@@ -40,9 +40,9 @@ const side = (files) => {
   const d = files.some(f => /^EscapeFromTarkov_Data\\/i.test(f)), o = files.some(f => !/^(BepInEx|SPT_Runtime|EscapeFromTarkov_Data)\\/i.test(f));
   return [c && '게임', d && '게임 데이터', s && '서버', o && '루트'].filter(Boolean).join('+');
 };
-const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(stage5-A)·총기 편의(stage5-B)' };
+const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 56개 (SPT 기본 5 + 모드 51, 2026-10-24 18:21 `LogOutput.log` 확인 — stage5-B의 게임 쪽 6개는 아직 미확인) / 서버 모드 로드: 23개 (18:24 서버 테스트, stage5-B 포함)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 56개 (SPT 기본 5 + 모드 51, 2026-10-24 18:21 `LogOutput.log` 확인 — stage5-B·5-C의 게임 쪽 9개는 아직 미확인) / 서버 모드 로드: 27개 (18:31 서버 테스트, stage5-C 포함)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];
