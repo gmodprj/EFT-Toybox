@@ -1,0 +1,101 @@
+[
+  {
+    "id": 2786,
+    "name": "Auto Ranging",
+    "version": "2.0.0",
+    "file": "2786__AutoRanging-v2.0.0.zip",
+    "bytes": 4837,
+    "expected": 4837,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2789,
+    "name": "NVG Sight Dimmer",
+    "version": "2.1.0",
+    "file": "2789__NVGSightDimmer-v2.1.0.zip",
+    "bytes": 5503,
+    "expected": 5503,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1416,
+    "name": "Default Fire Mode Fixer",
+    "version": "2.1.0",
+    "file": "1416__acidphantasm-defaultfiremode.7z",
+    "bytes": 5796,
+    "expected": 5796,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2646,
+    "name": "Flexible Builds",
+    "version": "1.2.2",
+    "file": "2646__FlexibleBuilds-1.2.2.7z",
+    "bytes": 14024,
+    "expected": 14024,
+    "sizeOk": true,
+    "host": "gitlab.com",
+    "seconds": 1
+  },
+  {
+    "id": 2774,
+    "name": "Transparent Sights",
+    "version": "0.2.3",
+    "file": "2774__7Bpencil.TransparentSights.0.2.3.zip",
+    "bytes": 16864,
+    "expected": 16864,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2531,
+    "name": "Better Thermal & Night Vision",
+    "version": "2.1.1",
+    "file": "2531__BetterThermalNightVision-v2.1.1_SPT-4.1.x.zip",
+    "bytes": 22526,
+    "expected": 22526,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2790,
+    "name": "Easy Mounting",
+    "version": "2.0.1",
+    "file": "2790__maschine-EasyMounting-v2.0.1.zip",
+    "bytes": 37656,
+    "expected": 37656,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2667,
+    "name": "Picture in Picture Disabler",
+    "version": "2.1.0",
+    "file": "2667__PiP-Disabler.7z",
+    "bytes": 86198,
+    "expected": 86198,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2735,
+    "name": "Scope Rangefinder",
+    "version": "3.5.0",
+    "file": "2735__maschine-ScopeRangefinder-3.5.0.zip",
+    "bytes": 549247,
+    "expected": 549247,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

@@ -1,0 +1,2 @@
+1416__acidphantasm-defaultfiremode	SPT_Runtime\user\mods\acidphantasm-defaultfiremode\acidphantasm-defaultfiremode.dll
+1416__acidphantasm-defaultfiremode	SPT_Runtime\user\mods\acidphantasm-defaultfiremode\LICENSE
