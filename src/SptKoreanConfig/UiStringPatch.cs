@@ -27,9 +27,29 @@ namespace SptKoreanConfig
     {
         private static Dictionary<string, string> _map = new Dictionary<string, string>(StringComparer.Ordinal);
 
+        private static readonly HashSet<string> Used = new HashSet<string>(StringComparer.Ordinal);
+
         internal static int Loaded => _map.Count;
         internal static int PatchedMethods { get; private set; }
         internal static int ReplacedLiterals { get; private set; }
+
+        /// <summary>
+        /// 한 번도 바뀌지 않은 항목을 알린다. DLL 안의 문자열과 글자가 다르거나,
+        /// 더 긴 문자열의 일부일 때 이렇게 된다(문자열 상수는 통째로만 바꿀 수 있다).
+        /// </summary>
+        internal static void LogUnused()
+        {
+            var unused = _map.Keys.Where(k => !Used.Contains(k)).ToList();
+            if (unused.Count == 0)
+            {
+                KoreanConfigPlugin.Log.LogInfo("  창 UI 사전 항목 전부 사용됨");
+                return;
+            }
+
+            KoreanConfigPlugin.Log.LogWarning($"  창 UI 사전 {unused.Count}개 항목이 쓰이지 않았다 (원문이 다르거나 더 긴 문자열의 일부)");
+            foreach (var k in unused)
+                KoreanConfigPlugin.Log.LogWarning($"    안 쓰임: \"{k.Replace("\n", "\\n")}\"");
+        }
 
         /// <summary>바꾸면 설정 자체가 어긋나는 문자열. 사전에 들어 있어도 건너뛴다.</summary>
         private static readonly HashSet<string> Forbidden = new HashSet<string>(StringComparer.Ordinal)
@@ -150,6 +170,7 @@ namespace SptKoreanConfig
                 {
                     instruction.operand = korean;
                     ReplacedLiterals++;
+                    Used.Add(s);
                 }
                 yield return instruction;
             }

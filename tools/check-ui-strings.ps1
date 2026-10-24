@@ -1,5 +1,10 @@
-# _ui.json 의 원문이 ConfigurationManager.dll 안에 실제로 그대로 있는지 확인한다.
-# 한 글자라도 다르면 그 항목은 조용히 무시되므로, 사전을 고칠 때마다 돌려 본다.
+# _ui.json 의 원문이 ConfigurationManager.dll 안에 보이는지 빠르게 훑는다. 오타를 잡는 용도다.
+#
+# 주의 — 이것만으로는 부족하다. 여기서는 DLL 안에 그 글자가 "들어 있는지"만 본다.
+# 문자열 상수는 통째로만 바꿀 수 있으므로, 더 긴 문자열의 일부인 항목은
+# 여기서 OK 로 나와도 실제로는 한 번도 바뀌지 않는다(실제로 5건 있었다).
+# 확실한 확인은 게임 로그의 "창 UI 사전 항목 전부 사용됨" 줄이다.
+#
 #   pwsh -File tools/check-ui-strings.ps1 [-SptDir E:\Spt]
 param(
     [string]$SptDir = 'E:\Spt'
@@ -29,7 +34,8 @@ foreach ($p in $strings.PSObject.Properties) {
 }
 
 if ($missing.Count -eq 0) {
-    "OK  원문 $count 개 모두 DLL 에서 확인됨"
+    "OK  원문 $count 개가 DLL 안에서 보인다 (오타 없음)"
+    "    실제로 바뀌는지는 게임 로그의 '창 UI 사전 항목 전부 사용됨' 줄로 확인한다."
 } else {
     "!   원문 $count 개 중 $($missing.Count) 개를 DLL 에서 찾지 못했다 (그 항목은 무시된다)"
     $missing | ForEach-Object { "    없음: [$_]" }

@@ -52,6 +52,7 @@ namespace SptKoreanConfig
             {
                 harmony.PatchAll(typeof(UiStringPatch));
                 Log.LogInfo($"창 UI 한글화 — 사전 {UiStringPatch.Loaded}개, 메서드 {UiStringPatch.PatchedMethods}개, 문자열 {UiStringPatch.ReplacedLiterals}개 교체");
+                UiStringPatch.LogUnused();
             }
         }
     }
