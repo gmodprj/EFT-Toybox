@@ -39,6 +39,15 @@ F12(ConfigurationManager) 창에 보이는 **모드 이름 · 섹션 이름 · �
 - 빠진 항목은 영문 원문이 그대로 나온다. 일부만 번역해도 된다.
 - `name` 이나 `desc` 중 하나만 적어도 된다.
 
+## 사전이 빠짐없는지 확인
+
+```
+node tools/check-lang-coverage.mjs                    전체 요약
+node tools/check-lang-coverage.mjs com.tyfon.uifixes  빠진 항목까지
+```
+
+`.cfg` 의 실제 항목과 사전을 맞춰 보고, 누락·오타(cfg 에 없는 열쇠)·설명 없는 항목 수를 알려 준다. 사전을 하나 쓸 때마다 돌려 본다.
+
 ## F12 안의 자체 설정
 
 | 항목 | 기본값 | 내용 |

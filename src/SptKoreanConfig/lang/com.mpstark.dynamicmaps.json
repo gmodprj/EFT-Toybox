@@ -1,0 +1,218 @@
+{
+  "guid": "com.mpstark.dynamicmaps",
+  "name": "실시간 지도 (Dynamic Maps)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Dynamic Markers": "2. 표시 항목",
+    "3. Progression": "3. 해금 조건",
+    "4. In-Raid": "4. 레이드 중",
+    "5. Mini-map": "5. 미니맵",
+    "6. Marker Colors": "6. 표시 색상",
+    "7. External Mod Support": "7. 다른 모드 연동"
+  },
+  "settings": {
+    "1. General/Replace Map Screen": {
+      "name": "기본 지도 화면 대체",
+      "desc": "BSG 기본 지도 화면을 이 지도로 바꾼다. 적용하려면 다른 지도로 바꿨다가 돌아와야 한다."
+    },
+    "1. General/Center on Player Hotkey": {
+      "name": "내 위치로 맞추기 키",
+      "desc": "지도를 연 상태에서 누르면 내 위치를 화면 가운데로 옮긴다."
+    },
+    "1. General/Move Map Up Hotkey": { "name": "지도 위로", "desc": "지도를 위로 미는 단축키." },
+    "1. General/Move Map Down Hotkey": { "name": "지도 아래로", "desc": "지도를 아래로 미는 단축키." },
+    "1. General/Move Map Left Hotkey": { "name": "지도 왼쪽으로", "desc": "지도를 왼쪽으로 미는 단축키." },
+    "1. General/Move Map Right Hotkey": { "name": "지도 오른쪽으로", "desc": "지도를 오른쪽으로 미는 단축키." },
+    "1. General/Move Map Hotkey Speed": {
+      "name": "지도 이동 속도",
+      "desc": "단축키로 지도를 미는 속도. 초당 지도 길이의 몇 퍼센트인지로 센다."
+    },
+    "1. General/Change Map Level Up Hotkey": {
+      "name": "위층으로",
+      "desc": "한 층 위로 올라가는 단축키. 지도 화면에서는 Shift+휠 위로도 된다."
+    },
+    "1. General/Change Map Level Down Hotkey": {
+      "name": "아래층으로",
+      "desc": "한 층 아래로 내려가는 단축키. 지도 화면에서는 Shift+휠 아래로도 된다."
+    },
+    "1. General/Zoom Menu Map to Mouse": {
+      "name": "마우스 위치 기준 확대",
+      "desc": "레이드 밖 인벤토리의 지도 화면에서 확대할 때, 화면 가운데가 아니라 마우스 위치를 기준으로 삼는다."
+    },
+    "1. General/Zoom Map In Hotkey": { "name": "확대", "desc": "지도를 확대하는 단축키. 지도 화면에서는 휠 위로도 된다." },
+    "1. General/Zoom Map Out Hotkey": { "name": "축소", "desc": "지도를 축소하는 단축키. 지도 화면에서는 휠 아래로도 된다." },
+    "1. General/Zoom Map Hotkey Speed": { "name": "확대·축소 속도", "desc": "단축키로 확대·축소하는 속도." },
+    "1. General/Dump Info Hotkey": {
+      "name": "정보 내보내기 키",
+      "desc": "지도를 연 상태에서 누르면 탈출구·전리품·스위치의 표시 정보를 json으로 플러그인 폴더에 내보낸다."
+    },
+
+    "2. Dynamic Markers/Show Player Marker": { "name": "내 위치 표시", "desc": "레이드 중 내 위치를 지도에 띄운다." },
+    "2. Dynamic Markers/Show Friendly Player Markers": { "name": "아군 표시", "desc": "레이드 중 아군의 위치를 띄운다." },
+    "2. Dynamic Markers/Show Enemy Player Markers": {
+      "name": "적 PMC 표시",
+      "desc": "레이드 중 적 플레이어의 위치를 띄운다. 보통 디버그용이다."
+    },
+    "2. Dynamic Markers/Show Scav Markers": {
+      "name": "스캐브 표시",
+      "desc": "레이드 중 스캐브의 위치를 띄운다. 보통 디버그용이다."
+    },
+    "2. Dynamic Markers/Show Boss Markers": { "name": "보스 표시", "desc": "레이드 중 보스의 위치를 띄운다." },
+    "2. Dynamic Markers/Show Locked Door Status": {
+      "name": "잠긴 문 상태 표시",
+      "desc": "열쇠를 가지고 있는지에 따라 잠긴 문 표시를 바꾼다."
+    },
+    "2. Dynamic Markers/Show Quests In Raid": { "name": "퀘스트 표시", "desc": "레이드 중 퀘스트 위치를 띄운다." },
+    "2. Dynamic Markers/Show Extracts In Raid": { "name": "탈출구 표시", "desc": "레이드 중 탈출 지점을 띄운다." },
+    "2. Dynamic Markers/Show Extracts Status In Raid": {
+      "name": "탈출구 상태 색 표시",
+      "desc": "탈출 지점을 상태에 따라 다른 색으로 보여 준다."
+    },
+    "2. Dynamic Markers/Show Transit Points In Raid": { "name": "이동 지점 표시", "desc": "맵 간 이동 지점을 띄운다." },
+    "2. Dynamic Markers/Show Secret Extracts In Raid": { "name": "비밀 탈출구 표시", "desc": "숨겨진 탈출 지점을 띄운다." },
+    "2. Dynamic Markers/Show Dropped Backpack In Raid": {
+      "name": "내가 버린 배낭 표시",
+      "desc": "내가 떨어뜨린 배낭만 띄운다. 남의 것은 보이지 않는다."
+    },
+    "2. Dynamic Markers/Show wish listed items In Raid": {
+      "name": "위시리스트 아이템 표시",
+      "desc": "위시리스트에 담은 아이템이 보이면 지도에 띄운다."
+    },
+    "2. Dynamic Markers/Show BTR In Raid": { "name": "BTR 표시", "desc": "레이드 중 BTR의 위치를 띄운다." },
+    "2. Dynamic Markers/Show Airdrops In Raid": { "name": "보급 상자 표시", "desc": "보급 상자가 떨어진 자리를 띄운다." },
+    "2. Dynamic Markers/Show Hidden Stashes In Raid": { "name": "은닉 보관함 표시", "desc": "숨겨진 보관함 위치를 띄운다." },
+    "2. Dynamic Markers/Show Friendly Corpses In Raid": { "name": "아군 시체 표시", "desc": "아군의 시체를 지도에 띄운다." },
+    "2. Dynamic Markers/Show Player-killed Corpses In Raid": {
+      "name": "내가 죽인 시체 표시",
+      "desc": "내가 처치한 시체를 띄운다. 보스는 다른 색으로 보인다."
+    },
+    "2. Dynamic Markers/Show Friendly-killed Corpses In Raid": {
+      "name": "아군이 죽인 시체 표시",
+      "desc": "아군이 처치한 시체를 띄운다. 보스는 다른 색으로 보인다."
+    },
+    "2. Dynamic Markers/Show Boss Corpses In Raid": {
+      "name": "보스 시체 표시",
+      "desc": "내가 죽인 것 외의 보스 시체도 띄운다."
+    },
+    "2. Dynamic Markers/Show Other Corpses In Raid": {
+      "name": "그 밖의 시체 표시",
+      "desc": "아군이나 내가 죽인 것이 아닌 시체도 띄운다."
+    },
+
+    "3. Progression/Require a map in your inventory": {
+      "name": "지도 소지 필요",
+      "desc": "레이드 중 지도를 보려면 인벤토리에 지도를 들고 있어야 한다."
+    },
+    "3. Progression/Intel level required to show PMCs": {
+      "name": "적 PMC 표시에 필요한 정보 센터 등급",
+      "desc": "정보 센터가 이 등급 이상이어야 적 PMC가 보인다."
+    },
+    "3. Progression/Intel level required to show bosses": {
+      "name": "보스 표시에 필요한 정보 센터 등급",
+      "desc": "정보 센터가 이 등급 이상이어야 보스가 보인다."
+    },
+    "3. Progression/Intel level required to show scavs": {
+      "name": "스캐브 표시에 필요한 정보 센터 등급",
+      "desc": "정보 센터가 이 등급 이상이어야 스캐브가 보인다."
+    },
+    "3. Progression/Intel level required to show friendly PMCs": {
+      "name": "아군 표시에 필요한 정보 센터 등급",
+      "desc": "정보 센터가 이 등급 이상이어야 아군 PMC가 보인다."
+    },
+    "3. Progression/Intel level required to show corpses": {
+      "name": "시체 표시에 필요한 정보 센터 등급",
+      "desc": "정보 센터가 이 등급 이상이어야 시체가 보인다."
+    },
+    "3. Progression/Intel level required to show airdrops": {
+      "name": "보급 상자 표시에 필요한 정보 센터 등급",
+      "desc": "정보 센터가 이 등급 이상이어야 보급 상자가 보인다."
+    },
+    "3. Progression/Intel level required to show wish listed loot items": {
+      "name": "위시리스트 표시에 필요한 정보 센터 등급",
+      "desc": "정보 센터가 이 등급 이상이어야 위시리스트 아이템이 보인다."
+    },
+    "3. Progression/Intel level required to show hidden stashes": {
+      "name": "은닉 보관함 표시에 필요한 정보 센터 등급",
+      "desc": "정보 센터가 이 등급 이상이어야 은닉 보관함이 보인다."
+    },
+
+    "4. In-Raid/Auto Select Level": {
+      "name": "층 자동 선택",
+      "desc": "레이드 중 내 위치에 맞는 층을 자동으로 골라 준다."
+    },
+    "4. In-Raid/Auto Center On Player Marker": {
+      "name": "열 때 내 위치로 맞추기",
+      "desc": "레이드 중 지도를 열 때마다 내 위치를 가운데로 둔다. '지도 위치 기억'과 함께 쓸 수 없다."
+    },
+    "4. In-Raid/Reset Zoom On Center": {
+      "name": "열 때 배율 초기화",
+      "desc": "레이드 중 지도를 열 때마다 확대 배율을 되돌린다. '지도 위치 기억'과 함께 쓸 수 없다."
+    },
+    "4. In-Raid/Remember Map Position": {
+      "name": "지도 위치 기억",
+      "desc": "보던 위치를 기억한다. 이번 레이드 동안만 유지된다. '열 때 내 위치로 맞추기'·'열 때 배율 초기화'와 함께 쓸 수 없다."
+    },
+    "4. In-Raid/Centering On Player Zoom Level": {
+      "name": "내 위치로 맞출 때 배율",
+      "desc": "내 위치로 맞출 때 쓸 확대 배율. 0이 가장 축소, 1이 가장 확대."
+    },
+    "4. In-Raid/Main map zoom": {
+      "name": "전체 지도 배율",
+      "desc": "Tab 지도와 엿보기 지도에 쓸 확대 배율. 0이 가장 축소, 1이 가장 확대."
+    },
+    "4. In-Raid/Peek at Map Shortcut": { "name": "지도 엿보기 키", "desc": "지도를 잠깐 띄우는 단축키." },
+    "4. In-Raid/Hold for Peek": {
+      "name": "누르고 있는 동안만 보기",
+      "desc": "키를 누르고 있는 동안만 지도를 띄운다. 끄면 한 번 눌러 켜고 끈다."
+    },
+    "4. In-Raid/Peek Transition enabled": {
+      "name": "전환 효과 사용",
+      "desc": "지도가 뜨고 사라질 때 애니메이션을 준다. 끄면 즉시 바뀐다."
+    },
+
+    "5. Mini-map/Mini-map enabled": { "name": "미니맵 사용", "desc": "화면 구석에 작은 지도를 띄운다." },
+    "5. Mini-map/Mini-map position": { "name": "미니맵 위치", "desc": "미니맵을 화면 어느 모서리에 둘지 정한다." },
+    "5. Mini-map/Mini-map size horizontal": { "name": "미니맵 가로 크기", "desc": "미니맵의 가로 크기." },
+    "5. Mini-map/Mini-map size vertical": { "name": "미니맵 세로 크기", "desc": "미니맵의 세로 크기." },
+    "5. Mini-map/Mini-map offset horizontal": {
+      "name": "미니맵 가로 여백",
+      "desc": "화면 가장자리에서 띄울 가로 거리. 해상도에 따라 값이 달라지므로 해상도를 바꿨다면 게임을 다시 켜야 한다."
+    },
+    "5. Mini-map/Mini-map offset vertical": {
+      "name": "미니맵 세로 여백",
+      "desc": "화면 가장자리에서 띄울 세로 거리. 해상도에 따라 값이 달라지므로 해상도를 바꿨다면 게임을 다시 켜야 한다."
+    },
+    "5. Mini-map/Show or Hide the mini-map": { "name": "미니맵 보이기·숨기기", "desc": "미니맵을 띄우거나 감추는 키." },
+    "5. Mini-map/Mini map zoom": {
+      "name": "미니맵 배율",
+      "desc": "미니맵에 쓸 확대 배율. 0이 가장 축소, 15가 가장 확대."
+    },
+    "5. Mini-map/Zoom in key bind": { "name": "미니맵 확대 키", "desc": "미니맵을 확대하는 키." },
+    "5. Mini-map/Zoom out key bind": { "name": "미니맵 축소 키", "desc": "미니맵을 축소하는 키." },
+
+    "6. Marker Colors/Your player marker color": { "name": "내 위치" },
+    "6. Marker Colors/Bear marker color": { "name": "베어" },
+    "6. Marker Colors/Usec marker color": { "name": "유섹" },
+    "6. Marker Colors/Scav marker color": { "name": "스캐브" },
+    "6. Marker Colors/Boss marker color": { "name": "보스" },
+    "6. Marker Colors/Airdrop marker color": { "name": "보급 상자" },
+    "6. Marker Colors/Backpack marker color": { "name": "배낭" },
+    "6. Marker Colors/Loot marker color": { "name": "전리품" },
+    "6. Marker Colors/Killed corpse marker color": { "name": "내가 죽인 시체" },
+    "6. Marker Colors/Killed boss corpse marker color": { "name": "내가 죽인 보스 시체" },
+    "6. Marker Colors/Killed by other corpse marker color": { "name": "남이 죽인 시체" },
+    "6. Marker Colors/BTR marker color": { "name": "BTR" },
+    "6. Marker Colors/Extract default marker color": { "name": "탈출구 — 기본" },
+    "6. Marker Colors/Extract open marker color": { "name": "탈출구 — 열림" },
+    "6. Marker Colors/Extract closed marker color": { "name": "탈출구 — 닫힘" },
+    "6. Marker Colors/Extract has requirements marker color": { "name": "탈출구 — 조건 있음" },
+    "6. Marker Colors/Transit point marker color": { "name": "이동 지점" },
+    "6. Marker Colors/Secret exfil point marker color": { "name": "비밀 탈출구" },
+    "6. Marker Colors/Hidden stash marker color": { "name": "은닉 보관함" },
+
+    "7. External Mod Support/Show Heli Crash Marker": {
+      "name": "헬기 추락 지점 표시",
+      "desc": "레이드 중 헬기 추락 지점을 지도에 띄운다."
+    }
+  }
+}
