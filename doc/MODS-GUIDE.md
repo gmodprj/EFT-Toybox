@@ -1,6 +1,6 @@
 # 설치된 모드 설명
 
-> 2026-10-24 기준 **93개**. 무엇을 하는 모드인지 기능별로 묶어 적은 문서.
+> 2026-10-25 기준 Forge 모드 **93개** + 직접 만든 것 **1개**. 무엇을 하는 모드인지 기능별로 묶어 적은 문서.
 > 버전·설치 파일 수·설치 기록은 [INSTALLED-MODS.md](INSTALLED-MODS.md)(자동 생성), 작업 경과는 [WORKLOG.md](WORKLOG.md).
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.40743)
@@ -167,6 +167,16 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Low Budget Bullet Time NG](https://sp-mod.com/mod/1988) | 2.3.0 | 5차 | 게임 | 시간을 느리게 만드는 불릿 타임(제한 있음). |
 | [Cobra's SPT Explorer](https://sp-mod.com/mod/3009) | 1.0.0 | 5차 | 게임+서버+루트 | (치트 표시) 읽기 전용 SPT 데이터베이스 탐색기 + 레이드 중 퀘스트·탈출구 도움. 서버를 켠 뒤 `CobraSPTExplorerUI\CobrasSPTExplorer.UI.exe`를 따로 실행한다. |
 
+## 직접 만든 것 (1개)
+
+Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 `tools/install-koreanconfig.ps1`.
+
+| 모드 | 버전 | 위치 | 결속 | 설명 |
+| --- | --- | --- | --- | --- |
+| SptKoreanConfig | 0.1.0 | 게임 | - | F12(설정 창)에 보이는 글자를 한글로 바꾼다. 모드 58개의 설정 1096항목(이름·묶음 제목·설명)과 창 자체의 글자 33항목. 다른 모드 파일과 `ConfigurationManager.dll`은 건드리지 않고, 화면에 그릴 값만 바꾸므로 플러그인을 빼면 영문으로 돌아간다. 설정 값과 `.cfg` 파일에도 영향이 없다. |
+
+번역을 고치려면 `BepInEx\plugins\SptKoreanConfig\lang\<모드 GUID>.json`을 고치고 F12를 다시 열면 된다(재시작 불필요). 창 자체의 글자(`lang\_ui.json`)만은 게임을 다시 켜야 한다.
+
 ## 프로필 결속 모드 (18개)
 
 제거하려면 프로필 백업이 먼저다. 되돌릴 때는 `doc/install-records/installed-<Tag>.txt`의 경로만 지운다.
@@ -208,4 +218,5 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | EasyMounting | `...\EasyMounting\Config\config.json` | 프리셋 `AnySurface` 적용 상태 |
 | Trader Namer | `...\TraderNamer\config.json` | 이름·소개 변경. 아바타는 `avatars\<상인이름>.jpg` |
 | SVM | `Greed.exe` | 치트성 기능은 여기서 먼저 찾는다 |
+| SptKoreanConfig | `...\SptKoreanConfig\lang\*.json` | 번역 문구. 모드별 사전은 고치고 F12를 다시 열면 반영, `_ui.json`은 재시작 필요. F12 안에서 한글 표시 자체를 끌 수도 있다 |
 | Transparent Sights | F12 메뉴 + 조준경 아이콘 더블클릭 | 파일로 받을 설정이 없다. `plugins\7Bpencil.TransparentSights\config.json`은 조준경별 전환을 저장할 때 모드가 직접 만든다(없으면 기본값). 형식은 `"<아이템 템플릿 ID>": "Enabled" / "EnabledWithMount" / "Disabled"` |
