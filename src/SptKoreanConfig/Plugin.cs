@@ -42,8 +42,17 @@ namespace SptKoreanConfig
 
             BuildSettingListPatch.LogReflectionTargets();
 
-            new Harmony(PluginGuid).PatchAll(typeof(BuildSettingListPatch));
+            var harmony = new Harmony(PluginGuid);
+            harmony.PatchAll(typeof(BuildSettingListPatch));
             Log.LogInfo("ConfigurationManager.BuildSettingList 패치 완료");
+
+            // 창 자체의 글자는 DLL 안에 박혀 있어 목록이 아니라 코드를 고쳐야 한다.
+            UiStringPatch.Load(Path.Combine(langDir, "_ui.json"));
+            if (UiStringPatch.Loaded > 0)
+            {
+                harmony.PatchAll(typeof(UiStringPatch));
+                Log.LogInfo($"창 UI 한글화 — 사전 {UiStringPatch.Loaded}개, 메서드 {UiStringPatch.PatchedMethods}개, 문자열 {UiStringPatch.ReplacedLiterals}개 교체");
+            }
         }
     }
 

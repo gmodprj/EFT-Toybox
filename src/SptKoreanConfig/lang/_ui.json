@@ -1,0 +1,46 @@
+{
+  "comment": "ConfigurationManager 창 자체의 글자. 왼쪽은 DLL 안에 박힌 원문이라 한 글자도 바꾸면 안 된다(끝의 공백 포함). 모드 사전과 달리 코드를 고치는 방식이라 바꾼 뒤에는 게임을 다시 켜야 한다.",
+  "strings": {
+    "Plugin / mod settings": "플러그인 / 모드 설정",
+
+    "Normal settings": "일반 설정",
+    "Keyboard shortcuts": "단축키",
+    "Advanced settings": "고급 설정",
+    "Debug info": "디버그 정보",
+    "Open Log": "로그 열기",
+    "Close": "닫기",
+
+    "Search: ": "검색: ",
+    "Clear": "지우기",
+    "Expand All": "모두 펼치기",
+    "Collapse All": "모두 접기",
+
+    "Reset": "되돌리기",
+    "Set...": "지정...",
+    "Cancel": "취소",
+    "Press any key": "아무 키나 누르세요",
+    "Press any key combination": "키 조합을 누르세요",
+    "Set the key by pressing any key on your keyboard.": "키보드에서 키를 눌러 지정한다.",
+
+    "Enabled": "켬",
+    "Disabled": "끔",
+
+    "Tip: Click plugin names to expand. Click setting and group names to see their descriptions.": "도움말: 모드 이름을 누르면 펼쳐진다. 설정 이름이나 묶음 제목을 누르면 설명이 나온다.",
+    "Tip: You can drag this window to move it. It will stay open while you interact with the game.": "도움말: 이 창은 끌어서 옮길 수 있다. 게임을 조작하는 동안에도 열린 채로 남는다.",
+    "Plugins with no options available: ": "설정이 없는 모드: ",
+    "No log files were found": "로그 파일을 찾지 못했다",
+
+    "Disabling this will disable some or all of the plugin's functionality.": "끄면 이 모드의 기능이 일부 또는 전부 멈춘다.",
+    "Hooks and event-based functionality will not be disabled.": "다만 후크와 이벤트로 도는 기능까지 멈추지는 않는다.",
+    "This setting will be lost after game restart.": "이 설정은 게임을 다시 켜면 사라진다.",
+    "Failed to draw this field, check log for details.": "이 항목을 그리지 못했다. 자세한 내용은 로그를 본다.",
+
+    "GUID: ": "GUID: ",
+    "Empty URL": "주소가 비어 있다",
+    "Failed to open URL ": "주소를 열지 못했다: ",
+    "Failed to get URI for ": "주소를 만들지 못했다: ",
+    "Failed to copy value ": "값을 복사하지 못했다: ",
+    "Error message:": "오류 내용:",
+    "Cause: ": "원인: "
+  }
+}

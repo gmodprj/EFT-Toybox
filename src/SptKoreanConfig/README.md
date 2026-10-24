@@ -18,7 +18,9 @@ F12(ConfigurationManager) 창에 보이는 **모드 이름 · 섹션 이름 · �
 | --- | --- |
 | `Plugin.cs` | `ConfigurationManager.BuildSettingList()` 에 Harmony Postfix. 목록이 만들어진 직후 표시용 필드만 덮어쓰고 섹션 묶음을 다시 만든다 |
 | `TranslationStore.cs` | `lang/*.json` 을 읽어 GUID로 찾게 한다. 파일 수정 시각이 바뀌면 **게임을 끄지 않고** 다시 읽는다 |
+| `UiStringPatch.cs` | 창 자체의 글자를 바꾼다. 아래 "창 자체의 글자" 참고 |
 | `lang/<플러그인 GUID>.json` | 모드 한 개의 번역 사전 |
+| `lang/_ui.json` | 창 자체의 글자. 밑줄로 시작하는 파일은 모드 사전으로 읽지 않는다 |
 
 ## 사전 형식
 
@@ -71,6 +73,23 @@ SPT 설치 위치가 다르면 `-p:SptDir=...` / `-SptDir ...` 로 넘긴다.
 - F12 목록은 모드 이름순으로 정렬되므로, 한글 이름을 붙인 모드는 **영문 모드들 뒤로 내려간다.** 번역을 다 하면 다시 한글 가나다순으로 정렬된다.
 - 설정을 뒤늦게 등록하는 모드가 있어 전체 항목 수는 실행 중에도 늘어난다(실측 992 → 1029). F12를 열 때마다 다시 적용하므로 문제는 없다.
 
-## 아직 안 되는 것
+## 창 자체의 글자 (`lang/_ui.json`)
 
-창 자체의 UI 글자(`Plugin / mod settings`, `Normal settings`, `Open Log`, `Search:` 등 약 40개)는 `ConfigurationManager.dll` 안에 하드코딩돼 있어 이 방식으로는 못 바꾼다. 별도 작업(LGPL 소스 포크 재빌드 또는 DLL 문자열 치환)이 필요하다.
+창 제목·버튼·안내 문구는 모드 설정이 아니라 `ConfigurationManager.dll` 코드 안에 박혀 있다. 표시용 필드가 없으므로 다른 수를 쓴다 — **Harmony 트랜스파일러로 그 메서드들의 문자열 상수(`ldstr`)를 불러올 때 한글로 바꿔치기한다.** DLL 파일은 그대로 두므로 플러그인만 빼면 원문으로 돌아간다.
+
+```json
+{
+  "strings": { "Close": "닫기", "Search: ": "검색: " }
+}
+```
+
+- 왼쪽은 DLL 안의 원문이라 **끝의 공백까지 한 글자도 달라선 안 된다.** 다르면 그 항목은 조용히 무시된다.
+- 사전에 있는 문자열을 실제로 쓰는 메서드만 골라 패치한다.
+- 설정 섹션·키 이름(`General`, `Show advanced` 등)과 `ConfigurationManagerAttributes` 의 필드 이름은 바꾸면 `.cfg` 의 키가 달라지거나 덕 타이핑이 깨지므로, 사전에 적어도 **건너뛰고 경고를 남긴다**.
+- 모드 사전과 달리 코드를 고치는 방식이라 **바꾼 뒤에는 게임을 다시 켜야 한다.**
+
+원문이 DLL에 실제로 있는지 확인:
+
+```
+pwsh -File tools/check-ui-strings.ps1
+```
