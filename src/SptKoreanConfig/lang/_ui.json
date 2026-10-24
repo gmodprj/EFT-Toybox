@@ -30,9 +30,7 @@
     "Plugins with no options available: ": "설정이 없는 모드: ",
     "No log files were found": "로그 파일을 찾지 못했다",
 
-    "Disabling this will disable some or all of the plugin's functionality.": "끄면 이 모드의 기능이 일부 또는 전부 멈춘다.",
-    "Hooks and event-based functionality will not be disabled.": "다만 후크와 이벤트로 도는 기능까지 멈추지는 않는다.",
-    "This setting will be lost after game restart.": "이 설정은 게임을 다시 켜면 사라진다.",
+    "Disabling this will disable some or all of the plugin's functionality.\nHooks and event-based functionality will not be disabled.\nThis setting will be lost after game restart.": "끄면 이 모드의 기능이 일부 또는 전부 멈춘다.\n다만 후크와 이벤트로 도는 기능까지 멈추지는 않는다.\n이 설정은 게임을 다시 켜면 사라진다.",
     "Failed to draw this field, check log for details.": "이 항목을 그리지 못했다. 자세한 내용은 로그를 본다.",
 
     "GUID: ": "GUID: ",
@@ -40,7 +38,9 @@
     "Failed to open URL ": "주소를 열지 못했다: ",
     "Failed to get URI for ": "주소를 만들지 못했다: ",
     "Failed to copy value ": "값을 복사하지 못했다: ",
-    "Error message:": "오류 내용:",
-    "Cause: ": "원인: "
+    "\nCause: ": "\n원인: ",
+
+    "WARNING: Failed to write to config directory, expect issues!\nError message:": "경고: 설정 폴더에 쓰지 못했다. 문제가 생길 수 있다.\n오류 내용:",
+    "WARNING: Permission denied to write to config directory, expect issues!\nError message:": "경고: 설정 폴더에 쓸 권한이 없다. 문제가 생길 수 있다.\n오류 내용:"
   }
 }
