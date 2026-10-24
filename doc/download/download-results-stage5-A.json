@@ -1,0 +1,233 @@
+[
+  {
+    "id": 2733,
+    "name": "Raid Menu Cleanup Fix",
+    "version": "2.0.0",
+    "file": "2733__maschine-RaidMenuCleanupFix-2.0.0.zip",
+    "bytes": 2877,
+    "expected": 2877,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2405,
+    "name": "LetMeRightClick",
+    "version": "1.1.1",
+    "file": "2405__LetMeRightClick.zip",
+    "bytes": 3112,
+    "expected": 3112,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2069,
+    "name": "Loot Instant Search",
+    "version": "1.0.5",
+    "file": "2069__LootInstantSearch-v1.0.5.0.zip",
+    "bytes": 3614,
+    "expected": 3614,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1136,
+    "name": "Equip From Weapon Rack",
+    "version": "1.6.0",
+    "file": "1136__DrakiaXYZ-EquipFromWeaponRack-1.6.0.7z",
+    "bytes": 4125,
+    "expected": 4125,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1249,
+    "name": "Exfil Flare Notification",
+    "version": "1.0.6",
+    "file": "1249__Terkoiz.FlareEventNotifier.zip",
+    "bytes": 4310,
+    "expected": 4310,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2729,
+    "name": "Notification Filter",
+    "version": "2.0.0",
+    "file": "2729__maschine-NotificationFilter-2.0.0.zip",
+    "bytes": 4919,
+    "expected": 4919,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1745,
+    "name": "Discarder",
+    "version": "5.0.0",
+    "file": "1745__Tyfon-Discarder-5.0.0.zip",
+    "bytes": 6027,
+    "expected": 6027,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2731,
+    "name": "Linked Search In Stash",
+    "version": "2.0.1",
+    "file": "2731__maschine-LinkedSearchInStash-2.0.1.zip",
+    "bytes": 6401,
+    "expected": 6401,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 824,
+    "name": "Task List Fixes",
+    "version": "1.8.0",
+    "file": "824__DrakiaXYZ-TaskListFixes-1.8.0.7z",
+    "bytes": 7329,
+    "expected": 7329,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3081,
+    "name": "Advanced Modding Lights",
+    "version": "2.0.0",
+    "file": "3081__AdvancedModdingLights.zip",
+    "bytes": 7504,
+    "expected": 7504,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2730,
+    "name": "Auto Corpse Search",
+    "version": "2.2.0",
+    "file": "2730__maschine-AutoCorpseSearch-2.2.0.zip",
+    "bytes": 9495,
+    "expected": 9495,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1469,
+    "name": "AutoDeposit",
+    "version": "6.0.0",
+    "file": "1469__Tyfon-AutoDeposit-6.0.0.zip",
+    "bytes": 9804,
+    "expected": 9804,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2623,
+    "name": "Refined Flea Offer List",
+    "version": "1.2.0",
+    "file": "2623__RefinedFleaOfferList_v1.2.0.zip",
+    "bytes": 10345,
+    "expected": 10345,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3152,
+    "name": "Hide Locked Flea",
+    "version": "1.0.0",
+    "file": "3152__Liquidwarp-HideLockedFlea-1.0.0.zip",
+    "bytes": 14979,
+    "expected": 14979,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3079,
+    "name": "Tag Over Name",
+    "version": "1.0.2",
+    "file": "3079__TagOverName-1.0.2.zip",
+    "bytes": 18679,
+    "expected": 18679,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3155,
+    "name": "Pinned Quest HUD",
+    "version": "1.0.1",
+    "file": "3155__PinnedQuestHUD-1.0.1.zip",
+    "bytes": 20021,
+    "expected": 20021,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3160,
+    "name": "Pre-Raid Checklist",
+    "version": "1.0.0",
+    "file": "3160__PreRaidChecklist-1.0.0.zip",
+    "bytes": 22005,
+    "expected": 22005,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2907,
+    "name": "Stash Filter",
+    "version": "1.0.0",
+    "file": "2907__maschine-StashFilter-1.0.0.zip",
+    "bytes": 25053,
+    "expected": 25053,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2909,
+    "name": "Hj's Task Search",
+    "version": "2.0.2",
+    "file": "2909__TaskSearch4.1.zip",
+    "bytes": 32659,
+    "expected": 32659,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2924,
+    "name": "Advanced Stash Sorting",
+    "version": "1.0.6",
+    "file": "2924__AdvancedStashSorting-1.0.6.zip",
+    "bytes": 120067,
+    "expected": 120067,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2386,
+    "name": "Use Items Anywhere",
+    "version": "2.1.6",
+    "file": "2386__UseItemsAnywhere-2.1.6-Release.zip",
+    "bytes": 1218923,
+    "expected": 1218923,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]
