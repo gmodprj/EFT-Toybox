@@ -211,6 +211,36 @@
 - [MODS-GUIDE.md](MODS-GUIDE.md)에 "직접 만든 것" 묶음 신설, "설정을 손볼 만한 곳"에 사전 파일 위치 추가. 머리말을 "Forge 모드 93개 + 직접 만든 것 1개"로 바로잡았다.
 - 루트 [README.md](../README.md)에 `src/` 와 도구 4개(`check-conflicts`, `install-koreanconfig`, `check-lang-coverage`, `check-ui-strings`)를 빠뜨리고 있어 함께 채웠다.
 
+### 탄창 소실 오류 조사 (08:1x ~ 09:3x)
+
+레이드 중 `Reload failed: Direct load flow error`가 뜨고 탄창이 사라진다는 제보로 시작했다. 결론은 [MODS-GUIDE.md의 "알려진 충돌"](MODS-GUIDE.md)에 정리했고, 여기에는 어떻게 좁혔는지를 남긴다.
+
+**증거 수집**
+
+- `LogOutput.log`에 예외 전문이 있었다. 던지는 쪽은 모드가 아니라 게임이다 — `Item.get_Parent` → "Trying to get parent of an item that doesn't have a parent".
+- 스택의 `DMD<...>` 프레임은 전부 Harmony 패치라는 뜻이다. 설치된 플러그인 DLL을 Mono.Cecil 로 전부 훑어 **누가 어느 메서드를 패치했는지** 표로 만들었다.
+  - `FirearmController.ReloadMag` ← UI Fixes `SwapIfNoSpacePatch`
+  - `ReloadExternalMagResult.Run` ← Mag Retention Reload `ReloadRunPatch`
+  - `ItemManipulator.Move` ← UI Fixes `MoveBeforeResize`·`MoveOperationDontForgetAboutPins`
+  - 호출한 쪽 ← Direct Reload `SoftcoreReloadPatch`
+- Direct Reload의 IL을 읽어 호출 인자를 확정했다: `ReloadMag(weapon.GetCurrentMagazine(), FindFreeAddress(...), callback)` — **빼낼 탄창과 넣을 탄창이 같은 객체다.** 이것이 깨지기 쉬운 구조의 핵심이었다.
+
+**틀린 가설 두 개 (실측으로 기각)**
+
+- "대형 탄창에서만 난다" — D60·MPX TTI 만 나와 그렇게 보였으나, 이어서 **UMP45 표준 탄창**에서도 났다. 쓰던 총이 그랬을 뿐이다. 패치 이름이 `SwapIfNoSpace` 라 더 그럴듯해 보였던 것도 한몫했다.
+- "UI Fixes의 `탄창 제자리 교체`가 범인" — 껐는데 그대로 났다(14번째). 기각.
+
+**확정**
+
+세 조합을 한 번에 하나씩만 바꿔 비교했다. `켬/켬` 13건 → `끔/켬` 계속 → **`켬/끔` 0건**. UI Fixes 설정은 켠 채로 문제없다.
+
+마지막에 Direct Reload 디버그 로그를 켜고 통과 장면을 직접 확인했다. `calling ReloadMag` 에 4회 도달(빈 탄창 `mag=0/25` 포함)해 전부 예외 없이 끝났고, 진단 줄이 탄창이 `Slot(mod_magazine)` → `SearchableGrid` 로 옮겨간 것까지 보여 준다. 예전에는 이 구간에서 부모를 잃었다.
+
+**남긴 것**
+
+- 조사 중 "오류가 안 난다"만으로는 고쳐졌는지 알 수 없었다. 성공 경로가 로그를 남기지 않기 때문이다. 그래서 디버그 로그로 **도달 횟수를 세는** 방식으로 바꿔 확증했다. 무오류는 증거가 약하다.
+- 디버그 로그는 로그를 빠르게 불린다(1,700줄 → 5,100줄). 확인 뒤 다시 끈다.
+
 ## 바로잡은 사항
 
 - 1차 모드는 "빼도 안전"하다고 안내했으나, Forge 기준 ODT's Item Info·Trader Modding·Modding Stats Helper도 프로필 결속 표시가 있음. [INSTALLED-MODS.md](INSTALLED-MODS.md)의 결속 열이 기준.
