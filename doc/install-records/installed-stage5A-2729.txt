@@ -1,0 +1,1 @@
+2729__maschine-NotificationFilter-2.0.0	BepInEx\plugins\maschine-NotificationFilter.dll

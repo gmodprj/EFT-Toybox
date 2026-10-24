@@ -1,0 +1,4 @@
+2924__AdvancedStashSorting-1.0.6	BepInEx\plugins\AdvancedStashSorting\AdvancedStashSorting.dll
+2924__AdvancedStashSorting-1.0.6	BepInEx\plugins\AdvancedStashSorting\locales\ch.json
+2924__AdvancedStashSorting-1.0.6	BepInEx\plugins\AdvancedStashSorting\locales\en.json
+2924__AdvancedStashSorting-1.0.6	BepInEx\plugins\AdvancedStashSorting\locales\ru.json

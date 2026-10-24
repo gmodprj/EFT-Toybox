@@ -1,0 +1,1 @@
+3081__AdvancedModdingLights	BepInEx\plugins\AdvancedModdingLights\MoxoPixel-AdvancedModdingLights.dll

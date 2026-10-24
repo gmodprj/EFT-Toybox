@@ -8,7 +8,7 @@ const DOC = path.join(ROOT, 'doc');
 
 // 1) 매니페스트: 모드 id → 이름·버전·단계
 const mods = new Map();
-for (const f of fs.readdirSync(path.join(DOC, 'download')).filter(f => /^manifest-stage\d\.json$/.test(f)).sort()) {
+for (const f of fs.readdirSync(path.join(DOC, 'download')).filter(f => /^manifest-stage\d(?:-[A-Za-z])?\.json$/.test(f)).sort()) {
   const stage = f.match(/stage(\d)/)[1];
   for (const m of JSON.parse(fs.readFileSync(path.join(DOC, 'download', f), 'utf8')).mods)
     mods.set(m.id, { id: m.id, name: m.name, version: m.version, stage, group: m.group ?? '', files: [], records: new Set() });
@@ -40,17 +40,19 @@ const side = (files) => {
   const d = files.some(f => /^EscapeFromTarkov_Data\\/i.test(f)), o = files.some(f => !/^(BepInEx|SPT_Runtime|EscapeFromTarkov_Data)\\/i.test(f));
   return [c && '게임', d && '게임 데이터', s && '서버', o && '루트'].filter(Boolean).join('+');
 };
-const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응' };
+const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의 (stage5-A)' };
+// 로드 확인 현황: 확인할 때마다 여기만 고친다
+const loadStatus = '- 게임 쪽 플러그인 로드: stage5-A 설치 이후 미확인 (게임 실행 후 `E:\\Spt\\BepInEx\\LogOutput.log` 확인 필요) / 서버 모드 로드: 20개 (2026-10-24 17:28 서버 테스트)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];
 const total = all.filter(m => m.files.length);
 md += `- 대상: \`E:\\Spt\` (SPT 4.1.6, EFT 0.16.9.5.40743)\n`;
 md += `- 설치된 모드: **${total.length}개**, 설치 파일 **${total.reduce((a, m) => a + m.files.length, 0)}개** (자동 생성 설정 파일 포함)\n`;
-md += `- 게임 쪽 플러그인 로드: 35개 (SPT 기본 5 + 모드 30, 2026-10-24 16:09 확인) / 서버 모드 로드: 19개 (16:08 확인)\n`;
+md += `${loadStatus}\n`;
 md += `- **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음\n\n`;
 
-for (const st of ['1', '2', '3', '4']) {
+for (const st of ['1', '2', '3', '4', '5']) {
   const list = all.filter(m => m.stage === st);
   if (!list.length) continue;
   md += `## ${stageTitle[st]}\n\n| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |\n| --- | --- | --- | --- | --- | --- |\n`;

@@ -1,0 +1,1 @@
+3079__TagOverName-1.0.2	BepInEx\plugins\TagOverName\TagOverName.dll

@@ -1,0 +1,3 @@
+3155__PinnedQuestHUD-1.0.1	BepInEx\plugins\donkeybong-PinnedQuestHUD\LICENSE
+3155__PinnedQuestHUD-1.0.1	BepInEx\plugins\donkeybong-PinnedQuestHUD\PinnedQuestHUD.dll
+3155__PinnedQuestHUD-1.0.1	BepInEx\plugins\donkeybong-PinnedQuestHUD\README.md
