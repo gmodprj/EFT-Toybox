@@ -1,0 +1,68 @@
+[
+  {
+    "id": 994,
+    "name": "Set Speed - Set Player Speed with Hotkeys",
+    "version": "1.5.0",
+    "file": "994__DrakiaXYZ-SetSpeed-1.5.0.7z",
+    "bytes": 3254,
+    "expected": 3254,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2618,
+    "name": "Tripwire Improvement",
+    "version": "1.1.0",
+    "file": "2618__TripwireImprovement_v1.1.0.zip",
+    "bytes": 5068,
+    "expected": 5068,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 164,
+    "name": "Freecam",
+    "version": "1.4.8",
+    "file": "164__Terkoiz.Freecam.7z",
+    "bytes": 6017,
+    "expected": 6017,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2783,
+    "name": "Fast Grenade Throw",
+    "version": "2.0.0",
+    "file": "2783__FastGrenadeThrow-v2.0.0.zip",
+    "bytes": 7054,
+    "expected": 7054,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1988,
+    "name": "Low Budget Bullet Time NG",
+    "version": "2.3.0",
+    "file": "1988__dvize.BulletTime-v2.3.0.zip",
+    "bytes": 70921,
+    "expected": 70921,
+    "sizeOk": true,
+    "host": "gitlab.com",
+    "seconds": 1
+  },
+  {
+    "id": 3009,
+    "name": "Cobra's SPT Explorer",
+    "version": "1.0.0",
+    "file": "3009__CobrasSPTExplorer-v1.0.0.zip",
+    "bytes": 417250,
+    "expected": 417250,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

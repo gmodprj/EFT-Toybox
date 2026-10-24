@@ -247,3 +247,37 @@ stage5-E (치트·도구, 선택)
 - 다운로드·설치·설정 변경을 하지 않는다. 이 문서는 무엇을 어떤 순서로 넣을지만 정한다.
 - 대용량 콘텐츠 확장(총기 팩, 대형 커스텀 상인)은 범위 밖. 넣을지부터 따로 정한 뒤 6차로 계획한다.
 - SVM 프리셋은 건드리지 않는다. 치트성 기능은 SVM 쪽을 먼저 쓴다.
+
+## 실행 결과 (2026-10-24)
+
+| 단계 | 설치 | 서버 모드 | 서버 테스트 | 비고 |
+| --- | --- | --- | --- | --- |
+| stage5-A | 21 | 19 → 20 | STARTED 29s | 게임 쪽 21개 로드 확인(18:21) |
+| stage5-B | 9 | 20 → 23 | STARTED 26s | 3개가 서버 쪽(계획의 "게임 전용" 정정) |
+| stage5-C | 6 | 23 → 27 | 4건 모두 STARTED | 결속 2개는 하나씩. CobrasAmmoStack 압축 경로 교정 |
+| stage5-D | 10 | 27 → 37 | 1건 FAILED → 수정 후 STARTED | TraderNamer 빈 폴더 누락으로 서버 중단 |
+| stage5-E | 6 | 37 → 38 | STARTED 35s | Explorer UI는 README대로 SPT 루트에 설치 |
+
+합계 **52개 설치**, 설치본 41 → 93개, 파일 1809 → 2280개.
+
+### 절차에서 고친 것
+
+- `tools/check-conflicts.mjs` 신규 — 해제본 경로를 `E:\Spt`와 비교(이미 있는 경로·모드 간 중복·설치 경로 아닌 파일).
+- `tools/install-and-test.ps1` — 압축에 들어 있던 **빈 폴더도 생성**한다. TraderNamer가 `avatars/`를 열면서 서버가 죽은 뒤 수정. 생성한 폴더는 `installed-<Tag>.dirs.txt`에 기록.
+- `tools/gen-installed-mods.mjs` — `manifest-stage<N>-<X>.json` 형식도 읽고, 로드 현황을 `loadStatus` 상수로 분리.
+
+### 압축 구조가 달라 손본 것
+
+| 모드 | 문제 | 처리 |
+| --- | --- | --- |
+| Tag Over Name(3079) | 읽어보기·소스·중첩 복사본이 섞여 있음 | `extracted/_extras-stage5-A/`로 분리 |
+| Cobra's Ammo Stack(2840) | `<루트>/SPT/user/mods/...` (이 설치본은 `SPT_Runtime/`) | 경로 이동 |
+| Trader Level Req Editor(3005) | 폴더가 한 겹 더 싸여 있음 | 평탄화 |
+| Cobra's SPT Explorer(3009) | 외부 UI 앱·문서가 SPT 루트로 들어감 | README 지시대로 설치 |
+
+### 남은 확인
+
+- 게임 쪽 16개(stage5-B 조준경 6개, 5-C 3개, 5-D 2개, 5-E 5개) — 게임 실행 후 `LogOutput.log`.
+- 상인 6명이 목록에 모두 보이는지(TraderScrolling·TraderSpace 동작).
+- Cobra's Ammo Stack 기본 스택 500 유지 결정(사용자 판단). stage5-E 테스트 시점에는 탄약 **427종**에 적용됨(Amonya 추가분 포함).
+- Direct Reload의 의료 사용시간 x0.5·약물 지속 x2 기본값이 SVM 설정과 겹치는지.

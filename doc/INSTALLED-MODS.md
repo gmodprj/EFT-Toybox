@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **87개**, 설치 파일 **2253개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 56개 (SPT 기본 5 + 모드 51, 2026-10-24 18:21 `LogOutput.log` 확인 — stage5-B·5-C·5-D의 게임 쪽 11개는 아직 미확인) / 서버 모드 로드: 37개 (18:52 서버 테스트, stage5-D 포함)
+- 설치된 모드: **93개**, 설치 파일 **2280개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 56개 (SPT 기본 5 + 모드 51, 2026-10-24 18:21 `LogOutput.log` 확인 — stage5-B~5-E의 게임 쪽 16개는 아직 미확인) / 서버 모드 로드: 38개 (19:00 서버 테스트, stage5-E 포함)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -68,7 +68,7 @@
 | [Kaeno-TraderScrolling](https://sp-mod.com/mod/1089) | 4.1.0 | 게임 | - | 1 | `stage4-U1-TraderScrolling` |
 | [TraderSpace](https://sp-mod.com/mod/2694) | 2.0.0 | 게임 | - | 1 | `stage4-U2-TraderSpace` |
 
-## 5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)
+## 5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)
 
 | 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
 | --- | --- | --- | --- | --- | --- |
@@ -118,6 +118,12 @@
 | [PresetTrader](https://sp-mod.com/mod/2966) | 1.2.0 | 서버 | **결속** | 9 | `stage5D-2966` |
 | [Ledger](https://sp-mod.com/mod/3085) | 1.1.0 | 서버 | **결속** | 10 | `stage5D-3085` |
 | [Amonya - Ammo Loving Trader & Quester](https://sp-mod.com/mod/2419) | 2.2.0 | 서버 | **결속** | 280 | `stage5D-2419.dirs`, `stage5D-2419` |
+| [Freecam](https://sp-mod.com/mod/164) | 1.4.8 | 게임 | - | 1 | `stage5E-164` |
+| [Cobra's SPT Explorer](https://sp-mod.com/mod/3009) | 1.0.0 | 게임+서버+루트 | - (치트 표시) | 20 | `stage5E-3009` |
+| [Set Speed - Set Player Speed with Hotkeys](https://sp-mod.com/mod/994) | 1.5.0 | 게임 | - | 1 | `stage5E-994` |
+| [Fast Grenade Throw](https://sp-mod.com/mod/2783) | 2.0.0 | 게임 | - | 1 | `stage5E-2783` |
+| [Low Budget Bullet Time NG](https://sp-mod.com/mod/1988) | 2.3.0 | 게임 | - | 3 | `stage5E-1988` |
+| [Tripwire Improvement](https://sp-mod.com/mod/2618) | 1.1.0 | 게임 | - | 1 | `stage5E-2618` |
 
 ## 다른 경로로 설치된 것
 
