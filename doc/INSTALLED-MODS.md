@@ -4,7 +4,7 @@
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 설치된 모드: **93개**, 설치 파일 **2280개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 76개 (SPT 기본 5 + 모드 71, 2026-10-24 19:33 `LogOutput.log` 확인 — 5차 설치분 전부 로드) / 서버 모드 로드: 38개 (19:11 사용자 서버, 오류 0)
+- 게임 쪽 플러그인 로드: 77개 (SPT 기본 5 + 모드 71 + 자체 제작 1, 2026-10-25 06:37 `LogOutput.log` 확인) / 서버 모드 로드: 38개 (2026-10-24 19:11 사용자 서버, 오류 0)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -129,5 +129,6 @@
 
 | 항목 | 위치 | 설치 주체 |
 | --- | --- | --- |
+| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | `BepInEx\plugins\SptKoreanConfig\` (DLL 1 + 번역 사전 59) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 `tools/install-koreanconfig.ps1`. Forge 모드가 아니라 설치 기록에 없다 |
 | HideSpecialIconGrids 1.1.0.1 | `BepInEx\plugins\HideSpecialIconGrids.dll`, `BepInEx\config\com.pandahhcorp.hidespecialicongrids.cfg` | SVM `Greed.exe`가 프리셋 `CSM.EnableCSM: true` 적용 시 설치 (15:01). 설치 기록에 없음 |
 | SVM 프리셋 `Noname` | `SPT_Runtime\user\mods\[SVM] Server Value Modifier\Presets\Noname.json` | 사용자가 `Greed.exe`로 생성. 16:00에 `Hideout.RemoveConstructionsRequirements`만 false로 수정 |
