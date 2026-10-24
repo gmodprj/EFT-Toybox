@@ -69,11 +69,7 @@ namespace SptKoreanConfig
         /// <summary>파일 구성이나 수정 시각이 달라졌을 때만 다시 읽는다. 다시 읽었으면 true.</summary>
         public bool ReloadIfChanged()
         {
-            if (!Directory.Exists(_dir)) return false;
-
-            var now = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-            foreach (var f in Directory.GetFiles(_dir, "*.json", SearchOption.AllDirectories))
-                now[f] = File.GetLastWriteTimeUtc(f);
+            var now = Collect();
 
             if (now.Count == _stamps.Count)
             {
@@ -93,11 +89,21 @@ namespace SptKoreanConfig
 
         public void Reload()
         {
+            Load(Collect());
+        }
+
+        /// <summary>모드 사전 파일과 수정 시각. 밑줄로 시작하는 파일(_ui.json 등)은 모드 사전이 아니다.</summary>
+        private Dictionary<string, DateTime> Collect()
+        {
             var now = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
-            if (Directory.Exists(_dir))
-                foreach (var f in Directory.GetFiles(_dir, "*.json", SearchOption.AllDirectories))
-                    now[f] = File.GetLastWriteTimeUtc(f);
-            Load(now);
+            if (!Directory.Exists(_dir)) return now;
+
+            foreach (var f in Directory.GetFiles(_dir, "*.json", SearchOption.AllDirectories))
+            {
+                if (Path.GetFileName(f).StartsWith("_", StringComparison.Ordinal)) continue;
+                now[f] = File.GetLastWriteTimeUtc(f);
+            }
+            return now;
         }
 
         private void Load(Dictionary<string, DateTime> stamps)
