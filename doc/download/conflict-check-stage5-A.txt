@@ -1,0 +1,32 @@
+stage5-A: 모드 21개 / 설치 대상 경로 34개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 0
+
+[4] 모드별 설치 위치
+    1136__DrakiaXYZ-EquipFromWeaponRack-1.6.0 -> 게임
+    1249__Terkoiz.FlareEventNotifier -> 게임
+    1469__Tyfon-AutoDeposit-6.0.0 -> 게임
+    1745__Tyfon-Discarder-5.0.0 -> 게임
+    2069__LootInstantSearch-v1.0.5.0 -> 게임
+    2386__UseItemsAnywhere-2.1.6-Release -> 게임
+    2405__LetMeRightClick -> 게임
+    2623__RefinedFleaOfferList_v1.2.0 -> 게임
+    2729__maschine-NotificationFilter-2.0.0 -> 게임
+    2730__maschine-AutoCorpseSearch-2.2.0 -> 게임
+    2731__maschine-LinkedSearchInStash-2.0.1 -> 게임
+    2733__maschine-RaidMenuCleanupFix-2.0.0 -> 게임
+    2907__maschine-StashFilter-1.0.0 -> 게임
+    2909__TaskSearch4.1 -> 게임
+    2924__AdvancedStashSorting-1.0.6 -> 게임
+    3079__TagOverName-1.0.2 -> 게임
+    3081__AdvancedModdingLights -> 게임
+    3152__Liquidwarp-HideLockedFlea-1.0.0 -> 게임+서버
+    3155__PinnedQuestHUD-1.0.1 -> 게임
+    3160__PreRaidChecklist-1.0.0 -> 게임
+    824__DrakiaXYZ-TaskListFixes-1.8.0 -> 게임
+
+CLEAN (0)
