@@ -1,0 +1,6 @@
+1303__acidphantasm-harryhideout	SPT_Runtime\user\mods\acidphantasm-harryhideout\acidphantasm-harryhideout.dll
+1303__acidphantasm-harryhideout	SPT_Runtime\user\mods\acidphantasm-harryhideout\config.json
+1303__acidphantasm-harryhideout	SPT_Runtime\user\mods\acidphantasm-harryhideout\LICENSE
+1303__acidphantasm-harryhideout	SPT_Runtime\user\mods\acidphantasm-harryhideout\data\base.json
+1303__acidphantasm-harryhideout	SPT_Runtime\user\mods\acidphantasm-harryhideout\data\harry.jpg
+1303__acidphantasm-harryhideout	SPT_Runtime\user\mods\acidphantasm-harryhideout\data\questAssort.json

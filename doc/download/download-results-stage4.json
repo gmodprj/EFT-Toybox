@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1089,
+    "name": "Kaeno-TraderScrolling",
+    "version": "4.1.0",
+    "file": "1089__Kaeno-TraderScrolling-4.1.0.7z",
+    "bytes": 4347,
+    "expected": 4347,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2694,
+    "name": "TraderSpace",
+    "version": "2.0.0",
+    "file": "2694__TraderSpace.7z",
+    "bytes": 5531,
+    "expected": 5531,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

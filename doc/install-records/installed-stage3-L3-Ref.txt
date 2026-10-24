@@ -1,0 +1,4 @@
+1538__acidphantasm-reffriendlyquests	SPT_Runtime\user\mods\acidphantasm-reffriendlyquests\acidphantasm-reffriendlyquests.dll
+1538__acidphantasm-reffriendlyquests	SPT_Runtime\user\mods\acidphantasm-reffriendlyquests\config.json
+1538__acidphantasm-reffriendlyquests	SPT_Runtime\user\mods\acidphantasm-reffriendlyquests\LICENSE
+1538__acidphantasm-reffriendlyquests	SPT_Runtime\user\mods\acidphantasm-reffriendlyquests\db\quests.json
