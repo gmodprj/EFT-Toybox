@@ -1,0 +1,3 @@
+1988__dvize.BulletTime-v2.3.0	BepInEx\plugins\dvize.BulletTime\dvize.BulletTime.dll
+1988__dvize.BulletTime-v2.3.0	BepInEx\plugins\dvize.BulletTime\enterbullet.ogg
+1988__dvize.BulletTime-v2.3.0	BepInEx\plugins\dvize.BulletTime\exitbullet.ogg

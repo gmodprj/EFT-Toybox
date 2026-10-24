@@ -1,0 +1,1 @@
+2789__NVGSightDimmer-v2.1.0	BepInEx\plugins\NVGSightDimmer\NVGSightDimmer.dll

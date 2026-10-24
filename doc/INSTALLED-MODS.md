@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **41개**, 설치 파일 **1809개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 35개 (SPT 기본 5 + 모드 30, 2026-10-24 16:09 확인) / 서버 모드 로드: 19개 (16:08 확인)
+- 설치된 모드: **93개**, 설치 파일 **2280개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 56개 (SPT 기본 5 + 모드 51, 2026-10-24 18:21 `LogOutput.log` 확인 — stage5-B~5-E의 게임 쪽 16개는 아직 미확인) / 서버 모드 로드: 38개 (19:00 서버 테스트, stage5-E 포함)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -67,6 +67,63 @@
 | --- | --- | --- | --- | --- | --- |
 | [Kaeno-TraderScrolling](https://sp-mod.com/mod/1089) | 4.1.0 | 게임 | - | 1 | `stage4-U1-TraderScrolling` |
 | [TraderSpace](https://sp-mod.com/mod/2694) | 2.0.0 | 게임 | - | 1 | `stage4-U2-TraderSpace` |
+
+## 5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)
+
+| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
+| --- | --- | --- | --- | --- | --- |
+| [Use Items Anywhere](https://sp-mod.com/mod/2386) | 2.1.6 | 게임 | - | 4 | `stage5A-2386` |
+| [AutoDeposit](https://sp-mod.com/mod/1469) | 6.0.0 | 게임 | - | 1 | `stage5A-1469` |
+| [Task List Fixes](https://sp-mod.com/mod/824) | 1.8.0 | 게임 | - | 1 | `stage5A-824` |
+| [Exfil Flare Notification](https://sp-mod.com/mod/1249) | 1.0.6 | 게임 | - | 2 | `stage5A-1249` |
+| [Equip From Weapon Rack](https://sp-mod.com/mod/1136) | 1.6.0 | 게임 | - | 1 | `stage5A-1136` |
+| [Loot Instant Search](https://sp-mod.com/mod/2069) | 1.0.5 | 게임 | - | 1 | `stage5A-2069` |
+| [LetMeRightClick](https://sp-mod.com/mod/2405) | 1.1.1 | 게임 | - | 2 | `stage5A-2405` |
+| [Auto Corpse Search](https://sp-mod.com/mod/2730) | 2.2.0 | 게임 | - | 1 | `stage5A-2730` |
+| [Discarder](https://sp-mod.com/mod/1745) | 5.0.0 | 게임 | - | 1 | `stage5A-1745` |
+| [Advanced Stash Sorting](https://sp-mod.com/mod/2924) | 1.0.6 | 게임 | - | 4 | `stage5A-2924` |
+| [Stash Filter](https://sp-mod.com/mod/2907) | 1.0.0 | 게임 | - | 1 | `stage5A-2907` |
+| [Linked Search In Stash](https://sp-mod.com/mod/2731) | 2.0.1 | 게임 | - | 1 | `stage5A-2731` |
+| [Raid Menu Cleanup Fix](https://sp-mod.com/mod/2733) | 2.0.0 | 게임 | - | 1 | `stage5A-2733` |
+| [Advanced Modding Lights](https://sp-mod.com/mod/3081) | 2.0.0 | 게임 | - | 1 | `stage5A-3081` |
+| [Notification Filter](https://sp-mod.com/mod/2729) | 2.0.0 | 게임 | - | 1 | `stage5A-2729` |
+| [Tag Over Name](https://sp-mod.com/mod/3079) | 1.0.2 | 게임 | - | 1 | `stage5A-3079` |
+| [Hide Locked Flea](https://sp-mod.com/mod/3152) | 1.0.0 | 게임+서버 | - | 2 | `stage5A-3152` |
+| [Refined Flea Offer List](https://sp-mod.com/mod/2623) | 1.2.0 | 게임 | - | 1 | `stage5A-2623` |
+| [Hj's Task Search](https://sp-mod.com/mod/2909) | 2.0.2 | 게임 | - | 1 | `stage5A-2909` |
+| [Pinned Quest HUD](https://sp-mod.com/mod/3155) | 1.0.1 | 게임 | - | 3 | `stage5A-3155` |
+| [Pre-Raid Checklist](https://sp-mod.com/mod/3160) | 1.0.0 | 게임 | - | 3 | `stage5A-3160` |
+| [Picture in Picture Disabler](https://sp-mod.com/mod/2667) | 2.1.0 | 게임 | - | 4 | `stage5B-2667` |
+| [Scope Rangefinder](https://sp-mod.com/mod/2735) | 3.5.0 | 게임 | - | 32 | `stage5B-2735` |
+| [Auto Ranging](https://sp-mod.com/mod/2786) | 2.0.0 | 게임 | - | 1 | `stage5B-2786` |
+| [NVG Sight Dimmer](https://sp-mod.com/mod/2789) | 2.1.0 | 게임 | - | 1 | `stage5B-2789` |
+| [Easy Mounting](https://sp-mod.com/mod/2790) | 2.0.1 | 게임+서버 | - | 4 | `stage5B-2790` |
+| [Transparent Sights](https://sp-mod.com/mod/2774) | 0.2.3 | 게임 | - | 1 | `stage5B-2774` |
+| [Default Fire Mode Fixer](https://sp-mod.com/mod/1416) | 2.1.0 | 서버 | - | 2 | `stage5B-1416` |
+| [Flexible Builds](https://sp-mod.com/mod/2646) | 1.2.2 | 게임+서버 | - | 2 | `stage5B-2646` |
+| [Better Thermal & Night Vision](https://sp-mod.com/mod/2531) | 2.1.1 | 게임 | - | 3 | `stage5B-2531` |
+| [Magazine Check Interrupt](https://sp-mod.com/mod/2643) | 1.1.1 | 게임 | - | 4 | `stage5C-2643` |
+| [Direct Reload & Painless Meds](https://sp-mod.com/mod/3074) | 1.3.2 | 게임+서버 | - | 3 | `stage5C-3074` |
+| [Low Ammo Cue](https://sp-mod.com/mod/3046) | 1.0.0 | 게임 | - | 1 | `stage5C-3046` |
+| [BarterItemsStacks](https://sp-mod.com/mod/2480) | 1.4.3 | 게임+서버 | - | 5 | `stage5C-2480` |
+| [Cobra's Ammo Stack](https://sp-mod.com/mod/2840) | 1.1.0 | 서버 | **결속** | 5 | `stage5C-2840` |
+| [Caliber Split Storage Solutions](https://sp-mod.com/mod/2990) | 1.0.1 | 서버 | **결속** | 12 | `stage5C-2990` |
+| [SPT Trader Restock Refresh](https://sp-mod.com/mod/3098) | 1.0.0 | 게임+서버 | - | 4 | `stage5D-3098` |
+| [Trader Level Requirements Editor](https://sp-mod.com/mod/3005) | 1.1.0 | 서버 | - | 2 | `stage5D-3005` |
+| [Trader Namer](https://sp-mod.com/mod/1527) | 4.1.0 | 서버 | - | 4 | `stage5D-1527.dirs`, `stage5D-1527` |
+| [Ultimate Trader Assort Editor](https://sp-mod.com/mod/2834) | 2.1.1 | 게임+서버 | - | 2 | `stage5D-2834` |
+| [Gunsmith Task Trader](https://sp-mod.com/mod/3124) | 1.0.2 | 서버 | **결속** | 7 | `stage5D-3124` |
+| [Gunwright](https://sp-mod.com/mod/3128) | 1.0.2 | 서버 | **결속** | 5 | `stage5D-3128` |
+| [CaseTrader — Buy any case](https://sp-mod.com/mod/3024) | 1.0.1 | 서버 | **결속** | 7 | `stage5D-3024` |
+| [PresetTrader](https://sp-mod.com/mod/2966) | 1.2.0 | 서버 | **결속** | 9 | `stage5D-2966` |
+| [Ledger](https://sp-mod.com/mod/3085) | 1.1.0 | 서버 | **결속** | 10 | `stage5D-3085` |
+| [Amonya - Ammo Loving Trader & Quester](https://sp-mod.com/mod/2419) | 2.2.0 | 서버 | **결속** | 280 | `stage5D-2419.dirs`, `stage5D-2419` |
+| [Freecam](https://sp-mod.com/mod/164) | 1.4.8 | 게임 | - | 1 | `stage5E-164` |
+| [Cobra's SPT Explorer](https://sp-mod.com/mod/3009) | 1.0.0 | 게임+서버+루트 | - (치트 표시) | 20 | `stage5E-3009` |
+| [Set Speed - Set Player Speed with Hotkeys](https://sp-mod.com/mod/994) | 1.5.0 | 게임 | - | 1 | `stage5E-994` |
+| [Fast Grenade Throw](https://sp-mod.com/mod/2783) | 2.0.0 | 게임 | - | 1 | `stage5E-2783` |
+| [Low Budget Bullet Time NG](https://sp-mod.com/mod/1988) | 2.3.0 | 게임 | - | 3 | `stage5E-1988` |
+| [Tripwire Improvement](https://sp-mod.com/mod/2618) | 1.1.0 | 게임 | - | 1 | `stage5E-2618` |
 
 ## 다른 경로로 설치된 것
 

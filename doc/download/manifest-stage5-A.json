@@ -1,0 +1,218 @@
+{
+  "spt": "4.1.6",
+  "generated": "2026-10-24",
+  "mods": [
+    {
+      "group": "stage5-A",
+      "id": 2386,
+      "name": "Use Items Anywhere",
+      "version": "2.1.6",
+      "size": 1218923,
+      "link": "https://sp-mod.com/mod/download/2386/use-items-anywhere/2.1.6",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 1469,
+      "name": "AutoDeposit",
+      "version": "6.0.0",
+      "size": 9804,
+      "link": "https://sp-mod.com/mod/download/1469/autodeposit/6.0.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 824,
+      "name": "Task List Fixes",
+      "version": "1.8.0",
+      "size": 7329,
+      "link": "https://sp-mod.com/mod/download/824/task-list-fixes/1.8.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 1249,
+      "name": "Exfil Flare Notification",
+      "version": "1.0.6",
+      "size": 4310,
+      "link": "https://sp-mod.com/mod/download/1249/exfil-flare-notification/1.0.6",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 1136,
+      "name": "Equip From Weapon Rack",
+      "version": "1.6.0",
+      "size": 4125,
+      "link": "https://sp-mod.com/mod/download/1136/equip-from-weapon-rack/1.6.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2069,
+      "name": "Loot Instant Search",
+      "version": "1.0.5",
+      "size": 3614,
+      "link": "https://sp-mod.com/mod/download/2069/loot-instant-search/1.0.5",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2405,
+      "name": "LetMeRightClick",
+      "version": "1.1.1",
+      "size": 3112,
+      "link": "https://sp-mod.com/mod/download/2405/letmerightclick/1.1.1",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2730,
+      "name": "Auto Corpse Search",
+      "version": "2.2.0",
+      "size": 9495,
+      "link": "https://sp-mod.com/mod/download/2730/auto-corpse-search/2.2.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 1745,
+      "name": "Discarder",
+      "version": "5.0.0",
+      "size": 6027,
+      "link": "https://sp-mod.com/mod/download/1745/discarder/5.0.0",
+      "profileBinding": false,
+      "deps": [
+        "1342:UI Fixes"
+      ]
+    },
+    {
+      "group": "stage5-A",
+      "id": 2924,
+      "name": "Advanced Stash Sorting",
+      "version": "1.0.6",
+      "size": 120067,
+      "link": "https://sp-mod.com/mod/download/2924/advanced-stash-sorting/1.0.6",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2907,
+      "name": "Stash Filter",
+      "version": "1.0.0",
+      "size": 25053,
+      "link": "https://sp-mod.com/mod/download/2907/stash-filter/1.0.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2731,
+      "name": "Linked Search In Stash",
+      "version": "2.0.1",
+      "size": 6401,
+      "link": "https://sp-mod.com/mod/download/2731/linked-search-in-stash/2.0.1",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2733,
+      "name": "Raid Menu Cleanup Fix",
+      "version": "2.0.0",
+      "size": 2877,
+      "link": "https://sp-mod.com/mod/download/2733/raid-menu-cleanup-fix/2.0.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 3081,
+      "name": "Advanced Modding Lights",
+      "version": "2.0.0",
+      "size": 7504,
+      "link": "https://sp-mod.com/mod/download/3081/advanced-modding-lights/2.0.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2729,
+      "name": "Notification Filter",
+      "version": "2.0.0",
+      "size": 4919,
+      "link": "https://sp-mod.com/mod/download/2729/notification-filter/2.0.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 3079,
+      "name": "Tag Over Name",
+      "version": "1.0.2",
+      "size": 18679,
+      "link": "https://sp-mod.com/mod/download/3079/tag-over-name/1.0.2",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 3152,
+      "name": "Hide Locked Flea",
+      "version": "1.0.0",
+      "size": 14979,
+      "link": "https://sp-mod.com/mod/download/3152/hide-locked-flea/1.0.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2623,
+      "name": "Refined Flea Offer List",
+      "version": "1.2.0",
+      "size": 10345,
+      "link": "https://sp-mod.com/mod/download/2623/refined-flea-offer-list/1.2.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 2909,
+      "name": "Hj's Task Search",
+      "version": "2.0.2",
+      "size": 32659,
+      "link": "https://sp-mod.com/mod/download/2909/hjs-task-search/2.0.2",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 3155,
+      "name": "Pinned Quest HUD",
+      "version": "1.0.1",
+      "size": 20021,
+      "link": "https://sp-mod.com/mod/download/3155/pinned-quest-hud/1.0.1",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-A",
+      "id": 3160,
+      "name": "Pre-Raid Checklist",
+      "version": "1.0.0",
+      "size": 22005,
+      "link": "https://sp-mod.com/mod/download/3160/pre-raid-checklist/1.0.0",
+      "profileBinding": false,
+      "deps": []
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+824__DrakiaXYZ-TaskListFixes-1.8.0	BepInEx\plugins\DrakiaXYZ-TaskListFixes.dll

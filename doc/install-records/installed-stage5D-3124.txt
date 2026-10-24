@@ -1,0 +1,7 @@
+3124__GunsmithTrader-1.0.2	SPT_Runtime\user\mods\GunsmithTrader\config.json
+3124__GunsmithTrader-1.0.2	SPT_Runtime\user\mods\GunsmithTrader\GunsmithTrader.dll
+3124__GunsmithTrader-1.0.2	SPT_Runtime\user\mods\GunsmithTrader\LICENSE
+3124__GunsmithTrader-1.0.2	SPT_Runtime\user\mods\GunsmithTrader\README.md
+3124__GunsmithTrader-1.0.2	SPT_Runtime\user\mods\GunsmithTrader\db\base.json
+3124__GunsmithTrader-1.0.2	SPT_Runtime\user\mods\GunsmithTrader\db\gunsmith.jpg
+3124__GunsmithTrader-1.0.2	SPT_Runtime\user\mods\GunsmithTrader\db\presets.json

@@ -1,0 +1,3 @@
+3074__DirectReload-PainlessMeds-v1.3.2	BepInEx\plugins\RZDirectReload\RZDirectReload.dll
+3074__DirectReload-PainlessMeds-v1.3.2	SPT_Runtime\user\mods\RZDirectReload\config.json
+3074__DirectReload-PainlessMeds-v1.3.2	SPT_Runtime\user\mods\RZDirectReload\RZDirectReload.Server.dll

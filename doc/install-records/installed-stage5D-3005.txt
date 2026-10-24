@@ -1,0 +1,2 @@
+3005__TraderLevelRequirementsEditor	SPT_Runtime\user\mods\TraderLevelRequirementsEditor\TraderLevelRequirementsEditor.dll
+3005__TraderLevelRequirementsEditor	SPT_Runtime\user\mods\TraderLevelRequirementsEditor\config\traders.jsonc

@@ -1,0 +1,1 @@
+3046__maschine-LowAmmoCue-1.0.0	BepInEx\plugins\maschine-LowAmmoCue.dll

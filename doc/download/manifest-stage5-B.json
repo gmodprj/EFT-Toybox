@@ -1,0 +1,96 @@
+{
+  "spt": "4.1.6",
+  "generated": "2026-10-24",
+  "mods": [
+    {
+      "group": "stage5-B",
+      "id": 2667,
+      "name": "Picture in Picture Disabler",
+      "version": "2.1.0",
+      "size": 86198,
+      "link": "https://sp-mod.com/mod/download/2667/picture-in-picture-disabler/2.1.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-B",
+      "id": 2735,
+      "name": "Scope Rangefinder",
+      "version": "3.5.0",
+      "size": 549247,
+      "link": "https://sp-mod.com/mod/download/2735/scope-rangefinder/3.5.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-B",
+      "id": 2786,
+      "name": "Auto Ranging",
+      "version": "2.0.0",
+      "size": 4837,
+      "link": "https://sp-mod.com/mod/download/2786/auto-ranging/2.0.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-B",
+      "id": 2789,
+      "name": "NVG Sight Dimmer",
+      "version": "2.1.0",
+      "size": 5503,
+      "link": "https://sp-mod.com/mod/download/2789/nvg-sight-dimmer/2.1.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-B",
+      "id": 2790,
+      "name": "Easy Mounting",
+      "version": "2.0.1",
+      "size": 37656,
+      "link": "https://sp-mod.com/mod/download/2790/easy-mounting/2.0.1",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-B",
+      "id": 2774,
+      "name": "Transparent Sights",
+      "version": "0.2.3",
+      "size": 16864,
+      "link": "https://sp-mod.com/mod/download/2774/transparent-sights/0.2.3",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-B",
+      "id": 1416,
+      "name": "Default Fire Mode Fixer",
+      "version": "2.1.0",
+      "size": 5796,
+      "link": "https://sp-mod.com/mod/download/1416/default-fire-mode-fixer/2.1.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-B",
+      "id": 2646,
+      "name": "Flexible Builds",
+      "version": "1.2.2",
+      "size": 14024,
+      "link": "https://sp-mod.com/mod/download/2646/flexible-builds/1.2.2",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-B",
+      "id": 2531,
+      "name": "Better Thermal & Night Vision",
+      "version": "2.1.1",
+      "size": 22526,
+      "link": "https://sp-mod.com/mod/download/2531/better-thermal-night-vision/2.1.1",
+      "profileBinding": false,
+      "deps": []
+    }
+  ]
+}
