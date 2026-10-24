@@ -1,0 +1,3 @@
+3160__PreRaidChecklist-1.0.0	BepInEx\plugins\donkeybong-PreRaidChecklist\LICENSE
+3160__PreRaidChecklist-1.0.0	BepInEx\plugins\donkeybong-PreRaidChecklist\PreRaidChecklist.dll
+3160__PreRaidChecklist-1.0.0	BepInEx\plugins\donkeybong-PreRaidChecklist\README.md

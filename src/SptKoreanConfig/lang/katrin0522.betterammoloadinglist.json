@@ -1,0 +1,42 @@
+{
+  "guid": "katrin0522.betterammoloadinglist",
+  "name": "탄약 장전 목록 개선 (BALL)",
+  "sections": {
+    "1. Settings": "1. 설정",
+    "2. EXPERIMENTAL SETTINGS": "2. 실험 기능"
+  },
+  "settings": {
+    "1. Settings/Enable feature": {
+      "name": "모드 사용",
+      "desc": "장전 목록의 탄약을 정렬하고 색을 입히고 수치를 보여 준다."
+    },
+    "1. Settings/Color Gradient": {
+      "name": "색 그러데이션",
+      "desc": "오른쪽 메뉴의 탄약 목록에 색 그러데이션을 쓴다."
+    },
+    "1. Settings/Color Gradient Best": {
+      "name": "가장 좋은 탄약 색",
+      "desc": "가장 좋은 탄약에 쓸 색."
+    },
+    "1. Settings/Color Gradient Worst": {
+      "name": "가장 나쁜 탄약 색",
+      "desc": "가장 나쁜 탄약에 쓸 색."
+    },
+    "1. Settings/Sort Order Type": {
+      "name": "정렬 방향",
+      "desc": "고른 기준을 오름차순으로 볼지 내림차순으로 볼지 정한다."
+    },
+    "1. Settings/Sort ammo by stat type": {
+      "name": "정렬 기준 수치",
+      "desc": "어떤 수치를 기준으로 탄약을 줄 세울지 정한다."
+    },
+    "2. EXPERIMENTAL SETTINGS/Show All Stats": {
+      "name": "모든 수치 표시",
+      "desc": "[실험] 목록에 모든 수치를 보여 준다. 정렬은 고른 기준을 따르고, 그 수치만 색이 입는다."
+    },
+    "2. EXPERIMENTAL SETTINGS/Warp Text Stats": {
+      "name": "수치 줄바꿈",
+      "desc": "[실험] 수치를 다음 줄로 넘겨 적는다."
+    }
+  }
+}

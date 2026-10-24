@@ -1,0 +1,14 @@
+# 대용량 원본과 압축 해제본 (Forge에서 다시 받을 수 있음)
+downloads/
+extracted/
+
+# 프로필 등 개인 데이터가 든 백업
+backup/
+
+# 기타
+*.part
+*.pid
+
+# 빌드 산출물
+src/**/bin/
+src/**/obj/

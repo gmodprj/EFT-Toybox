@@ -1,0 +1,1 @@
+2730__maschine-AutoCorpseSearch-2.2.0	BepInEx\plugins\maschine-AutoCorpseSearch.dll

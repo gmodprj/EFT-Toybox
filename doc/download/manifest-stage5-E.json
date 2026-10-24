@@ -1,0 +1,72 @@
+{
+  "spt": "4.1.6",
+  "generated": "2026-10-24",
+  "mods": [
+    {
+      "group": "stage5-E",
+      "id": 164,
+      "name": "Freecam",
+      "version": "1.4.8",
+      "size": 6017,
+      "link": "https://sp-mod.com/mod/download/164/freecam/1.4.8",
+      "profileBinding": false,
+      "cheat": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-E",
+      "id": 3009,
+      "name": "Cobra's SPT Explorer",
+      "version": "1.0.0",
+      "size": 417250,
+      "link": "https://sp-mod.com/mod/download/3009/cobras-spt-explorer/1.0.0",
+      "profileBinding": false,
+      "cheat": true,
+      "deps": []
+    },
+    {
+      "group": "stage5-E",
+      "id": 994,
+      "name": "Set Speed - Set Player Speed with Hotkeys",
+      "version": "1.5.0",
+      "size": 3254,
+      "link": "https://sp-mod.com/mod/download/994/set-speed-set-player-speed-with-hotkeys/1.5.0",
+      "profileBinding": false,
+      "cheat": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-E",
+      "id": 2783,
+      "name": "Fast Grenade Throw",
+      "version": "2.0.0",
+      "size": 7054,
+      "link": "https://sp-mod.com/mod/download/2783/fast-grenade-throw/2.0.0",
+      "profileBinding": false,
+      "cheat": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-E",
+      "id": 1988,
+      "name": "Low Budget Bullet Time NG",
+      "version": "2.3.0",
+      "size": 70921,
+      "link": "https://sp-mod.com/mod/download/1988/low-budget-bullet-time-ng/2.3.0",
+      "profileBinding": false,
+      "cheat": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-E",
+      "id": 2618,
+      "name": "Tripwire Improvement",
+      "version": "1.1.0",
+      "size": 5068,
+      "link": "https://sp-mod.com/mod/download/2618/tripwire-improvement/1.1.0",
+      "profileBinding": false,
+      "cheat": false,
+      "deps": []
+    }
+  ]
+}

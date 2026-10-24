@@ -1,0 +1,1 @@
+2731__maschine-LinkedSearchInStash-2.0.1	BepInEx\plugins\maschine-LinkedSearchInStash.dll

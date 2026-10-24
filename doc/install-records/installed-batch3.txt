@@ -1,0 +1,14 @@
+167__RaiRaiTheRaichu-AmmoStats-4.1.0	SPT_Runtime\user\mods\AmmoStats\AmmoStats.dll
+167__RaiRaiTheRaichu-AmmoStats-4.1.0	SPT_Runtime\user\mods\AmmoStats\AmmoStats.pdb
+167__RaiRaiTheRaichu-AmmoStats-4.1.0	SPT_Runtime\user\mods\AmmoStats\LICENSE
+167__RaiRaiTheRaichu-AmmoStats-4.1.0	SPT_Runtime\user\mods\AmmoStats\README.md
+167__RaiRaiTheRaichu-AmmoStats-4.1.0	SPT_Runtime\user\mods\AmmoStats\config\config.jsonc
+2586__CaliberUnderName-1.2.0	BepInEx\plugins\CaliberUnderName.dll
+2553__Tosox.ChamberAmmoInfo-v1.1.0	BepInEx\plugins\Tosox.ChamberAmmoInfo.dll
+2221__BetterAmmoLoadingList_1.1.1	BepInEx\plugins\Kat.BetterAmmoLoadingList.dll
+2112__ozen.ContinuousLoadAmmo-1.2.0	BepInEx\plugins\ozen.ContinuousLoadAmmo\ozen.ContinuousLoadAmmo.dll
+2112__ozen.ContinuousLoadAmmo-1.2.0	BepInEx\plugins\ozen.ContinuousLoadAmmo\ozen.ContinuousLoadAmmo.pdb
+2859__CompatibilityHighlighterV1.3.0	BepInEx\plugins\CompatibilityHighlighter.dll
+2037__ColoredTracers.3.0.1	SPT_Runtime\user\mods\ColoredTracers\ColoredTracers.dll
+2037__ColoredTracers.3.0.1	SPT_Runtime\user\mods\ColoredTracers\config\defaultConfig.json
+2037__ColoredTracers.3.0.1	SPT_Runtime\user\mods\ColoredTracers\config\config.json

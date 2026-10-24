@@ -1,0 +1,4 @@
+2790__maschine-EasyMounting-v2.0.1	BepInEx\plugins\maschine-EasyMounting.Client.dll
+2790__maschine-EasyMounting-v2.0.1	SPT_Runtime\user\mods\EasyMounting\maschine-EasyMounting.deps.json
+2790__maschine-EasyMounting-v2.0.1	SPT_Runtime\user\mods\EasyMounting\maschine-EasyMounting.dll
+2790__maschine-EasyMounting-v2.0.1	SPT_Runtime\user\mods\EasyMounting\Config\config.json

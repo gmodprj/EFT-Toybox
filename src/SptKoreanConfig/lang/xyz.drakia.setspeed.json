@@ -1,0 +1,21 @@
+{
+  "guid": "xyz.drakia.setspeed",
+  "name": "이동 속도 단축키 (Set Speed)",
+  "sections": {
+    "Keybinds": "단축키",
+    "Speeds": "속도 값"
+  },
+  "settings": {
+    "Keybinds/Set Speed 1 Key": { "name": "속도 1 키", "desc": "이동 속도를 '속도 1' 값으로 바꾼다." },
+    "Keybinds/Set Speed 2 Key": { "name": "속도 2 키", "desc": "이동 속도를 '속도 2' 값으로 바꾼다." },
+    "Keybinds/Set Speed 3 Key": { "name": "속도 3 키", "desc": "이동 속도를 '속도 3' 값으로 바꾼다." },
+    "Keybinds/Set Speed 4 Key": { "name": "속도 4 키", "desc": "이동 속도를 '속도 4' 값으로 바꾼다." },
+    "Keybinds/Set Speed 5 Key": { "name": "속도 5 키", "desc": "이동 속도를 '속도 5' 값으로 바꾼다." },
+
+    "Speeds/Speed 1": { "name": "속도 1", "desc": "속도 1 키를 눌렀을 때 적용할 이동 속도." },
+    "Speeds/Speed 2": { "name": "속도 2", "desc": "속도 2 키를 눌렀을 때 적용할 이동 속도." },
+    "Speeds/Speed 3": { "name": "속도 3", "desc": "속도 3 키를 눌렀을 때 적용할 이동 속도." },
+    "Speeds/Speed 4": { "name": "속도 4", "desc": "속도 4 키를 눌렀을 때 적용할 이동 속도." },
+    "Speeds/Speed 5": { "name": "속도 5", "desc": "속도 5 키를 눌렀을 때 적용할 이동 속도." }
+  }
+}

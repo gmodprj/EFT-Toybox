@@ -1,0 +1,37 @@
+{
+  "guid": "com.awnova.compatibilityhighlighter",
+  "name": "호환 부품 강조 (CompatibilityHighlighter)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Enabled": {
+      "name": "모드 사용",
+      "desc": "인벤토리에서 아이템 위에 마우스를 올리면 호환되는 것들을 강조한다."
+    },
+    "General/Hover Delay": {
+      "name": "반응 지연",
+      "desc": "강조가 뜨기까지 커서가 머물러야 하는 시간(초). 창고를 빠르게 훑을 때 화면이 깜빡이지 않게 해 준다."
+    },
+    "General/Suppress During Drag": {
+      "name": "끄는 동안은 비켜 주기",
+      "desc": "아이템을 실제로 집어 든 동안에는 게임 자체의 강조에 맡긴다. 끄면 끄는 내내 이 모드의 색으로 강조하되, 지나치는 칸이 아니라 집어 든 아이템 기준으로 고정된다."
+    },
+    "General/Include Containers": {
+      "name": "컨테이너도 포함",
+      "desc": "배낭·조끼·케이스 같은 보관함과, 합칠 수 있는 묶음도 함께 강조한다. 기본은 꺼짐이다. 이 모드는 무엇에 달 수 있는지를 보여 주는 것이지 어디에 들어가는지를 보여 주는 것이 아니다."
+    },
+    "General/Compatible Color": {
+      "name": "강조 색",
+      "desc": "호환되는 아이템을 강조할 색. 기본값은 게임이 올바른 놓을 자리에 쓰는 초록색과 같다."
+    },
+    "General/Recolor Equipment Slots": {
+      "name": "칸 테두리도 같은 색으로",
+      "desc": "이 모드가 강조하는 동안 게임이 그리는 호환 칸 테두리도 위 색으로 바꾼다. 끄면 게임 기본 초록 테두리를 그대로 둔다."
+    },
+    "General/Highlight Trader Inventory": {
+      "name": "상인 화면에서도 강조",
+      "desc": "상인 판매 화면의 아이템에도 강조를 적용한다. 상인 물건은 끌 수 없으므로, 그 물건이 들어갈 내 아이템과 칸을 되짚어 표시하는 쪽만 보인다."
+    }
+  }
+}

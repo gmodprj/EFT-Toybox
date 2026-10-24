@@ -1,0 +1,25 @@
+{
+  "guid": "com.tyfon.weaponcustomizer",
+  "name": "부착물 위치 조절 (Weapon Customizer)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Customize Weapons In Raid": {
+      "name": "레이드 중 조절 허용",
+      "desc": "레이드 중에 부착물 위치를 언제 조절할 수 있게 할지 정한다."
+    },
+    "General/Step Size": {
+      "name": "이동 단위",
+      "desc": "부착물을 이 간격으로 끊어 옮긴다. 0이면 부드럽게 움직인다."
+    },
+    "General/Rotation Angle": {
+      "name": "회전 단위",
+      "desc": "부착물을 이 각도만큼 끊어 돌린다. 0이면 부드럽게 돌아간다."
+    },
+    "General/Move Everything": {
+      "name": "모든 부품 이동 허용",
+      "desc": "총의 모든 부품을 옮길 수 있게 한다. 말이 되지는 않지만 재미로 쓴다."
+    }
+  }
+}

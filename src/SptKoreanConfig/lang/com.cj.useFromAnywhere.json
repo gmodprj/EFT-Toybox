@@ -1,0 +1,124 @@
+{
+  "guid": "com.cj.useFromAnywhere",
+  "name": "어디서나 사용 (Use Items Anywhere)",
+  "sections": {
+    "Quick Use Wheel": "빠른 사용 휠",
+    "Quick Use Wheel Category Slots": "빠른 사용 휠 — 고정 자리",
+    "Slot Access Delays": "꺼내는 시간",
+    "Slot Configurations": "칸 설정"
+  },
+  "settings": {
+    "Quick Use Wheel/Favorite Item Templates": {
+      "name": "즐겨찾기 목록",
+      "desc": "휠에서 즐겨찾기로 지정한 아이템들. 모드가 알아서 저장한다."
+    },
+    "Quick Use Wheel/Show Item State": {
+      "name": "아이템 상태 표시",
+      "desc": "휠의 각 아이템 아래에 남은 양·탄약 수·개수·내구도를 보여 준다."
+    },
+    "Quick Use Wheel/Enable Quick Use Wheel": { "name": "빠른 사용 휠 사용", "desc": "아이템을 고르는 휠을 켠다." },
+    "Quick Use Wheel/Quick Use Wheel Key": {
+      "name": "빠른 사용 휠 키",
+      "desc": "한 번 누르면 마지막에 쓴 아이템을 다시 쓰고, 누르고 있으면 휠이 열려 고를 수 있다."
+    },
+    "Quick Use Wheel/Enable Weapon Device Wheel": {
+      "name": "총기 장비 휠 사용",
+      "desc": "연사 모드와 전술 장비를 고르는 휠을 켠다."
+    },
+    "Quick Use Wheel/Weapon Device Wheel Key": {
+      "name": "총기 장비 휠 키",
+      "desc": "누르고 있으면 지금 든 총의 연사 모드와 전술 장비를 고를 수 있다."
+    },
+    "Quick Use Wheel/Tap Uses Last Item": {
+      "name": "한 번 누르면 마지막 아이템",
+      "desc": "휠 키를 짧게 누르면 마지막으로 고른 아이템을 바로 쓴다."
+    },
+    "Quick Use Wheel/Wheel Hold Duration": { "name": "휠이 열리는 시간", "desc": "휠이 열리기까지 키를 눌러야 하는 시간(초)." },
+    "Quick Use Wheel/Wheel Sounds": { "name": "휠 소리", "desc": "휠을 열고 옮기고 고를 때 소리를 낸다." },
+    "Quick Use Wheel/Items Per Page": { "name": "한 쪽당 아이템 수", "desc": "휠 한 쪽에 몇 개까지 보여 줄지 정한다." },
+    "Quick Use Wheel/Group Identical Items": {
+      "name": "같은 아이템 묶기",
+      "desc": "같은 종류의 소모품·수류탄·신호탄을 휠에서 한 칸으로 묶는다."
+    },
+    "Quick Use Wheel/Grouped Item Selection": {
+      "name": "묶음에서 고르는 기준",
+      "desc": "묶인 것 중 무엇을 쓸지 정한다 — 가득 찬 것을 아껴 두기, 가득 찬 것부터 쓰기, 가장 빨리 꺼낼 수 있는 것 쓰기."
+    },
+    "Quick Use Wheel/Show Source Slot": { "name": "보관 위치 표시", "desc": "아이템이 어느 칸에 있는지 함께 보여 준다." },
+    "Quick Use Wheel/Show Guns": { "name": "총기 표시", "desc": "휠에 총기를 보여 준다." },
+    "Quick Use Wheel/Show Melee": { "name": "근접 무기 표시", "desc": "휠에 근접 무기를 보여 준다." },
+    "Quick Use Wheel/Show Grenades": { "name": "수류탄 표시", "desc": "휠에 수류탄을 보여 준다." },
+    "Quick Use Wheel/Show Meds": { "name": "의약품 표시", "desc": "휠에 의약품을 보여 준다." },
+    "Quick Use Wheel/Show Food/Drink": { "name": "음식·음료 표시", "desc": "휠에 음식과 음료를 보여 준다." },
+    "Quick Use Wheel/Show Flares": { "name": "신호탄 표시", "desc": "휠에 신호탄을 보여 준다." },
+
+    "Quick Use Wheel Category Slots/Top": {
+      "name": "위",
+      "desc": "첫 쪽 여덟 자리 중 이 방향에 고정할 분류. 쓸 수 있는 아이템을 남겨 두고 나머지는 즐겨찾기와 빠른 순으로 채운다. 치료 분류에는 양이 충분한 다용도 아이템도 들어간다. 모든 자리를 Unassigned 로 두면 이 쪽이 사라진다."
+    },
+    "Quick Use Wheel Category Slots/Top Right": { "name": "오른쪽 위", "desc": "첫 쪽 여덟 자리 중 이 방향에 고정할 분류." },
+    "Quick Use Wheel Category Slots/Right": { "name": "오른쪽", "desc": "첫 쪽 여덟 자리 중 이 방향에 고정할 분류." },
+    "Quick Use Wheel Category Slots/Bottom Right": { "name": "오른쪽 아래", "desc": "첫 쪽 여덟 자리 중 이 방향에 고정할 분류." },
+    "Quick Use Wheel Category Slots/Bottom": { "name": "아래", "desc": "첫 쪽 여덟 자리 중 이 방향에 고정할 분류." },
+    "Quick Use Wheel Category Slots/Bottom Left": { "name": "왼쪽 아래", "desc": "첫 쪽 여덟 자리 중 이 방향에 고정할 분류." },
+    "Quick Use Wheel Category Slots/Left": { "name": "왼쪽", "desc": "첫 쪽 여덟 자리 중 이 방향에 고정할 분류." },
+    "Quick Use Wheel Category Slots/Top Left": { "name": "왼쪽 위", "desc": "첫 쪽 여덟 자리 중 이 방향에 고정할 분류." },
+
+    "Slot Access Delays/Enable Slot Delays": {
+      "name": "꺼내는 시간 사용",
+      "desc": "아래에 정한 칸별 지연 시간을 실제로 적용한다."
+    },
+    "Slot Access Delays/Show Timer Panel": { "name": "대기 시간 표시", "desc": "아이템을 꺼내는 동안 남은 시간을 화면에 보여 준다." },
+    "Slot Access Delays/Animate Backpack Access": {
+      "name": "배낭 뒤지는 동작",
+      "desc": "배낭에서 꺼낼 때 앉아서 배낭을 앞으로 돌려 뒤지는 동작을 보여 준다."
+    },
+    "Slot Access Delays/Backpack Horizontal Position": {
+      "name": "배낭 가로 위치",
+      "desc": "화면에서 배낭이 보이는 가로 위치. 0이 왼쪽 끝, 1이 오른쪽 끝."
+    },
+    "Slot Access Delays/Backpack Vertical Position": {
+      "name": "배낭 세로 위치",
+      "desc": "화면에서 배낭이 보이는 세로 위치. 0이 아래쪽 끝, 1이 위쪽 끝."
+    },
+    "Slot Access Delays/Backpack View Size": { "name": "배낭 크기", "desc": "화면에 보이는 배낭의 크기." },
+    "Slot Access Delays/Moving Cancels Access": {
+      "name": "움직이면 취소",
+      "desc": "꺼내는 중에 움직이면 그 시도와 예약된 다음 아이템까지 취소한다."
+    },
+    "Slot Access Delays/Damage Cancels Access": {
+      "name": "피격 시 취소",
+      "desc": "꺼내는 중에 피해를 입으면 그 시도와 예약된 다음 아이템까지 취소한다."
+    },
+    "Slot Access Delays/Timer Sounds": { "name": "대기 소리", "desc": "꺼내기가 끝나거나 취소될 때 가벼운 소리를 낸다." },
+    "Slot Access Delays/Pending Item Use Behavior": {
+      "name": "대기 중 사용 처리",
+      "desc": "꺼내는 중에 또 사용하려 할 때의 동작 — 무시, 취소하고 새 아이템 사용, 하나만 예약, 또는 휠을 열어 다시 고르기."
+    },
+    "Slot Access Delays/Clear Item Access Delay": {
+      "name": "대기 취소 키",
+      "desc": "진행 중인 꺼내기를 취소하고 예약된 다음 아이템도 지운다."
+    },
+    "Slot Access Delays/Additional Backpack Nesting Delay": {
+      "name": "가방 속 가방 추가 시간",
+      "desc": "아이템과 배낭 사이에 컨테이너가 한 겹 끼일 때마다 더해지는 시간(초). 컨테이너 종류와 무관하다."
+    },
+    "Slot Access Delays/Pockets Delay": { "name": "주머니", "desc": "주머니에서 꺼낼 때 더해지는 시간(초)." },
+    "Slot Access Delays/Tactical Vest Delay": { "name": "전술 조끼", "desc": "전술 조끼에서 꺼낼 때 더해지는 시간(초)." },
+    "Slot Access Delays/Arm Band Delay": { "name": "완장", "desc": "완장에서 꺼낼 때 더해지는 시간(초)." },
+    "Slot Access Delays/Backpack Delay": { "name": "배낭", "desc": "배낭에서 꺼낼 때 더해지는 시간(초)." },
+    "Slot Access Delays/Secured Container Delay": { "name": "보안 컨테이너", "desc": "보안 컨테이너에서 꺼낼 때 더해지는 시간(초)." },
+
+    "Slot Configurations/Weapon Slots": {
+      "name": "총기를 꺼낼 칸",
+      "desc": "총기를 꺼낼 수 있는 칸. 기본 무기 칸은 항상 켜져 있고 끌 수 없다."
+    },
+    "Slot Configurations/Grenade Throwing Slots": { "name": "수류탄을 꺼낼 칸", "desc": "수류탄을 꺼낼 수 있는 칸." },
+    "Slot Configurations/Melee Slots": { "name": "근접 무기를 꺼낼 칸", "desc": "근접 무기를 꺼낼 수 있는 칸." },
+    "Slot Configurations/Flare Slots": { "name": "신호탄을 꺼낼 칸", "desc": "신호탄을 꺼낼 수 있는 칸." },
+    "Slot Configurations/Reload Slots": { "name": "재장전에 쓸 칸", "desc": "재장전할 때 탄창·탄약을 꺼낼 수 있는 칸." },
+    "Slot Configurations/Meds Slots": { "name": "의약품을 꺼낼 칸", "desc": "의약품을 퀵슬롯에 걸 수 있는 칸." },
+    "Slot Configurations/Food/Drink Slots": { "name": "음식·음료를 꺼낼 칸", "desc": "음식과 음료를 퀵슬롯에 걸 수 있는 칸." },
+    "Slot Configurations/All Other Items": { "name": "그 밖의 아이템", "desc": "따로 정하지 않은 나머지 아이템에 적용할 칸." }
+  }
+}

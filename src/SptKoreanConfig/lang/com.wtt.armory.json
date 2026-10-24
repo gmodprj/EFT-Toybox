@@ -1,0 +1,29 @@
+{
+  "guid": "com.wtt.armory",
+  "name": "WTT 무기고 (WTT-Armory)",
+  "sections": {
+    "Hyperburst": "하이퍼버스트"
+  },
+  "settings": {
+    "Hyperburst/Hyperburst ROF Multi": {
+      "name": "연사 속도 배수",
+      "desc": "하이퍼버스트 중 연사 속도 배수. 기본 600인 총에 3배를 주면 그동안 1800이 된다."
+    },
+    "Hyperburst/Hyperburst Recoil Multi": {
+      "name": "반동 배수",
+      "desc": "하이퍼버스트 중 반동 배수."
+    },
+    "Hyperburst/Shot Reset Delay": {
+      "name": "사격 종료 판정 시간",
+      "desc": "사격이 끝났다고 볼 때까지 기다리는 시간. 타이밍이 어긋나면 조절한다."
+    },
+    "Hyperburst/Hyperburst Shot Threshold": {
+      "name": "종료 발수",
+      "desc": "하이퍼버스트가 끝나는 발수. 연사 속도 변화가 다음 발까지 이어지므로, 2발로 하려면 1을 넣는다."
+    },
+    "Hyperburst/Hyperburst Shot Spread": {
+      "name": "탄 퍼짐",
+      "desc": "값이 클수록 넓게 퍼진다. 퍼짐이 없으면 반동 배수와 무관하게 탄이 한 점에 겹쳐 박힌다."
+    }
+  }
+}

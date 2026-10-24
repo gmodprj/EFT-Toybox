@@ -1,0 +1,2 @@
+1249__Terkoiz.FlareEventNotifier	BepInEx\plugins\Terkoiz.FlareEventNotifier\LICENSE
+1249__Terkoiz.FlareEventNotifier	BepInEx\plugins\Terkoiz.FlareEventNotifier\Terkoiz-FlareEventNotifier.dll

@@ -1,0 +1,38 @@
+{
+  "guid": "com.ozen.continuousloadammo",
+  "name": "탄약 연속 장전 (Continuous Load Ammo)",
+  "sections": {
+    "General": "일반",
+    "Quick Load": "빠른 장전"
+  },
+  "settings": {
+    "General/Speed Limit": {
+      "name": "이동 속도 제한",
+      "desc": "탄약을 채우는 동안 걷기 속도의 몇 퍼센트까지만 움직이게 할지 정한다."
+    },
+    "General/Reachable Places Only": {
+      "name": "손 닿는 곳만",
+      "desc": "탄창과 탄약이 조끼·주머니·보안 컨테이너에 있을 때만 인벤토리 밖에서 채울 수 있게 한다."
+    },
+    "General/Inventory Tabs": {
+      "name": "탭을 옮겨도 계속",
+      "desc": "지도·퀘스트 등 인벤토리 탭을 옮겨도 장전을 끊지 않는다."
+    },
+    "General/Mag Preset Fallback": {
+      "name": "프리셋 없으면 빠른 장전",
+      "desc": "탄창 프리셋을 쓸 수 없으면 빠른 장전으로 넘어간다."
+    },
+    "Quick Load/Hotkey": {
+      "name": "단축키",
+      "desc": "인벤토리 밖에서 탄약을 채우는 키."
+    },
+    "Quick Load/Mode": {
+      "name": "고르는 기준",
+      "desc": "Highest Penetration Available: 관통력이 가장 높은 탄약을 고른다.\nLast Bullet in Magazine: 지금 탄창의 마지막 탄약과 같은 것을 먼저 쓴다.\nLast Used Magazine Preset: 마지막으로 쓴 탄창 프리셋을 그대로 채운다."
+    },
+    "Quick Load/Notify": {
+      "name": "채운 탄약 알리기",
+      "desc": "빠른 장전으로 무엇을 채웠는지 화면에 알린다."
+    }
+  }
+}

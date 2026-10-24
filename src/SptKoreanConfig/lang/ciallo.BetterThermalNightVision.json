@@ -1,0 +1,111 @@
+{
+  "guid": "ciallo.BetterThermalNightVision",
+  "name": "열상·야시경 개선 (Better Thermal & Night Vision)",
+  "sections": {
+    "Night Vision": "야시경",
+    "T7 Thermal": "T7 열상 (헬멧)",
+    "Thermal Optic": "열상 조준경",
+    "Black Screen Mask": "검은 화면 가림",
+    "T7 Palette - White-hot": "T7 색 — 화이트핫",
+    "T7 Palette - Black-hot": "T7 색 — 블랙핫",
+    "T7 Palette - Red-hot": "T7 색 — 레드핫",
+    "T7 Palette - Fusion": "T7 색 — 퓨전",
+    "T7 Palette - Ironbow": "T7 색 — 아이언보우",
+    "T7 Palette - Rainbow": "T7 색 — 레인보우",
+    "Internal": "내부"
+  },
+  "settings": {
+    "Black Screen Mask/Helmet NV & T7": {
+      "name": "헬멧 야시경·T7 가림막",
+      "desc": "헬멧 야시경과 T7을 올렸을 때 화면이 검게 덮이는 처리를 조절한다."
+    },
+
+    "Internal/ConfigVersion": {
+      "name": "설정 버전",
+      "desc": "모드가 설정 이전에 쓰는 값. 건드리지 않는다."
+    },
+
+    "Night Vision/Noise": { "name": "노이즈", "desc": "야시경 화면의 잡티 정도." },
+    "Night Vision/Optic Bright Default (?)": {
+      "name": "조준경 기본 밝기 사용",
+      "desc": "헬멧 야시경을 쓸 때 게임 기본의 조준경 밝기를 그대로 쓸지 정한다. 기본값은 배율 조준경에서 더 어둡다."
+    },
+    "Night Vision/Optic Brightness (?)": {
+      "name": "조준경 밝기",
+      "desc": "직접 정하는 조준경 밝기. '조준경 기본 밝기 사용'을 꺼야 적용된다."
+    },
+
+    "T7 Palette - Black-hot/MainTexColorCoef": { "name": "밝기", "desc": "이 색 모드의 전체 밝기." },
+    "T7 Palette - Black-hot/MinimumTemperatureValue": { "name": "온도 대비", "desc": "온도 차이를 얼마나 벌려 보여 줄지 정한다." },
+    "T7 Palette - Black-hot/RampShift": { "name": "색 이동", "desc": "색 띠 전체를 밀어 색조를 바꾼다." },
+
+    "T7 Palette - Fusion/MainTexColorCoef": { "name": "밝기", "desc": "이 색 모드의 전체 밝기." },
+    "T7 Palette - Fusion/MinimumTemperatureValue": { "name": "온도 대비", "desc": "온도 차이를 얼마나 벌려 보여 줄지 정한다." },
+    "T7 Palette - Fusion/RampShift": { "name": "색 이동", "desc": "색 띠 전체를 밀어 색조를 바꾼다." },
+
+    "T7 Palette - Ironbow/MainTexColorCoef": { "name": "밝기", "desc": "이 색 모드의 전체 밝기." },
+    "T7 Palette - Ironbow/MinimumTemperatureValue": { "name": "온도 대비", "desc": "온도 차이를 얼마나 벌려 보여 줄지 정한다." },
+    "T7 Palette - Ironbow/RampShift": { "name": "색 이동", "desc": "색 띠 전체를 밀어 색조를 바꾼다." },
+
+    "T7 Palette - Rainbow/MainTexColorCoef": { "name": "밝기", "desc": "이 색 모드의 전체 밝기." },
+    "T7 Palette - Rainbow/MinimumTemperatureValue": { "name": "온도 대비", "desc": "온도 차이를 얼마나 벌려 보여 줄지 정한다." },
+    "T7 Palette - Rainbow/RampShift": { "name": "색 이동", "desc": "색 띠 전체를 밀어 색조를 바꾼다." },
+
+    "T7 Palette - Red-hot/MainTexColorCoef": { "name": "밝기", "desc": "이 색 모드의 전체 밝기." },
+    "T7 Palette - Red-hot/MinimumTemperatureValue": { "name": "온도 대비", "desc": "온도 차이를 얼마나 벌려 보여 줄지 정한다." },
+    "T7 Palette - Red-hot/RampShift": { "name": "색 이동", "desc": "색 띠 전체를 밀어 색조를 바꾼다." },
+
+    "T7 Palette - White-hot/MainTexColorCoef": { "name": "밝기", "desc": "이 색 모드의 전체 밝기." },
+    "T7 Palette - White-hot/MinimumTemperatureValue": { "name": "온도 대비", "desc": "온도 차이를 얼마나 벌려 보여 줄지 정한다." },
+    "T7 Palette - White-hot/RampShift": { "name": "색 이동", "desc": "색 띠 전체를 밀어 색조를 바꾼다." },
+
+    "T7 Thermal/FPS Limit": { "name": "화면 갱신 제한", "desc": "열상 화면이 초당 몇 번 갱신될지 정한다. 낮을수록 끊겨 보인다." },
+    "T7 Thermal/Glitch effect": { "name": "글리치 효과", "desc": "화면이 지지직거리는 효과." },
+    "T7 Thermal/Motion Blur": { "name": "잔상", "desc": "움직일 때 남는 잔상 정도." },
+    "T7 Thermal/Noise": { "name": "노이즈", "desc": "화면의 잡티 정도." },
+    "T7 Thermal/Pixelation": { "name": "픽셀 거칠기", "desc": "화면을 거친 픽셀로 보이게 하는 정도." },
+    "T7 Thermal/Blur": { "name": "흐림", "desc": "화면 전체의 흐림 정도." },
+    "T7 Thermal/Block Optic Scope (?)": {
+      "name": "조준경 렌즈 투과 막기",
+      "desc": "일반 조준경 렌즈를 열상으로 들여다볼 수 없게 한다. 열상 전용 조준경은 '열상 조준경' 설정을 그대로 쓴다."
+    },
+    "T7 Thermal/Block Glass (?)": {
+      "name": "유리 투과 막기",
+      "desc": "건물 유리 너머가 열상으로 비치지 않게 한다. 조준경이나 도트의 렌즈에는 영향을 주지 않는다."
+    },
+    "T7 Thermal/Depth Fade (?)": {
+      "name": "거리 감쇠",
+      "desc": "낮출수록 먼 거리가 잘 보인다. T7 기본값은 0.03이다."
+    },
+    "T7 Thermal/Thermal Palette": { "name": "색 모드", "desc": "T7에 쓸 색 모드를 고른다." },
+    "T7 Thermal/Color Passthrough (?)": {
+      "name": "원본 색 통과",
+      "desc": "BD-T7/S 방식의 풀컬러 열 버퍼를 그대로 쓴다. 켜 두면 색 모드 설정은 건너뛴다."
+    },
+    "T7 Thermal/Palette Tuning (?)": {
+      "name": "색 미세 조정",
+      "desc": "고른 색 모드를 실시간으로 바꿔 본다. Save Palette 를 눌러야 설정에 저장되며, 저장하지 않고 다른 색 모드로 넘어가면 사라진다."
+    },
+
+    "Thermal Optic/FPS Limit": { "name": "화면 갱신 제한", "desc": "열상 조준경 화면이 초당 몇 번 갱신될지 정한다." },
+    "Thermal Optic/Scanline": { "name": "주사선", "desc": "가로줄이 지나가는 효과." },
+    "Thermal Optic/Motion Blur": { "name": "잔상", "desc": "움직일 때 남는 잔상 정도." },
+    "Thermal Optic/Noise": { "name": "노이즈", "desc": "화면의 잡티 정도." },
+    "Thermal Optic/Pixelation": { "name": "픽셀 거칠기", "desc": "화면을 거친 픽셀로 보이게 하는 정도." },
+    "Thermal Optic/Edge Aberration": { "name": "가장자리 색 번짐", "desc": "화면 가장자리의 색 번짐 정도." },
+    "Thermal Optic/Blur": { "name": "흐림", "desc": "화면 전체의 흐림 정도." },
+    "Thermal Optic/Distance": { "name": "탐지 거리", "desc": "열상이 닿는 거리." },
+    "Thermal Optic/Depth Fade (?)": { "name": "거리 감쇠", "desc": "낮출수록 먼 거리가 또렷하다." },
+    "Thermal Optic/Use Custom Color (?)": {
+      "name": "색 직접 지정",
+      "desc": "주의: 이 값들은 레이드 중 모든 열상 조준경의 각 모드를 덮어쓴다. 한 벌의 값이 서로 다른 조준경과 색 모드에 다 맞지는 않는다. 되돌리려면 '기본값 복구'를 쓴다."
+    },
+    "Thermal Optic/Use MainTexColorCoef - Brightness": { "name": "직접 지정 — 밝기", "desc": "'색 직접 지정'을 켰을 때 쓸 밝기." },
+    "Thermal Optic/Use MinTempValue - ColorDiff": { "name": "직접 지정 — 온도 대비", "desc": "'색 직접 지정'을 켰을 때 쓸 온도 대비." },
+    "Thermal Optic/Use RampShift - ColorShift": { "name": "직접 지정 — 색 이동", "desc": "'색 직접 지정'을 켰을 때 쓸 색 이동." },
+    "Thermal Optic/Use Recover Default (?)": {
+      "name": "기본값 복구",
+      "desc": "조준경의 원래 값으로 되돌린다. 메뉴를 닫고 해당 열상 조준경을 써야 적용된다. 레이드에서 처음 쓴 열상 모드의 값만 기억하므로, 조준경이나 모드가 여럿이면 다음 레이드에서 '색 직접 지정'을 끄고 하나씩 되돌려야 한다."
+    }
+  }
+}

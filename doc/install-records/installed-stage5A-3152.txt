@@ -1,0 +1,2 @@
+3152__Liquidwarp-HideLockedFlea-1.0.0	BepInEx\plugins\Liquidwarp-HideLockedFlea.Client.dll
+3152__Liquidwarp-HideLockedFlea-1.0.0	SPT_Runtime\user\mods\Liquidwarp-HideLockedFlea\Liquidwarp-HideLockedFlea.Server.dll

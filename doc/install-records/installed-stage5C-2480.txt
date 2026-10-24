@@ -1,0 +1,5 @@
+2480__BarterItemsStacks-1.4.3	BepInEx\plugins\BarterItemsStacksClient.dll
+2480__BarterItemsStacks-1.4.3	SPT_Runtime\user\mods\BarterItemsStacks\BarterItemsStacks.dll
+2480__BarterItemsStacks-1.4.3	SPT_Runtime\user\mods\BarterItemsStacks\presets\Default.jsonc
+2480__BarterItemsStacks-1.4.3	SPT_Runtime\user\mods\BarterItemsStacks\config.jsonc
+2480__BarterItemsStacks-1.4.3	SPT_Runtime\user\mods\BarterItemsStacks\params.json

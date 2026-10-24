@@ -1,0 +1,10 @@
+3085__Ledger	SPT_Runtime\user\mods\Ledger\Ledger.deps.json
+3085__Ledger	SPT_Runtime\user\mods\Ledger\Ledger.dll
+3085__Ledger	SPT_Runtime\user\mods\Ledger\Ledger.pdb
+3085__Ledger	SPT_Runtime\user\mods\Ledger\assets\Ledger.png
+3085__Ledger	SPT_Runtime\user\mods\Ledger\assets\quests\LedgerQuest1.jpg
+3085__Ledger	SPT_Runtime\user\mods\Ledger\assets\quests\LedgerQuest2.jpg
+3085__Ledger	SPT_Runtime\user\mods\Ledger\assets\quests\LedgerQuest3.jpg
+3085__Ledger	SPT_Runtime\user\mods\Ledger\assets\quests\LedgerQuest4.jpg
+3085__Ledger	SPT_Runtime\user\mods\Ledger\assets\quests\LedgerQuest5.jpg
+3085__Ledger	SPT_Runtime\user\mods\Ledger\assets\quests\LedgerQuest6.jpg

@@ -1,0 +1,11 @@
+1090__RaiRai.ColorConverterAPI	BepInEx\plugins\RaiRai.ColorConverterAPI.dll
+1342__Tyfon-UIFixes-6.0.4	BepInEx\plugins\Tyfon.UIFixes.dll
+1342__Tyfon-UIFixes-6.0.4	BepInEx\plugins\Tyfon.UIFixes.Net.dll
+1342__Tyfon-UIFixes-6.0.4	SPT_Runtime\user\mods\Tyfon.UIFixes.Server\Tyfon.UIFixes.Server.dll
+3011__ShowMeTheMoney-3.0.2-SPT-4.1.5	BepInEx\plugins\SwiftXP.ShowMeTheMoney.dll
+3011__ShowMeTheMoney-3.0.2-SPT-4.1.5	SPT_Runtime\user\mods\swiftxp-showmethemoney\LICENSE.md
+3011__ShowMeTheMoney-3.0.2-SPT-4.1.5	SPT_Runtime\user\mods\swiftxp-showmethemoney\SwiftXP.SPT.ShowMeTheMoney.Server.dll
+1140__DrakiaXYZ-QuestTracker-1.7.0	BepInEx\Plugins\DrakiaXYZ-QuestTracker\DrakiaXYZ-QuestTracker.dll
+1140__DrakiaXYZ-QuestTracker-1.7.0	BepInEx\Plugins\DrakiaXYZ-QuestTracker\questtrackerui.bundle
+934__DrakiaXYZ-SearchOpenContainers-1.5.0	BepInEx\plugins\DrakiaXYZ-SearchOpenContainers.dll
+1341__DrakiaXYZ-QuickMoveToContainer-1.5.0	BepInEx\plugins\DrakiaXYZ-QuickMoveToContainer.dll

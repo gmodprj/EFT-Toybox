@@ -1,0 +1,101 @@
+[
+  {
+    "id": 2402,
+    "name": "AmmoBox1x1",
+    "version": "2.0.0",
+    "file": "2402__jeroAmmoBox1x1.7z",
+    "bytes": 4800,
+    "expected": 4800,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2739,
+    "name": "Unload All Magazines",
+    "version": "2.2.1",
+    "file": "2739__maschine-UnloadAllMagazines-2.2.1.zip",
+    "bytes": 11654,
+    "expected": 11654,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2407,
+    "name": "QuickSellFlea",
+    "version": "1.4.5",
+    "file": "2407__QuickSellFlea.zip",
+    "bytes": 11728,
+    "expected": 11728,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2589,
+    "name": "Mag Retention Reload",
+    "version": "1.3.0",
+    "file": "2589__Tosox.MagRetentionReload-v1.3.0.zip",
+    "bytes": 14505,
+    "expected": 14505,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1950,
+    "name": "Weapon Customizer",
+    "version": "4.0.0",
+    "file": "1950__Tyfon-WeaponCustomizer-4.0.0.zip",
+    "bytes": 34426,
+    "expected": 34426,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2310,
+    "name": "WTT - CommonLib",
+    "version": "3.0.6",
+    "file": "2310__WTT-CommonLib-v3.0.6.zip",
+    "bytes": 248445,
+    "expected": 248445,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 236,
+    "name": "Server Value Modifier [SVM]",
+    "version": "2.2.3",
+    "file": "236__SVM.Server.Value.Modifier.zip",
+    "bytes": 5764291,
+    "expected": 5764291,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1023,
+    "name": "WTT- Artem",
+    "version": "3.0.2",
+    "file": "1023__WTT-Artem.7z",
+    "bytes": 1622167511,
+    "expected": 1622167511,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 58
+  },
+  {
+    "id": 2246,
+    "name": "WTT- Armory",
+    "version": "3.0.0",
+    "file": "2246__WTT-Armory-3.0.0.7z",
+    "bytes": 4866137251,
+    "expected": 4866137251,
+    "sizeOk": true,
+    "host": "downloads.welcometotarkov.com",
+    "seconds": 188
+  }
+]

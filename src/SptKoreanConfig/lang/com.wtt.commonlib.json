@@ -1,0 +1,28 @@
+{
+  "guid": "com.wtt.commonlib",
+  "name": "WTT 공용 라이브러리 (WTT-ClientCommonLib)",
+  "sections": {
+    "General": "일반",
+    "Gym Radio": "체육관 라디오",
+    "Rest Space Radio": "휴게실 라디오",
+    "FaceCard": "페이스카드"
+  },
+  "settings": {
+    "FaceCard/Music Volume": { "name": "음량", "desc": "페이스카드 전용 음원의 음량." },
+
+    "General/Developer Mode": {
+      "name": "개발자 모드",
+      "desc": "구역 편집기와 고정 스폰 도구를 쓰려면 켠 뒤 게임을 다시 켜야 한다."
+    },
+
+    "Gym Radio/Enabled": { "name": "사용", "desc": "체육관 라디오의 음원 교체를 켜고 끈다." },
+    "Gym Radio/Gym Radio Volume": { "name": "음량", "desc": "체육관 라디오 음원의 음량." },
+    "Gym Radio/Replacement Chance": { "name": "교체 확률 (%)", "desc": "체육관 라디오 음원을 바꿀 확률(0~100)." },
+    "Gym Radio/Play On First Entrance": { "name": "은신처 첫 진입 시 재생", "desc": "은신처에 처음 들어갈 때 음원을 재생한다." },
+
+    "Rest Space Radio/Enabled": { "name": "사용", "desc": "휴게실 라디오의 음원 교체를 켜고 끈다." },
+    "Rest Space Radio/Rest Space Radio Volume": { "name": "음량", "desc": "휴게실 라디오 음원의 음량." },
+    "Rest Space Radio/Replacement Chance": { "name": "교체 확률 (%)", "desc": "휴게실 라디오 음원을 바꿀 확률(0~100)." },
+    "Rest Space Radio/Play On First Entrance": { "name": "은신처 첫 진입 시 재생", "desc": "은신처에 처음 들어갈 때 음원을 재생한다." }
+  }
+}

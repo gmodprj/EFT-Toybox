@@ -1,0 +1,80 @@
+{
+  "spt": "4.1.6",
+  "generated": "2026-10-24",
+  "mods": [
+    {
+      "group": "tools",
+      "id": 1343,
+      "name": "Skipper",
+      "version": "1.1.5",
+      "size": 5511,
+      "link": "https://sp-mod.com/mod/download/1343/skipper/1.1.5",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "tools",
+      "id": 1617,
+      "name": "give-ui",
+      "version": "5.0.1",
+      "size": 4693574,
+      "link": "https://sp-mod.com/mod/download/1617/give-ui/5.0.1",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "tools",
+      "id": 1184,
+      "name": "Open Sesame",
+      "version": "3.0.1",
+      "size": 10809,
+      "link": "https://sp-mod.com/mod/download/1184/open-sesame/3.0.1",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "traders",
+      "id": 1232,
+      "name": "Lotus",
+      "version": "1.8.1",
+      "size": 22330824,
+      "link": "https://sp-mod.com/mod/download/1232/lotus/1.8.1",
+      "profileBinding": true,
+      "deps": [
+        "2310:WTT - CommonLib"
+      ]
+    },
+    {
+      "group": "traders",
+      "id": 1348,
+      "name": "Scorpion",
+      "version": "1.1.1",
+      "size": 357758,
+      "link": "https://sp-mod.com/mod/download/1348/scorpion/1.1.1",
+      "profileBinding": true,
+      "deps": [
+        "2310:WTT - CommonLib"
+      ]
+    },
+    {
+      "group": "traders",
+      "id": 1538,
+      "name": "Ref - SPT Friendly Quests",
+      "version": "2.1.0",
+      "size": 14391,
+      "link": "https://sp-mod.com/mod/download/1538/ref-spt-friendly-quests/2.1.0",
+      "profileBinding": true,
+      "deps": []
+    },
+    {
+      "group": "traders",
+      "id": 1303,
+      "name": "HarryHideout",
+      "version": "3.1.2",
+      "size": 22794,
+      "link": "https://sp-mod.com/mod/download/1303/harryhideout/3.1.2",
+      "profileBinding": true,
+      "deps": []
+    }
+  ]
+}

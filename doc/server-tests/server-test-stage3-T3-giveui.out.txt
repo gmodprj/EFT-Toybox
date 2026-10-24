@@ -1,0 +1,79 @@
+ModLoader: 총 15 개의 모드 불러오는 중...
+모드 give-ui 버전 5.0.1 (GUID: com.agavalda.giveui | targets SPT: ~4.1.0) by 
+agavalda 불러옴
+모드 TraderModding 버전 2.1.2 (GUID: com.choochoo.tradermodding | targets SPT: 
+~4.1.X) by Choo² 불러옴
+모드 Artem 버전 3.0.2 (GUID: com.crackbone.artem-wtt | targets SPT: ~4.1.0) by 
+Crackbone 불러옴
+모드 Show Me The Money 버전 3.0.2 (GUID: com.dark.spt.showmethemoney | targets 
+SPT: ~4.1.0) by SwiftXP 불러옴
+모드 BetterKeysNG 버전 1.8.0 (GUID: com.flir.betterkeys | targets SPT: ~4.1.0) 
+by flir 불러옴
+모드 AmmoBox1x1 버전 2.0.0 (GUID: com.jero.ammobox1x1 | targets SPT: ~4.1.6) by 
+jero 불러옴
+모드 Dynamic Maps 버전 1.2.1 (GUID: com.mpstark.dynamicmaps | targets SPT: 
+~4.1.0) by mpstark 불러옴
+모드 ItemInfo 버전 3.0.0 (GUID: com.odt.iteminfo | targets SPT: ~4.1.5) by ODT 
+불러옴
+모드 AmmoStats 버전 4.1.0 (GUID: com.rairaitheraichu.ammostats | targets SPT: 
+~4.1.0) by RaiRaiTheRaichu 불러옴
+모드 ColoredTracers 버전 3.0.1 (GUID: com.szonszczyk.coloredtracers | targets 
+SPT: ~4.1.2) by Szonszczyk 불러옴
+모드 UI Fixes 버전 6.0.4 (GUID: com.tyfon.uifixes | targets SPT: ~4.1.0) by 
+Tyfon 불러옴
+모드 Weapon Customizer 버전 4.0.0 (GUID: com.tyfon.weaponcustomizer | targets 
+SPT: ~4.1.0) by Tyfon 불러옴
+모드 WTT-Armory 버전 2.0.5 (GUID: com.wtt.armory | targets SPT: ~4.1.0) by 
+GrooveypenguinX 불러옴
+모드 WTT-ServerCommonLib 버전 3.0.6 (GUID: com.wtt.commonlib | targets SPT: 
+~4.1.3) by GrooveypenguinX 불러옴
+모드 SVM 버전 2.2.3 (GUID: fika.ghostfenixx.svm | targets SPT: ~4.1.3) by 
+GhostFenixx 불러옴
+데이터베이스를 추출 중...
+데이터베이스 추출 완료
+Database import took 1225ms
+서버: 시작 콜백을 실행합니다...
+┌─────────────────────────────────────┐
+│ SPT 4.1.6                           │
+│ https://discord.sp-tushonka.com     │
+│                                     │
+│ 이 소프트웨어는 무료입니다                      │
+│ 만약 금전적 대가를 지불하였다면, 사기에 당하신 겁니다.     │
+│ 상업적 용도는 제한됩니다                       │
+└─────────────────────────────────────┘
+[AmmoStats] ColorConverterAPI Plugin detected?: True
+[SVM] Remove backpack restrictions - empty filters detected on ID - 
+656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[SVM] Remove backpack restrictions - empty filters detected on ID - 
+656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[SVM] Remove backpack restrictions - empty filters detected on ID - 
+656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[SVM] Initialization complete. I hope all safes you loot will mock you with 
+emptiness
+
+[SVM] Preset - Noname - successfully loaded
+플리마켓 상품 생성 중
+[BetterKeysNG] Loaded: Customs
+[BetterKeysNG] Loaded: Factory
+[BetterKeysNG] Loaded: Ground Zero
+[BetterKeysNG] Loaded: Interchange
+[BetterKeysNG] Loaded: Lighthouse
+[BetterKeysNG] Loaded: Reserve
+[BetterKeysNG] Loaded: Shoreline
+[BetterKeysNG] Loaded: Streets of Tarkov
+[BetterKeysNG] Loaded: The Lab
+[BetterKeysNG] Loaded: Woods
+[BetterKeysNG] Loaded: The Labyrinth
+[BetterKeysNG] Processed 200 known keys and 43 junk keys
+[BetterKeysNG] modified 4,097 translations in 396 ms
+[ColoredTracers/OnLoadAsync] Added 225 tracers to 225 bullets!
+[JERO] 36 ammo boxes adjusted!
+[ItemInfo] Processing items...
+[ItemInfo] Processing additional info...
+[ItemInfo] Completed processing 5645 items in 16632 ms.
+[ItemInfo] Item Info loaded!
+Web authentication is enabled.
+시작된 웹서버 https://127.0.0.1:6969
+시작된 웹소켓 서버 wss://127.0.0.1:6969
+서버가 시작되었습니다, 즐거운 시간 되세요.
+Loaded self-signed certificate (user\certs\server.crt)

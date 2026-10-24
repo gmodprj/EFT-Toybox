@@ -1,0 +1,4 @@
+3098__fenrirthegray-traderrestockrefresh	BepInEx\plugins\fenrirthegray-traderrestockrefresh\fenrirthegray-traderrestockrefresh.dll
+3098__fenrirthegray-traderrestockrefresh	BepInEx\plugins\fenrirthegray-traderrestockrefresh\LICENSE
+3098__fenrirthegray-traderrestockrefresh	SPT_Runtime\user\mods\fenrirthegray-traderrestockrefresh\fenrirthegray-traderrestockrefresh.dll
+3098__fenrirthegray-traderrestockrefresh	SPT_Runtime\user\mods\fenrirthegray-traderrestockrefresh\LICENSE

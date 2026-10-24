@@ -1,0 +1,21 @@
+stage5-D: 모드 10개 / 설치 대상 경로 325개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 0
+
+[4] 모드별 설치 위치
+    1527__TraderNamer-4.1.0 -> 서버
+    2419__Amonya.2.2.0 -> 서버
+    2834__UltimateTraderAssortEditor -> 게임+서버
+    2966__SPTarkov.PresetTrader -> 서버
+    3005__TraderLevelRequirementsEditor -> 서버
+    3024__CaseTrader.101.415 -> 서버
+    3085__Ledger -> 서버
+    3098__fenrirthegray-traderrestockrefresh -> 게임+서버
+    3124__GunsmithTrader-1.0.2 -> 서버
+    3128__Gunwright-v1_0_2 -> 서버
+
+CLEAN (0)

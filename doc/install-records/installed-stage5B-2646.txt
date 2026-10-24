@@ -1,0 +1,2 @@
+2646__FlexibleBuilds-1.2.2	BepInEx\plugins\FlexibleBuildsClient.dll
+2646__FlexibleBuilds-1.2.2	SPT_Runtime\user\mods\FlexibleBuilds\FlexibleBuildsServer.dll

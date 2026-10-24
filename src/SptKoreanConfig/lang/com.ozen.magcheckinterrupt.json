@@ -1,0 +1,43 @@
+{
+  "guid": "com.ozen.magcheckinterrupt",
+  "name": "탄창 확인 중 재장전 (Magazine Check Interrupt)",
+  "sections": {
+    "General": "일반",
+    "Reload Window": "재장전 가능 구간",
+    "Slow Animation": "동작 늦추기",
+    "Ammo Details": "탄약 정보 표시"
+  },
+  "settings": {
+    "Ammo Details/Follows Magazine": {
+      "name": "탄창을 따라 표시",
+      "desc": "탄약 정보 표시가 탄창을 따라 움직인다."
+    },
+    "Ammo Details/Position Offset X": { "name": "위치 보정 X", "desc": "탄약 정보 표시를 좌우로 옮긴다." },
+    "Ammo Details/Position Offset Y": { "name": "위치 보정 Y", "desc": "탄약 정보 표시를 위아래로 옮긴다." },
+    "Ammo Details/Position Offset Z": { "name": "위치 보정 Z", "desc": "탄약 정보 표시를 앞뒤로 옮긴다." },
+    "Ammo Details/Scale": { "name": "크기", "desc": "탄약 정보 표시의 크기." },
+
+    "General/Reload Mode": {
+      "name": "재장전 방식",
+      "desc": "재장전 키와 탄창 확인 키가 겹칠 때 쓸 처리 방식."
+    },
+
+    "Reload Window/Start": {
+      "name": "시작 지점",
+      "desc": "탄창 확인 동작 중 언제부터 재장전할 수 있는지 정한다(동작 길이를 0~1로 본 값)."
+    },
+    "Reload Window/End": {
+      "name": "끝 지점",
+      "desc": "탄창 확인 동작 중 언제까지 재장전할 수 있는지 정한다(동작 길이를 0~1로 본 값)."
+    },
+
+    "Slow Animation/Enable": { "name": "동작 늦추기 사용", "desc": "탄창 확인 동작을 일정 구간 동안 느리게 한다." },
+    "Slow Animation/Slow Percentage": { "name": "느려지는 정도", "desc": "동작 늦추기를 켰을 때 적용할 속도 배수." },
+    "Slow Animation/Start": { "name": "느려지기 시작", "desc": "동작의 어느 지점부터 느려질지 정한다(0~1)." },
+    "Slow Animation/End": { "name": "속도 회복", "desc": "동작의 어느 지점에서 원래 속도로 돌아올지 정한다(0~1)." },
+    "Slow Animation/Smoothing Max Delta": {
+      "name": "속도 변화 한계",
+      "desc": "느려지고 돌아오는 변화의 최대 폭. 값이 클수록 빠르게 바뀐다."
+    }
+  }
+}

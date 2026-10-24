@@ -1,0 +1,35 @@
+stage5-E: 모드 6개 / 설치 대상 경로 9개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 18
+    3009__CobrasSPTExplorer-v1.0.0 -> CHANGELOG.md
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/AssetRipper.TextureDecoder.dll
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/AssetsTools.NET.dll
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/AssetsTools.NET.Texture.dll
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/CobrasSPTExplorer.Core.dll
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/CobrasSPTExplorer.Shared.dll
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/CobrasSPTExplorer.UI.deps.json
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/CobrasSPTExplorer.UI.dll
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/CobrasSPTExplorer.UI.exe
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/CobrasSPTExplorer.UI.runtimeconfig.json
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/Sounds/confirm.wav
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/Sounds/info.wav
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/Sounds/success.wav
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/Sounds/warning.wav
+    3009__CobrasSPTExplorer-v1.0.0 -> CobraSPTExplorerUI/StbImageWriteSharp.dll
+    3009__CobrasSPTExplorer-v1.0.0 -> LICENSE
+    3009__CobrasSPTExplorer-v1.0.0 -> README.md
+    3009__CobrasSPTExplorer-v1.0.0 -> THIRD-PARTY-NOTICES.md
+
+[4] 모드별 설치 위치
+    164__Terkoiz.Freecam -> 게임
+    1988__dvize.BulletTime-v2.3.0 -> 게임
+    2618__TripwireImprovement_v1.1.0 -> 게임
+    2783__FastGrenadeThrow-v2.0.0 -> 게임
+    3009__CobrasSPTExplorer-v1.0.0 -> 게임+서버
+    994__DrakiaXYZ-SetSpeed-1.5.0 -> 게임
+
+ATTENTION (18)

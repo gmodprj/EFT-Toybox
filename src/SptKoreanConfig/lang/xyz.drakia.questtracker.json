@@ -1,0 +1,46 @@
+{
+  "guid": "xyz.drakia.questtracker",
+  "name": "퀘스트 추적 창 (Quest Tracker)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Panel Settings": "2. 목록 내용",
+    "3. Display": "3. 겉모습"
+  },
+  "settings": {
+    "1. General/Visible At Raid Start": { "name": "레이드 시작 시 표시", "desc": "레이드를 시작할 때 창을 띄워 둘지 정한다." },
+    "1. General/Panel Toggle Key": { "name": "창 전환 키", "desc": "퀘스트 추적 창을 띄우고 감추는 키." },
+    "1. General/Auto Hide": { "name": "자동 숨김", "desc": "일정 시간이 지나면 목록을 저절로 감춘다." },
+    "1. General/Auto Hide Timer": { "name": "자동 숨김 시간", "desc": "감추기까지 보여 줄 시간(초)." },
+    "1. General/Show On Objective Progress": {
+      "name": "목표 진행 시 잠깐 표시",
+      "desc": "목표가 진행될 때 목록을 잠시 띄운다."
+    },
+
+    "2. Panel Settings/Include Current Map Quests": {
+      "name": "현재 맵 퀘스트 항상 포함",
+      "desc": "지금 맵의 퀘스트는 늘 목록에 넣는다."
+    },
+    "2. Panel Settings/Exclude Other Map Quests": {
+      "name": "다른 맵 퀘스트 제외",
+      "desc": "지금 맵이나 '아무 곳' 퀘스트가 아니면 목록에서 뺀다."
+    },
+    "2. Panel Settings/Progress As Percent": {
+      "name": "진행률을 백분율로",
+      "desc": "퀘스트 전체 진행을 백분율로 볼지 개수로 볼지 정한다."
+    },
+    "2. Panel Settings/Hide Completed Quests": { "name": "완료한 퀘스트 숨기기", "desc": "제출만 남은 퀘스트를 목록에서 감춘다." },
+    "2. Panel Settings/Show Objectives": { "name": "세부 목표 표시", "desc": "퀘스트마다 세부 목표를 함께 보여 준다." },
+    "2. Panel Settings/Objectives As Percent": {
+      "name": "목표 진행률을 백분율로",
+      "desc": "세부 목표 진행을 백분율로 볼지 개수로 볼지 정한다."
+    },
+    "2. Panel Settings/Hide Completed Objectives": { "name": "완료한 목표 숨기기", "desc": "다 끝낸 세부 목표를 목록에서 감춘다." },
+
+    "3. Display/Maximum Width (1920p)": { "name": "최대 너비 (1920 기준)", "desc": "글자가 줄바꿈되기 전까지의 최대 가로 크기." },
+    "3. Display/Panel Background Transparency": { "name": "배경 투명도", "desc": "창 배경이 비치는 정도." },
+    "3. Display/Font Size": { "name": "글자 크기", "desc": "퀘스트 이름의 글자 크기." },
+    "3. Display/Objective Font Size": { "name": "목표 글자 크기", "desc": "세부 목표의 글자 크기." },
+    "3. Display/Alignment": { "name": "정렬", "desc": "창을 왼쪽에 붙일지 오른쪽에 붙일지 정한다." },
+    "3. Display/Cool Kids Mode": { "name": "쿨한 모드", "desc": "제작자가 넣어 둔 장난 설정." }
+  }
+}

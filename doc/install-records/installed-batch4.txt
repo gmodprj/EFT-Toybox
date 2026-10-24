@@ -1,0 +1,5 @@
+2743__maschine-WeaponBuilderSearch-2.0.0	BepInEx\plugins\maschine-WeaponBuilderSearch.dll
+2824__maschine-TraderSearch-2.1.0	BepInEx\plugins\maschine-TraderSearch.dll
+1283__ChooChoo-TraderModding	BepInEx\plugins\ChooChoo-TraderModding.dll
+1283__ChooChoo-TraderModding	SPT_Runtime\user\mods\ChooChoo-TraderModding\ChooChoo-TraderModding.dll
+1300__Wara-ModdingStatsHelper-1.2.0	BepInEx\plugins\Wara-ModdingStatsHelper.dll

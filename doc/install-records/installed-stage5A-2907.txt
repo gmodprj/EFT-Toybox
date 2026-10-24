@@ -1,0 +1,1 @@
+2907__maschine-StashFilter-1.0.0	BepInEx\plugins\maschine-StashFilter.dll

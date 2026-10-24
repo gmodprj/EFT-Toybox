@@ -1,0 +1,1 @@
+1136__DrakiaXYZ-EquipFromWeaponRack-1.6.0	BepInEx\plugins\DrakiaXYZ-EquipFromWeaponRack.dll

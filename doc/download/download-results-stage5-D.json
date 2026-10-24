@@ -1,0 +1,112 @@
+[
+  {
+    "id": 3005,
+    "name": "Trader Level Requirements Editor",
+    "version": "1.1.0",
+    "file": "3005__TraderLevelRequirementsEditor.zip",
+    "bytes": 9886,
+    "expected": 9886,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 3098,
+    "name": "SPT Trader Restock Refresh",
+    "version": "1.0.0",
+    "file": "3098__fenrirthegray-traderrestockrefresh.zip",
+    "bytes": 10664,
+    "expected": 10664,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1527,
+    "name": "Trader Namer",
+    "version": "4.1.0",
+    "file": "1527__TraderNamer-4.1.0.zip",
+    "bytes": 11750,
+    "expected": 11750,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2834,
+    "name": "Ultimate Trader Assort Editor",
+    "version": "2.1.1",
+    "file": "2834__UltimateTraderAssortEditor.zip",
+    "bytes": 162635,
+    "expected": 162635,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 3124,
+    "name": "Gunsmith Task Trader",
+    "version": "1.0.2",
+    "file": "3124__GunsmithTrader-1.0.2.zip",
+    "bytes": 189275,
+    "expected": 189275,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3024,
+    "name": "CaseTrader — Buy any case",
+    "version": "1.0.1",
+    "file": "3024__CaseTrader.101.415.zip",
+    "bytes": 330171,
+    "expected": 330171,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3085,
+    "name": "Ledger",
+    "version": "1.1.0",
+    "file": "3085__Ledger.zip",
+    "bytes": 506002,
+    "expected": 506002,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3128,
+    "name": "Gunwright",
+    "version": "1.0.2",
+    "file": "3128__Gunwright-v1_0_2.zip",
+    "bytes": 1055499,
+    "expected": 1055499,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2966,
+    "name": "PresetTrader",
+    "version": "1.2.0",
+    "file": "2966__SPTarkov.PresetTrader.zip",
+    "bytes": 232040,
+    "expected": 1358724,
+    "sizeOk": false,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2419,
+    "name": "Amonya - Ammo Loving Trader & Quester",
+    "version": "2.2.0",
+    "file": "2419__Amonya.2.2.0.zip",
+    "bytes": 98432758,
+    "expected": 98432758,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 5
+  }
+]

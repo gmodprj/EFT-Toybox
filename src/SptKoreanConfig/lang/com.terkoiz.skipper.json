@@ -1,0 +1,21 @@
+{
+  "guid": "com.terkoiz.skipper",
+  "name": "퀘스트 건너뛰기 (Skipper)",
+  "sections": {
+    "Main": "기본"
+  },
+  "settings": {
+    "Main/1. Enabled": {
+      "name": "모드 사용",
+      "desc": "이 모드를 켜고 끈다. 바꾼 뒤에는 퀘스트 창을 다시 열어야 적용된다."
+    },
+    "Main/2. Always display Skip button": {
+      "name": "건너뛰기 버튼 항상 표시",
+      "desc": "켜면 건너뛰기 버튼이 늘 보인다."
+    },
+    "Main/3. Display hotkey": {
+      "name": "버튼 표시 키",
+      "desc": "이 키를 누르고 있는 동안 건너뛰기 버튼이 나타난다."
+    }
+  }
+}

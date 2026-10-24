@@ -1,0 +1,26 @@
+{
+  "guid": "moxopixel.advanced.modding.lights",
+  "name": "개조 화면 조명 (Advanced Modding Lights)",
+  "sections": {
+    "General": "일반",
+    "Directional Light": "방향 조명"
+  },
+  "settings": {
+    "Directional Light/Brightness": {
+      "name": "밝기",
+      "desc": "방향 조명의 밝기(0.1~5.0)."
+    },
+    "Directional Light/Rotation X": {
+      "name": "X축 회전",
+      "desc": "방향 조명의 X축 각도(-180~180도)."
+    },
+    "Directional Light/Rotation Y": {
+      "name": "Y축 회전",
+      "desc": "방향 조명의 Y축 각도(-180~180도)."
+    },
+    "General/Enable Custom Lighting": {
+      "name": "조명 개선 사용",
+      "desc": "총기 개조·빌드 화면의 조명을 손본다."
+    }
+  }
+}

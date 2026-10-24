@@ -1,0 +1,4 @@
+2667__PiP-Disabler	BepInEx\plugins\PiP-Disabler\custom_mesh_surgery_settings.json
+2667__PiP-Disabler	BepInEx\plugins\PiP-Disabler\PiP-Disabler.dll
+2667__PiP-Disabler	BepInEx\plugins\PiP-Disabler\pipdisabler_effect_shaders.bundle
+2667__PiP-Disabler	BepInEx\plugins\PiP-Disabler\pipdisabler_reticle_shaders.bundle

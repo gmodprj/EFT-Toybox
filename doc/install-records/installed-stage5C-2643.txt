@@ -1,0 +1,4 @@
+2643__ozen.MagCheckInterrupt-1.1.1	BepInEx\plugins\ozen.MagCheckInterrupt\LICENSE
+2643__ozen.MagCheckInterrupt-1.1.1	BepInEx\plugins\ozen.MagCheckInterrupt\ozen.MagCheckInterrupt.dll
+2643__ozen.MagCheckInterrupt-1.1.1	BepInEx\plugins\ozen.MagCheckInterrupt\ozen.MagCheckInterrupt.Net.dll
+2643__ozen.MagCheckInterrupt-1.1.1	BepInEx\plugins\ozen.MagCheckInterrupt\ozen.MagCheckInterrupt.pdb

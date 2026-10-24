@@ -1,0 +1,21 @@
+{
+  "guid": "com.maschine.UnloadAllMagazines",
+  "name": "탄창 한 번에 비우기 (UnloadAllMagazines)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/UnloadMagazines": {
+      "name": "탄창 비우기",
+      "desc": "컨테이너 안의 모든 탄창을 비운다. 총에 끼워진 탄창도 포함한다."
+    },
+    "General/UnloadChamberedRounds": {
+      "name": "약실 탄약도 빼기",
+      "desc": "컨테이너 안 모든 총의 약실에 든 탄도 뺀다. 탄은 사라지지 않고 탄창을 비울 때처럼 총이 놓인 자리로 간다. 걸린 총과 자물쇠로 잠근 것은 건너뛴다."
+    },
+    "General/UnpackAmmoPacks": {
+      "name": "탄약 상자 풀기",
+      "desc": "봉인된 탄약 상자도 푼다. 기본 동작과 마찬가지로 상자 자체는 없어지고, 낱알 탄약은 상자보다 자리를 훨씬 많이 차지하니 공간을 확인한다. 자물쇠로 잠근 상자는 건너뛴다."
+    }
+  }
+}

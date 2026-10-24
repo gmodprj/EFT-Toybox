@@ -1,0 +1,20 @@
+236__SVM.Server.Value.Modifier	Greed.exe
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\ServerValueModifier.dll
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Chinese\Dictionary-zh-CN.xaml
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Chinese\faqCN.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Chinese\HelloCN.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Korean\Dictionary-ko-KR.xaml
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Korean\faqKR.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Korean\HelloKR.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Russian\Dictionary-ru-RU.xaml
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Russian\faqRU.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Russian\HelloRU.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Spanish\Dictionary-es-ES.xaml
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Spanish\faqES.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Spanish\HelloES.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Ukrainian\Dictionary-uk-UA.xaml
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Ukrainian\faqUA.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Languages\Ukrainian\HelloUA.rtf
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Loader\loader.json
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Misc\MOTD.txt
+236__SVM.Server.Value.Modifier	SPT_Runtime\user\mods\[SVM] Server Value Modifier\Misc\Waves.json

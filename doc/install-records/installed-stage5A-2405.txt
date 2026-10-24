@@ -1,0 +1,2 @@
+2405__LetMeRightClick	BepInEx\plugins\LetMeRightClick\LetMeRightClick.dll
+2405__LetMeRightClick	BepInEx\plugins\LetMeRightClick\License.md

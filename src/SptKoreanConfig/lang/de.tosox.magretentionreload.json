@@ -1,0 +1,21 @@
+{
+  "guid": "de.tosox.magretentionreload",
+  "name": "탄창 회수 재장전 (Mag Retention Reload)",
+  "sections": {
+    "1. General": "1. 일반"
+  },
+  "settings": {
+    "1. General/Enabled": {
+      "name": "모드 사용",
+      "desc": "끄면 탄창을 회수하지 않는다. UI Fixes 가 깔려 있으면 그쪽 기능으로 넘긴다."
+    },
+    "1. General/Require Max Weapon Mastering": {
+      "name": "숙련도 최대일 때만",
+      "desc": "총기 숙련도가 최대일 때만 탄창을 회수한다."
+    },
+    "1. General/Notify on Dropped Magazine": {
+      "name": "탄창을 떨어뜨리면 알림",
+      "desc": "재장전 중 탄창을 떨어뜨렸을 때 알린다."
+    }
+  }
+}

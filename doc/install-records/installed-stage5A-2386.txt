@@ -1,0 +1,4 @@
+2386__UseItemsAnywhere-2.1.6-Release	BepInEx\plugins\UseItemsAnywhere\itemusedelaytimer
+2386__UseItemsAnywhere-2.1.6-Release	BepInEx\plugins\UseItemsAnywhere\LICENSE
+2386__UseItemsAnywhere-2.1.6-Release	BepInEx\plugins\UseItemsAnywhere\quickusewheel
+2386__UseItemsAnywhere-2.1.6-Release	BepInEx\plugins\UseItemsAnywhere\UseItemsAnywhere.dll

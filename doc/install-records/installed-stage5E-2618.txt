@@ -1,0 +1,1 @@
+2618__TripwireImprovement_v1.1.0	BepInEx\plugins\infiniteTripwire.dll

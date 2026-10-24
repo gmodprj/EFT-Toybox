@@ -1,0 +1,3 @@
+2531__BetterThermalNightVision-v2.1.1_SPT-4.1.x	BepInEx\plugins\BetterThermalNightVision\BetterThermalNightVision.dll
+2531__BetterThermalNightVision-v2.1.1_SPT-4.1.x	BepInEx\plugins\BetterThermalNightVision\IronbowRamp.png
+2531__BetterThermalNightVision-v2.1.1_SPT-4.1.x	BepInEx\plugins\BetterThermalNightVision\RedhotRamp.png
