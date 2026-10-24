@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1343,
+    "name": "Skipper",
+    "version": "1.1.5",
+    "file": "1343__Terkoiz.Skipper.zip",
+    "bytes": 5511,
+    "expected": 5511,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1184,
+    "name": "Open Sesame",
+    "version": "3.0.1",
+    "file": "1184__SPTOpenSesame-3.0.1.zip",
+    "bytes": 10809,
+    "expected": 10809,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 1538,
+    "name": "Ref - SPT Friendly Quests",
+    "version": "2.1.0",
+    "file": "1538__acidphantasm-reffriendlyquests.7z",
+    "bytes": 14391,
+    "expected": 14391,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1303,
+    "name": "HarryHideout",
+    "version": "3.1.2",
+    "file": "1303__acidphantasm-harryhideout.7z",
+    "bytes": 22794,
+    "expected": 22794,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1348,
+    "name": "Scorpion",
+    "version": "1.1.1",
+    "file": "1348__acidphantasm-scorpion.7z",
+    "bytes": 357758,
+    "expected": 357758,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1617,
+    "name": "give-ui",
+    "version": "5.0.1",
+    "file": "1617__give-ui-v5.0.1.zip",
+    "bytes": 4693574,
+    "expected": 4693574,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1232,
+    "name": "Lotus",
+    "version": "1.8.1",
+    "file": "1232__Lotus.7z",
+    "bytes": 22330824,
+    "expected": 22330824,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

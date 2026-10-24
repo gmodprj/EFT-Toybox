@@ -1,0 +1,1 @@
+1089__Kaeno-TraderScrolling-4.1.0	BepInEx\plugins\Kaeno-TraderScrolling.dll

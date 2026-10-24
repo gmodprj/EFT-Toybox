@@ -1,0 +1,9 @@
+1950__Tyfon-WeaponCustomizer-4.0.0	BepInEx\plugins\Tyfon.WeaponCustomizer.dll
+1950__Tyfon-WeaponCustomizer-4.0.0	SPT_Runtime\user\mods\Tyfon.WeaponCustomizer.Server\Tyfon.WeaponCustomizer.Server.dll
+2589__Tosox.MagRetentionReload-v1.3.0	BepInEx\plugins\Tosox.MagRetentionReload.dll
+2589__Tosox.MagRetentionReload-v1.3.0	BepInEx\plugins\Tosox.MagRetentionReload.Net.dll
+2739__maschine-UnloadAllMagazines-2.2.1	BepInEx\plugins\maschine-UnloadAllMagazines.dll
+2402__jeroAmmoBox1x1	SPT_Runtime\user\mods\jeroAmmoBox1x1\jeroAmmoBox1x1.dll
+2407__QuickSellFlea	BepInEx\plugins\QuickSellFlea\License.md
+2407__QuickSellFlea	BepInEx\plugins\QuickSellFlea\QuickSellFlea.dll
+1950__Tyfon-WeaponCustomizer-4.0.0	SPT_Runtime\user\mods\Tyfon.WeaponCustomizer.Server\customizations.json

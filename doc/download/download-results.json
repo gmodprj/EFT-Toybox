@@ -1,0 +1,232 @@
+[
+  {
+    "id": 1090,
+    "name": "Color Converter API",
+    "version": "1.2.0",
+    "file": "1090__RaiRai.ColorConverterAPI.zip",
+    "bytes": 4800,
+    "expected": 4800,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 1342,
+    "name": "UI Fixes",
+    "version": "6.0.4",
+    "file": "1342__Tyfon-UIFixes-6.0.4.zip",
+    "bytes": 184465,
+    "expected": 184465,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 1431,
+    "name": "Dynamic Maps",
+    "version": "1.2.1",
+    "file": "1431__DynamicMaps-1.2.1.zip",
+    "bytes": 1330991,
+    "expected": 1330991,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2521,
+    "name": "Amands' Sense - Updated",
+    "version": "3.1.0",
+    "file": "2521__AmandsSense-3.1.0.7z",
+    "bytes": 217647,
+    "expected": 217647,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 1140,
+    "name": "Quest Tracker",
+    "version": "1.7.0",
+    "file": "1140__DrakiaXYZ-QuestTracker-1.7.0.7z",
+    "bytes": 22840,
+    "expected": 22840,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2430,
+    "name": "ODT's Item Info - SPT 4.0",
+    "version": "3.0.0",
+    "file": "2430__ODT-ItemInfo-4.1_3.0.0.7z",
+    "bytes": 42840,
+    "expected": 42840,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 3011,
+    "name": "Show Me The Money (Item Pricing) (4.1.x)",
+    "version": "3.0.2",
+    "file": "3011__ShowMeTheMoney-3.0.2-SPT-4.1.5.zip",
+    "bytes": 41475,
+    "expected": 41475,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 1888,
+    "name": "Better Keys NG",
+    "version": "1.8.0",
+    "file": "1888__betterkeys-v1.8.0.zip",
+    "bytes": 26273,
+    "expected": 26273,
+    "sizeOk": true,
+    "host": "gitlab.com"
+  },
+  {
+    "id": 1374,
+    "name": "Player Encumbrance Bar",
+    "version": "1.3.0",
+    "file": "1374__PlayerEncumbranceBar-1.3.0.zip",
+    "bytes": 10128,
+    "expected": 10128,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 934,
+    "name": "Search Open Containers",
+    "version": "1.5.0",
+    "file": "934__DrakiaXYZ-SearchOpenContainers-1.5.0.7z",
+    "bytes": 3307,
+    "expected": 3307,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 1341,
+    "name": "Quick Move To Containers",
+    "version": "1.5.0",
+    "file": "1341__DrakiaXYZ-QuickMoveToContainer-1.5.0.7z",
+    "bytes": 6103,
+    "expected": 6103,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2934,
+    "name": "Armor Class Icon",
+    "version": "1.1.1",
+    "file": "2934__ArmorClassIcon-1.1.1.zip",
+    "bytes": 19481,
+    "expected": 19481,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2743,
+    "name": "Weapon Builder Search",
+    "version": "2.0.0",
+    "file": "2743__maschine-WeaponBuilderSearch-2.0.0.zip",
+    "bytes": 6271,
+    "expected": 6271,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2824,
+    "name": "Trader Search",
+    "version": "2.1.0",
+    "file": "2824__maschine-TraderSearch-2.1.0.zip",
+    "bytes": 13979,
+    "expected": 13979,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 167,
+    "name": "Ammo Stats",
+    "version": "4.1.0",
+    "file": "167__RaiRaiTheRaichu-AmmoStats-4.1.0.zip",
+    "bytes": 35044,
+    "expected": 35044,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2586,
+    "name": "Caliber Under Ammo Name",
+    "version": "1.2.0",
+    "file": "2586__CaliberUnderName-1.2.0.7z",
+    "bytes": 20786,
+    "expected": 20786,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2553,
+    "name": "Chamber Ammo Info",
+    "version": "1.1.0",
+    "file": "2553__Tosox.ChamberAmmoInfo-v1.1.0.zip",
+    "bytes": 4051,
+    "expected": 4051,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2221,
+    "name": "BALL - Better Ammo Loading List",
+    "version": "1.1.1",
+    "file": "2221__BetterAmmoLoadingList_1.1.1.7z",
+    "bytes": 7539,
+    "expected": 7539,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2112,
+    "name": "Continuous Load Ammo",
+    "version": "1.2.0",
+    "file": "2112__ozen.ContinuousLoadAmmo-1.2.0.zip",
+    "bytes": 39646,
+    "expected": 39646,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2859,
+    "name": "Compatibility Highlighter",
+    "version": "1.3.0",
+    "file": "2859__CompatibilityHighlighterV1.3.0.7z",
+    "bytes": 10330,
+    "expected": 10330,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 2037,
+    "name": "Colored Tracers",
+    "version": "3.0.1",
+    "file": "2037__ColoredTracers.3.0.1.zip",
+    "bytes": 14457,
+    "expected": 14457,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 1283,
+    "name": "Trader Modding And Improved Weapon Building",
+    "version": "2.1.2",
+    "file": "1283__ChooChoo-TraderModding.zip",
+    "bytes": 30477,
+    "expected": 30477,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  },
+  {
+    "id": 1300,
+    "name": "Modding Stats Helper - by wara",
+    "version": "1.2.0",
+    "file": "1300__Wara-ModdingStatsHelper-1.2.0.zip",
+    "bytes": 6759,
+    "expected": 6759,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com"
+  }
+]

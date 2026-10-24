@@ -1,0 +1,26 @@
+{
+  "spt": "4.1.6",
+  "generated": "2026-10-24",
+  "mods": [
+    {
+      "group": "ui",
+      "id": 1089,
+      "name": "Kaeno-TraderScrolling",
+      "version": "4.1.0",
+      "size": 4347,
+      "link": "https://sp-mod.com/mod/download/1089/kaeno-traderscrolling/4.1.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "ui",
+      "id": 2694,
+      "name": "TraderSpace",
+      "version": "2.0.0",
+      "size": 5531,
+      "link": "https://sp-mod.com/mod/download/2694/traderspace/2.0.0",
+      "profileBinding": false,
+      "deps": []
+    }
+  ]
+}

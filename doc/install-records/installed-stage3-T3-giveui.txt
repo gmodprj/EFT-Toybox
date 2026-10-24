@@ -1,0 +1,2 @@
+1617__give-ui-v5.0.1	SPT_Runtime\user\mods\give-ui\give-ui_x64-portable.exe
+1617__give-ui-v5.0.1	SPT_Runtime\user\mods\give-ui\GiveUI.dll

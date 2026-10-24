@@ -1,0 +1,6 @@
+2310__WTT-CommonLib-v3.0.6	BepInEx\patchers\FixPluginTypesSerialization.dll
+2310__WTT-CommonLib-v3.0.6	BepInEx\plugins\WTT-ClientCommonLib\WTT-ClientCommonLib.dll
+2310__WTT-CommonLib-v3.0.6	BepInEx\plugins\WTT-ClientCommonLib\WTT-ClientCommonLibFika.dll
+2310__WTT-CommonLib-v3.0.6	SPT_Runtime\user\mods\WTT-ServerCommonLib\config.jsonc
+2310__WTT-CommonLib-v3.0.6	SPT_Runtime\user\mods\WTT-ServerCommonLib\WTT-ServerCommonLib.dll
+2310__WTT-CommonLib-v3.0.6	SPT_Runtime\user\mods\WTT-ServerCommonLib\db\CustomLocales\en.json

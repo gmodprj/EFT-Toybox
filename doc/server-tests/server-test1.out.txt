@@ -1,0 +1,24 @@
+ModLoader: 총 2 개의 모드 불러오는 중...
+모드 Show Me The Money 버전 3.0.2 (GUID: com.dark.spt.showmethemoney | targets 
+SPT: ~4.1.0) by SwiftXP 불러옴
+모드 UI Fixes 버전 6.0.4 (GUID: com.tyfon.uifixes | targets SPT: ~4.1.0) by 
+Tyfon 불러옴
+데이터베이스를 추출 중...
+데이터베이스 추출 완료
+Database import took 1072ms
+서버: 시작 콜백을 실행합니다...
+┌─────────────────────────────────────┐
+│ SPT 4.1.6                           │
+│ https://discord.sp-tushonka.com     │
+│                                     │
+│ 이 소프트웨어는 무료입니다                      │
+│ 만약 금전적 대가를 지불하였다면, 사기에 당하신 겁니다.     │
+│ 상업적 용도는 제한됩니다                       │
+└─────────────────────────────────────┘
+Failed to start the web server on 127.0.0.1:6969. Socket error: 
+AddressAlreadyInUse (10048).
+Another SPT server may already be running, or another process is using port 
+6969.
+Close the other process, or change the server port in your HTTP configuration, 
+then restart SPT.
+Press any key to exit...
