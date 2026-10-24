@@ -1,0 +1,5 @@
+3128__Gunwright-v1_0_2	SPT_Runtime\user\mods\Gunwright\Gunwright.deps.json
+3128__Gunwright-v1_0_2	SPT_Runtime\user\mods\Gunwright\Gunwright.dll
+3128__Gunwright-v1_0_2	SPT_Runtime\user\mods\Gunwright\Gunwright.pdb
+3128__Gunwright-v1_0_2	SPT_Runtime\user\mods\Gunwright\db\config.json
+3128__Gunwright-v1_0_2	SPT_Runtime\user\mods\Gunwright\db\gunwright.png

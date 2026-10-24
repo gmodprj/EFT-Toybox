@@ -1,0 +1,9 @@
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\PresetTrader.deps.json
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\PresetTrader.dll
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\PresetTrader.pdb
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\db\armorPresets.json
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\db\base.json
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\db\gearPresets.json
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\db\headshot.jpg
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\db\keyPresets.json
+2966__SPTarkov.PresetTrader	SPT_Runtime\user\mods\PresetTrader\db\weaponPresets.json

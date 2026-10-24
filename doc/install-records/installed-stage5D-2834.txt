@@ -1,0 +1,2 @@
+2834__UltimateTraderAssortEditor	BepInEx\plugins\Ultimate Trader Assort Editor\Ultimate Trader Assort Editor.dll
+2834__UltimateTraderAssortEditor	SPT_Runtime\user\mods\Ultimate Trader Assort Editor\Ultimate Trader Assort Editor.dll

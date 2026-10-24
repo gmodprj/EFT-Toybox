@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **77개**, 설치 파일 **1923개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 56개 (SPT 기본 5 + 모드 51, 2026-10-24 18:21 `LogOutput.log` 확인 — stage5-B·5-C의 게임 쪽 9개는 아직 미확인) / 서버 모드 로드: 27개 (18:31 서버 테스트, stage5-C 포함)
+- 설치된 모드: **87개**, 설치 파일 **2253개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 56개 (SPT 기본 5 + 모드 51, 2026-10-24 18:21 `LogOutput.log` 확인 — stage5-B·5-C·5-D의 게임 쪽 11개는 아직 미확인) / 서버 모드 로드: 37개 (18:52 서버 테스트, stage5-D 포함)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -68,7 +68,7 @@
 | [Kaeno-TraderScrolling](https://sp-mod.com/mod/1089) | 4.1.0 | 게임 | - | 1 | `stage4-U1-TraderScrolling` |
 | [TraderSpace](https://sp-mod.com/mod/2694) | 2.0.0 | 게임 | - | 1 | `stage4-U2-TraderSpace` |
 
-## 5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)
+## 5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)
 
 | 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
 | --- | --- | --- | --- | --- | --- |
@@ -108,6 +108,16 @@
 | [BarterItemsStacks](https://sp-mod.com/mod/2480) | 1.4.3 | 게임+서버 | - | 5 | `stage5C-2480` |
 | [Cobra's Ammo Stack](https://sp-mod.com/mod/2840) | 1.1.0 | 서버 | **결속** | 5 | `stage5C-2840` |
 | [Caliber Split Storage Solutions](https://sp-mod.com/mod/2990) | 1.0.1 | 서버 | **결속** | 12 | `stage5C-2990` |
+| [SPT Trader Restock Refresh](https://sp-mod.com/mod/3098) | 1.0.0 | 게임+서버 | - | 4 | `stage5D-3098` |
+| [Trader Level Requirements Editor](https://sp-mod.com/mod/3005) | 1.1.0 | 서버 | - | 2 | `stage5D-3005` |
+| [Trader Namer](https://sp-mod.com/mod/1527) | 4.1.0 | 서버 | - | 4 | `stage5D-1527.dirs`, `stage5D-1527` |
+| [Ultimate Trader Assort Editor](https://sp-mod.com/mod/2834) | 2.1.1 | 게임+서버 | - | 2 | `stage5D-2834` |
+| [Gunsmith Task Trader](https://sp-mod.com/mod/3124) | 1.0.2 | 서버 | **결속** | 7 | `stage5D-3124` |
+| [Gunwright](https://sp-mod.com/mod/3128) | 1.0.2 | 서버 | **결속** | 5 | `stage5D-3128` |
+| [CaseTrader — Buy any case](https://sp-mod.com/mod/3024) | 1.0.1 | 서버 | **결속** | 7 | `stage5D-3024` |
+| [PresetTrader](https://sp-mod.com/mod/2966) | 1.2.0 | 서버 | **결속** | 9 | `stage5D-2966` |
+| [Ledger](https://sp-mod.com/mod/3085) | 1.1.0 | 서버 | **결속** | 10 | `stage5D-3085` |
+| [Amonya - Ammo Loving Trader & Quester](https://sp-mod.com/mod/2419) | 2.2.0 | 서버 | **결속** | 280 | `stage5D-2419.dirs`, `stage5D-2419` |
 
 ## 다른 경로로 설치된 것
 

@@ -28,6 +28,18 @@ foreach ($p in $pairs) {
   Copy-Item -LiteralPath $p.Src -Destination $p.Dst
 }
 $pairs | ForEach-Object { "$($d.Name)`t$($_.Rel)" } | Set-Content -Encoding utf8 $rec
+# 압축에 들어 있던 빈 폴더도 만든다(파일만 복사하면 모드가 찾는 폴더가 없어 서버가 죽는 경우가 있다)
+$emptyDirs = Get-ChildItem -LiteralPath $d.FullName -Recurse -Directory |
+  Where-Object { -not (Get-ChildItem -LiteralPath $_.FullName -Recurse -File) } |
+  ForEach-Object { $_.FullName.Substring($d.FullName.Length + 1) }
+if ($emptyDirs) {
+  foreach ($rel in $emptyDirs) {
+    $dst = Join-Path 'E:\Spt' $rel
+    if (-not (Test-Path -LiteralPath $dst)) { New-Item -ItemType Directory -Force -Path $dst | Out-Null }
+    "EMPTYDIR $dst"
+  }
+  $emptyDirs | ForEach-Object { "$($d.Name)`t$_" } | Set-Content -Encoding utf8 ($rec -replace '\.txt$', '.dirs.txt')
+}
 $mb = [math]::Round(($files | Measure-Object Length -Sum).Sum / 1MB, 1)
 "INSTALL $($d.Name): $($pairs.Count) files, $mb MB, $([int]((Get-Date) - $t0).TotalSeconds)s"
 if ($SkipTest) { return }

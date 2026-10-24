@@ -1,0 +1,106 @@
+{
+  "spt": "4.1.6",
+  "generated": "2026-10-24",
+  "mods": [
+    {
+      "group": "stage5-D",
+      "id": 3098,
+      "name": "SPT Trader Restock Refresh",
+      "version": "1.0.0",
+      "size": 10664,
+      "link": "https://sp-mod.com/mod/download/3098/spt-trader-restock-refresh/1.0.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 3005,
+      "name": "Trader Level Requirements Editor",
+      "version": "1.1.0",
+      "size": 9886,
+      "link": "https://sp-mod.com/mod/download/3005/trader-level-requirements-editor/1.1.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 1527,
+      "name": "Trader Namer",
+      "version": "4.1.0",
+      "size": 11750,
+      "link": "https://sp-mod.com/mod/download/1527/trader-namer/4.1.0",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 2834,
+      "name": "Ultimate Trader Assort Editor",
+      "version": "2.1.1",
+      "size": 162635,
+      "link": "https://sp-mod.com/mod/download/2834/ultimate-trader-assort-editor/2.1.1",
+      "profileBinding": false,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 3124,
+      "name": "Gunsmith Task Trader",
+      "version": "1.0.2",
+      "size": 189275,
+      "link": "https://sp-mod.com/mod/download/3124/gunsmith-task-trader/1.0.2",
+      "profileBinding": true,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 3128,
+      "name": "Gunwright",
+      "version": "1.0.2",
+      "size": 1055499,
+      "link": "https://sp-mod.com/mod/download/3128/gunwright/1.0.2",
+      "profileBinding": true,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 3024,
+      "name": "CaseTrader — Buy any case",
+      "version": "1.0.1",
+      "size": 330171,
+      "link": "https://sp-mod.com/mod/download/3024/casetrader-buy-any-case/1.0.1",
+      "profileBinding": true,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 2966,
+      "name": "PresetTrader",
+      "version": "1.2.0",
+      "size": 1358724,
+      "link": "https://sp-mod.com/mod/download/2966/presettrader/1.2.0",
+      "profileBinding": true,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 3085,
+      "name": "Ledger",
+      "version": "1.1.0",
+      "size": 506002,
+      "link": "https://sp-mod.com/mod/download/3085/ledger/1.1.0",
+      "profileBinding": true,
+      "deps": []
+    },
+    {
+      "group": "stage5-D",
+      "id": 2419,
+      "name": "Amonya - Ammo Loving Trader & Quester",
+      "version": "2.2.0",
+      "size": 98432758,
+      "link": "https://sp-mod.com/mod/download/2419/amonya-ammo-loving-trader-quester/2.2.0",
+      "profileBinding": true,
+      "deps": []
+    }
+  ]
+}
