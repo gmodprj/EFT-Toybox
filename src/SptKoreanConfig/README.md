@@ -1,0 +1,62 @@
+# SptKoreanConfig — F12 설정 창 한글화
+
+F12(ConfigurationManager) 창에 보이는 **모드 이름 · 섹션 이름 · 설정 이름 · 설명**만 한글로 바꾸는 BepInEx 플러그인이다.
+
+## 무엇을 건드리고 무엇을 안 건드리나
+
+| 건드리는 것 | 건드리지 않는 것 |
+| --- | --- |
+| ConfigurationManager가 화면에 쓰려고 만든 표시용 값 (`DispName`·`Category`·`Description`) | 설정 값 |
+| `BepInPlugin.Name` (헤더에 뜨는 모드 이름, 끄면 원문으로 되돌림) | `BepInEx\config\*.cfg` 파일 |
+| | 다른 모드의 DLL·파일 |
+
+설정 목록은 F12를 열 때마다 새로 만들어지므로, 플러그인을 빼면 다음 실행에서 원래 영문으로 돌아간다.
+
+## 구조
+
+| 경로 | 내용 |
+| --- | --- |
+| `Plugin.cs` | `ConfigurationManager.BuildSettingList()` 에 Harmony Postfix. 목록이 만들어진 직후 표시용 필드만 덮어쓰고 섹션 묶음을 다시 만든다 |
+| `TranslationStore.cs` | `lang/*.json` 을 읽어 GUID로 찾게 한다. 파일 수정 시각이 바뀌면 **게임을 끄지 않고** 다시 읽는다 |
+| `lang/<플러그인 GUID>.json` | 모드 한 개의 번역 사전 |
+
+## 사전 형식
+
+파일 이름은 모드의 BepInEx GUID (`BepInEx\config\<GUID>.cfg` 와 같은 이름).
+
+```json
+{
+  "guid": "7Bpencil.TransparentSights",
+  "name": "투명 조준경 (TransparentSights)",
+  "sections": { "원문 섹션": "한글 섹션" },
+  "settings": {
+    "원문 섹션/원문 키": { "name": "한글 이름", "desc": "한글 설명" }
+  }
+}
+```
+
+- 원문 섹션·키는 `.cfg` 파일의 `[섹션]` 과 `키 = 값` 을 그대로 쓴다.
+- 빠진 항목은 영문 원문이 그대로 나온다. 일부만 번역해도 된다.
+- `name` 이나 `desc` 중 하나만 적어도 된다.
+
+## F12 안의 자체 설정
+
+| 항목 | 기본값 | 내용 |
+| --- | --- | --- |
+| 한글로 표시 | 켜짐 | 끄면 그 자리에서 영문으로 되돌아간다 |
+| 번역 안 된 항목 표시 | 꺼짐 | 사전에 없는 항목 앞에 `·` 를 붙인다. 번역할 때만 켠다 |
+
+## 빌드와 설치
+
+```
+dotnet build -c Release src/SptKoreanConfig
+pwsh -File tools/install-koreanconfig.ps1
+```
+
+`E:\Spt\BepInEx\plugins\SptKoreanConfig\` 에 DLL과 `lang/` 이 들어간다. **DLL이 바뀌면 게임 재시작**, 번역 JSON만 고쳤으면 F12를 다시 열기만 하면 된다.
+
+SPT 설치 위치가 다르면 `-p:SptDir=...` / `-SptDir ...` 로 넘긴다.
+
+## 아직 안 되는 것
+
+창 자체의 UI 글자(`Plugin / mod settings`, `Normal settings`, `Open Log`, `Search:` 등 약 40개)는 `ConfigurationManager.dll` 안에 하드코딩돼 있어 이 방식으로는 못 바꾼다. 별도 작업(LGPL 소스 포크 재빌드 또는 DLL 문자열 치환)이 필요하다.
