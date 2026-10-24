@@ -1,0 +1,99 @@
+{
+  "guid": "com.dark.spt.showmethemoney",
+  "name": "시세 표시 (Show Me The Money)",
+  "sections": {
+    "1. Main settings": "1. 기본 설정",
+    "2. Currency conversion": "2. 화폐 환산",
+    "3. Appearance": "3. 겉모습",
+    "4. Color coding": "4. 색 등급",
+    "5. Flea market": "5. 플리마켓"
+  },
+  "settings": {
+    "1. Main settings/Enable plug-in": { "name": "모드 사용", "desc": "이 모드를 켜고 끈다. (기본: 켬)" },
+    "1. Main settings/Enable trader price(s)": { "name": "상인 가격 표시", "desc": "설명 상자에 상인 매입가를 보여 준다. (기본: 켬)" },
+    "1. Main settings/Enable flea price(s)": { "name": "플리 시세 표시", "desc": "설명 상자에 플리마켓 시세를 보여 준다. (기본: 켬)" },
+    "1. Main settings/Show price-per-slot": {
+      "name": "한 칸당 가격 표시",
+      "desc": "설명 상자에 칸당 가격을 보여 준다. 표시를 꺼도 계산은 계속 칸당 가격으로 한다. (기본: 켬)"
+    },
+    "1. Main settings/Show weapon-mods price": { "name": "총기 부착물 합계 표시", "desc": "총에 달린 부착물 값을 모두 더해 보여 준다. (기본: 켬)" },
+    "1. Main settings/Show armor-plates price": { "name": "방탄판 합계 표시", "desc": "방탄복에 끼운 (분리 가능한) 방탄판 값을 모두 더해 보여 준다. (기본: 켬)" },
+    "1. Main settings/Trader(s) to ignore": {
+      "name": "제외할 상인",
+      "desc": "값을 보지 않을 상인을 쉼표로 구분해 적는다. ID나 이름 모두 된다. 예: Prapor,Skier,Peacekeeper"
+    },
+    "1. Main settings/Tool-Tip delay": {
+      "name": "설명 상자 지연",
+      "desc": "설명 상자가 뜨기까지 기다리는 시간(초). (모드 기본: 0, 게임 기본: 0.6)"
+    },
+
+    "2. Currency conversion/Roubles only": {
+      "name": "루블만 계산",
+      "desc": "루블로 매입하는 거래만 따진다. 루블로 사지 않는 상인의 값은 더 이상 보이지 않는다. (기본: 끔)"
+    },
+
+    "3. Appearance/Best trade color": {
+      "name": "최고가 강조 색",
+      "desc": "상인이든 플리든 가장 비싼 쪽을 표시할 색. (기본: R255 G255 B255)"
+    },
+    "3. Appearance/Font size": { "name": "글자 크기", "desc": "가격 글자의 크기. (기본: Smaller)" },
+    "3. Appearance/Italics": { "name": "기울임꼴", "desc": "가격을 기울여 적는다. (기본: 끔)" },
+
+    "4. Color coding/Enable color coding (based on price-per-slot)": {
+      "name": "색 등급 사용",
+      "desc": "값어치를 색으로 한눈에 보여 준다. 탄약을 따로 설정하지 않는 한 항상 칸당 가격이 기준이다. 기본 색은 WoW 등급 색이다. (기본: 켬)"
+    },
+    "4. Color coding/Color coding mode": { "name": "색 적용 방식", "desc": "색을 어디에 입힐지 정한다. (기본: Both)" },
+    "4. Color coding/Poor value (smaller than)": { "name": "하급 기준 (미만)", "desc": "칸당 가격이 이 값보다 낮으면 하급. (기본: 900)" },
+    "4. Color coding/Common value (smaller than)": { "name": "일반 기준 (미만)", "desc": "(기본: 12000)" },
+    "4. Color coding/Uncommon value (smaller than)": { "name": "고급 기준 (미만)", "desc": "(기본: 21000)" },
+    "4. Color coding/Rare value (smaller than)": { "name": "희귀 기준 (미만)", "desc": "(기본: 38000)" },
+    "4. Color coding/Epic value (smaller than) - everything above that is considered legendary": {
+      "name": "영웅 기준 (미만) — 이상은 전설",
+      "desc": "(기본: 92000)"
+    },
+    "4. Color coding/Use penetration power instead of price value for color coding of ammunition": {
+      "name": "탄약은 관통력으로 등급 매기기",
+      "desc": "탄약만은 가격 대신 관통력으로 색을 정한다. (기본: 켬)"
+    },
+    "4. Color coding/Poor penetration value (smaller than)": { "name": "관통력 하급 기준 (미만)", "desc": "(기본: 15)" },
+    "4. Color coding/Common penetration value (smaller than)": { "name": "관통력 일반 기준 (미만)", "desc": "(기본: 25)" },
+    "4. Color coding/Uncommon penetration value (smaller than)": { "name": "관통력 고급 기준 (미만)", "desc": "(기본: 34)" },
+    "4. Color coding/Rare penetration value (smaller than)": { "name": "관통력 희귀 기준 (미만)", "desc": "(기본: 43)" },
+    "4. Color coding/Epic penetration value (smaller than) - everything above that is considered legendary": {
+      "name": "관통력 영웅 기준 (미만) — 이상은 전설",
+      "desc": "(기본: 55)"
+    },
+    "4. Color coding/Poor color": { "name": "하급 색", "desc": "(기본: R157 G157 B157)" },
+    "4. Color coding/Common color": { "name": "일반 색", "desc": "(기본: R255 G255 B255)" },
+    "4. Color coding/Uncommon color": { "name": "고급 색", "desc": "(기본: R30 G255 B0)" },
+    "4. Color coding/Rare color": { "name": "희귀 색", "desc": "(기본: R0 G112 B221)" },
+    "4. Color coding/Epic color": { "name": "영웅 색", "desc": "(기본: R163 G53 B238)" },
+    "4. Color coding/Legendary color": { "name": "전설 색", "desc": "(기본: R255 G128 B0)" },
+
+    "5. Flea market/Always show flea price": {
+      "name": "플리 시세 항상 표시",
+      "desc": "플리마켓이 아직 안 열렸거나 레이드 획득(FiR) 표시가 없어 팔 수 없는 물건이라도 시세를 보여 준다. (기본: 끔)"
+    },
+    "5. Flea market/Flea price multiplicand": {
+      "name": "플리 시세 배수",
+      "desc": "평균 시세에 곱해서 보여 줄 배수. 평균 시세 × 이 값으로 계산한다. (기본: 1.0)"
+    },
+    "5. Flea market/Include flea tax": { "name": "수수료 반영", "desc": "플리 시세에 수수료를 빼고 보여 줄지 정한다. (기본: 끔)" },
+    "5. Flea market/Show flea tax": { "name": "수수료 표시", "desc": "설명 상자에 수수료를 따로 보여 준다. (기본: 끔)" },
+    "5. Flea market/Toggle-mode for flea tax": {
+      "name": "수수료 눌러서 보기",
+      "desc": "켜면 아래 키를 누르고 있을 때만 수수료가 보인다. (기본: 끔)"
+    },
+    "5. Flea market/Toggle-mode key": { "name": "수수료 표시 키", "desc": "수수료를 보려고 누를 키. (기본: LeftAlt)" },
+    "5. Flea market/Update flea price interval": {
+      "name": "시세 갱신 주기",
+      "desc": "시세를 다시 받아 오는 간격(분). 자주 받을수록 정확하지만 서버 부담이 는다. (기본: 5분)"
+    },
+    "5. Flea market/Update flea price during raids": { "name": "레이드 중에도 갱신", "desc": "레이드 중에도 시세를 받아 올지 정한다. (기본: 끔)" },
+    "5. Flea market/Update flea prices": {
+      "name": "지금 시세 받기",
+      "desc": "SPT 서버에서 지금 시세를 받아 온다. 30초까지 걸릴 수 있다."
+    }
+  }
+}

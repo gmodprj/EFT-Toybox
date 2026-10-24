@@ -1,0 +1,29 @@
+{
+  "guid": "ciallo.inftripwire",
+  "name": "무한 인계철선 (Infinite Tripwire)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Infinite Tripwire": {
+      "name": "무한 인계철선",
+      "desc": "인계철선을 몇 번이고 설치할 수 있게 한다."
+    },
+    "General/Reduce Explosion Delay (?)": {
+      "name": "폭발 지연 줄이기",
+      "desc": "터지기까지의 시간을 이만큼(초) 줄인다. 수류탄의 신관 시간보다 크게 잡으면 즉시 터진다. 주의: 파르티잔의 F-1 함정도 함께 바뀐다(3.5초 - 이 값)."
+    },
+    "General/Effective Seconds": {
+      "name": "작동 유지 시간",
+      "desc": "설치한 인계철선이 작동하는 시간(초)."
+    },
+    "General/Max Height Diff": {
+      "name": "최대 높이 차",
+      "desc": "양 끝의 높이가 이보다 더 벌어지면 설치할 수 없다."
+    },
+    "General/Max Length": {
+      "name": "최대 길이",
+      "desc": "인계철선을 이 길이까지 늘일 수 있다."
+    }
+  }
+}

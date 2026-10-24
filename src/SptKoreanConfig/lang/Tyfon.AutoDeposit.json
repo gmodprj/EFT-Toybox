@@ -1,0 +1,29 @@
+{
+  "guid": "Tyfon.AutoDeposit",
+  "name": "한 번에 창고 넣기 (AutoDeposit)",
+  "sections": {
+    "1. Buttons": "1. 버튼 위치"
+  },
+  "settings": {
+    "1. Buttons/Rig": {
+      "name": "전술 조끼",
+      "desc": "전술 조끼에 자동 보관 버튼을 띄운다."
+    },
+    "1. Buttons/Pockets": {
+      "name": "주머니",
+      "desc": "주머니에 자동 보관 버튼을 띄운다."
+    },
+    "1. Buttons/Backpack": {
+      "name": "배낭",
+      "desc": "배낭에 자동 보관 버튼을 띄운다."
+    },
+    "1. Buttons/Secure Container": {
+      "name": "보안 컨테이너",
+      "desc": "보안 컨테이너에 자동 보관 버튼을 띄운다."
+    },
+    "1. Buttons/Transfer Screen": {
+      "name": "전송 화면",
+      "desc": "아이템 전송 화면에 자동 보관 버튼을 띄운다."
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "guid": "com.lacyway.csf",
+  "name": "플리 빠른 판매 (QuickSellFlea)",
+  "sections": {
+    "QuickSellFlea": "빠른 판매"
+  },
+  "settings": {
+    "QuickSellFlea/Hotkey": {
+      "name": "단축키",
+      "desc": "빠른 판매 메뉴를 띄우려고 누르고 있을 키."
+    },
+    "QuickSellFlea/Show Listing Price": {
+      "name": "등록가 표시",
+      "desc": "설명에 등록가를 보여 준다. 끄면 묶음 전체의 판매 총액을 보여 준다."
+    },
+    "QuickSellFlea/Bypass Limit": {
+      "name": "등록 수 제한 무시",
+      "desc": "플리 등록 개수 제한을 무시한다."
+    },
+    "QuickSellFlea/Skip Mode": {
+      "name": "깜빡임 생략",
+      "desc": "서버 응답을 기다리는 동안의 깜빡임 효과를 끈다. SPT 서버에서 그 응답이 영영 오지 않아 아이템이 계속 깜빡이는 문제가 있어 기본으로 켜 둔다."
+    },
+    "QuickSellFlea/Posting Currency": {
+      "name": "등록 화폐",
+      "desc": "매물을 어떤 화폐로 올릴지 정한다."
+    },
+    "QuickSellFlea/Change Currency Key": {
+      "name": "화폐 변경 키",
+      "desc": "등록 화폐를 빠르게 바꾸는 키."
+    }
+  }
+}

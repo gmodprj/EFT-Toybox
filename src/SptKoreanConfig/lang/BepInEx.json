@@ -1,0 +1,81 @@
+{
+  "guid": "BepInEx",
+  "name": "BepInEx (모드 로더)",
+  "sections": {
+    "Caching": "캐시",
+    "Chainloader": "플러그인 로더",
+    "Logging": "로그",
+    "Logging.Console": "로그 — 콘솔 창",
+    "Logging.Disk": "로그 — 파일",
+    "Preloader": "프리로더",
+    "Preloader.Entrypoint": "프리로더 — 진입점",
+    "Harmony.Logger": "Harmony 로그"
+  },
+  "settings": {
+    "Caching/EnableAssemblyCache": {
+      "name": "어셈블리 캐시 사용",
+      "desc": "BepInEx가 찾아낸 형식 정보를 캐시에 담아 플러그인·패처를 더 빨리 찾게 한다."
+    },
+
+    "Chainloader/HideManagerGameObject": {
+      "name": "관리 오브젝트 숨기기",
+      "desc": "BepInEx Manager 오브젝트를 유니티에서 감춘다. BepInEx 로드를 막으려는 게임에서 문제를 풀 수 있지만, 오래된 플러그인의 동작에 영향을 줄 수 있으니 뜻을 알 때만 쓴다."
+    },
+
+    "Harmony.Logger/LogChannels": {
+      "name": "기록할 로그 채널",
+      "desc": "Harmony의 어떤 로그를 남길지 고른다. IL 채널은 패치 메서드 전체를 쏟아내니 꼭 필요할 때만 켠다."
+    },
+
+    "Logging/UnityLogListening": { "name": "유니티 로그 수집", "desc": "유니티 로그를 BepInEx 로그에 함께 담는다." },
+    "Logging/LogConsoleToUnityLog": {
+      "name": "표준 출력을 유니티 로그로",
+      "desc": "표준 출력 메시지를 유니티 로그에 쓴다. 보통은 유니티가 알아서 하므로, 유니티 로그에 콘솔 메시지가 전혀 없을 때만 쓴다."
+    },
+
+    "Logging.Console/Enabled": { "name": "콘솔 창 사용", "desc": "로그를 보여 주는 콘솔 창을 띄운다." },
+    "Logging.Console/PreventClose": {
+      "name": "콘솔 창 닫기 막기",
+      "desc": "콘솔 창이 닫히지 않게 한다(닫기 버튼을 없애거나 플랫폼별 방법을 쓴다)."
+    },
+    "Logging.Console/ShiftJisEncoding": {
+      "name": "Shift-JIS 인코딩",
+      "desc": "켜면 콘솔을 Shift-JIS로, 끄면 UTF-8로 쓴다."
+    },
+    "Logging.Console/StandardOutType": {
+      "name": "표준 출력 처리 방식",
+      "desc": "Auto는 BepInEx가 알아서 정하고, ConsoleOut은 콘솔 출력으로, StandardOut은 표준 출력으로 내보낸다."
+    },
+    "Logging.Console/LogLevels": { "name": "콘솔에 보일 수준", "desc": "콘솔 창에 어느 수준까지 보여 줄지 정한다." },
+
+    "Logging.Disk/WriteUnityLog": { "name": "유니티 로그 포함", "desc": "로그 파일에 유니티 로그도 함께 남긴다." },
+    "Logging.Disk/AppendLog": { "name": "이어 쓰기", "desc": "게임을 켤 때 로그 파일을 덮어쓰지 않고 뒤에 이어 쓴다." },
+    "Logging.Disk/Enabled": { "name": "파일로 기록", "desc": "로그를 파일에 남긴다." },
+    "Logging.Disk/LogLevels": { "name": "파일에 남길 수준", "desc": "로그 파일에 어느 수준까지 남길지 정한다." },
+
+    "Preloader/ApplyRuntimePatches": {
+      "name": "런타임 패치 적용",
+      "desc": "항상 켜 두어야 한다. Harmony 문제로 게임이 아예 켜지지 않거나, 무슨 뜻인지 아는 경우에만 끈다."
+    },
+    "Preloader/HarmonyBackend": {
+      "name": "Harmony 백엔드",
+      "desc": "Harmony 패치에 쓸 MonoMod 백엔드. Auto면 가장 알맞은 것을 고른다. 개발용 설정이며 다른 코드가 덮어쓸 수 있다."
+    },
+    "Preloader/DumpAssemblies": {
+      "name": "패치된 어셈블리 저장",
+      "desc": "패치한 어셈블리를 BepInEx/DumpedAssemblies 에 저장한다. 개발자가 들여다볼 때 쓴다."
+    },
+    "Preloader/LoadDumpedAssemblies": {
+      "name": "저장된 어셈블리 불러오기",
+      "desc": "메모리 대신 BepInEx/DumpedAssemblies 에서 불러온다. 켜면 위 설정을 덮어쓴다."
+    },
+    "Preloader/BreakBeforeLoadAssemblies": {
+      "name": "불러오기 전 중단점",
+      "desc": "패치된 어셈블리를 불러오기 직전에 한 번 Debugger.Break() 를 부른다. dnSpy 같은 디버거에서 중단점을 걸 때 쓴다."
+    },
+
+    "Preloader.Entrypoint/Assembly": { "name": "대상 어셈블리", "desc": "진입점으로 삼을 어셈블리 파일 이름." },
+    "Preloader.Entrypoint/Type": { "name": "대상 형식", "desc": "그 어셈블리 안에서 진입점 메서드를 찾을 형식 이름." },
+    "Preloader.Entrypoint/Method": { "name": "대상 메서드", "desc": "후킹해서 플러그인 로더를 띄울 메서드 이름." }
+  }
+}

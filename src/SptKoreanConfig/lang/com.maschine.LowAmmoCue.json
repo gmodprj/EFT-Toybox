@@ -1,0 +1,44 @@
+{
+  "guid": "com.maschine.LowAmmoCue",
+  "name": "잔탄 경고음 (LowAmmoCue)",
+  "sections": {
+    "General": "일반",
+    "Warning": "경고 시점",
+    "Audio": "소리",
+    "Diagnostics": "진단"
+  },
+  "settings": {
+    "Audio/Volume": {
+      "name": "최대 음량",
+      "desc": "마지막 한 발에서의 최대 소리 크기. 그 앞의 경고음은 이 값의 35%에서 점점 커진다. 게임의 전체 음량 설정도 함께 따른다."
+    },
+    "Audio/Test sound": {
+      "name": "소리 들어 보기",
+      "desc": "설정한 최대 음량으로 한 번 재생한다. 진단 로그를 켜야 보이며, 누르면 저절로 꺼진다."
+    },
+    "Audio/Reload sound file": {
+      "name": "소리 파일 다시 읽기",
+      "desc": "DLL 옆에 둔 lowammo.wav 가 있으면 내장 소리보다 먼저 쓴다. 진단 로그를 켜야 보이며, 누르면 저절로 꺼진다. 파일이 바뀌면 알아서 감지하니, 권리가 있는 음원만 넣는다."
+    },
+    "Diagnostics/Debug logging": {
+      "name": "진단 로그",
+      "desc": "진단 로그를 남기고 위의 소리 시험·다시 읽기 버튼을 보여 준다."
+    },
+    "General/Enabled": {
+      "name": "모드 사용",
+      "desc": "지금 든 총의 마지막 몇 발에서 딸깍 소리를 낸다."
+    },
+    "Warning/Mode": {
+      "name": "경고 기준",
+      "desc": "장탄수의 비율로 셀지, 마지막 몇 발로 셀지 정한다."
+    },
+    "Warning/Percentage": {
+      "name": "비율 (%)",
+      "desc": "총 장탄수(탄창+약실)의 마지막 몇 퍼센트에서 울릴지 정한다. 소수점은 버리며 최소 한 발이다."
+    },
+    "Warning/Rounds": {
+      "name": "발수",
+      "desc": "발수 기준일 때 마지막 몇 발에서 울릴지 정한다."
+    }
+  }
+}

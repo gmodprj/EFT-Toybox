@@ -1,0 +1,13 @@
+{
+  "guid": "com.kaeno.TraderScrolling",
+  "name": "상인 목록 스크롤 (Trader Scrolling)",
+  "sections": {
+    "Config": "설정"
+  },
+  "settings": {
+    "Config/Scroll Wheel Speed": {
+      "name": "휠 스크롤 속도",
+      "desc": "휠을 굴릴 때의 스크롤 속도."
+    }
+  }
+}

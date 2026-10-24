@@ -1,0 +1,13 @@
+{
+  "guid": "xyz.drakia.quickmovetocontainer",
+  "name": "컨테이너로 빠른 이동 (QuickMoveToContainer)",
+  "sections": {
+    "1. General": "1. 일반"
+  },
+  "settings": {
+    "1. General/Target All Open Containers": {
+      "name": "열린 컨테이너 전부 훑기",
+      "desc": "열려 있는 컨테이너를 순서대로 돌며 넣을 자리를 찾을지 정한다."
+    }
+  }
+}

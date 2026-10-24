@@ -1,0 +1,21 @@
+{
+  "guid": "com.maschine.WeaponBuilderSearch",
+  "name": "빌드 화면 부착물 검색 (WeaponBuilderSearch)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Enabled": {
+      "name": "모드 사용",
+      "desc": "총기 빌드 화면의 목록에 부착물 검색창을 넣는다."
+    },
+    "General/MinItemsForSearch": {
+      "name": "검색창이 뜨는 최소 개수",
+      "desc": "목록에 부착물이 이만큼 이상일 때만 검색창을 보여 준다."
+    },
+    "General/SearchBarPosition": {
+      "name": "검색창 위치",
+      "desc": "부착물 목록을 기준으로 검색창을 어디에 둘지 정한다."
+    }
+  }
+}

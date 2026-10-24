@@ -1,0 +1,69 @@
+{
+  "guid": "com.choochoo.tradermodding",
+  "name": "개조 화면 상인 정보 (Trader Modding)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Price Tags": "2. 가격표",
+    "3. Build Cost": "3. 제작 비용",
+    "4. Highlight Items": "4. 강조 표시",
+    "5. Color Settings": "5. 색 설정",
+    "6. Detaching Items": "6. 부품 떼어 오기",
+    "7. Invert Trader Only Items": "7. 상인 물건 반대로 보기"
+  },
+  "settings": {
+    "1. General/Default to trader only view": {
+      "name": "상인 물건만 보기로 시작",
+      "desc": "게임을 켜거나 레이드를 마친 뒤 개조 화면을 처음 열 때 상인 물건만 보여 줄지 정한다."
+    },
+    "1. General/Color borders": { "name": "칸 테두리에 색 입히기", "desc": "부품 칸의 테두리를 구할 수 있는지에 따라 색으로 구분한다." },
+    "1. General/Show attached items (Not buyable)": {
+      "name": "다른 총에 달린 부품도 표시",
+      "desc": "이미 다른 총에 달려 있어 상인에게서는 살 수 없는 부품도 보여 준다."
+    },
+
+    "2. Price Tags/Show price tags on items": { "name": "상인 가격표 표시", "desc": "부품 아이콘에 상인 가격을 붙인다." },
+    "2. Price Tags/Show flea price tags": { "name": "플리 가격표 표시", "desc": "상인에게 없는 부품은 플리마켓 시세를 붙인다." },
+    "2. Price Tags/Price tags on current weapon": {
+      "name": "지금 총의 부품에도 가격표",
+      "desc": "지금 개조 중인 총에 이미 달린 부품에도 상인 가격을 붙인다. 기본은 꺼짐이며, 꺼 두는 쪽이 깔끔하다."
+    },
+    "2. Price Tags/Abbreviate prices": { "name": "가격 줄여 쓰기", "desc": "69420 을 69,4k 처럼 줄여 적는다." },
+
+    "3. Build Cost/Show build cost panel": { "name": "제작 비용 창 표시", "desc": "총 개조 비용을 보여 주는 창을 띄운다." },
+    "3. Build Cost/Build cost font size": { "name": "제작 비용 글자 크기", "desc": "제작 비용 창의 글자 크기." },
+
+    "4. Highlight Items/Highlight items on current weapon": {
+      "name": "지금 총의 부품 강조",
+      "desc": "지금 개조 중인 총에 달려 있는 부품을 강조한다."
+    },
+    "4. Highlight Items/Highlight attached items": {
+      "name": "다른 총에 달린 부품 강조",
+      "desc": "이미 다른 총에 달린 부품을 강조한다. 완벽하게 잡히지는 않는다."
+    },
+    "4. Highlight Items/Highlight usable items": {
+      "name": "바로 쓸 수 있는 부품 강조",
+      "desc": "어느 총에도 달려 있지 않아 바로 쓸 수 있는 부품을 강조한다."
+    },
+
+    "5. Color Settings/Color for items on current weapon": { "name": "지금 총의 부품 색", "desc": "지금 개조 중인 총에 달린 부품을 강조할 색." },
+    "5. Color Settings/Color for attached items (Not buyable)": {
+      "name": "다른 총의 부품 색 (못 삼)",
+      "desc": "상인에게서 살 수 없는, 다른 총에 달린 부품을 강조할 색."
+    },
+    "5. Color Settings/Color for attached items (Buyable)": {
+      "name": "다른 총의 부품 색 (살 수 있음)",
+      "desc": "상인에게서 살 수 있는, 다른 총에 달린 부품을 강조할 색."
+    },
+    "5. Color Settings/Color for usable items": { "name": "바로 쓸 수 있는 부품 색", "desc": "바로 쓸 수 있는 부품을 강조할 색." },
+
+    "6. Detaching Items/Also detach from equipped guns": {
+      "name": "착용 중인 총에서도 떼어 오기",
+      "desc": "쓰고 있는 부품을 떼어 올 때 지금 착용한 총에서도 빼 올지 정한다. 떼어 올 순서는 여전히 따로 있는 부품 → 창고의 총 순이다."
+    },
+
+    "7. Invert Trader Only Items/HIDE all items from traders instead": {
+      "name": "상인 물건을 오히려 숨기기",
+      "desc": "상인 물건과 내 물건만 보여 주는 대신, 상인 물건을 전부 감춘다."
+    }
+  }
+}

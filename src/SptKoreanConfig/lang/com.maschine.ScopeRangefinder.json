@@ -1,0 +1,191 @@
+{
+  "guid": "com.maschine.ScopeRangefinder",
+  "name": "조준경 거리 측정기 (ScopeRangefinder)",
+  "sections": {
+    "General": "일반",
+    "Activation": "작동 조건",
+    "Measurement": "측정",
+    "Readout": "표시 내용",
+    "Auto Zero": "자동 영점",
+    "Manual Zeroing": "수동 영점",
+    "Scope Text": "조준경 글자",
+    "Scope Background": "조준경 배경판",
+    "Developer": "개발용"
+  },
+  "settings": {
+    "Activation/MinZoomBlendFactor": {
+      "name": "최소 배율",
+      "desc": "거리 표시가 뜨기 시작하는 조준 배율(0~1). 0이면 조준경 화면이 켜지는 즉시 뜬다."
+    },
+    "Activation/ShowDelay": { "name": "표시 지연", "desc": "조준을 시작한 뒤 거리가 뜨기까지 기다리는 시간(초)." },
+    "Activation/MinDisplayDistance": {
+      "name": "최소 표시 거리",
+      "desc": "목표가 이 거리(미터) 이상일 때만 표시한다. 0이면 배율 조건을 대신 쓴다."
+    },
+    "Activation/NonMagnifiedSights": {
+      "name": "무배율 조준경 허용 목록",
+      "desc": "거리 표시를 함께 쓸 무배율 조준경(도트·홀로)의 아이템 템플릿 ID를 쉼표로 적는다. 이들은 조준경 카메라가 없어 화면 겹침 방식으로 그리며, 위치는 레이아웃 편집기(F8)에서 조준경마다 맞춘다. 기본값은 Milkor M2A1 반사경이라 유탄 발사기 조준 시 측정 거리가 나오고 다른 모드가 그 값을 읽을 수 있다. 비우면 배율 조준경에만 적용된다."
+    },
+    "Activation/RequireWilcoxRaptar": {
+      "name": "RAPTAR 장착 시에만",
+      "desc": "Wilcox RAPTAR ES 거리 측정기를 총에 달았을 때만 거리를 표시한다."
+    },
+    "Activation/RequireWilcoxRaptarActive": {
+      "name": "RAPTAR 전원까지 확인",
+      "desc": "'RAPTAR 장착 시에만'을 쓸 때, 달린 RAPTAR가 켜져 있어야만 표시한다."
+    },
+
+    "Auto Zero/AutoZeroEnabled": {
+      "name": "자동 영점",
+      "desc": "측정한 거리에 맞춰 조준경 영점을 1m 단위로 맞춘다. 장전된 탄약·총기·거리를 모두 따진다. 자동 영점이 손을 떼면 원래 영점으로 되돌린다."
+    },
+    "Auto Zero/AutoZeroMode": {
+      "name": "자동 영점 방식",
+      "desc": "'단축키'는 누를 때마다 한 번 맞추고 그 영점을 유지한다(같은 조준경에서 다시 누르거나, 영점 다이얼을 직접 돌리거나, 자동 영점을 끌 때까지). '연속'은 조준하는 동안 측정 거리를 계속 따라간다."
+    },
+    "Auto Zero/AutoZeroHotkey": { "name": "자동 영점 단축키", "desc": "지금 측정된 거리로 영점을 맞춘다." },
+    "Auto Zero/AutoZeroTransitionTime": {
+      "name": "영점 전환 시간",
+      "desc": "새 거리로 영점이 부드럽게 넘어가는 시간(초). 0이면 즉시 바뀐다."
+    },
+    "Auto Zero/ShowTrajectoryPreview": {
+      "name": "탄도 미리보기",
+      "desc": "측정 거리까지의 예상 탄도를 그린다. 탄 낙차·비행 시간·실제 탄착군을 눈으로 익히기에 좋다."
+    },
+    "Auto Zero/AutoZeroTrajectoryNearColor": {
+      "name": "탄도 색 — 가까운 쪽",
+      "desc": "총구 쪽 탄도 색. 가까운 선이 시야를 가리지 않도록 불투명도를 낮게 두는 것이 좋다."
+    },
+    "Auto Zero/AutoZeroTrajectoryFarColor": {
+      "name": "탄도 색 — 먼 쪽",
+      "desc": "멀어질수록 가까운 쪽 색에서 이 색으로 섞인다."
+    },
+    "Auto Zero/AutoZeroImpactSpreadCircle": {
+      "name": "탄착군 원 표시",
+      "desc": "탄착 지점에 그 거리에서의 최대 탄착군을 원으로 그린다. 총기 정확도·총열 내구도·탄약·버프·과열까지 게임의 계산식을 그대로 쓴다."
+    },
+    "Auto Zero/AutoZeroSpreadCircleColor": { "name": "탄착군 원 색", "desc": "탄착군 원의 색." },
+
+    "Developer/LogScopeKeys": {
+      "name": "조준경 키 로그",
+      "desc": "조준할 때마다 그 조준경의 레이아웃 키를 로그에 남긴다. ScopeRangefinder.layouts.json 을 직접 고칠 때 쓴다. 레이아웃 편집기에서도 같은 키를 보고 복사할 수 있다."
+    },
+    "Developer/LogLoadedFonts": {
+      "name": "불러온 글꼴 로그",
+      "desc": "처음 조준할 때 한 번, 불러온 글꼴 전부와 RAPTAR 표시 글꼴을 LogOutput.log 에 남긴다. 게임 글꼴을 고를 때 쓰는 개발용 기능이다."
+    },
+    "Developer/ConfigVersion": {
+      "name": "설정 버전",
+      "desc": "이 설정 파일로 마지막으로 돌린 플러그인 버전. 설정 이전에 쓰이니 건드리지 않는다."
+    },
+
+    "General/Enabled": { "name": "모드 사용", "desc": "배율 조준경으로 조준할 때 거리를 표시한다." },
+    "General/StylePreset": {
+      "name": "표시 스타일 프리셋",
+      "desc": "마지막으로 적용한 스타일. 프리셋은 게임 안 편집기(F8)에서 고른다. 기본 프리셋은 ScopeRangefinder.presets.json 에 있고(업데이트 시 덮어써진다), 직접 저장한 것은 ScopeRangefinder.styles.json 에 남아 업데이트해도 그대로다."
+    },
+    "General/ResetAllSettings": {
+      "name": "모든 설정 초기화",
+      "desc": "이 모드의 모든 설정을 기본값으로 되돌린다. 확인을 위해 한 번 더 눌러야 한다."
+    },
+    "General/MaxDistance": { "name": "최대 측정 거리", "desc": "거리를 재는 최대 범위(미터)." },
+    "General/UpdateInterval": { "name": "측정 주기", "desc": "거리를 다시 재는 간격(초)." },
+    "General/ToggleEditor": {
+      "name": "편집기 단축키",
+      "desc": "조준경별 배치와 스타일을 손보는 게임 내 편집기를 열고 닫는다."
+    },
+
+    "Manual Zeroing/MaxZeroingDistance": {
+      "name": "영점 확장 거리",
+      "desc": "영점 다이얼이 있는 모든 조준경의 한계를 이 거리(미터)까지 늘린다. 각 조준경의 원래 단위(대부분 50m)를 그대로 쓴다. 기본 조준경은 100~450m에서 끝난다. 0이면 원래대로 두며, 다른 모드가 이미 늘리고 있다면 0으로 둔다."
+    },
+    "Manual Zeroing/ZeroForLoadedAmmo": {
+      "name": "장전된 탄약 기준 영점",
+      "desc": "게임은 무엇을 넣든 총기의 기본 탄약을 기준으로 영점을 계산한다. 켜면 약실(또는 다음) 탄약을 기준으로, 그 탄이 바뀔 때마다 다시 계산해 다이얼에 맞춘 거리에 실제로 맞는다. 다른 모드가 이미 하고 있다면 끈다."
+    },
+
+    "Measurement/HoldTime": {
+      "name": "값 유지 시간",
+      "desc": "측정선이 잠깐 목표를 놓쳤을 때(가장자리·바위 턱·창틀을 스칠 때) 마지막 값을 붙들고 있는 시간(초). '목표 없음' 글자가 깜빡이지 않고, 연속 자동 영점도 영점을 유지한다. 0이면 끄며 1~2초가 알맞다."
+    },
+    "Measurement/ScanMode": {
+      "name": "탐색 방식",
+      "desc": "실제 거리 측정기의 NEAR/FAR처럼, 탐색 시간 안에서 가장 가까운(Near) 또는 가장 먼(Far) 값을 채택한다. 조준선을 목표에 고정하지 않고 스치기만 해도 된다. Near는 지형·건물 앞의 목표에, Far는 엄폐물 가장자리나 풀·유리 뒤의 목표에 알맞다. 다만 Far는 지평선을 한 번만 스쳐도 그 먼 값이 유지되니 탐색 시간을 짧게 둔다. 끄면 잰 그대로 쓴다."
+    },
+    "Measurement/ScanWindow": {
+      "name": "탐색 시간",
+      "desc": "탐색으로 채택한 값이 새 값에 밀리지 않고 버티는 시간(초). 짧으면 민감하고 길면 한 번 잡은 값을 오래 붙든다."
+    },
+    "Measurement/FreezeHotkey": {
+      "name": "값 고정 키",
+      "desc": "다시 누르거나 조준을 풀 때까지 지금 거리를 붙들어 둔다. 영점은 건드리지 않고 한 번 잰 값만 남기는 기능이며, 기본값은 지정되어 있지 않다."
+    },
+
+    "Readout/DistanceUnit": {
+      "name": "거리 단위",
+      "desc": "화면에 보여 줄 단위. 자동 영점은 이 설정과 무관하게 항상 실제 미터 거리로 계산한다."
+    },
+    "Readout/ShowUnitSuffix": {
+      "name": "단위 기호 붙이기",
+      "desc": "거리 뒤에 단위를 적는다(0123m / 0135yd). 실제 RAPTAR는 숫자만 보여 준다."
+    },
+    "Readout/UseDecimalFormat": {
+      "name": "소수점 표기 사용",
+      "desc": "4자리 미터(RAPTAR 방식) 대신 000.0 형식(Vortex 방식)으로 적는다."
+    },
+    "Readout/ShowZeroLine": {
+      "name": "영점 줄 표시",
+      "desc": "지금 적용 중인 영점을 둘째 줄에 보여 준다. 자동 영점이 맞춘 거리, 연속 방식이면 'auto', 자동 영점이 꺼져 있으면 조준경 다이얼 값이 뜬다. 배경판은 알아서 늘어난다."
+    },
+    "Readout/BallisticsLine": {
+      "name": "탄도 줄 표시",
+      "desc": "장전된 탄약으로 그 거리를 맞히는 사격 해법을 셋째 줄에 보여 준다. Hold는 지금 영점 대비 얼마나 위로 겨눌지(양수면 목표 위), Dial은 조준경에서 고를 수 있는 가장 알맞은 영점 단계와 그때 남는 보정을 알려 준다. 게임 자체 탄도 계산을 써서 탄약·부착물·공기 저항이 모두 반영된다."
+    },
+    "Readout/BallisticsHoldUnit": {
+      "name": "탄도 보정 단위",
+      "desc": "탄도 줄에 쓸 단위 — 밀리라디안(mil), 분각(MOA), 또는 측정 거리에서의 센티미터."
+    },
+    "Readout/RangeLinePrefix": { "name": "거리 줄 머리말", "desc": "영점 줄을 함께 띄울 때 거리 줄 앞에 붙일 글자. 비우면 붙이지 않는다." },
+    "Readout/ZeroLinePrefix": { "name": "영점 줄 머리말", "desc": "영점 줄 앞에 붙일 글자. 비우면 붙이지 않는다." },
+    "Readout/HoldLinePrefix": { "name": "Hold 줄 머리말", "desc": "Hold 방식일 때 탄도 줄 앞에 붙일 글자. 비우면 붙이지 않는다." },
+    "Readout/DialLinePrefix": { "name": "Dial 줄 머리말", "desc": "Dial 방식일 때 탄도 줄 앞에 붙일 글자(Hold 표시로 넘어갈 때도 쓴다). 비우면 붙이지 않는다." },
+    "Readout/NoDistanceText": { "name": "목표 없음 표시", "desc": "잴 목표가 없을 때 보여 줄 글자." },
+
+    "Scope Background/ScopeWorldBackground": { "name": "배경판 사용", "desc": "조준경에 붙는 글자 뒤에 어두운 판을 깐다." },
+    "Scope Background/ScopeWorldBackgroundWidth": { "name": "배경판 너비", "desc": "배경판의 가로 크기." },
+    "Scope Background/ScopeWorldBackgroundHeight": { "name": "배경판 높이", "desc": "배경판의 세로 크기." },
+    "Scope Background/ScopeWorldBackgroundColor": { "name": "배경판 색", "desc": "배경판의 색과 투명도." },
+
+    "Scope Text/ScopeWorldTextColor": { "name": "글자 색", "desc": "조준경에 붙는 글자의 색과 투명도." },
+    "Scope Text/ScopeFontSource": {
+      "name": "글꼴 출처",
+      "desc": "GameBender는 RAPTAR 화면과 게임 UI가 쓰는 게임 자체 Bender 글꼴, SystemFont는 아래에서 고른 윈도우 글꼴, CustomFont는 플러그인 fonts 폴더의 글꼴 파일을 쓴다."
+    },
+    "Scope Text/ScopeFontName": {
+      "name": "시스템 글꼴 이름",
+      "desc": "윈도우에 설치된 글꼴을 이름('Lucida Console')이나 파일명('lucon.ttf')으로 적는다. 사용자 전용 글꼴도 찾는다. 글꼴 출처가 SystemFont 일 때만 쓰인다."
+    },
+    "Scope Text/CustomFontFile": {
+      "name": "글꼴 파일",
+      "desc": "BepInEx/plugins/maschine-ScopeRangefinder/fonts/ 안의 .ttf·.otf 또는 TMP 글꼴 번들(파일명:에셋명). 글꼴 출처가 CustomFont 일 때만 쓰인다. 편집기(F8)에서 글꼴을 고르면 출처도 자동으로 바뀐다."
+    },
+    "Scope Text/ScopeTextThickness": { "name": "글자 굵기", "desc": "글자의 굵기. 음수면 가늘게, 양수면 굵게." },
+    "Scope Text/ScopeTextSpacing": { "name": "글자 간격", "desc": "글자 사이를 더 띄운다. 7세그먼트처럼 자간이 좁은 글꼴에 쓸모 있다." },
+    "Scope Text/ScopeTextGlow": {
+      "name": "글자 발광",
+      "desc": "전광판처럼 글자 둘레를 제 색으로 은은하게 빛나게 한다. 0이면 끈다. SDF 글꼴이어야 한다."
+    },
+    "Scope Text/ScopeTextOutline": {
+      "name": "글자 외곽선",
+      "desc": "밝은 배경에서도 읽히도록 글자에 검은 테를 두른다. 0이면 끈다. SDF 글꼴이어야 한다."
+    },
+    "Scope Text/ScopeTextAberration": {
+      "name": "색수차 효과",
+      "desc": "실제 렌즈의 색 번짐처럼, 조준경 중심을 기준으로 글자 색이 양쪽으로 갈라져 보이게 한다. 번지는 색은 글자 색을 따른다(흰 글자면 빨강·청록). 0이면 끈다. SDF 글꼴이어야 한다."
+    },
+    "Scope Text/ScopeWorldTextOffsetY": {
+      "name": "글자 세로 위치",
+      "desc": "배경판 안에서 글자를 위아래로 옮긴다. 글꼴마다 보이는 높이가 달라 쓸모 있다."
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "guid": "com.pandahhcorp.hidespecialicongrids",
+  "name": "특수 칸 아이콘 숨기기 (HideSpecialIconGrids)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Enable": {
+      "name": "모드 사용",
+      "desc": "특수 칸의 배경 아이콘을 감춘다."
+    },
+    "General/Frames To Wait": {
+      "name": "대기 프레임",
+      "desc": "화면이 그려진 뒤 몇 프레임 기다렸다 적용할지 정한다."
+    }
+  }
+}

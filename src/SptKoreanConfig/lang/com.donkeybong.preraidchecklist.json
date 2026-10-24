@@ -1,0 +1,45 @@
+{
+  "guid": "com.donkeybong.preraidchecklist",
+  "name": "출발 전 점검표 (Pre-Raid Checklist)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Checks": "2. 점검 항목",
+    "3. Popup": "3. 알림 창"
+  },
+  "settings": {
+    "1. General/Enabled": { "name": "모드 사용", "desc": "끄면 아무것도 하지 않고 레이드가 평소대로 시작된다." },
+    "1. General/Toggle Key": {
+      "name": "전환 키",
+      "desc": "모드 전체를 켜고 끄는 키('모드 사용'과 같다). 기본값은 비어 있다."
+    },
+    "1. General/Check Scav Raids": {
+      "name": "스캐브 레이드도 점검",
+      "desc": "스캐브로 나갈 때도 점검한다(스캐브 프로필 기준). 장비를 직접 고르지 않으므로 기본은 꺼짐이다."
+    },
+
+    "2. Checks/Healing Items": {
+      "name": "치료 아이템",
+      "desc": "구급킷·붕대·부목·진통제 같은 치료 아이템이 없으면 알린다. 각성제는 치지 않는다."
+    },
+    "2. Checks/Ammo For Weapons": {
+      "name": "총기용 탄약",
+      "desc": "착용한 총(주무기·보조무기·권총)이 비어 있는데 맞는 탄약이나 채워진 탄창도 없으면 알린다."
+    },
+    "2. Checks/Body Armor": {
+      "name": "방탄복",
+      "desc": "방탄복이나 방탄판을 끼운 방탄 조끼를 입지 않았으면 알린다."
+    },
+    "2. Checks/Helmet": { "name": "헬멧", "desc": "방탄 헬멧을 쓰지 않았으면 알린다. 모자류는 치지 않는다." },
+    "2. Checks/Empty Magazines": { "name": "빈 탄창", "desc": "착용한 총에 맞는 빈 탄창을 들고 있으면 알린다." },
+    "2. Checks/Backpack Almost Full": {
+      "name": "배낭 거의 참",
+      "desc": "착용한 배낭이 거의 차 전리품 넣을 자리가 없으면 알린다."
+    },
+    "2. Checks/Backpack Full Threshold (%)": {
+      "name": "배낭 경고 기준 (%)",
+      "desc": "배낭 칸이 몇 퍼센트 차면 알릴지 정한다."
+    },
+
+    "3. Popup/Scale": { "name": "알림 창 크기", "desc": "경고 창의 크기. 1이면 화면 높이에 맞춘다(1080p 기준 100%)." }
+  }
+}

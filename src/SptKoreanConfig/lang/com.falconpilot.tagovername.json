@@ -1,0 +1,13 @@
+{
+  "guid": "com.falconpilot.tagovername",
+  "name": "이름 대신 태그 (Tag Over Name)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Hide item name when tagged": {
+      "name": "태그가 있으면 이름 숨기기",
+      "desc": "태그를 단 아이템은 짧은 이름을 감춰 태그 전체가 늘 보이게 한다. 인벤토리를 다시 열거나 태그를 고쳐야 바뀐 것이 보인다."
+    }
+  }
+}
