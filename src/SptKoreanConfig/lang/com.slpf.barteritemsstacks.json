@@ -1,0 +1,25 @@
+{
+  "guid": "com.slpf.barteritemsstacks",
+  "name": "교환 아이템 겹치기 (Barter Items Stacks)",
+  "sections": {
+    "FiR & non-FiR stacking (behavior may be unpredictable)": "레이드 획득·비획득 겹치기 (동작이 일정하지 않을 수 있음)"
+  },
+  "settings": {
+    "FiR & non-FiR stacking (behavior may be unpredictable)/Barter items": {
+      "name": "교환 아이템",
+      "desc": "레이드 획득(FiR)과 비획득 교환 아이템을 겹칠 수 있게 한다. 합쳐진 묶음은 항상 비획득이 된다."
+    },
+    "FiR & non-FiR stacking (behavior may be unpredictable)/Medical items": {
+      "name": "의료 아이템",
+      "desc": "레이드 획득과 비획득 의료 아이템을 겹칠 수 있게 한다. 합쳐진 묶음은 항상 비획득이 된다."
+    },
+    "FiR & non-FiR stacking (behavior may be unpredictable)/Food/Drink items": {
+      "name": "음식·음료",
+      "desc": "레이드 획득과 비획득 음식·음료를 겹칠 수 있게 한다. 합쳐진 묶음은 항상 비획득이 된다."
+    },
+    "FiR & non-FiR stacking (behavior may be unpredictable)/Repair kit items": {
+      "name": "수리 키트",
+      "desc": "레이드 획득과 비획득 수리 키트를 겹칠 수 있게 한다. 합쳐진 묶음은 항상 비획득이 된다."
+    }
+  }
+}

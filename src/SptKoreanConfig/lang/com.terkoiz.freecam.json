@@ -1,0 +1,44 @@
+{
+  "guid": "com.terkoiz.freecam",
+  "name": "자유 시점 카메라 (Freecam)",
+  "sections": {
+    "Camera Settings": "카메라",
+    "Keybinds": "단축키",
+    "Toggles": "켜고 끄기",
+    "Fall Damage": "낙하 피해"
+  },
+  "settings": {
+    "Camera Settings/Camera Speed": { "name": "이동 속도", "desc": "카메라가 평소에 움직이는 속도." },
+    "Camera Settings/Camera Sprint Speed": { "name": "빠른 이동 속도", "desc": "Shift를 누르고 있을 때의 이동 속도." },
+    "Camera Settings/Camera Mouse Sensitivity": { "name": "마우스 감도", "desc": "시점을 돌릴 때의 마우스 감도." },
+    "Camera Settings/Camera Zoom Speed": { "name": "확대 속도", "desc": "휠로 확대·축소할 때의 변화량." },
+    "Camera Settings/Camera Zoom Sprint Speed": { "name": "빠른 확대 속도", "desc": "Shift를 누른 채 휠을 굴릴 때의 변화량." },
+
+    "Fall Damage/Globally Disable Fall Damage": {
+      "name": "낙하 피해 완전히 끄기",
+      "desc": "낙하 피해를 아예 없앤다. 자유 시점을 쓸 때 가장 안전하며, 아래의 '똑똑한 낙하 피해 방지'보다 우선한다."
+    },
+    "Fall Damage/Smart Fall Damage Prevention": {
+      "name": "똑똑한 낙하 피해 방지",
+      "desc": "순간이동을 쓴 뒤 착지할 때까지만 낙하 피해를 막는다. 덜 반칙 같지만 가끔 제대로 듣지 않을 수 있다."
+    },
+
+    "Keybinds/Toggle Freecam": { "name": "자유 시점 전환", "desc": "자유 시점을 켜고 끄는 키." },
+    "Keybinds/Toggle Freecam Controls": { "name": "조작 안내 전환", "desc": "자유 시점 조작 안내를 띄우고 감추는 키." },
+    "Keybinds/Teleport To Camera": { "name": "카메라 위치로 이동", "desc": "지금 카메라가 있는 곳으로 캐릭터를 옮기는 키." },
+    "Keybinds/Toggle UI": { "name": "화면 표시 전환", "desc": "게임 UI를 띄우고 감추는 키." },
+
+    "Toggles/Camera Height Movement Keys": {
+      "name": "높이 이동 키 사용",
+      "desc": "카메라를 위아래로 옮기는 키(기본 Q·E·R·F)를 켜고 끈다. 자유 시점에서 캐릭터가 기울이기를 하게 두려면 끈다."
+    },
+    "Toggles/Camera Mousewheel Zoom": {
+      "name": "휠 확대 사용",
+      "desc": "휠로 카메라를 움직이는 기능을 켜고 끈다. 거슬리면 끄면 된다."
+    },
+    "Toggles/Remember Last Camera Position": {
+      "name": "마지막 위치 기억",
+      "desc": "자유 시점을 끌 때의 카메라 위치를 기억했다가 다시 켤 때 그 자리에서 시작한다."
+    }
+  }
+}

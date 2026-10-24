@@ -1,0 +1,29 @@
+{
+  "guid": "com.maschine.NotificationFilter",
+  "name": "알림 걸러내기 (NotificationFilter)",
+  "sections": {
+    "Notifications": "알림"
+  },
+  "settings": {
+    "Notifications/Notification Volume": {
+      "name": "알림 음량",
+      "desc": "레이드 중 알림 소리(퀘스트 완료·실패, 세부 목표 완료, 스킬 상승 등)의 크기. 0이면 완전히 끄고 1이면 평소 크기다."
+    },
+    "Notifications/Hide XP Notifications": {
+      "name": "경험치 알림 숨기기",
+      "desc": "레이드 중 전리품·치료 등으로 얻는 경험치 알림을 아예 감춘다."
+    },
+    "Notifications/Hide Skill Level-Up Notifications": {
+      "name": "스킬 상승 알림 숨기기",
+      "desc": "레이드 중 스킬 레벨이 오를 때 뜨는 알림을 아예 감춘다."
+    },
+    "Notifications/Hide Skill Progress Notifications": {
+      "name": "스킬 진행 알림 숨기기",
+      "desc": "레이드 중 스킬 경험치가 오를 때마다 뜨는 '스킬 X가 Y만큼 올랐다' 알림을 감춘다."
+    },
+    "Notifications/Notification Duration": {
+      "name": "알림 유지 시간",
+      "desc": "알림이 화면에 머무는 시간. Default는 평소, Long은 두 배, Infinite는 누를 때까지 남는다."
+    }
+  }
+}

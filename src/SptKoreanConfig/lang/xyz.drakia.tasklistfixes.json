@@ -1,0 +1,37 @@
+{
+  "guid": "xyz.drakia.tasklistfixes",
+  "name": "퀘스트 목록 정렬 수정 (TaskListFixes)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/New Default Order": {
+      "name": "새 기본 정렬 방향",
+      "desc": "정렬 기준을 바꿀 때 새로 정한 기본 방향을 쓴다."
+    },
+    "General/Sub Sort By Name": {
+      "name": "2차 정렬을 이름으로",
+      "desc": "같은 값일 때 시작 시각 대신 퀘스트 이름으로 줄 세운다."
+    },
+    "General/Group Locations By Trader": {
+      "name": "장소를 상인별로 묶기",
+      "desc": "장소로 정렬할 때 같은 장소 안에서는 상인 이름으로 묶는다."
+    },
+    "General/Group Traders By Location": {
+      "name": "상인을 장소별로 묶기",
+      "desc": "상인으로 정렬할 때 같은 상인 안에서는 장소 이름으로 묶는다."
+    },
+    "General/Remember Sort Order": {
+      "name": "정렬 상태 기억",
+      "desc": "마지막에 쓴 정렬을 기억했다가 다시 적용한다."
+    },
+    "General/Last Sorted By": {
+      "name": "마지막 정렬 기준",
+      "desc": "모드가 기억해 두는 값이다."
+    },
+    "General/Last Sorted Ascend": {
+      "name": "마지막 정렬 방향",
+      "desc": "모드가 기억해 두는 값이다."
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "guid": "com.fiodor.traderspace",
+  "name": "상인 화면 공간 확보 (TraderSpace)",
+  "sections": {
+    "Background Panel": "배경 패널",
+    "Name": "플레이어 이름",
+    "Level Icon": "레벨 아이콘",
+    "Money": "소지금",
+    "Divider Line": "구분선",
+    "Trader Requirements": "상인 요구 조건"
+  },
+  "settings": {
+    "Background Panel/Panel Width": { "name": "패널 너비", "desc": "배경 패널의 가로 크기." },
+
+    "Divider Line/Divider Line X Offset": { "name": "구분선 가로 위치", "desc": "구분선을 좌우로 옮긴다." },
+    "Divider Line/Line Y Offset": { "name": "구분선 세로 위치", "desc": "구분선을 위아래로 옮긴다." },
+
+    "Level Icon/Level Icon X Offset": { "name": "레벨 아이콘 가로 위치", "desc": "레벨 아이콘을 좌우로 옮긴다." },
+    "Level Icon/Level Icon Y Offset": { "name": "레벨 아이콘 세로 위치", "desc": "레벨 아이콘을 위아래로 옮긴다." },
+
+    "Money/Money X Offset": { "name": "소지금 가로 위치", "desc": "소지금 표시를 좌우로 옮긴다." },
+    "Money/Money Y Offset": { "name": "소지금 세로 위치", "desc": "소지금 표시를 위아래로 옮긴다." },
+
+    "Name/Name X Offset": { "name": "이름 가로 위치", "desc": "플레이어 이름을 좌우로 옮긴다." },
+    "Name/Name Y Offset": { "name": "이름 세로 위치", "desc": "플레이어 이름을 위아래로 옮긴다." },
+
+    "Trader Requirements/Requirements X Offset": { "name": "요구 조건 가로 위치", "desc": "상인 요구 조건 영역을 좌우로 옮긴다." },
+    "Trader Requirements/Requirements Y Offset": { "name": "요구 조건 세로 위치", "desc": "상인 요구 조건 영역을 위아래로 옮긴다." }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "guid": "com.mpstark.PlayerEncumbranceBar",
+  "name": "무게 표시 막대 (Player Encumbrance Bar)",
+  "sections": {
+    "1. General": "1. 일반"
+  },
+  "settings": {
+    "1. General/Display Breakpoint Text": {
+      "name": "구간 숫자 표시",
+      "desc": "막대의 눈금마다 기준 무게를 글자로 보여 줄지 정한다."
+    }
+  }
+}

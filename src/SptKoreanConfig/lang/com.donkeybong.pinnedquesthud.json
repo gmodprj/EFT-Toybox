@@ -1,0 +1,35 @@
+{
+  "guid": "com.donkeybong.pinnedquesthud",
+  "name": "고정 퀘스트 표시 (Pinned Quest HUD)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Auto-hide": "2. 자동 숨김",
+    "3. Appearance": "3. 겉모습",
+    "4. Colors": "4. 색상"
+  },
+  "settings": {
+    "1. General/Toggle Key": {
+      "name": "표시 전환 키",
+      "desc": "레이드 중 퀘스트 목록을 띄우고 감춘다. 레이드를 시작할 때는 항상 감춰진 상태다."
+    },
+    "1. General/Max Quests": { "name": "최대 표시 개수", "desc": "고정한 퀘스트를 몇 개까지 보여 줄지 정한다." },
+
+    "2. Auto-hide/Hide In Inventory/Menus": {
+      "name": "인벤토리·메뉴에서 숨기기",
+      "desc": "레이드 중 인벤토리나 메뉴가 열려 있는 동안(마우스 커서가 보이는 모든 화면) 목록을 감춘다."
+    },
+
+    "3. Appearance/Scale": { "name": "크기", "desc": "목록 전체의 크기." },
+    "3. Appearance/Opacity": { "name": "불투명도", "desc": "목록 전체의 불투명도. 1이면 완전히 불투명하다." },
+    "3. Appearance/Max Width": { "name": "최대 너비", "desc": "목록의 가로 크기(픽셀, 크기 보정 전). 더 긴 줄은 줄바꿈된다." },
+    "3. Appearance/Offset From Right": { "name": "오른쪽 여백", "desc": "화면 오른쪽 끝에서 띄울 거리(픽셀)." },
+    "3. Appearance/Offset From Top": { "name": "위쪽 여백", "desc": "화면 위쪽 끝에서 띄울 거리(픽셀)." },
+    "3. Appearance/Outline Strength": { "name": "외곽선 세기", "desc": "글자와 점 둘레의 어두운 테 진하기. 0이면 테를 두르지 않는다." },
+
+    "4. Colors/Number": { "name": "번호" },
+    "4. Colors/Title": { "name": "퀘스트 이름" },
+    "4. Colors/Trader": { "name": "상인 이름" },
+    "4. Colors/Objective": { "name": "남은 목표" },
+    "4. Colors/Objective Done": { "name": "완료한 목표" }
+  }
+}

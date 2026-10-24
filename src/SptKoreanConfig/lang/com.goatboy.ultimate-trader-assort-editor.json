@@ -1,0 +1,17 @@
+{
+  "guid": "com.goatboy.ultimate-trader-assort-editor",
+  "name": "상인 판매 목록 편집 (Ultimate Trader Assort Editor)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Show EDIT ASSORTS Button": {
+      "name": "편집 버튼 표시",
+      "desc": "상인 화면에 EDIT ASSORTS 버튼을 띄운다. 감춰도 이미 저장한 편집 내용은 그대로 적용된다."
+    },
+    "General/Enable Assort Export": {
+      "name": "내보내기 버튼 사용",
+      "desc": "상인을 편집하는 동안 EXPORT ASSORT 버튼을 쓸 수 있게 한다. 모드 제작용으로 assortexport.json 과 questassortexport.json 을 써낸다."
+    }
+  }
+}

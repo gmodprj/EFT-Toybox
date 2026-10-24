@@ -1,0 +1,40 @@
+{
+  "guid": "com.hj.tasksearch",
+  "name": "퀘스트 검색 (TaskSearch)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Searched Fields": "2. 검색 대상",
+    "3. Search Field Layout": "3. 검색창 배치",
+    "4. Trader Search Field Layout": "4. 상인 화면 검색창 배치"
+  },
+  "settings": {
+    "1. General/Enabled": { "name": "모드 사용", "desc": "끄면 퀘스트 화면을 전혀 건드리지 않는다." },
+    "1. General/Enable in Trader View": {
+      "name": "상인 화면에도 검색창",
+      "desc": "거래 > 상인 > 퀘스트 목록에도 검색창을 넣는다. 끄면 상인 퀘스트 화면은 그대로 둔다."
+    },
+
+    "2. Searched Fields/Quest Names": { "name": "퀘스트 이름", "desc": "퀘스트 이름에서 찾는다." },
+    "2. Searched Fields/Descriptions": { "name": "설명문", "desc": "퀘스트 브리핑 내용에서 찾는다." },
+    "2. Searched Fields/Objectives": { "name": "목표", "desc": "목표 문구와 목표 종류에서 찾는다." },
+    "2. Searched Fields/Locations": { "name": "장소", "desc": "퀘스트의 맵과 목표가 가리키는 맵·구역 이름에서 찾는다." },
+    "2. Searched Fields/Traders": { "name": "상인", "desc": "퀘스트를 주는 상인 이름에서 찾는다." },
+    "2. Searched Fields/Items": { "name": "아이템", "desc": "목표가 가리키는 아이템 이름에서 찾는다." },
+    "2. Searched Fields/Rewards": { "name": "보상", "desc": "보이는 보상 이름에서 찾는다. 가려진(?) 보상은 찾지 않는다." },
+    "2. Searched Fields/Requirements": { "name": "선행 퀘스트", "desc": "선행 퀘스트 이름에서 찾는다." },
+    "2. Searched Fields/Quest IDs": { "name": "퀘스트 ID", "desc": "퀘스트의 내부 id에서 찾는다. 모드 제작자에게 쓸모 있고 그 외에는 무해하다." },
+
+    "3. Search Field Layout/Width": { "name": "너비", "desc": "검색창의 가로 크기." },
+    "3. Search Field Layout/Height": { "name": "높이", "desc": "검색창의 세로 크기." },
+    "3. Search Field Layout/Horizontal Offset": {
+      "name": "가로 위치",
+      "desc": "퀘스트 목록 오른쪽 끝을 기준으로 왼쪽(음수)·오른쪽(양수)으로 민다."
+    },
+    "3. Search Field Layout/Vertical Offset": { "name": "세로 위치", "desc": "값이 작으면 내려가고 크면 올라간다." },
+
+    "4. Trader Search Field Layout/Width": { "name": "너비", "desc": "상인 화면 검색창의 가로 크기." },
+    "4. Trader Search Field Layout/Height": { "name": "높이", "desc": "상인 화면 검색창의 세로 크기." },
+    "4. Trader Search Field Layout/Horizontal Offset": { "name": "가로 위치", "desc": "양수면 오른쪽, 음수면 왼쪽으로 민다." },
+    "4. Trader Search Field Layout/Vertical Offset": { "name": "세로 위치", "desc": "값이 크면 올라가고 작으면 내려간다." }
+  }
+}

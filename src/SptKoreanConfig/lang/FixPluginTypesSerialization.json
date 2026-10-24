@@ -1,0 +1,31 @@
+{
+  "guid": "FixPluginTypesSerialization",
+  "name": "플러그인 직렬화 수정 (FixPluginTypesSerialization)",
+  "sections": {
+    "Overrides": "직접 지정",
+    "Cache": "캐시"
+  },
+  "settings": {
+    "Cache/LastDownloadedGUID": {
+      "name": "마지막 pdb GUID",
+      "desc": "마지막으로 받은 UnityPlayer pdb 파일의 GUID. 지금 것과 같으면 아래 주소들을 실행 중에 다시 구하지 않고 그대로 쓴다."
+    },
+    "Cache/MonoManagerAwakeFromLoadOffset": { "name": "MonoManager::AwakeFromLoad 주소", "desc": "메모리 안 함수 주소." },
+    "Cache/MonoManagerIsAssemblyCreatedOffset": { "name": "MonoManager::IsAssemblyCreated 주소", "desc": "메모리 안 함수 주소." },
+    "Cache/IsFileCreatedOffset": { "name": "IsFileCreated 주소", "desc": "메모리 안 함수 주소." },
+    "Cache/ScriptingManagerDeconstructorOffset": { "name": "ScriptingManagerDeconstructor 주소", "desc": "메모리 안 함수 주소." },
+    "Cache/ConvertSeparatorsToPlatformOffset": { "name": "ConvertSeparatorsToPlatform 주소", "desc": "메모리 안 함수 주소." },
+    "Cache/FreeAllocInternalOffset": { "name": "free_alloc_internal 주소", "desc": "메모리 안 함수 주소." },
+    "Cache/MallocInternalOffset": { "name": "malloc_internal 주소", "desc": "메모리 안 함수 주소." },
+    "Cache/ScriptingAssembliesOffset": { "name": "m_ScriptingAssemblies 주소", "desc": "메모리 안 전역 필드 주소." },
+
+    "Overrides/UnityVersionOverride": {
+      "name": "유니티 버전 지정",
+      "desc": "Major.Minor.Patch 형식(예: 2017.2.1). 적으면 실행 파일에서 찾는 대신 이 버전을 쓴다. 패처가 달리 동작하지 않을 때만 적는다."
+    },
+    "Overrides/FunctionOffsetLookupType": {
+      "name": "함수 주소를 찾는 방법",
+      "desc": "PreferSupportedVersions: 지원 버전의 값을 먼저 쓰고, 지원하지 않는 버전이면 pdb 를 시도한다.\nPreferPdb: 유니티 심볼 서버에서 pdb 를 받아 쓰고, 없거나 실패하면 지원 버전 값을 쓴다.\nManual: 위 [캐시] 항목에 직접 적어 둔 16진수 주소를 쓴다."
+    }
+  }
+}

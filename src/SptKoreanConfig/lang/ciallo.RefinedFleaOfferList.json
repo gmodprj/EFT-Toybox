@@ -1,0 +1,41 @@
+{
+  "guid": "ciallo.RefinedFleaOfferList",
+  "name": "플리 매물 정리 (Refined Flea Offer List)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Activate All": {
+      "name": "전체 사용",
+      "desc": "아이템마다 가장 싼 매물만 보여 준다. 정렬은 가격 낮은 순으로 고정된다."
+    },
+    "General/No GP Offers": {
+      "name": "GP 코인 매물 숨기기",
+      "desc": "플리를 볼 때 GP 코인 매물을 모두 지운다. 총기 빌드 구매에는 영향을 주지 않는다."
+    },
+    "General/Hide Disabled Offers": {
+      "name": "살 수 없는 매물 숨기기",
+      "desc": "그 쪽의 살 수 없는 매물을 지운다. 매물이 너무 적거나 전부 살 수 없는 경우는 그대로 둔다."
+    },
+    "General/Page Capacity": {
+      "name": "쪽당 처리 수",
+      "desc": "플리 한 쪽에서 원본 매물을 몇 개까지 훑을지 정한다. 숨긴 매물도 수에 포함되므로, 한 쪽에 더 담으려면 큰 값이 필요하다. 끄면 게임 원래 값으로 돌아간다."
+    },
+    "General/Retain Full-condition Offer": {
+      "name": "내구도 100% 매물 남기기",
+      "desc": "여러 종류를 한 번에 볼 때 내구도가 가득한 가장 싼 매물을 남긴다. 그런 매물만 보고 싶다면 게임의 플리 필터를 쓰는 편이 낫다."
+    },
+    "General/Retain Ruble Offer": {
+      "name": "루블 매물 남기기",
+      "desc": "여러 종류를 한 번에 볼 때 루블로 파는 가장 싼 매물을 남긴다. 루블 매물만 보고 싶다면 게임의 플리 필터를 쓰는 편이 낫다."
+    },
+    "General/Single Item Offers Quantity": {
+      "name": "한 아이템당 매물 수",
+      "desc": "아이템 하나를 골랐을 때 가장 싼 매물을 몇 개까지 보여 줄지 정한다. 매물에 차이가 없으면 ×2 +2 로 늘어난다."
+    },
+    "General/Vanilla Single Item Page": {
+      "name": "한 아이템은 원래대로",
+      "desc": "아이템 하나를 골랐을 때는 손대지 않고 원래 순서 그대로 전부 보여 준다."
+    }
+  }
+}

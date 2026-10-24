@@ -1,0 +1,26 @@
+{
+  "guid": "com.vultify.nvgsightdimmer",
+  "name": "야시경 조준점 밝기 (NVG Sight Dimmer)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Settings": "2. 밝기"
+  },
+  "settings": {
+    "1. General/Enable Auto Dim": {
+      "name": "자동으로 어둡게",
+      "desc": "야시경을 내리면 조준점과 조준경을 자동으로 어둡게 한다."
+    },
+    "2. Settings/NVG Sight Brightness (Holo / Red Dot)": {
+      "name": "홀로·도트 밝기",
+      "desc": "야시경을 쓸 때 홀로그래픽·도트 조준점의 밝기 배수. 낮을수록 어둡다."
+    },
+    "2. Settings/NVG Sight Brightness (Scopes)": {
+      "name": "조준경 밝기",
+      "desc": "야시경을 쓸 때 조준경 조준선의 밝기 배수. 낮을수록 어둡다."
+    },
+    "2. Settings/NVG Sight Brightness (ACOG/Scopes)": {
+      "name": "ACOG·기타 조준경 밝기",
+      "desc": "모든 ACOG와 위 설정이 잡지 못하는 나머지 조준경의 밝기 배수. 낮을수록 어둡다."
+    }
+  }
+}

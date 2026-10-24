@@ -1,0 +1,26 @@
+{
+  "guid": "com.vultify.fastgrenadethrow",
+  "name": "수류탄 즉시 투척 (Fast Grenade Throw)",
+  "sections": {
+    "Settings": "설정",
+    "Keybinds": "단축키"
+  },
+  "settings": {
+    "Keybinds/Quick Throw (Overhand)": {
+      "name": "오버핸드 투척",
+      "desc": "누르면 고른 수류탄을 곧바로 위로 던진다."
+    },
+    "Keybinds/Quick Throw (Underhand)": {
+      "name": "언더핸드 투척",
+      "desc": "누르면 고른 수류탄을 곧바로 아래로 굴려 던진다."
+    },
+    "Settings/Enabled": {
+      "name": "모드 사용",
+      "desc": "즉시 투척 단축키를 켠다."
+    },
+    "Settings/Debug Logging": {
+      "name": "디버그 로그",
+      "desc": "BepInEx/LogOutput.log 에 상세 로그를 남긴다. 문제를 알릴 때만 켠다."
+    }
+  }
+}

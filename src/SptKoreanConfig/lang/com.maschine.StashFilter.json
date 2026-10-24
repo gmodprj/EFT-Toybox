@@ -1,0 +1,13 @@
+{
+  "guid": "com.maschine.StashFilter",
+  "name": "창고 필터 (StashFilter)",
+  "sections": {
+    "Display": "표시"
+  },
+  "settings": {
+    "Display/Effective durability attribute": {
+      "name": "유효 내구도 표시",
+      "desc": "방탄복과 방탄판의 유효 내구도를 정보·비교 창에 보여 준다. 패널의 방어구 탭 버튼으로도 켜고 끌 수 있다."
+    }
+  }
+}

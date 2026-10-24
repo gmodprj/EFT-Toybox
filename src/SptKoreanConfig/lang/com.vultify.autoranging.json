@@ -1,0 +1,26 @@
+{
+  "guid": "com.vultify.autoranging",
+  "name": "자동 영점 (AutoRanging)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Ranging": "2. 영점"
+  },
+  "settings": {
+    "1. General/Enable Mod": {
+      "name": "모드 사용",
+      "desc": "이 모드 전체를 켜고 끈다."
+    },
+    "2. Ranging/Auto Range": {
+      "name": "자동 영점",
+      "desc": "조준하는 동안 영점을 자동으로 맞춘다. 끄면 아래 키로 직접 맞춘다."
+    },
+    "2. Ranging/Manual Range Key": {
+      "name": "수동 영점 키",
+      "desc": "영점을 직접 맞추는 키. 자동 영점이 꺼져 있을 때만 동작한다."
+    },
+    "2. Ranging/Ammo Aware Zeroing": {
+      "name": "장전된 탄약 기준",
+      "desc": "총기 기본 탄약이 아니라 실제로 장전된 탄약을 기준으로 영점을 계산해, 실제 탄속에 맞는 낙차가 나오게 한다."
+    }
+  }
+}

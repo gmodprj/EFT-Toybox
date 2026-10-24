@@ -1,0 +1,17 @@
+{
+  "guid": "com.danw.opensesame",
+  "name": "잠긴 문 열기 (Open Sesame)",
+  "sections": {
+    "Main": "기본"
+  },
+  "settings": {
+    "Main/Enabled Features": {
+      "name": "사용할 기능",
+      "desc": "이 모드에서 켤 기능을 고른다."
+    },
+    "Main/Enabled Debug Messages": {
+      "name": "디버그 메시지",
+      "desc": "디버그 메시지를 남긴다."
+    }
+  }
+}

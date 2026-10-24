@@ -1,0 +1,37 @@
+{
+  "guid": "com.dvize.bullettime",
+  "name": "불릿 타임 (Bullet Time)",
+  "sections": {
+    "Main Settings": "기본 설정"
+  },
+  "settings": {
+    "Main Settings/Plugin on/off": {
+      "name": "모드 사용",
+      "desc": "이 모드를 켜고 끈다."
+    },
+    "Main Settings/Bullet Time Key": {
+      "name": "단축키",
+      "desc": "불릿 타임을 켜고 끄는 키."
+    },
+    "Main Settings/Bullet Time Scale": {
+      "name": "느려지는 정도",
+      "desc": "시간이 얼마나 느려질지 정한다. 낮을수록 더 느리다."
+    },
+    "Main Settings/Bullet Time Stamina Burn Rate Per Second": {
+      "name": "초당 스태미나 소모",
+      "desc": "불릿 타임 중 스태미나가 닳는 속도. 낮을수록 천천히 닳는다."
+    },
+    "Main Settings/Scale Physics With Time": {
+      "name": "물리 연산도 함께 느리게",
+      "desc": "물리 계산 간격도 함께 늦춘다. 같은 부담으로 물리와 동작이 평소만큼 매끄럽게 유지된다. 이 컴퓨터에만 적용되므로 같은 레이드의 다른 사람이 대신 켜고 끌 수 없다."
+    },
+    "Main Settings/Minimum Allowed Time Scale": {
+      "name": "최저 시간 배율",
+      "desc": "시간이 이보다 더 느려지지 않게 막는다. 주로 호스트일 때 레이드가 지나치게 느려지는 것을 막는 데 쓴다."
+    },
+    "Main Settings/Slow Bullets With Time": {
+      "name": "날아가는 탄도 느리게",
+      "desc": "날아가는 중인 탄알도 함께 느리게 한다."
+    }
+  }
+}
