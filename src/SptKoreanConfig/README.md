@@ -57,6 +57,11 @@ pwsh -File tools/install-koreanconfig.ps1
 
 SPT 설치 위치가 다르면 `-p:SptDir=...` / `-SptDir ...` 로 넘긴다.
 
+## 알아 둘 것
+
+- F12 목록은 모드 이름순으로 정렬되므로, 한글 이름을 붙인 모드는 **영문 모드들 뒤로 내려간다.** 번역을 다 하면 다시 한글 가나다순으로 정렬된다.
+- 설정을 뒤늦게 등록하는 모드가 있어 전체 항목 수는 실행 중에도 늘어난다(실측 992 → 1029). F12를 열 때마다 다시 적용하므로 문제는 없다.
+
 ## 아직 안 되는 것
 
 창 자체의 UI 글자(`Plugin / mod settings`, `Normal settings`, `Open Log`, `Search:` 등 약 40개)는 `ConfigurationManager.dll` 안에 하드코딩돼 있어 이 방식으로는 못 바꾼다. 별도 작업(LGPL 소스 포크 재빌드 또는 DLL 문자열 치환)이 필요하다.

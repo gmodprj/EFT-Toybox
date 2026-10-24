@@ -127,7 +127,8 @@ namespace SptKoreanConfig
             if (!(AllSettingsField.GetValue(cm) is List<SettingEntryBase> all)) return;
 
             var mark = KoreanConfigPlugin.MarkUntranslated.Value;
-            int named = 0, sectioned = 0, missing = 0;
+            var sectionsDone = new HashSet<string>();
+            int named = 0, missing = 0;
 
             foreach (var setting in all)
             {
@@ -150,7 +151,7 @@ namespace SptKoreanConfig
                 if (koSection != null)
                 {
                     CategoryField.SetValue(setting, koSection);
-                    sectioned++;
+                    sectionsDone.Add(guid + "/" + koSection);
                 }
 
                 var ko = table?.SettingOf(srcSection, srcKey);
@@ -171,7 +172,7 @@ namespace SptKoreanConfig
             }
 
             _lastAppliedKorean = true;
-            KoreanConfigPlugin.Log.LogInfo($"한글 적용 — 항목 {named}/{all.Count}, 섹션 {sectioned}, 사전에 없음 {missing}");
+            KoreanConfigPlugin.Log.LogInfo($"한글 적용 — 항목 {named}/{all.Count}, 섹션 {sectionsDone.Count}종, 사전에 없음 {missing}");
 
             // 섹션 묶음은 Category 로 다시 만들어야 한글 제목으로 묶인다.
             BuildFiltered?.Invoke(cm, null);
