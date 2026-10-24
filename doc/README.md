@@ -12,6 +12,7 @@
 | [PROCEDURE.md](PROCEDURE.md) | 모드 추가 절차(조회→다운로드→설치→검증→되돌리기), SVM 메모, 무시해도 되는 로그 메시지 |
 | [CANDIDATES-416.md](CANDIDATES-416.md) | 4.1.6 호환 미설치 후보 136개 — 분야별 버전·용량·결속·의존성 |
 | [PLAN-STAGE5.md](PLAN-STAGE5.md) | 5차 설치 계획과 실행 결과 — 설치 52 / 보류 32 / 제외 52, 단계별 결과 |
+| [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 — 구조, 사전 형식, 빌드·설치 |
 
 ## 기록 폴더
 

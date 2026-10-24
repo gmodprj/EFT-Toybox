@@ -1,0 +1,51 @@
+{
+  "guid": "7Bpencil.TransparentSights",
+  "name": "투명 조준경 (TransparentSights)",
+  "sections": {
+    "General": "일반",
+    "Depth of Field": "피사계 심도",
+    "Depth of Field Advanced": "피사계 심도 — 고급"
+  },
+  "settings": {
+    "General/Make entire weapon transparent": {
+      "name": "총기 전체를 투명하게",
+      "desc": "조준할 때 조준경뿐 아니라 총기 전체를 투명하게 만든다."
+    },
+    "General/Make optic housing transparent": {
+      "name": "조준경 몸통도 투명하게",
+      "desc": "렌즈만이 아니라 조준경 하우징(몸통)까지 투명하게 만든다."
+    },
+    "General/Blur transparent sights": {
+      "name": "투명해진 부분 흐리게",
+      "desc": "투명 처리된 부분에 흐림 효과를 준다. 끄면 선명하게 비쳐 보인다."
+    },
+    "Depth of Field/Blur Size": {
+      "name": "흐림 크기",
+      "desc": "조준하지 않을 때 적용되는 흐림의 세기. 클수록 더 뭉개진다."
+    },
+    "Depth of Field/Blur Size in Optic": {
+      "name": "조준경 안 흐림 크기",
+      "desc": "조준경을 들여다볼 때 적용되는 흐림의 세기."
+    },
+    "Depth of Field Advanced/Blur Quality": {
+      "name": "흐림 품질",
+      "desc": "흐림을 계산할 때 쓰는 표본 수. 높을수록 곱지만 더 무겁다. (Low 낮음 / Medium 보통 / High 높음)"
+    },
+    "Depth of Field Advanced/Aperture": {
+      "name": "조리개",
+      "desc": "초점이 맞는 범위의 넓이. 값이 작을수록 초점 범위가 넓어진다."
+    },
+    "Depth of Field Advanced/Focal Length": {
+      "name": "초점 거리",
+      "desc": "렌즈의 초점 거리. 클수록 배경이 더 많이 흐려진다."
+    },
+    "Depth of Field Advanced/Focal Size": {
+      "name": "초점 크기",
+      "desc": "초점이 맞는 지점의 크기."
+    },
+    "Depth of Field Advanced/Foreground Overlap": {
+      "name": "전경 겹침",
+      "desc": "앞쪽에 있는 물체의 흐림이 번져 나오는 정도."
+    }
+  }
+}

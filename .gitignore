@@ -8,3 +8,7 @@ backup/
 # 기타
 *.part
 *.pid
+
+# 빌드 산출물
+src/**/bin/
+src/**/obj/
