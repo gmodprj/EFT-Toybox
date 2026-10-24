@@ -2,8 +2,9 @@
 
 `E:\Spt`에 설치한 SPT 4.1.6(Single Player Tarkov) 모드의 관리 폴더.
 
-- 설치된 모드: [doc/INSTALLED-MODS.md](doc/INSTALLED-MODS.md)
+- 설치된 모드: [doc/INSTALLED-MODS.md](doc/INSTALLED-MODS.md) (목록), [doc/MODS-GUIDE.md](doc/MODS-GUIDE.md) (무엇을 하는 모드인지)
 - 작업 이력: [doc/WORKLOG.md](doc/WORKLOG.md)
+- 직접 만든 플러그인: [src/SptKoreanConfig](src/SptKoreanConfig) — F12 설정 창 한글화
 - 모드 추가·검증·되돌리기 절차: [doc/PROCEDURE.md](doc/PROCEDURE.md)
 - 문서 색인: [doc/README.md](doc/README.md)
 
@@ -13,6 +14,7 @@
 | --- | --- | --- |
 | `doc/` | 기록·문서 | 추적 |
 | `tools/` | Forge API 조회, 다운로드, 설치·테스트, 목록 생성 스크립트 | 추적 |
+| `src/` | 직접 만든 플러그인 소스 (빌드 결과 `bin`·`obj`는 제외) | 추적 |
 | `downloads/` | 원본 압축 파일 (약 6.2 GB) | 제외 |
 | `extracted/` | 압축 해제본, 설치 원본 (약 6.4 GB) | 제외 |
 | `backup/` | 원본 설정·프로필·SVM 프리셋 백업 (프로필 개인 데이터 포함) | 제외 |
@@ -28,5 +30,9 @@
 | `tools/download-stage.mjs` | `doc/download/manifest-<stage>.json` 기준 다운로드·크기 검증 |
 | `tools/install-and-test.ps1` | 덮어쓰기 금지 설치 + 기록 + 테스트 서버 확인 |
 | `tools/gen-installed-mods.mjs` | 설치 기록으로 `doc/INSTALLED-MODS.md` 생성 |
+| `tools/check-conflicts.mjs` | 설치 전 경로 충돌(덮어쓰기) 검사 |
+| `tools/install-koreanconfig.ps1` | 한글화 플러그인 빌드 결과와 사전 설치 |
+| `tools/check-lang-coverage.mjs` | 한글 사전이 설정 항목을 빠짐없이 덮는지 검사 |
+| `tools/check-ui-strings.ps1` | 창 UI 사전의 원문 오타 검사 (자세한 한계는 스크립트 머리말) |
 
 Node 24, PowerShell 7 기준. Forge API는 인증 없이 읽기 전용.

@@ -33,8 +33,9 @@ function readCfg(path) {
 }
 
 const only = process.argv[2];
+// 밑줄로 시작하는 파일(_ui.json)은 모드 사전이 아니다. 플러그인도 똑같이 건너뛴다.
 const langFiles = existsSync(LANG_DIR)
-  ? readdirSync(LANG_DIR).filter((f) => f.endsWith('.json'))
+  ? readdirSync(LANG_DIR).filter((f) => f.endsWith('.json') && !f.startsWith('_'))
   : [];
 
 let totalKeys = 0;

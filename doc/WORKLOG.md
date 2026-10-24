@@ -202,6 +202,15 @@
 - `사전에 없음 2`는 한글화 모드 자신(`spt.koreanconfig`)의 설정 2개다. 이미 한글이라 사전을 만들지 않았으므로 정상이며, 이 숫자는 앞으로도 2로 남는다.
 - 플러그인 관련 경고·오류 0건. **F12 한글화 작업 완료.**
 
+### 문서 정리 — 자체 제작 플러그인 반영 (06:4x)
+
+한글화 플러그인이 게임에는 깔려 있는데 모드 문서 어디에도 없어서, 설치물 목록에 올렸다.
+
+- `gen-installed-mods.mjs`의 "다른 경로로 설치된 것"에 `SptKoreanConfig 0.1.0` 추가. Forge 모드가 아니라 매니페스트·설치 기록이 없으므로 이 자리가 맞다.
+- 같은 스크립트의 로드 현황을 갱신 — 게임 플러그인 **76 → 77개**(SPT 기본 5 + 모드 71 + 자체 제작 1, 06:37 로그). 서버 모드 38개는 그대로(클라이언트 전용 플러그인이라 영향 없음).
+- [MODS-GUIDE.md](MODS-GUIDE.md)에 "직접 만든 것" 묶음 신설, "설정을 손볼 만한 곳"에 사전 파일 위치 추가. 머리말을 "Forge 모드 93개 + 직접 만든 것 1개"로 바로잡았다.
+- 루트 [README.md](../README.md)에 `src/` 와 도구 4개(`check-conflicts`, `install-koreanconfig`, `check-lang-coverage`, `check-ui-strings`)를 빠뜨리고 있어 함께 채웠다.
+
 ## 바로잡은 사항
 
 - 1차 모드는 "빼도 안전"하다고 안내했으나, Forge 기준 ODT's Item Info·Trader Modding·Modding Stats Helper도 프로필 결속 표시가 있음. [INSTALLED-MODS.md](INSTALLED-MODS.md)의 결속 열이 기준.
