@@ -87,7 +87,7 @@
 | [Weapon Customizer](https://sp-mod.com/mod/1950) | 4.0.0 | 2차 | 게임+서버 | 레일과 부착물 위치를 미세 조정해 외형을 바꾼다. |
 | [Flexible Builds](https://sp-mod.com/mod/2646) | 1.2.2 | 5차 | 게임+서버 | 무기 프리셋과 빌드 저장·적용을 개선한다. |
 | [Advanced Modding Lights](https://sp-mod.com/mod/3081) | 2.0.0 | 5차 | 게임 | 개조·빌드 화면 조명을 밝게 해 부품이 잘 보이게 한다. |
-| [Transparent Sights](https://sp-mod.com/mod/2774) | 0.2.3 | 5차 | 게임 | 조준경을 반투명하게 만들어 양쪽 눈을 뜬 채 조준하는 느낌을 준다. |
+| [Transparent Sights](https://sp-mod.com/mod/2774) | 0.2.3 | 5차 | 게임 | 조준경을 반투명하게 만들어 양쪽 눈을 뜬 채 조준하는 느낌을 준다. 설정은 F12 메뉴, 조준경별 전환은 인벤토리 아이콘 더블클릭(`TRANSP: ON` / `OFF` / `ON + MOUNT`). 첫 실행 때 `config.json` 없다는 Error가 뜨는 것은 정상 — 조준경별 설정을 처음 바꿀 때 모드가 직접 만든다. |
 
 ## 조준·사격·전투 (9개)
 
@@ -208,3 +208,4 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | EasyMounting | `...\EasyMounting\Config\config.json` | 프리셋 `AnySurface` 적용 상태 |
 | Trader Namer | `...\TraderNamer\config.json` | 이름·소개 변경. 아바타는 `avatars\<상인이름>.jpg` |
 | SVM | `Greed.exe` | 치트성 기능은 여기서 먼저 찾는다 |
+| Transparent Sights | F12 메뉴 + 조준경 아이콘 더블클릭 | 파일로 받을 설정이 없다. `plugins\7Bpencil.TransparentSights\config.json`은 조준경별 전환을 저장할 때 모드가 직접 만든다(없으면 기본값) |
