@@ -109,7 +109,7 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 
 | 모드 | 버전 | 단계 | 위치 | 설명 |
 | --- | --- | --- | --- | --- |
-| [Mag Retention Reload](https://sp-mod.com/mod/2589) | 1.3.0 | 2차 | 게임 | 재장전할 때 빈 탄창을 바닥에 버리지 않고 유지한다. |
+| [Mag Retention Reload](https://sp-mod.com/mod/2589) | 1.3.0 | 2차 | 게임 | 재장전할 때 빈 탄창을 바닥에 버리지 않고 유지한다. **현재 꺼 둠** — Direct Reload와 충돌해 탄창이 사라졌다. 아래 "알려진 충돌" 참고. 같은 기능은 UI Fixes가 맡는다. |
 | [Unload All Magazines](https://sp-mod.com/mod/2739) | 2.2.1 | 2차 | 게임 | 여러 탄창을 한 번에 비운다. |
 | [Continuous Load Ammo](https://sp-mod.com/mod/2112) | 1.2.0 | 1차 | 게임 | 인벤토리 밖에서도 탄을 연속으로 장전·해제한다. |
 | [Magazine Check Interrupt](https://sp-mod.com/mod/2643) | 1.1.1 | 5차 | 게임 | 탄창 확인 동작 중에 바로 재장전으로 이어진다. |
@@ -199,6 +199,40 @@ Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는
 - [Trader Modding And Improved Weapon Building](https://sp-mod.com/mod/1283) (2.1.2)
 - [WTT- Armory](https://sp-mod.com/mod/2246) (3.0.0)
 - [WTT- Artem](https://sp-mod.com/mod/1023) (3.0.2)
+
+## 알려진 충돌
+
+### Mag Retention Reload × Direct Reload — 탄창 소실 (2026-10-25 확인, 해결)
+
+**증상** — 레이드 중 R로 직접 장전하면 화면에 `Reload failed: Direct load flow error`가 뜨고, 때때로 **탄창이 사라진다.** 한 레이드에서 14번 발생했고 탄창 종류와는 무관했다(D60 드럼 9, MPX TTI 4, UMP45 표준 1).
+
+**원인** — 두 모드가 "재장전할 때 빼낸 탄창을 어디에 둘지"를 각자 고쳐 쓴다.
+
+- Direct Reload는 **총에 이미 꽂혀 있는 탄창**을 "새로 넣을 탄창"으로 넘겨 게임의 `ReloadMag`를 부른다(빼낼 탄창과 넣을 탄창이 같은 객체다).
+- Mag Retention Reload는 `ReloadExternalMagResult.Run`에 끼어들어 빼낸 탄창의 보관을 가로챈다.
+- 그래서 떼어낸 직후 같은 객체를 다시 넣으려는 순간 부모가 없어 `Item.get_Parent`가 예외를 던진다.
+- 예외가 트랜잭션 **중간**에 터지고 Direct Reload의 예외 처리에는 되돌리기가 없어, 떼어낸 탄창이 어느 칸에도 속하지 않은 채 남는다 — 이것이 "사라짐"이다.
+
+**조치** — Mag Retention Reload를 끈다(F12 → `탄창 회수 재장전` → `1. 일반` → `모드 사용`). 탄창 회수 기능은 UI Fixes가 맡으므로 잃는 기능은 없다. 그 모드 자신의 설명도 "끄면 UI Fixes에 넘긴다"이다.
+
+**확인 방법** — 세 조합을 하나씩 비교해 분리했다.
+
+| UI Fixes `탄창 제자리 교체` | Mag Retention `모드 사용` | 결과 |
+| --- | --- | --- |
+| 켬 | 켬 | 오류 13건 |
+| **끔** | 켬 | 오류 계속 (14번째) |
+| 켬 | **끔** | **오류 0건**, `calling ReloadMag` 4회 도달·전부 통과 |
+
+UI Fixes의 `탄창 제자리 교체`는 켠 채로 문제없다.
+
+### 헷갈리기 쉬운 정상 동작
+
+Direct Reload의 아래 두 알림은 고장이 아니다.
+
+| 알림 | 뜻 |
+| --- | --- |
+| `Cannot start a reload right now` | 달리는 중 등 게임이 재장전을 거절하는 상태. 멈춰 서면 된다 |
+| `No free slot to stow the current magazine` | 빼낸 탄창을 둘 빈 칸이 없음. 모드가 억지로 진행하지 않고 멈추는 설계다 |
 
 ## 지우면 안 되는 파일
 
