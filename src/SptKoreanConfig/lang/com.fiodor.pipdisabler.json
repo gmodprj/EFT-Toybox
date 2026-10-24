@@ -1,0 +1,324 @@
+{
+  "guid": "com.fiodor.pipdisabler",
+  "name": "조준경 PiP 제거 (PiP-Disabler)",
+  "sections": {
+    "General": "일반",
+    "Scope Effects": "조준경 화면 효과",
+    "Graphics": "그래픽",
+    "Hacks": "보정 처리",
+    "Global Mesh Surgery settings": "메시 절단 — 공통",
+    "Per scope settings": "메시 절단 — 조준경별",
+    "Debug": "디버그"
+  },
+  "settings": {
+    "Debug/DebugShowHousingMask": {
+      "name": "렌즈 마스크 보기",
+      "desc": "렌즈 스텐실 마스크가 잡힌 자리를 빨간색으로 덮어 보여 준다."
+    },
+    "Debug/DebugShowScopeShadowMask": {
+      "name": "그림자 마스크 보기",
+      "desc": "조준경 그림자 마스크를 초록색으로 덮어 보여 준다."
+    },
+    "Debug/Debug logging": { "name": "상세 로그", "desc": "진단용 로그를 자세히 남긴다." },
+    "Debug/Draw reticle after everything": {
+      "name": "조준선을 맨 마지막에 그리기",
+      "desc": "예전 설정. 지금은 조준선이 항상 맨 마지막에, 야시경 이후 전용 셰이더로 그려진다."
+    },
+
+    "General/Mod Enabled": { "name": "모드 사용", "desc": "모드 전체를 켜고 끄는 주 스위치." },
+    "General/Mod Toggle Key": { "name": "모드 전환 키", "desc": "모드 전체를 켜고 끄는 단축키." },
+    "General/Auto Disable For NV/Thermals": {
+      "name": "야시경·열상에서 자동 해제",
+      "desc": "열상·야시 조준경에서는 모드를 자동으로 끈다."
+    },
+    "General/Auto Bypass Name Contains": {
+      "name": "이름으로 자동 제외",
+      "desc": "세미콜론(;)으로 구분한 목록. 오브젝트 이름이나 조준경 키에 이 글자가 들어가면 모드를 건너뛴다."
+    },
+    "General/Scope Blacklist Names": {
+      "name": "제외 목록",
+      "desc": "모드를 적용하지 않을 조준경 키 목록. 세미콜론(;)으로 구분한다."
+    },
+    "General/Scope Blacklist Toggle Entry Key": {
+      "name": "제외 목록 추가·삭제 키",
+      "desc": "조준 중에 누르면 지금 조준경을 제외 목록에 넣거나 뺀다."
+    },
+    "General/Scope Whitelist Names": {
+      "name": "허용 목록",
+      "desc": "모드를 적용할 조준경만 적은 목록. 비워 두면 허용 목록을 쓰지 않는다."
+    },
+    "General/Scope Whitelist Toggle Entry Key": {
+      "name": "허용 목록 추가·삭제 키",
+      "desc": "조준 중에 누르면 지금 조준경을 허용 목록에 넣거나 뺀다."
+    },
+    "General/FOV Fix Behaviour": {
+      "name": "시야각 보정 방식",
+      "desc": "켜면 1배율 시야각을 게임 설정의 시야각 값에 맞춘다."
+    },
+    "General/Global Scope Scaling Multiplier": {
+      "name": "조준경 크기 배수",
+      "desc": "모든 조준경의 크기를 한꺼번에 조절한다. 조준경이 너무 작거나 크게 느껴질 때 쓴다."
+    },
+    "General/Global Reticle Scaling Multiplier": {
+      "name": "조준선 크기 배수",
+      "desc": "모든 조준선의 크기를 한꺼번에 조절한다."
+    },
+    "General/Baseline FOV": {
+      "name": "기준 시야각",
+      "desc": "배율에 따른 시야각을 계산할 기준값(50으로 두면 2배율은 25°가 된다). 단계식 조준경의 1배율은 항상 35°로 고정된다."
+    },
+    "General/FOV Animation Duration": {
+      "name": "시야각 전환 시간",
+      "desc": "배율을 바꿀 때 시야각이 변하는 데 걸리는 시간."
+    },
+    "General/Depth of field": {
+      "name": "조준경 밖 흐림",
+      "desc": "조준경 렌즈 바깥 영역을 흐리게 처리한다."
+    },
+    "General/NVG Lens Blur": {
+      "name": "야시경 렌즈 흐림",
+      "desc": "실제 야시경처럼 보이도록 렌즈 안 화면을 흐리게 한다."
+    },
+
+    "Global Mesh Surgery settings/PlaneOffsetMeters": {
+      "name": "절단면 간격 (m)",
+      "desc": "절단면을 법선 방향으로 얼마나 밀지 정한다(미터)."
+    },
+    "Global Mesh Surgery settings/Plane1Radius": {
+      "name": "1번 면 반지름 (m)",
+      "desc": "카메라 쪽 절단 원뿔의 가까운 쪽 반지름(미터). 보통 조준경 렌즈는 0.01~0.02m 정도다."
+    },
+    "Global Mesh Surgery settings/Plane1OffsetMeters": {
+      "name": "1번 면 위치 (m)",
+      "desc": "렌즈 기준점에서 총열 축을 따라 1번 면을 얼마나 띄울지 정한다(미터)."
+    },
+    "Global Mesh Surgery settings/Plane2Position": {
+      "name": "2번 면 위치 (0~1)",
+      "desc": "가까운 쪽을 기준으로 한 2번 면의 위치. 절단 길이를 바꿔도 이 면의 실제 깊이는 그대로다."
+    },
+    "Global Mesh Surgery settings/Plane2Radius": { "name": "2번 면 반지름 (m)", "desc": "2번 면에서의 반지름(미터)." },
+    "Global Mesh Surgery settings/Plane3Position": {
+      "name": "3번 면 위치 (0~1)",
+      "desc": "가까운 쪽 0, 먼 쪽 1 기준으로 한 3번 면의 깊이."
+    },
+    "Global Mesh Surgery settings/Plane3Radius": { "name": "3번 면 반지름 (m)", "desc": "3번 면에서의 반지름(미터)." },
+    "Global Mesh Surgery settings/Plane4Position": {
+      "name": "4번 면 위치 (0~1)",
+      "desc": "가까운 쪽 0, 먼 쪽 1 기준으로 한 4번 면의 깊이. 보통 1로 둔다."
+    },
+    "Global Mesh Surgery settings/Plane4Radius": {
+      "name": "4번 면 반지름 (m)",
+      "desc": "4번 면(플레이어에서 가장 먼 쪽)에서의 반지름(미터)."
+    },
+    "Global Mesh Surgery settings/CutStartOffset": {
+      "name": "절단 시작 위치",
+      "desc": "접안렌즈보다 카메라 쪽으로 얼마나 뒤에서 자르기 시작할지 정한다. 0이면 접안렌즈 바로 그 자리, 0.05면 5cm 뒤(조준경 내부 구조까지 잘라 낸다). 절단 길이를 바꿔도 이 면은 움직이지 않는다."
+    },
+    "Global Mesh Surgery settings/CutLength": {
+      "name": "절단 길이",
+      "desc": "시작 면에서 대물렌즈 쪽으로 얼마나 길게 자를지 정한다. 이 값을 바꾸면 끝 면만 움직인다."
+    },
+    "Global Mesh Surgery settings/NearPreserveDepth": {
+      "name": "앞쪽 남길 두께",
+      "desc": "시작 면에서 이만큼은 자르지 않고 남긴다. 조준할 때 조준선을 감싸는 얇은 테두리가 남는다. 0.01=1cm(기본), 0.02~0.04면 더 두껍고, 0이면 전부 잘라 낸다."
+    },
+    "Global Mesh Surgery settings/Reticle Base Size": { "name": "조준선 기본 크기", "desc": "조준선의 크기." },
+    "Global Mesh Surgery settings/Mesh Reticle Min Scale": {
+      "name": "메시 조준선 최소 크기",
+      "desc": "보정과 배율을 거친 뒤 메시 조준선이 작아질 수 있는 한계. 0이면 제한 없음."
+    },
+    "Global Mesh Surgery settings/Mesh Reticle Max Scale": {
+      "name": "메시 조준선 최대 크기",
+      "desc": "보정과 배율을 거친 뒤 메시 조준선이 커질 수 있는 한계. 0이면 제한 없음."
+    },
+    "Global Mesh Surgery settings/Mesh Reticle Normalized Scale": {
+      "name": "메시 조준선 보정 배수",
+      "desc": "메시 조준선 크기를 고르게 맞춘 뒤에 곱하는 값."
+    },
+    "Global Mesh Surgery settings/Mesh Reticle Minimum Stroke Enabled": {
+      "name": "조준선 최소 굵기 사용",
+      "desc": "작게 줄여도 가는 선이 사라지지 않도록 화면 기준으로 살짝 굵게 그린다."
+    },
+    "Global Mesh Surgery settings/Mesh Reticle Minimum Stroke Pixels": {
+      "name": "조준선 최소 굵기 (픽셀)",
+      "desc": "메시 조준선이 화면에서 유지할 최소 두께(픽셀)."
+    },
+    "Global Mesh Surgery settings/ExpandSearchToWeaponRoot": {
+      "name": "총기 전체에 적용",
+      "desc": "메시 절단을 조준경만이 아니라 총기 전체를 대상으로 돌린다."
+    },
+
+    "Graphics/Keep scoped LOD Bias until inventory is opened": {
+      "name": "조준 해제 후에도 LOD 유지",
+      "desc": "켜면 조준을 풀어도 조준 중 LOD 설정이 남아 있다가 인벤토리나 전리품 창을 열 때 돌아온다. 끄면 조준을 푸는 즉시 되돌린다."
+    },
+    "Graphics/Manual LOD Bias": {
+      "name": "LOD 수동 설정",
+      "desc": "조준 중에 쓸 LOD 값. 0이면 자동(배율 × 자동 LOD 배수). 값이 크면 성능이 나빠진다."
+    },
+    "Graphics/Auto LOD bias multiplier": {
+      "name": "자동 LOD 배수",
+      "desc": "자동 계산에 쓰는 배수. 값이 크면 성능이 나빠진다."
+    },
+
+    "Hacks/ADS Scope Alignment Angle Tolerance": {
+      "name": "조준 정렬 허용 각도",
+      "desc": "달리기나 자세 전환 뒤, 조준경 축과 카메라가 이 각도 안으로 맞아야 모드가 작동한다."
+    },
+    "Hacks/Post Sprint ADS Gate Duration": {
+      "name": "달린 뒤 정렬 검사 시간",
+      "desc": "달리기를 멈춘 뒤 얼마 동안 정렬 검사를 할지 정한다."
+    },
+    "Hacks/Bypass During Stance Transitions": {
+      "name": "자세 전환 중 건너뛰기",
+      "desc": "서기와 엎드리기를 오가는 동안에는 모드를 적용하지 않는다."
+    },
+    "Hacks/Post Stance ADS Gate Duration": {
+      "name": "자세 전환 뒤 정렬 검사 시간",
+      "desc": "자세를 바꾼 뒤 얼마 동안 정렬 검사를 할지 정한다."
+    },
+    "Hacks/Bypass during reload": { "name": "재장전 중 건너뛰기", "desc": "재장전하는 동안에는 모드를 적용하지 않는다." },
+    "Hacks/Reload Bypass Modifier": {
+      "name": "재장전 건너뛰기 보정",
+      "desc": "재장전 중 건너뛰는 시간을 조절한다. 값이 클수록 짧아진다."
+    },
+    "Hacks/Scale Sway With Camera FOV": {
+      "name": "시야각에 따라 흔들림 줄이기",
+      "desc": "조준 중 시야각에 비례해 총기 흔들림을 줄인다."
+    },
+    "Hacks/Sway Modifier": { "name": "흔들림 감소 정도", "desc": "흔들림을 얼마나 줄일지 조절한다." },
+    "Hacks/Manual Weapon Scale": {
+      "name": "총기 크기 수동 보정",
+      "desc": "조준 중 총기 크기를 직접 보정한다. 값이 클수록 총이 작아 보인다."
+    },
+    "Hacks/Visual Recoil Compensation": {
+      "name": "시각 반동 보정",
+      "desc": "낮은 시야각에서 조준이 어긋나 보이지 않도록 화면만 조준경 쪽으로 옮긴다. 음수면 반대 방향, 0이면 끈다."
+    },
+    "Hacks/Suppress Fire Mode Switch Movement": {
+      "name": "연사 전환 동작 숨기기",
+      "desc": "연사 모드는 바뀌되 총을 움직이는 동작은 재생하지 않는다."
+    },
+    "Hacks/Suppress Magnification Switch Movement": {
+      "name": "배율 전환 동작 숨기기",
+      "desc": "배율은 바뀌되 총을 움직이는 동작은 재생하지 않는다."
+    },
+    "Hacks/Force Recoil Return To Zero": {
+      "name": "반동 복귀를 제자리로 고정",
+      "desc": "반동 뒤 손이 돌아오는 지점을 타르코프의 무작위 보정 대신 항상 원위치로 맞춘다."
+    },
+
+    "Per scope settings/Save custom settings key": {
+      "name": "조준경별 설정 저장 키",
+      "desc": "조준 중에 누르면 이 항목들의 값을 지금 조준경 전용으로 custom_mesh_surgery_settings.json 에 저장한다."
+    },
+    "Per scope settings/DeleteCustomMeshSurgerySettingsKey": {
+      "name": "조준경별 설정 삭제 키",
+      "desc": "조준 중에 누르면 지금 조준경의 전용 설정을 custom_mesh_surgery_settings.json 에서 지운다."
+    },
+    "Per scope settings/PlaneOffsetMeters": { "name": "절단면 간격 (m)", "desc": "이 조준경 전용 절단면 간격(미터)." },
+    "Per scope settings/Plane1Radius": { "name": "1번 면 반지름 (m)", "desc": "이 조준경 전용 값(미터)." },
+    "Per scope settings/Plane1OffsetMeters": { "name": "1번 면 위치 (m)", "desc": "이 조준경 전용 값(미터)." },
+    "Per scope settings/Plane2Position": { "name": "2번 면 위치 (0~1)", "desc": "이 조준경 전용 값. 절단 길이를 바꿔도 가까운 쪽 기준은 유지된다." },
+    "Per scope settings/Plane2Radius": { "name": "2번 면 반지름 (m)", "desc": "이 조준경 전용 값(미터)." },
+    "Per scope settings/Plane3Position": { "name": "3번 면 위치 (0~1)", "desc": "이 조준경 전용 값." },
+    "Per scope settings/Plane3Radius": { "name": "3번 면 반지름 (m)", "desc": "이 조준경 전용 값(미터)." },
+    "Per scope settings/Plane4Position": { "name": "4번 면 위치 (0~1)", "desc": "이 조준경 전용 값." },
+    "Per scope settings/Plane4Radius": { "name": "4번 면 반지름 (m)", "desc": "이 조준경 전용 값(미터)." },
+    "Per scope settings/CutStartOffset": { "name": "절단 시작 위치", "desc": "이 조준경 전용 값(미터)." },
+    "Per scope settings/CutLength": { "name": "절단 길이", "desc": "이 조준경 전용 값(미터)." },
+    "Per scope settings/NearPreserveDepth": { "name": "앞쪽 남길 두께", "desc": "이 조준경 전용 값(미터)." },
+    "Per scope settings/Reticle Size": {
+      "name": "조준선 크기",
+      "desc": "배율에 따라 커지지 않는 조준선의 크기. 저장해야 적용된다."
+    },
+    "Per scope settings/Reticle Size Multiplier": {
+      "name": "조준선 크기 배수",
+      "desc": "이 조준경의 조준선 크기에 곱하는 값. 1이면 그대로. 저장해야 적용된다."
+    },
+    "Per scope settings/Variable Reticle Minimum Size": {
+      "name": "가변 조준선 최소 크기",
+      "desc": "이 조준경 전용 최소 크기. 최대·최소 중 하나라도 0이면 동작하지 않는다. 저장해야 적용된다."
+    },
+    "Per scope settings/Variable Reticle Maximum Size": {
+      "name": "가변 조준선 최대 크기",
+      "desc": "이 조준경 전용 최대 크기. 최대·최소 중 하나라도 0이면 동작하지 않는다. 저장해야 적용된다."
+    },
+    "Per scope settings/Weapon Scale Min Magnification": {
+      "name": "최소 배율에서 총기 크기",
+      "desc": "최소 배율일 때 총기 크기 보정. 0이면 공통값을 쓴다. 값이 클수록 총이 작아 보인다. 저장해야 적용된다."
+    },
+    "Per scope settings/Weapon Scale Max Magnification": {
+      "name": "최대 배율에서 총기 크기",
+      "desc": "최대 배율일 때 총기 크기 보정. 0이면 공통값을 쓴다. 값이 클수록 총이 작아 보인다. 저장해야 적용된다."
+    },
+    "Per scope settings/Weapon Scale Multiplier": {
+      "name": "총기 크기 배수",
+      "desc": "위 두 총기 크기 값에 함께 곱한다. 1이면 그대로. 저장해야 적용된다."
+    },
+    "Per scope settings/Visual Recoil Compensation": {
+      "name": "시각 반동 보정",
+      "desc": "이 조준경 전용 값. 0이면 공통값을 쓰고, 음수면 반대 방향이다. 저장해야 적용된다."
+    },
+    "Per scope settings/Vignette Opacity": { "name": "비네트 진하기", "desc": "이 조준경 전용 값. 0이면 공통 설정을 쓴다." },
+    "Per scope settings/Vignette Radius": { "name": "비네트 반지름", "desc": "이 조준경 전용 값. 0이면 공통 설정을 쓴다." },
+    "Per scope settings/Vignette Softness": { "name": "비네트 부드러움", "desc": "이 조준경 전용 값. 0이면 공통 설정을 쓴다." },
+    "Per scope settings/ExpandSearchToWeaponRoot": {
+      "name": "총기 전체에 적용",
+      "desc": "이 조준경에서만 메시 절단 대상을 총기 전체로 넓힌다."
+    },
+
+    "Scope Effects/Vignette": { "name": "비네트", "desc": "조준경 구멍 둘레에 어두운 테를 그린다." },
+    "Scope Effects/Vignette Opacity": {
+      "name": "비네트 진하기",
+      "desc": "테의 최대 진하기. 0이면 보이지 않고 1이면 완전히 검다."
+    },
+    "Scope Effects/Vignette Radius": {
+      "name": "비네트 반지름",
+      "desc": "어두워지지 않는 가운데 범위. 0이면 중심부터 어두워지고, 1이면 가장자리만 어두워진다."
+    },
+    "Scope Effects/Vignette Softness": {
+      "name": "비네트 부드러움",
+      "desc": "테가 번지는 폭. 0이면 경계가 또렷하고 1이면 전부 그러데이션이다."
+    },
+    "Scope Effects/Scope Shadow": {
+      "name": "조준경 그림자",
+      "desc": "렌즈 영역을 뺀 화면 전체를 검게 덮는다."
+    },
+    "Scope Effects/ScopeShadow Persist On Unscope": {
+      "name": "조준 해제 후에도 그림자 유지",
+      "desc": "조준을 풀어도 시야각이 돌아올 때까지 그림자를 남긴다. 시야각 전환 시간을 0으로 둔 경우에 쓸모 있다."
+    },
+    "Scope Effects/ScopeShadow Opacity": { "name": "조준경 그림자 진하기", "desc": "덮는 그림자의 최대 진하기." },
+    "Scope Effects/Depth of field Blur Downsample": {
+      "name": "바깥 흐림 — 해상도 축소",
+      "desc": "조준경 밖을 흐릴 때 줄이는 배수. 값이 크면 빨라지지만 뭉개진다."
+    },
+    "Scope Effects/Depth of field Blur Iterations": {
+      "name": "바깥 흐림 — 반복 횟수",
+      "desc": "조준경 밖 흐림을 몇 단계로 처리할지 정한다."
+    },
+    "Scope Effects/Depth of field Blur Radius": { "name": "바깥 흐림 — 반지름", "desc": "흐림을 퍼뜨리는 간격(픽셀)." },
+    "Scope Effects/Depth of field Blur Opacity": { "name": "바깥 흐림 — 세기", "desc": "흐려진 화면을 얼마나 섞을지 정한다." },
+    "Scope Effects/Depth of field Blur Darkening": {
+      "name": "바깥 흐림 — 어둡게",
+      "desc": "흐려진 바깥 화면을 추가로 어둡게 한다."
+    },
+    "Scope Effects/Depth of field Blur Radial Gate": {
+      "name": "바깥 흐림 — 거리별 적용",
+      "desc": "렌즈 중심에서 멀어질수록 서서히 흐려지게 한다."
+    },
+    "Scope Effects/Depth of field Blur Radial Gate Start": {
+      "name": "바깥 흐림 — 시작 거리",
+      "desc": "렌즈 반지름을 단위로, 중심에서 얼마나 떨어진 곳부터 흐려질지 정한다."
+    },
+    "Scope Effects/Depth of field Blur Radial Gate Softness": {
+      "name": "바깥 흐림 — 번짐 폭",
+      "desc": "거리별 적용이 서서히 바뀌는 폭. 렌즈 반지름이 단위다."
+    },
+    "Scope Effects/NVG Lens Blur Multiplier": {
+      "name": "야시경 흐림 배수",
+      "desc": "야시경 렌즈 흐림의 세기. 클수록 더 흐려진다."
+    }
+  }
+}
