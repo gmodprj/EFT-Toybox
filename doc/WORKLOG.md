@@ -331,3 +331,12 @@ Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했
 - 로그가 포르투갈어로 찍힌다. `Mod carregado com sucesso.`가 성공 신호다.
 - **초상화가 없는 상인 11명**은 원본 그대로 간다: Смотритель(등대)·APC(BTR)·Storyteller·Amonya·Harry·Gunwright·Victor Barinov·Gunsmith·PresetTrader·Ledger·Elias Ward(NATO Quartermaster). 이 모드가 다루는 건 바닐라 9명 + Lotus·Scorpion·Artem·Couturier·Croupier 등이다.
 - 제작자는 적용 후 런처의 **Settings → Clean Temp Files**를 누르라고 안내한다. `%LOCALAPPDATA%\Temp\Battlestate Games`도 `E:\Spt\cache`도 없어서 지울 캐시를 특정하지 못했다(있는 건 `user\cache\bundleHashCache.json`과 BepInEx 타입 캐시뿐이라 성격이 다르다). 초상화가 그대로면 런처에서 한 번 눌러 보는 쪽이 맞다.
+
+### 등대지기·BTR 판매 목록이 비어 있는 건 (2026-10-25 11:0x)
+
+6차로 넣은 PortableTraders 덕에 두 상인이 주 화면에 떴는데 **아무것도 팔지 않는다**는 제보. 모드 설정·SPT DB를 직접 열어 확인했다.
+
+- `database/traders/638f541a29ffd1183d187f57/assort.json`(등대지기), `656f0f98d80a697f855d34b1/assort.json`(BTR) 모두 `{"barter_scheme":{},"items":[],"loyal_level_items":{}}`. 메카닉의 같은 파일은 385KB다. 등대지기는 `sell_category: 0`에 수리·보험도 false라 **사지도 않는다**.
+- 둘은 원래 서비스·퀘스트 전용이다. 등대지기 `services.json`에 Zryachiy 지원·ExUsec 충성·교단 지원 3종(각각 선행 퀘스트), BTR에 물품 배달·택시·엄호·환승 배달 4종.
+- 즉 PortableTraders는 정상 동작이다. 설치 로그의 `30 task(s) reachable from the main menu`가 이 모드의 결과물이고, 확인은 거래 탭이 아니라 **임무 탭**에서 한다.
+- 사용자 판단으로 **품목은 채우지 않기로** 했다. 바닐라 설계를 그대로 둔다. 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.
