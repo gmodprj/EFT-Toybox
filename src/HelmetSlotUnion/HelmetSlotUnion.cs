@@ -115,7 +115,95 @@ public class HelmetSlotUnion(
             $"[HelmetSlotUnion] 헬멧 {helmets.Count}종, 칸 묶음 {union.Count}개. "
                 + $"{changedSlots}개 칸에 항목 {addedEntries}개를 더했다."
         );
+
+        if (config.RemoveAttachmentConflicts || config.RemoveAllConflictsOnAttachments)
+        {
+            RemoveConflicts(items, helmets, config);
+        }
+
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// "A와 B는 동시에 장착할 수 없습니다" 를 만드는 ConflictingItems 를 정리한다.
+    ///
+    /// 칸 필터를 넓혀도 이 목록이 남아 있으면 끼울 수 없다. 예컨대 Ops-Core FAST 멀티 히트
+    /// 바이저는 Single Clamp 레일 어댑터 마운트를 막는다. 둘 다 헬멧 파츠이므로 지운다.
+    ///
+    /// 기본값은 범위 안(헬멧 + 헬멧 파츠)끼리의 항목만 지운다. 헤드셋·안면 보호구처럼
+    /// 범위 밖을 가리키는 항목은 착용 조합 쪽 이야기라 Less Restricting Headwear 에 맡긴다.
+    /// </summary>
+    private void RemoveConflicts(
+        Dictionary<MongoId, TemplateItem> items,
+        List<TemplateItem> helmets,
+        Config config
+    )
+    {
+        var scope = new HashSet<MongoId>();
+        foreach (var helmet in helmets) scope.Add(helmet.Id);
+
+        // 헬멧 칸에 들어갈 수 있는 파츠, 그리고 그 파츠에 또 달리는 파츠까지 따라간다.
+        var pending = new Queue<MongoId>();
+        foreach (var helmet in helmets)
+        foreach (var slot in Slots(helmet))
+        foreach (var filter in Filters(slot))
+        {
+            if (filter.Filter is not { } ids) continue;
+            foreach (var id in ids)
+            {
+                if (scope.Add(id)) pending.Enqueue(id);
+            }
+        }
+
+        while (pending.Count > 0)
+        {
+            if (!items.TryGetValue(pending.Dequeue(), out var part)) continue;
+            foreach (var slot in Slots(part))
+            foreach (var filter in Filters(slot))
+            {
+                if (filter.Filter is not { } ids) continue;
+                foreach (var id in ids)
+                {
+                    if (scope.Add(id)) pending.Enqueue(id);
+                }
+            }
+        }
+
+        var touched = 0;
+        var removed = 0;
+        var kept = 0;
+        foreach (var id in scope)
+        {
+            if (!items.TryGetValue(id, out var item)) continue;
+            if (item.Properties?.ConflictingItems is not { Count: > 0 } conflicts) continue;
+
+            var before = conflicts.Count;
+            if (config.RemoveAllConflictsOnAttachments)
+            {
+                conflicts.Clear();
+            }
+            else
+            {
+                conflicts.RemoveWhere(scope.Contains);
+            }
+
+            var gone = before - conflicts.Count;
+            kept += conflicts.Count;
+            if (gone <= 0) continue;
+
+            touched++;
+            removed += gone;
+            if (config.Debug)
+            {
+                logger.Debug($"[HelmetSlotUnion] 충돌 정리 {id}: {before} → {conflicts.Count} (-{gone})");
+            }
+        }
+
+        var mode = config.RemoveAllConflictsOnAttachments ? "통째로" : "범위 안끼리만";
+        logger.Success(
+            $"[HelmetSlotUnion] 충돌 정리({mode}): 대상 {scope.Count}개 중 {touched}개에서 {removed}건을 지웠다. "
+                + $"남은 항목 {kept}건."
+        );
     }
 
     /// <summary>Headwear 밑에 달린 아이템 중 부착 칸이 있는 것.</summary>
