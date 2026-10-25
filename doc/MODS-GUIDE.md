@@ -1,6 +1,6 @@
 # 설치된 모드 설명
 
-> 2026-10-25 기준 Forge 모드 **93개** + 직접 만든 것 **1개**. 무엇을 하는 모드인지 기능별로 묶어 적은 문서.
+> 2026-10-25 기준 Forge 모드 **106개** + Forge 밖 **3개**(GitHub 2·Nexus 1) + 직접 만든 것 **1개**. 무엇을 하는 모드인지 기능별로 묶어 적은 문서.
 > 버전·설치 파일 수·설치 기록은 [INSTALLED-MODS.md](INSTALLED-MODS.md)(자동 생성), 작업 경과는 [WORKLOG.md](WORKLOG.md).
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.40743)
@@ -8,7 +8,7 @@
 - **결속** = Forge "프로필 결속" 표시. 설치하고 플레이한 뒤 제거하면 프로필이 깨질 수 있다.
 - 설명은 모드 소개와 이번 설치에서 실제로 확인한 동작을 합쳐 적었다.
 
-## 기반 라이브러리 (2개)
+## 기반 라이브러리 (3개)
 
 다른 모드가 요구하는 것. 단독으로는 눈에 보이는 변화가 없다.
 
@@ -16,6 +16,7 @@
 | --- | --- | --- | --- | --- |
 | [Color Converter API](https://sp-mod.com/mod/1090) | 1.2.0 | 1차 | 게임 | 아이템 배경색에 16진수 색상 코드를 쓸 수 있게 하는 클라이언트 API. 색을 쓰는 모드들의 선행 조건. |
 | [WTT - CommonLib](https://sp-mod.com/mod/2310) | 3.0.6 | 2차 | 게임+서버 | WTT 계열 모드가 커스텀 아이템·퀘스트·의류를 추가할 때 쓰는 서버/클라이언트 공용 라이브러리. |
+| [UnityToolkit](https://sp-mod.com/mod/1426) | 2.0.2 | 6차 | 게임 | 클라이언트 모드용 공용 라이브러리(UniTask·ZLinq 등). `BepInEx\patchers`에 프리패처도 깔려 게임 시작 중 어셈블리를 교체한다. Forge 표기는 4.1.5지만 4.1.6에서 정상 동작하는 것을 게임 로그로 확인했다. Field Attachments·Scrollable Attachments의 선행 조건. |
 
 ## 인터페이스·화면 편의 (14개)
 
@@ -77,7 +78,7 @@
 | [BALL - Better Ammo Loading List](https://sp-mod.com/mod/2221) | 1.1.1 | 1차 | 게임 | 탄약 선택 목록을 읽기 쉽게 정리한다. |
 | [Colored Tracers](https://sp-mod.com/mod/2037) | 3.0.1 | 1차 | 서버 | 탄의 관통력에 따라 예광탄 색을 다르게 한다. |
 
-## 총기 개조·빌드 화면 (7개)
+## 총기 개조·빌드 화면 (9개)
 
 | 모드 | 버전 | 단계 | 위치 | 설명 |
 | --- | --- | --- | --- | --- |
@@ -88,8 +89,10 @@
 | [Flexible Builds](https://sp-mod.com/mod/2646) | 1.2.2 | 5차 | 게임+서버 | 무기 프리셋과 빌드 저장·적용을 개선한다. |
 | [Advanced Modding Lights](https://sp-mod.com/mod/3081) | 2.0.0 | 5차 | 게임 | 개조·빌드 화면 조명을 밝게 해 부품이 잘 보이게 한다. |
 | [Transparent Sights](https://sp-mod.com/mod/2774) | 0.2.3 | 5차 | 게임 | 조준경을 반투명하게 만들어 양쪽 눈을 뜬 채 조준하는 느낌을 준다. 설정은 F12 메뉴, 조준경별 전환은 인벤토리 아이콘 더블클릭(`TRANSP: ON` / `OFF` / `ON + MOUNT`). 첫 실행 때 `config.json` 없다는 Error가 뜨는 것은 정상 — 조준경별 설정을 처음 바꿀 때 모드가 직접 만든다. |
+| [Tylevo's Field Attachments](https://sp-mod.com/mod/3125) | 1.2.0 | 6차 | 게임 | **결속** 인벤토리를 열지 않고 레이드 중에 부품을 바꾼다. Left Alt를 누르면 무기 주변에 카드가 뜨고, 들고 있는 부품 중에서 광학·소음기·손잡이를 고른다. 개머리판·핸드가드·권총 손잡이까지 바꾸려면 Leatherman 멀티툴을 지녀야 한다. UnityToolkit 2.0.2 이상 필요. |
+| [Scrollable Attachments](https://sp-mod.com/mod/2677) | 2.0.0 | 6차 | 게임 | 개조 화면의 부착물 목록을 휠로 넘긴다. UnityToolkit 필요. |
 
-## 조준·사격·전투 (9개)
+## 조준·사격·전투 (12개)
 
 stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, 나머지는 조작 편의.
 
@@ -104,6 +107,9 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Default Fire Mode Fixer](https://sp-mod.com/mod/1416) | 2.1.0 | 5차 | 서버 | 무기 기본 발사모드를 단발이 아닌 연발로 맞춘다(샷건은 2연발). |
 | [Fast Grenade Throw](https://sp-mod.com/mod/2783) | 2.0.0 | 5차 | 게임 | 예전 방식의 즉시 수류탄 투척을 되살린다(오버핸드·언더핸드 별도 키). |
 | [Tripwire Improvement](https://sp-mod.com/mod/2618) | 1.1.0 | 5차 | 게임 | 와이어 트랩 키트를 무한으로 쓰고 폭발 카운트다운·설치 범위를 조정한다. |
+| [ECOTI - Enhanced Clip-On Thermal Imager](https://sp-mod.com/mod/2930) | 3.4.2 | 6차 | 게임+서버 | **결속** 야투경 앞에 물리는 클립온 열상(AN/PAS-29B). 열상이 화면을 덮지 않고 야투경 튜브 원 **안에만** 겹친다. Peacekeeper가 판다(본체 LL4 $2,000, 열상 라이저·스코프링 LL3 $1,750, 각 한도 3). 서버가 처음 뜰 때 설치된 야투경(WTT-Artem 등)에 맞춘 호환 파일 15개를 스스로 만든다. 3.4.2가 **PiP Disabler와의 열상 표시 문제를 고친 버전**이라 그 아래로 내리지 않는다. Better Thermal과 같은 화면을 건드리므로 이상하면 그쪽을 먼저 끈다. |
+| [BrightLasers](https://sp-mod.com/mod/1358) | 3.0.0 | 6차 | 게임+서버 | 레이저 밝기·굵기·색을 F12에서 조절한다. 3.0.0부터 번들 모드가 아니어서 WTT Content Backport와 충돌하지 않는다. |
+| [No Barrel Shadow](https://sp-mod.com/mod/2780) | 2.0.1 | 6차 | 게임 | **결속** 라이트·전술 장비가 총구에 드리우던 그림자를 없애고, 조명별 밝기·세기를 F12에서 조절한다. 결속 표시가 있지만 클라이언트 전용이다. |
 
 ## 장전·탄약 취급 (6개)
 
@@ -116,7 +122,7 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Direct Reload & Painless Meds](https://sp-mod.com/mod/3074) | 1.3.2 | 5차 | 게임+서버 | 느슨한 탄약에서 바로 재장전한다. 의료품 사용시간 x0.5·약물 지속 x2 같은 수치 변경도 기본 포함되므로 SVM 설정과 겹치는지 볼 것(`config.json`). |
 | [Low Ammo Cue](https://sp-mod.com/mod/3046) | 1.0.0 | 5차 | 게임 | 잔탄이 적어지면 금속음이 점점 커지며 알려 준다. |
 
-## 상인·플레아 화면 (10개)
+## 상인·플레아 화면 (17개)
 
 상인 목록이 길어진 상태를 받쳐 주는 쪽. 커스텀 상인 본체는 아래 묶음.
 
@@ -132,10 +138,17 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Ultimate Trader Assort Editor](https://sp-mod.com/mod/2834) | 2.1.1 | 5차 | 게임+서버 | 상인 판매 목록(어소트)을 세부까지 편집하는 도구. |
 | [Hide Locked Flea](https://sp-mod.com/mod/3152) | 1.0.0 | 5차 | 게임+서버 | 플레아에서 잠긴(구매 불가) 매물을 숨기는 필터를 넣는다. |
 | [Refined Flea Offer List](https://sp-mod.com/mod/2623) | 1.2.0 | 5차 | 게임 | 플레아 카테고리 목록에서 아이템별 최저가만 보여 준다. |
+| [Quick Trader Load Times](https://github.com/JoelHauser/QuickTraderLoadTimes) | 1.0.0 | 6차 | 게임+서버 | **Forge 밖**(GitHub·MIT). 상인 화면과 플레아가 뜨는 속도를 끌어올린다 — 한 프레임에 칸 하나씩 그리던 것을 프레임 예산 안에서 여러 개씩, 상인을 바꿀 때 스태시를 한 프레임에 다시 그리던 것을 여러 프레임에 나눠서. 상인이 늘어난 지금 체감이 가장 큰 쪽이다. |
+| [Moe-TradeMarker](https://sp-mod.com/mod/2736) | 1.2.6 | 6차 | 게임+서버 | **결속** 상인에게서 산 물건에 배지를 붙여 전리품과 구분한다. 원하면 그 물건의 플레아 재판매를 막는다(기본 켜짐). QuickSell 연동. |
+| [OpenBarters](https://sp-mod.com/mod/3194) | 1.0.1 | 6차 | 게임 | 물물교환 대금을 요구 품목 대신 **상인이 사주는 아무 아이템**으로 치른다(합산 가치가 요구치를 넘으면 성립). |
+| [All Weapons Flea](https://sp-mod.com/mod/3200) | 1.0.1 | 6차 | 서버 | 상인 전용이던 총기를 플레아에서 사고팔 수 있게 한다(무기 238종, BSG 제한 33개 해제). 총기 파츠를 모으는 데 직접 도움이 된다. |
+| [Ref Rework](https://sp-mod.com/mod/3014) | 1.0.0 | 6차 | 게임+서버 | 도그태그와 레가 메달을 Ref에 팔아 GP 코인으로 바꾼다. 레벨이 높은 태그일수록 비싸다. **Ledger와 도그태그 용처가 겹치므로** 게임에서 보고 한쪽을 끄는 편이 낫다. |
+| [Realistic Insurance](https://sp-mod.com/mod/2949) | 0.2.1 | 6차 | 게임+서버 | 보험 회수를 고정 확률이 아니라 "누가 죽였고 그가 살아 나갔는지"로 정한다(PMC 55 / 플레이어 스캐브 45 / 스캐브 75 / 보스 40%). SVM 보험 설정과 겹치면 한쪽만 쓴다. |
+| [VanillaTradersRework-Reloaded](https://www.nexusmods.com/escapefromtarkov/mods/10) | 1.0.0 | 6차 | 서버 | **Forge 밖**(Nexus·받으려면 로그인 필요). 상인 초상화를 사실적인 그림으로 교체한다 — 바닐라 9명과 Lotus·Scorpion·Artem·Couturier·Croupier 등. 초상화가 없는 상인 11명(등대지기·BTR·Amonya·Harry·Gunwright·Ledger·PresetTrader·Elias Ward 등)은 원본 그대로다. 안 바뀌어 보이면 런처 Settings → Clean Temp Files. 제작자가 AI 생성 이미지를 썼다고 밝혔다. |
 
-## 커스텀 상인·콘텐츠 (12개)
+## 커스텀 상인·콘텐츠 (15개)
 
-전부 프로필 결속. 넣고 플레이한 뒤 제거하면 프로필이 깨질 수 있다.
+PortableTraders만 빼고 전부 프로필 결속. 넣고 플레이한 뒤 제거하면 프로필이 깨질 수 있다.
 
 | 모드 | 버전 | 단계 | 위치 | 설명 |
 | --- | --- | --- | --- | --- |
@@ -151,6 +164,9 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [PresetTrader](https://sp-mod.com/mod/2966) | 1.2.0 | 5차 | 서버 | **결속** 저장해 둔 빌드와 장비 세트를 비싼 값에 파는 상인. |
 | [Ledger](https://sp-mod.com/mod/3085) | 1.1.0 | 5차 | 서버 | **결속** 도그태그를 모으는 상인 Ledger. 퀘스트 40개 이상의 이야기가 붙는다. |
 | [Amonya - Ammo Loving Trader & Quester](https://sp-mod.com/mod/2419) | 2.2.0 | 5차 | 서버 | **결속** 탄약 전문 상인 Amonya. 퀘스트 보상으로 상급 탄을 준다. `db/99_Ids/ids_*.json` 보존 필요. |
+| [NATO Quartermaster](https://sp-mod.com/mod/3030) | 1.1.3 | 6차 | 서버 | **결속** 서방제 총기·방어구·탄약·완성 빌드를 파는 상인 Elias Ward. 매물 49개와 6단계 퀘스트 체인(뒤로 갈수록 좋은 장비가 열린다). 싸게 주는 치트 상인이 아니라 "비싸지만 바로 살 수 있는" 쪽이다. |
+| [PortableTraders](https://github.com/wangbofan/SPT-PortableTraders) | 1.1.0 | 6차 | 서버 | **Forge 밖**(GitHub·MIT, 결속 아님). 레이드 안에서만 상대할 수 있던 **등대지기와 BTR 운전병**을 주 화면 상인 목록에 올려, 과제 30개를 받고 제출하게 한다(물품 보상은 메일로). 두 상인의 **판매 목록은 원래 비어 있다** — 아래 "헷갈리기 쉬운 정상 동작" 참고. |
+| [Vanguard](https://sp-mod.com/mod/2917) | 2.0.0 | 6차 | 서버 | **결속** Insight WMLX 라이트와 Dead Air Sandman X 소음기를 흑·FDE 두 색으로 추가한다. WTT CommonLib 필요. |
 
 ## 서버 조정·도구·치트 (8개)
 
@@ -177,7 +193,7 @@ Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는
 
 번역을 고치려면 `BepInEx\plugins\SptKoreanConfig\lang\<모드 GUID>.json`을 고치고 F12를 다시 열면 된다(재시작 불필요). 창 자체의 글자(`lang\_ui.json`)만은 게임을 다시 켜야 한다.
 
-## 프로필 결속 모드 (18개)
+## 프로필 결속 모드 (24개)
 
 제거하려면 프로필 백업이 먼저다. 되돌릴 때는 `doc/install-records/installed-<Tag>.txt`의 경로만 지운다.
 
@@ -185,18 +201,24 @@ Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는
 - [Caliber Split Storage Solutions](https://sp-mod.com/mod/2990) (1.0.1)
 - [CaseTrader — Buy any case](https://sp-mod.com/mod/3024) (1.0.1)
 - [Cobra's Ammo Stack](https://sp-mod.com/mod/2840) (1.1.0)
+- [ECOTI - Enhanced Clip-On Thermal Imager](https://sp-mod.com/mod/2930) (3.4.2)
 - [Gunsmith Task Trader](https://sp-mod.com/mod/3124) (1.0.2)
 - [Gunwright](https://sp-mod.com/mod/3128) (1.0.2)
 - [HarryHideout](https://sp-mod.com/mod/1303) (3.1.2)
 - [Ledger](https://sp-mod.com/mod/3085) (1.1.0)
 - [Lotus](https://sp-mod.com/mod/1232) (1.8.1)
 - [Modding Stats Helper - by wara](https://sp-mod.com/mod/1300) (1.2.0)
+- [Moe-TradeMarker](https://sp-mod.com/mod/2736) (1.2.6)
+- [NATO Quartermaster](https://sp-mod.com/mod/3030) (1.1.3)
+- [No Barrel Shadow](https://sp-mod.com/mod/2780) (2.0.1)
 - [ODT's Item Info - SPT 4.0](https://sp-mod.com/mod/2430) (3.0.0)
 - [PresetTrader](https://sp-mod.com/mod/2966) (1.2.0)
 - [Ref - SPT Friendly Quests](https://sp-mod.com/mod/1538) (2.1.0)
 - [Scorpion](https://sp-mod.com/mod/1348) (1.1.1)
 - [Server Value Modifier [SVM]](https://sp-mod.com/mod/236) (2.2.3)
 - [Trader Modding And Improved Weapon Building](https://sp-mod.com/mod/1283) (2.1.2)
+- [Tylevo's Field Attachments](https://sp-mod.com/mod/3125) (1.2.0)
+- [Vanguard](https://sp-mod.com/mod/2917) (2.0.0)
 - [WTT- Armory](https://sp-mod.com/mod/2246) (3.0.0)
 - [WTT- Artem](https://sp-mod.com/mod/1023) (3.0.2)
 
