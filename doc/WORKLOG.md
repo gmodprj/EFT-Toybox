@@ -287,3 +287,15 @@
 - 사용자 서버가 켜져 있어 설치 스크립트가 거부했다(스크립트 자체 안전장치). 종료하고 설치한 뒤 다시 띄워 뒀다 — 46개 로드, 웹서버 정상.
 - `gen-installed-mods.mjs`를 6차에 맞게 고쳤다: 6단계 추가, **모드 id를 문자열로** 취급(Forge 밖 모드는 `gh-...`), 링크는 매니페스트의 `homepage`를 쓰고 없으면 Forge, 결속 조회는 숫자 id만.
 - 남은 확인: **게임 쪽 7개**(OpenBarters·BrightLasers·NoBarrelShadow·RefReworkClient·RealisticInsurance·QuickTraderLoadTimes·Moe-TradeMarker)는 게임을 켠 뒤 `LogOutput.log`로 본다. 그리고 도그태그 용처가 Ledger와 Ref Rework로 둘이 됐다 — 게임에서 보고 하나를 끈다.
+
+### 6-B 설치 — 결속 2개 (2026-10-25 09:5x)
+
+프로필 백업 → 설치 → 테스트를 하나씩. 설치본 103 → **105개**, 서버 모드 46 → **48개**.
+
+- **NATO Quartermaster 1.1.3**(4파일) — `49 curated offers and 6 quests`, 퀘스트 해금 Q1~Q6까지 로그로 확인. 상인이 7명째가 됐다. `SERVER STARTED in 41s`, 오류 0.
+- **ECOTI 3.4.2**(압축 56파일 → 기록 **71파일**) — 서버가 뜰 때 WTT-Artem의 야투경에 맞춘 호환 파일을 **스스로 만든다**: `nvghostcompat/[wtt-artem]_(gpnvg-18…)` 5종 + `wwwroot/meshes-auto/*.glb` 10종. 설치 스크립트가 이 생성분까지 `installed-stage6B-2930.txt`에 넣었으므로 되돌릴 때 함께 지워진다.
+  - 등록된 것: COTI 본체, 열상 라이저 TR-1 2색, 열상 스코프링 TSR-1/2/3 6종. 판매는 Peacekeeper LL3~LL4($1,750~$2,000, 한도 3).
+  - `[COTI] meshes: 5 converted, 0 unchanged, 0 removed, 0 failed`. 오류 0.
+- 프로필 해시는 6-A 시작 전과 **그대로 같다**(`8c0fe366…`). 백업 `profiles-before-stage6B-3030`, `-2930`.
+- 사용자 서버를 다시 띄웠다 — 48개 로드, 웹서버 정상.
+- 남은 확인(게임을 켠 뒤): 6차 게임 쪽 플러그인 **8개**, 상인 7명이 목록에 다 보이는지(TraderScrolling·TraderSpace), ECOTI 열상이 야투경 튜브 안에만 들어오는지 — **PiP Disabler(2667)·Better Thermal(2531)을 켠 상태**에서 본다. 문제가 나면 2531을 먼저 끈다.
