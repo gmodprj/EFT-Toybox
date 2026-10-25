@@ -387,3 +387,15 @@ Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했
 - 26번 모두 `SERVER STARTED`(38~71초). 테스트 출력 26개 전체에서 `[Error]`·`[Critical]` **0건**, stderr 26개 **전부 0바이트**, 설치 기록 26개 생성.
 - 백업은 `backup/profiles-before-stage7C-<id>` 26벌.
 - **중간에 작업이 막혔다** — 셸·파일 편집 도구의 안전 검사가 여러 턴에 걸쳐 응답하지 않아(일시적 오류) 설치 직후의 **서버 재가동·목록 재생성·커밋이 미뤄졌다.** 설치와 검증 자체는 그 전에 끝났고, 검증은 읽기 전용 도구(Grep)로 대신했다. 그동안 사용자 서버가 꺼져 있어 **사용자가 직접 켰다.**
+
+### 7차 게임 확인 — 사용자 서버·게임 로그 (2026-10-25 15:3x)
+
+사용자가 서버를 켜고 게임까지 접속한 로그를 받아 확인했다.
+
+- **게임 플러그인 86 → 106개**(`106 plugins to load`, `Loading [` 줄도 106). 6-C의 2개 + 7-A의 10개 + 7-C의 클라이언트 쪽 8개가 전부 떴다. 표시명이 또 달라 이름으로는 안 걸리는 것이 많았다 — `Armor Info Mod`(ArmorInfoPlus), `BlackHawk-QuickAim`, `ArmorExpert`, `UltimateFlea Client`, `RepairMaxDurabilityClient`, `maschine-Airburst`, `Tylevo Field Attachments`, `pein-ScrollableAttachments`.
+- 게임 쪽 `[Error]`는 **1건뿐**이고 Fika 미설치로 나는 Direct Reload의 그 메시지다(무시 목록에 있음). 서버 쪽은 80개 로드에 오류 0.
+- **SOMF가 무력화됐다.** 7-A 때는 `Head/Face blocking 37 / specific 2089 / Head/Eyes 7 / 123`을 풀었는데, 7-C에서 Less Restricting Headwear(922)를 넣은 뒤로는 **전부 0**이다. 922가 먼저 `117 block flags cleared, 4005 conflict entries removed`로 같은 일을 끝내기 때문이다. 둘은 역할이 겹치므로 하나만 두면 된다 — 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.
+- **DLL 표기 버전이 사이트와 다른 것이 또 나왔다**: BETTER ATTACHMENTS(Forge 4.1.5 → 로그 **2.0.0**), Full Automatic Guns(4.1.5 → **1.0.0**), bluehead's AIO Trader(5.3.1 → 5.3.0), Restore Armor Plates(1.0.2 → 1.0.1), Ultimate Trader Assort Editor(2.1.1 → 2.1.0). 제작자가 DLL 버전을 안 올린 것으로, 기존 사례(Armory·TraderScrolling·Gunwright)와 같다.
+- **새 상호작용 하나** — `[RealisticInsurance] trader 'Armorer' ... not listed in insurance.json returnChancePercent ... will use the '90%' fallback`. 7-C에서 넣은 AllGoodsTrader의 보험 상인을 Realistic Insurance가 모르기 때문에 **그 상인 보험만 90% 고정**으로 돌아간다. 오류는 아니다.
+- 수치로 확인된 적용 범위: Definitive Weapon Variants **커스텀 아이템 776개**, BETTER ATTACHMENTS 부착물 **1,092개**, Less Restricting Headwear 품목 182개, Realistic Suppressors 소음기 103개, Cobra's Durability Tweaks 무기 932개(내구도 소모 **12%**), Slimmer Magazines 탄창 44개, Jero Backpack 배낭 36개, Foldables 배낭 46·조끼 36·헤드폰 21, Limitless **26,179개 품목**, Ultimate Flea 레벨 락 1,691개 + 카테고리 17종, bluehead AIO 품목 6,261개(매물 7,178), All Weapons Flea **무기 925종**(6차 때 238종 → 총기 팩이 늘어 확대).
+- 서버 시작에서 가장 오래 걸리는 것은 **ODT's Item Info의 아이템 처리 53.5초**다(6,728개). 시작이 느려진 주된 이유.
