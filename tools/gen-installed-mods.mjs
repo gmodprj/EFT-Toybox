@@ -40,9 +40,9 @@ const side = (files) => {
   const d = files.some(f => /^EscapeFromTarkov_Data\\/i.test(f)), o = files.some(f => !/^(BepInEx|SPT_Runtime|EscapeFromTarkov_Data)\\/i.test(f));
   return [c && '게임', d && '게임 데이터', s && '서버', o && '루트'].filter(Boolean).join('+');
 };
-const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10개 + 6-B 결속 2개 + 6-C 부착물 UI 3개)' };
+const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 86개 (SPT 기본 5 + 모드 80 + 자체 제작 1, 2026-10-25 09:57 `LogOutput.log` 확인) — 6-C의 Field Attachments·Scrollable Attachments 2개는 설치가 그 뒤라 아직 확인 전 / 서버 모드 로드: 48개 (2026-10-25 6-C 테스트 서버, 오류 0)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 86개 (SPT 기본 5 + 모드 80 + 자체 제작 1, 2026-10-25 09:57 `LogOutput.log` 확인) — 6-C의 Field Attachments·Scrollable Attachments 2개는 설치가 그 뒤라 아직 확인 전 / 서버 모드 로드: 49개 (2026-10-25 6-D 테스트 서버, 오류 0)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];

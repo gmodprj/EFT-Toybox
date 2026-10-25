@@ -321,3 +321,13 @@ Loading [Unity Toolkit 2.0.2]  /  86 plugins to load
 - 프로필은 설치 직전 백업과 해시 동일(`edfb23fe…`). 사용자가 게임을 켠 뒤 프로필이 바뀌었으므로 **설치 직전에 백업을 다시 떴다**(`profiles-before-stage6C-3125`, 10:15).
 - **절차에서 고칠 점(실수 기록)**: 게임이 켜져 있는 동안 설치하려고 서버를 먼저 내렸다. 설치 스크립트가 게임 실행을 잡아내 막아 줘서 파일은 건드리지 않았지만, 그 사이 게임의 서버 연결이 끊겼다. 즉시 다시 띄웠다. **서버를 내리기 전에 `EscapeFromTarkov` 프로세스를 먼저 본다.**
 - 남은 확인: 게임을 다음에 켤 때 플러그인 **88개**가 되는지, Left Alt로 부착물 카드가 뜨는지(스톡·핸드가드·손잡이 교체는 Leatherman 멀티툴 소지 필요), 부착물 목록 스크롤이 되는지.
+
+### 6-D 설치 — 상인 초상화 (2026-10-25 10:4x)
+
+Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했다. 내장 브라우저로 파일 탭을 열자 `You have to be logged in to download files`가 떴다(미로그인). 사용자 요청으로 **외부 Chrome**(이미 Nexus 로그인 상태)에서 Manual download → Slow download를 눌러 받았다. 받은 파일은 Chrome 기본 경로인 `E:\Spt_Mods\downloads\`로 떨어졌다(파일명에 Nexus 토큰이 붙은 긴 이름).
+
+- 압축을 풀어 보니 **텍스처를 덮어쓰는 방식이 아니었다**. `SPT_Runtime/user/mods/VanillaTradersRework.Reloaded/`에 DLL 1 + `avatars/` 18장이 들어가는 평범한 서버 모드다. 그래서 걱정했던 덮어쓰기 충돌이 없다 — `check-conflicts.mjs stage6-D` **CLEAN**.
+- 단계 폴더를 `stage6-D`로 따로 두고 설치(19파일, 10.3MB). `SERVER STARTED in 47s`, 서버 모드 48 → **49개**, 오류 0. 프로필 해시 동일.
+- 로그가 포르투갈어로 찍힌다. `Mod carregado com sucesso.`가 성공 신호다.
+- **초상화가 없는 상인 11명**은 원본 그대로 간다: Смотритель(등대)·APC(BTR)·Storyteller·Amonya·Harry·Gunwright·Victor Barinov·Gunsmith·PresetTrader·Ledger·Elias Ward(NATO Quartermaster). 이 모드가 다루는 건 바닐라 9명 + Lotus·Scorpion·Artem·Couturier·Croupier 등이다.
+- 제작자는 적용 후 런처의 **Settings → Clean Temp Files**를 누르라고 안내한다. `%LOCALAPPDATA%\Temp\Battlestate Games`도 `E:\Spt\cache`도 없어서 지울 캐시를 특정하지 못했다(있는 건 `user\cache\bundleHashCache.json`과 BepInEx 타입 캐시뿐이라 성격이 다르다). 초상화가 그대로면 런처에서 한 번 눌러 보는 쪽이 맞다.
