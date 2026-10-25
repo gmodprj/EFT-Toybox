@@ -1,0 +1,274 @@
+{
+  "stage": "stage7-C",
+  "spt": "4.1.6",
+  "note": "7-C — 결속·소형 26개. 계획 순서대로 하나씩 설치(매번 프로필 백업 + 서버 테스트)",
+  "mods": [
+    {
+      "group": "7C-01",
+      "id": 922,
+      "name": "Less Restricting Headwear",
+      "version": "4.0.0",
+      "size": 17439,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/922/less-restricting-headwear/4.0.0"
+    },
+    {
+      "group": "7C-02",
+      "id": 1939,
+      "name": "BETTER ATTACHMENTS",
+      "version": "4.1.5",
+      "size": 54833,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/1939/better-attachments/4.1.5"
+    },
+    {
+      "group": "7C-03",
+      "id": 2010,
+      "name": "Definitive Weapon Variants",
+      "version": "4.3.2",
+      "size": 146054,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2010/definitive-weapon-variants/4.3.2"
+    },
+    {
+      "group": "7C-04",
+      "id": 2415,
+      "name": "Canted Aiming",
+      "version": "2.0.0",
+      "size": 11208,
+      "profileBinding": true,
+      "deps": [
+        "2310:WTT - CommonLib"
+      ],
+      "link": "https://sp-mod.com/mod/download/2415/canted-aiming/2.0.0"
+    },
+    {
+      "group": "7C-05",
+      "id": 2650,
+      "name": "Holster Everything",
+      "version": "2.0.0",
+      "size": 38212,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2650/holster-everything/2.0.0"
+    },
+    {
+      "group": "7C-06",
+      "id": 2380,
+      "name": "Black Exfil Revision",
+      "version": "1.1.0",
+      "size": 8035,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2380/black-exfil-revision/1.1.0"
+    },
+    {
+      "group": "7C-07",
+      "id": 2369,
+      "name": "Jero Backpack",
+      "version": "4.1.1",
+      "size": 32985,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2369/jero-backpack/4.1.1"
+    },
+    {
+      "group": "7C-08",
+      "id": 2973,
+      "name": "Restore Armor Plates",
+      "version": "1.0.2",
+      "size": 26976,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2973/restore-armor-plates/1.0.2"
+    },
+    {
+      "group": "7C-09",
+      "id": 2556,
+      "name": "Repair Skill Extension",
+      "version": "1.4.1",
+      "size": 14866,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2556/repair-skill-extension/1.4.1"
+    },
+    {
+      "group": "7C-10",
+      "id": 1305,
+      "name": "Repair Max Durability",
+      "version": "2.2.0",
+      "size": 31097,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/1305/repair-max-durability/2.2.0"
+    },
+    {
+      "group": "7C-11",
+      "id": 3019,
+      "name": "Cobra's Durability Tweaks",
+      "version": "1.0.0",
+      "size": 11845,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/3019/cobras-durability-tweaks/1.0.0"
+    },
+    {
+      "group": "7C-12",
+      "id": 3171,
+      "name": "Realistic Suppressors",
+      "version": "1.0.0",
+      "size": 8095,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/3171/realistic-suppressors/1.0.0"
+    },
+    {
+      "group": "7C-13",
+      "id": 1972,
+      "name": "Full Automatic Guns",
+      "version": "4.1.5",
+      "size": 24902,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/1972/full-automatic-guns/4.1.5"
+    },
+    {
+      "group": "7C-14",
+      "id": 3118,
+      "name": "ShrapnelFix",
+      "version": "1.0.0",
+      "size": 14378,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/3118/shrapnelfix/1.0.0"
+    },
+    {
+      "group": "7C-15",
+      "id": 2948,
+      "name": "Airburst",
+      "version": "1.1.2",
+      "size": 29496,
+      "profileBinding": true,
+      "deps": [
+        "2310:WTT - CommonLib"
+      ],
+      "link": "https://sp-mod.com/mod/download/2948/airburst/1.1.2"
+    },
+    {
+      "group": "7C-16",
+      "id": 3101,
+      "name": "Magic Optic Mount",
+      "version": "0.1.0",
+      "size": 19574,
+      "profileBinding": true,
+      "deps": [
+        "1950:Weapon Customizer",
+        "2310:WTT - CommonLib"
+      ],
+      "link": "https://sp-mod.com/mod/download/3101/magic-optic-mount/0.1.0"
+    },
+    {
+      "group": "7C-17",
+      "id": 2434,
+      "name": "500 Euro for Skier",
+      "version": "2.0.0",
+      "size": 7937,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2434/500-euro-for-skier/2.0.0"
+    },
+    {
+      "group": "7C-18",
+      "id": 2483,
+      "name": "Boxes At Ref (BARF) - NG",
+      "version": "3.0.0",
+      "size": 8787,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2483/boxes-at-ref-barf-ng/3.0.0"
+    },
+    {
+      "group": "7C-19",
+      "id": 2175,
+      "name": "🛠️ Limitless – Unlimited or Multiply Buy Limits",
+      "version": "1.0.0",
+      "size": 27217,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2175/limitless-unlimited-or-multiply-buy-limits/1.0.0"
+    },
+    {
+      "group": "7C-20",
+      "id": 2897,
+      "name": "Equipment Is Eternal",
+      "version": "1.2.0",
+      "size": 14763,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2897/equipment-is-eternal/1.2.0"
+    },
+    {
+      "group": "7C-21",
+      "id": 2777,
+      "name": "AmmoGen",
+      "version": "2.4.0",
+      "size": 65776,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2777/ammogen/2.4.0"
+    },
+    {
+      "group": "7C-22",
+      "id": 2373,
+      "name": "Slimmer Magazines",
+      "version": "2.0.0",
+      "size": 6337,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2373/slimmer-magazines/2.0.0"
+    },
+    {
+      "group": "7C-23",
+      "id": 2844,
+      "name": "Ultimate Flea",
+      "version": "1.2.0",
+      "size": 48107,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2844/ultimate-flea/1.2.0"
+    },
+    {
+      "group": "7C-24",
+      "id": 2648,
+      "name": "AllGoodsTrader",
+      "version": "2.0.0",
+      "size": 603424,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/2648/allgoodstrader/2.0.0"
+    },
+    {
+      "group": "7C-25",
+      "id": 374,
+      "name": "bluehead's AIO Trader",
+      "version": "5.3.1",
+      "size": 41700,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/374/blueheads-aio-trader/5.3.1"
+    },
+    {
+      "group": "7C-26",
+      "id": 1554,
+      "name": "ALL AMMO TRADER - UPDATED BY TILTUSHKIN",
+      "version": "1.5.0",
+      "size": 2898664,
+      "profileBinding": true,
+      "deps": [],
+      "link": "https://sp-mod.com/mod/download/1554/all-ammo-trader-updated-by-tiltushkin/1.5.0"
+    }
+  ]
+}

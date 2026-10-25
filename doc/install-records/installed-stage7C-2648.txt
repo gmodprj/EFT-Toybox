@@ -1,0 +1,12 @@
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\AllGoodsTrader.dll
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\config.json
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\data.jsonc
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\README.md
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\res\consumables_trader.png
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\res\equipment_trader.png
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\res\goods_trader.png
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\res\gun_mod_trader.png
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\traders\68dcbdecd6e04c263b42f6ba.json
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\traders\68e24cd2607f5c9ae44c27b0.json
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\traders\68e24cdc607f5c9ae44c27b1.json
+2648__Suntion-AllGoodsTrader-2.0.0	SPT_Runtime\user\mods\Suntion-AllGoodsTrader\data\traders\68e24cdc607f5c9ae44c27b2.json

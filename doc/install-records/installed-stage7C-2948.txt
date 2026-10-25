@@ -1,0 +1,7 @@
+2948__maschine-Airburst-1.1.2	BepInEx\plugins\maschine-Airburst.Client.dll
+2948__maschine-Airburst-1.1.2	BepInEx\plugins\maschine-Airburst.Client.Fika.dll
+2948__maschine-Airburst-1.1.2	SPT_Runtime\user\mods\Airburst\LICENSE
+2948__maschine-Airburst-1.1.2	SPT_Runtime\user\mods\Airburst\maschine-Airburst.Server.dll
+2948__maschine-Airburst-1.1.2	SPT_Runtime\user\mods\Airburst\README.md
+2948__maschine-Airburst-1.1.2	SPT_Runtime\user\mods\Airburst\db\CustomItems\Airburst.json
+2948__maschine-Airburst-1.1.2	SPT_Runtime\user\mods\Amonya\db\99_Ids\ids_2026-10-25_14-56-28.json

@@ -1,0 +1,6 @@
+2175__Limitless-1.0.0	SPT_Runtime\user\mods\Limitless\config.json
+2175__Limitless-1.0.0	SPT_Runtime\user\mods\Limitless\Limitless.deps.json
+2175__Limitless-1.0.0	SPT_Runtime\user\mods\Limitless\Limitless.dll
+2175__Limitless-1.0.0	SPT_Runtime\user\mods\Limitless\Limitless.pdb
+2175__Limitless-1.0.0	SPT_Runtime\user\mods\Limitless\Limitless.staticwebassets.endpoints.json
+2175__Limitless-1.0.0	SPT_Runtime\user\mods\Limitless\Limitless.staticwebassets.runtime.json

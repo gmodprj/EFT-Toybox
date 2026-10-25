@@ -374,3 +374,16 @@ Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했
 - **절차에서 걸린 것** — 설치 호출을 `| Select-Object -First 3`으로 받았더니 PowerShell이 파이프라인을 일찍 끊어 **서버 테스트 단계가 통째로 생략**됐다. 스크립트의 테스트 부분을 그대로 재현해 따로 돌렸고, 그 과정에서 All In Weapon이 첫 실행 때 만드는 `config/config.jsonc`가 설치 기록에 빠지는 것을 발견해 손으로 채웠다. **설치 스크립트 출력은 `Select-Object`로 자르지 않는다.**
 - `gen-installed-mods.mjs`에 7단계를 추가했다(단계 루프·제목·로드 현황).
 - 남은 확인: 게임 쪽 플러그인 **12개**(6-C의 2개 + 7-A의 10개)는 게임을 켠 뒤 `LogOutput.log`에서 본다. 방어구 툴팁 수치(Armor Expert)가 ODT Item Info와 겹쳐 길어지지 않는지, 호환 강조(Compatibility Highlighter)가 All In Weapon 때문에 "전부 호환"으로 보이지 않는지도 함께.
+
+### 7-C 설치 — 결속 26개를 하나씩 (2026-10-25 15:0x ~ 15:4x)
+
+[PLAN-STAGE7.md](PLAN-STAGE7.md)의 7-C 순서 그대로, **매번 프로필 백업 → 설치 → 서버 테스트**로 26번 반복했다. 서버 모드 55 → **80개**(ShrapnelFix만 클라이언트 전용이라 그때는 서버 수가 그대로였다).
+
+- 다운로드 26개(합계 4.0MB) 중 **크기 불일치 2건** — Repair Max Durability(실제 31,209 / 메타데이터 31,097), bluehead's AIO Trader(42,151 / 41,700). 둘 다 정상으로 풀리고 내용도 멀쩡해 **Forge 메타데이터가 낡은 쪽**으로 판단했다. 5차 PresetTrader와 같은 유형.
+- **압축 구조를 손본 것 2건**
+  - **Cobra's Durability Tweaks** — 폴더가 한 겹 더 싸여 있고 그 안이 `SPT_RunTime`(대문자 T)이었다. 평탄화 + 이름 교정 후 설치. 그냥 두면 `E:\Spt` 아래에 엉뚱한 폴더가 생긴다.
+  - **Ultimate Flea** — 루트에 `README.txt`가 섞여 있어 `extracted/_extras-stage7-C/`로 분리.
+  - 두 건 모두 `check-conflicts.mjs`가 "설치 경로가 아닌 파일 6"으로 미리 잡았고, 교정 후 재검사는 CLEAN.
+- 26번 모두 `SERVER STARTED`(38~71초). 테스트 출력 26개 전체에서 `[Error]`·`[Critical]` **0건**, stderr 26개 **전부 0바이트**, 설치 기록 26개 생성.
+- 백업은 `backup/profiles-before-stage7C-<id>` 26벌.
+- **중간에 작업이 막혔다** — 셸·파일 편집 도구의 안전 검사가 여러 턴에 걸쳐 응답하지 않아(일시적 오류) 설치 직후의 **서버 재가동·목록 재생성·커밋이 미뤄졌다.** 설치와 검증 자체는 그 전에 끝났고, 검증은 읽기 전용 도구(Grep)로 대신했다. 그동안 사용자 서버가 꺼져 있어 **사용자가 직접 켰다.**

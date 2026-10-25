@@ -1,0 +1,2 @@
+3118__ShrapnelFix-1.0.0	BepInEx\plugins\ShrapnelFix\README.md
+3118__ShrapnelFix-1.0.0	BepInEx\plugins\ShrapnelFix\ShrapnelFix.dll

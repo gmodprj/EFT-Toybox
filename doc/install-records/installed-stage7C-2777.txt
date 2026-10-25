@@ -1,0 +1,4 @@
+2777__AmmoGen-2.4.0	BepInEx\plugins\Serenity-AmmoGen\AmmoGen.Client.dll
+2777__AmmoGen-2.4.0	SPT_Runtime\user\mods\AmmoGen\AmmoGen.Server.dll
+2777__AmmoGen-2.4.0	SPT_Runtime\user\mods\AmmoGen\ammo\example-pack.json
+2777__AmmoGen-2.4.0	SPT_Runtime\user\mods\AmmoGen\config\config.json

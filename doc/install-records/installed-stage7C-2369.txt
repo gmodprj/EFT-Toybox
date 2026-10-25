@@ -1,0 +1,4 @@
+2369__JeroBackpack	SPT_Runtime\user\mods\JeroBackpack\JeroBackpack.dll
+2369__JeroBackpack	SPT_Runtime\user\mods\JeroBackpack\config\blacklist.json
+2369__JeroBackpack	SPT_Runtime\user\mods\JeroBackpack\config\config.json
+2369__JeroBackpack	SPT_Runtime\user\mods\JeroBackpack\config\item.json
