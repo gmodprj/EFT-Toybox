@@ -475,3 +475,13 @@ The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하
 - **새로 생긴 오류 4건** — `ItemBaseClassService: Could not add 668ff5bde41a0cce3b142464 / 6699546547ad52e0fccf6da9 to cache, it does not exist in the item database!` (플리마켓 상품 생성 단계). 추적해 보니 **Painter의 `db/assort.json`이 어디에도 없는 아이템 두 종을 팔려고 올려 둔 것**이다. 설치된 모드 전체 JSON을 훑어도 그 두 tpl을 정의하는 곳이 없고(같은 제작자의 다른 팩에 있는 것으로 보인다), `barter_scheme`에 가격도 없는 **죽은 항목 4줄**(두 종 × 2)이다.
   - 영향: 시작 때마다 오류 4건 + 그 두 칸은 살 수 없다. 서버는 계속 진행한다.
   - 고치려면 Painter의 assort에서 그 4줄을 지우면 된다(모드 데이터 수정이라 보류 중).
+
+### Painter 의 죽은 매물 제거 (2026-10-25 18:4x)
+
+7-E 설치 뒤 시작마다 나던 `ItemBaseClassService: Could not add … to cache` 오류 4건을 없앴다.
+
+- Painter의 `db/assort.json`에는 매물이 7건 있었는데, 그중 **4건이 존재하지 않는 아이템**(`668ff5bde41a0cce3b142464`, `6699546547ad52e0fccf6da9` 각 2건)이었다. 같은 제작자의 다른 팩에 있는 아이템으로 보이고, 설치된 모드 어디에도 정의가 없다.
+- 그 4건의 `items` 항목과 거기에 딸린 `barter_scheme`·`loyal_level_items` 키를 함께 지웠다(7 → **3건**). 처음 점검 때 "가격 정보 없음"으로 본 것은 내가 tpl id로 찾았기 때문이고, 실제로는 **항목 id로 가격이 걸려 있었다** — 그래서 같이 지웠다. 부모가 사라진 고아 자식 항목은 0개.
+- 원본은 두 곳에 있다: `backup/painter-assort-original.json`과 해제본 `extracted/stage7-E/1025__Painter_3.0.0/…/db/assort.json`. 되돌리려면 둘 중 하나를 덮으면 된다.
+- 결과: 재시작한 서버에서 **Error·Critical 0건**, `ItemBaseClassService` 메시지 0건, 모드 95개, Painter·TGC 정상 로드.
+- 주의: **모드가 배포한 데이터 파일을 직접 고친 것**이라 Painter를 업데이트하면 되돌아간다. 설치 기록(`installed-stage7E-1025.txt`)의 파일 목록은 그대로지만 내용은 원본과 다르다.
