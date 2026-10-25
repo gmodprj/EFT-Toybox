@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **105개**, 설치 파일 **2397개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 77개 (SPT 기본 5 + 모드 71 + 자체 제작 1, 2026-10-25 06:37 `LogOutput.log` 확인) — 6차 게임 쪽 8개는 게임을 아직 켜지 않아 확인 전 / 서버 모드 로드: 48개 (2026-10-25 6-B 테스트 서버, 오류 0)
+- 설치된 모드: **108개**, 설치 파일 **2655개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 86개 (SPT 기본 5 + 모드 80 + 자체 제작 1, 2026-10-25 09:57 `LogOutput.log` 확인) — 6-C의 Field Attachments·Scrollable Attachments 2개는 설치가 그 뒤라 아직 확인 전 / 서버 모드 로드: 48개 (2026-10-25 6-C 테스트 서버, 오류 0)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -125,10 +125,13 @@
 | [Low Budget Bullet Time NG](https://sp-mod.com/mod/1988) | 2.3.0 | 게임 | - | 3 | `stage5E-1988` |
 | [Tripwire Improvement](https://sp-mod.com/mod/2618) | 1.1.0 | 게임 | - | 1 | `stage5E-2618` |
 
-## 6차 — 상인·파츠 (6-A 10개 + 6-B 결속 2개, Forge 밖 2개 포함)
+## 6차 — 상인·파츠 (6-A 10개 + 6-B 결속 2개 + 6-C 부착물 UI 3개)
 
 | 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
 | --- | --- | --- | --- | --- | --- |
+| [UnityToolkit](https://sp-mod.com/mod/1426) | 2.0.2 | 게임 | - | 17 | `stage6C-1426` |
+| [Tylevo's Field Attachments](https://sp-mod.com/mod/3125) | 1.2.0 | 게임 | **결속** | 240 | `stage6C-3125` |
+| [Scrollable Attachments](https://sp-mod.com/mod/2677) | 2.0.0 | 게임 | - | 1 | `stage6C-2677` |
 | [BrightLasers](https://sp-mod.com/mod/1358) | 3.0.0 | 게임+서버 | - | 4 | `stage6A-1358` |
 | [No Barrel Shadow](https://sp-mod.com/mod/2780) | 2.0.1 | 게임 | **결속** | 2 | `stage6A-2780` |
 | [Vanguard](https://sp-mod.com/mod/2917) | 2.0.0 | 서버 | **결속** | 10 | `stage6A-2917` |

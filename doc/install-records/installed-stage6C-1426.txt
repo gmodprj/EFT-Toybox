@@ -1,0 +1,17 @@
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\patchers\UnityToolkit\System.Runtime.CompilerServices.Unsafe.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\patchers\UnityToolkit\THIRD_PARTY_NOTICES.txt
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\patchers\UnityToolkit\UnityToolkit-Prepatcher.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\Assemblies.jsonc
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\THIRD_PARTY_NOTICES.txt
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\UniTask.Addressables.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\UniTask.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\UniTask.DOTween.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\UniTask.Linq.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\UniTask.TextMeshPro.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\Unity.Collections.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\UnityToolkit.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\VContainer.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\ZLinq.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\ZLinq.Unity.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\ZLinq.Unity.UnityCollectoins.dll
+1426__UnityToolkit-v2.0.2-SPT4.1.5	BepInEx\plugins\UnityToolkit\ZString.dll

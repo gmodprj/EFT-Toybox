@@ -299,3 +299,25 @@
 - 프로필 해시는 6-A 시작 전과 **그대로 같다**(`8c0fe366…`). 백업 `profiles-before-stage6B-3030`, `-2930`.
 - 사용자 서버를 다시 띄웠다 — 48개 로드, 웹서버 정상.
 - 남은 확인(게임을 켠 뒤): 6차 게임 쪽 플러그인 **8개**, 상인 7명이 목록에 다 보이는지(TraderScrolling·TraderSpace), ECOTI 열상이 야투경 튜브 안에만 들어오는지 — **PiP Disabler(2667)·Better Thermal(2531)을 켠 상태**에서 본다. 문제가 나면 2531을 먼저 끈다.
+
+### 6-C 설치 — 부착물 교체 UI (2026-10-25 10:0x ~ 10:2x)
+
+5차에서 "UnityToolkit이 4.1.5 표기"라 보류했던 묶음을, 계획대로 **의존성 단독 설치 → 게임 로그 확인 → 본 모드** 순으로 처리했다. 설치본 105 → **108개**, 파일 2322 → 2655개.
+
+- 조회에서 먼저 드러난 것: **Field Attachments 1.2.0은 `4.1.6` 정확 표기**, Scrollable Attachments 2.0.0은 `~4.1.6`이었다. 4.1.6 표기가 없는 건 UnityToolkit 2.0.2(`4.1.5`) 하나뿐이어서, 위험은 그 하나로 좁혀졌다.
+- UnityToolkit은 `BepInEx\plugins`만이 아니라 **`BepInEx\patchers`(프리패처)** 에도 들어간다. 프리패처가 어긋나면 게임이 아예 안 뜨는 형태로 드러나므로 단독 확인이 맞았다.
+- 게임을 한 번 켠 로그(09:57)에서 통과를 확인했다.
+
+```
+Loaded 1 patcher method from [UnityToolkit-Prepatcher 2.0.2.0]
+UnityToolkit-Prepatcher: Loading new version of assembly 'System.Runtime.CompilerServices.Unsafe.dll'
+Patching [System.Runtime.CompilerServices.Unsafe] with [UnityToolkit.Prepatcher.Patcher]
+Loading [Unity Toolkit 2.0.2]  /  86 plugins to load
+```
+
+- 게임 플러그인 77 → **86개**(+9). 표시명이 파일·모드명과 달라 처음 검색에 안 걸린 것이 많았다 — `Unity Toolkit`, `No Barrel Shadow`, `Realistic Insurance (client)`, `Quick Trader Load Times`, `Ref Rework`. 5-A 때와 같은 함정이라 이번에는 `Loading [` 줄 수(86)와 대조해 확정했다.
+- 로그의 `[Error]` 1건은 Direct Reload가 Fika용 패치를 못 걸었다는 것. Fika 미설치라 정상이며 [PROCEDURE.md](PROCEDURE.md)의 무시 목록에 올렸다.
+- 그 뒤 설치: Field Attachments 240파일(25.3MB, **결속**) → Scrollable Attachments 1파일. 테스트 3회 모두 `SERVER STARTED`(44·44·41초), 서버 48개 그대로, 오류 0.
+- 프로필은 설치 직전 백업과 해시 동일(`edfb23fe…`). 사용자가 게임을 켠 뒤 프로필이 바뀌었으므로 **설치 직전에 백업을 다시 떴다**(`profiles-before-stage6C-3125`, 10:15).
+- **절차에서 고칠 점(실수 기록)**: 게임이 켜져 있는 동안 설치하려고 서버를 먼저 내렸다. 설치 스크립트가 게임 실행을 잡아내 막아 줘서 파일은 건드리지 않았지만, 그 사이 게임의 서버 연결이 끊겼다. 즉시 다시 띄웠다. **서버를 내리기 전에 `EscapeFromTarkov` 프로세스를 먼저 본다.**
+- 남은 확인: 게임을 다음에 켤 때 플러그인 **88개**가 되는지, Left Alt로 부착물 카드가 뜨는지(스톡·핸드가드·손잡이 교체는 Leatherman 멀티툴 소지 필요), 부착물 목록 스크롤이 되는지.

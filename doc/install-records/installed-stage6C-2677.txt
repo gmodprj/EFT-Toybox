@@ -1,0 +1,1 @@
+2677__ScrollableAttachments-2.0.0	BepInEx\plugins\pein-ScrollableAttachments\ScrollableAttachments.dll
