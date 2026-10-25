@@ -150,7 +150,7 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Restore Armor Plates](https://sp-mod.com/mod/2973) | 1.0.2 | 7차 | 게임+서버 | **결속** 전용 키트로 방어판의 최대 내구도를 되돌린다. DLL 표기는 1.0.1. |
 | [Repair Skill Extension](https://sp-mod.com/mod/2556) | 1.4.1 | 7차 | 서버 | **결속** 수리 버프가 붙을 확률을 올리고 수리 스킬을 모든 방어구에 적용한다. |
 | [Black Exfil Revision](https://sp-mod.com/mod/2380) | 1.1.0 | 7차 | 서버 | **결속** Black Exfil 마스크에 페이스실드를 다시 달 수 있게 한다. |
-| [Change Helmet Visor](https://sp-mod.com/mod/2554) | 3.0.0 | 7차 | 게임+서버 | 페이스실드·바이저가 화면에 그려지는 방식을 바꾼다(지금은 모두 `Wide`). |
+| [Change Helmet Visor](https://sp-mod.com/mod/2554) | 3.0.0 | 7차 | 게임+서버 | 페이스실드·바이저가 시야를 가리는 마스크를 바꾼다. **지금은 모두 `NoMask`** — 타길라 용접 마스크 3종·Altyn·Rys-T·Maska 2종의 가림이 사라진다. |
 | [VisorEffectManager](https://sp-mod.com/mod/2429) | 1.1.0 | 7차 | 게임 | 바이저의 시각 효과(김서림·빗물 등)를 켜고 끈다. |
 | [Equipment Is Eternal](https://sp-mod.com/mod/2897) | 1.2.0 | 7차 | 서버 | **결속** 죽어도 장비를 잃지 않는다. 슬롯별로 끌 수 있고 지금은 보험·퀘스트 아이템·암밴드·보안 컨테이너가 제외돼 있다. |
 | [Foldables](https://sp-mod.com/mod/2422) | 1.1.1 | 7차 | 게임+서버 | 배낭·조끼·헤드폰을 접어 보관 자리를 줄인다(배낭 46·조끼 36·헤드폰 21). |
