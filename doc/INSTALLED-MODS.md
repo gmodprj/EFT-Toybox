@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **163개**, 설치 파일 **3046개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 106개 (2026-10-25 15:32 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) — 그 뒤 SOMF 제거(서버 전용)와 7-B·7-D 설치가 있어 다음 실행 때 다시 센다 / 서버 모드 로드: 93개 (2026-10-25 7-D 테스트 서버, 오류 0)
+- 설치된 모드: **162개**, 설치 파일 **3031개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 106개 (2026-10-25 15:32 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) — 그 뒤 SOMF 제거(서버 전용)와 7-B·7-D 설치가 있어 다음 실행 때 다시 센다 / 서버 모드 로드: 92개 (2026-10-25 The Quartermaster 제거 후 사용자 서버, 오류 0)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -183,7 +183,7 @@
 | [ItemGen](https://sp-mod.com/mod/2803) | 1.5.1 | 게임+서버 | **결속** | 4 | `stage7D-2803` |
 | [Better OKP-7](https://sp-mod.com/mod/2711) | 1.1.0 | 서버 | **결속** | 6 | `stage7D-2711.dirs`, `stage7D-2711` |
 | [TraderGen](https://sp-mod.com/mod/2749) | 2.4.1 | 게임+서버 | **결속** | 12 | `stage7D-2749` |
-| [The Quartermaster](https://sp-mod.com/mod/2817) | 1.4.3 | 게임+서버 | **결속** | 15 | `stage7D-2817` |
+| [The Quartermaster](https://sp-mod.com/mod/2817) | 1.4.3 | - | **결속** | 0 | **미설치** |
 | [Wolfik's Heavy Trooper Masks](https://sp-mod.com/mod/1569) | 1.2.0 | 서버 | **결속** | 13 | `stage7D-1569` |
 | [Manimal's Ammo Loading Animations](https://sp-mod.com/mod/2681) | 2.0.0 | 게임+서버 | **결속** | 10 | `stage7D-2681` |
 | [Sage's Incendiary Grenade](https://sp-mod.com/mod/3113) | 1.1.0 | 게임+서버 | **결속** | 9 | `stage7D-3113` |

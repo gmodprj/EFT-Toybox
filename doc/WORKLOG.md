@@ -434,3 +434,20 @@ Less Restricting Headwear와 역할이 겹쳐 아무 일도 하지 않게 된 SO
 - The Quartermaster가 `18 active listings / 86 items`, 커뮤니티 계약 2건을 띄웠다. 상인이 더 늘었다.
 - **프로필이 이 단계에서 바뀌기 시작했다.** 7-B와 7-D의 902·2803·2711까지는 해시가 같았고(`3b683421`), **TraderGen(2749) 테스트부터 매 실행마다 달라졌다.** 커스텀 상인·아이템이 프로필에 자기 자리를 만들기 때문이고, 이것이 "프로필 결속"의 실체다. 단계별 백업 13벌이 남아 있다.
 - 사용자 서버 재가동 확인: 모드 **93개**, 오류 0.
+
+### The Quartermaster 제거 — 5초마다 혼자 재입고 (2026-10-25 17:0x)
+
+사용자 제보: 7-D로 넣은 The Quartermaster만 상인 화면이 혼자 계속 새로고침된다.
+
+**원인을 로그와 IL로 확정했다.**
+
+- 서버 로그가 **정확히 5초 간격**으로 같은 일을 반복한다: `/client/trading/api/getTraderAssort/66789abc…` → `Loaded 187 active listings` → `Assort refreshed with 77 items` → 5초 뒤 again(`:04 :09 :14 :19 :24 …`). 다른 상인에는 이런 패턴이 없다.
+- `TheQuartermaster.Server.dll`을 Mono.Cecil로 뜯어 보니 **상인 데이터를 만들 때마다 다음 재입고 시각을 현재 시각으로 설정**한다 — `BuildTraderBase`·`RefreshAssort`·`OnListingUploaded`·`OnListingPurchased` 네 곳 모두 `set_NextResupply(DateTimeOffset.UtcNow…)`. 재입고 타이머가 항상 만료 상태라 클라이언트가 계속 다시 요청하고, 요청할 때마다 서버가 187건을 다시 만들며 타이머를 또 "지금"으로 되돌린다.
+- 설정으로는 못 고친다. `config/config.json`에 `modEnabled`·`jackpotEnabled` 둘뿐이고 주기 항목이 없다.
+
+**제거 결과** — 설치본 163 → **162개**, 서버 모드 93 → **92개**. 재가동한 서버 로그(마지막 세션 286줄)에 `TheQuartermaster` 0건, `Assort refreshed` 0건, 오류 0건.
+
+- 기록 `installed-stage7D-2817.txt`의 **15개 전부** 삭제(누락 0). 이 기록에는 설치 테스트 중 모드가 만든 `cache/*`·`client_submissions.json`·`db/CommunityQuests/*`까지 들어 있어 함께 지워졌다.
+- 기록에 없던 잔류물 3종을 손으로 찾아 지웠다 — `BepInEx\plugins\Serenity-TheQuartermaster\TheQuartermaster\community_auth.json`(커뮤니티 장터 인증 토큰), `BepInEx\config\com.shaneeexd.thequartermaster.cfg`, Ultimate Trader Assort Editor의 빈 편집 폴더 `Quartermaster [66789abcde1234567890abcd]`. **게임을 실제로 켠 뒤 생기는 파일은 설치 기록에 안 잡힌다**는 뜻이라, 앞으로 제거할 때는 모드 이름으로 전수 검색을 한 번 더 한다.
+- 이름이 비슷한 **NATO Quartermaster(3030, id `bb371fed…`)는 그대로 둔다.** 다른 모드다. UTAE의 `Quartermaster [bb371fed…]` 폴더와 `sptappdata`의 NATO 아바타도 건드리지 않았다.
+- 의존성으로 함께 넣었던 **ItemGen(2803)은 남겼다.** 지금은 쓰는 모드가 없어 `No item packs found`만 찍지만, 비용이 없고 나중에 다른 모드가 요구할 수 있다.
