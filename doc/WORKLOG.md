@@ -521,3 +521,16 @@ The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하
 - `gen-installed-mods.mjs` 에 `번역 사전 59` 가 하드코딩돼 있어 `lang/` 을 직접 세도록 고쳤다. 손으로 적은 수는 늘 어긋난다.
 - 결과: `check-lang-coverage.mjs` **1457/1457 항목, 사전 83개, 누락·오타 0**. `install-koreanconfig.ps1` 로 설치해 `BepInEx\plugins\SptKoreanConfig\lang` 에 84개 파일(사전 83 + `_ui.json`)이 들어갔다. 게임에서 실제로 보이는지는 아직 확인하지 않았다 — JSON 만 고친 것이라 F12 를 다시 열면 반영된다.
 - 열거형 값(`Outline`/`Full`, `AbovePockets`/`BelowPockets` 등)은 사전 형식에 `values` 칸이 없어 영문 그대로 나온다. 설명에서 각 값이 무슨 뜻인지 풀어 적어 두었다.
+
+### 안면 보호구 시야 가림을 없앴다 — ChangeHelmetVisor MaskType (2026-10-25)
+
+타길라 용접 마스크처럼 시야를 가리는 안면 보호구의 가림을 풀 모드를 새로 찾아야 하는지 물었는데, **이미 깔려 있었다**. 7-A 의 Change Helmet Visor(2554)가 바로 그 모드다.
+
+- 원리: 아이템 DB 의 `_props.FaceShieldMask` 가 가림 마스크를 정한다. 전체 아이템 중 가리는 것은 **7종뿐**이고 나머지 720개는 이미 `NoMask` 다.
+  - `Wide`: 타길라의 용접 마스크 "UBEY"(`60a7ad2a2198820d95707a2e`) · "고릴라"(`60a7ad3a0c5cb24b0134664a`) · "ZABEY"(`678f84bb9e85556ca60f0362`), Altyn 안면 보호대(`5aa7e373e5b5b000137b76f0`), "Rys-T" 안면 보호대(`5f60c85b58eff926626a60f7`)
+  - `Narrow`: Maska-1SCh 안면 보호대 Olive Drab(`5c0919b50db834001b7ce3b9`) · 킬라 에디션(`5c0e842486f77443a74d2976`)
+- 바꾼 것: `SPT_Runtime/user/mods/ChangeHelmetVisor/config.json` 의 `MaskType` 을 `"Wide"` → **`"NoMask"`**. 한 줄만 고쳤다. 원본은 `backup/changehelmetvisor-config-original.json`.
+  - 전에는 `AllFaceShields: true` + `MaskType: "Wide"` 였다. 타길라 마스크는 원래부터 `Wide` 라서 **해제 효과가 하나도 없는 설정**이었다. Maska 2종만 `Narrow` → `Wide` 로 완화된 셈이었다.
+- `SpecificFaceShields` 의 3줄은 그대로 뒀다. 서버 DLL 에 `FindAllFaceShieldHelmets` 와 `ChangeSpecificHelmetsVisors` 가 따로 있어 `AllFaceShields: true` 면 개별 지정은 쓰이지 않는 구조로 보이지만, **코드를 읽은 것이 아니라 메서드 이름으로 추정한 것이다.** 게임에서 Altyn(`Narrow` 지정)이나 Maska Olive Drab(`Wide` 지정)에 아직 마스크가 보이면 개별 지정이 이기는 것이니 그 3줄도 `NoMask` 로 바꾼다.
+- **서버 모드라 서버를 다시 켜야 적용된다.** 게임에서 실제로 확인하지는 않았다.
+- 곁가지: VisorEffectManager(2429)는 가림이 아니라 유리의 파손·긁힘·흐림·일그러짐만 없앤다(네 항목 모두 켜져 있음). Less Restricting Headwear(922)는 착용 조합 제한만 풀고 시야와 무관하다. 2554 의 게임 쪽 F12 슬라이더(`좁은/넓은 바이저 확대`)는 마스크를 없애지 않고 구멍만 키우는 중간 선택지다.
