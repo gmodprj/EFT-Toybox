@@ -1,0 +1,13 @@
+{
+  "guid": "com.sage.incendiarygrenade",
+  "name": "소이 수류탄 (Sage's Incendiary Grenade)",
+  "sections": {
+    "Audio": "소리"
+  },
+  "settings": {
+    "Audio/Fire Sound Volume": {
+      "name": "불 소리 크기",
+      "desc": "소이 수류탄이 터지고 타오르고 꺼지는 소리의 크기."
+    }
+  }
+}

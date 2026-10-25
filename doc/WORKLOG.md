@@ -508,3 +508,16 @@ The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하
 - 고치는 길 둘을 확인했다: ⒜ F12 → `탄창에 구경 표시` 끄기(즉시, 되돌리기 쉬움, 탄창 구경 정보는 포기) ⒝ `AllinWeaponUnslotted/config/config.jsonc`의 `FckMagazines`를 false(탄창이 제 구경만 받음 → 한 줄, 서버 재시작 필요, 나머지 자유도 유지).
 - **사용자가 ⒜를 선택해 F12에서 껐고, 길게 나오지 않는 것을 확인했다.** 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.
 - 배운 것: "제한을 푸는 모드"와 "제한을 읽어 표시하는 모드"는 서로를 증폭한다. 표시 쪽 모드가 갑자기 수다스러워지면 최근에 넣은 해제형 모드를 먼저 본다.
+
+### F12 미한글화 항목을 전부 덮었다 (2026-10-25, 사전 59 → 83)
+
+설치 목록을 다시 생성해 보니 `doc/INSTALLED-MODS.md`는 이미 최신이었다(모드 165개, 미설치 3건). 그래서 F12 쪽만 손봤다.
+
+- 먼저 센 방법이 틀렸다. `grep -c ' = '` 로 `.cfg` 항목을 세면 설명 줄의 `1.0 = default` 까지 세어 미한글화가 483항목으로 부풀어 보였다. `check-lang-coverage.mjs` 와 같은 파서로 다시 세니 **25개 모드 / 268항목**이었다.
+- 사전이 아예 없던 **24개 모드**에 사전을 새로 썼다. 항목 많은 쪽부터: No Barrel Shadow(93) · Field Attachments(39) · ShrapnelFix(34) · QuickSell(27) · ECOTI(27) · Munitions Expert(22) · Infinite Everything(21) · Holster Everything(20) · Quick Trader Load Times(13) · BrightLasers(10) · Armor Expert(10) · VisorEffectManager(8) · Airburst(8) · Quick Aim(6) · Foldables(4) · Moe-TradeMarker(4) · Scrollable Attachments(3) · Change Helmet Visor(3) · ArmorInfoPlus·BiC·Quick Cancel·Incendiary Grenade·AmmoGen·TraderGen·BeltSlot(각 1).
+- No Barrel Shadow 는 손전등·레이저 82종 × 거리/밝기 두 항목이 기계적으로 반복되는 꼴이라 스크립트로 생성했다. 장비 이름은 고유명사라 그대로 두고 접미사(`— Range`/`— Intensity`)와 설명만 한글로 바꿨다.
+- 직전에 발견한 CaliberUnderName 누락 2항목(`Caliber22LR`, `Caliber1143x33mmR`)도 채웠다.
+- `spt.koreanconfig`(한글화 모드 자신)는 사전을 만들지 않았다. 플러그인이 자기 설정 이름을 처음부터 한글로 등록한다.
+- `gen-installed-mods.mjs` 에 `번역 사전 59` 가 하드코딩돼 있어 `lang/` 을 직접 세도록 고쳤다. 손으로 적은 수는 늘 어긋난다.
+- 결과: `check-lang-coverage.mjs` **1457/1457 항목, 사전 83개, 누락·오타 0**. `install-koreanconfig.ps1` 로 설치해 `BepInEx\plugins\SptKoreanConfig\lang` 에 84개 파일(사전 83 + `_ui.json`)이 들어갔다. 게임에서 실제로 보이는지는 아직 확인하지 않았다 — JSON 만 고친 것이라 F12 를 다시 열면 반영된다.
+- 열거형 값(`Outline`/`Full`, `AbovePockets`/`BelowPockets` 등)은 사전 형식에 `values` 칸이 없어 영문 그대로 나온다. 설명에서 각 값이 무슨 뜻인지 풀어 적어 두었다.

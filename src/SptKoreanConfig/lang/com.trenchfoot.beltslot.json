@@ -1,0 +1,13 @@
+{
+  "guid": "com.trenchfoot.beltslot",
+  "name": "벨트 칸 (Tactical Gear Component)",
+  "sections": {
+    "A. Belt Location": "A. 벨트 칸 위치"
+  },
+  "settings": {
+    "A. Belt Location/Belt slot location": {
+      "name": "벨트 칸 위치",
+      "desc": "벨트 칸을 어디에 둘지 정한다. AbovePockets 는 주머니 위, BelowPockets 는 주머니 아래다. 바꾸면 재시작해야 한다."
+    }
+  }
+}

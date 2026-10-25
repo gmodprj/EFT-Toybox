@@ -1,0 +1,13 @@
+{
+  "guid": "com.serenity.tradergen",
+  "name": "상인 생성 — 게임 쪽 (TraderGen)",
+  "sections": {
+    "TraderGen": "TraderGen"
+  },
+  "settings": {
+    "TraderGen/EnableExportButton": {
+      "name": "내보내기 버튼 표시",
+      "desc": "창고 아이템의 오른쪽 메뉴에 'Export to TG' 버튼을 띄운다."
+    }
+  }
+}

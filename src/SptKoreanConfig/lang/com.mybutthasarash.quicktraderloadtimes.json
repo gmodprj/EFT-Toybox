@@ -1,0 +1,62 @@
+{
+  "guid": "com.mybutthasarash.quicktraderloadtimes",
+  "name": "상인 화면 빨리 열기 (Quick Trader Load Times)",
+  "sections": {
+    "Fixes": "개선 항목",
+    "Measurement": "측정"
+  },
+  "settings": {
+    "Fixes/FastIconRender": {
+      "name": "아이콘 빨리 그리기",
+      "desc": "저장되지 않은 아이템 아이콘을 두 프레임에 하나씩 그리는 게임 방식 대신, 프레임당 '아이콘 그리기 예산' 만큼 한꺼번에 그린다. 실제로는 빨라지지 않아(칸 생성을 기다린다) 기본은 꺼짐이다. 바로 적용된다."
+    },
+    "Fixes/RenderBudgetMs": {
+      "name": "아이콘 그리기 예산 (ms)",
+      "desc": "'아이콘 빨리 그리기'를 켰을 때 한 프레임에 아이콘 생성에 쓸 수 있는 시간. 한 프레임의 첫 아이콘은 언제나 그린다."
+    },
+    "Fixes/FastTraderCells": {
+      "name": "상인 칸 빨리 채우기",
+      "desc": "상인 목록 칸을 프레임당 하나씩 채우는 대신, '칸 채우기 예산' 만큼 위쪽 줄부터 한꺼번에 채운다. 바로 적용된다."
+    },
+    "Fixes/SpreadStashCells": {
+      "name": "창고 칸 나눠 채우기",
+      "desc": "상인 화면에서 창고 칸을 한 프레임에 몰아 만드는 대신(상인을 바꿀 때마다 0.5초쯤 멎는 원인) 상인 칸과 나란히 여러 프레임에 걸쳐 만든다. 바로 적용된다."
+    },
+    "Fixes/CellBudgetMs": {
+      "name": "칸 채우기 예산 (ms)",
+      "desc": "'상인 칸 빨리 채우기'나 '창고 칸 나눠 채우기'를 켰을 때 한 프레임에 칸 만들기에 쓸 수 있는 시간으로, 채우는 중인 목록들이 나눠 쓴다. 높이면 빨리 채워지는 대신 그 짧은 동안 프레임이 떨어진다(16 이면 60 프레임 메뉴에서 30~40 정도). 한 프레임의 첫 칸은 언제나 만든다."
+    },
+    "Fixes/AqcStashCountCache": {
+      "name": "창고 수량 세기 재사용",
+      "desc": "AllQuestsCheckmarks 호환. 칸마다 가진 아이템을 전부 훑는 대신 창고를 한 번 세고 그 결과를 모든 칸이 나눠 쓴다. 인벤토리가 바뀌면 다시 센다. 상인 화면과 플리마켓에서만 쓴다. 바로 적용된다."
+    },
+    "Fixes/QuestPanelOncePerFrame": {
+      "name": "퀘스트 표시는 프레임당 한 번",
+      "desc": "새 아이템 칸은 한 프레임에 퀘스트 체크 표시를 세 번 준비한다(게임이 Init 과 두 번의 UpdateInfo 에서 각각 부른다). 칸마다 프레임당 한 번만 하게 바꾼다. 바로 적용된다."
+    },
+    "Fixes/AqcQuestIndex": {
+      "name": "퀘스트 색인 사용",
+      "desc": "AllQuestsCheckmarks 호환. 칸마다 모든 퀘스트를 훑는 대신 진행 중인 퀘스트를 한 번 색인해 두고 그것으로 답한다. 총기는 그 모드 자체 조회를 쓴다. 인벤토리가 바뀌면 다시 만든다. 상인 화면과 플리마켓에서만 쓴다. 바로 적용된다."
+    },
+    "Measurement/Enabled": {
+      "name": "측정 사용",
+      "desc": "재시작이 필요하다. 상인을 열 때마다 걸린 시간을 BepInEx 기록과 DLL 옆 measurements.csv 에 남긴다. 시험용이며, 상인을 열 때마다 약간의 부담이 더해진다."
+    },
+    "Measurement/RunLabel": {
+      "name": "측정 이름표",
+      "desc": "CSV 모든 줄에 적히는 이름표로, 바꾸기 전후 측정을 구분하는 데 쓴다(예: baseline, prewarm-v1)."
+    },
+    "Measurement/ColdIconCache": {
+      "name": "빈 아이콘 캐시로 측정",
+      "desc": "재시작이 필요하고 측정을 켠 때만 쓴다. 아이템 아이콘 캐시를 DLL 옆의 빈 임시 폴더(cold-cache\\<실행>, 최근 6개는 scripts\\compare-icons.ps1 용으로 남는다)로 돌려 모든 아이콘을 처음부터 그리게 한다. 실제 아이콘 캐시는 건드리지 않는다."
+    },
+    "Measurement/MaxSessionSeconds": {
+      "name": "측정 최대 시간 (초)",
+      "desc": "아이콘이 아직 불리는 중이어도 이 시간이 지나면 상인 열기 측정을 끝낸다."
+    },
+    "Measurement/SettleSeconds": {
+      "name": "측정 종료 대기 (초)",
+      "desc": "보이는 아이콘이 모두 그려지고 이 시간 동안 새로 끝난 아이콘이 없으면 상인 열기가 끝난 것으로 본다."
+    }
+  }
+}

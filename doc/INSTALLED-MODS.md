@@ -214,6 +214,6 @@
 
 | 항목 | 위치 | 설치 주체 |
 | --- | --- | --- |
-| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | `BepInEx\plugins\SptKoreanConfig\` (DLL 1 + 번역 사전 59) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 `tools/install-koreanconfig.ps1`. Forge 모드가 아니라 설치 기록에 없다 |
+| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | `BepInEx\plugins\SptKoreanConfig\` (DLL 1 + 번역 사전 84) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 `tools/install-koreanconfig.ps1`. Forge 모드가 아니라 설치 기록에 없다 |
 | HideSpecialIconGrids 1.1.0.1 | `BepInEx\plugins\HideSpecialIconGrids.dll`, `BepInEx\config\com.pandahhcorp.hidespecialicongrids.cfg` | SVM `Greed.exe`가 프리셋 `CSM.EnableCSM: true` 적용 시 설치 (15:01). 설치 기록에 없음 |
 | SVM 프리셋 `Noname` | `SPT_Runtime\user\mods\[SVM] Server Value Modifier\Presets\Noname.json` | 사용자가 `Greed.exe`로 생성. 16:00에 `Hideout.RemoveConstructionsRequirements`만 false로 수정 |

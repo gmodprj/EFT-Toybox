@@ -1,0 +1,92 @@
+{
+  "guid": "com.alanyung-yl.holstereverything.f12config",
+  "name": "권총집에 아무거나 (Holster Everything)",
+  "sections": {
+    "General (Restart Server)": "일반 (서버 재시작)",
+    "Holster Handling (Apply Immediately)": "조작성 (즉시 적용)",
+    "Holster Size (Apply Immediately)": "크기 제한 (즉시 적용)",
+    "Weapon Categories (Restart Server)": "총기 분류 (서버 재시작)"
+  },
+  "settings": {
+    "General (Restart Server)/Enable All Weapons": {
+      "name": "모든 총기 허용",
+      "desc": "켜면 모든 총기 분류를 권총집 칸에 넣을 수 있다."
+    },
+    "Holster Handling (Apply Immediately)/Enable Handling Penalty": {
+      "name": "조작성 손해 사용",
+      "desc": "켜면 권총집에 넣은 총이 지금 손에 든 총의 조작성을 떨어뜨린다."
+    },
+    "Holster Handling (Apply Immediately)/Limit Additional Weapons Only": {
+      "name": "추가 분류에만 적용",
+      "desc": "켜면 조작성 손해를 이 모드로 늘린 총기 분류에만 적용한다."
+    },
+    "Holster Handling (Apply Immediately)/Handling Ergo Penalty": {
+      "name": "조작성 감소량",
+      "desc": "권총집의 총이 조작을 방해할 때 깎는 조작성 수치."
+    },
+    "Holster Handling (Apply Immediately)/Include Non-Foldable Weapons": {
+      "name": "접히지 않는 총기도 포함",
+      "desc": "켜면 개머리판이 접히지 않는 총도 조작성 손해를 일으킬 수 있다."
+    },
+    "Holster Size (Apply Immediately)/Enable Size Limit": {
+      "name": "크기 제한 사용",
+      "desc": "켜면 너무 큰 총은 권총집 칸에 넣을 수 없다."
+    },
+    "Holster Size (Apply Immediately)/Limit Additional Weapons Only": {
+      "name": "추가 분류에만 적용",
+      "desc": "켜면 원래 권총집에 들어가던 총기에는 크기 제한을 적용하지 않는다."
+    },
+    "Holster Size (Apply Immediately)/Use Unfolded Size": {
+      "name": "펼친 크기로 판정",
+      "desc": "켜면 접은 총도 펼쳤을 때의 크기로 따진다."
+    },
+    "Holster Size (Apply Immediately)/Max Holster Width": {
+      "name": "최대 너비",
+      "desc": "크기 제한을 켰을 때 권총집에 넣을 수 있는 총의 최대 너비."
+    },
+    "Holster Size (Apply Immediately)/Max Holster Height": {
+      "name": "최대 높이",
+      "desc": "크기 제한을 켰을 때 권총집에 넣을 수 있는 총의 최대 높이."
+    },
+    "Weapon Categories (Restart Server)/Assault Carbine": {
+      "name": "돌격 카빈",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/Assault Rifle": {
+      "name": "돌격 소총",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/Grenade Launcher": {
+      "name": "유탄 발사기",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/Machine Gun": {
+      "name": "기관총",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/Marksman Rifle": {
+      "name": "지정사수 소총",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/Rocket Launcher": {
+      "name": "로켓 발사기",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/Shotgun": {
+      "name": "산탄총",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/SMG": {
+      "name": "기관단총",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/Sniper Rifle": {
+      "name": "저격 소총",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    },
+    "Weapon Categories (Restart Server)/Special Weapon": {
+      "name": "특수 화기",
+      "desc": "모든 총기 허용이 꺼져 있을 때 이 분류를 권총집에 넣을 수 있게 한다."
+    }
+  }
+}

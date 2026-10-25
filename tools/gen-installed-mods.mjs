@@ -64,7 +64,9 @@ for (const st of ['1', '2', '3', '4', '5', '6', '7']) {
 }
 
 md += `## 다른 경로로 설치된 것\n\n| 항목 | 위치 | 설치 주체 |\n| --- | --- | --- |\n`;
-md += `| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | \`BepInEx\\plugins\\SptKoreanConfig\\\` (DLL 1 + 번역 사전 59) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 \`tools/install-koreanconfig.ps1\`. Forge 모드가 아니라 설치 기록에 없다 |\n`;
+// 사전 개수는 src/SptKoreanConfig/lang 을 직접 센다. 손으로 고치면 늘 어긋난다.
+const langCount = fs.readdirSync(path.join(ROOT, 'src', 'SptKoreanConfig', 'lang')).filter(f => f.endsWith('.json')).length;
+md += `| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | \`BepInEx\\plugins\\SptKoreanConfig\\\` (DLL 1 + 번역 사전 ${langCount}) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 \`tools/install-koreanconfig.ps1\`. Forge 모드가 아니라 설치 기록에 없다 |\n`;
 md += `| HideSpecialIconGrids 1.1.0.1 | \`BepInEx\\plugins\\HideSpecialIconGrids.dll\`, \`BepInEx\\config\\com.pandahhcorp.hidespecialicongrids.cfg\` | SVM \`Greed.exe\`가 프리셋 \`CSM.EnableCSM: true\` 적용 시 설치 (15:01). 설치 기록에 없음 |\n`;
 md += `| SVM 프리셋 \`Noname\` | \`SPT_Runtime\\user\\mods\\[SVM] Server Value Modifier\\Presets\\Noname.json\` | 사용자가 \`Greed.exe\`로 생성. 16:00에 \`Hideout.RemoveConstructionsRequirements\`만 false로 수정 |\n`;
 
