@@ -580,3 +580,20 @@ Forge 에 4.1.6 호환 모드가 없어 직접 만들었다. 소스는 [../src/H
 - 통째로 비우는 `RemoveAllConflictsOnAttachments` 도 넣었지만 기본은 꺼짐이다.
 - 빌드 오류 0 · 경고 0. 설치된 `config.jsonc` 는 손대지 않은 기본값이어서 새 기본값으로 바꿔 두었다.
 - **DLL 교체는 못 했다.** 사용자가 06:00 에 SPT.Server, 06:03 에 게임을 직접 켜 둔 상태라 `HelmetSlotUnion.dll` 이 잠겨 있다(`The process cannot access the file`). 게임과 서버를 닫은 뒤 `tools/install-helmetslotunion.ps1` 을 다시 돌려야 한다. 남의 플레이 세션을 끄지 않았다.
+
+#### 설치·검증 완료 (2026-10-26, 이어서)
+
+사용자가 게임과 서버를 닫은 뒤 설치했다. DLL 15,872 → 18,432 B.
+
+서버 로그(`server-tests/server-test9-helmet-conflicts.out.txt`):
+
+```
+[HelmetSlotUnion] 헬멧 64종, 칸 묶음 11개. 281개 칸에 항목 6224개를 더했다.
+[HelmetSlotUnion] 충돌 정리(범위 안끼리만): 대상 240개 중 57개에서 295건을 지웠다. 남은 항목 623건.
+```
+
+**미리 센 값(대상 240 / 57개 / 295건 / 남은 623건)과 정확히 같다.** 서버 모드 96개, stderr 0바이트, `서버가 시작되었습니다` 까지 정상. `Not an error` 3줄은 이전 테스트에도 있던 것으로 무관하다.
+
+스크린샷의 그 쌍은 둘 다 범위 안이라 양쪽 다 0건이 됐다: FAST FS 9건 → 0, SCRA 1건 → 0.
+
+게임에서 실제로 끼워 보는 것만 남았다.
