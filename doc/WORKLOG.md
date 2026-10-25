@@ -340,3 +340,13 @@ Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했
 - 둘은 원래 서비스·퀘스트 전용이다. 등대지기 `services.json`에 Zryachiy 지원·ExUsec 충성·교단 지원 3종(각각 선행 퀘스트), BTR에 물품 배달·택시·엄호·환승 배달 4종.
 - 즉 PortableTraders는 정상 동작이다. 설치 로그의 `30 task(s) reachable from the main menu`가 이 모드의 결과물이고, 확인은 거래 탭이 아니라 **임무 탭**에서 한다.
 - 사용자 판단으로 **품목은 채우지 않기로** 했다. 바닐라 설계를 그대로 둔다. 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.
+
+### 7차 후보 조사 — 상인·탄환·총기 파츠·방어구 (2026-10-25 11:3x)
+
+"밸런스는 무시"라는 조건이 붙어, 지금까지 치트성·바닐라 이탈을 이유로 걸렀던 것을 전부 다시 올렸다.
+
+- **조회 방식을 바꿨다.** 이름·소개 키워드만 쓰던 것을 **Forge 카테고리와 합쳐** 걸렀다. ECOTI를 두 번 놓친 원인이 키워드였기 때문이다. 4.1.6 호환 633개의 카테고리 분포는 Other 176 / Tools 65 / Items 59 / Overhauls 56 / Scripting 37 / Weapons 35 / Equipment 31 / Traders 30 / … 이다.
+- 네 분야로 165개가 걸렸고 그중 **84개는 기존 문서에 한 번도 없던 것**이었다. 실제 해당하는 65개를 버전·용량·결속·의존성까지 확인해 [CANDIDATES-STAGE7.md](CANDIDATES-STAGE7.md)에 정리했다(원자료 `stage2-survey/survey-stage7-416.json`).
+- **방어구는 이번이 처음 다루는 분야**다. 1~6차 어디에도 없었고, 그래서 20개 중 대부분이 새 후보다. 다운로드 상위는 Pack 'n' Strap(239k)·Less Restricting Headwear(137k)·Foldables(50k)다.
+- 확인한 제약 몇 가지: **Painter(1025) ↔ Tactical Gear Component(1125)가 서로를 요구**해 647MB를 한 묶음으로만 넣을 수 있다. The Quartermaster는 ItemGen(2803), Sage's Incendiary Grenade는 BigBrain(902)이라는 **새 의존성**을 끌고 온다. Instant Insurance(2394)는 6차에 넣은 Realistic Insurance(2949)와 **정면으로 어긋난다**.
+- 설치·다운로드는 하지 않았다. 문서의 개수(방어구 20·상인 14·탄환 11·파츠 20 = 65)와 설치본 중복 0은 스크립트로 확인했다.
