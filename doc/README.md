@@ -12,6 +12,7 @@
 | [PROCEDURE.md](PROCEDURE.md) | 모드 추가 절차(조회→다운로드→설치→검증→되돌리기), SVM 메모, 무시해도 되는 로그 메시지 |
 | [CANDIDATES-416.md](CANDIDATES-416.md) | 4.1.6 호환 미설치 후보 136개 — 분야별 버전·용량·결속·의존성 |
 | [CANDIDATES-GUN-TRADER.md](CANDIDATES-GUN-TRADER.md) | 총기·파츠·상인 재조사(2026-10-25) — 기존 후보 문서에 없던 27개, 넣기 전에 정할 것 |
+| [PLAN-STAGE7.md](PLAN-STAGE7.md) | 7차 계획 — 비결속·소형(7-A 14개)부터 결속·중형·대형까지 단계별 순서와 확인 지점 |
 | [CANDIDATES-STAGE7.md](CANDIDATES-STAGE7.md) | 7차 후보 — 상인·탄환·총기 파츠·방어구 65개. **밸런스를 따지지 않고** 고른 목록(방어구는 이번이 처음) |
 | [PLAN-STAGE6.md](PLAN-STAGE6.md) | 6차 계획 — sp-mod 밖(GitHub·Nexus)까지 훑은 결과와 단계별 설치 순서 |
 | [PLAN-STAGE5.md](PLAN-STAGE5.md) | 5차 설치 계획과 실행 결과 — 설치 52 / 보류 32 / 제외 52, 단계별 결과 |

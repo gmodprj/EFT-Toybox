@@ -350,3 +350,15 @@ Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했
 - **방어구는 이번이 처음 다루는 분야**다. 1~6차 어디에도 없었고, 그래서 20개 중 대부분이 새 후보다. 다운로드 상위는 Pack 'n' Strap(239k)·Less Restricting Headwear(137k)·Foldables(50k)다.
 - 확인한 제약 몇 가지: **Painter(1025) ↔ Tactical Gear Component(1125)가 서로를 요구**해 647MB를 한 묶음으로만 넣을 수 있다. The Quartermaster는 ItemGen(2803), Sage's Incendiary Grenade는 BigBrain(902)이라는 **새 의존성**을 끌고 온다. Instant Insurance(2394)는 6차에 넣은 Realistic Insurance(2949)와 **정면으로 어긋난다**.
 - 설치·다운로드는 하지 않았다. 문서의 개수(방어구 20·상인 14·탄환 11·파츠 20 = 65)와 설치본 중복 0은 스크립트로 확인했다.
+
+### 7차 계획 — 작고 가벼운 것부터 (2026-10-25 11:5x)
+
+후보 65개를 **비결속 → 결속, 작은 것 → 큰 것** 순으로 [PLAN-STAGE7.md](PLAN-STAGE7.md)에 줄 세웠다.
+
+- **7-A 비결속·소형 14개 / 합계 314KB** — 방어구 9(LMSP·Unrestricted Armor Plate·Foldables·Armor Expert·Change Helmet Visor·VisorEffectManager·SOMF·BiC·ArmorInfoPlus), 탄환 2(Munitions Expert·Quick Cancel), 파츠 2(Quick Aim·All In Weapon), 상인 1(Item Limits Begone). 전부 파일 삭제만으로 되돌아간다. 다운로드 목록 `download/manifest-stage7.json`까지 만들어 뒀다.
+- **7-B(8개)** 는 비결속이지만 설치본과 겹쳐 선택이 필요한 것 — 탄약 이름 표기, QuickSell 교체, 플레아 가격 소스, 장전 속도, 무한 옵션, 그리고 6차 Realistic Insurance와 **정면으로 어긋나는** Instant Insurance.
+- **7-C(26개)** 는 결속이지만 파일이 작은 것들. 효과가 큰 순서로 1번 Less Restricting Headwear, 2번 BETTER ATTACHMENTS, 3번 Definitive Weapon Variants를 뒀다. 하나씩 프로필 백업 후 설치.
+- **7-D(10개)** 는 10MB 이상. 이 중 Manimal's 장전 애니메이션은 의존성 둘이 이미 깔려 있어 부담이 가장 작고, Sage's Incendiary Grenade는 BigBrain(902), The Quartermaster는 ItemGen(2803)이라는 새 의존성을 끌고 온다.
+- **7-E(3항목)** 는 100MB 이상, 합쳐 1.2GB. Painter ↔ Tactical Gear Component는 서로를 요구해 647MB 한 묶음이다.
+- 후보 65개가 계획 어딘가에 **빠짐없이** 들어갔고(스크립트 대조), 7-A 표와 매니페스트가 같은 14개임도 확인했다. 설치·다운로드는 하지 않았다.
+- 계획에 적어 둔 주의 둘: Git Bash의 `tar`로는 zip이 안 풀리니 `C:\Windows\System32\tar.exe`를 쓸 것, 서버를 내리기 전에 `EscapeFromTarkov` 프로세스를 먼저 볼 것.
