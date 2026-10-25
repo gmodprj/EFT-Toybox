@@ -1,0 +1,13 @@
+{
+  "guid": "com.serenity.ammogen",
+  "name": "탄약 생성 — 게임 쪽 진단 (AmmoGen)",
+  "sections": {
+    "Debug": "진단"
+  },
+  "settings": {
+    "Debug/Enabled": {
+      "name": "생성 기록",
+      "desc": "지켜보는 아이템이 작전 중에 생성될 때 기록을 남긴다."
+    }
+  }
+}

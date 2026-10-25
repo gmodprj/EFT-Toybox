@@ -1,0 +1,21 @@
+{
+  "guid": "com.trinagan.ChangeHelmetVisor",
+  "name": "헬멧 바이저 교체 (Change Helmet Visor)",
+  "sections": {
+    "Main": "기본"
+  },
+  "settings": {
+    "Main/Enabled": {
+      "name": "모드 사용",
+      "desc": "이 모드를 켜고 끈다."
+    },
+    "Main/Narrow Visor Zoom Slider": {
+      "name": "좁은 바이저 확대",
+      "desc": "시야가 좁은 마스크의 화면 확대 정도."
+    },
+    "Main/Wide Visor Zoom Slider": {
+      "name": "넓은 바이저 확대",
+      "desc": "시야가 넓은 마스크의 화면 확대 정도."
+    }
+  }
+}

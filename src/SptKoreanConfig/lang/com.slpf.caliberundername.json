@@ -79,6 +79,8 @@
     "4. Caliber Names/Caliber86x63": { "name": ".338 노르마 (8.6×63)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
     "4. Caliber Names/Caliber1036x77": { "name": ".408 셰이택 (10.36×77)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
     "4. Caliber Names/Caliber25x59": { "name": "25×59", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber11x33R": { "name": ".44 매그넘 (11×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." }
+    "4. Caliber Names/Caliber11x33R": { "name": ".44 매그넘 (11×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
+    "4. Caliber Names/Caliber22LR": { "name": ".22 LR (5.6×15R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
+    "4. Caliber Names/Caliber1143x33mmR": { "name": ".45 롱 콜트 (11.43×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." }
   }
 }

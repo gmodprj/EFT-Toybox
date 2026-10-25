@@ -1,0 +1,383 @@
+{
+  "guid": "com.vultify.nobarrelshadow",
+  "name": "총구 그림자 제거 (No Barrel Shadow)",
+  "sections": {
+    "1. Settings": "1. 설정",
+    "2. Range Multipliers": "2. 도달 거리 배율",
+    "3. Intensity Multipliers": "3. 밝기 배율"
+  },
+  "settings": {
+    "1. Settings/Debug Logging": {
+      "name": "디버그 기록",
+      "desc": "자세한 진단 기록을 BepInEx/LogOutput.log 에 남긴다. 버그를 신고할 때만 켠다."
+    },
+    "2. Range Multipliers/Klesch-2P — Range": {
+      "name": "Klesch-2P — 도달 거리",
+      "desc": "Klesch-2P 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/X400U — Range": {
+      "name": "X400U — 도달 거리",
+      "desc": "X400U 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/WF501B — Range": {
+      "name": "WF501B — 도달 거리",
+      "desc": "WF501B 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/XHP35 — Range": {
+      "name": "XHP35 — 도달 거리",
+      "desc": "XHP35 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/XC1 — Range": {
+      "name": "XC1 — 도달 거리",
+      "desc": "XC1 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/GTL 21 — Range": {
+      "name": "GTL 21 — 도달 거리",
+      "desc": "GTL 21 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/LAS/TAC 2 — Range": {
+      "name": "LAS/TAC 2 — 도달 거리",
+      "desc": "LAS/TAC 2 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Klesch-2U — Range": {
+      "name": "Klesch-2U — 도달 거리",
+      "desc": "Klesch-2U 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/DBAL-PL — Range": {
+      "name": "DBAL-PL — 도달 거리",
+      "desc": "DBAL-PL 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/WMX200 — Range": {
+      "name": "WMX200 — 도달 거리",
+      "desc": "WMX200 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/BaldrPro (Black) — Range": {
+      "name": "BaldrPro (Black) — 도달 거리",
+      "desc": "BaldrPro (Black) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/BaldrPro (Tan) — Range": {
+      "name": "BaldrPro (Tan) — 도달 거리",
+      "desc": "BaldrPro (Tan) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/2D — Range": {
+      "name": "2D — 도달 거리",
+      "desc": "2D 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ TR-1 — Range": {
+      "name": "★ TR-1 — 도달 거리",
+      "desc": "★ TR-1 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ TR-1 (Tan) — Range": {
+      "name": "★ TR-1 (Tan) — 도달 거리",
+      "desc": "★ TR-1 (Tan) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Black)) — Range": {
+      "name": "Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Black)) — 도달 거리",
+      "desc": "Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Black)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Tan)) — Range": {
+      "name": "Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Tan)) — 도달 거리",
+      "desc": "Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Tan)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ TSR-1 — Range": {
+      "name": "★ TSR-1 — 도달 거리",
+      "desc": "★ TSR-1 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ TSR-1 (Tan) — Range": {
+      "name": "★ TSR-1 (Tan) — 도달 거리",
+      "desc": "★ TSR-1 (Tan) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ TSR-2 — Range": {
+      "name": "★ TSR-2 — 도달 거리",
+      "desc": "★ TSR-2 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ TSR-2 (Tan) — Range": {
+      "name": "★ TSR-2 (Tan) — 도달 거리",
+      "desc": "★ TSR-2 (Tan) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ TSR-3 — Range": {
+      "name": "★ TSR-3 — 도달 거리",
+      "desc": "★ TSR-3 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ TSR-3 (Tan) — Range": {
+      "name": "★ TSR-3 (Tan) — 도달 거리",
+      "desc": "★ TSR-3 (Tan) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ AN/PEQ-6 — Range": {
+      "name": "★ AN/PEQ-6 — 도달 거리",
+      "desc": "★ AN/PEQ-6 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/☆ PMM las. — Range": {
+      "name": "☆ PMM las. — 도달 거리",
+      "desc": "☆ PMM las. 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (SureFire X300U A Flashlight) — Range": {
+      "name": "TGC NG (SureFire X300U A Flashlight) — 도달 거리",
+      "desc": "TGC NG (SureFire X300U A Flashlight) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (Surefire M640U BK PRO Flashlight Offset) — Range": {
+      "name": "TGC NG (Surefire M640U BK PRO Flashlight Offset) — 도달 거리",
+      "desc": "TGC NG (Surefire M640U BK PRO Flashlight Offset) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (Surefire M640U BK PRO FDE Flashlight Offset) — Range": {
+      "name": "TGC NG (Surefire M640U BK PRO FDE Flashlight Offset) — 도달 거리",
+      "desc": "TGC NG (Surefire M640U BK PRO FDE Flashlight Offset) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (INFORCE WMLX GEN 2) — Range": {
+      "name": "TGC NG (INFORCE WMLX GEN 2) — 도달 거리",
+      "desc": "TGC NG (INFORCE WMLX GEN 2) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (SureFire Flashlight With Pressure Pad) — Range": {
+      "name": "TGC NG (SureFire Flashlight With Pressure Pad) — 도달 거리",
+      "desc": "TGC NG (SureFire Flashlight With Pressure Pad) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (SureFire Flashlight With Pressure Pad (FDE)) — Range": {
+      "name": "TGC NG (SureFire Flashlight With Pressure Pad (FDE)) — 도달 거리",
+      "desc": "TGC NG (SureFire Flashlight With Pressure Pad (FDE)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (Surefire M640U BK PRO Flashlight) — Range": {
+      "name": "TGC NG (Surefire M640U BK PRO Flashlight) — 도달 거리",
+      "desc": "TGC NG (Surefire M640U BK PRO Flashlight) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (Wilcox Tactical Device) — Range": {
+      "name": "TGC NG (Wilcox Tactical Device) — 도달 거리",
+      "desc": "TGC NG (Wilcox Tactical Device) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (Wilcox Tactical Device (Black)) — Range": {
+      "name": "TGC NG (Wilcox Tactical Device (Black)) — 도달 거리",
+      "desc": "TGC NG (Wilcox Tactical Device (Black)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (FTX Tactical Device) — Range": {
+      "name": "TGC NG (FTX Tactical Device) — 도달 거리",
+      "desc": "TGC NG (FTX Tactical Device) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/TGC NG (LWRCI Railskin) — Range": {
+      "name": "TGC NG (LWRCI Railskin) — 도달 거리",
+      "desc": "TGC NG (LWRCI Railskin) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Mount All Lennoxp90 Thermal Riser — Range": {
+      "name": "Mount All Lennoxp90 Thermal Riser — 도달 거리",
+      "desc": "Mount All Lennoxp90 Thermal Riser 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Mount All Lennoxp90 Tsr1 30mm — Range": {
+      "name": "Mount All Lennoxp90 Tsr1 30mm — 도달 거리",
+      "desc": "Mount All Lennoxp90 Tsr1 30mm 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Mount All Lennoxp90 Tsr2 34mm — Range": {
+      "name": "Mount All Lennoxp90 Tsr2 34mm — 도달 거리",
+      "desc": "Mount All Lennoxp90 Tsr2 34mm 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Mount All Lennoxp90 Tsr3 35mm — Range": {
+      "name": "Mount All Lennoxp90 Tsr3 35mm — 도달 거리",
+      "desc": "Mount All Lennoxp90 Tsr3 35mm 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Mount All Lennoxp90 Thermal Riser Tan — Range": {
+      "name": "Mount All Lennoxp90 Thermal Riser Tan — 도달 거리",
+      "desc": "Mount All Lennoxp90 Thermal Riser Tan 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Mount All Lennoxp90 Tsr1 30mm Tan — Range": {
+      "name": "Mount All Lennoxp90 Tsr1 30mm Tan — 도달 거리",
+      "desc": "Mount All Lennoxp90 Tsr1 30mm Tan 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Mount All Lennoxp90 Tsr2 34mm Tan — Range": {
+      "name": "Mount All Lennoxp90 Tsr2 34mm Tan — 도달 거리",
+      "desc": "Mount All Lennoxp90 Tsr2 34mm Tan 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Mount All Lennoxp90 Tsr3 35mm Tan — Range": {
+      "name": "Mount All Lennoxp90 Tsr3 35mm Tan — 도달 거리",
+      "desc": "Mount All Lennoxp90 Tsr3 35mm Tan 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/WTT Armory (AN/PEQ 6 Integrated Laser Light Module) — Range": {
+      "name": "WTT Armory (AN/PEQ 6 Integrated Laser Light Module) — 도달 거리",
+      "desc": "WTT Armory (AN/PEQ 6 Integrated Laser Light Module) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/WTT Armory (PMM 12 Laser Aiming Module) — Range": {
+      "name": "WTT Armory (PMM 12 Laser Aiming Module) — 도달 거리",
+      "desc": "WTT Armory (PMM 12 Laser Aiming Module) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Klesch-2P — Intensity": {
+      "name": "Klesch-2P — 밝기",
+      "desc": "Klesch-2P 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/X400U — Intensity": {
+      "name": "X400U — 밝기",
+      "desc": "X400U 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/WF501B — Intensity": {
+      "name": "WF501B — 밝기",
+      "desc": "WF501B 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/XHP35 — Intensity": {
+      "name": "XHP35 — 밝기",
+      "desc": "XHP35 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/XC1 — Intensity": {
+      "name": "XC1 — 밝기",
+      "desc": "XC1 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/GTL 21 — Intensity": {
+      "name": "GTL 21 — 밝기",
+      "desc": "GTL 21 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/LAS/TAC 2 — Intensity": {
+      "name": "LAS/TAC 2 — 밝기",
+      "desc": "LAS/TAC 2 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Klesch-2U — Intensity": {
+      "name": "Klesch-2U — 밝기",
+      "desc": "Klesch-2U 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/DBAL-PL — Intensity": {
+      "name": "DBAL-PL — 밝기",
+      "desc": "DBAL-PL 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/WMX200 — Intensity": {
+      "name": "WMX200 — 밝기",
+      "desc": "WMX200 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/BaldrPro (Black) — Intensity": {
+      "name": "BaldrPro (Black) — 밝기",
+      "desc": "BaldrPro (Black) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/BaldrPro (Tan) — Intensity": {
+      "name": "BaldrPro (Tan) — 밝기",
+      "desc": "BaldrPro (Tan) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/2D — Intensity": {
+      "name": "2D — 밝기",
+      "desc": "2D 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ TR-1 — Intensity": {
+      "name": "★ TR-1 — 밝기",
+      "desc": "★ TR-1 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ TR-1 (Tan) — Intensity": {
+      "name": "★ TR-1 (Tan) — 밝기",
+      "desc": "★ TR-1 (Tan) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Black)) — Intensity": {
+      "name": "Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Black)) — 밝기",
+      "desc": "Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Black)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Tan)) — Intensity": {
+      "name": "Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Tan)) — 밝기",
+      "desc": "Vanguard Mod (Inforce WMLX Gen 3 +IR Tactical Flashlight (Tan)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ TSR-1 — Intensity": {
+      "name": "★ TSR-1 — 밝기",
+      "desc": "★ TSR-1 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ TSR-1 (Tan) — Intensity": {
+      "name": "★ TSR-1 (Tan) — 밝기",
+      "desc": "★ TSR-1 (Tan) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ TSR-2 — Intensity": {
+      "name": "★ TSR-2 — 밝기",
+      "desc": "★ TSR-2 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ TSR-2 (Tan) — Intensity": {
+      "name": "★ TSR-2 (Tan) — 밝기",
+      "desc": "★ TSR-2 (Tan) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ TSR-3 — Intensity": {
+      "name": "★ TSR-3 — 밝기",
+      "desc": "★ TSR-3 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ TSR-3 (Tan) — Intensity": {
+      "name": "★ TSR-3 (Tan) — 밝기",
+      "desc": "★ TSR-3 (Tan) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ AN/PEQ-6 — Intensity": {
+      "name": "★ AN/PEQ-6 — 밝기",
+      "desc": "★ AN/PEQ-6 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/☆ PMM las. — Intensity": {
+      "name": "☆ PMM las. — 밝기",
+      "desc": "☆ PMM las. 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (SureFire X300U A Flashlight) — Intensity": {
+      "name": "TGC NG (SureFire X300U A Flashlight) — 밝기",
+      "desc": "TGC NG (SureFire X300U A Flashlight) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (Surefire M640U BK PRO Flashlight Offset) — Intensity": {
+      "name": "TGC NG (Surefire M640U BK PRO Flashlight Offset) — 밝기",
+      "desc": "TGC NG (Surefire M640U BK PRO Flashlight Offset) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (Surefire M640U BK PRO FDE Flashlight Offset) — Intensity": {
+      "name": "TGC NG (Surefire M640U BK PRO FDE Flashlight Offset) — 밝기",
+      "desc": "TGC NG (Surefire M640U BK PRO FDE Flashlight Offset) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (INFORCE WMLX GEN 2) — Intensity": {
+      "name": "TGC NG (INFORCE WMLX GEN 2) — 밝기",
+      "desc": "TGC NG (INFORCE WMLX GEN 2) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (SureFire Flashlight With Pressure Pad) — Intensity": {
+      "name": "TGC NG (SureFire Flashlight With Pressure Pad) — 밝기",
+      "desc": "TGC NG (SureFire Flashlight With Pressure Pad) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (SureFire Flashlight With Pressure Pad (FDE)) — Intensity": {
+      "name": "TGC NG (SureFire Flashlight With Pressure Pad (FDE)) — 밝기",
+      "desc": "TGC NG (SureFire Flashlight With Pressure Pad (FDE)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (Surefire M640U BK PRO Flashlight) — Intensity": {
+      "name": "TGC NG (Surefire M640U BK PRO Flashlight) — 밝기",
+      "desc": "TGC NG (Surefire M640U BK PRO Flashlight) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (Wilcox Tactical Device) — Intensity": {
+      "name": "TGC NG (Wilcox Tactical Device) — 밝기",
+      "desc": "TGC NG (Wilcox Tactical Device) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (Wilcox Tactical Device (Black)) — Intensity": {
+      "name": "TGC NG (Wilcox Tactical Device (Black)) — 밝기",
+      "desc": "TGC NG (Wilcox Tactical Device (Black)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (FTX Tactical Device) — Intensity": {
+      "name": "TGC NG (FTX Tactical Device) — 밝기",
+      "desc": "TGC NG (FTX Tactical Device) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/TGC NG (LWRCI Railskin) — Intensity": {
+      "name": "TGC NG (LWRCI Railskin) — 밝기",
+      "desc": "TGC NG (LWRCI Railskin) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Mount All Lennoxp90 Thermal Riser — Intensity": {
+      "name": "Mount All Lennoxp90 Thermal Riser — 밝기",
+      "desc": "Mount All Lennoxp90 Thermal Riser 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Mount All Lennoxp90 Tsr1 30mm — Intensity": {
+      "name": "Mount All Lennoxp90 Tsr1 30mm — 밝기",
+      "desc": "Mount All Lennoxp90 Tsr1 30mm 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Mount All Lennoxp90 Tsr2 34mm — Intensity": {
+      "name": "Mount All Lennoxp90 Tsr2 34mm — 밝기",
+      "desc": "Mount All Lennoxp90 Tsr2 34mm 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Mount All Lennoxp90 Tsr3 35mm — Intensity": {
+      "name": "Mount All Lennoxp90 Tsr3 35mm — 밝기",
+      "desc": "Mount All Lennoxp90 Tsr3 35mm 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Mount All Lennoxp90 Thermal Riser Tan — Intensity": {
+      "name": "Mount All Lennoxp90 Thermal Riser Tan — 밝기",
+      "desc": "Mount All Lennoxp90 Thermal Riser Tan 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Mount All Lennoxp90 Tsr1 30mm Tan — Intensity": {
+      "name": "Mount All Lennoxp90 Tsr1 30mm Tan — 밝기",
+      "desc": "Mount All Lennoxp90 Tsr1 30mm Tan 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Mount All Lennoxp90 Tsr2 34mm Tan — Intensity": {
+      "name": "Mount All Lennoxp90 Tsr2 34mm Tan — 밝기",
+      "desc": "Mount All Lennoxp90 Tsr2 34mm Tan 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Mount All Lennoxp90 Tsr3 35mm Tan — Intensity": {
+      "name": "Mount All Lennoxp90 Tsr3 35mm Tan — 밝기",
+      "desc": "Mount All Lennoxp90 Tsr3 35mm Tan 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/WTT Armory (AN/PEQ 6 Integrated Laser Light Module) — Intensity": {
+      "name": "WTT Armory (AN/PEQ 6 Integrated Laser Light Module) — 밝기",
+      "desc": "WTT Armory (AN/PEQ 6 Integrated Laser Light Module) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/WTT Armory (PMM 12 Laser Aiming Module) — Intensity": {
+      "name": "WTT Armory (PMM 12 Laser Aiming Module) — 밝기",
+      "desc": "WTT Armory (PMM 12 Laser Aiming Module) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    }
+  }
+}

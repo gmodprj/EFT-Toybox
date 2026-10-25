@@ -1,0 +1,21 @@
+{
+  "guid": "com.pein.attachmentscrolling",
+  "name": "부착물 목록 스크롤 (Scrollable Attachments)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Scroll speed": {
+      "name": "스크롤 속도",
+      "desc": "부착물 목록이 굴러가는 속도."
+    },
+    "General/Attachment menu columns": {
+      "name": "가로 칸 수",
+      "desc": "부착물 목록에 한 줄로 보여 줄 칸 수."
+    },
+    "General/Attachment menu height": {
+      "name": "목록 높이",
+      "desc": "부착물 목록 창의 높이."
+    }
+  }
+}

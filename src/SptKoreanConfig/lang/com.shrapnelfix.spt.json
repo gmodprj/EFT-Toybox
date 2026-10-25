@@ -1,0 +1,151 @@
+{
+  "guid": "com.shrapnelfix.spt",
+  "name": "수류탄 파편 보정 (ShrapnelFix)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Origin": "2. 파편 발생 지점",
+    "3. Spray": "3. 파편 흩뿌리기",
+    "4. Aimed fragments": "4. 조준 파편",
+    "5. Performance": "5. 성능",
+    "6. Per-grenade multipliers": "6. 수류탄별 배율",
+    "7. Debug": "7. 진단"
+  },
+  "settings": {
+    "1. General/Enabled": {
+      "name": "모드 사용",
+      "desc": "끄면 수류탄 동작이 100% 바닐라로 돌아간다."
+    },
+    "1. General/Disabled maps": {
+      "name": "제외할 맵",
+      "desc": "이 모드를 적용하지 않을 맵 아이디를 쉼표로 나눠 적는다. 예: factory4_day,factory4_night,laboratory"
+    },
+    "1. General/Include 40mm/30mm launcher rounds": {
+      "name": "유탄 발사기 탄에도 적용",
+      "desc": "총기 하부·발사기 유탄(VOG-25, M433, M381 등)에도 적용한다. 지뢰와 포격은 어떤 경우에도 건드리지 않는다."
+    },
+    "1. General/Global lethality multiplier": {
+      "name": "전체 살상력 배율",
+      "desc": "모든 수류탄의 무작위 파편 수와 추가 조준 파편 수를 한꺼번에 조절한다. 수류탄별 배율에 곱해진다."
+    },
+    "2. Origin/Origin lift (m)": {
+      "name": "발생 지점 높이 (m)",
+      "desc": "땅에서 터질 때 파편이 바닥 4cm 쯤이 아니라 수류탄보다 이만큼 위에서 출발한다. 탁자·천장 아래에서는 알아서 낮춘다."
+    },
+    "2. Origin/Lift blast origin too": {
+      "name": "폭압 피해도 같이 올리기",
+      "desc": "파편이 아닌 폭압 피해 선도 같이 올린다. 허리 높이 엄폐물이 훨씬 약해진다. 끄면 폭압은 바닐라 그대로다."
+    },
+    "2. Origin/Fix ground detection": {
+      "name": "바닥 판정 수정",
+      "desc": "총알 충돌 판정면도 바닥으로 인정해, 철골 통로나 위층에 놓인 수류탄을 공중 폭발로 잘못 보지 않게 한다. 바닐라는 이 경우 파편을 바닥에 뿌린다."
+    },
+    "3. Spray/Reshape random spray": {
+      "name": "흩뿌리는 모양 바꾸기",
+      "desc": "바닐라의 반구형 30발 흩뿌리기를 아래 설정으로 대체한다. 끄면 바닐라 방식으로 뿌리되 바닥 판정 수정만 적용된다."
+    },
+    "3. Spray/Fragment count scale": {
+      "name": "파편 수 배율",
+      "desc": "무작위 파편 수 = 수류탄 고유 파편 수 × 이 값 × 살상력 배율. 바닐라는 항상 30발로 묶인다."
+    },
+    "3. Spray/Max fragments per explosion": {
+      "name": "폭발당 파편 상한",
+      "desc": "한 번 폭발에서 날아가는 무작위 파편 수의 절대 상한."
+    },
+    "3. Spray/Band min elevation (deg)": {
+      "name": "사람 높이 띠 — 최저 각도 (도)",
+      "desc": "땅에서 터질 때 파편을 집중시키는 각도 띠의 아래쪽 한계. 음수면 약간 아래로 향해 바닥보다 다리를 먼저 맞힌다."
+    },
+    "3. Spray/Band max elevation (deg)": {
+      "name": "사람 높이 띠 — 최고 각도 (도)",
+      "desc": "땅에서 터질 때 파편을 집중시키는 각도 띠의 위쪽 한계."
+    },
+    "3. Spray/Fraction in band": {
+      "name": "띠 안에 넣을 비율",
+      "desc": "땅에서 터질 때 각도 띠 안으로 보낼 파편 비율. 나머지는 바닐라처럼 위쪽 반구로 흩어진다."
+    },
+    "3. Spray/Airburst down bias": {
+      "name": "공중 폭발 아래쪽 치우침",
+      "desc": "2m 보다 높이 터질 때 위로 가는 파편을 아래로 뒤집을 확률. 그보다 낮으면 그냥 구형으로 퍼진다. 바닐라는 4m 이상에서만 0.75 다."
+    },
+    "3. Spray/Speed factor min": {
+      "name": "속도 배율 — 최소",
+      "desc": "무작위 파편은 파편 탄약 속도의 최소~최대 사이 임의 비율로 날아간다. 바닐라는 0.5~0.95 다."
+    },
+    "3. Spray/Speed factor max": {
+      "name": "속도 배율 — 최대",
+      "desc": "속도 배율 최소 항목을 함께 본다."
+    },
+    "4. Aimed fragments/Aimed fragment multiplier": {
+      "name": "조준 파편 배율",
+      "desc": "바닐라는 거리에 따라 정해진 몫의 파편을 가까운 사람(최대 2명)에게 곧장 날린다. 이 설정은 그 몫의 (배율 − 1) 만큼을 추가로 날리며, 대상 한 명당 최대 4발까지다. 1 이면 바닐라와 같다."
+    },
+    "4. Aimed fragments/Aim along feet-to-head line": {
+      "name": "발끝~머리 사이를 조준",
+      "desc": "추가 조준 파편이 발끝과 머리 사이 임의 지점을 노린다. 서 있든 앉았든 엎드렸든 통한다. 끄면 바닐라처럼 발에서 0.8m 위를 노린다."
+    },
+    "5. Performance/Fragments per frame (per explosion)": {
+      "name": "프레임당 파편 수 (폭발 하나)",
+      "desc": "폭발 하나가 한 프레임에 쏘는 무작위 파편 수. 바닐라는 9 다."
+    },
+    "5. Performance/Fragments per frame (all explosions)": {
+      "name": "프레임당 파편 수 (전체)",
+      "desc": "동시에 일어난 폭발이 함께 쓰는 프레임당 상한. 넘친 파편은 다음 프레임으로 넘어간다."
+    },
+    "6. Per-grenade multipliers/F-1": {
+      "name": "F-1",
+      "desc": "이 수류탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/RGD-5": {
+      "name": "RGD-5",
+      "desc": "이 수류탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/M67": {
+      "name": "M67",
+      "desc": "이 수류탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/RGN": {
+      "name": "RGN",
+      "desc": "이 수류탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/RGO": {
+      "name": "RGO",
+      "desc": "이 수류탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/VOG-17 Khattabka": {
+      "name": "VOG-17 하타브카",
+      "desc": "이 수류탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/VOG-25 Khattabka": {
+      "name": "VOG-25 하타브카",
+      "desc": "이 수류탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/V40 Mini": {
+      "name": "V40 미니",
+      "desc": "이 수류탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/40mm VOG-25": {
+      "name": "40mm VOG-25",
+      "desc": "이 유탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/30x29mm VOG-30": {
+      "name": "30x29mm VOG-30",
+      "desc": "이 유탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/40x46mm M433 HEDP": {
+      "name": "40x46mm M433 HEDP",
+      "desc": "이 유탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "6. Per-grenade multipliers/40x46mm HE (M381, M386, M406, M441)": {
+      "name": "40x46mm HE (M381, M386, M406, M441)",
+      "desc": "이 유탄의 살상력 배율(무작위 파편 수와 추가 조준 파편 수)."
+    },
+    "7. Debug/Draw fragment rays": {
+      "name": "파편 경로 표시",
+      "desc": "파편이 날아간 선을 3초간 벽을 통과해 보이게 그린다. 초록은 사람 높이 띠, 노랑은 흩어진 것, 빨강은 추가 조준 파편이다."
+    },
+    "7. Debug/Log explosions and fragment hits": {
+      "name": "폭발·명중 기록",
+      "desc": "폭발마다 한 줄, 파편이 몸에 맞을 때마다 한 줄을 BepInEx/LogOutput.log 에 남긴다."
+    }
+  }
+}

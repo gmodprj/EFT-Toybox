@@ -1,0 +1,171 @@
+{
+  "guid": "com.tylevo.fieldattachments",
+  "name": "현장 부착물 교체 (Tylevo's Field Attachments)",
+  "sections": {
+    "Compatibility": "호환",
+    "Controls": "조작",
+    "Diagnostics": "진단",
+    "Discovery": "부품 찾기",
+    "Display": "화면 표시",
+    "Experiments": "실험 기능",
+    "General": "일반"
+  },
+  "settings": {
+    "Compatibility/FluidStanceTransitions": {
+      "name": "자세 전환과 맞추기",
+      "desc": "부착물 화면의 총기 자세와 전환 속도를 Stance Overhaul 쪽 설정에 맞춘다. 카드는 자세 움직임이 멎을 때까지 기다린다. Stance Overhaul 이 없으면 아무 효과도 없고, 그 모드의 설정이나 시야각도 건드리지 않는다."
+    },
+    "Compatibility/ShowStanceStatus": {
+      "name": "메인 화면에 자세 모드 상태 표시",
+      "desc": "메인 메뉴에 Stance Overhaul 상태를 띄운다. '넘기기'를 누르면 이번 실행에서만 숨고, 이 설정을 끄면 다시 켤 때까지 영구히 숨는다."
+    },
+    "Controls/MenuKey": {
+      "name": "부착물 메뉴 키",
+      "desc": "부착물 메뉴를 열고 그 안의 커서를 움직이는 키. 기본값은 왼쪽 Alt. 쓰지 않는 키보드 키나 가운데 버튼·측면 버튼을 고른다. 조합키로 쓰려면 보조키를 누른 채 주 키를 눌렀다 떼고 보조키를 뗀다. 좌·우클릭, Esc, Tab, F12 는 메뉴 조작용으로 예약돼 있다. 비우면 단축키를 끈다."
+    },
+    "Controls/MenuActivation": {
+      "name": "메뉴 여는 방식",
+      "desc": "Hold 는 키를 누른 동안만 메뉴가 열려 있고 떼면 닫힌다. Toggle 은 한 번 눌러 열고 다시 눌러 닫는다. Alt 처럼 보조키 하나만 쓸 때는 짧게 톡 쳐서 닫고, 다른 메뉴 조작과 함께 쓰면 열린 채 남는다. 닫으면 대기 중인 교체는 취소되지만 이미 시작된 교체는 되돌리지 않는다."
+    },
+    "Controls/MouseModifier": {
+      "name": "구형 커서 보조키",
+      "desc": "O 키로 연 구형 화면에서 커서를 잡는 보조키. 새 Alt 메뉴는 커서를 알아서 잡는다. 기본값은 왼쪽 Alt."
+    },
+    "Controls/AttachmentAnimationSpeedMultiplier": {
+      "name": "부착·제거 동작 속도",
+      "desc": "이 모드의 부착물 장착·제거 동작 재생 속도. 1.12 면 12% 빠르고 1 이면 원래 속도다. 일반 살펴보기·발사·재장전은 그대로다."
+    },
+    "Controls/MouseSensitivity": {
+      "name": "커서 감도",
+      "desc": "보조키를 누른 동안 움직이는 가상 커서의 속도."
+    },
+    "Controls/FasterMenuClose": {
+      "name": "메뉴 빨리 닫기",
+      "desc": "시험 기능. 완전히 열린 부착물 메뉴를 닫을 때 총을 0.36초에 내린다. 끄면 기존 0.77초쯤으로 돌아간다. 열기·중간에 떼기·즉시 취소는 그대로이고, 다음에 닫을 때부터 적용되니 재시작은 필요 없다."
+    },
+    "Controls/OpenOverlay": {
+      "name": "덧화면 열기 키",
+      "desc": "누르고 있는 동안 덧화면을 띄운다. 시점과 클릭은 별도의 마우스 보조키가 잡는다."
+    },
+    "Controls/ToggleInsteadOfHold": {
+      "name": "누르고 있기 대신 눌러서 전환",
+      "desc": "열기 키를 누르고 있는 대신 한 번 눌러 열고 다시 눌러 닫는다."
+    },
+    "Controls/ToggleAttachmentPose": {
+      "name": "부착물 자세를 눌러서 전환",
+      "desc": "켜면 부착물 키를 한 번 눌러 열고 다시 눌러 닫는다. 끄면 누르고 있어야 한다. 닫으면 아직 넘기지 않은 교체 요청은 취소된다."
+    },
+    "Controls/AttachmentPose": {
+      "name": "부착물 자세 키 (별도)",
+      "desc": "자세만 따로 잡는 키. 기본으로는 비어 있다. 여기에 키를 넣으면 구형 커서 보조키를 따로 써야 한다. 기본 Alt 메뉴는 자세와 커서를 한꺼번에 연다."
+    },
+    "Controls/MarkPose": {
+      "name": "자세 표시 키 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 보정 키. 단독 부착물 모드에서는 F4 자세 표시와 저장된 살펴보기 표식이 동작하지 않는다."
+    },
+    "Controls/Rescan": {
+      "name": "다시 훑기 키",
+      "desc": "덧화면이 열려 있는 동안 부품을 다시 훑는다."
+    },
+    "Controls/ArmSelection": {
+      "name": "선택 준비 키",
+      "desc": "준비 단계에만 쓰는 추가 단축키. Enter 와 숫자패드 Enter 로도 준비된다. 인벤토리를 건드리지 않고, F7 은 따로 남는다. F8 과 같은 조합키 처리 방식을 쓴다."
+    },
+    "Controls/ExportReport": {
+      "name": "보고서 내보내기 키",
+      "desc": "버그 신고용으로 현재 부착물 상태와 최근 작업 결과를 저장한다. 기본값은 F10. 아이템을 옮기는 일은 결코 없다."
+    },
+    "Controls/AttemptEmptySlotInstall": {
+      "name": "빈 칸에 장착 시도 키",
+      "desc": "실제로 아이템이 움직이는 조작이다. Enter 로 준비한 뒤 덧화면이 열린 상태에서 누른다. 호환되는 빈 칸과, 들고 있는 낱개 조준경·총구 부품·전술 장비·핸드가드에만 통한다."
+    },
+    "Controls/CycleAttachmentPosition": {
+      "name": "장착 위치 돌려 보기 키",
+      "desc": "커서가 켜진 동안 열린 목록이나 가리킨 카드의 장착 지점을 차례로 바꾼다. 개수와 연결선으로 지금 고른 지점을 알 수 있다. 기본값은 왼쪽 Alt + R."
+    },
+    "Controls/CycleAttachmentLayer": {
+      "name": "부품 묶음 전환 키",
+      "desc": "메뉴가 열린 동안 기본 부품과 멀티툴 부품을 번갈아 본다. 기본값은 가운데 버튼. 묶음을 바꿔도 부착물은 바뀌지 않는다."
+    },
+    "Diagnostics/ExportLimitedIL": {
+      "name": "제한된 IL 내보내기",
+      "desc": "인벤토리 관련 함수 몇 개의 IL 코드를 분량을 제한해 내보낸다. 메타데이터만 읽고 그 함수를 실행하지는 않는다. 남에게 보내기 전에 내용을 확인한다."
+    },
+    "Discovery/ShowSameClassHints": {
+      "name": "같은 종류 힌트 표시 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 설정. 빠른 교체 선택창은 이제 실제로 맞고 작전 중 교체가 되는 부착물만 보여 준다."
+    },
+    "Discovery/ShowAllUnknownMods": {
+      "name": "알 수 없는 부품도 표시 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 설정. 알 수 없거나 호환되지 않는 아이템은 계속 숨는다."
+    },
+    "Display/RequestNativeIcons": {
+      "name": "아이템 그림 사용",
+      "desc": "게임의 아이템 그림을 가져와 보여 준다. 그림을 못 불러오면 이름으로 표시된다."
+    },
+    "Display/StudioCrossLayout": {
+      "name": "십자 배치 — 다듬은 판",
+      "desc": "십자 배치를 쓸 때 다듬어 둔 MCX 배치(위치, 17/-39/30도 축, 크기)를 쓴다. 장착된 그림이나 빈 칸을 눌러 부품을 고르고, 제거는 그 아래에 있다. 칸 연결선과 총기 흔들림은 그대로 살아 있다. 십자 배치에서만 '카드를 화면 쪽으로'와 카드 각도 보정을 덮어쓴다. 끄면 이전 십자 배치로 돌아간다."
+    },
+    "Display/WeaponFollowingCards": {
+      "name": "카드가 총을 따라가기",
+      "desc": "부착물 카드가 총의 움직임과 흔들림을 따라 움직이게 한다."
+    },
+    "Display/IdleMovement": {
+      "name": "미세한 흔들림",
+      "desc": "부착물을 보는 동안 숨 쉬듯 조금씩 움직이는 정도. 0 이면 끈다. 카드나 열린 목록 위에서는 잦아들고, 누르는 동안에는 멈춘다."
+    },
+    "Display/CameraFacingCards": {
+      "name": "카드를 화면 쪽으로",
+      "desc": "카드·육각 타일·십자 타일을 기울이지 않고 화면을 똑바로 보게 한다. 위치는 '카드가 총을 따라가기'가 켜져 있으면 그대로 총을 따라간다. 끄면 총열 방향으로 기울던 이전 모습으로 돌아간다. 총기 동작은 바뀌지 않는다."
+    },
+    "Display/CardPerspectiveStrength": {
+      "name": "카드 기울기 세기",
+      "desc": "'카드를 화면 쪽으로'를 끈 때만 쓴다. 0 이면 총기 기울기를 반영하면서도 화면을 보고, 1 이면 게임 원래 원근을 쓰되 읽을 수 있게 각도를 제한한다. 값이 낮을수록 카드가 넓고 덜 찌그러진다. 총이 돌아가지는 않는다."
+    },
+    "Display/CardClockwiseDegrees": {
+      "name": "카드 시계 방향 보정 (도)",
+      "desc": "'카드를 화면 쪽으로'를 끈 때만 쓴다. 모든 카드 면을 시계 방향으로 조금 돌린다. 양수면 카드 모서리가 오른쪽으로 간다. 총기 움직임·칸 위치·살펴보기는 그대로다."
+    },
+    "Experiments/ShortPoseReturn": {
+      "name": "자세 복귀 짧게 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 설정. 단독 부착물 모드에서는 동작하지 않는다."
+    },
+    "Experiments/McxLateInspection": {
+      "name": "MCX 늦은 살펴보기 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 설정. 단독 부착물 모드에서는 동작하지 않는다."
+    },
+    "Experiments/GlobalMcxInspection": {
+      "name": "MCX 살펴보기 전체 적용 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 설정. 단독 부착물 모드에서는 동작하지 않는다."
+    },
+    "Experiments/MdrMotionTrial": {
+      "name": "MDR 동작 시험 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 설정. 단독 부착물 모드에서는 동작하지 않는다."
+    },
+    "Experiments/StmPresentationTrial": {
+      "name": "STM 기울기 시험 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 설정. 단독 부착물 모드에서는 동작하지 않는다."
+    },
+    "Experiments/StmPresentationTiltDegrees": {
+      "name": "STM 기울기 값 (구형)",
+      "desc": "설정 호환을 위해 남겨 둔 구형 설정. 단독 부착물 모드에서는 동작하지 않는다."
+    },
+    "Experiments/EnableEmptySlotInstall": {
+      "name": "실제 장착·제거 허용",
+      "desc": "눌러서 들고 있는 부착물을 장착·제거·교체할 수 있게 한다. 조준경과 마운트가 붙은 묶음도 포함된다. 끄면 아이템을 옮기지 않고 보기만 한다. 작전 중 교체 제한과 보관 공간 조건은 그대로 적용된다."
+    },
+    "Experiments/HexAttachmentSelectors": {
+      "name": "육각형 선택창",
+      "desc": "실험 기능. 부착물을 아이템 그림이 붙은 작은 육각형 뭉치로 모아 총기 원근에 맞춰 보여 준다. Alt 클릭 동작·칸 선택·안전장치는 같다. 끄면 지금 카드 모양을 그대로 쓰며, 총기 동작이나 인벤토리 동작은 바뀌지 않는다."
+    },
+    "Experiments/CrossAttachmentSelectors": {
+      "name": "십자형 선택창",
+      "desc": "실험 기능. 총을 따라다니는 십자 배치로, 위는 조준경, 왼쪽은 총구, 오른쪽은 전술 장비, 아래는 핸드가드다. 타르코프 기본 색과 실제 아이템 그림을 쓴다. 켜 두면 육각형 선택창보다 우선하고, 끄면 이전 배치로 돌아간다. Alt 조작과 안전장치는 같다."
+    },
+    "General/Enabled": {
+      "name": "모드 사용",
+      "desc": "현장 부착물 교체 기능 전체를 켜고 끈다."
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "guid": "com.maschine.Airburst",
+  "name": "공중 폭발탄 (Airburst)",
+  "sections": {
+    "General": "일반",
+    "JumpUp": "도비탄 수류탄"
+  },
+  "settings": {
+    "General/Enabled": {
+      "name": "모드 사용",
+      "desc": "두 탄종 모두를 켜고 끈다. 끄면 M397A1 의 튀어 올라 터지는 신관도 멎어서, 그 탄은 일반 충격 수류탄이 아니라 불발탄이 된다."
+    },
+    "General/AirburstShellTemplateIds": {
+      "name": "공중 폭발탄 템플릿 ID",
+      "desc": "공중 폭발탄으로 다룰 템플릿 ID 를 쉼표로 나눠 적는다. 기본값은 이 모드의 XM1166 HEAB 이고, 다른 모드의 폭발탄을 적으면 같은 사격 통제를 쓰게 된다(예: WTT-Armory 의 25x59mm XM1019 — 6938bc0b6e96bcf17932873e)."
+    },
+    "General/AirburstDefaultDistance": {
+      "name": "기본 폭발 거리",
+      "desc": "조준경 영점을 쓸 수 없을 때(조준경이 없을 때) 쓰는 폭발 거리."
+    },
+    "General/UseScopeRangefinderDistance": {
+      "name": "Scope Rangefinder 거리 사용",
+      "desc": "Scope Rangefinder 가 거리 측정 기능을 내주면, 거리를 고정하지 않고 쏜 탄은 조준경 영점 단계가 아니라 그 모드가 실제로 측정한 거리(3초 안에 측정된 것)에서 터진다. 거리 고정은 어느 쪽이든 따로 측정한다."
+    },
+    "General/AirburstLockHotkey": {
+      "name": "거리 고정 키",
+      "desc": "엄폐물을 조준한 채 누르면 그 거리를 공중 폭발탄용으로 고정하고, 조준하지 않은 상태에서 누르면 해제한다. 기본값은 Scope Rangefinder 의 영점 키와 같아 한 번 누르면 둘 다 된다(그쪽은 자체 자동 영점이 켜져 있을 때만 영점을 잡는다)."
+    },
+    "General/AirburstBurstOffset": {
+      "name": "폭발 거리 보정 (m)",
+      "desc": "측정한 거리에 더하는 거리로, 탄이 엄폐물과 나란히가 아니라 그 뒤에서 터지게 한다. 실제 사격 통제 장치도 같은 일을 한다."
+    },
+    "JumpUp/JumpUpTemplateIds": {
+      "name": "도비탄 수류탄 템플릿 ID",
+      "desc": "튀어 올라 터지는 수류탄으로 다룰 템플릿 ID 를 쉼표로 나눠 적는다. 이런 탄은 부딪친 면의 수직 방향으로 조금 떨어진 곳에서 터진다."
+    },
+    "JumpUp/JumpUpHeight": {
+      "name": "튀어 오르는 거리",
+      "desc": "고폭 장약이 부딪친 면에서 이만큼 떨어진 뒤 터진다."
+    }
+  }
+}

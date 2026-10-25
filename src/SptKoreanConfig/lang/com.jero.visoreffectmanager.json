@@ -1,0 +1,42 @@
+{
+  "guid": "com.jero.visoreffectmanager",
+  "name": "얼굴 보호구 효과 (VisorEffectManager)",
+  "sections": {
+    "Face Shield Settings": "얼굴 보호구 설정",
+    "Keyboard Shortcuts": "단축키"
+  },
+  "settings": {
+    "Face Shield Settings/1. Remove Glass Damage": {
+      "name": "1. 유리 파손 없애기",
+      "desc": "얼굴 보호구의 파손 무늬를 없앤다."
+    },
+    "Face Shield Settings/2. Remove Scratches": {
+      "name": "2. 긁힌 자국 없애기",
+      "desc": "얼굴 보호구의 긁힌 무늬를 없앤다."
+    },
+    "Face Shield Settings/3. Remove Blur": {
+      "name": "3. 흐림 없애기",
+      "desc": "얼굴 보호구의 흐림 효과를 없앤다."
+    },
+    "Face Shield Settings/4. Remove Distortion": {
+      "name": "4. 일그러짐 없애기",
+      "desc": "얼굴 보호구의 일그러짐 효과를 없앤다."
+    },
+    "Keyboard Shortcuts/1. Hotkey - Glass Damage": {
+      "name": "1. 단축키 — 유리 파손",
+      "desc": "유리 파손 없애기를 켜고 끄는 단축키."
+    },
+    "Keyboard Shortcuts/2. Hotkey - Scratches": {
+      "name": "2. 단축키 — 긁힌 자국",
+      "desc": "긁힌 자국 없애기를 켜고 끄는 단축키."
+    },
+    "Keyboard Shortcuts/3. Hotkey - Blur": {
+      "name": "3. 단축키 — 흐림",
+      "desc": "흐림 없애기를 켜고 끄는 단축키."
+    },
+    "Keyboard Shortcuts/4. Hotkey - Distortion": {
+      "name": "4. 단축키 — 일그러짐",
+      "desc": "일그러짐 없애기를 켜고 끄는 단축키."
+    }
+  }
+}

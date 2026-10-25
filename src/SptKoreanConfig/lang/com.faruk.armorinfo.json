@@ -1,0 +1,13 @@
+{
+  "guid": "com.faruk.armorinfo",
+  "name": "방어구 정보 창 (ArmorInfoPlus)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Show Armor Info Key": {
+      "name": "방어구 정보 창 키",
+      "desc": "방어구 정보 창을 여는 단축키."
+    }
+  }
+}
