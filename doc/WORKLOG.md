@@ -472,7 +472,7 @@ The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하
 - **WTT Pack 'n' Strap 2.1.1** — 60파일 302MB. `SERVER STARTED in 77s`, 오류 0.
 - **Painter 3.0.0 + Tactical Gear Component 3.0.0** — 서로를 요구하므로 TGC(137파일 658MB)를 `-SkipTest`로 먼저 복사하고 Painter(27파일)를 넣은 뒤 한 번에 테스트. `SERVER STARTED in 77s`, 오류 0. 둘 다 `Mod loaded successfully.`
 - 설치 후 사용자 서버: 모드 **95개**, 모드 로드 → 웹서버 **69초**(7-E 전 67초). 1.2GB가 늘었는데 시작 시간은 2초 차이다.
-- **새로 생긴 오류 4건** — `ItemBaseClassService: Could not add 668ff5bde41a0cce3b142464 / 6699546547ad52e0fccf6da9 to cache, it does not exist in the item database!` (플리마켓 상품 생성 단계). 추적해 보니 **Painter의 `db/assort.json`이 어디에도 없는 아이템 두 종을 팔려고 올려 둔 것**이다. 설치된 모드 전체 JSON을 훑어도 그 두 tpl을 정의하는 곳이 없고(같은 제작자의 다른 팩에 있는 것으로 보인다), `barter_scheme`에 가격도 없는 **죽은 항목 4줄**(두 종 × 2)이다.
+- **새로 생긴 오류 4건** — `ItemBaseClassService: Could not add 668ff5bde41a0cce3b142464 / 6699546547ad52e0fccf6da9 to cache, it does not exist in the item database!` (플리마켓 상품 생성 단계). 추적해 보니 **Painter의 `db/assort.json`이 어디에도 없는 아이템 두 종을 팔려고 올려 둔 것**이다. 설치된 모드 전체 JSON을 훑어도 그 두 tpl을 정의하는 곳이 없는 **죽은 항목 4줄**(두 종 × 2)이다. (처음에는 "같은 제작자의 다른 팩에 있는 듯", "가격 정보도 없다"고 적었는데 **둘 다 틀렸다** — 아래 추적 결과 참고.)
   - 영향: 시작 때마다 오류 4건 + 그 두 칸은 살 수 없다. 서버는 계속 진행한다.
   - 고치려면 Painter의 assort에서 그 4줄을 지우면 된다(모드 데이터 수정이라 보류 중).
 
@@ -485,3 +485,16 @@ The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하
 - 원본은 두 곳에 있다: `backup/painter-assort-original.json`과 해제본 `extracted/stage7-E/1025__Painter_3.0.0/…/db/assort.json`. 되돌리려면 둘 중 하나를 덮으면 된다.
 - 결과: 재시작한 서버에서 **Error·Critical 0건**, `ItemBaseClassService` 메시지 0건, 모드 95개, Painter·TGC 정상 로드.
 - 주의: **모드가 배포한 데이터 파일을 직접 고친 것**이라 Painter를 업데이트하면 되돌아간다. 설치 기록(`installed-stage7E-1025.txt`)의 파일 목록은 그대로지만 내용은 원본과 다르다.
+
+### 그 두 아이템의 정체 — 다른 모드가 아니라 Painter 자신 (2026-10-25 19:0x)
+
+"같은 제작자의 다른 팩에 있는 아이템"이라고 추측했었는데, 추적해 보니 **틀렸다.**
+
+- GitHub 코드 검색에서 바로 나왔다. 두 id는 Painter 저장소(`emilanderss0n/Painter`)의 `src/CustomItemsManager.ts`에 있는 **Painter 자신의 커스텀 아이템**이다.
+  - `668ff5bde41a0cce3b142464` = **Painter's Special Delivery**(루트박스, 봉인 무기 상자를 복제해 만든다)
+  - `6699546547ad52e0fccf6da9` = **Painter's War Box**(두 번째 루트박스, `6489981f7063b903ff4b8565` 복제)
+  - 모드가 `createItemFromClone`으로 **실행 시점에 만들어 내는** 아이템이라, 어느 모드의 JSON에도 정의가 없는 게 당연했다.
+- 그런데 **4.x 포팅본(`Painter-4.0.dll`)에는 그 코드가 없다.** DLL을 ASCII·UTF-16 양쪽으로 훑어도 `mysterybox`·`LootBox`·두 id·`CreateItemFromClone`이 하나도 안 나오고, 클래스도 `EpicTraderHelper`·`ModMetadata`·`Painter`·`PainterModQuest` 넷뿐이다.
+- 반면 **`db/assort.json`에는 그 매물이 남아 있고 번들(`bundles/mysterybox.bundle`, `mysterybox_2.bundle`)도 같이 배포된다.** 즉 TypeScript 시절의 루트박스 기능이 C# 포팅에서 빠졌는데 데이터와 리소스만 남은 것이다. **다른 모드를 깐다고 해결되지 않는다.**
+- 같은 제작자(MoxoPixel)의 다른 팩 6종(BlackCore·SandCore·GreenCore·WhiteCore·Mag Tape·War Heads)은 **전부 3.x까지만** 나와 있어 4.1.6에서는 설치 대상이 아니다. 이 건과도 무관하다.
+- 결론: 앞서 지운 매물 4줄은 **되살릴 방법이 없는 항목**이 맞다. 제작자가 루트박스 코드를 다시 넣기 전까지는 지운 채로 두는 것이 옳다.
