@@ -1,0 +1,21 @@
+{
+  // false 로 두면 이 모드는 아무것도 바꾸지 않는다. 서버를 다시 켜야 적용된다.
+  "ModEnabled": true,
+
+  // 칸마다 무엇이 몇 개로 늘었는지 한 줄씩 기록한다. 문제를 볼 때만 켠다.
+  "Debug": false,
+
+  // mod_equipment 와 mod_equipment_000·001·002… 를 한 묶음으로 본다.
+  // 칸 번호의 뜻이 헬멧마다 달라서(Ops-Core FAST 는 001 이 RAC 헤드셋, 002 가 SLAAP 방탄판)
+  // 켜면 헤드셋 자리에 방탄판이 들어가는 식의 조합까지 열린다. 기본은 꺼짐.
+  "MergeEquipmentSlots": false,
+
+  // 건드리지 않을 칸 이름. 대소문자는 가리지 않는다.
+  // helmet_top·helmet_back 은 헬멧에 내장된 방탄판 자리다(36종). 여기를 합치면
+  // 아무 헬멧에 아무 방탄판을 넣을 수 있어 방어력이 크게 달라진다. 그대로 두고 싶으면
+  // ["helmet_top", "helmet_back"] 으로 적는다.
+  "ExcludedSlotNames": [],
+
+  // 건드리지 않을 헬멧 아이템 id. 예: ["5c0919b50db834001b7ce3b9"]
+  "ExcludedHelmetIds": []
+}
