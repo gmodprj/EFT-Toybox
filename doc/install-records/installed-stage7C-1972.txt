@@ -1,0 +1,5 @@
+1972__FullAutoGuns_v4_1_5	SPT_Runtime\user\mods\FullAutoGuns\FullAutoGuns.deps.json
+1972__FullAutoGuns_v4_1_5	SPT_Runtime\user\mods\FullAutoGuns\FullAutoGuns.dll
+1972__FullAutoGuns_v4_1_5	SPT_Runtime\user\mods\FullAutoGuns\FullAutoGuns.pdb
+1972__FullAutoGuns_v4_1_5	SPT_Runtime\user\mods\FullAutoGuns\config\all-guns.json
+1972__FullAutoGuns_v4_1_5	SPT_Runtime\user\mods\FullAutoGuns\config\config.json

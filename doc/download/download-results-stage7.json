@@ -1,0 +1,156 @@
+[
+  {
+    "id": 2814,
+    "name": "LMSP - Let Me Switch Plates",
+    "version": "1.0.1",
+    "file": "2814__LMSP.zip",
+    "bytes": 2830,
+    "expected": 2830,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3190,
+    "name": "BiC - Bind in Container",
+    "version": "1.0.1",
+    "file": "3190__BindInContainer-1.0.1.zip",
+    "bytes": 3285,
+    "expected": 3285,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2429,
+    "name": "VisorEffectManager",
+    "version": "1.1.0",
+    "file": "2429__VisorEffectManager.7z",
+    "bytes": 4084,
+    "expected": 4084,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2969,
+    "name": "Manimal's Quick Cancel",
+    "version": "2.0.0",
+    "file": "2969__Manimal-QuickCancel-2.0.0.zip",
+    "bytes": 4491,
+    "expected": 4491,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2524,
+    "name": "Item Limits Begone!",
+    "version": "1.1.0",
+    "file": "2524__acidphantasm-itemlimitsbegone.7z",
+    "bytes": 4959,
+    "expected": 4959,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2985,
+    "name": "Quick Aim",
+    "version": "1.0.0",
+    "file": "2985__QuickAim.v1.0.zip",
+    "bytes": 6268,
+    "expected": 6268,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3049,
+    "name": "ArmorInfoPlus",
+    "version": "1.0.0",
+    "file": "3049__ArmorInfoPlus4.1.x.zip",
+    "bytes": 9472,
+    "expected": 9472,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3106,
+    "name": "Armor Expert",
+    "version": "3.1.0",
+    "file": "3106__Liquidwarp-ArmorExpert-3.1.0.zip",
+    "bytes": 10540,
+    "expected": 10540,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 3006,
+    "name": "Munitions Expert - Reloaded",
+    "version": "3.1.0",
+    "file": "3006__Liquidwarp-MunitionsExpert-3.1.0.zip",
+    "bytes": 13867,
+    "expected": 13867,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 1878,
+    "name": "Unrestricted Armor Plate",
+    "version": "2.1.0",
+    "file": "1878__FiveF-UnrestrictedArmorPlate-2.1.0.zip",
+    "bytes": 15577,
+    "expected": 15577,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2576,
+    "name": "All In Weapon: Unslotted",
+    "version": "1.2.0",
+    "file": "2576__AllinWeaponUnslotted.zip",
+    "bytes": 15754,
+    "expected": 15754,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2554,
+    "name": "Change Helmet Visor",
+    "version": "3.0.0",
+    "file": "2554__ChangeHelmetVisor.7z",
+    "bytes": 47314,
+    "expected": 47314,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2422,
+    "name": "Foldables",
+    "version": "1.1.1",
+    "file": "2422__ozen.Foldables-1.1.1.zip",
+    "bytes": 71356,
+    "expected": 71356,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3105,
+    "name": "SOMF - SitOnMyFace",
+    "version": "0.1.2",
+    "file": "3105__SOMF-Sit.OnMyFace-0.1.2.zip",
+    "bytes": 111488,
+    "expected": 111488,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

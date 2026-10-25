@@ -1,0 +1,7 @@
+3101__7Bpencil.MagicOpticMount.0.1.0	BepInEx\plugins\7Bpencil.MagicOpticMount\7Bpencil.MagicOpticMount.dll
+3101__7Bpencil.MagicOpticMount.0.1.0	SPT_Runtime\user\mods\7Bpencil.MagicOpticMount\7Bpencil.MagicOpticMount.dll
+3101__7Bpencil.MagicOpticMount.0.1.0	SPT_Runtime\user\mods\7Bpencil.MagicOpticMount\bundles.json
+3101__7Bpencil.MagicOpticMount.0.1.0	SPT_Runtime\user\mods\7Bpencil.MagicOpticMount\bundles\7b_magic_mount_optic.bundle
+3101__7Bpencil.MagicOpticMount.0.1.0	SPT_Runtime\user\mods\7Bpencil.MagicOpticMount\db\CustomItems\items.jsonc
+3101__7Bpencil.MagicOpticMount.0.1.0	SPT_Runtime\user\mods\7Bpencil.MagicOpticMount\db\CustomItems\riser-optic-scopes.jsonc
+3101__7Bpencil.MagicOpticMount.0.1.0	SPT_Runtime\user\mods\7Bpencil.MagicOpticMount\db\CustomItems\riser-special-devices.jsonc

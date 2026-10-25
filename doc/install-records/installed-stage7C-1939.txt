@@ -1,0 +1,4 @@
+1939__BetterAttachments_v4_1_5	SPT_Runtime\user\mods\BetterAttachments\BetterAttachments.deps.json
+1939__BetterAttachments_v4_1_5	SPT_Runtime\user\mods\BetterAttachments\BetterAttachments.dll
+1939__BetterAttachments_v4_1_5	SPT_Runtime\user\mods\BetterAttachments\BetterAttachments.pdb
+1939__BetterAttachments_v4_1_5	SPT_Runtime\user\mods\BetterAttachments\config\config.json

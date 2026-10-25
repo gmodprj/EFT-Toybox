@@ -1,0 +1,4 @@
+922__LessRestrictingHeadwear-4.0.0-SPT-4.1	SPT_Runtime\user\mods\LessRestrictingHeadwear\config.jsonc
+922__LessRestrictingHeadwear-4.0.0-SPT-4.1	SPT_Runtime\user\mods\LessRestrictingHeadwear\LessRestrictingHeadwear.dll
+922__LessRestrictingHeadwear-4.0.0-SPT-4.1	SPT_Runtime\user\mods\LessRestrictingHeadwear\LICENSE
+922__LessRestrictingHeadwear-4.0.0-SPT-4.1	SPT_Runtime\user\mods\LessRestrictingHeadwear\README.md

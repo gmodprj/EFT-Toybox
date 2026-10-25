@@ -1,0 +1,2 @@
+2556__RepairSkillExtension_1.4.1	SPT_Runtime\user\mods\RepairSkillExtension\buffs.jsonc
+2556__RepairSkillExtension_1.4.1	SPT_Runtime\user\mods\RepairSkillExtension\RepairSkillExtension.dll

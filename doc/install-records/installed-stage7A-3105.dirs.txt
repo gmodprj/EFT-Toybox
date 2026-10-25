@@ -1,0 +1,2 @@
+3105__SOMF-Sit.OnMyFace-0.1.2	SPT_Runtime\user\mods\SitOnMyFace\Config\Debug
+3105__SOMF-Sit.OnMyFace-0.1.2	SPT_Runtime\user\mods\SitOnMyFace\obj\Release\staticwebassets

@@ -1,0 +1,10 @@
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\BlueheadsAIOTrader.deps.json
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\BlueheadsAIOTrader.dll
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\BlueheadsAIOTrader.pdb
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\BlueheadsAIOTrader.staticwebassets.endpoints.json
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\readme.md
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\data\aiotrader.png
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\data\assort_aio_trader.json
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\data\config.json
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\data\item_aio_case.json
+374__bluehead-AIOTrader.5.3.1	SPT_Runtime\user\mods\BlueheadsAIOTrader\data\trader_aio_trader.json

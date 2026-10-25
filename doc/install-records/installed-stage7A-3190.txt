@@ -1,0 +1,1 @@
+3190__BindInContainer-1.0.1	BepInEx\plugins\BindInContainer.dll

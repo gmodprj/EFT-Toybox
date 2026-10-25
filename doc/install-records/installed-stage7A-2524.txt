@@ -1,0 +1,2 @@
+2524__acidphantasm-itemlimitsbegone	SPT_Runtime\user\mods\acidphantasm-itemlimitsbegone\acidphantasm-itemlimitsbegone.dll
+2524__acidphantasm-itemlimitsbegone	SPT_Runtime\user\mods\acidphantasm-itemlimitsbegone\LICENSE

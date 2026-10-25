@@ -1,0 +1,5 @@
+3019__CobrasDurabilityTweaks-v1.0.0	SPT_Runtime\user\mods\CobrasDurabilityTweaks\CHANGELOG.md
+3019__CobrasDurabilityTweaks-v1.0.0	SPT_Runtime\user\mods\CobrasDurabilityTweaks\CobrasDurabilityTweaks.dll
+3019__CobrasDurabilityTweaks-v1.0.0	SPT_Runtime\user\mods\CobrasDurabilityTweaks\config.json
+3019__CobrasDurabilityTweaks-v1.0.0	SPT_Runtime\user\mods\CobrasDurabilityTweaks\LICENSE
+3019__CobrasDurabilityTweaks-v1.0.0	SPT_Runtime\user\mods\CobrasDurabilityTweaks\README.md

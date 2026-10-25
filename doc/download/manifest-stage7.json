@@ -1,0 +1,133 @@
+{
+  "stage": "stage7",
+  "spt": "4.1.6",
+  "note": "7-A — 용량 작고 비결속인 것 14개 (방어구 9·탄환 2·파츠 2·상인 1)",
+  "mods": [
+    {
+      "group": "7A-방어구",
+      "id": 2814,
+      "name": "LMSP - Let Me Switch Plates",
+      "version": "1.0.1",
+      "size": 2830,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2814/lmsp-let-me-switch-plates/1.0.1"
+    },
+    {
+      "group": "7A-방어구",
+      "id": 1878,
+      "name": "Unrestricted Armor Plate",
+      "version": "2.1.0",
+      "size": 15577,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1878/unrestricted-armor-plate/2.1.0"
+    },
+    {
+      "group": "7A-방어구",
+      "id": 3106,
+      "name": "Armor Expert",
+      "version": "3.1.0",
+      "size": 10540,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3106/armor-expert/3.1.0"
+    },
+    {
+      "group": "7A-탄환",
+      "id": 3006,
+      "name": "Munitions Expert - Reloaded",
+      "version": "3.1.0",
+      "size": 13867,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3006/munitions-expert-reloaded/3.1.0"
+    },
+    {
+      "group": "7A-방어구",
+      "id": 2422,
+      "name": "Foldables",
+      "version": "1.1.1",
+      "size": 71356,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2422/foldables/1.1.1"
+    },
+    {
+      "group": "7A-방어구",
+      "id": 2429,
+      "name": "VisorEffectManager",
+      "version": "1.1.0",
+      "size": 4084,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2429/visoreffectmanager/1.1.0"
+    },
+    {
+      "group": "7A-방어구",
+      "id": 2554,
+      "name": "Change Helmet Visor",
+      "version": "3.0.0",
+      "size": 47314,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2554/change-helmet-visor/3.0.0"
+    },
+    {
+      "group": "7A-방어구",
+      "id": 3190,
+      "name": "BiC - Bind in Container",
+      "version": "1.0.1",
+      "size": 3285,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3190/bic-bind-in-container/1.0.1"
+    },
+    {
+      "group": "7A-탄환",
+      "id": 2969,
+      "name": "Manimal's Quick Cancel",
+      "version": "2.0.0",
+      "size": 4491,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2969/manimals-quick-cancel/2.0.0"
+    },
+    {
+      "group": "7A-총파츠",
+      "id": 2985,
+      "name": "Quick Aim",
+      "version": "1.0.0",
+      "size": 6268,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2985/quick-aim/1.0.0"
+    },
+    {
+      "group": "7A-총파츠",
+      "id": 2576,
+      "name": "All In Weapon: Unslotted",
+      "version": "1.2.0",
+      "size": 15754,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2576/all-in-weapon-unslotted/1.2.0"
+    },
+    {
+      "group": "7A-상인",
+      "id": 2524,
+      "name": "Item Limits Begone!",
+      "version": "1.1.0",
+      "size": 4959,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2524/item-limits-begone/1.1.0"
+    },
+    {
+      "group": "7A-방어구",
+      "id": 3105,
+      "name": "SOMF - SitOnMyFace",
+      "version": "0.1.2",
+      "size": 111488,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3105/somf-sitonmyface/0.1.2"
+    },
+    {
+      "group": "7A-방어구",
+      "id": 3049,
+      "name": "ArmorInfoPlus",
+      "version": "1.0.0",
+      "size": 9472,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3049/armorinfoplus/1.0.0"
+    }
+  ]
+}

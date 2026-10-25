@@ -1,0 +1,7 @@
+2650__HolsterEverything-v2.0.0	BepInEx\plugins\HolsterEverything\HolsterEverything.dll
+2650__HolsterEverything-v2.0.0	BepInEx\plugins\HolsterEverything\HolsterEverything.pdb
+2650__HolsterEverything-v2.0.0	SPT_Runtime\user\mods\HolsterEverything\config.json
+2650__HolsterEverything-v2.0.0	SPT_Runtime\user\mods\HolsterEverything\HolsterEverything.deps.json
+2650__HolsterEverything-v2.0.0	SPT_Runtime\user\mods\HolsterEverything\HolsterEverything.dll
+2650__HolsterEverything-v2.0.0	SPT_Runtime\user\mods\HolsterEverything\HolsterEverything.pdb
+2650__HolsterEverything-v2.0.0	SPT_Runtime\user\mods\HolsterEverything\HolsterEverything.staticwebassets.endpoints.json

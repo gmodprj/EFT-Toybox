@@ -1,0 +1,8 @@
+2422__ozen.Foldables-1.1.1	BepInEx\plugins\ozen.Foldables\ozen.Foldables.dll
+2422__ozen.Foldables-1.1.1	BepInEx\plugins\ozen.Foldables\ozen.Foldables.pdb
+2422__ozen.Foldables-1.1.1	SPT_Runtime\user\mods\ozen.Foldables\ozen.Foldables.dll
+2422__ozen.Foldables-1.1.1	SPT_Runtime\user\mods\ozen.Foldables\ozen.Foldables.pdb
+2422__ozen.Foldables-1.1.1	SPT_Runtime\user\mods\ozen.Foldables\config\config.json
+2422__ozen.Foldables-1.1.1	SPT_Runtime\user\mods\ozen.Foldables\config\locales\ch.json
+2422__ozen.Foldables-1.1.1	SPT_Runtime\user\mods\ozen.Foldables\config\locales\en.json
+2422__ozen.Foldables-1.1.1	SPT_Runtime\user\mods\ozen.Foldables\config\locales\ru.json
