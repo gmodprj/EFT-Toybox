@@ -451,3 +451,15 @@ Less Restricting Headwear와 역할이 겹쳐 아무 일도 하지 않게 된 SO
 - 기록에 없던 잔류물 3종을 손으로 찾아 지웠다 — `BepInEx\plugins\Serenity-TheQuartermaster\TheQuartermaster\community_auth.json`(커뮤니티 장터 인증 토큰), `BepInEx\config\com.shaneeexd.thequartermaster.cfg`, Ultimate Trader Assort Editor의 빈 편집 폴더 `Quartermaster [66789abcde1234567890abcd]`. **게임을 실제로 켠 뒤 생기는 파일은 설치 기록에 안 잡힌다**는 뜻이라, 앞으로 제거할 때는 모드 이름으로 전수 검색을 한 번 더 한다.
 - 이름이 비슷한 **NATO Quartermaster(3030, id `bb371fed…`)는 그대로 둔다.** 다른 모드다. UTAE의 `Quartermaster [bb371fed…]` 폴더와 `sptappdata`의 NATO 아바타도 건드리지 않았다.
 - 의존성으로 함께 넣었던 **ItemGen(2803)은 남겼다.** 지금은 쓰는 모드가 없어 `No item packs found`만 찍지만, 비용이 없고 나중에 다른 모드가 요구할 수 있다.
+
+### 프로필에 남은 상인 흔적 정리 (2026-10-25 18:0x)
+
+The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하지 않는 상인 `66789abcde1234567890abcd`가 프로필에서 발견되었습니다… `core.json`의 `removeModItemsFromProfile`을 true로".
+
+- **조사(examine) 문제의 범인도 이 모드였다.** 제거하자마자 사라졌다. 앞서 의심했던 ArmorExpert·MunitionsExpert·ArmorInfoPlus 셋은 무죄였고, 비활성화 테스트는 하지 않아도 됐다. 5초마다 상인 매물을 다시 만드는 동안 조사 완료 처리가 막혔던 것으로 보인다.
+- 프로필에서 그 id가 **4곳**에 남아 있었다: `characters.pmc.TradersInfo.<id>`(평판 loyaltyLevel 1·standing 0.2·판매 0)와 `dialogues.<id>`(메시지 1건, **첨부 아이템 0개**, 이미 읽음). 관련 퀘스트는 0개였다.
+- 안내대로 `removeModItemsFromProfile`을 true로 바꿔 서버를 재시작했지만 **프로필은 그대로였다.** 이 정리는 서버가 뜰 때가 아니라 **클라이언트가 프로필을 선택해 불러올 때** 도는 것으로 보인다.
+- 내용이 평판 한 줄과 첨부 없는 메일 하나뿐이라, 백업을 두 벌(자동 정리 전·수동 편집 직전) 뜬 뒤 **두 키를 직접 지웠다.** 원본이 한 줄짜리 compact JSON이라 같은 형식으로 다시 썼다(415KB → 414KB).
+- 서버를 내린 뒤 편집했다. 서버가 프로필을 메모리에 들고 있어, 켠 채로 고치면 종료할 때 되살아날 수 있다.
+- 결과: 재시작한 서버에서 경고 0건, 오류 0건, 모드 92개. 프로필은 상인 29명·대화 13건·레벨 15로 멀쩡하다. `removeModItemsFromProfile`은 **false로 되돌렸다**(켜 두면 앞으로 모드를 뺄 때마다 조용히 지워진다).
+- 백업: `backup/profiles-before-profile-cleanup/`에 프로필 2벌과 `core.json.bak`.
