@@ -1,6 +1,6 @@
 # 설치된 모드 설명
 
-> 2026-10-25 기준 Forge 모드 **145개** + Forge 밖 **3개**(GitHub 2·Nexus 1) + 직접 만든 것 **1개**. 무엇을 하는 모드인지 기능별로 묶어 적은 문서.
+> 2026-10-25 기준 Forge 모드 **145개** + Forge 밖 **3개**(GitHub 2·Nexus 1) + 직접 만든 것 **2개**. 무엇을 하는 모드인지 기능별로 묶어 적은 문서.
 > 버전·설치 파일 수·설치 기록은 [INSTALLED-MODS.md](INSTALLED-MODS.md)(자동 생성), 작업 경과는 [WORKLOG.md](WORKLOG.md).
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.40743)
@@ -231,15 +231,18 @@ PortableTraders만 빼고 전부 프로필 결속. 넣고 플레이한 뒤 제�
 | [Repair Max Durability](https://sp-mod.com/mod/1305) | 2.2.0 | 7차 | 게임+서버 | **결속** 무기의 최대 내구도를 되돌리는 아이템을 추가한다. |
 | [Cobra's Durability Tweaks](https://sp-mod.com/mod/3019) | 1.0.0 | 7차 | 서버 | **결속** 내구도 소모를 줄이거나 없앤다 — 지금 설정은 **소모 12%**, 고장은 바닐라 그대로(무기 932개). 압축이 `SPT_RunTime`(대문자 T)으로 돼 있어 설치 때 경로를 고쳐야 했다. |
 
-## 직접 만든 것 (1개)
+## 직접 만든 것 (2개)
 
-Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 `tools/install-koreanconfig.ps1`.
+Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는 [../src](../src) 아래에 있다.
 
 | 모드 | 버전 | 위치 | 결속 | 설명 |
 | --- | --- | --- | --- | --- |
-| SptKoreanConfig | 0.1.0 | 게임 | - | F12(설정 창)에 보이는 글자를 한글로 바꾼다. 모드 58개의 설정 1096항목(이름·묶음 제목·설명)과 창 자체의 글자 33항목. 다른 모드 파일과 `ConfigurationManager.dll`은 건드리지 않고, 화면에 그릴 값만 바꾸므로 플러그인을 빼면 영문으로 돌아간다. 설정 값과 `.cfg` 파일에도 영향이 없다. |
+| SptKoreanConfig | 0.1.0 | 게임 | - | F12(설정 창)에 보이는 글자를 한글로 바꾼다. 모드 83개의 설정 1457항목(이름·묶음 제목·설명)과 창 자체의 글자 33항목. 다른 모드 파일과 `ConfigurationManager.dll`은 건드리지 않고, 화면에 그릴 값만 바꾸므로 플러그인을 빼면 영문으로 돌아간다. 설정 값과 `.cfg` 파일에도 영향이 없다. |
+| HelmetSlotUnion | 0.1.0 | 서버 | - | 헬멧의 부착 칸 필터를 **칸 이름별 합집합**으로 넓힌다. 같은 이름의 칸(`helmet_ears`·`mod_nvg`·`mod_equipment_000` …)을 헬멧 전체에서 모아 그 합집합을 각 칸에 더한다. 헬멧 64종·칸 묶음 11개, 필터 항목 495 → 6719. 기존 항목은 지우지 않고 더하기만 한다. |
 
 번역을 고치려면 `BepInEx\plugins\SptKoreanConfig\lang\<모드 GUID>.json`을 고치고 F12를 다시 열면 된다(재시작 불필요). 창 자체의 글자(`lang\_ui.json`)만은 게임을 다시 켜야 한다.
+
+HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`이고 서버를 다시 켜야 적용된다. `helmet_top`·`helmet_back`은 내장 방탄판 자리(36종)라 기본값대로 합치면 아무 헬멧에 아무 방탄판이 들어간다 — 방어력을 그대로 두려면 `"ExcludedSlotNames": ["helmet_top", "helmet_back"]`. 자세한 내용은 [../src/HelmetSlotUnion/README.md](../src/HelmetSlotUnion/README.md).
 
 ## 프로필 결속 모드 (50개)
 
