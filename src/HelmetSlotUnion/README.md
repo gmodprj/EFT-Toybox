@@ -8,8 +8,9 @@
 
 | 층 | 무엇 | 누가 푸나 |
 | --- | --- | --- |
-| 착용 조합 (`BlocksEarpiece`·`ConflictingItems` 등) | 헬멧·헤드셋·안면 보호구·안경을 같이 쓸 수 있는지 | [Less Restricting Headwear](https://sp-mod.com/mod/922) (설치됨) |
+| 착용 조합 (`BlocksEarpiece` 등) | 헬멧·헤드셋·안면 보호구·안경을 같이 쓸 수 있는지 | [Less Restricting Headwear](https://sp-mod.com/mod/922) (설치됨) |
 | **부착 칸 필터** (`Slots[].filters[].Filter`) | **어느 헬멧의 어느 칸에 어떤 파츠가 들어가는지** | **이 모드** |
+| **파츠끼리의 충돌** (`ConflictingItems`) | **끼운 파츠 둘이 서로를 막는지** | **이 모드** |
 
 922 는 아래 층을 의도적으로 건드리지 않는다(README: 차단 플래그와 명시적 충돌 항목만 제거). 그래서 Altyn 바이저를 Ops-Core FAST 에 끼우는 식은 그대로 막혀 있었고, 4.1.6 호환 모드도 Forge 에 없었다.
 
@@ -46,6 +47,18 @@
 
 기존 필터를 지우지 않고 `UnionWith` 로 **더하기만** 한다. `Required`·`MaxCount`·`Shift`·`Locked`·`Plate` 같은 다른 칸 속성은 손대지 않는다.
 
+### 파츠끼리의 충돌도 지운다
+
+칸 필터만 넓히면 끼울 수 있는 목록에는 올라오지만, 막상 끼우려 하면 이런 메시지가 뜬다:
+
+> ★ FAST FS (3/40)과 ★ SCRA 아이템은 동시에 장착할 수 없습니다
+
+이건 필터가 아니라 파츠 자신의 `ConflictingItems` 다. 예로 Ops-Core FAST 멀티 히트 바이저(`5a16b7e1fcdbcb00165aa6c9`)는 야간투시경 5종·마운트 3종·SLAAP 방탄판을 막는다(9건).
+
+`RemoveAttachmentConflicts`(기본 켜짐)는 **헬멧과 헬멧 파츠끼리** 서로를 막는 항목만 지운다. 범위는 헬멧 64 + 파츠 176 = **240개**(파츠에 또 달리는 파츠까지 따라간다). 설치 시점 기준 **아이템 57개에서 295건**을 지우고, 헤드셋·안면 보호구처럼 **범위 밖을 가리키는 623건은 그대로 둔다** — 그쪽은 착용 조합 이야기라 922 가 맡는다.
+
+`RemoveAllConflictsOnAttachments`(기본 꺼짐)는 범위 안 아이템의 목록을 통째로 비운다. 범위 밖 항목까지 사라지므로 다른 모드와 부딪힐 수 있다.
+
 ## 설정 — `config.jsonc` (DLL 옆)
 
 | 항목 | 기본값 | 내용 |
@@ -53,6 +66,8 @@
 | `ModEnabled` | `true` | `false` 면 DB 를 전혀 건드리지 않는다 |
 | `Debug` | `false` | 칸마다 `헬멧id / 칸이름: 전 → 후 (+n)` 를 기록한다 |
 | `MergeEquipmentSlots` | `false` | `mod_equipment` 와 `mod_equipment_000·001·002…` 를 한 묶음으로 본다 |
+| `RemoveAttachmentConflicts` | `true` | 헬멧·헬멧 파츠끼리 서로를 막는 `ConflictingItems` 를 지운다 |
+| `RemoveAllConflictsOnAttachments` | `false` | 범위 안 아이템의 `ConflictingItems` 를 통째로 비운다 |
 | `ExcludedSlotNames` | `[]` | 건드리지 않을 칸 이름(대소문자 무시) |
 | `ExcludedHelmetIds` | `[]` | 건드리지 않을 헬멧 아이템 id |
 
