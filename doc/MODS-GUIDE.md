@@ -1,6 +1,6 @@
 # 설치된 모드 설명
 
-> 2026-10-25 기준 Forge 모드 **106개** + Forge 밖 **3개**(GitHub 2·Nexus 1) + 직접 만든 것 **1개**. 무엇을 하는 모드인지 기능별로 묶어 적은 문서.
+> 2026-10-25 기준 Forge 모드 **145개** + Forge 밖 **3개**(GitHub 2·Nexus 1) + 직접 만든 것 **1개**. 무엇을 하는 모드인지 기능별로 묶어 적은 문서.
 > 버전·설치 파일 수·설치 기록은 [INSTALLED-MODS.md](INSTALLED-MODS.md)(자동 생성), 작업 경과는 [WORKLOG.md](WORKLOG.md).
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.40743)
@@ -39,7 +39,7 @@
 | [Amands' Sense - Updated](https://sp-mod.com/mod/2521) | 3.1.0 | 1차 | 게임 | 아이템·컨테이너·시체·탈출구에 상호작용 아이콘을 띄워 레이드 중 눈에 잘 띄게 한다. |
 | [Dynamic Maps](https://sp-mod.com/mod/1431) | 1.2.1 | 1차 | 게임+게임 데이터+서버 | 게임 기본 지도 화면을 실제로 쓸 수 있는 동적 지도(내 위치·탈출구 표시)로 바꾼다. |
 
-## 스태시·인벤토리 (16개)
+## 스태시·인벤토리 (18개)
 
 보관과 정리. 스태시 압박을 줄이는 쪽이라 난이도에도 영향이 있다.
 
@@ -61,8 +61,10 @@
 | [BarterItemsStacks](https://sp-mod.com/mod/2480) | 1.4.3 | 5차 | 게임+서버 | 교환용(바터) 아이템의 스택 크기를 키운다. |
 | [Caliber Split Storage Solutions](https://sp-mod.com/mod/2990) | 1.0.1 | 5차 | 서버 | **결속** 구경별로 나뉜 탄약 보관 케이스를 추가한다(아이템 91개 생성). `db/99_Ids/ids_*.json`을 지우면 프로필이 깨진다. |
 | [Cobra's Ammo Stack](https://sp-mod.com/mod/2840) | 1.1.0 | 5차 | 서버 | **결속** 구경별 탄약 스택 크기를 설정한다. 기본값 500발은 바닐라보다 훨씬 커서 조정 여지가 있다(`config.json`). |
+| [Slimmer Magazines](https://sp-mod.com/mod/2373) | 2.0.0 | 7차 | 서버 | **결속** 2x2 탄창을 1x2로 줄인다. 설치 때 탄창 44개가 바뀌었다. 같은 일을 하는 Shorter Magazines(3186)는 **같이 넣지 않는다**. |
+| [BiC - Bind in Container](https://sp-mod.com/mod/3190) | 1.0.1 | 7차 | 게임 | 보안 컨테이너 안의 물건에도 단축키를 걸 수 있게 한다. |
 
-## 아이템 정보·가격 표시 (9개)
+## 아이템 정보·가격 표시 (12개)
 
 판단에 필요한 수치를 아이템 위에 올려 주는 것들. 표기가 겹치면 서로 가릴 수 있다.
 
@@ -77,8 +79,11 @@
 | [Chamber Ammo Info](https://sp-mod.com/mod/2553) | 1.1.0 | 1차 | 게임 | 약실 점검 시 장전된 탄종을 보여 준다. |
 | [BALL - Better Ammo Loading List](https://sp-mod.com/mod/2221) | 1.1.1 | 1차 | 게임 | 탄약 선택 목록을 읽기 쉽게 정리한다. |
 | [Colored Tracers](https://sp-mod.com/mod/2037) | 3.0.1 | 1차 | 서버 | 탄의 관통력에 따라 예광탄 색을 다르게 한다. |
+| [Armor Expert](https://sp-mod.com/mod/3106) | 3.1.0 | 7차 | 게임 | 방어 장비·헤드셋의 숨은 수치를 아이템 설명에 표시한다. ODT Item Info와 같은 자리를 쓰므로 설명이 길어질 수 있다. |
+| [Munitions Expert - Reloaded](https://sp-mod.com/mod/3006) | 3.1.0 | 7차 | 게임 | 탄약·폭발물의 숨은 수치를 표시한다. Armor Expert와 한 쌍. |
+| [ArmorInfoPlus](https://sp-mod.com/mod/3049) | 1.0.0 | 7차 | 게임 | 모든 아이템의 24자 템플릿 ID를 띄운다. 조사·설정용이고 평소에는 꺼 두어도 된다. |
 
-## 총기 개조·빌드 화면 (9개)
+## 총기 개조·빌드 화면 (11개)
 
 | 모드 | 버전 | 단계 | 위치 | 설명 |
 | --- | --- | --- | --- | --- |
@@ -91,8 +96,10 @@
 | [Transparent Sights](https://sp-mod.com/mod/2774) | 0.2.3 | 5차 | 게임 | 조준경을 반투명하게 만들어 양쪽 눈을 뜬 채 조준하는 느낌을 준다. 설정은 F12 메뉴, 조준경별 전환은 인벤토리 아이콘 더블클릭(`TRANSP: ON` / `OFF` / `ON + MOUNT`). 첫 실행 때 `config.json` 없다는 Error가 뜨는 것은 정상 — 조준경별 설정을 처음 바꿀 때 모드가 직접 만든다. |
 | [Tylevo's Field Attachments](https://sp-mod.com/mod/3125) | 1.2.0 | 6차 | 게임 | **결속** 인벤토리를 열지 않고 레이드 중에 부품을 바꾼다. Left Alt를 누르면 무기 주변에 카드가 뜨고, 들고 있는 부품 중에서 광학·소음기·손잡이를 고른다. 개머리판·핸드가드·권총 손잡이까지 바꾸려면 Leatherman 멀티툴을 지녀야 한다. UnityToolkit 2.0.2 이상 필요. |
 | [Scrollable Attachments](https://sp-mod.com/mod/2677) | 2.0.0 | 6차 | 게임 | 개조 화면의 부착물 목록을 휠로 넘긴다. UnityToolkit 필요. |
+| [BETTER ATTACHMENTS](https://sp-mod.com/mod/1939) | 4.1.5 | 7차 | 게임+서버 | **결속** 모든 부착물의 인간공학·반동을 좋게 만든다. 설치 때 **부착물 1,092개**가 바뀌었다. DLL 표기는 2.0.0이다. |
+| [All In Weapon: Unslotted](https://sp-mod.com/mod/2576) | 1.2.0 | 7차 | 서버 | 슬롯·호환 제한을 없애 아무 부품·탄창·탄약이나 끼울 수 있다. 봇 무기 생성은 바닐라 그대로. 설치된 Compatibility Highlighter의 강조가 "전부 호환"처럼 보일 수 있다. |
 
-## 조준·사격·전투 (12개)
+## 조준·사격·전투 (19개)
 
 stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, 나머지는 조작 편의.
 
@@ -110,8 +117,15 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [ECOTI - Enhanced Clip-On Thermal Imager](https://sp-mod.com/mod/2930) | 3.4.2 | 6차 | 게임+서버 | **결속** 야투경 앞에 물리는 클립온 열상(AN/PAS-29B). 열상이 화면을 덮지 않고 야투경 튜브 원 **안에만** 겹친다. Peacekeeper가 판다(본체 LL4 $2,000, 열상 라이저·스코프링 LL3 $1,750, 각 한도 3). 서버가 처음 뜰 때 설치된 야투경(WTT-Artem 등)에 맞춘 호환 파일 15개를 스스로 만든다. 3.4.2가 **PiP Disabler와의 열상 표시 문제를 고친 버전**이라 그 아래로 내리지 않는다. Better Thermal과 같은 화면을 건드리므로 이상하면 그쪽을 먼저 끈다. |
 | [BrightLasers](https://sp-mod.com/mod/1358) | 3.0.0 | 6차 | 게임+서버 | 레이저 밝기·굵기·색을 F12에서 조절한다. 3.0.0부터 번들 모드가 아니어서 WTT Content Backport와 충돌하지 않는다. |
 | [No Barrel Shadow](https://sp-mod.com/mod/2780) | 2.0.1 | 6차 | 게임 | **결속** 라이트·전술 장비가 총구에 드리우던 그림자를 없애고, 조명별 밝기·세기를 F12에서 조절한다. 결속 표시가 있지만 클라이언트 전용이다. |
+| [Canted Aiming](https://sp-mod.com/mod/2415) | 2.0.0 | 7차 | 게임+서버 | **결속** 백업 사이트 없이도 총을 기울여 조준한다. |
+| [Magic Optic Mount](https://sp-mod.com/mod/3101) | 0.1.0 | 7차 | 게임+서버 | **결속** 광학 조준경과 열상·야투를 한 총에 같이 단다. 설치된 ECOTI와 성격이 겹친다. |
+| [Realistic Suppressors](https://sp-mod.com/mod/3171) | 1.0.0 | 7차 | 서버 | **결속** 소음기 성능을 크게 올린다. 설치 때 **소음기 103개**에 적용됐다. |
+| [Full Automatic Guns](https://sp-mod.com/mod/1972) | 4.1.5 | 7차 | 서버 | **결속** 일부 SMG·소총·카빈을 자동 사격으로 바꾼다(무기 12종). DLL 표기는 1.0.0이다. |
+| [ShrapnelFix](https://sp-mod.com/mod/3118) | 1.0.0 | 7차 | 게임 | 수류탄 파편이 바닥이 아니라 몸 높이로 날아가게 고친다. |
+| [Airburst](https://sp-mod.com/mod/2948) | 1.1.2 | 7차 | 게임+서버 | **결속** 엄폐물 위에서 터지는 40mm 공중폭발탄을 추가한다. |
+| [Quick Aim](https://sp-mod.com/mod/2985) | 1.0.0 | 7차 | 게임 | 앉기·엎드리기·거치 상태에서 조준을 더 오래 유지한다. |
 
-## 장전·탄약 취급 (6개)
+## 장전·탄약 취급 (8개)
 
 | 모드 | 버전 | 단계 | 위치 | 설명 |
 | --- | --- | --- | --- | --- |
@@ -121,8 +135,31 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Magazine Check Interrupt](https://sp-mod.com/mod/2643) | 1.1.1 | 5차 | 게임 | 탄창 확인 동작 중에 바로 재장전으로 이어진다. |
 | [Direct Reload & Painless Meds](https://sp-mod.com/mod/3074) | 1.3.2 | 5차 | 게임+서버 | 느슨한 탄약에서 바로 재장전한다. 의료품 사용시간 x0.5·약물 지속 x2 같은 수치 변경도 기본 포함되므로 SVM 설정과 겹치는지 볼 것(`config.json`). |
 | [Low Ammo Cue](https://sp-mod.com/mod/3046) | 1.0.0 | 5차 | 게임 | 잔탄이 적어지면 금속음이 점점 커지며 알려 준다. |
+| [Manimal's Quick Cancel](https://sp-mod.com/mod/2969) | 2.0.0 | 7차 | 게임 | 소비 동작(치료·음식)을 재장전 키로 즉시 끊는다. |
+| [AmmoGen](https://sp-mod.com/mod/2777) | 2.4.0 | 7차 | 서버 | **결속** 커스텀 탄약·탄약 상자를 JSON으로 만드는 프레임워크. 팩을 넣기 전에는 `No ammo packs found`만 찍고 아무것도 하지 않는다. |
 
-## 상인·플레아 화면 (17개)
+## 방어구·장비 (12개)
+
+7차에서 처음 다룬 분야. 장비를 어디에 어떻게 걸칠 수 있는지와 방어판·내구도를 건드린다.
+
+| 모드 | 버전 | 단계 | 위치 | 설명 |
+| --- | --- | --- | --- | --- |
+| [Less Restricting Headwear](https://sp-mod.com/mod/922) | 4.0.0 | 7차 | 서버 | **결속** 헬멧·헤드셋·마스크·페이스실드를 함께 쓰지 못하게 막던 제한을 푼다. 설치 때 **품목 182개**에서 차단 117건·세부 충돌 4,005건이 사라졌다. |
+| [Unrestricted Armor Plate](https://sp-mod.com/mod/1878) | 2.1.0 | 7차 | 서버 | 아무 방어판이나 아무 방탄 조끼·리그에 꽂을 수 있게 한다. |
+| [LMSP - Let Me Switch Plates](https://sp-mod.com/mod/2814) | 1.0.1 | 7차 | 게임 | 레이드 중에 방어구를 벗지 않고 방어판만 바꾼다. |
+| [Restore Armor Plates](https://sp-mod.com/mod/2973) | 1.0.2 | 7차 | 게임+서버 | **결속** 전용 키트로 방어판의 최대 내구도를 되돌린다. DLL 표기는 1.0.1. |
+| [Repair Skill Extension](https://sp-mod.com/mod/2556) | 1.4.1 | 7차 | 서버 | **결속** 수리 버프가 붙을 확률을 올리고 수리 스킬을 모든 방어구에 적용한다. |
+| [Black Exfil Revision](https://sp-mod.com/mod/2380) | 1.1.0 | 7차 | 서버 | **결속** Black Exfil 마스크에 페이스실드를 다시 달 수 있게 한다. |
+| [Change Helmet Visor](https://sp-mod.com/mod/2554) | 3.0.0 | 7차 | 게임+서버 | 페이스실드·바이저가 화면에 그려지는 방식을 바꾼다(지금은 모두 `Wide`). |
+| [VisorEffectManager](https://sp-mod.com/mod/2429) | 1.1.0 | 7차 | 게임 | 바이저의 시각 효과(김서림·빗물 등)를 켜고 끈다. |
+| [Equipment Is Eternal](https://sp-mod.com/mod/2897) | 1.2.0 | 7차 | 서버 | **결속** 죽어도 장비를 잃지 않는다. 슬롯별로 끌 수 있고 지금은 보험·퀘스트 아이템·암밴드·보안 컨테이너가 제외돼 있다. |
+| [Foldables](https://sp-mod.com/mod/2422) | 1.1.1 | 7차 | 게임+서버 | 배낭·조끼·헤드폰을 접어 보관 자리를 줄인다(배낭 46·조끼 36·헤드폰 21). |
+| [Jero Backpack](https://sp-mod.com/mod/2369) | 4.1.1 | 7차 | 서버 | **결속** 배낭 격자를 키운다(배낭 36개 변경, 격자가 나뉜 10개는 제외). |
+| [Holster Everything](https://sp-mod.com/mod/2650) | 2.0.0 | 7차 | 게임+서버 | **결속** 홀스터 슬롯에 넣을 수 있는 품목을 넓힌다. |
+
+**SOMF(SitOnMyFace)는 7-A에 넣었다가 뺐다.** Less Restricting Headwear가 같은 일을 먼저 해 버려 규칙을 0건 바꾸게 됐기 때문이다. 아래 "헷갈리기 쉬운 정상 동작" 참고.
+
+## 상인·플레아 화면 (20개)
 
 상인 목록이 길어진 상태를 받쳐 주는 쪽. 커스텀 상인 본체는 아래 묶음.
 
@@ -145,8 +182,11 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Ref Rework](https://sp-mod.com/mod/3014) | 1.0.0 | 6차 | 게임+서버 | 도그태그와 레가 메달을 Ref에 팔아 GP 코인으로 바꾼다. 레벨이 높은 태그일수록 비싸다. **Ledger와 도그태그 용처가 겹치므로** 게임에서 보고 한쪽을 끄는 편이 낫다. |
 | [Realistic Insurance](https://sp-mod.com/mod/2949) | 0.2.1 | 6차 | 게임+서버 | 보험 회수를 고정 확률이 아니라 "누가 죽였고 그가 살아 나갔는지"로 정한다(PMC 55 / 플레이어 스캐브 45 / 스캐브 75 / 보스 40%). SVM 보험 설정과 겹치면 한쪽만 쓴다. |
 | [VanillaTradersRework-Reloaded](https://www.nexusmods.com/escapefromtarkov/mods/10) | 1.0.0 | 6차 | 서버 | **Forge 밖**(Nexus·받으려면 로그인 필요). 상인 초상화를 사실적인 그림으로 교체한다 — 바닐라 9명과 Lotus·Scorpion·Artem·Couturier·Croupier 등. 초상화가 없는 상인 11명(등대지기·BTR·Amonya·Harry·Gunwright·Ledger·PresetTrader·Elias Ward 등)은 원본 그대로다. 안 바뀌어 보이면 런처 Settings → Clean Temp Files. 제작자가 AI 생성 이미지를 썼다고 밝혔다. |
+| [Ultimate Flea](https://sp-mod.com/mod/2844) | 1.2.0 | 7차 | 게임+서버 | **결속** 플레아를 전면 통제한다(품목 풀·가격·수급·레벨 락). 설치 때 **레벨 락 1,691개 품목 + 카테고리 17종**이 걸렸다. SVM 플레아 설정과 겹치는지 볼 것. |
+| [500 Euro for Skier](https://sp-mod.com/mod/2434) | 2.0.0 | 7차 | 서버 | **결속** 스키어 거래를 루블이 아닌 유로로 바꾼다. |
+| [Boxes At Ref (BARF)](https://sp-mod.com/mod/2483) | 3.0.0 | 7차 | 서버 | **결속** Arena의 전리품 상자류를 Ref 판매 목록에 넣는다. |
 
-## 커스텀 상인·콘텐츠 (15개)
+## 커스텀 상인·콘텐츠 (19개)
 
 PortableTraders만 빼고 전부 프로필 결속. 넣고 플레이한 뒤 제거하면 프로필이 깨질 수 있다.
 
@@ -167,8 +207,12 @@ PortableTraders만 빼고 전부 프로필 결속. 넣고 플레이한 뒤 제�
 | [NATO Quartermaster](https://sp-mod.com/mod/3030) | 1.1.3 | 6차 | 서버 | **결속** 서방제 총기·방어구·탄약·완성 빌드를 파는 상인 Elias Ward. 매물 49개와 6단계 퀘스트 체인(뒤로 갈수록 좋은 장비가 열린다). 싸게 주는 치트 상인이 아니라 "비싸지만 바로 살 수 있는" 쪽이다. |
 | [PortableTraders](https://github.com/wangbofan/SPT-PortableTraders) | 1.1.0 | 6차 | 서버 | **Forge 밖**(GitHub·MIT, 결속 아님). 레이드 안에서만 상대할 수 있던 **등대지기와 BTR 운전병**을 주 화면 상인 목록에 올려, 과제 30개를 받고 제출하게 한다(물품 보상은 메일로). 두 상인의 **판매 목록은 원래 비어 있다** — 아래 "헷갈리기 쉬운 정상 동작" 참고. |
 | [Vanguard](https://sp-mod.com/mod/2917) | 2.0.0 | 6차 | 서버 | **결속** Insight WMLX 라이트와 Dead Air Sandman X 소음기를 흑·FDE 두 색으로 추가한다. WTT CommonLib 필요. |
+| [Definitive Weapon Variants](https://sp-mod.com/mod/2010) | 4.3.2 | 7차 | 서버 | **결속** 기존 총기를 바탕으로 변형을 대량 추가한다 — 설치 때 **커스텀 아이템 776개**를 만들었고, 마크드룸 전리품에도 409종이 들어간다. |
+| [AllGoodsTrader](https://sp-mod.com/mod/2648) | 2.0.0 | 7차 | 서버 | **결속** 이중 언어 상인 4명(Armorer 포함)을 추가한다. 대부분 아이템을 사 주고 수리·보험도 한다. 그 보험 상인은 Realistic Insurance가 모르는 상대라 **회수율 90% 기본값**으로 돈다. |
+| [bluehead's AIO Trader](https://sp-mod.com/mod/374) | 5.3.1 | 7차 | 서버 | **결속** 거의 모든 물품을 한 상인에서 판다 — **품목 6,261개 / 매물 7,178개**. 치트성이 강하다. DLL 표기는 5.3.0. |
+| [ALL AMMO TRADER](https://sp-mod.com/mod/1554) | 1.5.0 | 7차 | 서버 | **결속** 모든 탄약을 파는 상인 VAFELZ. |
 
-## 서버 조정·도구·치트 (8개)
+## 서버 조정·도구·치트 (12개)
 
 게임 규칙을 직접 바꾸는 쪽. 치트성 기능은 SVM으로 되는지 먼저 확인하는 것이 이 저장소의 방침.
 
@@ -182,6 +226,10 @@ PortableTraders만 빼고 전부 프로필 결속. 넣고 플레이한 뒤 제�
 | [Set Speed - Set Player Speed with Hotkeys](https://sp-mod.com/mod/994) | 1.5.0 | 5차 | 게임 | 단축키로 걷기 속도 프리셋을 바꾼다. |
 | [Low Budget Bullet Time NG](https://sp-mod.com/mod/1988) | 2.3.0 | 5차 | 게임 | 시간을 느리게 만드는 불릿 타임(제한 있음). |
 | [Cobra's SPT Explorer](https://sp-mod.com/mod/3009) | 1.0.0 | 5차 | 게임+서버+루트 | (치트 표시) 읽기 전용 SPT 데이터베이스 탐색기 + 레이드 중 퀘스트·탈출구 도움. 서버를 켠 뒤 `CobraSPTExplorerUI\CobrasSPTExplorer.UI.exe`를 따로 실행한다. |
+| [Item Limits Begone!](https://sp-mod.com/mod/2524) | 1.1.0 | 7차 | 서버 | 레이드·인벤토리·플레아 등록 수량 제한을 없앤다. |
+| [Limitless](https://sp-mod.com/mod/2175) | 1.0.0 | 7차 | 서버 | **결속** 상인 구매 제한을 풀거나 배수로 늘린다. 설치 때 **26,179개 품목**에 적용됐다. |
+| [Repair Max Durability](https://sp-mod.com/mod/1305) | 2.2.0 | 7차 | 게임+서버 | **결속** 무기의 최대 내구도를 되돌리는 아이템을 추가한다. |
+| [Cobra's Durability Tweaks](https://sp-mod.com/mod/3019) | 1.0.0 | 7차 | 서버 | **결속** 내구도 소모를 줄이거나 없앤다 — 지금 설정은 **소모 12%**, 고장은 바닐라 그대로(무기 932개). 압축이 `SPT_RunTime`(대문자 T)으로 돼 있어 설치 때 경로를 고쳐야 했다. |
 
 ## 직접 만든 것 (1개)
 
@@ -193,7 +241,7 @@ Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는
 
 번역을 고치려면 `BepInEx\plugins\SptKoreanConfig\lang\<모드 GUID>.json`을 고치고 F12를 다시 열면 된다(재시작 불필요). 창 자체의 글자(`lang\_ui.json`)만은 게임을 다시 켜야 한다.
 
-## 프로필 결속 모드 (24개)
+## 프로필 결속 모드 (50개)
 
 제거하려면 프로필 백업이 먼저다. 되돌릴 때는 `doc/install-records/installed-<Tag>.txt`의 경로만 지운다.
 
@@ -221,6 +269,32 @@ Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는
 - [Vanguard](https://sp-mod.com/mod/2917) (2.0.0)
 - [WTT- Armory](https://sp-mod.com/mod/2246) (3.0.0)
 - [WTT- Artem](https://sp-mod.com/mod/1023) (3.0.2)
+- [500 Euro for Skier](https://sp-mod.com/mod/2434) (2.0.0)
+- [Airburst](https://sp-mod.com/mod/2948) (1.1.2)
+- [AllGoodsTrader](https://sp-mod.com/mod/2648) (2.0.0)
+- [ALL AMMO TRADER](https://sp-mod.com/mod/1554) (1.5.0)
+- [AmmoGen](https://sp-mod.com/mod/2777) (2.4.0)
+- [BETTER ATTACHMENTS](https://sp-mod.com/mod/1939) (4.1.5)
+- [Black Exfil Revision](https://sp-mod.com/mod/2380) (1.1.0)
+- [bluehead's AIO Trader](https://sp-mod.com/mod/374) (5.3.1)
+- [Boxes At Ref (BARF)](https://sp-mod.com/mod/2483) (3.0.0)
+- [Canted Aiming](https://sp-mod.com/mod/2415) (2.0.0)
+- [Cobra's Durability Tweaks](https://sp-mod.com/mod/3019) (1.0.0)
+- [Definitive Weapon Variants](https://sp-mod.com/mod/2010) (4.3.2)
+- [Equipment Is Eternal](https://sp-mod.com/mod/2897) (1.2.0)
+- [Full Automatic Guns](https://sp-mod.com/mod/1972) (4.1.5)
+- [Holster Everything](https://sp-mod.com/mod/2650) (2.0.0)
+- [Jero Backpack](https://sp-mod.com/mod/2369) (4.1.1)
+- [Less Restricting Headwear](https://sp-mod.com/mod/922) (4.0.0)
+- [Limitless](https://sp-mod.com/mod/2175) (1.0.0)
+- [Magic Optic Mount](https://sp-mod.com/mod/3101) (0.1.0)
+- [Realistic Suppressors](https://sp-mod.com/mod/3171) (1.0.0)
+- [Repair Max Durability](https://sp-mod.com/mod/1305) (2.2.0)
+- [Repair Skill Extension](https://sp-mod.com/mod/2556) (1.4.1)
+- [Restore Armor Plates](https://sp-mod.com/mod/2973) (1.0.2)
+- [ShrapnelFix](https://sp-mod.com/mod/3118) (1.0.0)
+- [Slimmer Magazines](https://sp-mod.com/mod/2373) (2.0.0)
+- [Ultimate Flea](https://sp-mod.com/mod/2844) (1.2.0)
 
 ## 알려진 충돌
 
