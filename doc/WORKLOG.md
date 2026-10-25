@@ -362,3 +362,15 @@ Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했
 - **7-E(3항목)** 는 100MB 이상, 합쳐 1.2GB. Painter ↔ Tactical Gear Component는 서로를 요구해 647MB 한 묶음이다.
 - 후보 65개가 계획 어딘가에 **빠짐없이** 들어갔고(스크립트 대조), 7-A 표와 매니페스트가 같은 14개임도 확인했다. 설치·다운로드는 하지 않았다.
 - 계획에 적어 둔 주의 둘: Git Bash의 `tar`로는 zip이 안 풀리니 `C:\Windows\System32\tar.exe`를 쓸 것, 서버를 내리기 전에 `EscapeFromTarkov` 프로세스를 먼저 볼 것.
+
+### 7-A 설치 — 비결속·소형 14개 (2026-10-25 14:2x ~ 14:4x)
+
+[PLAN-STAGE7.md](PLAN-STAGE7.md)의 7-A를 그대로 받아 설치했다. 설치본 109 → **123개**, 파일 2655 → 2743개, 서버 모드 49 → **55개**.
+
+- 다운로드 14개 전부 바이트 일치(합계 314KB). `check-conflicts.mjs stage7` **CLEAN** — 기존 경로 겹침 0, 모드 간 겹침 0, 섞여 온 파일 0.
+- 설치 위치가 예상과 달랐던 것: **Armor Expert·Munitions Expert가 게임(클라이언트) 플러그인**이었고, Unrestricted Armor Plate·All In Weapon·Item Limits Begone·SOMF는 서버 쪽이다. 위치는 압축 구조로만 확정된다는 5차의 교훈 그대로다.
+- SOMF(0.1.2)는 압축에 **빌드 찌꺼기**가 들어 있다(`obj/Release/staticwebassets`, `Config/Debug` 빈 폴더). 설치 스크립트가 빈 폴더까지 만들고 `installed-stage7A-3105.dirs.txt`에 기록했다.
+- 서버 테스트에서 신규 서버 모드 6개 전부 로드 확인(SitOnMyFace·Item Limits Begone·UnrestrictedArmorPlates·Foldables·All In Weapon: Unslotted·Change Helmet Visor). `SERVER STARTED`, stderr 0바이트, `[Error]`·`[Critical]` 0건. 프로필 해시도 설치 전과 같다(`cf795863…`).
+- **절차에서 걸린 것** — 설치 호출을 `| Select-Object -First 3`으로 받았더니 PowerShell이 파이프라인을 일찍 끊어 **서버 테스트 단계가 통째로 생략**됐다. 스크립트의 테스트 부분을 그대로 재현해 따로 돌렸고, 그 과정에서 All In Weapon이 첫 실행 때 만드는 `config/config.jsonc`가 설치 기록에 빠지는 것을 발견해 손으로 채웠다. **설치 스크립트 출력은 `Select-Object`로 자르지 않는다.**
+- `gen-installed-mods.mjs`에 7단계를 추가했다(단계 루프·제목·로드 현황).
+- 남은 확인: 게임 쪽 플러그인 **12개**(6-C의 2개 + 7-A의 10개)는 게임을 켠 뒤 `LogOutput.log`에서 본다. 방어구 툴팁 수치(Armor Expert)가 ODT Item Info와 겹쳐 길어지지 않는지, 호환 강조(Compatibility Highlighter)가 All In Weapon 때문에 "전부 호환"으로 보이지 않는지도 함께.

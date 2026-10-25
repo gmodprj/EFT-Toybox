@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **109개**, 설치 파일 **2674개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 86개 (SPT 기본 5 + 모드 80 + 자체 제작 1, 2026-10-25 09:57 `LogOutput.log` 확인) — 6-C의 Field Attachments·Scrollable Attachments 2개는 설치가 그 뒤라 아직 확인 전 / 서버 모드 로드: 49개 (2026-10-25 6-D 테스트 서버, 오류 0)
+- 설치된 모드: **123개**, 설치 파일 **2743개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 86개 (SPT 기본 5 + 모드 80 + 자체 제작 1, 2026-10-25 09:57 `LogOutput.log` 확인) — 6-C의 2개와 7-A의 10개는 설치가 그 뒤라 아직 확인 전 / 서버 모드 로드: 55개 (2026-10-25 7-A 테스트 서버, 오류 0)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -145,6 +145,25 @@
 | [ECOTI - Enhanced Clip-On Thermal Imager](https://sp-mod.com/mod/2930) | 3.4.2 | 게임+서버 | **결속** | 71 | `stage6B-2930` |
 | [PortableTraders (GitHub)](https://github.com/wangbofan/SPT-PortableTraders) | 1.1.0 | 서버 | - | 2 | `stage6A-portabletraders` |
 | [Quick Trader Load Times (GitHub)](https://github.com/JoelHauser/QuickTraderLoadTimes) | 1.0.0 | 게임+서버 | - | 2 | `stage6A-quicktraderloadtimes` |
+
+## 7차 — 방어구·탄환·파츠·상인 (7-A 비결속·소형)
+
+| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
+| --- | --- | --- | --- | --- | --- |
+| [LMSP - Let Me Switch Plates](https://sp-mod.com/mod/2814) | 1.0.1 | 게임 | - | 1 | `stage7A-2814` |
+| [Unrestricted Armor Plate](https://sp-mod.com/mod/1878) | 2.1.0 | 서버 | - | 3 | `stage7A-1878` |
+| [Armor Expert](https://sp-mod.com/mod/3106) | 3.1.0 | 게임 | - | 1 | `stage7A-3106` |
+| [Munitions Expert - Reloaded](https://sp-mod.com/mod/3006) | 3.1.0 | 게임 | - | 1 | `stage7A-3006` |
+| [Foldables](https://sp-mod.com/mod/2422) | 1.1.1 | 게임+서버 | - | 8 | `stage7A-2422` |
+| [VisorEffectManager](https://sp-mod.com/mod/2429) | 1.1.0 | 게임 | - | 1 | `stage7A-2429` |
+| [Change Helmet Visor](https://sp-mod.com/mod/2554) | 3.0.0 | 게임+서버 | - | 5 | `stage7A-2554` |
+| [BiC - Bind in Container](https://sp-mod.com/mod/3190) | 1.0.1 | 게임 | - | 1 | `stage7A-3190` |
+| [Manimal's Quick Cancel](https://sp-mod.com/mod/2969) | 2.0.0 | 게임 | - | 1 | `stage7A-2969` |
+| [Quick Aim](https://sp-mod.com/mod/2985) | 1.0.0 | 게임 | - | 1 | `stage7A-2985` |
+| [All In Weapon: Unslotted](https://sp-mod.com/mod/2576) | 1.2.0 | 서버 | - | 3 | `stage7A-2576` |
+| [Item Limits Begone!](https://sp-mod.com/mod/2524) | 1.1.0 | 서버 | - | 2 | `stage7A-2524` |
+| [SOMF - SitOnMyFace](https://sp-mod.com/mod/3105) | 0.1.2 | 서버 | - | 39 | `stage7A-3105.dirs`, `stage7A-3105` |
+| [ArmorInfoPlus](https://sp-mod.com/mod/3049) | 1.0.0 | 게임 | - | 2 | `stage7A-3049` |
 
 ## 다른 경로로 설치된 것
 
