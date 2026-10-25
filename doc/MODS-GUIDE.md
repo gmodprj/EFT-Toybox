@@ -330,6 +330,8 @@ Direct Reload의 아래 두 알림은 고장이 아니다.
 | `Cannot start a reload right now` | 달리는 중 등 게임이 재장전을 거절하는 상태. 멈춰 서면 된다 |
 | `No free slot to stow the current magazine` | 빼낸 탄창을 둘 빈 칸이 없음. 모드가 억지로 진행하지 않고 멈추는 설계다 |
 
+**탄창 이름 아래 구경이 30줄로 늘어나는 것**(2026-10-25 해결)은 두 모드가 겹친 결과다. [All In Weapon: Unslotted](https://sp-mod.com/mod/2576)(7-A)가 탄창의 구경 필터를 지워 **모든 구경을 받는 탄창**으로 만들고, [Caliber Under Ammo Name](https://sp-mod.com/mod/2586)이 받는 구경을 전부 적기 때문이다(설치 로그의 `Fcked: weapons, mods, chambers, calibers, magazines`가 그 증거). 고치는 길은 둘이다 — ⒜ F12 → **이름 아래 구경 표시** → `탄창에 구경 표시`를 끄면 즉시 사라진다(**현재 이렇게 해 둠**). ⒝ `AllinWeaponUnslotted/config/config.jsonc`의 `FckMagazines`를 false로 두면 탄창이 제 구경만 받아 한 줄로 돌아온다(서버 재시작 필요, 나머지 자유도는 유지).
+
 **SOMF(SitOnMyFace)가 "relaxed: 0"만 찍는 것도 정상이다**(2026-10-25 확인). 7-A 때는 머리/얼굴 차단 규칙 37건·세부 호환 2,089건을 풀었는데, 7-C에서 **Less Restricting Headwear(922)** 를 넣은 뒤로는 전부 0이 됐다. 922가 먼저 `117 block flags cleared / 4005 conflict entries removed`로 같은 일을 해 버려 SOMF가 풀 것이 남지 않는다. 둘은 겹치므로 **하나만 두면 된다** — 922 쪽이 다루는 품목이 더 많다(182개).
 
 **등대지기·BTR 운전병의 판매 목록이 비어 있는 것도 정상이다**(2026-10-25 확인). PortableTraders(6차)가 이 둘을 주 화면 상인 목록에 올리지만, SPT 4.1.6 자체 DB에서 두 상인의 `assort.json`이 `items: []`다(메카닉은 385KB). 원래 **서비스·퀘스트 전용 상인**이라 그렇다 — 등대지기는 Zryachiy 지원·ExUsec 충성·교단 지원 3종, BTR은 물품 배달·택시·엄호·환승 배달 4종을 가진다. 재입고 타이머가 `00:00:00`인 것도 채울 물건이 없어서다. 이 모드의 값어치는 **임무 탭에서 두 상인의 과제 30개를 받고 제출**할 수 있게 되는 것이다(전에는 레이드 안에서만 가능). 물건을 팔게 하려면 Ultimate Trader Assort Editor로 직접 품목을 넣어야 하는데, 바닐라 설계를 벗어나므로 이번에는 하지 않기로 했다.

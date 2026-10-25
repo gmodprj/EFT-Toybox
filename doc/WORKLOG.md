@@ -498,3 +498,13 @@ The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하
 - 반면 **`db/assort.json`에는 그 매물이 남아 있고 번들(`bundles/mysterybox.bundle`, `mysterybox_2.bundle`)도 같이 배포된다.** 즉 TypeScript 시절의 루트박스 기능이 C# 포팅에서 빠졌는데 데이터와 리소스만 남은 것이다. **다른 모드를 깐다고 해결되지 않는다.**
 - 같은 제작자(MoxoPixel)의 다른 팩 6종(BlackCore·SandCore·GreenCore·WhiteCore·Mag Tape·War Heads)은 **전부 3.x까지만** 나와 있어 4.1.6에서는 설치 대상이 아니다. 이 건과도 무관하다.
 - 결론: 앞서 지운 매물 4줄은 **되살릴 방법이 없는 항목**이 맞다. 제작자가 루트박스 코드를 다시 넣기 전까지는 지운 채로 두는 것이 옳다.
+
+### 탄창 이름 아래 구경이 30줄로 늘어난 건 (2026-10-25 19:2x, 해결)
+
+인벤토리에서 탄창 하나에 구경이 30줄 넘게 붙는다는 제보(스크린샷).
+
+- **글자를 그리는 쪽**은 1차에 넣은 Caliber Under Ammo Name(2586). 탄창이 받는 구경을 전부 적는다.
+- **길어진 원인**은 7-A의 All In Weapon: Unslotted(2576)다. 설치 로그가 `Fcked: weapons, mods, chambers, calibers, magazines`로 찍혔듯 **탄창의 구경 필터를 지워** 모든 구경을 받게 만들었고, 그러니 표시 모드가 전부 나열했다. 스크린샷의 목록이 2586 설정 파일 `[4. Caliber Names]`의 구경 표와 그대로 일치한다.
+- 고치는 길 둘을 확인했다: ⒜ F12 → `탄창에 구경 표시` 끄기(즉시, 되돌리기 쉬움, 탄창 구경 정보는 포기) ⒝ `AllinWeaponUnslotted/config/config.jsonc`의 `FckMagazines`를 false(탄창이 제 구경만 받음 → 한 줄, 서버 재시작 필요, 나머지 자유도 유지).
+- **사용자가 ⒜를 선택해 F12에서 껐고, 길게 나오지 않는 것을 확인했다.** 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.
+- 배운 것: "제한을 푸는 모드"와 "제한을 읽어 표시하는 모드"는 서로를 증폭한다. 표시 쪽 모드가 갑자기 수다스러워지면 최근에 넣은 해제형 모드를 먼저 본다.
