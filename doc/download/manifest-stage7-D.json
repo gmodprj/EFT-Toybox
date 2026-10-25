@@ -1,0 +1,115 @@
+{
+  "stage": "stage7-D",
+  "spt": "4.1.6",
+  "note": "7-D — 중형. 앞의 둘은 새 의존성(BigBrain=Sage 소이탄용, ItemGen=Quartermaster용)",
+  "mods": [
+    {
+      "group": "7D-dep",
+      "id": 902,
+      "name": "BigBrain",
+      "version": "1.5.0",
+      "size": 16790,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/902/bigbrain/1.5.0"
+    },
+    {
+      "group": "7D-dep",
+      "id": 2803,
+      "name": "ItemGen",
+      "version": "1.5.1",
+      "size": 54104,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2803/itemgen/1.5.1"
+    },
+    {
+      "group": "7D",
+      "id": 2711,
+      "name": "Better OKP-7",
+      "version": "1.1.0",
+      "size": 4183538,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2711/better-okp-7/1.1.0"
+    },
+    {
+      "group": "7D",
+      "id": 2749,
+      "name": "TraderGen",
+      "version": "2.4.1",
+      "size": 1353638,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2749/tradergen/2.4.1"
+    },
+    {
+      "group": "7D",
+      "id": 2817,
+      "name": "The Quartermaster",
+      "version": "1.4.3",
+      "size": 5933548,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2817/the-quartermaster/1.4.3"
+    },
+    {
+      "group": "7D",
+      "id": 1569,
+      "name": "Wolfik's Heavy Trooper Masks",
+      "version": "1.2.0",
+      "size": 19342911,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/1569/wolfiks-heavy-trooper-masks/1.2.0"
+    },
+    {
+      "group": "7D",
+      "id": 2681,
+      "name": "Manimal's Ammo Loading Animations",
+      "version": "2.0.0",
+      "size": 19454509,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2681/manimals-ammo-loading-animations/2.0.0"
+    },
+    {
+      "group": "7D",
+      "id": 3113,
+      "name": "Sage's Incendiary Grenade",
+      "version": "1.1.0",
+      "size": 25319070,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/3113/sages-incendiary-grenade/1.1.0"
+    },
+    {
+      "group": "7D",
+      "id": 2516,
+      "name": ".22lr Ammunition",
+      "version": "2.0.0",
+      "size": 30264753,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2516/22lr-ammunition/2.0.0"
+    },
+    {
+      "group": "7D",
+      "id": 2414,
+      "name": "Peacemaker Continued",
+      "version": "2.1.0",
+      "size": 46952912,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2414/peacemaker-continued/2.1.0"
+    },
+    {
+      "group": "7D",
+      "id": 1591,
+      "name": "Better Rear Sights",
+      "version": "1.8.0",
+      "size": 54074476,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/1591/better-rear-sights/1.8.0"
+    },
+    {
+      "group": "7D",
+      "id": 2691,
+      "name": "Fold That Stock",
+      "version": "2.1.0",
+      "size": 59009192,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2691/fold-that-stock/2.1.0"
+    }
+  ]
+}

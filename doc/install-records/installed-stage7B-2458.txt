@@ -1,0 +1,4 @@
+2458__SPTarkov.Speedloader	SPT_Runtime\user\mods\Speedloader\Speedloader.deps.json
+2458__SPTarkov.Speedloader	SPT_Runtime\user\mods\Speedloader\Speedloader.dll
+2458__SPTarkov.Speedloader	SPT_Runtime\user\mods\Speedloader\Speedloader.pdb
+2458__SPTarkov.Speedloader	SPT_Runtime\user\mods\Speedloader\db\config.json

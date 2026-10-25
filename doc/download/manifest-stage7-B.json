@@ -1,0 +1,34 @@
+{
+  "stage": "stage7-B",
+  "spt": "4.1.6",
+  "note": "7-B — 겹침 판단 후 넣기로 한 3개. QuickSellFlea(2407)는 일단 그대로 두고, 메뉴가 중복되면 그때 뺀다",
+  "mods": [
+    {
+      "group": "7B",
+      "id": 2955,
+      "name": "Quick Sell",
+      "version": "4.3.0",
+      "size": 51017,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2955/quick-sell/4.3.0"
+    },
+    {
+      "group": "7B",
+      "id": 2458,
+      "name": "Bela.s.Speedloader",
+      "version": "1.2.4",
+      "size": 23781,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2458/belasspeedloader/1.2.4"
+    },
+    {
+      "group": "7B",
+      "id": 3108,
+      "name": "Infinite Everything",
+      "version": "2.5.3",
+      "size": 56870,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3108/infinite-everything/2.5.3"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+2817__TheQuartermaster-1.4.3	BepInEx\plugins\Serenity-TheQuartermaster\TheQuartermaster.Client.dll
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\ItemGen\items\qm-cases.json
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\TheQuartermaster.Server.dll
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\Assets\quest.png
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\Assets\trader.png
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\config\config.json
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\ItemGen\doors.json
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\client_submissions.json
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\cache\catalogue.json
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\cache\contract_version.txt
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\cache\lastRefresh.json
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\cache\notified_contracts.json
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Images\quest.png
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Locales\en.json
+2817__TheQuartermaster-1.4.3	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Quests\quest_definitions.json

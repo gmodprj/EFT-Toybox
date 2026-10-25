@@ -409,3 +409,28 @@ Less Restricting Headwear와 역할이 겹쳐 아무 일도 하지 않게 된 SO
 - **압축에 섞여 온 것들이 함께 빠졌다** — `SPT_Runtime\desktop.ini`(제작자 PC의 폴더 설정 파일), `Mod.cs`, `SitOnMyFace.csproj`, `bin/Release`·`obj/Release` 빌드 산출물. `desktop.ini`는 경로가 `SPT_Runtime/` 아래라 `check-conflicts.mjs`가 정상 설치 경로로 보고 통과시켰다. **검사기가 걸러내지 못하는 유형**이니 앞으로 해제본 파일 목록을 눈으로 볼 때 이런 잡파일을 함께 본다.
 - 설치 기록은 지우지 않고 `doc/install-records/removed/`로 옮겼다. 생성기는 `install-records` 바로 아래만 읽으므로 목록에서 **미설치**로 표시된다(매니페스트에는 남는다).
 - 사용자 서버 재가동 확인: 모드 **79개**, `[SOMF]` 줄 0건, Error·Critical 0건.
+
+### 7-B 판단과 설치, 7-D 중형 설치 (2026-10-25 16:3x ~ 17:1x)
+
+설치본 148 → **163개**, 파일 2855 → 3046개, 서버 모드 79 → **93개**. 테스트 13회 전부 `SERVER STARTED`, 오류 0, stderr 0바이트.
+
+**7-B — 겹치는 8개를 판단해 3개만 넣었다**
+
+| 모드 | 판단 |
+| --- | --- |
+| Quick Sell(2955) | **넣음.** 최적 상인·플레아 즉시 판매 + 툴팁 가격. 설치된 QuickSellFlea는 일단 두고, 메뉴가 중복돼 보이면 그때 뺀다(비결속 2파일이라 되돌리기 쉽다) |
+| Bela's Speedloader(2458) | **넣음.** 장전 속도·탄 스택. Continuous Load Ammo·Cobra's Ammo Stack과 수치가 겹칠 수 있어 게임에서 확인 필요 |
+| Infinite Everything(3108) | **넣음.** 로그가 `infinite money + hideout` 등으로 찍힌다. SVM 옵션과 겹치지만 SVM은 건드리지 않았다 |
+| Easy Ammo Names(1262) / Ammo Stats In Names(2989) | **뺐다.** 설치된 Ammo Stats·Caliber Under Ammo Name이 같은 로케일 열쇠를 쓴다. 나중에 로드되는 쪽이 이겨 표기가 뒤섞인다 |
+| Live Flea Prices(1131) | **뺐다.** 7-C에서 넣은 Ultimate Flea가 가격 소스를 쥐고 있다(`Price source: local`). 가격을 실시간으로 쓰려면 Ultimate Flea의 `pricing.json`에서 켜는 쪽이 맞다 |
+| Better Flea(3177) | **뺐다.** Ultimate Flea와 정면으로 같은 영역 |
+| Instant Insurance(2394) | **뺐다.** 6차 Realistic Insurance와 정반대다. 넣으려면 2949를 꺼야 한다 |
+
+**7-D — 새 의존성 2개 + 중형 10개, 하나씩**
+
+- 선행: **BigBrain**(902, 비결속, 클라이언트 전용이라 서버 수 그대로) → **ItemGen**(2803, 결속). 각각 Sage's Incendiary Grenade와 The Quartermaster가 요구한다.
+- 이어서 Better OKP-7 → TraderGen → The Quartermaster → Wolfik's Heavy Trooper Masks → Manimal's 장전 애니메이션 → Sage's Incendiary Grenade → .22lr → Peacemaker → Better Rear Sights → Fold That Stock.
+- 압축 해제 후 실제 용량이 다운로드보다 큰 것이 많다(.22lr 29MB → 105MB, Peacemaker 45MB → 137MB). 번들이 압축돼 있어서다.
+- The Quartermaster가 `18 active listings / 86 items`, 커뮤니티 계약 2건을 띄웠다. 상인이 더 늘었다.
+- **프로필이 이 단계에서 바뀌기 시작했다.** 7-B와 7-D의 902·2803·2711까지는 해시가 같았고(`3b683421`), **TraderGen(2749) 테스트부터 매 실행마다 달라졌다.** 커스텀 상인·아이템이 프로필에 자기 자리를 만들기 때문이고, 이것이 "프로필 결속"의 실체다. 단계별 백업 13벌이 남아 있다.
+- 사용자 서버 재가동 확인: 모드 **93개**, 오류 0.

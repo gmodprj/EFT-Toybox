@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **148개**, 설치 파일 **2855개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 106개 (SPT 기본 5 + 모드 100 + 자체 제작 1, 2026-10-25 15:32 `LogOutput.log` 확인, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 79개 (2026-10-25 SOMF 제거 후 사용자 서버, 오류 0)
+- 설치된 모드: **163개**, 설치 파일 **3046개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 106개 (2026-10-25 15:32 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) — 그 뒤 SOMF 제거(서버 전용)와 7-B·7-D 설치가 있어 다음 실행 때 다시 센다 / 서버 모드 로드: 93개 (2026-10-25 7-D 테스트 서버, 오류 0)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -146,10 +146,13 @@
 | [PortableTraders (GitHub)](https://github.com/wangbofan/SPT-PortableTraders) | 1.1.0 | 서버 | - | 2 | `stage6A-portabletraders` |
 | [Quick Trader Load Times (GitHub)](https://github.com/JoelHauser/QuickTraderLoadTimes) | 1.0.0 | 게임+서버 | - | 2 | `stage6A-quicktraderloadtimes` |
 
-## 7차 — 방어구·탄환·파츠·상인 (7-A 비결속 14 + 7-C 결속 26)
+## 7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 중형 12)
 
 | 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
 | --- | --- | --- | --- | --- | --- |
+| [Quick Sell](https://sp-mod.com/mod/2955) | 4.3.0 | 게임+서버 | - | 3 | `stage7B-2955` |
+| [Bela.s.Speedloader](https://sp-mod.com/mod/2458) | 1.2.4 | 서버 | - | 4 | `stage7B-2458` |
+| [Infinite Everything](https://sp-mod.com/mod/3108) | 2.5.3 | 게임+서버 | - | 4 | `stage7B-3108` |
 | [Less Restricting Headwear](https://sp-mod.com/mod/922) | 4.0.0 | 서버 | **결속** | 4 | `stage7C-922` |
 | [BETTER ATTACHMENTS](https://sp-mod.com/mod/1939) | 4.1.5 | 서버 | **결속** | 4 | `stage7C-1939` |
 | [Definitive Weapon Variants](https://sp-mod.com/mod/2010) | 4.3.2 | 서버 | **결속** | 34 | `stage7C-2010` |
@@ -176,6 +179,18 @@
 | [AllGoodsTrader](https://sp-mod.com/mod/2648) | 2.0.0 | 서버 | **결속** | 12 | `stage7C-2648` |
 | [bluehead's AIO Trader](https://sp-mod.com/mod/374) | 5.3.1 | 서버 | **결속** | 10 | `stage7C-374` |
 | [ALL AMMO TRADER - UPDATED BY TILTUSHKIN](https://sp-mod.com/mod/1554) | 1.5.0 | 서버 | **결속** | 5 | `stage7C-1554` |
+| [BigBrain](https://sp-mod.com/mod/902) | 1.5.0 | 게임 | - | 1 | `stage7D-902` |
+| [ItemGen](https://sp-mod.com/mod/2803) | 1.5.1 | 게임+서버 | **결속** | 4 | `stage7D-2803` |
+| [Better OKP-7](https://sp-mod.com/mod/2711) | 1.1.0 | 서버 | **결속** | 6 | `stage7D-2711.dirs`, `stage7D-2711` |
+| [TraderGen](https://sp-mod.com/mod/2749) | 2.4.1 | 게임+서버 | **결속** | 12 | `stage7D-2749` |
+| [The Quartermaster](https://sp-mod.com/mod/2817) | 1.4.3 | 게임+서버 | **결속** | 15 | `stage7D-2817` |
+| [Wolfik's Heavy Trooper Masks](https://sp-mod.com/mod/1569) | 1.2.0 | 서버 | **결속** | 13 | `stage7D-1569` |
+| [Manimal's Ammo Loading Animations](https://sp-mod.com/mod/2681) | 2.0.0 | 게임+서버 | **결속** | 10 | `stage7D-2681` |
+| [Sage's Incendiary Grenade](https://sp-mod.com/mod/3113) | 1.1.0 | 게임+서버 | **결속** | 9 | `stage7D-3113` |
+| [.22lr Ammunition](https://sp-mod.com/mod/2516) | 2.0.0 | 서버 | **결속** | 24 | `stage7D-2516` |
+| [Peacemaker Continued](https://sp-mod.com/mod/2414) | 2.1.0 | 서버 | **결속** | 18 | `stage7D-2414` |
+| [Better Rear Sights](https://sp-mod.com/mod/1591) | 1.8.0 | 서버 | **결속** | 43 | `stage7D-1591` |
+| [Fold That Stock](https://sp-mod.com/mod/2691) | 2.1.0 | 게임+서버 | **결속** | 25 | `stage7D-2691` |
 | [LMSP - Let Me Switch Plates](https://sp-mod.com/mod/2814) | 1.0.1 | 게임 | - | 1 | `stage7A-2814` |
 | [Unrestricted Armor Plate](https://sp-mod.com/mod/1878) | 2.1.0 | 서버 | - | 3 | `stage7A-1878` |
 | [Armor Expert](https://sp-mod.com/mod/3106) | 3.1.0 | 게임 | - | 1 | `stage7A-3106` |

@@ -1,0 +1,5 @@
+2711__Eukyre-BetterOKP7v1.1.0	SPT_Runtime\user\mods\Eukyre-BetterOKP7\bundles.json
+2711__Eukyre-BetterOKP7v1.1.0	SPT_Runtime\user\mods\Eukyre-BetterOKP7\Eukyre-BetterOKP7.dll
+2711__Eukyre-BetterOKP7v1.1.0	SPT_Runtime\user\mods\Eukyre-BetterOKP7\bundles\scope_all_ekb_okp7.bundle
+2711__Eukyre-BetterOKP7v1.1.0	SPT_Runtime\user\mods\Eukyre-BetterOKP7\bundles\scope_dovetail_ekb_okp7_dovetail.bundle
+2711__Eukyre-BetterOKP7v1.1.0	SPT_Runtime\user\mods\Eukyre-BetterOKP7\db\CustomLocales\en.json

@@ -1,0 +1,13 @@
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\bundles.json
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\WolfiksHeavyTroopers.dll
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\bundles\assets\Black_Mask.bundle
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\bundles\assets\Coyote_Mask.bundle
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\bundles\assets\Cultist_Mask.bundle
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\bundles\assets\Tan_Mask.bundle
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\bundles\assets\Wolf_Mask.bundle
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\config\config.jsonc
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\db\MaskProps.json
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\locales\locales.json
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Images\quest.png
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Locales\en.json
+1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Quests\quest_definitions.json

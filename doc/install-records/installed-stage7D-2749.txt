@@ -1,0 +1,12 @@
+2749__TraderGen-2.4.1	BepInEx\plugins\TraderGen\randomitem.png
+2749__TraderGen-2.4.1	BepInEx\plugins\TraderGen\TraderGen.Client.dll
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\TraderGen.dll
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\config\locale.json
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\traders\ExampleTrader\quests.json
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\traders\ExampleTrader\README.md
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\traders\ExampleTrader\trader.json
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\traders\ExampleTrader\assets\avatar.jpg
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\traders\ExampleTrader\assets\default_quest_icon.png
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\traders\ExampleTrader\locales\es.json
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\traders\ExampleTrader\locales\ge.json
+2749__TraderGen-2.4.1	SPT_Runtime\user\mods\TraderGen\traders\ExampleTrader\locales\po.json
