@@ -1,0 +1,246 @@
+ModLoader: 총 48 개의 모드 불러오는 중...
+모드 Bright Lasers 버전 3.0.0 (GUID: com.acidphantasm.brightlasers | targets 
+SPT: ~4.1.0) by acidphantasm 불러옴
+모드 Default Firemode Fixer 버전 2.1.0 (GUID: com.acidphantasm.defaultfiremode |
+targets SPT: ~4.1.0) by acidphantasm 불러옴
+모드 Harry Hideout 버전 3.1.2 (GUID: com.acidphantasm.harryhideout | targets 
+SPT: ~4.1.0) by acidphantasm 불러옴
+모드 Ref Friendly Quests 버전 2.1.0 (GUID: com.acidphantasm.reffriendlyquests | 
+targets SPT: ~4.1.0) by acidphantasm 불러옴
+모드 Scorpion 버전 1.1.1 (GUID: com.acidphantasm.scorpion | targets SPT: ~4.1.0)
+by acidphantasm 불러옴
+모드 give-ui 버전 5.0.1 (GUID: com.agavalda.giveui | targets SPT: ~4.1.0) by 
+agavalda 불러옴
+모드 AllWeaponsFlea 버전 1.0.1 (GUID: com.arion.allweaponsflea | targets SPT: 
+=4.1.6) by Arion 불러옴
+모드 TraderModding 버전 2.1.2 (GUID: com.choochoo.tradermodding | targets SPT: 
+~4.1.X) by Choo² 불러옴
+모드 Cobra's Ammo Stack 버전 1.1.0 (GUID: com.cobra.ammostack | targets SPT: 
+~4.1.0) by Cobra 불러옴
+모드 CobraSPTExplorer 버전 1.0.0 (GUID: com.cobra.sptexplorer | targets SPT: 
+~4.1.5) by Cobra 불러옴
+모드 Artem 버전 3.0.2 (GUID: com.crackbone.artem-wtt | targets SPT: ~4.1.0) by 
+Crackbone 불러옴
+모드 Show Me The Money 버전 3.0.2 (GUID: com.dark.spt.showmethemoney | targets 
+SPT: ~4.1.0) by SwiftXP 불러옴
+모드 Flexible Builds 버전 1.2.2 (GUID: com.deadlauncher.FlexibleBuilds | targets
+SPT: ~4.1.0) by DeadLauncher 불러옴
+모드 Gunwright 버전 1.3.0 (GUID: com.deadwolf.spt.gunwright | targets SPT: 
+~4.1.2) by DeadWolf 불러옴
+모드 Ref Rework 버전 1.0.0 (GUID: com.elmerglue.refrework | targets SPT: ~4.1.0)
+by Elmer Glue 불러옴
+모드 Vanguard 버전 2.0.0 (GUID: com.epicrangetime.vanguard | targets SPT: ~4.1) 
+by EpicRangeTime 불러옴
+모드 TraderRestockRefresh 버전 1.0.0 (GUID: 
+com.fenrirthegray.traderrestockrefresh | targets SPT: ~4.1.0) by FenrirTheGray 
+불러옴
+모드 BetterKeysNG 버전 1.8.0 (GUID: com.flir.betterkeys | targets SPT: ~4.1.0) 
+by flir 불러옴
+모드 Ultimate Trader Assort Editor 버전 2.1.0 (GUID: 
+com.goatboy.ultimate-trader-assort-editor | targets SPT: ~4.1.0) by GoatBoy 
+불러옴
+모드 CaseTrader 버전 1.0.1 (GUID: com.hayk.casetrader | targets SPT: ~4.1.0) by 
+Hayk 불러옴
+모드 AmmoBox1x1 버전 2.0.0 (GUID: com.jero.ammobox1x1 | targets SPT: ~4.1.6) by 
+jero 불러옴
+모드 Gunsmith Trader 버전 1.0.2 (GUID: com.landon.gunsmithtrader | targets SPT: 
+~4.1.0) by Landon 불러옴
+모드 ECOTI 버전 3.4.2 (GUID: com.lennoxp90.coti.server | targets SPT: >=4.1.3 
+<4.2.0) by LennoxP90 불러옴
+모드 Lotus 버전 1.8.1 (GUID: com.Luna.LunnayalunaLotus | targets SPT: ~4.1.6) by
+LunnayalunaLotus 불러옴
+모드 EasyMounting 버전 2.0.1 (GUID: com.maschine.EasyMounting | targets SPT: 
+~4.1.0) by maschine 불러옴
+모드 NATO Quartermaster 버전 1.1.3 (GUID: com.michael.spt.natoquartermaster | 
+targets SPT: ~4.1.3) by Michael 불러옴
+모드 Dynamic Maps 버전 1.2.1 (GUID: com.mpstark.dynamicmaps | targets SPT: 
+~4.1.0) by mpstark 불러옴
+모드 Quick Trader Load Times 버전 1.0.0 (GUID: 
+com.mybutthasarash.quicktraderloadtimes | targets SPT: ~4.1.0) by JoelHauser 
+불러옴
+모드 Realistic Insurance 버전 0.2.1 (GUID: com.mybutthasarash.realisticinsurance
+| targets SPT: ~4.1.0) by JoelHauser 불러옴
+모드 ItemInfo 버전 3.0.0 (GUID: com.odt.iteminfo | targets SPT: ~4.1.5) by ODT 
+불러옴
+모드 PortableTraders 버전 1.1.0 (GUID: com.portabletraders.core | targets SPT: 
+~4.1.2) by PortableTraders 불러옴
+모드 AmmoStats 버전 4.1.0 (GUID: com.rairaitheraichu.ammostats | targets SPT: 
+~4.1.0) by RaiRaiTheRaichu 불러옴
+모드 Direct Reload & Painless Meds 버전 1.3.2 (GUID: com.rz99.directreload | 
+targets SPT: ~4.1.0) by RZ-99 불러옴
+모드 Trader Namer 버전 4.1.0 (GUID: com.sgtlaggy.tradernamer | targets SPT: 
+~4.1.0) by sgtlaggy 불러옴
+모드 Barter Items Stacks 버전 1.4.3 (GUID: com.slpf.barteritemsstacks | targets 
+SPT: ~4.1.0) by SLPF 불러옴
+모드 PresetTrader 버전 1.2.0 (GUID: com.sp.bela.presettrader | targets SPT: 
+~4.1.2) by Bela 불러옴
+모드 Amonya 버전 2.2.0 (GUID: com.szonszczyk.amonya | targets SPT: ~4.1.2) by 
+Szonszczyk 불러옴
+모드 CaliberSplitStorageSolutions 버전 1.0.1 (GUID: 
+com.szonszczyk.calibersplitstoragesolutions | targets SPT: ~4.1.3) by Szonszczyk
+불러옴
+모드 ColoredTracers 버전 3.0.1 (GUID: com.szonszczyk.coloredtracers | targets 
+SPT: ~4.1.2) by Szonszczyk 불러옴
+모드 UI Fixes 버전 6.0.4 (GUID: com.tyfon.uifixes | targets SPT: ~4.1.0) by 
+Tyfon 불러옴
+모드 Weapon Customizer 버전 4.0.0 (GUID: com.tyfon.weaponcustomizer | targets 
+SPT: ~4.1.0) by Tyfon 불러옴
+모드 WTT-Armory 버전 2.0.5 (GUID: com.wtt.armory | targets SPT: ~4.1.0) by 
+GrooveypenguinX 불러옴
+모드 WTT-ServerCommonLib 버전 3.0.6 (GUID: com.wtt.commonlib | targets SPT: 
+~4.1.3) by GrooveypenguinX 불러옴
+모드 Ledger 버전 1.1.0 (GUID: com.zantetsukenar3.ledger | targets SPT: ~4.1.0) 
+by ZantetsukenAR3 불러옴
+모드 SVM 버전 2.2.3 (GUID: fika.ghostfenixx.svm | targets SPT: ~4.1.3) by 
+GhostFenixx 불러옴
+모드 Moe-TradeMarker 버전 1.2.6 (GUID: moe.trade.marker.server | targets SPT: 
+~4.1.0) by moe 불러옴
+모드 HideLockedFlea 버전 1.0.0 (GUID: net.liquidwarp.hidelockedflea | targets 
+SPT: ~4.1.6) by Liquidwarp 불러옴
+모드 Trader Level Requirements Editor 버전 1.1.0 (GUID: 
+wozzy.spt.traderlevelrequirementseditor | targets SPT: ~4.1.0) by wozzy 불러옴
+데이터베이스를 추출 중...
+데이터베이스 추출 완료
+Database import took 1386ms
+Mod ECOTI has a wwwroot, mapping to /coti-assets/
+서버: 시작 콜백을 실행합니다...
+┌─────────────────────────────────────┐
+│ SPT 4.1.6                           │
+│ https://discord.sp-tushonka.com     │
+│                                     │
+│ 이 소프트웨어는 무료입니다                      │
+│ 만약 금전적 대가를 지불하였다면, 사기에 당하신 겁니다.     │
+│ 상업적 용도는 제한됩니다                       │
+└─────────────────────────────────────┘
+Builds Fixes patches loaded!
+[COTI] Item created, id 6a7f15387b68c336e18e8977
+[COTI] Thermal riser created, id 6ad3016bab020957abb6ca3b (LennoxP90 TR-1 
+thermal sight riser)
+[COTI] Thermal riser created, id 6ad408a96bf1f761d970a4ff (LennoxP90 TR-1 
+thermal sight riser (Tan))
+[AmmoStats] ColorConverterAPI Plugin detected?: True
+Moe-TradeMarker 설정을 불러왔습니다.
+Moe-TradeMarker 서버를 불러왔습니다.
+[COTI] Scope ring created, id 6ad5739462c39577194eedc5 (LennoxP90 TSR-1 thermal 
+scope ring 30mm)
+[COTI] Scope ring created, id 6ad573a014ebd436fbd1dfda (LennoxP90 TSR-1 thermal 
+scope ring 30mm (Tan))
+[COTI] Scope ring created, id 6ad5775e327076f93b3b36bf (LennoxP90 TSR-2 thermal 
+scope ring 34mm)
+[COTI] Scope ring created, id 6ad57762f51afaf4379f19a2 (LennoxP90 TSR-2 thermal 
+scope ring 34mm (Tan))
+[COTI] Scope ring created, id 6ad577679385f594db176ad6 (LennoxP90 TSR-3 thermal 
+scope ring 35mm)
+[COTI] Scope ring created, id 6ad5776a93ea4db35ed55dcf (LennoxP90 TSR-3 thermal 
+scope ring 35mm (Tan))
+[SVM] Remove backpack restrictions - empty filters detected on ID - 
+656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[SVM] Remove backpack restrictions - empty filters detected on ID - 
+656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[SVM] Remove backpack restrictions - empty filters detected on ID - 
+656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[SVM] Initialization complete. Goose goes Honk Honk 
+
+[SVM] Preset - Noname - successfully loaded
+[CaliberSplitStorageSolutions/OnLoadAsync] Mod loaded successfully. Created 91 
+custom items!
+[Amonya/OnLoadAsync] Mod finished loading. Created 193 custom items!
+[Amonya/OnLoadAsync] Added 183 custom quests!
+[Trader Level Requirements Editor] Updated Prapor
+[Trader Level Requirements Editor] Updated Therapist
+[Trader Level Requirements Editor] Updated Skier
+[Trader Level Requirements Editor] Updated Peacekeeper
+[Trader Level Requirements Editor] Updated Mechanic
+[Trader Level Requirements Editor] Updated Ragman
+[Trader Level Requirements Editor] Updated Jaeger
+[PortableTraders] BTR Driver (APC) (656f0f98d80a697f855d34b1): main menu = True,
+unlocked = True, quest rewards by mail = True.
+[PortableTraders] Lightkeeper (638f541a29ffd1183d187f57): main menu = True, 
+unlocked = True, quest rewards by mail = True.
+[PortableTraders] Loaded: 2 portable trader(s), 30 task(s) reachable from the 
+main menu.
+[SCORPION] ┬─┬ノ( º _ ºノ)
+[Gunwright]: Registered trader 8b4f2d91c7a63e5f1d9a0b4c ahead of profile 
+validation
+[CaseTrader] Skipped container 5c0a5f6c86f774753654890e (Developer case): no 
+handbook price and no override
+[CaseTrader] Skipped container 688b2dba67bf6fa26c07e918 
+(item_container_moderator_toolbox): no handbook price and no override
+[CaseTrader] Added Case trader with 116 container offers
+[Gunsmith Trader] Loaded with 30 Gunsmith builds.
+Make sure to check the Lotus modpage for gunsmith task solutions
+[PresetTrader]: Registered trader 67a5e1c2f3d4b5a6c7d8e9f0 ahead of profile 
+validation
+[Ledger] Loaded.
+[NATO Quartermaster] V1.1.3 loaded: 49 curated offers and 6 quests.
+[NATO Quartermaster] Quest unlocks: Q1=1, Q2=1, Q3=3, Q4=1, Q5=2, Q6=2.
+[COTI] COTI added to Peacekeeper LL4 at $2000, limit 3
+[COTI] TR-1 thermal sight riser (2 colourways) added to Peacekeeper LL3 at 
+$1500, limit 3
+[COTI] TSR thermal scope rings (6) added to Peacekeeper LL3 at $1750, limit 3
+Ref Rework: applied Ref dogtag/Lega medal -> GP coin changes.
+[All Weapons Flea] 238 weapons enabled; 33 BSG restrictions removed.
+플리마켓 상품 생성 중
+[UTAE] Changes applied successfully. Loaded 0 additions, 0 modifications, and 0 
+removals.
+[RealisticInsurance] loaded - pmc 55% / playerScav 45% / scav 75% / boss 40% / 
+other 90%, looter extracts 65% (+25% when they don't)
+[BetterKeysNG] Loaded: Customs
+[BetterKeysNG] Loaded: Factory
+[BetterKeysNG] Loaded: Ground Zero
+[BetterKeysNG] Loaded: Interchange
+[BetterKeysNG] Loaded: Lighthouse
+[BetterKeysNG] Loaded: Reserve
+[BetterKeysNG] Loaded: Shoreline
+[BetterKeysNG] Loaded: Streets of Tarkov
+[BetterKeysNG] Loaded: The Lab
+[BetterKeysNG] Loaded: Woods
+[BetterKeysNG] Loaded: The Labyrinth
+[BetterKeysNG] Processed 200 known keys and 44 junk keys
+[BetterKeysNG] modified 4,114 translations in 471 ms
+[EasyMounting] Applied preset 'AnySurface' to weapon mounting surface detection.
+Quick Trader Load Times 1.0.0 loaded
+[DirectReload] core_medical_surgical_kit: surgery keep-ratio set to 100%
+[DirectReload] survival_first_aid_rollup_kit: surgery keep-ratio set to 100%
+[DirectReload] sanitar_medical_surgical_kit: surgery keep-ratio set to 100%
+[DirectReload] Surgery no-penalty applied to 3/3 surgical kits
+[DirectReload] MedUseTime scaled on 44 items (x0.5, floor 0.8s)
+[DirectReload] Drug effect durations scaled: 27 entries (x2)
+[DirectReload] Stimulator positive-buff durations scaled: 147 entries (x2)
+[PresetTrader]: Loaded 4 weapon build(s), 27 gear preset(s) and 19 armor 
+preset(s) to trader 67a5e1c2f3d4b5a6c7d8e9f0. Opening the trader or refreshing 
+rotates through key packs and gunsmith/quest weapon presets.
+[ColoredTracers/OnLoadAsync] Added 229 tracers to 415 bullets!
+[JERO] 36 ammo boxes adjusted!
+[COTI] Device store: 5 device(s) resolved, covering 5 host(s), from 
+E:\Spt\SPT_Runtime\user\mods\LennoxP90-COTI\nvghostcompat
+[COTI] 5 host(s) fitted, 0 not installed
+[COTI] Device store: 10 device(s) resolved, covering 10 host(s), from 
+E:\Spt\SPT_Runtime\user\mods\LennoxP90-COTI\nvghostcompat
+[COTI] Auto-discovery: 5 new night vision host(s) stubbed.
+[COTI] Thermal riser: 8 denied (6 not in this database) from 
+E:\Spt\SPT_Runtime\user\mods\LennoxP90-COTI\config\riser-sights.json
+[COTI] Thermal riser (2 colourways): 48 sights and mounts (vanilla 45, 
+WTT-Armory 3), fits 110 slots with the LaRue and 116 more scope slots, conflicts
+with 105 rear sights
+[COTI] Scope rings (6): fit 122 slots that take their base mounts; the riser 
+taken out of 16 ring slot filters; 0 scopes taken from same-tube mounts; 0 
+denied by scope-rings.json
+[COTI] APBS not installed: its bot pools are left alone
+[COTI] Slot names registered in 17 locale(s)
+[COTI] Loot spawns registered against 10 night vision template(s): COTI at 25% 
+of their weight, thermal riser and scope rings at 30% each. The transformers are
+registered either way, so switching one on takes effect at the next raid.
+[COTI] meshes: 5 converted, 0 unchanged, 0 removed, 0 failed
+[ItemInfo] Processing items...
+[ItemInfo] Processing additional info...
+[ItemInfo] Completed processing 5943 items in 25314 ms.
+[ItemInfo] Item Info loaded!
+[BarterItemsStacks] Config loaded.
+Web authentication is enabled.
+[Cobra's Ammo Stack] v1.1.0 loaded. Modified 427 ammunition items.
+[Cobra's SPT Explorer] Server component loaded successfully.
+시작된 웹서버 https://127.0.0.1:6969
+시작된 웹소켓 서버 wss://127.0.0.1:6969
+서버가 시작되었습니다, 즐거운 시간 되세요.
+Loaded self-signed certificate (user\certs\server.crt)

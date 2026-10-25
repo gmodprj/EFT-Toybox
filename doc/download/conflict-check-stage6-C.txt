@@ -1,0 +1,14 @@
+stage6-C: 모드 3개 / 설치 대상 경로 258개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 0
+
+[4] 모드별 설치 위치
+    1426__UnityToolkit-v2.0.2-SPT4.1.5 -> 게임
+    2677__ScrollableAttachments-2.0.0 -> 게임
+    3125__Tylevo.FieldAttachments-1.2.0 -> 게임
+
+CLEAN (0)

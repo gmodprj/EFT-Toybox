@@ -1,0 +1,1 @@
+3194__OpenBarters-1.0.1	BepInEx\plugins\OpenBarters\OpenBarters.dll

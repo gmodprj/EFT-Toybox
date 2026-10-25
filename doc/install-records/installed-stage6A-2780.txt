@@ -1,0 +1,2 @@
+2780__NoBarrelShadow_v2.0.1	BepInEx\plugins\NoBarrelShadow\light_names.json
+2780__NoBarrelShadow_v2.0.1	BepInEx\plugins\NoBarrelShadow\NoBarrelShadow.dll

@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **93개**, 설치 파일 **2280개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 77개 (SPT 기본 5 + 모드 71 + 자체 제작 1, 2026-10-25 06:37 `LogOutput.log` 확인) / 서버 모드 로드: 38개 (2026-10-24 19:11 사용자 서버, 오류 0)
+- 설치된 모드: **109개**, 설치 파일 **2674개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 86개 (SPT 기본 5 + 모드 80 + 자체 제작 1, 2026-10-25 09:57 `LogOutput.log` 확인) — 6-C의 Field Attachments·Scrollable Attachments 2개는 설치가 그 뒤라 아직 확인 전 / 서버 모드 로드: 49개 (2026-10-25 6-D 테스트 서버, 오류 0)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -124,6 +124,27 @@
 | [Fast Grenade Throw](https://sp-mod.com/mod/2783) | 2.0.0 | 게임 | - | 1 | `stage5E-2783` |
 | [Low Budget Bullet Time NG](https://sp-mod.com/mod/1988) | 2.3.0 | 게임 | - | 3 | `stage5E-1988` |
 | [Tripwire Improvement](https://sp-mod.com/mod/2618) | 1.1.0 | 게임 | - | 1 | `stage5E-2618` |
+
+## 6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)
+
+| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
+| --- | --- | --- | --- | --- | --- |
+| [UnityToolkit](https://sp-mod.com/mod/1426) | 2.0.2 | 게임 | - | 17 | `stage6C-1426` |
+| [Tylevo's Field Attachments](https://sp-mod.com/mod/3125) | 1.2.0 | 게임 | **결속** | 240 | `stage6C-3125` |
+| [Scrollable Attachments](https://sp-mod.com/mod/2677) | 2.0.0 | 게임 | - | 1 | `stage6C-2677` |
+| [VanillaTradersRework-Reloaded (Nexus)](https://www.nexusmods.com/escapefromtarkov/mods/10) | 1.0.0 | 서버 | - | 19 | `stage6D-vanillatradersrework` |
+| [BrightLasers](https://sp-mod.com/mod/1358) | 3.0.0 | 게임+서버 | - | 4 | `stage6A-1358` |
+| [No Barrel Shadow](https://sp-mod.com/mod/2780) | 2.0.1 | 게임 | **결속** | 2 | `stage6A-2780` |
+| [Vanguard](https://sp-mod.com/mod/2917) | 2.0.0 | 서버 | **결속** | 10 | `stage6A-2917` |
+| [OpenBarters](https://sp-mod.com/mod/3194) | 1.0.1 | 게임 | - | 1 | `stage6A-3194` |
+| [Moe-TradeMarker](https://sp-mod.com/mod/2736) | 1.2.6 | 게임+서버 | **결속** | 9 | `stage6A-2736` |
+| [Ref Rework](https://sp-mod.com/mod/3014) | 1.0.0 | 게임+서버 | - | 4 | `stage6A-3014` |
+| [Realistic Insurance](https://sp-mod.com/mod/2949) | 0.2.1 | 게임+서버 | - | 5 | `stage6A-2949` |
+| [All Weapons Flea](https://sp-mod.com/mod/3200) | 1.0.1 | 서버 | - | 3 | `stage6A-3200` |
+| [NATO Quartermaster — Western Gear Trader, Presets & Quest Unlocks](https://sp-mod.com/mod/3030) | 1.1.3 | 서버 | **결속** | 4 | `stage6B-3030` |
+| [ECOTI - Enhanced Clip-On Thermal Imager](https://sp-mod.com/mod/2930) | 3.4.2 | 게임+서버 | **결속** | 71 | `stage6B-2930` |
+| [PortableTraders (GitHub)](https://github.com/wangbofan/SPT-PortableTraders) | 1.1.0 | 서버 | - | 2 | `stage6A-portabletraders` |
+| [Quick Trader Load Times (GitHub)](https://github.com/JoelHauser/QuickTraderLoadTimes) | 1.0.0 | 게임+서버 | - | 2 | `stage6A-quicktraderloadtimes` |
 
 ## 다른 경로로 설치된 것
 

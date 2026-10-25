@@ -248,3 +248,95 @@
 - 2차 B 확인 시 게임 플러그인 31개를 예상했으나 Fika용 DLL은 로드되지 않으므로 30개가 정상.
 - 5차 계획서에 stage5-B를 "게임 전용"으로 적었으나 Default Fire Mode Fixer는 서버 전용, Flexible Builds·EasyMounting은 게임+서버였다. 설치 위치는 압축 해제 경로로만 확정된다.
 - 5-A 게임 로드 확인에서 처음 18/21로 셌으나, Use Items Anywhere·Advanced Modding Lights·Refined Flea Offer List는 로그에 공백 포함 표시명으로 찍혀 파일명 검색에 걸리지 않았을 뿐 21개 전부 로드돼 있었다.
+
+### 총기·파츠 / 상인 모드 재조사 (2026-10-25)
+
+기존 후보 문서는 이름·소개 키워드로 5개 분야를 추린 것이라, 분류를 비켜간 것이 남아 있을 수 있었다. 그래서 두 분야만 다시 훑었다.
+
+- Forge 전수 조회가 **633개**로 늘었다(10-24 조사 626개). 하루 사이 7개.
+- 부착물·조준경·소음기·탄창·빌드 / 상인·플레아·물물교환·보험 계열로 걸러 181개, 그중 설치본·후보 문서·5차 계획서에 **한 번도 안 나온 것이 81개**였다.
+- 81개를 성격별로 가른 뒤 두 분야에 실제 해당하는 **27개**만 `tools/mod-detail.mjs`로 버전·용량·결속·의존성을 확인해 [CANDIDATES-GUN-TRADER.md](CANDIDATES-GUN-TRADER.md)에 정리했다. 원자료는 `stage2-survey/sweep-416-gun-trader.json`.
+- 가장 "총기 파츠"에 가까운 것은 **Kalashnikov Enhanced Modding**(3010) — AK의 핸드가드·가스튜브·사이드레일·배럴을 분리해 부품으로 만든다. 다만 260MB·결속이다.
+- 상인 쪽은 **NATO Quartermaster**(3030, 354KB, 4.1.6 정확)와 **OpenBarters**(3194, 14KB, 비결속)가 부담이 가장 적다.
+- 설치는 하지 않았다. 대형 콘텐츠(3010·3035·2239·2737)는 5차 계획의 "총기 팩·대형 상인은 범위 밖" 방침대로 넣을지부터 정해야 한다.
+
+### sp-mod 밖 배포지 조사와 6차 계획 (2026-10-25)
+
+사용자 요청으로 Forge 밖도 훑었다.
+
+- `forge.sp-tarkov.com`·`hub.sp-tarkov.com`은 **DNS 조회부터 실패**한다. 예전 공식 주소는 죽었고 sp-mod.com이 그 후속이다.
+- GitHub(topic `spt-mod`·`sptarkov`·`spt-aki`)에는 Forge에 없는 4.1.6 모드가 실제로 있었다. 이번에 집은 둘: **Quick Trader Load Times**(상인 화면 로딩, MIT)와 **PortableTraders**(BTR·등대 상인을 주 화면으로, MIT). 릴리스 asset URL은 `download-stage.mjs`로 그대로 받힌다.
+- Nexus Escape from Tarkov 섹션은 SPT 모드가 **22개 전부**다. 대부분 한 사람의 포팅본이고 다운로드 30~700대. 쓸 만한 건 상인 초상화 교체(VanillaTradersRework-Reloaded) 하나. 받으려면 계정 로그인이 필요해 스크립트로는 못 받는다.
+- 아카이브(tekunogosu/sptmodarchive)는 sp-mod.com 목록의 사본이라 새 출처가 아니다. Reddit·일반 검색은 SPT 4.1 결과가 사실상 없었다.
+- **키워드 추림의 구멍을 하나 찾았다.** ECOTI(2930, 클립온 열상, 다운로드 15,943)는 이름·소개에 부착물 계열 단어가 없어 1·2차 추림 모두 놓쳤고 GitHub 쪽에서 먼저 보였다. 6차에 넣는다. 그 3.4.2가 설치된 PiP Disabler(2667)와의 열상 표시 문제를 고친 버전이다.
+- 5차에서 보류한 Field Attachments(3125)의 걸림돌을 확인했다: UnityToolkit **2.0.2 이상**이 필요하고, 2.0.2는 **Forge에만**(4.1.5 표기) 있다. GitHub 최신은 2.0.1이라 그쪽으로는 해결되지 않는다. 그래서 6-C는 1426 단독 설치·확인부터로 잡았다.
+- 결과를 [PLAN-STAGE6.md](PLAN-STAGE6.md)에 정리했다(6-A 10개, 6-B 결속 2개, 6-C 선행 확인 3개, 6-D 수동 1개). 다운로드 목록 `download/manifest-stage6.json`까지 만들어 뒀고, 다운로드·설치는 하지 않았다.
+
+### 6-A 설치 (2026-10-25 09:0x ~ 09:4x)
+
+[PLAN-STAGE6.md](PLAN-STAGE6.md)의 6-A 10개를 받아 설치했다. 설치본 93 → **103개**, 파일 2280 → 2322개, 서버 모드 38 → **46개**.
+
+- 다운로드 12개 모두 바이트 일치. Forge 링크가 전부 `release-assets.githubusercontent.com`으로 리다이렉트된다 — Forge도 GitHub 릴리스에 파일을 둔다.
+- **Git Bash의 `tar`로는 zip이 안 풀린다**(GNU tar). `C:\Windows\System32\tar.exe`를 직접 불러야 한다. 문서의 "tar.exe"는 그쪽이다.
+- 압축 구조를 손본 것: **PortableTraders**가 `SPT/user/mods/...`(이 설치본은 `SPT_Runtime/`)였고 루트에 LICENSE·README가 섞여 있었다. 경로를 옮기고 문서는 `extracted/_extras-stage6/`로 뺐다. stage5의 Cobra's Ammo Stack과 같은 유형.
+- BrightLasers는 같은 이름의 DLL이 `BepInEx/plugins`와 `user/mods` 양쪽에 있다. 해시가 달라 **클라이언트·서버 두 짝이 맞다**(중복 아님). 둘 다 설치.
+- `check-conflicts.mjs stage6` 결과 CLEAN — 기존 경로와 겹침 0, 모드 간 겹침 0, 설치 경로 아닌 파일 0.
+- 설치 순서: 비결속 8개(`-SkipTest`) → 서버 테스트 1회 → 결속 2개는 프로필 백업 후 하나씩. 테스트 3회 모두 `SERVER STARTED`(50·47·47초), stderr 0바이트, `[Error]`·`[Critical]` 없음.
+- 서버 쪽 신규 8개 로드 확인: BrightLasers·Ref Rework·Realistic Insurance·All Weapons Flea·Quick Trader Load Times·PortableTraders·Moe-TradeMarker·Vanguard. PortableTraders가 `BTR Driver·Lightkeeper 2명, 과제 30개`를, All Weapons Flea가 `무기 238종, BSG 제한 33개 해제`를 찍었다.
+- 프로필은 설치 전 백업과 **해시가 같다**(`8c0fe366…`). 백업은 `profiles-before-stage6A`, `-2736`, `-2917`.
+- 사용자 서버가 켜져 있어 설치 스크립트가 거부했다(스크립트 자체 안전장치). 종료하고 설치한 뒤 다시 띄워 뒀다 — 46개 로드, 웹서버 정상.
+- `gen-installed-mods.mjs`를 6차에 맞게 고쳤다: 6단계 추가, **모드 id를 문자열로** 취급(Forge 밖 모드는 `gh-...`), 링크는 매니페스트의 `homepage`를 쓰고 없으면 Forge, 결속 조회는 숫자 id만.
+- 남은 확인: **게임 쪽 7개**(OpenBarters·BrightLasers·NoBarrelShadow·RefReworkClient·RealisticInsurance·QuickTraderLoadTimes·Moe-TradeMarker)는 게임을 켠 뒤 `LogOutput.log`로 본다. 그리고 도그태그 용처가 Ledger와 Ref Rework로 둘이 됐다 — 게임에서 보고 하나를 끈다.
+
+### 6-B 설치 — 결속 2개 (2026-10-25 09:5x)
+
+프로필 백업 → 설치 → 테스트를 하나씩. 설치본 103 → **105개**, 서버 모드 46 → **48개**.
+
+- **NATO Quartermaster 1.1.3**(4파일) — `49 curated offers and 6 quests`, 퀘스트 해금 Q1~Q6까지 로그로 확인. 상인이 7명째가 됐다. `SERVER STARTED in 41s`, 오류 0.
+- **ECOTI 3.4.2**(압축 56파일 → 기록 **71파일**) — 서버가 뜰 때 WTT-Artem의 야투경에 맞춘 호환 파일을 **스스로 만든다**: `nvghostcompat/[wtt-artem]_(gpnvg-18…)` 5종 + `wwwroot/meshes-auto/*.glb` 10종. 설치 스크립트가 이 생성분까지 `installed-stage6B-2930.txt`에 넣었으므로 되돌릴 때 함께 지워진다.
+  - 등록된 것: COTI 본체, 열상 라이저 TR-1 2색, 열상 스코프링 TSR-1/2/3 6종. 판매는 Peacekeeper LL3~LL4($1,750~$2,000, 한도 3).
+  - `[COTI] meshes: 5 converted, 0 unchanged, 0 removed, 0 failed`. 오류 0.
+- 프로필 해시는 6-A 시작 전과 **그대로 같다**(`8c0fe366…`). 백업 `profiles-before-stage6B-3030`, `-2930`.
+- 사용자 서버를 다시 띄웠다 — 48개 로드, 웹서버 정상.
+- 남은 확인(게임을 켠 뒤): 6차 게임 쪽 플러그인 **8개**, 상인 7명이 목록에 다 보이는지(TraderScrolling·TraderSpace), ECOTI 열상이 야투경 튜브 안에만 들어오는지 — **PiP Disabler(2667)·Better Thermal(2531)을 켠 상태**에서 본다. 문제가 나면 2531을 먼저 끈다.
+
+### 6-C 설치 — 부착물 교체 UI (2026-10-25 10:0x ~ 10:2x)
+
+5차에서 "UnityToolkit이 4.1.5 표기"라 보류했던 묶음을, 계획대로 **의존성 단독 설치 → 게임 로그 확인 → 본 모드** 순으로 처리했다. 설치본 105 → **108개**, 파일 2322 → 2655개.
+
+- 조회에서 먼저 드러난 것: **Field Attachments 1.2.0은 `4.1.6` 정확 표기**, Scrollable Attachments 2.0.0은 `~4.1.6`이었다. 4.1.6 표기가 없는 건 UnityToolkit 2.0.2(`4.1.5`) 하나뿐이어서, 위험은 그 하나로 좁혀졌다.
+- UnityToolkit은 `BepInEx\plugins`만이 아니라 **`BepInEx\patchers`(프리패처)** 에도 들어간다. 프리패처가 어긋나면 게임이 아예 안 뜨는 형태로 드러나므로 단독 확인이 맞았다.
+- 게임을 한 번 켠 로그(09:57)에서 통과를 확인했다.
+
+```
+Loaded 1 patcher method from [UnityToolkit-Prepatcher 2.0.2.0]
+UnityToolkit-Prepatcher: Loading new version of assembly 'System.Runtime.CompilerServices.Unsafe.dll'
+Patching [System.Runtime.CompilerServices.Unsafe] with [UnityToolkit.Prepatcher.Patcher]
+Loading [Unity Toolkit 2.0.2]  /  86 plugins to load
+```
+
+- 게임 플러그인 77 → **86개**(+9). 표시명이 파일·모드명과 달라 처음 검색에 안 걸린 것이 많았다 — `Unity Toolkit`, `No Barrel Shadow`, `Realistic Insurance (client)`, `Quick Trader Load Times`, `Ref Rework`. 5-A 때와 같은 함정이라 이번에는 `Loading [` 줄 수(86)와 대조해 확정했다.
+- 로그의 `[Error]` 1건은 Direct Reload가 Fika용 패치를 못 걸었다는 것. Fika 미설치라 정상이며 [PROCEDURE.md](PROCEDURE.md)의 무시 목록에 올렸다.
+- 그 뒤 설치: Field Attachments 240파일(25.3MB, **결속**) → Scrollable Attachments 1파일. 테스트 3회 모두 `SERVER STARTED`(44·44·41초), 서버 48개 그대로, 오류 0.
+- 프로필은 설치 직전 백업과 해시 동일(`edfb23fe…`). 사용자가 게임을 켠 뒤 프로필이 바뀌었으므로 **설치 직전에 백업을 다시 떴다**(`profiles-before-stage6C-3125`, 10:15).
+- **절차에서 고칠 점(실수 기록)**: 게임이 켜져 있는 동안 설치하려고 서버를 먼저 내렸다. 설치 스크립트가 게임 실행을 잡아내 막아 줘서 파일은 건드리지 않았지만, 그 사이 게임의 서버 연결이 끊겼다. 즉시 다시 띄웠다. **서버를 내리기 전에 `EscapeFromTarkov` 프로세스를 먼저 본다.**
+- 남은 확인: 게임을 다음에 켤 때 플러그인 **88개**가 되는지, Left Alt로 부착물 카드가 뜨는지(스톡·핸드가드·손잡이 교체는 Leatherman 멀티툴 소지 필요), 부착물 목록 스크롤이 되는지.
+
+### 6-D 설치 — 상인 초상화 (2026-10-25 10:4x)
+
+Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했다. 내장 브라우저로 파일 탭을 열자 `You have to be logged in to download files`가 떴다(미로그인). 사용자 요청으로 **외부 Chrome**(이미 Nexus 로그인 상태)에서 Manual download → Slow download를 눌러 받았다. 받은 파일은 Chrome 기본 경로인 `E:\Spt_Mods\downloads\`로 떨어졌다(파일명에 Nexus 토큰이 붙은 긴 이름).
+
+- 압축을 풀어 보니 **텍스처를 덮어쓰는 방식이 아니었다**. `SPT_Runtime/user/mods/VanillaTradersRework.Reloaded/`에 DLL 1 + `avatars/` 18장이 들어가는 평범한 서버 모드다. 그래서 걱정했던 덮어쓰기 충돌이 없다 — `check-conflicts.mjs stage6-D` **CLEAN**.
+- 단계 폴더를 `stage6-D`로 따로 두고 설치(19파일, 10.3MB). `SERVER STARTED in 47s`, 서버 모드 48 → **49개**, 오류 0. 프로필 해시 동일.
+- 로그가 포르투갈어로 찍힌다. `Mod carregado com sucesso.`가 성공 신호다.
+- **초상화가 없는 상인 11명**은 원본 그대로 간다: Смотритель(등대)·APC(BTR)·Storyteller·Amonya·Harry·Gunwright·Victor Barinov·Gunsmith·PresetTrader·Ledger·Elias Ward(NATO Quartermaster). 이 모드가 다루는 건 바닐라 9명 + Lotus·Scorpion·Artem·Couturier·Croupier 등이다.
+- 제작자는 적용 후 런처의 **Settings → Clean Temp Files**를 누르라고 안내한다. `%LOCALAPPDATA%\Temp\Battlestate Games`도 `E:\Spt\cache`도 없어서 지울 캐시를 특정하지 못했다(있는 건 `user\cache\bundleHashCache.json`과 BepInEx 타입 캐시뿐이라 성격이 다르다). 초상화가 그대로면 런처에서 한 번 눌러 보는 쪽이 맞다.
+
+### 등대지기·BTR 판매 목록이 비어 있는 건 (2026-10-25 11:0x)
+
+6차로 넣은 PortableTraders 덕에 두 상인이 주 화면에 떴는데 **아무것도 팔지 않는다**는 제보. 모드 설정·SPT DB를 직접 열어 확인했다.
+
+- `database/traders/638f541a29ffd1183d187f57/assort.json`(등대지기), `656f0f98d80a697f855d34b1/assort.json`(BTR) 모두 `{"barter_scheme":{},"items":[],"loyal_level_items":{}}`. 메카닉의 같은 파일은 385KB다. 등대지기는 `sell_category: 0`에 수리·보험도 false라 **사지도 않는다**.
+- 둘은 원래 서비스·퀘스트 전용이다. 등대지기 `services.json`에 Zryachiy 지원·ExUsec 충성·교단 지원 3종(각각 선행 퀘스트), BTR에 물품 배달·택시·엄호·환승 배달 4종.
+- 즉 PortableTraders는 정상 동작이다. 설치 로그의 `30 task(s) reachable from the main menu`가 이 모드의 결과물이고, 확인은 거래 탭이 아니라 **임무 탭**에서 한다.
+- 사용자 판단으로 **품목은 채우지 않기로** 했다. 바닐라 설계를 그대로 둔다. 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.

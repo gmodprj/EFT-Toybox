@@ -1,0 +1,5 @@
+2949__RealisticInsurance-0.2.1-SPT4.1	BepInEx\plugins\RealisticInsurance\RealisticInsuranceClient.dll
+2949__RealisticInsurance-0.2.1-SPT4.1	SPT_Runtime\user\mods\RealisticInsurance\LICENSE
+2949__RealisticInsurance-0.2.1-SPT4.1	SPT_Runtime\user\mods\RealisticInsurance\README.md
+2949__RealisticInsurance-0.2.1-SPT4.1	SPT_Runtime\user\mods\RealisticInsurance\RealisticInsurance.dll
+2949__RealisticInsurance-0.2.1-SPT4.1	SPT_Runtime\user\mods\RealisticInsurance\config\config.json

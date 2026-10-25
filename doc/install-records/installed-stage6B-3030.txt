@@ -1,0 +1,4 @@
+3030__Michael-NATOQuartermaster-1.1.3	SPT_Runtime\user\mods\Michael-NATOQuartermaster\config.json
+3030__Michael-NATOQuartermaster-1.1.3	SPT_Runtime\user\mods\Michael-NATOQuartermaster\NATOQuartermaster.dll
+3030__Michael-NATOQuartermaster-1.1.3	SPT_Runtime\user\mods\Michael-NATOQuartermaster\assets\nato-quartermaster.jpg
+3030__Michael-NATOQuartermaster-1.1.3	SPT_Runtime\user\mods\Michael-NATOQuartermaster\db\base.json

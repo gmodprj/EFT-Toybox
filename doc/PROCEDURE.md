@@ -88,6 +88,7 @@
 | --- | --- | --- |
 | 게임 | `HarmonyX ... You should only patch implemented methods` | 패치 방식 안내 (UI Fixes, WTT 등) |
 | 게임 | `FixPluginTypesSerialization ... references Fika.Core which doesn't exist` | Fika 미설치라 Fika 연동 DLL 제외 |
+| 게임 | `[Error][DirectReload] Patch FAILED to enable: FikaHostReloadMirror — Fika ObservedFirearmController not found` | 같은 이유. **Error 등급으로 찍히지만 정상**이다. Fika를 쓰지 않으면 이 패치는 걸 대상이 없다 |
 | 게임 | `WTT-ClientCommonLib [HideoutIcons]/[MarkTextures] No ... in manifest` | 해당 리소스를 쓰는 모드 없음 |
 | 게임 | `DanW-OpenSesame Cannot find translations for locale "xx"` | 번역 없는 언어는 영어 사용(한국어는 해당 없음) |
 | 서버 | `[SVM] Initialization cancelled: Preset or/and Loader is not found` (Error 등급) | 프리셋 미생성. 지금은 해당 없음 |

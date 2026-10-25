@@ -1,0 +1,117 @@
+{
+  "stage": "stage6",
+  "spt": "4.1.6",
+  "note": "6차 — 총기·파츠/상인. Forge(sp-mod.com) + GitHub 릴리스. Nexus 것은 수동 다운로드",
+  "mods": [
+    {
+      "group": "6A-parts",
+      "id": 1358,
+      "name": "BrightLasers",
+      "version": "3.0.0",
+      "size": 12646,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1358/brightlasers/3.0.0"
+    },
+    {
+      "group": "6A-parts",
+      "id": 2780,
+      "name": "No Barrel Shadow",
+      "version": "2.0.1",
+      "size": 10035,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2780/no-barrel-shadow/2.0.1"
+    },
+    {
+      "group": "6A-parts",
+      "id": 2917,
+      "name": "Vanguard",
+      "version": "2.0.0",
+      "size": 18437771,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2917/vanguard/2.0.0"
+    },
+    {
+      "group": "6A-trader",
+      "id": 3194,
+      "name": "OpenBarters",
+      "version": "1.0.1",
+      "size": 14299,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3194/openbarters/1.0.1"
+    },
+    {
+      "group": "6A-trader",
+      "id": 2736,
+      "name": "Moe-TradeMarker",
+      "version": "1.2.6",
+      "size": 101149,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2736/moe-trademarker/1.2.6"
+    },
+    {
+      "group": "6A-trader",
+      "id": 3014,
+      "name": "Ref Rework",
+      "version": "1.0.0",
+      "size": 17428,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3014/ref-rework/1.0.0"
+    },
+    {
+      "group": "6A-trader",
+      "id": 2949,
+      "name": "Realistic Insurance",
+      "version": "0.2.1",
+      "size": 39205,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2949/realistic-insurance/0.2.1"
+    },
+    {
+      "group": "6A-trader",
+      "id": 3200,
+      "name": "All Weapons Flea",
+      "version": "1.0.1",
+      "size": 8046,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3200/all-weapons-flea/1.0.1"
+    },
+    {
+      "group": "6B-bind",
+      "id": 3030,
+      "name": "NATO Quartermaster — Western Gear Trader, Presets & Quest Unlocks",
+      "version": "1.1.3",
+      "size": 362069,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/3030/nato-quartermaster-western-gear-trader-presets-quest-unlocks/1.1.3"
+    },
+    {
+      "group": "6B-bind",
+      "id": 2930,
+      "name": "ECOTI - Enhanced Clip-On Thermal Imager",
+      "version": "3.4.2",
+      "size": 33006918,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2930/ecoti-enhanced-clip-on-thermal-imager/3.4.2"
+    },
+    {
+      "group": "6A-trader",
+      "id": "gh-portabletraders",
+      "name": "PortableTraders (GitHub)",
+      "version": "1.1.0",
+      "size": 15954,
+      "profileBinding": false,
+      "link": "https://github.com/wangbofan/SPT-PortableTraders/releases/download/v1.1.0/PortableTraders-1.1.0.zip",
+      "homepage": "https://github.com/wangbofan/SPT-PortableTraders"
+    },
+    {
+      "group": "6A-trader",
+      "id": "gh-quicktraderloadtimes",
+      "name": "Quick Trader Load Times (GitHub)",
+      "version": "1.0.0",
+      "size": 39963,
+      "profileBinding": false,
+      "link": "https://github.com/JoelHauser/QuickTraderLoadTimes/releases/download/v1.0.0/QuickTraderLoadTimes-1.0.0.zip",
+      "homepage": "https://github.com/JoelHauser/QuickTraderLoadTimes"
+    }
+  ]
+}
