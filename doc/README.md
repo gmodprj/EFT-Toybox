@@ -11,6 +11,7 @@
 | [WORKLOG.md](WORKLOG.md) | 단계별 작업 이력, 발생한 문제와 조치, 바로잡은 안내 |
 | [PROCEDURE.md](PROCEDURE.md) | 모드 추가 절차(조회→다운로드→설치→검증→되돌리기), SVM 메모, 무시해도 되는 로그 메시지 |
 | [CANDIDATES-416.md](CANDIDATES-416.md) | 4.1.6 호환 미설치 후보 136개 — 분야별 버전·용량·결속·의존성 |
+| [CANDIDATES-GUN-TRADER.md](CANDIDATES-GUN-TRADER.md) | 총기·파츠·상인 재조사(2026-10-25) — 기존 후보 문서에 없던 27개, 넣기 전에 정할 것 |
 | [PLAN-STAGE5.md](PLAN-STAGE5.md) | 5차 설치 계획과 실행 결과 — 설치 52 / 보류 32 / 제외 52, 단계별 결과 |
 | [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 — 구조, 사전 형식, 빌드·설치 |
 
@@ -21,7 +22,7 @@
 | `install-records/` | 설치 단위별 설치 파일 목록 `installed-<Tag>.txt` (`모드폴더<TAB>E:\Spt 기준 경로`). 되돌릴 때 이 파일 목록만 삭제 |
 | `download/` | 단계별 다운로드 목록 `manifest-stage*.json`, 결과·크기 검증 `download-results*.json` (1차 결과는 `download-results.json`), 5차 경로 충돌 검사 `conflict-check-stage5-*.txt` |
 | `server-tests/` | 설치 직후 테스트 서버 출력. `server-test1~7`은 1~2차, `server-test-<Tag>`는 2차 B 이후 |
-| `stage2-survey/` | 2·3차 후보 76개 Forge 조회 결과, 5차 후보 조회(`survey-candidates-416.json`, `candidate-groups-416.json`, `survey-deps-416.json`) |
+| `stage2-survey/` | 2·3차 후보 76개 Forge 조회 결과, 5차 후보 조회(`survey-candidates-416.json`, `candidate-groups-416.json`, `survey-deps-416.json`), 총기·상인 재조사 원자료(`sweep-416-gun-trader.json`) |
 
 설치 기록에 `installed-<Tag>.dirs.txt`가 있으면 그 단계에서 **빈 폴더**를 만들었다는 뜻이다(모드가 폴더 존재를 요구하는 경우). 되돌릴 때 함께 지운다.
 
