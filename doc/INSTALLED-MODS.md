@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **162개**, 설치 파일 **3031개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 106개 (2026-10-25 15:32 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) — 그 뒤 SOMF 제거(서버 전용)와 7-B·7-D 설치가 있어 다음 실행 때 다시 센다 / 서버 모드 로드: 92개 (2026-10-25 The Quartermaster 제거 후 사용자 서버, 오류 0)
+- 설치된 모드: **165개**, 설치 파일 **3255개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 106개 (2026-10-25 15:32 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) — 그 뒤 SOMF 제거(서버 전용)와 7-B·7-D 설치가 있어 다음 실행 때 다시 센다 / 서버 모드 로드: 95개 (2026-10-25 7-E 테스트 서버, 오류 0)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -146,7 +146,7 @@
 | [PortableTraders (GitHub)](https://github.com/wangbofan/SPT-PortableTraders) | 1.1.0 | 서버 | - | 2 | `stage6A-portabletraders` |
 | [Quick Trader Load Times (GitHub)](https://github.com/JoelHauser/QuickTraderLoadTimes) | 1.0.0 | 게임+서버 | - | 2 | `stage6A-quicktraderloadtimes` |
 
-## 7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 중형 12)
+## 7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)
 
 | 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
 | --- | --- | --- | --- | --- | --- |
@@ -191,6 +191,10 @@
 | [Peacemaker Continued](https://sp-mod.com/mod/2414) | 2.1.0 | 서버 | **결속** | 18 | `stage7D-2414` |
 | [Better Rear Sights](https://sp-mod.com/mod/1591) | 1.8.0 | 서버 | **결속** | 43 | `stage7D-1591` |
 | [Fold That Stock](https://sp-mod.com/mod/2691) | 2.1.0 | 게임+서버 | **결속** | 25 | `stage7D-2691` |
+| [WTT - Pack 'n' Strap](https://sp-mod.com/mod/1278) | 2.1.1 | 게임+서버 | **결속** | 60 | `stage7E-1278` |
+| [Kalashnikov Enhanced Modding ](https://sp-mod.com/mod/3010) | 4.1.2 | - | **결속** | 0 | **미설치** |
+| [Tactical Gear Component](https://sp-mod.com/mod/1125) | 3.0.0 | 서버 | **결속** | 137 | `stage7E-1125` |
+| [Painter](https://sp-mod.com/mod/1025) | 3.0.0 | 서버 | **결속** | 27 | `stage7E-1025` |
 | [LMSP - Let Me Switch Plates](https://sp-mod.com/mod/2814) | 1.0.1 | 게임 | - | 1 | `stage7A-2814` |
 | [Unrestricted Armor Plate](https://sp-mod.com/mod/1878) | 2.1.0 | 서버 | - | 3 | `stage7A-1878` |
 | [Armor Expert](https://sp-mod.com/mod/3106) | 3.1.0 | 게임 | - | 1 | `stage7A-3106` |

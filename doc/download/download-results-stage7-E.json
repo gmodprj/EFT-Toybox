@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1025,
+    "name": "Painter",
+    "version": "3.0.0",
+    "file": "1025__Painter_3.0.0.7z",
+    "bytes": 22220369,
+    "expected": 22220369,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 3
+  },
+  {
+    "id": 3010,
+    "name": "Kalashnikov Enhanced Modding ",
+    "version": "4.1.2",
+    "file": "3010__KalashnikovEnhancedModding-4.1.2.zip",
+    "bytes": 272992528,
+    "expected": 272992528,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 11
+  },
+  {
+    "id": 1278,
+    "name": "WTT - Pack 'n' Strap",
+    "version": "2.1.1",
+    "file": "1278__WTT-PackNStrap-2.1.1.7z",
+    "bytes": 316944826,
+    "expected": 316944826,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 13
+  },
+  {
+    "id": 1125,
+    "name": "Tactical Gear Component",
+    "version": "3.0.0",
+    "file": "1125__TGC_3.0.0.7z",
+    "bytes": 656654851,
+    "expected": 656654851,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 29
+  }
+]

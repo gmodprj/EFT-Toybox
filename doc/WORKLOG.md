@@ -463,3 +463,15 @@ The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하
 - 서버를 내린 뒤 편집했다. 서버가 프로필을 메모리에 들고 있어, 켠 채로 고치면 종료할 때 되살아날 수 있다.
 - 결과: 재시작한 서버에서 경고 0건, 오류 0건, 모드 92개. 프로필은 상인 29명·대화 13건·레벨 15로 멀쩡하다. `removeModItemsFromProfile`은 **false로 되돌렸다**(켜 두면 앞으로 모드를 뺄 때마다 조용히 지워진다).
 - 백업: `backup/profiles-before-profile-cleanup/`에 프로필 2벌과 `core.json.bak`.
+
+### 7-E 설치 — Pack 'n' Strap + Painter·Tactical Gear Component (2026-10-25 18:2x ~ 18:3x)
+
+사용자 결정으로 **Kalashnikov Enhanced Modding(3010)은 제외**하고 둘만 넣었다(받아 둔 파일은 `downloads/stage7-E`·`extracted/stage7-E`에 남겨 뒀고, 매니페스트에 제외 표시). 설치본 162 → **165개**, 파일 3031 → 3255개, 서버 모드 92 → **95개**.
+
+- 다운로드 4개 1,210MB 전부 바이트 일치. `check-conflicts.mjs stage7-E` **CLEAN**.
+- **WTT Pack 'n' Strap 2.1.1** — 60파일 302MB. `SERVER STARTED in 77s`, 오류 0.
+- **Painter 3.0.0 + Tactical Gear Component 3.0.0** — 서로를 요구하므로 TGC(137파일 658MB)를 `-SkipTest`로 먼저 복사하고 Painter(27파일)를 넣은 뒤 한 번에 테스트. `SERVER STARTED in 77s`, 오류 0. 둘 다 `Mod loaded successfully.`
+- 설치 후 사용자 서버: 모드 **95개**, 모드 로드 → 웹서버 **69초**(7-E 전 67초). 1.2GB가 늘었는데 시작 시간은 2초 차이다.
+- **새로 생긴 오류 4건** — `ItemBaseClassService: Could not add 668ff5bde41a0cce3b142464 / 6699546547ad52e0fccf6da9 to cache, it does not exist in the item database!` (플리마켓 상품 생성 단계). 추적해 보니 **Painter의 `db/assort.json`이 어디에도 없는 아이템 두 종을 팔려고 올려 둔 것**이다. 설치된 모드 전체 JSON을 훑어도 그 두 tpl을 정의하는 곳이 없고(같은 제작자의 다른 팩에 있는 것으로 보인다), `barter_scheme`에 가격도 없는 **죽은 항목 4줄**(두 종 × 2)이다.
+  - 영향: 시작 때마다 오류 4건 + 그 두 칸은 살 수 없다. 서버는 계속 진행한다.
+  - 고치려면 Painter의 assort에서 그 4줄을 지우면 된다(모드 데이터 수정이라 보류 중).
