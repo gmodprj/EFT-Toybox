@@ -551,3 +551,17 @@ Forge 에 4.1.6 호환 모드가 없어 직접 만들었다. 소스는 [../src/H
 - `helmet_top`·`helmet_back` 은 **내장 방탄판 자리**(36종)다. 합치면 아무 헬멧에 아무 방탄판이 들어가 방어력이 크게 달라진다. 요청이 "합집합"이었으므로 **기본값은 포함**으로 두고, 빼는 설정을 README 에 적어 뒀다.
 - `mod_equipment_000·001·002` 는 번호의 뜻이 헬멧마다 다르다(Ops-Core FAST 는 001 이 RAC 헤드셋, 002 가 SLAAP 방탄판). 그래서 번호를 떼어 한 묶음으로 보는 `MergeEquipmentSlots` 는 **기본 꺼짐**이다.
 - 모드를 뺄 때 주의: 이 모드로만 가능했던 조합을 끼운 채 빼면 필터에 없는 자식을 가진 헬멧이 남는다.
+
+#### 빌드·설치·검증까지 마쳤다 (2026-10-26, 이어서)
+
+- `winget install Microsoft.DotNet.SDK.10` 으로 **SDK 10.0.402** 를 깔았다(런타임 10.0.13 은 이미 있었다). 그 전까지 SDK 는 8.0.426 뿐이었다.
+- 첫 빌드에서 오류 24개가 났고 둘 다 메타데이터만 보고는 알 수 없던 것이었다.
+  1. `ImplicitUsings` 를 켜지 않아 `Task`·`List`·`Dictionary`·`HashSet`·`CancellationToken` 을 못 찾았다 → csproj 에 `<ImplicitUsings>enable</ImplicitUsings>`.
+  2. `IModMetadata` 의 속성은 모두 **`init` 전용**이다. `set` 으로 두면 구현으로 인정되지 않아 CS8854·CS0738 이 쏟아진다 → 전부 `{ get; init; }` 로, `Contributors`·`Incompatibilities`·`ModDependencies`·`Url` 은 nullable 로 맞췄다.
+- 다시 빌드: **오류 0 · 경고 0**. `tools/install-helmetslotunion.ps1` 로 `SPT_Runtime\user\mods\HelmetSlotUnion\` 에 DLL(15,872B)과 `config.jsonc` 를 넣었다.
+- 서버를 띄워 확인했다(`server-tests/server-test8-helmetslotunion.out.txt`):
+  - `모드 Helmet Slot Union 버전 0.1.0 (GUID: spt.helmetslotunion | targets SPT: ~4.1.6) by Qahnaarin 불러옴`
+  - `[HelmetSlotUnion] 헬멧 64종, 칸 묶음 11개. 281개 칸에 항목 6224개를 더했다.`
+  - **Node 로 미리 센 값(바뀐 칸 281, 더한 항목 6224)과 정확히 같다.** 알고리즘 검증이 실측과 맞았다.
+  - 서버 모드 **96개**(이전 95), stderr 0바이트, `서버가 시작되었습니다` 까지 정상. `Not an error, don't report it` 3줄은 이전 테스트에도 있던 것으로 이 모드와 무관하다.
+- 아직 안 한 것: **게임에서 실제로 끼워 보지는 않았다.** 필터가 넓어진 것은 서버 로그로 확인했지만, 모양이 겹쳐 3D 로 어색한 조합이 있는지는 플레이로만 알 수 있다.

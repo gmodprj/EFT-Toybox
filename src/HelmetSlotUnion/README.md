@@ -67,7 +67,7 @@
 
 ## 빌드
 
-SPT 4.1.6 서버는 `net10.0`(`SPT.Server.runtimeconfig.json` 의 `tfm`)이라 **.NET 10 SDK 가 필요하다.** SDK 8 로 빌드하면 `NETSDK1045` 로 멈춘다.
+SPT 4.1.6 서버는 `net10.0`(`SPT.Server.runtimeconfig.json` 의 `tfm`)이라 **.NET 10 SDK 가 필요하다.** SDK 8 로 빌드하면 `NETSDK1045` 로 멈춘다. 이 PC 는 `winget install Microsoft.DotNet.SDK.10` 로 10.0.402 를 깔아 뒀다.
 
 ```powershell
 dotnet build src/HelmetSlotUnion -c Release
