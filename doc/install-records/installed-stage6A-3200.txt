@@ -1,0 +1,3 @@
+3200__AllWeaponsFlea_SPT_4.1.6_v1.0.1	SPT_Runtime\user\mods\AllWeaponsFlea\AllWeaponsFlea.dll
+3200__AllWeaponsFlea_SPT_4.1.6_v1.0.1	SPT_Runtime\user\mods\AllWeaponsFlea\LICENSE
+3200__AllWeaponsFlea_SPT_4.1.6_v1.0.1	SPT_Runtime\user\mods\AllWeaponsFlea\README.md

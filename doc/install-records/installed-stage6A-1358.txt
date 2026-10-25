@@ -1,0 +1,4 @@
+1358__acidphantasm-brightlasers	BepInEx\plugins\acidphantasm-brightlasers\acidphantasm-brightlasers.dll
+1358__acidphantasm-brightlasers	BepInEx\plugins\acidphantasm-brightlasers\LICENSE
+1358__acidphantasm-brightlasers	SPT_Runtime\user\mods\acidphantasm-brightlasers\acidphantasm-brightlasers.dll
+1358__acidphantasm-brightlasers	SPT_Runtime\user\mods\acidphantasm-brightlasers\LICENSE

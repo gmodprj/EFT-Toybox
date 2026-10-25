@@ -1,0 +1,10 @@
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\bundles.json
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\Vanguard-Mod.dll
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\bundles\vanguard_common.bundle
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\bundles\mods\lights\wmlx_black.bundle
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\bundles\mods\lights\wmlx_fde.bundle
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\bundles\mods\suppressors\sandman_x_black.bundle
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\bundles\mods\suppressors\sandman_x_fde.bundle
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\db\CustomItems\Lights.json
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\db\CustomItems\Suppressors.json
+2917__Vanguard-2.0.0	SPT_Runtime\user\mods\Vanguard-Mod\db\CustomLocales\en.json

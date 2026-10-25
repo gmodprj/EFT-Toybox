@@ -100,7 +100,8 @@
       "version": "1.1.0",
       "size": 15954,
       "profileBinding": false,
-      "link": "https://github.com/wangbofan/SPT-PortableTraders/releases/download/v1.1.0/PortableTraders-1.1.0.zip"
+      "link": "https://github.com/wangbofan/SPT-PortableTraders/releases/download/v1.1.0/PortableTraders-1.1.0.zip",
+      "homepage": "https://github.com/wangbofan/SPT-PortableTraders"
     },
     {
       "group": "6A-trader",
@@ -109,7 +110,8 @@
       "version": "1.0.0",
       "size": 39963,
       "profileBinding": false,
-      "link": "https://github.com/JoelHauser/QuickTraderLoadTimes/releases/download/v1.0.0/QuickTraderLoadTimes-1.0.0.zip"
+      "link": "https://github.com/JoelHauser/QuickTraderLoadTimes/releases/download/v1.0.0/QuickTraderLoadTimes-1.0.0.zip",
+      "homepage": "https://github.com/JoelHauser/QuickTraderLoadTimes"
     }
   ]
 }
