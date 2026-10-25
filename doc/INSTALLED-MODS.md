@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **149개**, 설치 파일 **2894개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 106개 (SPT 기본 5 + 모드 100 + 자체 제작 1, 2026-10-25 15:32 `LogOutput.log` 확인, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 80개 (2026-10-25 7-C 테스트 서버, 오류 0)
+- 설치된 모드: **148개**, 설치 파일 **2855개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 106개 (SPT 기본 5 + 모드 100 + 자체 제작 1, 2026-10-25 15:32 `LogOutput.log` 확인, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 79개 (2026-10-25 SOMF 제거 후 사용자 서버, 오류 0)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -188,7 +188,7 @@
 | [Quick Aim](https://sp-mod.com/mod/2985) | 1.0.0 | 게임 | - | 1 | `stage7A-2985` |
 | [All In Weapon: Unslotted](https://sp-mod.com/mod/2576) | 1.2.0 | 서버 | - | 3 | `stage7A-2576` |
 | [Item Limits Begone!](https://sp-mod.com/mod/2524) | 1.1.0 | 서버 | - | 2 | `stage7A-2524` |
-| [SOMF - SitOnMyFace](https://sp-mod.com/mod/3105) | 0.1.2 | 서버 | - | 39 | `stage7A-3105.dirs`, `stage7A-3105` |
+| [SOMF - SitOnMyFace](https://sp-mod.com/mod/3105) | 0.1.2 | - | - | 0 | **미설치** |
 | [ArmorInfoPlus](https://sp-mod.com/mod/3049) | 1.0.0 | 게임 | - | 2 | `stage7A-3049` |
 
 ## 다른 경로로 설치된 것

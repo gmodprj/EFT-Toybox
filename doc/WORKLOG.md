@@ -399,3 +399,13 @@ Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했
 - **새 상호작용 하나** — `[RealisticInsurance] trader 'Armorer' ... not listed in insurance.json returnChancePercent ... will use the '90%' fallback`. 7-C에서 넣은 AllGoodsTrader의 보험 상인을 Realistic Insurance가 모르기 때문에 **그 상인 보험만 90% 고정**으로 돌아간다. 오류는 아니다.
 - 수치로 확인된 적용 범위: Definitive Weapon Variants **커스텀 아이템 776개**, BETTER ATTACHMENTS 부착물 **1,092개**, Less Restricting Headwear 품목 182개, Realistic Suppressors 소음기 103개, Cobra's Durability Tweaks 무기 932개(내구도 소모 **12%**), Slimmer Magazines 탄창 44개, Jero Backpack 배낭 36개, Foldables 배낭 46·조끼 36·헤드폰 21, Limitless **26,179개 품목**, Ultimate Flea 레벨 락 1,691개 + 카테고리 17종, bluehead AIO 품목 6,261개(매물 7,178), All Weapons Flea **무기 925종**(6차 때 238종 → 총기 팩이 늘어 확대).
 - 서버 시작에서 가장 오래 걸리는 것은 **ODT's Item Info의 아이템 처리 53.5초**다(6,728개). 시작이 느려진 주된 이유.
+
+### SOMF 제거 (2026-10-25 16:1x)
+
+Less Restricting Headwear와 역할이 겹쳐 아무 일도 하지 않게 된 SOMF를 사용자 판단으로 뺐다. 설치본 149 → **148개**, 파일 2894 → 2855개, 서버 모드 80 → **79개**.
+
+- 게임이 켜져 있는 동안은 **서버가 `SitOnMyFace.dll`을 잠그고 있어 삭제가 안 된다**는 것을 `[IO.File]::Open`으로 실제 확인했다. 게임 종료 → 서버 종료 → 잠김 해제 확인 후 진행.
+- `installed-stage7A-3105.txt`의 **37개 전부** 삭제(누락 0), `.dirs.txt`의 빈 폴더 2개도 삭제. 남은 것은 빈 폴더뿐이어서 모드 폴더째 지웠고, `sitonmyface`·`somf`로 전수 검색해 잔류 0 확인.
+- **압축에 섞여 온 것들이 함께 빠졌다** — `SPT_Runtime\desktop.ini`(제작자 PC의 폴더 설정 파일), `Mod.cs`, `SitOnMyFace.csproj`, `bin/Release`·`obj/Release` 빌드 산출물. `desktop.ini`는 경로가 `SPT_Runtime/` 아래라 `check-conflicts.mjs`가 정상 설치 경로로 보고 통과시켰다. **검사기가 걸러내지 못하는 유형**이니 앞으로 해제본 파일 목록을 눈으로 볼 때 이런 잡파일을 함께 본다.
+- 설치 기록은 지우지 않고 `doc/install-records/removed/`로 옮겼다. 생성기는 `install-records` 바로 아래만 읽으므로 목록에서 **미설치**로 표시된다(매니페스트에는 남는다).
+- 사용자 서버 재가동 확인: 모드 **79개**, `[SOMF]` 줄 0건, Error·Critical 0건.
