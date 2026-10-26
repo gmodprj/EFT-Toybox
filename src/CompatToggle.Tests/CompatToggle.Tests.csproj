@@ -22,6 +22,7 @@
   <ItemGroup>
     <Compile Include="..\CompatToggle\ToggleSet.cs" />
     <Compile Include="..\CompatToggle\CompatGate.cs" />
+    <Compile Include="..\CompatToggle\SlotClassifier.cs" />
     <Compile Include="*.cs" />
   </ItemGroup>
 

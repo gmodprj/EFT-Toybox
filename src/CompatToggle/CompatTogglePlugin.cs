@@ -57,6 +57,8 @@ namespace CompatToggle
             _ignoreConflicts = Config.Bind("Compatibility", "Ignore conflicts", true,
                 "Ignore ConflictingItems between weapons and mods. Helmets and face gear are left alone, so mods that author those conflicts keep working.");
 
+            new Patches.SlotCompatibilityPatch().Enable();
+
             Logger.LogInfo("Compat Toggle loaded.");
         }
     }
