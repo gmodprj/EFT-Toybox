@@ -7,6 +7,14 @@ namespace CompatToggle.Patches
     /// <summary>
     /// 탄창 내부에 들어가는 탄약 묶음. 약실과 무기의 탄창 슬롯은 <see cref="Slot"/>이므로
     /// <see cref="SlotCompatibilityPatch"/>가 이미 처리한다.
+    ///
+    /// <see cref="StackSlot"/>은 <see cref="Magazine"/>과 <c>AmmoBox</c>가 모두 만들므로
+    /// 숙주가 탄창인지 확인한다. 그러지 않으면 탄약 상자에 탄약이 아닌 물건이 들어간다.
+    ///
+    /// 탄을 채우는 경로는 <c>StackSlot.GetMaxAddCount</c>를 지나 이 판정에 닿는다. 그래서
+    /// <c>Magazine.CheckCompatibility(Ammo)</c>는 패치하지 않는다 — 그쪽은 봇의 재장전
+    /// 판단(<c>BotReloadOnlyBarrel</c>, <c>BotReloadRevolver</c>)과 탄약 선택 UI 목록까지
+    /// 함께 지나가므로, 플레이어 조작에 필요하지 않은데 봇 동작을 바꾼다.
     /// </summary>
     public class StackSlotCompatibilityPatch : ModulePatch
     {
@@ -23,42 +31,17 @@ namespace CompatToggle.Patches
                 return;
             }
 
-            if (!CompatGate.ShouldForceAllow(CompatTogglePlugin.Toggles, SlotKind.CartridgeStack))
+            var allow = CompatGate.ShouldForceAllowCartridgeStack(
+                CompatTogglePlugin.Toggles,
+                SlotClassifier.HostIsMagazine(__instance));
+
+            if (!allow)
             {
                 return;
             }
 
             __result = true;
             CompatTogglePlugin.LogForced("CartridgeStack", __instance?.ID, item?.TemplateId.ToString());
-        }
-    }
-
-    /// <summary>
-    /// 탄창이 그 탄약을 받는지. 인벤토리에서 끌어다 놓는 경로뿐 아니라 탄을 채우는
-    /// 장전 경로도 이 판정을 지나므로, 토글은 레이드 중에도 동작한다(설계 §5.3).
-    /// </summary>
-    public class MagazineCompatibilityPatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return typeof(Magazine).GetMethod(nameof(Magazine.CheckCompatibility), new[] { typeof(Ammo) });
-        }
-
-        [PatchPostfix]
-        private static void Postfix(Magazine __instance, Ammo ammo, ref bool __result)
-        {
-            if (__result)
-            {
-                return;
-            }
-
-            if (!CompatGate.ShouldForceAllow(CompatTogglePlugin.Toggles, SlotKind.CartridgeStack))
-            {
-                return;
-            }
-
-            __result = true;
-            CompatTogglePlugin.LogForced("Magazine", __instance?.TemplateId.ToString(), ammo?.TemplateId.ToString());
         }
     }
 }

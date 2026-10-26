@@ -35,7 +35,8 @@ namespace CompatToggle.Tests
         {
             var t = new ToggleSet(false, true, true, true, true, true, true);
             Assert.False(CompatGate.ShouldForceAllow(t, SlotKind.WeaponBody));
-            Assert.False(CompatGate.ShouldIgnoreConflict(t, subjectIsWeaponOrMod: true));
+            Assert.False(CompatGate.ShouldIgnoreConflict(t, subjectIsWeaponOrMod: true, hostIsWeapon: true));
+            Assert.False(CompatGate.ShouldForceAllowCartridgeStack(t, hostIsMagazine: true));
         }
 
         [Fact]
@@ -52,12 +53,36 @@ namespace CompatToggle.Tests
         [Fact]
         public void Conflicts_are_ignored_only_for_weapons_and_mods()
         {
-            Assert.True(CompatGate.ShouldIgnoreConflict(AllOn, subjectIsWeaponOrMod: true));
-            Assert.False(CompatGate.ShouldIgnoreConflict(AllOn, subjectIsWeaponOrMod: false));
+            Assert.True(CompatGate.ShouldIgnoreConflict(AllOn, subjectIsWeaponOrMod: true, hostIsWeapon: true));
+            Assert.False(CompatGate.ShouldIgnoreConflict(AllOn, subjectIsWeaponOrMod: false, hostIsWeapon: true));
         }
 
         [Fact]
         public void Conflicts_off_ignores_nothing()
-            => Assert.False(CompatGate.ShouldIgnoreConflict(AllOff, subjectIsWeaponOrMod: true));
+            => Assert.False(CompatGate.ShouldIgnoreConflict(AllOff, subjectIsWeaponOrMod: true, hostIsWeapon: true));
+
+        /// <summary>
+        /// 헬멧에 끼우는 야투경·레일 어댑터는 Mod 다(NightVision → SightMod → FunctionalMod → Mod,
+        /// Mount → GearMod → Mod). 그래서 대상 아이템만 보면 헬멧 쪽 충돌까지 무시된다 —
+        /// 설계 목표 5가 깨지는 자리다. 숙주가 무기일 때만 무시해야 한다.
+        /// </summary>
+        [Fact]
+        public void Conflicts_on_a_helmet_host_are_never_ignored()
+            => Assert.False(CompatGate.ShouldIgnoreConflict(AllOn, subjectIsWeaponOrMod: true, hostIsWeapon: false));
+
+        /// <summary>
+        /// StackSlot 은 Magazine 과 AmmoBox 가 모두 만든다. 탄창 토글이 탄약 상자까지
+        /// 열어버리면 보관 제한이 무너진다.
+        /// </summary>
+        [Fact]
+        public void Cartridge_stacks_open_only_inside_magazines()
+        {
+            Assert.True(CompatGate.ShouldForceAllowCartridgeStack(AllOn, hostIsMagazine: true));
+            Assert.False(CompatGate.ShouldForceAllowCartridgeStack(AllOn, hostIsMagazine: false));
+        }
+
+        [Fact]
+        public void Cartridge_stacks_stay_closed_when_the_toggle_is_off()
+            => Assert.False(CompatGate.ShouldForceAllowCartridgeStack(AllOff, hostIsMagazine: true));
     }
 }

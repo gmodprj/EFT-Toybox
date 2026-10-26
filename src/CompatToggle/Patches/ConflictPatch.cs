@@ -24,20 +24,25 @@ namespace CompatToggle.Patches
         }
 
         [PatchPostfix]
-        private static void Postfix(Item item, ref Option<bool> __result)
+        private static void Postfix(Slot __instance, Item item, ref Option<bool> __result)
         {
             if (!__result.Failed)
             {
                 return;
             }
 
-            if (!CompatGate.ShouldIgnoreConflict(CompatTogglePlugin.Toggles, SlotClassifier.IsWeaponOrMod(item)))
+            var ignore = CompatGate.ShouldIgnoreConflict(
+                CompatTogglePlugin.Toggles,
+                SlotClassifier.IsWeaponOrMod(item),
+                SlotClassifier.HostIsWeapon(__instance));
+
+            if (!ignore)
             {
                 return;
             }
 
             __result = true;
-            CompatTogglePlugin.LogForced("Conflict", null, item?.TemplateId.ToString());
+            CompatTogglePlugin.LogForced("Conflict", __instance?.ID, item?.TemplateId.ToString());
         }
     }
 }

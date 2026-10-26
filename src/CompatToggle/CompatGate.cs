@@ -58,12 +58,25 @@ namespace CompatToggle
         }
 
         /// <summary>
-        /// ConflictingItems 충돌을 무시해야 하는가. 무기·부품에만 적용한다 —
-        /// 헬멧·안면 장비의 충돌은 그것을 써넣은 모드들의 의도이므로 건드리지 않는다.
+        /// ConflictingItems 충돌을 무시해야 하는가.
+        ///
+        /// 설치하려는 아이템이 무기·부품인 것만으로는 부족하다. 헬멧에 끼우는 야투경과
+        /// 레일 어댑터도 <c>Mod</c>이기 때문이다(NightVision → SightMod → FunctionalMod → Mod,
+        /// Mount → GearMod → Mod). 그래서 숙주가 무기인지도 함께 본다 — 그러지 않으면
+        /// 헬멧 모드들이 의도를 갖고 써넣은 충돌까지 가려버린다.
         /// </summary>
-        public static bool ShouldIgnoreConflict(in ToggleSet toggles, bool subjectIsWeaponOrMod)
+        public static bool ShouldIgnoreConflict(in ToggleSet toggles, bool subjectIsWeaponOrMod, bool hostIsWeapon)
         {
-            return toggles.Master && toggles.IgnoreConflicts && subjectIsWeaponOrMod;
+            return toggles.Master && toggles.IgnoreConflicts && subjectIsWeaponOrMod && hostIsWeapon;
+        }
+
+        /// <summary>
+        /// 탄약 묶음 자리를 열어야 하는가. <c>StackSlot</c>은 탄창과 탄약 상자가 모두 만들므로,
+        /// 숙주가 탄창일 때만 연다 — 그러지 않으면 탄약 상자의 보관 제한까지 무너진다.
+        /// </summary>
+        public static bool ShouldForceAllowCartridgeStack(in ToggleSet toggles, bool hostIsMagazine)
+        {
+            return hostIsMagazine && ShouldForceAllow(toggles, SlotKind.CartridgeStack);
         }
     }
 }
