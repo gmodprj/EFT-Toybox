@@ -705,3 +705,15 @@ JSON 이 아닌 `//` 줄 주석은 이 방법으로도 살릴 수 없다. 그래
 **구조.** 저장·알림이 패널마다 되풀이되지 않도록 `SaveResult` 와 `SaveBar` 로 뺐다(처음 쓸 때 `Store.Save` 를 두 번 부르는 실수를 했고, 한곳으로 모으며 고쳤다). 문자열 목록 ↔ 여러 줄 입력칸 변환은 `TextLines` 로 뺐다. `ConfigStore` 의 키는 폴더명이 아니라 대상 식별자가 되어 모드 하나가 설정 파일을 여럿 가질 수 있다.
 
 실측: 서버 오류 0, 페이지 200·32,522 바이트, `mud-tab` 9개.
+
+#### 개조 화면에 관계없는 부품까지 나오던 이유 (2026-10-26)
+
+"총기 개조·프리셋에서 부품이란 부품이 다 나온다" 는 지적을 받고 `AllinWeaponUnslotted` 의 IL 을 읽었다.
+
+`ChangeItems.GetSlotCategories(List<MongoId>)` 는 칸에 원래 들어가던 tpl 들을 아이템 테이블에서 찾아 각각의 **`Parent`(분류 노드 id)** 를 모은다. `GetItemsInCategory` 는 그 분류에 속한 **모든** 아이템을 돌려주고, `RelaxWeaponFilters` 가 그것을 칸 필터에 넣는다(`mod_core` 는 건너뛰고 `mod_magazine` 은 `FckCalibers` 가 따로 본다).
+
+즉 이 모드의 확장 단위는 "같은 분류"다. AK 핸드가드 칸에 M4·MP5 핸드가드가 나오는 것은 버그가 아니라 설계다. `FckALL` 은 그보다 한 단계 더 센 것(분류를 가리지 않고 전부)이고 원래 꺼져 있었으므로, 더 줄이려면 분류 확장 자체를 끄는 수밖에 없다 — 그게 곧 바닐라 필터다.
+
+**이 모드에는 "같은 총 계열만" 같은 중간 단계가 없다.** 분류별로 골라 넓히려면 우리가 따로 만들어야 한다.
+
+조치: `FckWeapons` 를 껐다(`FckMods` 는 사용자가 이미 꺼둔 상태였다). 그 모드가 남기는 로그가 `Fcked: weapons, mods, chambers, calibers, magazines` 에서 `Fcked: chambers,` 로 바뀐 것으로 확인했다. 서버 오류 0.
