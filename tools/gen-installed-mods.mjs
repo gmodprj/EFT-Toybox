@@ -42,7 +42,7 @@ const side = (files) => {
 };
 const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)', 8: '8차 — OP·AI 동료·HUD 포팅본 (8-A 5 + 8-B 3 + 8-C 3 + 8-D 치트 2 + 8-E AI 동료 3 + 8-F 대형 1)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 116개 (2026-10-26 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐 — 8-A 클라이언트 모드 2개를 넣은 뒤로는 아직 재확인하지 않음) / 서버 모드 로드: 101개 (2026-10-27 8-A 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8A-755.out.txt`)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 119개 (2026-10-27 레이드 후 `LogOutput.log` — 8-A 클라이언트 2개 + Waypoints 확인, 오류는 Fika 미설치 관련 1건뿐. Miyako 클라이언트는 아직 게임에서 확인하지 않음) / 서버 모드 로드: 102개 (2026-10-27 Miyako 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8E-2709.out.txt`)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];

@@ -32,7 +32,7 @@
    - `link`는 Forge `.../mod/download/<id>/<slug>/<version>` (GitHub 릴리스 등으로 리다이렉트)
 2. `node tools/download-stage.mjs <stage>` → `downloads/<stage>/`, 결과 `doc/download/download-results-<stage>.json`
    - 스트리밍 저장(수 GB 대응), `size`와 바이트 단위 비교.
-3. 해제: Windows 기본 `tar.exe -xf <파일> -C extracted/<stage>/<파일명>` (zip·7z 모두 가능, 7-Zip 불필요)
+3. 해제: Windows 기본 bsdtar 를 **절대경로로** 부른다 — `/c/Windows/System32/tar.exe -xf <파일> -C extracted/<stage>/<파일명>` (zip·7z 모두 가능, 7-Zip 불필요). Git Bash 에서 `tar.exe` 로만 쓰면 `/usr/bin/tar.exe` 의 GNU tar 가 먼저 잡혀 zip 을 `This does not look like a tar archive` 로 거부한다
 4. 구조·충돌 검사: 각 파일의 상대경로가 `E:\Spt`에 이미 있는지, 모드끼리 겹치는지 확인 → 둘 다 없어야 진행.
 
 ## 3. 설치
