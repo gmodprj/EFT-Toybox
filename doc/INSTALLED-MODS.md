@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **164개**, 설치 파일 **3252개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 117개 (2026-10-26 `LogOutput.log`, CompatToggle 포함, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 95개 (2026-10-26 AllinWeaponUnslotted 제거 후 재시작, 오류 0 — `server-tests/server-after-compattoggle.log`)
+- 설치된 모드: **165개**, 설치 파일 **3255개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 116개 (2026-10-26 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 97개 (2026-10-26 AllinWeaponUnslotted 복원 + WebConfigBridge 설치 후 재시작, 오류 0 — `server-tests/server-webconfigbridge.log`)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -205,7 +205,7 @@
 | [BiC - Bind in Container](https://sp-mod.com/mod/3190) | 1.0.1 | 게임 | - | 1 | `stage7A-3190` |
 | [Manimal's Quick Cancel](https://sp-mod.com/mod/2969) | 2.0.0 | 게임 | - | 1 | `stage7A-2969` |
 | [Quick Aim](https://sp-mod.com/mod/2985) | 1.0.0 | 게임 | - | 1 | `stage7A-2985` |
-| [All In Weapon: Unslotted](https://sp-mod.com/mod/2576) | 1.2.0 | - | - | 0 | **미설치** |
+| [All In Weapon: Unslotted](https://sp-mod.com/mod/2576) | 1.2.0 | 서버 | - | 3 | `stage7A-2576` |
 | [Item Limits Begone!](https://sp-mod.com/mod/2524) | 1.1.0 | 서버 | - | 2 | `stage7A-2524` |
 | [SOMF - SitOnMyFace](https://sp-mod.com/mod/3105) | 0.1.2 | - | - | 0 | **미설치** |
 | [ArmorInfoPlus](https://sp-mod.com/mod/3049) | 1.0.0 | 게임 | - | 2 | `stage7A-3049` |
@@ -216,6 +216,7 @@
 | --- | --- | --- |
 | SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | `BepInEx\plugins\SptKoreanConfig\` (DLL 1 + 번역 사전 85) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 `tools/install-koreanconfig.ps1`. Forge 모드가 아니라 설치 기록에 없다 |
 | HelmetSlotUnion 0.1.0 (헬멧 부착 칸 합집합) | `SPT_Runtime\user\mods\HelmetSlotUnion\` (DLL 1 + `config.jsonc`) | 이 저장소에서 직접 만든 것. 소스는 [../src/HelmetSlotUnion](../src/HelmetSlotUnion), 설치는 `tools/install-helmetslotunion.ps1`. Forge 모드가 아니라 설치 기록에 없다 |
-| CompatToggle 0.1.0 (호환성 토글) | `BepInEx\plugins\CompatToggle.dll` + 한국어 문구 1 | 이 저장소에서 직접 만든 것. 소스는 [../src/CompatToggle](../src/CompatToggle), 설치는 `tools/install-compattoggle.ps1`. 제거한 `All In Weapon: Unslotted`를 대신해 무기·부품·탄약 호환 제한을 F12에서 세션 중에 켜고 끈다. Forge 모드가 아니라 설치 기록에 없다 |
+| WebConfigBridge 0.1.0 (웹 설정 편집기 연결) | `SPT_Runtime\user\mods\WebConfigBridge\` (DLL 1) | 이 저장소에서 직접 만든 것. 소스는 [../src/WebConfigBridge](../src/WebConfigBridge), 설치는 `tools/install-webconfigbridge.ps1`. 자체 편집 수단이 없는 다른 서버 모드의 설정 파일을 서버 웹 페이지(`/configs`)의 설정 편집기에 등록한다. 현재 대상은 `All In Weapon: Unslotted`. Forge 모드가 아니라 설치 기록에 없다 |
+| CompatToggle 0.1.0 (호환성 토글) | **설치 안 함** | 이 저장소에서 직접 만든 것. 소스는 [../src/CompatToggle](../src/CompatToggle). `All In Weapon: Unslotted`를 F12 토글로 대체하려 했으나 개조 화면의 부품 목록을 채우지 못해 철회했다. 경위는 [WORKLOG](../WORKLOG.md) 참고 |
 | HideSpecialIconGrids 1.1.0.1 | `BepInEx\plugins\HideSpecialIconGrids.dll`, `BepInEx\config\com.pandahhcorp.hidespecialicongrids.cfg` | SVM `Greed.exe`가 프리셋 `CSM.EnableCSM: true` 적용 시 설치 (15:01). 설치 기록에 없음 |
 | SVM 프리셋 `Noname` | `SPT_Runtime\user\mods\[SVM] Server Value Modifier\Presets\Noname.json` | 사용자가 `Greed.exe`로 생성. 16:00에 `Hideout.RemoveConstructionsRequirements`만 false로 수정 |
