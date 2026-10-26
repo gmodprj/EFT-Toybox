@@ -1,0 +1,16 @@
+{
+  "stage": "stage8-E0",
+  "spt": "4.1.6",
+  "note": "8-E 선행. Waypoints 1.9.0 만 먼저 넣고 레이드로 성능을 본다.",
+  "mods": [
+    {
+      "group": "8E-0",
+      "id": 827,
+      "name": "Waypoints - Expanded Navmesh",
+      "version": "1.9.0",
+      "size": 50349566,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/827/waypoints-expanded-navmesh/1.9.0"
+    }
+  ]
+}
