@@ -1,0 +1,16 @@
+{
+  "stage": "stage8-E1",
+  "spt": "4.1.6",
+  "note": "8-E 본체. Waypoints 1.9.0 레이드 확인 후(플러그인 119개, 오류 0) Miyako 만 넣는다. PIT Fireteam 2676 과 같이 넣지 않는다.",
+  "mods": [
+    {
+      "group": "8E-1",
+      "id": 2709,
+      "name": "Miyako Carry Service",
+      "version": "1.1.4",
+      "size": 521609,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2709/miyako-carry-service/1.1.4"
+    }
+  ]
+}
