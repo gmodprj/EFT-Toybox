@@ -80,8 +80,12 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
         return File.Exists(full) ? full : null;
     }
 
-    /// <summary>주석이 있는 JSONC 를 읽는다. 읽지 못하면 null.</summary>
-    public T? Load<T>(string target)
+    /// <summary>
+    /// 주석이 있는 JSONC 를 읽는다. 읽지 못하면 null.
+    /// <paramref name="stamp"/> 를 주면 읽은 내용의 지문을 거기 적어 둔다 — 나중에
+    /// <see cref="Save{T}"/> 가 그것으로 파일이 밖에서 바뀌었는지 가린다.
+    /// </summary>
+    public T? Load<T>(string target, ConfigStamp? stamp = null)
         where T : class
     {
         var path = PathOf(target);
@@ -92,7 +96,14 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
 
         try
         {
-            return JsonSerializer.Deserialize<T>(File.ReadAllText(path), ReadOptions);
+            var text = File.ReadAllText(path);
+            var config = JsonSerializer.Deserialize<T>(text, ReadOptions);
+            if (stamp is not null)
+            {
+                stamp.Value = ConfigStamp.Of(text);
+            }
+
+            return config;
         }
         catch (Exception ex)
         {
@@ -104,17 +115,28 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
     /// <summary>
     /// 설정을 파일에 쓴다. 처음 쓸 때 원본을 <c>.orig</c> 로 한 번 남긴다 —
     /// 이 쓰기는 원본의 주석을 지우기 때문이다.
+    ///
+    /// <paramref name="stamp"/> 를 주면 쓰기 직전에 파일을 다시 읽어 지문을 견준다.
+    /// 다르면 <b>쓰지 않고</b> <see cref="SaveOutcome.Conflict"/> 로 돌아온다.
+    /// <paramref name="force"/> 가 참이면 그 검사를 건너뛴다 — 사람이 덮어쓰기를 고른 뒤다.
     /// </summary>
-    public bool Save<T>(string target, T config)
+    public SaveOutcome Save<T>(string target, T config, ConfigStamp? stamp = null, bool force = false)
     {
         var path = PathOf(target);
         if (path is null)
         {
-            return false;
+            return SaveOutcome.Failed;
         }
 
         try
         {
+            if (!force && stamp is not null && !stamp.Matches(File.ReadAllText(path)))
+            {
+                logger.Warning(
+                    $"[WebConfigBridge] 저장하지 않았다 — 화면이 읽은 뒤 파일이 밖에서 바뀌었다: {path}");
+                return SaveOutcome.Conflict;
+            }
+
             var backup = path + ".orig";
             if (!File.Exists(backup))
             {
@@ -122,14 +144,20 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
                 logger.Info($"[WebConfigBridge] 원본을 남겼다: {backup}");
             }
 
-            File.WriteAllText(path, JsonSerializer.Serialize(config, WriteOptions));
+            var json = JsonSerializer.Serialize(config, WriteOptions);
+            File.WriteAllText(path, json);
+            if (stamp is not null)
+            {
+                stamp.Value = ConfigStamp.Of(json);
+            }
+
             logger.Info($"[WebConfigBridge] 설정을 저장했다: {path} (적용은 다음 서버 시작부터)");
-            return true;
+            return SaveOutcome.Saved;
         }
         catch (Exception ex)
         {
             logger.Error($"[WebConfigBridge] 설정을 저장하지 못했다: {path} — {ex.Message}");
-            return false;
+            return SaveOutcome.Failed;
         }
     }
 }

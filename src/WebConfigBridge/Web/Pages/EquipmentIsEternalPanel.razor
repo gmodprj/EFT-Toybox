@@ -1,5 +1,6 @@
 @inject ConfigStore Store
 @inject ISnackbar Snackbar
+@inject IDialogService Dialog
 
 <MudText Typo="Typo.h6" GutterBottom="true">Equipment Is Eternal</MudText>
 <MudText Typo="Typo.body2" Class="mb-4">사망해도 장비를 레이드 전 상태로 되돌린다. 아래는 그 위에 얹는 선택지다.</MudText>
@@ -44,15 +45,17 @@ else
 
 @code {
     private EquipmentIsEternalConfig? _config;
+    private readonly ConfigStamp _stamp = new();
 
     protected override void OnInitialized() => Reload();
 
     private void Reload() =>
-        _config = Store.Load<EquipmentIsEternalConfig>(ConfigStore.Targets.EquipmentIsEternal);
+        _config = Store.Load<EquipmentIsEternalConfig>(ConfigStore.Targets.EquipmentIsEternal, _stamp);
 
-    private void Save()
+    private async Task Save()
     {
         if (_config is null) return;
-        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.EquipmentIsEternal, _config);
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.EquipmentIsEternal, _config, _stamp, Reload);
     }
 }

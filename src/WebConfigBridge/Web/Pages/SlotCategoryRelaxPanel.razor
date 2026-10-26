@@ -1,5 +1,6 @@
 @inject ConfigStore Store
 @inject ISnackbar Snackbar
+@inject IDialogService Dialog
 
 <MudText Typo="Typo.h6" GutterBottom="true">Slot Category Relax</MudText>
 <MudText Typo="Typo.body2" Class="mb-4">
@@ -63,6 +64,7 @@ else
 
 @code {
     private SlotCategoryRelaxConfig? _config;
+    private readonly ConfigStamp _stamp = new();
     private List<DiscoveredCategory> _discovered = [];
     private string _excludedSlots = string.Empty;
 
@@ -103,7 +105,7 @@ else
 
     private void Reload()
     {
-        _config = Store.Load<SlotCategoryRelaxConfig>(ConfigStore.Targets.SlotCategoryRelax);
+        _config = Store.Load<SlotCategoryRelaxConfig>(ConfigStore.Targets.SlotCategoryRelax, _stamp);
         _discovered = Store.Load<List<DiscoveredCategory>>(ConfigStore.Targets.SlotCategoryRelaxDiscovered) ?? [];
         _excludedSlots = TextLines.Join(_config?.ExcludedSlotNames);
     }
@@ -117,11 +119,12 @@ else
         _config.Categories[name] = value;
     }
 
-    private void Save()
+    private async Task Save()
     {
         if (_config is null) return;
 
         _config.ExcludedSlotNames = TextLines.Split(_excludedSlots);
-        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.SlotCategoryRelax, _config);
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.SlotCategoryRelax, _config, _stamp, Reload);
     }
 }

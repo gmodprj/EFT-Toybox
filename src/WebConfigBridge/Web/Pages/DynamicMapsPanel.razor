@@ -1,5 +1,6 @@
 @inject ConfigStore Store
 @inject ISnackbar Snackbar
+@inject IDialogService Dialog
 
 <MudText Typo="Typo.h6" GutterBottom="true">Dynamic Maps</MudText>
 <MudText Typo="Typo.body2" Class="mb-4">레이드 중 지도에 어떤 표식을 띄울지 정한다.</MudText>
@@ -28,14 +29,17 @@ else
 
 @code {
     private DynamicMapsConfig? _config;
+    private readonly ConfigStamp _stamp = new();
 
     protected override void OnInitialized() => Reload();
 
-    private void Reload() => _config = Store.Load<DynamicMapsConfig>(ConfigStore.Targets.DynamicMaps);
+    private void Reload() =>
+        _config = Store.Load<DynamicMapsConfig>(ConfigStore.Targets.DynamicMaps, _stamp);
 
-    private void Save()
+    private async Task Save()
     {
         if (_config is null) return;
-        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.DynamicMaps, _config);
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.DynamicMaps, _config, _stamp, Reload);
     }
 }

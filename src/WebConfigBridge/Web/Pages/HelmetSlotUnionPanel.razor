@@ -1,5 +1,6 @@
 @inject ConfigStore Store
 @inject ISnackbar Snackbar
+@inject IDialogService Dialog
 
 <MudText Typo="Typo.h6" GutterBottom="true">Helmet Slot Union</MudText>
 <MudText Typo="Typo.body2" Class="mb-4">헬멧의 부착 칸을 합집합으로 만들어, 한 칸에만 맞던 파츠를 다른 칸에도 끼울 수 있게 한다.</MudText>
@@ -59,6 +60,7 @@ else
 
 @code {
     private HelmetSlotUnionConfig? _config;
+    private readonly ConfigStamp _stamp = new();
     private string _excludedSlotNames = string.Empty;
     private string _excludedHelmetIds = string.Empty;
 
@@ -66,12 +68,12 @@ else
 
     private void Reload()
     {
-        _config = Store.Load<HelmetSlotUnionConfig>(ConfigStore.Targets.HelmetSlotUnion);
+        _config = Store.Load<HelmetSlotUnionConfig>(ConfigStore.Targets.HelmetSlotUnion, _stamp);
         _excludedSlotNames = ToLines(_config?.ExcludedSlotNames);
         _excludedHelmetIds = ToLines(_config?.ExcludedHelmetIds);
     }
 
-    private void Save()
+    private async Task Save()
     {
         if (_config is null)
         {
@@ -81,14 +83,8 @@ else
         _config.ExcludedSlotNames = FromLines(_excludedSlotNames);
         _config.ExcludedHelmetIds = FromLines(_excludedHelmetIds);
 
-        if (Store.Save(ConfigStore.Targets.HelmetSlotUnion, _config))
-        {
-            Snackbar.Add("저장했다. 적용은 다음 서버 시작부터다.", Severity.Success);
-        }
-        else
-        {
-            Snackbar.Add("저장하지 못했다. 서버 로그를 보라.", Severity.Error);
-        }
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.HelmetSlotUnion, _config, _stamp, Reload);
     }
 
     private static string ToLines(List<string>? values) =>

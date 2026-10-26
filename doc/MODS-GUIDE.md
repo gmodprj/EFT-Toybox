@@ -129,7 +129,7 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 
 | 모드 | 버전 | 단계 | 위치 | 설명 |
 | --- | --- | --- | --- | --- |
-| [Mag Retention Reload](https://sp-mod.com/mod/2589) | 1.3.0 | 2차 | 게임 | 재장전할 때 빈 탄창을 바닥에 버리지 않고 유지한다. **현재 꺼 둠** — Direct Reload와 충돌해 탄창이 사라졌다. 아래 "알려진 충돌" 참고. 같은 기능은 UI Fixes가 맡는다. |
+| [Mag Retention Reload](https://sp-mod.com/mod/2589) | 1.3.0 | 2차 | 게임 | 재장전할 때 빈 탄창을 바닥에 버리지 않고 유지한다. **꺼 둬야 한다 — 켜지 말 것.** Direct Reload와 충돌해 탄창이 사라진다(2026-10-25 확인, 10-26 재발). 아래 "알려진 충돌" 참고. 같은 기능은 UI Fixes가 맡는다. |
 | [Unload All Magazines](https://sp-mod.com/mod/2739) | 2.2.1 | 2차 | 게임 | 여러 탄창을 한 번에 비운다. |
 | [Continuous Load Ammo](https://sp-mod.com/mod/2112) | 1.2.0 | 1차 | 게임 | 인벤토리 밖에서도 탄을 연속으로 장전·해제한다. |
 | [Magazine Check Interrupt](https://sp-mod.com/mod/2643) | 1.1.1 | 5차 | 게임 | 탄창 확인 동작 중에 바로 재장전으로 이어진다. |
@@ -301,7 +301,16 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 
 ## 알려진 충돌
 
-### Mag Retention Reload × Direct Reload — 탄창 소실 (2026-10-25 확인, 해결)
+### Mag Retention Reload × Direct Reload — 탄창 소실 (2026-10-25 확인 / 2026-10-26 재발)
+
+> **⚠ Mag Retention Reload의 `1. 일반` → `모드 사용`은 켜지 말 것.**
+> 켜면 레이드 중 재장전에서 탄창이 사라진다. Direct Reload를 같이 쓰는 동안은 고쳐 쓸 길이 없다.
+> 탄창 회수 기능은 UI Fixes가 맡으므로 **꺼도 잃는 기능이 없다**(`com.tyfon.uifixes.cfg`의
+> `Reload Magazines In-Place = true` 확인됨). 둘 중 하나만 지우고 싶다면 Mag Retention Reload 쪽이다.
+>
+> **2026-10-26 재발했다.** 10-25에 끈 것이 F12에서 다시 켜져 같은 예외가 레이드 로그에 2건 찍혔다
+> (`Direct load flow error | Trying to get parent of an item that doesn't have a parent`).
+> F12 목록에서 이 모드를 보더라도 손대지 말라 — 켜는 순간 되돌아온다.
 
 **증상** — 레이드 중 R로 직접 장전하면 화면에 `Reload failed: Direct load flow error`가 뜨고, 때때로 **탄창이 사라진다.** 한 레이드에서 14번 발생했고 탄창 종류와는 무관했다(D60 드럼 9, MPX TTI 4, UMP45 표준 1).
 
@@ -314,6 +323,8 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 
 **조치** — Mag Retention Reload를 끈다(F12 → `탄창 회수 재장전` → `1. 일반` → `모드 사용`). 탄창 회수 기능은 UI Fixes가 맡으므로 잃는 기능은 없다. 그 모드 자신의 설명도 "끄면 UI Fixes에 넘긴다"이다.
 
+끄는 자리가 둘인데 **게임이 켜져 있으면 F12 쪽만 쓴다.** 설정 파일(`BepInEx/config/de.tosox.magretentionreload.cfg`)을 게임 실행 중에 고치면 종료할 때 메모리에 있던 값으로 덮어써져 되돌아간다. 파일에서 고치는 것은 게임이 꺼져 있을 때만 유효하다.
+
 **확인 방법** — 세 조합을 하나씩 비교해 분리했다.
 
 | UI Fixes `탄창 제자리 교체` | Mag Retention `모드 사용` | 결과 |
@@ -321,6 +332,7 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 | 켬 | 켬 | 오류 13건 |
 | **끔** | 켬 | 오류 계속 (14번째) |
 | 켬 | **끔** | **오류 0건**, `calling ReloadMag` 4회 도달·전부 통과 |
+| 켬 | 켬 (10-26 재발) | 오류 2건 — 끈 것이 F12에서 다시 켜졌을 때 |
 
 UI Fixes의 `탄창 제자리 교체`는 켠 채로 문제없다.
 

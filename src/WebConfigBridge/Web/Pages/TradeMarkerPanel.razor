@@ -1,5 +1,6 @@
 @inject ConfigStore Store
 @inject ISnackbar Snackbar
+@inject IDialogService Dialog
 
 <MudText Typo="Typo.h6" GutterBottom="true">Trade Marker</MudText>
 <MudText Typo="Typo.body2" Class="mb-4">상인에게 판 물건에 표시를 남기고, 플리마켓 재판매를 제한한다.</MudText>
@@ -33,6 +34,7 @@ else
 
 @code {
     private TradeMarkerConfig? _config;
+    private readonly ConfigStamp _stamp = new();
     private string _markingExcluded = string.Empty;
     private string _ragfairExcluded = string.Empty;
 
@@ -40,18 +42,19 @@ else
 
     private void Reload()
     {
-        _config = Store.Load<TradeMarkerConfig>(ConfigStore.Targets.TradeMarker);
+        _config = Store.Load<TradeMarkerConfig>(ConfigStore.Targets.TradeMarker, _stamp);
         _markingExcluded = TextLines.Join(_config?.Marking.DisabledTraderIds);
         _ragfairExcluded = TextLines.Join(_config?.RagfairRestriction.DisabledTraderIds);
     }
 
-    private void Save()
+    private async Task Save()
     {
         if (_config is null) return;
 
         _config.Marking.DisabledTraderIds = TextLines.Split(_markingExcluded);
         _config.RagfairRestriction.DisabledTraderIds = TextLines.Split(_ragfairExcluded);
 
-        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.TradeMarker, _config);
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.TradeMarker, _config, _stamp, Reload);
     }
 }
