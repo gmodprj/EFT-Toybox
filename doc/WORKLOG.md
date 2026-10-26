@@ -603,3 +603,79 @@ Forge 에 4.1.6 호환 모드가 없어 직접 만들었다. 소스는 [../src/H
 사용자가 게임에서 직접 확인했다. 세 층 모두 풀려 헬멧에 파츠를 제한 없이 끼울 수 있다. HelmetSlotUnion 은 이로써 설계 → 빌드 → 설치 → 서버 검증 → **플레이 확인**까지 마쳤다.
 
 남은 주의사항은 README 에 적어 둔 그대로다: `helmet_top`·`helmet_back` 을 합치면 방어력이 달라지고, 모양이 겹쳐 어색한 조합은 `ExcludedSlotNames`·`ExcludedHelmetIds` 로 뺀다. 모드를 뺄 때는 이 모드로만 가능했던 조합을 먼저 풀어 둔다.
+
+## CompatToggle — 호환성 토글 플러그인 (2026-10-26)
+
+F12 메뉴가 없는 설치 모드 99개를 전수 조사해 `doc/specs/2026-10-26-f12-menu-review.md`로 정리했다. 설정을 가진 서버 모드 74개 중 42개가 설정을 서버 시작 때만 읽어 세션 중 반영이 불가능하다는 것이 핵심이었다.
+
+그중 `All In Weapon: Unslotted`를 게임 쪽 플러그인으로 대체했다. 아이템 DB를 고치는 대신 `EFT.InventoryLogic`의 호환성 판정을 Harmony Postfix로 후킹해, F12 토글이 판정 시점에 답한다. 설계는 `doc/specs/2026-10-26-compat-toggle-design.md`, 계획은 `doc/plans/2026-10-26-compat-toggle-plan.md`.
+
+패치 지점은 `Assembly-CSharp.dll` 메타데이터를 Mono.Cecil로 읽어 확정했다. 전부 난독화 없는 실명이다 — `Slot.CheckCompatibility(Item)`, `Slot.CheckConflictingItems(Item)`, `StackSlot.CheckCompatibility(Item)`. 약실과 탄창 슬롯이 모두 `Slot`이라 토글 네 개가 패치 하나를 지난다. `Slot`에 `CanAccept(Item)`는 없다(`CanAcceptRaid(out InventoryError)`만 있다).
+
+### 설계 단계에서 틀렸다가 리뷰로 잡힌 것
+
+"헬멧·안면 장비는 `Mod`가 아니니 충돌 무시에서 자동 제외된다"고 적었는데 타입계층이 그렇지 않았다. `NightVision → SightMod → FunctionalMod → Mod`, `Mount → GearMod → Mod` — 헬멧에 끼우는 야투경과 레일 어댑터는 `Mod`이고 바닐라 `ConflictingItems`를 갖고 있다(GPNVG-18 ↔ FAST 바이저 등). 기본값이 켜짐이라 바로 닿는 결함이었다. 부품 사슬의 최상위가 무기일 때만 무시하도록 고쳤다.
+
+`StackSlot`은 탄창과 **탄약 상자**가 모두 만들어서 탄창 토글이 탄약 상자의 보관 제한까지 열고 있었다. 숙주가 탄창일 때만 열도록 막았다.
+
+`Magazine.CheckCompatibility(Ammo)` 패치는 제거했다. 호출자에 봇 재장전 판단(`BotReloadOnlyBarrel`, `BotReloadRevolver`)이 있어 봇이 제 구경 아닌 탄을 채울 수 있었다. 플레이어가 탄을 채우는 경로는 `StackSlot` 쪽에서 이미 덮인다.
+
+### 전환
+
+프로필·모드 설정·모드 폴더를 `backup/`에 백업한 뒤 `AllinWeaponUnslotted`를 제거했다(`backup/removed-AllinWeaponUnslotted/`로 되돌릴 수 있다). 설치 기록은 `doc/install-records/removed/`로 옮겼다.
+
+서버 재시작 후 모드 95개 로드, 오류 0 (`doc/server-tests/server-after-compattoggle.log`). 게임 쪽 플러그인 117개 로드, 오류는 기존 Fika 관련 1건뿐. 한국어 문구 커버리지 8/8.
+
+제거한 모드가 스스로 남긴 로그 줄이 설계 결정을 뒷받침했다 — `Fcked: weapons, mods, chambers, calibers, magazines. Removed conflicting items in mod slots.` 충돌 제거가 **부품 슬롯에 한정**된다고 적고 있어, 충돌 무시를 무기·부품으로 좁힌 것이 원본과 같은 범위다.
+
+### 남은 것
+
+인게임 동작 확인. 토글을 끄면 제한이 되살아나는지는 **서버 모드를 제거한 뒤에만** 의미가 있다 — 이 플러그인은 거부를 허용으로 바꾸기만 하고 그 반대는 하지 않으므로, DB가 풀려 있던 동안에는 차이가 보이지 않았다.
+
+개조 화면의 부품 **목록** 필터 표시는 0.1.0 범위에서 제외했다. 판정만 바꾸므로 "목록에는 안 보이는데 끌어다 놓으면 들어가는" 상태가 될 수 있다.
+
+### F12 경로 철회, 서버 웹 설정 편집기로 전환 (2026-10-26)
+
+인게임 확인에서 토글이 듣지 않았다. 로그를 보니 패치는 정상이었다 — 강제 허용이 4575건 찍혔고 여섯 종류 전부 발생했다(WeaponBody 1136, Attachment 219, Chamber 28, Magazine 94, CartridgeStack 3080, Conflict 18). 판정 계층은 작동했다.
+
+문제는 그 위였다. 개조 화면의 부품 목록은 판정 함수를 거치지 않는다. 그리고 `Slot.CheckConditions` 의 IL 을 읽어보니 관문이 열두 개인데 이 플러그인은 둘만 덮었다(`CheckCompatibility`, `CheckConflictingItems`). `BlockerSlots` 는 `Slot..ctor` 에서만 쓰여 항상 비어 있으니 후보가 아니었고, 나머지 관문 중 어느 것이 막는지는 확정하지 못했다.
+
+조사 중 한 가지를 틀리게 보고했다가 정정했다: `ModdingScreenSlotView.SetFilters` 가 목록을 만든다고 했으나, IL 을 읽으니 그것은 빈 칸에 붙는 **분류 힌트 아이콘**을 그리는 코드였다(`ItemFactory.GetFilterTypes` → `LoadModIconSprite` → `filter_icon` 인스턴스화).
+
+필터 자체를 런타임에 넓히는 방향도 검토했으나 접었다. `Slot.get_Filters` 를 읽는 메서드가 19개이고 그중 `ItemFactory.CreateAndFillItem`, `BotReload.FindAmmoToReloadMag`, `Slot.GetArmorPlateMask`, `Slot/CG_GetColliderTypes`(방어 콜라이더), `HideoutCustomizationSlotsGroupView` 가 섞여 있다 — 전역으로 넓히면 방어구 콜라이더와 하이드아웃 커스터마이즈까지 건드린다.
+
+그래서 사용자 판단으로 방향을 바꿨다. F12 플러그인을 걷고 `AllinWeaponUnslotted` 를 복원한 뒤, 조작 수단을 **서버 웹 페이지의 설정 편집기**로 옮긴다. 세션 중 즉시 반영은 포기하고 "작동하는 동작 + 파일을 직접 고치지 않아도 되는 편집 수단"을 택한 것이다.
+
+#### 확인한 기제
+
+서버 웹 UI 에 설정 편집기가 이미 있다(`/configs`, `SPTarkov.Server.Web.Pages.Configs.ConfigEditorPage`). 모드가 끼어드는 확장점은 `SPTarkov.Server.Web.Services.IConfigEditorConfigProvider` 의 `GetConfigs()` 이고, 등록 모델 `ConfigEditorConfigRegistration` 에는 `LoadFromDiskAsync`·`SaveToDiskAsync`·`ApplyToRuntimeAsync` 훅이 있다.
+
+설치된 전례가 있다 — `TraderNamer.ConfigEditorProvider` 가 `[Injectable]` + 그 인터페이스 + `ConfigEditorConfigRegistration.Create<TConfig>(id, 표시명, 설정객체, 파일경로)` 를 쓴다. `src/WebConfigBridge` 는 그 패턴을 그대로 따랐다.
+
+#### 한계
+
+- `AllinWeaponUnslotted` 는 설정을 `OnLoadAsync` 에서 한 번만 읽는다. 웹에서 저장하면 파일은 즉시 바뀌지만 적용은 다음 서버 시작부터다. 표시명에 그 사실을 적었다.
+- 편집기가 JSON 으로 다시 쓰므로 원본 `config.jsonc` 의 주석이 사라진다. 값은 그 모드가 문제없이 읽는다. 원본은 `backup/allinweaponunslotted-config/` 에 있다.
+- `/configs` 는 Blazor Server 회로로 목록을 채운다. 평범한 HTTP 요청의 HTML 에는 SPT 자체 설정도 `TraderNamer` 도 나타나지 않으므로, 등록이 실제로 보이는지는 상호작용 가능한 브라우저로만 확인된다. 내장 브라우저는 로컬 주소를 거부했다.
+
+#### 모드 페이지로 정정 (2026-10-26)
+
+"서버페이지의 모드페이지에 추가" 를 설정 편집기(`/configs`)에 등록하는 것으로 잘못 읽어 그쪽을 먼저 만들었다. 홈 화면을 보고 나서야 **모드 페이지**가 별도 구역임을 알았다 — `Barter Items Stacks`·`ECOTI`·`jerobackpack` 이 그 자리에 있다.
+
+그 구역은 `SPTarkov.Server.Web.IModBlazorMetadata`(`WWWRootUrl`·`HomePage`·`HomePageDescription`)로 들어간다. 설치된 전례는 `JeroBackpack.ModMetadata` 로, `IModMetadata` 와 함께 구현하고 Razor 컴포넌트를 DLL 안에 담는다(모드 폴더에 DLL 하나뿐, 정적 자원 없음).
+
+그대로 따랐다 — csproj 를 `Microsoft.NET.Sdk.Razor` + `FrameworkReference Microsoft.AspNetCore.App` + MudBlazor 참조로 바꾸고, `Web/Pages/Home.razor`(`@page "/webconfigbridge"`)에 스위치 9개와 저장 버튼을 두었다. 설정 읽기·쓰기는 `ConfigStore` 로 뺐다. 설정 편집기 등록(`ConfigEditorProvider`)은 중복이라 제거했다.
+
+처음 저장할 때 원본을 `config.jsonc.orig` 로 남긴다 — 저장이 주석을 지우기 때문이다.
+
+실측: 모드 로드 오류 0, 홈 화면 HTML 에 `Web Config Bridge` 카드와 `/webconfigbridge` 링크 존재, 그 경로가 200 으로 열리고 본문에 대상 파일 경로(`config.jsonc`)가 찍힌다 — 설정을 실제로 읽어냈다는 뜻이다. 스위치가 화면에 제대로 그려지는지는 Blazor 회로가 필요해 확인하지 못했다.
+
+##### 스위치가 맨 동그라미로 나온 원인 (2026-10-26)
+
+페이지는 떴으나 MudBlazor 스위치가 스타일 없이 동그라미로만 나왔다. `jerobackpack.Web.Pages.Home` 의 컴파일된 어트리뷰트와 하나씩 대조해 원인을 찾았다. 그쪽에는 셋이 있고 우리에겐 없었다:
+
+- `[Authorize]`
+- `[Layout(SPTarkov.Server.Web.Layout.BaseMudBlazorLayout)]` ← 핵심. 이 레이아웃이 없으면 MudBlazor 테마·팝오버 공급자가 붙지 않는다
+- `__PrivateComponentRenderModeAttribute` (`@rendermode InteractiveServer`) — 없으면 정적 렌더라 토글이 먹지 않는다
+
+셋을 모두 맞춘 뒤 빌드 산출물의 어트리뷰트가 전례와 같아진 것을 확인했다. 실측: 페이지 길이 15,994 → 29,578 바이트, `mud-switch` 마크업 0 → 90회, `mud-theme` 1회, 서버 오류 0.

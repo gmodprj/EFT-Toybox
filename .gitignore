@@ -12,3 +12,7 @@ backup/
 # 빌드 산출물
 src/**/bin/
 src/**/obj/
+
+# 도구 상태 파일 (oh-my-claudecode)
+.omc/
+**/.omc/
