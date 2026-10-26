@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1937,
+    "name": "Dev Balaclava Fix",
+    "version": "1.2.0",
+    "file": "1937__acidphantasm-devbalaclavafix.zip",
+    "bytes": 4213,
+    "expected": 4213,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2953,
+    "name": "Headshot Damage Redirection",
+    "version": "1.8.0",
+    "file": "2953__HeadShotDamageRedirect.zip",
+    "bytes": 8090,
+    "expected": 8090,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2763,
+    "name": "MeleeMultiplier",
+    "version": "0.0.4",
+    "file": "2763__MeleeMultiplier_004.zip",
+    "bytes": 20831,
+    "expected": 20831,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 755,
+    "name": "The Blacklist - flea market enhancements",
+    "version": "3.1.1",
+    "file": "755__platinum-theblacklist-3.1.1.zip",
+    "bytes": 81507,
+    "expected": 81507,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1796,
+    "name": "Fujiwara Mokou (Touhou)",
+    "version": "1.2.0",
+    "file": "1796__JSM.-.Mokou.TOUHOU.zip",
+    "bytes": 865564,
+    "expected": 865564,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

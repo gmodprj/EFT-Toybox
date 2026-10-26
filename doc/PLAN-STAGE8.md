@@ -136,14 +136,17 @@ node tools/download-stage.mjs stage8-A
 # 4) 충돌 검사 — 겹치는 경로가 하나도 없어야 진행
 node tools/check-conflicts.mjs stage8-A
 
-# 5) 설치 + 서버 테스트
-E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage8-A -Pattern '*' -Tag 'stage8-A'
+# 5) 설치 + 서버 테스트 — 모드 하나당 한 번씩 호출한다
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage8-A -Pattern '1937__*' -Tag 'stage8A-1937' -SkipTest
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage8-A -Pattern '755__*'  -Tag 'stage8A-755'
 
 # 6) 목록 갱신
 node tools/gen-installed-mods.mjs
 ```
 
-결속 단계(8-C, 8-F)와 8-E, 8-G는 `-Pattern`으로 **하나씩** 지정해 설치하고 매번 테스트한다.
+**`-Pattern`에 `'*'`를 넣으면 안 된다.** `install-and-test.ps1`은 패턴에 맞는 폴더 중 `Select-Object -First 1`로 **하나만** 설치한다. 여러 개를 넣을 때는 모드마다 한 번씩 호출하고, 마지막 하나만 `-SkipTest` 없이 호출해 서버 테스트를 한 번 받는다. `-Tag`도 모드마다 달라야 한다 — 같은 태그로 두 번 호출하면 설치 기록 파일이 덮어써진다.
+
+결속 단계(8-C, 8-F)와 8-E, 8-G는 `-SkipTest` 없이 **하나씩** 설치해 매번 테스트한다.
 
 게임 확인은 `E:\Spt\BepInEx\LogOutput.log`의 수정 시각이 설치 이후인지 먼저 본다.
 
