@@ -42,7 +42,7 @@ const side = (files) => {
 };
 const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 106개 (2026-10-25 15:32 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) — 그 뒤 SOMF 제거(서버 전용)와 7-B·7-D 설치가 있어 다음 실행 때 다시 센다 / 서버 모드 로드: 96개 (2026-10-26 HelmetSlotUnion 테스트 서버, 오류 0, stderr 비어 있음 — `server-tests/server-test8-helmetslotunion.out.txt`)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 117개 (2026-10-26 `LogOutput.log`, CompatToggle 포함, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 95개 (2026-10-26 AllinWeaponUnslotted 제거 후 재시작, 오류 0 — `server-tests/server-after-compattoggle.log`)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];
@@ -68,6 +68,7 @@ md += `## 다른 경로로 설치된 것\n\n| 항목 | 위치 | 설치 주체 |\
 const langCount = fs.readdirSync(path.join(ROOT, 'src', 'SptKoreanConfig', 'lang')).filter(f => f.endsWith('.json')).length;
 md += `| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | \`BepInEx\\plugins\\SptKoreanConfig\\\` (DLL 1 + 번역 사전 ${langCount}) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 \`tools/install-koreanconfig.ps1\`. Forge 모드가 아니라 설치 기록에 없다 |\n`;
 md += `| HelmetSlotUnion 0.1.0 (헬멧 부착 칸 합집합) | \`SPT_Runtime\\user\\mods\\HelmetSlotUnion\\\` (DLL 1 + \`config.jsonc\`) | 이 저장소에서 직접 만든 것. 소스는 [../src/HelmetSlotUnion](../src/HelmetSlotUnion), 설치는 \`tools/install-helmetslotunion.ps1\`. Forge 모드가 아니라 설치 기록에 없다 |\n`;
+md += `| CompatToggle 0.1.0 (호환성 토글) | \`BepInEx\\plugins\\CompatToggle.dll\` + 한국어 문구 1 | 이 저장소에서 직접 만든 것. 소스는 [../src/CompatToggle](../src/CompatToggle), 설치는 \`tools/install-compattoggle.ps1\`. 제거한 \`All In Weapon: Unslotted\`를 대신해 무기·부품·탄약 호환 제한을 F12에서 세션 중에 켜고 끈다. Forge 모드가 아니라 설치 기록에 없다 |\n`;
 md += `| HideSpecialIconGrids 1.1.0.1 | \`BepInEx\\plugins\\HideSpecialIconGrids.dll\`, \`BepInEx\\config\\com.pandahhcorp.hidespecialicongrids.cfg\` | SVM \`Greed.exe\`가 프리셋 \`CSM.EnableCSM: true\` 적용 시 설치 (15:01). 설치 기록에 없음 |\n`;
 md += `| SVM 프리셋 \`Noname\` | \`SPT_Runtime\\user\\mods\\[SVM] Server Value Modifier\\Presets\\Noname.json\` | 사용자가 \`Greed.exe\`로 생성. 16:00에 \`Hideout.RemoveConstructionsRequirements\`만 false로 수정 |\n`;
 

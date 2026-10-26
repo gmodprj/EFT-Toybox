@@ -603,3 +603,33 @@ Forge 에 4.1.6 호환 모드가 없어 직접 만들었다. 소스는 [../src/H
 사용자가 게임에서 직접 확인했다. 세 층 모두 풀려 헬멧에 파츠를 제한 없이 끼울 수 있다. HelmetSlotUnion 은 이로써 설계 → 빌드 → 설치 → 서버 검증 → **플레이 확인**까지 마쳤다.
 
 남은 주의사항은 README 에 적어 둔 그대로다: `helmet_top`·`helmet_back` 을 합치면 방어력이 달라지고, 모양이 겹쳐 어색한 조합은 `ExcludedSlotNames`·`ExcludedHelmetIds` 로 뺀다. 모드를 뺄 때는 이 모드로만 가능했던 조합을 먼저 풀어 둔다.
+
+## CompatToggle — 호환성 토글 플러그인 (2026-10-26)
+
+F12 메뉴가 없는 설치 모드 99개를 전수 조사해 `doc/specs/2026-10-26-f12-menu-review.md`로 정리했다. 설정을 가진 서버 모드 74개 중 42개가 설정을 서버 시작 때만 읽어 세션 중 반영이 불가능하다는 것이 핵심이었다.
+
+그중 `All In Weapon: Unslotted`를 게임 쪽 플러그인으로 대체했다. 아이템 DB를 고치는 대신 `EFT.InventoryLogic`의 호환성 판정을 Harmony Postfix로 후킹해, F12 토글이 판정 시점에 답한다. 설계는 `doc/specs/2026-10-26-compat-toggle-design.md`, 계획은 `doc/plans/2026-10-26-compat-toggle-plan.md`.
+
+패치 지점은 `Assembly-CSharp.dll` 메타데이터를 Mono.Cecil로 읽어 확정했다. 전부 난독화 없는 실명이다 — `Slot.CheckCompatibility(Item)`, `Slot.CheckConflictingItems(Item)`, `StackSlot.CheckCompatibility(Item)`. 약실과 탄창 슬롯이 모두 `Slot`이라 토글 네 개가 패치 하나를 지난다. `Slot`에 `CanAccept(Item)`는 없다(`CanAcceptRaid(out InventoryError)`만 있다).
+
+### 설계 단계에서 틀렸다가 리뷰로 잡힌 것
+
+"헬멧·안면 장비는 `Mod`가 아니니 충돌 무시에서 자동 제외된다"고 적었는데 타입계층이 그렇지 않았다. `NightVision → SightMod → FunctionalMod → Mod`, `Mount → GearMod → Mod` — 헬멧에 끼우는 야투경과 레일 어댑터는 `Mod`이고 바닐라 `ConflictingItems`를 갖고 있다(GPNVG-18 ↔ FAST 바이저 등). 기본값이 켜짐이라 바로 닿는 결함이었다. 부품 사슬의 최상위가 무기일 때만 무시하도록 고쳤다.
+
+`StackSlot`은 탄창과 **탄약 상자**가 모두 만들어서 탄창 토글이 탄약 상자의 보관 제한까지 열고 있었다. 숙주가 탄창일 때만 열도록 막았다.
+
+`Magazine.CheckCompatibility(Ammo)` 패치는 제거했다. 호출자에 봇 재장전 판단(`BotReloadOnlyBarrel`, `BotReloadRevolver`)이 있어 봇이 제 구경 아닌 탄을 채울 수 있었다. 플레이어가 탄을 채우는 경로는 `StackSlot` 쪽에서 이미 덮인다.
+
+### 전환
+
+프로필·모드 설정·모드 폴더를 `backup/`에 백업한 뒤 `AllinWeaponUnslotted`를 제거했다(`backup/removed-AllinWeaponUnslotted/`로 되돌릴 수 있다). 설치 기록은 `doc/install-records/removed/`로 옮겼다.
+
+서버 재시작 후 모드 95개 로드, 오류 0 (`doc/server-tests/server-after-compattoggle.log`). 게임 쪽 플러그인 117개 로드, 오류는 기존 Fika 관련 1건뿐. 한국어 문구 커버리지 8/8.
+
+제거한 모드가 스스로 남긴 로그 줄이 설계 결정을 뒷받침했다 — `Fcked: weapons, mods, chambers, calibers, magazines. Removed conflicting items in mod slots.` 충돌 제거가 **부품 슬롯에 한정**된다고 적고 있어, 충돌 무시를 무기·부품으로 좁힌 것이 원본과 같은 범위다.
+
+### 남은 것
+
+인게임 동작 확인. 토글을 끄면 제한이 되살아나는지는 **서버 모드를 제거한 뒤에만** 의미가 있다 — 이 플러그인은 거부를 허용으로 바꾸기만 하고 그 반대는 하지 않으므로, DB가 풀려 있던 동안에는 차이가 보이지 않았다.
+
+개조 화면의 부품 **목록** 필터 표시는 0.1.0 범위에서 제외했다. 판정만 바꾸므로 "목록에는 안 보이는데 끌어다 놓으면 들어가는" 상태가 될 수 있다.
