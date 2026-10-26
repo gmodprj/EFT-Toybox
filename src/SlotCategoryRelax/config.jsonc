@@ -1,0 +1,54 @@
+{
+  // false 로 두면 이 모드는 아무것도 바꾸지 않는다. 서버를 다시 켜야 적용된다.
+  // 꺼져 있어도 분류 목록(discovered-categories.json)은 계속 내놓는다.
+  "ModEnabled": true,
+
+  // 칸마다 몇 개가 늘었는지 기록한다. 문제를 볼 때만 켠다.
+  "Debug": false,
+
+  // 분류별 on/off. 켠 분류만 칸 필터를 넓힌다.
+  //
+  // 규칙: 어떤 칸이 켜진 분류의 부품을 하나라도 받고 있으면, 그 칸에 같은 분류의 부품을 모두 넣는다.
+  // 칸이 원래 받던 다른 분류는 그대로 둔다. 넓히기만 하고 좁히지 않는다.
+  //
+  // 여기 적지 않은 분류는 꺼진 것으로 본다. 이 설치본에 어떤 분류가 있는지는 서버를 한 번 켜면
+  // 같은 폴더의 discovered-categories.json 에 전부 나온다(분류 이름 + 그 분류의 아이템 수).
+  // 서버 웹 페이지의 모드 설정에서 스위치로 켜고 끌 수도 있다.
+  //
+  // 아래는 처음 설치했을 때의 보기다. 전부 꺼진 상태로 두었으니 원하는 것만 켜라.
+  "Categories": {
+    "AssaultScope": false,
+    "OpticScope": false,
+    "SpecialScope": false,
+    "Collimator": false,
+    "CompactCollimator": false,
+    "IronSight": false,
+    "Mount": false,
+    "TacticalCombo": false,
+    "AuxiliaryMod": false,
+    "Bipod": false,
+    "Foregrip": false,
+    "Silencer": false,
+    "FlashHider": false,
+    "MuzzleCombo": false,
+    "Handguard": false,
+    "Stock": false,
+    "PistolGrip": false,
+    "Receiver": false,
+    "Barrel": false,
+    "Gasblock": false,
+    "Charge": false,
+    "Launcher": false,
+    "Magazine": false,
+    "CylinderMagazine": false,
+    "SpringDrivenCylinder": false
+  },
+
+  // 건드리지 않을 칸 이름. 대소문자는 가리지 않는다.
+  // 예: ["mod_magazine"] 로 두면 탄창 칸은 분류가 켜져 있어도 그대로 둔다.
+  "ExcludedSlotNames": [],
+
+  // 부품에 달린 하위 칸까지 넓힐지. 끄면 무기 본체의 칸만 넓힌다.
+  // 마운트 위에 조준경을 올리는 조합은 이것이 켜져 있어야 열린다.
+  "IncludeAttachmentSlots": true
+}
