@@ -8,7 +8,7 @@ namespace WebConfigBridge;
 ///
 /// 그 모드도 설정을 서버 시작 때 한 번만 읽는다. 저장은 즉시, 적용은 다음 서버 시작부터.
 /// </summary>
-public class HelmetSlotUnionConfig
+public class HelmetSlotUnionConfig : TargetConfig
 {
     /// <summary>false 면 데이터베이스를 건드리지 않는다.</summary>
     [JsonPropertyName("ModEnabled")]

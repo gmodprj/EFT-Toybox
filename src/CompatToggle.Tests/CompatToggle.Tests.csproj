@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <!-- WebConfigBridge 의 POCO 들이 암시적 using 을 전제로 쓰였다 -->
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <IsPackable>false</IsPackable>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
@@ -23,6 +25,11 @@
     <Compile Include="..\CompatToggle\ToggleSet.cs" />
     <Compile Include="..\CompatToggle\CompatGate.cs" />
     <Compile Include="..\CompatToggle\SlotClassifier.cs" />
+    <!-- WebConfigBridge 의 설정 POCO 들. SPT 를 참조하지 않는 순수 코드라 여기서 시험할 수 있다. -->
+    <Compile Include="..\WebConfigBridge\TargetConfig.cs" />
+    <Compile Include="..\WebConfigBridge\Tier1Configs.cs" />
+    <Compile Include="..\WebConfigBridge\AllinWeaponUnslottedConfig.cs" />
+    <Compile Include="..\WebConfigBridge\HelmetSlotUnionConfig.cs" />
     <Compile Include="*.cs" />
   </ItemGroup>
 

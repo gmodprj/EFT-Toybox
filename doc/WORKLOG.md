@@ -689,3 +689,19 @@ F12 메뉴가 없는 설치 모드 99개를 전수 조사해 `doc/specs/2026-10-
 HelmetSlotUnion 은 토글 5개에 더해 제외 목록 둘(`ExcludedSlotNames`, `ExcludedHelmetIds`)이 있어 여러 줄 입력칸으로 넣었다. 저장할 때 빈 줄과 앞뒤 공백은 버린다.
 
 실측: 서버 오류 0, 페이지 200·30,215 바이트, `mud-tabs` 7회·`mud-tab` 14회로 탭이 그려진다. 둘째 탭 내용은 MudTabs 가 활성 패널만 그리므로 서버 응답에는 없다 — 클릭했을 때 들어온다.
+
+#### 1순위 모드 7개를 탭으로 추가 (2026-10-26)
+
+`doc/specs/2026-10-26-modpage-candidates.md` 의 1순위 7개를 같은 페이지에 더해 탭이 9개가 됐다.
+
+**먼저 막은 것 — 모르는 키 손실.** `RealisticInsurance` 는 `"// baseReturnChancePercent": "설명"` 형태의 주석용 JSON 키를 최상위에 여럿 두고(전체 20개 중 절반 가까이), `RepairSkillExtension` 은 "ONLY edit values of parameters" 라고 적힌 깊은 `repairKit` 트리를 들고 있다. 모델에 없는 키는 저장 때 사라지므로, 모든 설정 POCO 를 `TargetConfig`(=`[JsonExtensionData]`) 상속으로 바꿔 모르는 키를 담았다 되돌려주게 했다. 기존 두 POCO 도 같은 위험이 있어 함께 고쳤다.
+
+그게 실제로 되는지 `src/CompatToggle.Tests/ConfigRoundTripTests.cs` 로 확인한다 — 설치본의 진짜 설정 파일 8개를 읽어 다시 쓴 뒤 최상위 키가 하나라도 사라지면 실패한다. 38개 테스트 전부 통과.
+
+JSON 이 아닌 `//` 줄 주석은 이 방법으로도 살릴 수 없다. 그래서 처음 저장할 때 `.orig` 백업을 남기는 동작은 그대로 둔다.
+
+**일부만 노출한 것.** `RealisticInsurance` 는 바탕 반환 확률과 탈출 관련 값만(약탈자 능력치·탐욕·가치 가중 묶음은 손대지 않음), `RepairSkillExtension` 은 `BuffSettings` 세 값만, `UltimateFlea` 는 `mod.json` 의 기능 스위치만 다룬다. 나머지는 확장 데이터로 보존된다.
+
+**구조.** 저장·알림이 패널마다 되풀이되지 않도록 `SaveResult` 와 `SaveBar` 로 뺐다(처음 쓸 때 `Store.Save` 를 두 번 부르는 실수를 했고, 한곳으로 모으며 고쳤다). 문자열 목록 ↔ 여러 줄 입력칸 변환은 `TextLines` 로 뺐다. `ConfigStore` 의 키는 폴더명이 아니라 대상 식별자가 되어 모드 하나가 설정 파일을 여럿 가질 수 있다.
+
+실측: 서버 오류 0, 페이지 200·32,522 바이트, `mud-tab` 9개.

@@ -1,0 +1,45 @@
+@inject ConfigStore Store
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h6" GutterBottom="true">Infinite Everything</MudText>
+<MudText Typo="Typo.body2" Class="mb-4">
+    프로필마다 무한 돈·무한 하이드아웃을 켜고 끈다. 치트성 기능이다.
+</MudText>
+
+@if (_state is null || _state.Count == 0)
+{
+    <MudAlert Severity="Severity.Warning">
+        설정 파일을 찾지 못했거나 등록된 프로필이 없다.
+        <code>user/mods/InfiniteEverything/state.json</code> 을 확인하라.
+    </MudAlert>
+}
+else
+{
+    @foreach (var entry in _state)
+    {
+        <MudPaper Class="pa-4 mb-4">
+            <MudText Typo="Typo.subtitle2" GutterBottom="true">프로필 <code>@entry.Key</code></MudText>
+            <MudSwitch T="bool" Value="entry.Value.Money" Color="Color.Warning" Label="무한 돈"
+                       ValueChanged="@(v => entry.Value.Money = v)" />
+            <MudSwitch T="bool" Value="entry.Value.Hideout" Color="Color.Warning" Label="무한 하이드아웃"
+                       ValueChanged="@(v => entry.Value.Hideout = v)" />
+        </MudPaper>
+    }
+
+    <SaveBar OnSave="Save" OnReload="Reload" Path="@Store.PathOf(ConfigStore.Targets.InfiniteEverything)" />
+}
+
+@code {
+    private Dictionary<string, InfiniteEverythingProfile>? _state;
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload() =>
+        _state = Store.Load<Dictionary<string, InfiniteEverythingProfile>>(ConfigStore.Targets.InfiniteEverything);
+
+    private void Save()
+    {
+        if (_state is null) return;
+        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.InfiniteEverything, _state);
+    }
+}

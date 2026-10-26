@@ -1,0 +1,58 @@
+@inject ConfigStore Store
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h6" GutterBottom="true">Equipment Is Eternal</MudText>
+<MudText Typo="Typo.body2" Class="mb-4">사망해도 장비를 레이드 전 상태로 되돌린다. 아래는 그 위에 얹는 선택지다.</MudText>
+
+@if (_config is null)
+{
+    <MudAlert Severity="Severity.Warning">
+        설정 파일을 찾지 못했다. <code>user/mods/EquipmentIsEternal</code> 를 확인하라.
+    </MudAlert>
+}
+else
+{
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">추가로 되돌릴 칸</MudText>
+        <MudText Typo="Typo.caption" Class="mb-2">끄면 그 칸은 레이드에서의 상태를 그대로 둔다.</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.RestoreArmBand" Color="Color.Primary" Label="암밴드" />
+        <MudSwitch T="bool" @bind-Value="_config.RestoreSpecialSlots" Color="Color.Primary" Label="특수 칸" />
+        <MudSwitch T="bool" @bind-Value="_config.RestoreScabbard" Color="Color.Primary" Label="칼집" />
+        <MudSwitch T="bool" @bind-Value="_config.RestoreSecuredContainer" Color="Color.Primary" Label="보안 컨테이너" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">조건</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.OnlyRestoreInsured" Color="Color.Primary"
+                   Label="보험 든 것만 되돌리기" />
+        <MudSwitch T="bool" @bind-Value="_config.KeepQuestItems" Color="Color.Primary"
+                   Label="레이드 중 주운 퀘스트 아이템 지키기" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">중복 처리</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.DeduplicateItems" Color="Color.Primary"
+                   Label="겹친 id 는 복원본만 남기기" />
+        <MudText Typo="Typo.caption">
+            레이드 중 물건을 다른 칸으로 옮겼다가 복원되면 같은 id 가 둘이 된다.
+            끄면 둘 다 남기고 한쪽에 새 id 를 붙인다.
+        </MudText>
+    </MudPaper>
+
+    <SaveBar OnSave="Save" OnReload="Reload" Path="@Store.PathOf(ConfigStore.Targets.EquipmentIsEternal)" />
+}
+
+@code {
+    private EquipmentIsEternalConfig? _config;
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload() =>
+        _config = Store.Load<EquipmentIsEternalConfig>(ConfigStore.Targets.EquipmentIsEternal);
+
+    private void Save()
+    {
+        if (_config is null) return;
+        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.EquipmentIsEternal, _config);
+    }
+}
