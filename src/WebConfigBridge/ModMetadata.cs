@@ -19,7 +19,7 @@ public record WebConfigBridgeModMetadata : IModMetadata, IModBlazorMetadata
     public string? HomePage { get; init; } = "/webconfigbridge";
 
     public string? HomePageDescription { get; init; } =
-        "All In Weapon: Unslotted 의 무기·부품·탄약 호환 설정을 고친다";
+        "자체 편집 수단이 없는 서버 모드의 설정을 고친다";
 
     public string ModGuid { get; init; } = "spt.webconfigbridge";
     public string Name { get; init; } = "Web Config Bridge";

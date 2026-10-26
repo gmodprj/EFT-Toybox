@@ -7,8 +7,10 @@ using SPTarkov.Server.Core.Helpers.Server;
 namespace WebConfigBridge;
 
 /// <summary>
-/// 대상 모드의 설정 파일을 읽고 쓴다. 설정 편집기 등록과 모드 페이지가 함께 쓴다.
+/// 같은 <c>user/mods</c> 안에 있는 다른 모드의 설정 파일을 읽고 쓴다.
 /// 남의 파일을 다루므로 실패해도 던지지 않고 null·false 로 알린다.
+///
+/// 모드를 더하려면 <see cref="Targets"/> 에 한 줄을 더하고 POCO 를 하나 만들면 된다.
 /// </summary>
 [Injectable]
 public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
@@ -22,13 +24,44 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
 
     private static readonly JsonSerializerOptions WriteOptions = new() { WriteIndented = true };
 
-    /// <summary>All In Weapon: Unslotted 의 설정 파일. 없으면 null.</summary>
-    public string? AllinWeaponUnslottedPath =>
-        ResolveSiblingModFile("AllinWeaponUnslotted", Path.Combine("config", "config.jsonc"));
-
-    public AllinWeaponUnslottedConfig? LoadAllinWeaponUnslotted()
+    /// <summary>다룰 대상. 키는 화면에서 묶음을 가리키는 이름이다.</summary>
+    public static class Targets
     {
-        var path = AllinWeaponUnslottedPath;
+        public const string AllinWeaponUnslotted = "AllinWeaponUnslotted";
+        public const string HelmetSlotUnion = "HelmetSlotUnion";
+    }
+
+    /// <summary>모드 폴더명 → 설정 파일의 모드 폴더 기준 상대경로.</summary>
+    private static readonly Dictionary<string, string> RelativePaths = new()
+    {
+        [Targets.AllinWeaponUnslotted] = Path.Combine("config", "config.jsonc"),
+        [Targets.HelmetSlotUnion] = "config.jsonc",
+    };
+
+    /// <summary>대상 설정 파일의 절대경로. 모드나 파일이 없으면 null.</summary>
+    public string? PathOf(string modFolderName)
+    {
+        if (!RelativePaths.TryGetValue(modFolderName, out var relative))
+        {
+            return null;
+        }
+
+        var ownFolder = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
+        var modsRoot = Path.GetDirectoryName(ownFolder);
+        if (string.IsNullOrEmpty(modsRoot))
+        {
+            return null;
+        }
+
+        var full = Path.Combine(modsRoot, modFolderName, relative);
+        return File.Exists(full) ? full : null;
+    }
+
+    /// <summary>주석이 있는 JSONC 를 읽는다. 읽지 못하면 null.</summary>
+    public T? Load<T>(string modFolderName)
+        where T : class
+    {
+        var path = PathOf(modFolderName);
         if (path is null)
         {
             return null;
@@ -36,7 +69,7 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
 
         try
         {
-            return JsonSerializer.Deserialize<AllinWeaponUnslottedConfig>(File.ReadAllText(path), ReadOptions);
+            return JsonSerializer.Deserialize<T>(File.ReadAllText(path), ReadOptions);
         }
         catch (Exception ex)
         {
@@ -49,9 +82,9 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
     /// 설정을 파일에 쓴다. 처음 쓸 때 원본을 <c>.orig</c> 로 한 번 남긴다 —
     /// 이 쓰기는 원본의 주석을 지우기 때문이다.
     /// </summary>
-    public bool SaveAllinWeaponUnslotted(AllinWeaponUnslottedConfig config)
+    public bool Save<T>(string modFolderName, T config)
     {
-        var path = AllinWeaponUnslottedPath;
+        var path = PathOf(modFolderName);
         if (path is null)
         {
             return false;
@@ -75,19 +108,5 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
             logger.Error($"[WebConfigBridge] 설정을 저장하지 못했다: {path} — {ex.Message}");
             return false;
         }
-    }
-
-    /// <summary>같은 <c>user/mods</c> 안에 있는 다른 모드의 파일 경로. 없으면 null.</summary>
-    private string? ResolveSiblingModFile(string modFolderName, string relativePath)
-    {
-        var ownFolder = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
-        var modsRoot = Path.GetDirectoryName(ownFolder);
-        if (string.IsNullOrEmpty(modsRoot))
-        {
-            return null;
-        }
-
-        var full = Path.Combine(modsRoot, modFolderName, relativePath);
-        return File.Exists(full) ? full : null;
     }
 }

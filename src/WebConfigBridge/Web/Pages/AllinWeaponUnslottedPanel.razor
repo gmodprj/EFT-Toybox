@@ -1,0 +1,90 @@
+@inject ConfigStore Store
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h6" GutterBottom="true">All In Weapon: Unslotted</MudText>
+<MudText Typo="Typo.body2" Class="mb-4">무기·부품·탄약의 호환 제한을 푼다.</MudText>
+
+@if (_config is null)
+{
+    <MudAlert Severity="Severity.Warning">
+        설정 파일을 찾지 못했다. 그 모드가 <code>user/mods/AllinWeaponUnslotted</code> 에 설치되어 있는지 확인하라.
+    </MudAlert>
+}
+else
+{
+    <MudPaper Class="pa-4 mb-4">
+        <MudSwitch T="bool" @bind-Value="_config.ModEnabled" Color="Color.Primary"
+                   Label="모드 사용 — 끄면 이 모드가 데이터베이스를 건드리지 않는다" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">칸 풀기</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.FckWeapons" Color="Color.Primary"
+                   Label="무기 칸 — 무기 본체의 부착 칸에 아무 부품이나" />
+        <MudSwitch T="bool" @bind-Value="_config.FckMods" Color="Color.Primary"
+                   Label="부품 칸 — 부품의 하위 칸에 아무 부품이나" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">탄약</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.FckChambers" Color="Color.Primary"
+                   Label="약실 — 약실에 아무 탄약이나" />
+        <MudSwitch T="bool" @bind-Value="_config.FckCalibers" Color="Color.Primary"
+                   Label="탄창 구경 — 무기에 아무 탄창이나" />
+        <MudSwitch T="bool" @bind-Value="_config.FckMagazines" Color="Color.Primary"
+                   Label="탄창 탄약 — 탄창에 아무 탄약이나" />
+        <MudText Typo="Typo.caption">
+            셋 중 둘만 켜면 반쪽 조합이 된다. 약실과 탄창 탄약만 켜면 무기에는 맞는 탄창만 들어간다.
+        </MudText>
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">충돌</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.RemoveConflictingItems" Color="Color.Primary"
+                   Label="부품 충돌 무시 — 부품의 ConflictingItems 필터를 지운다" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">실험</MudText>
+        <MudText Typo="Typo.caption" Class="mb-2">
+            원본이 "본인 책임" 이라고 적어둔 항목들이다. 기본은 꺼짐이다.
+        </MudText>
+        <MudSwitch T="bool" @bind-Value="_config.FckALL" Color="Color.Warning"
+                   Label="모든 분류 밀어넣기 — 맞는 분류만이 아니라 전부를 칸 필터에 넣는다" />
+        <MudSwitch T="bool" @bind-Value="_config.Experimental" Color="Color.Warning"
+                   Label="다른 방식으로 칸 풀기 — 게임이 로딩되지 않을 때 시도" />
+    </MudPaper>
+
+    <MudStack Row="true" Spacing="2">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save">저장</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="Reload">다시 불러오기</MudButton>
+    </MudStack>
+
+    <MudText Typo="Typo.caption" Class="mt-4">파일: <code>@Store.PathOf(ConfigStore.Targets.AllinWeaponUnslotted)</code></MudText>
+}
+
+@code {
+    private AllinWeaponUnslottedConfig? _config;
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload() =>
+        _config = Store.Load<AllinWeaponUnslottedConfig>(ConfigStore.Targets.AllinWeaponUnslotted);
+
+    private void Save()
+    {
+        if (_config is null)
+        {
+            return;
+        }
+
+        if (Store.Save(ConfigStore.Targets.AllinWeaponUnslotted, _config))
+        {
+            Snackbar.Add("저장했다. 적용은 다음 서버 시작부터다.", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("저장하지 못했다. 서버 로그를 보라.", Severity.Error);
+        }
+    }
+}

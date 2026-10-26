@@ -679,3 +679,13 @@ F12 메뉴가 없는 설치 모드 99개를 전수 조사해 `doc/specs/2026-10-
 - `__PrivateComponentRenderModeAttribute` (`@rendermode InteractiveServer`) — 없으면 정적 렌더라 토글이 먹지 않는다
 
 셋을 모두 맞춘 뒤 빌드 산출물의 어트리뷰트가 전례와 같아진 것을 확인했다. 실측: 페이지 길이 15,994 → 29,578 바이트, `mud-switch` 마크업 0 → 90회, `mud-theme` 1회, 서버 오류 0.
+
+#### HelmetSlotUnion 을 같은 페이지에 묶음 (2026-10-26)
+
+모드마다 페이지를 만들면 첫 화면이 카드로 뒤덮인다. `WebConfigBridge` 한 페이지 안에 탭으로 담는 쪽으로 갔다.
+
+구조를 그에 맞게 정리했다 — `ConfigStore` 가 모드별 전용 메서드 대신 `PathOf`/`Load<T>`/`Save<T>` 일반형이 되고, 대상은 `Targets` 상수와 경로 표 한 줄로 등록된다. 화면도 모드별 패널 컴포넌트(`AllinWeaponUnslottedPanel`, `HelmetSlotUnionPanel`)로 쪼갰다. 다음 모드를 더할 때는 POCO 하나 + 패널 하나 + 경로 한 줄이면 된다.
+
+HelmetSlotUnion 은 토글 5개에 더해 제외 목록 둘(`ExcludedSlotNames`, `ExcludedHelmetIds`)이 있어 여러 줄 입력칸으로 넣었다. 저장할 때 빈 줄과 앞뒤 공백은 버린다.
+
+실측: 서버 오류 0, 페이지 200·30,215 바이트, `mud-tabs` 7회·`mud-tab` 14회로 탭이 그려진다. 둘째 탭 내용은 MudTabs 가 활성 패널만 그리므로 서버 응답에는 없다 — 클릭했을 때 들어온다.
