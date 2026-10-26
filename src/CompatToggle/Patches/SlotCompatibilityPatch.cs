@@ -23,7 +23,7 @@ namespace CompatToggle.Patches
         /// 영향받지 않는다.
         /// </summary>
         [PatchPostfix]
-        private static void Postfix(Slot __instance, ref bool __result)
+        private static void Postfix(Slot __instance, Item item, ref bool __result)
         {
             if (__result)
             {
@@ -37,6 +37,7 @@ namespace CompatToggle.Patches
             }
 
             __result = true;
+            CompatTogglePlugin.LogForced(kind.ToString(), __instance?.ID, item?.TemplateId.ToString());
         }
     }
 }

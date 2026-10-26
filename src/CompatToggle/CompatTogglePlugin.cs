@@ -1,5 +1,6 @@
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 
 namespace CompatToggle
 {
@@ -31,6 +32,23 @@ namespace CompatToggle
 
         public static bool LogDecisions => _logDecisions != null && _logDecisions.Value;
 
+        private static ManualLogSource _log;
+
+        /// <summary>
+        /// 거부될 판정을 허용으로 바꾼 건을 남긴다. 호출자는 바꾼 경우에만 부른다.
+        /// CheckCompatibility 는 인벤토리 조작마다 여러 번 불리는 뜨거운 경로이므로,
+        /// 문자열을 만들기 전에 빠져나간다.
+        /// </summary>
+        public static void LogForced(string kind, string slotId, string itemName)
+        {
+            if (_logDecisions == null || !_logDecisions.Value || _log == null)
+            {
+                return;
+            }
+
+            _log.LogInfo($"forced allow: {kind} slot='{slotId}' item='{itemName}'");
+        }
+
         private void Awake()
         {
             _master = Config.Bind("General", "Master switch", true,
@@ -56,6 +74,8 @@ namespace CompatToggle
 
             _ignoreConflicts = Config.Bind("Compatibility", "Ignore conflicts", true,
                 "Ignore ConflictingItems between weapons and mods. Helmets and face gear are left alone, so mods that author those conflicts keep working.");
+
+            _log = Logger;
 
             new Patches.SlotCompatibilityPatch().Enable();
             new Patches.ConflictPatch().Enable();

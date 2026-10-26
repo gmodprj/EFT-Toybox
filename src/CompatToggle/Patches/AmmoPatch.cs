@@ -16,7 +16,7 @@ namespace CompatToggle.Patches
         }
 
         [PatchPostfix]
-        private static void Postfix(ref bool __result)
+        private static void Postfix(StackSlot __instance, Item item, ref bool __result)
         {
             if (__result)
             {
@@ -29,6 +29,7 @@ namespace CompatToggle.Patches
             }
 
             __result = true;
+            CompatTogglePlugin.LogForced("CartridgeStack", __instance?.ID, item?.TemplateId.ToString());
         }
     }
 
@@ -44,7 +45,7 @@ namespace CompatToggle.Patches
         }
 
         [PatchPostfix]
-        private static void Postfix(ref bool __result)
+        private static void Postfix(Magazine __instance, Ammo ammo, ref bool __result)
         {
             if (__result)
             {
@@ -57,6 +58,7 @@ namespace CompatToggle.Patches
             }
 
             __result = true;
+            CompatTogglePlugin.LogForced("Magazine", __instance?.TemplateId.ToString(), ammo?.TemplateId.ToString());
         }
     }
 }

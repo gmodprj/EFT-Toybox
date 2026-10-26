@@ -37,6 +37,7 @@ namespace CompatToggle.Patches
             }
 
             __result = true;
+            CompatTogglePlugin.LogForced("Conflict", null, item?.TemplateId.ToString());
         }
     }
 }
