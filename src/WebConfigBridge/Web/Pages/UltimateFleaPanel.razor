@@ -1,0 +1,59 @@
+@inject ConfigStore Store
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h6" GutterBottom="true">Ultimate Flea</MudText>
+<MudText Typo="Typo.body2" Class="mb-4">플리마켓의 가격·경제 기능을 켜고 끈다.</MudText>
+
+@if (_config is null)
+{
+    <MudAlert Severity="Severity.Warning">
+        설정 파일을 찾지 못했다. <code>user/mods/UltimateFlea/config/mod.json</code> 을 확인하라.
+    </MudAlert>
+}
+else
+{
+    <MudAlert Severity="Severity.Info" Class="mb-4" Dense="true">
+        여기서는 기능 스위치(<code>mod.json</code>)만 다룬다. 경제 수치·레벨 제한·가격표는 같은 폴더의 다른 파일에 있다.
+    </MudAlert>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">기능</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.Enabled" Color="Color.Primary" Label="모드 사용" />
+        <MudSwitch T="bool" @bind-Value="_config.EnablePoolManager" Color="Color.Primary" Label="오퍼 풀 관리" />
+        <MudSwitch T="bool" @bind-Value="_config.EnablePricing" Color="Color.Primary" Label="가격 조정" />
+        <MudSwitch T="bool" @bind-Value="_config.EnableEconomy" Color="Color.Primary" Label="경제 시뮬" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">가격</MudText>
+        <MudTextField T="string" @bind-Value="_config.PriceSource" Label="가격 원천"
+                      Variant="Variant.Outlined" HelperText="원본이 쓰는 값. 기본은 local" />
+        <MudSwitch T="bool" @bind-Value="_config.PvePrices" Color="Color.Primary" Label="PVE 가격 쓰기" />
+        <MudSwitch T="bool" @bind-Value="_config.PreserveBasePrices" Color="Color.Primary" Label="기본 가격 보존" />
+        <MudSwitch T="bool" @bind-Value="_config.DisableTraderPriceFloor" Color="Color.Primary" Label="상인 최저가 제한 끄기" />
+        <MudSwitch T="bool" @bind-Value="_config.ExactOfferPrices" Color="Color.Primary" Label="오퍼 가격 그대로" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">그 밖</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.PlayerOffersOnly" Color="Color.Warning" Label="플레이어 오퍼만" />
+        <MudSwitch T="bool" @bind-Value="_config.Debug" Color="Color.Primary" Label="자세한 기록" />
+    </MudPaper>
+
+    <SaveBar OnSave="Save" OnReload="Reload" Path="@Store.PathOf(ConfigStore.Targets.UltimateFleaMod)" />
+}
+
+@code {
+    private UltimateFleaModConfig? _config;
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload() =>
+        _config = Store.Load<UltimateFleaModConfig>(ConfigStore.Targets.UltimateFleaMod);
+
+    private void Save()
+    {
+        if (_config is null) return;
+        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.UltimateFleaMod, _config);
+    }
+}

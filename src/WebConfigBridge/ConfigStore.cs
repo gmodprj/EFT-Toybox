@@ -24,27 +24,46 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
 
     private static readonly JsonSerializerOptions WriteOptions = new() { WriteIndented = true };
 
-    /// <summary>다룰 대상. 키는 화면에서 묶음을 가리키는 이름이다.</summary>
+    /// <summary>다룰 대상. 값은 화면과 코드가 같이 쓰는 식별자다.</summary>
     public static class Targets
     {
         public const string AllinWeaponUnslotted = "AllinWeaponUnslotted";
         public const string HelmetSlotUnion = "HelmetSlotUnion";
+        public const string DynamicMaps = "DynamicMaps";
+        public const string TradeMarker = "TradeMarker";
+        public const string EquipmentIsEternal = "EquipmentIsEternal";
+        public const string UltimateFleaMod = "UltimateFleaMod";
+        public const string RealisticInsurance = "RealisticInsurance";
+        public const string RepairSkillExtension = "RepairSkillExtension";
+        public const string InfiniteEverything = "InfiniteEverything";
     }
 
-    /// <summary>모드 폴더명 → 설정 파일의 모드 폴더 기준 상대경로.</summary>
-    private static readonly Dictionary<string, string> RelativePaths = new()
+    /// <summary>
+    /// 대상 → (모드 폴더명, 모드 폴더 기준 상대경로).
+    /// 모드 하나가 설정 파일을 여럿 가질 수 있으므로 키는 폴더명이 아니라 대상 식별자다.
+    /// </summary>
+    private static readonly Dictionary<string, (string Folder, string Relative)> RelativePaths = new()
     {
-        [Targets.AllinWeaponUnslotted] = Path.Combine("config", "config.jsonc"),
-        [Targets.HelmetSlotUnion] = "config.jsonc",
+        [Targets.AllinWeaponUnslotted] = ("AllinWeaponUnslotted", Path.Combine("config", "config.jsonc")),
+        [Targets.HelmetSlotUnion] = ("HelmetSlotUnion", "config.jsonc"),
+        [Targets.DynamicMaps] = ("mpstark-dynamicmaps", "config.json"),
+        [Targets.TradeMarker] = ("Moe-TradeMarker", "config.json"),
+        [Targets.EquipmentIsEternal] = ("EquipmentIsEternal", "config.jsonc"),
+        [Targets.UltimateFleaMod] = ("UltimateFlea", Path.Combine("config", "mod.json")),
+        [Targets.RealisticInsurance] = ("RealisticInsurance", Path.Combine("config", "config.json")),
+        [Targets.RepairSkillExtension] = ("RepairSkillExtension", "buffs.jsonc"),
+        [Targets.InfiniteEverything] = ("InfiniteEverything", "state.json"),
     };
 
     /// <summary>대상 설정 파일의 절대경로. 모드나 파일이 없으면 null.</summary>
-    public string? PathOf(string modFolderName)
+    public string? PathOf(string target)
     {
-        if (!RelativePaths.TryGetValue(modFolderName, out var relative))
+        if (!RelativePaths.TryGetValue(target, out var entry))
         {
             return null;
         }
+
+        var (modFolderName, relative) = entry;
 
         var ownFolder = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
         var modsRoot = Path.GetDirectoryName(ownFolder);
@@ -58,10 +77,10 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
     }
 
     /// <summary>주석이 있는 JSONC 를 읽는다. 읽지 못하면 null.</summary>
-    public T? Load<T>(string modFolderName)
+    public T? Load<T>(string target)
         where T : class
     {
-        var path = PathOf(modFolderName);
+        var path = PathOf(target);
         if (path is null)
         {
             return null;
@@ -82,9 +101,9 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
     /// 설정을 파일에 쓴다. 처음 쓸 때 원본을 <c>.orig</c> 로 한 번 남긴다 —
     /// 이 쓰기는 원본의 주석을 지우기 때문이다.
     /// </summary>
-    public bool Save<T>(string modFolderName, T config)
+    public bool Save<T>(string target, T config)
     {
-        var path = PathOf(modFolderName);
+        var path = PathOf(target);
         if (path is null)
         {
             return false;

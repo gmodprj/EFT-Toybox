@@ -9,7 +9,7 @@ namespace WebConfigBridge;
 /// 이 값들은 그 모드가 <c>OnLoadAsync</c> 에서 한 번만 읽는다. 웹 편집기에서 저장하면
 /// 파일은 즉시 바뀌지만 적용은 **다음 서버 시작부터**다.
 /// </summary>
-public class AllinWeaponUnslottedConfig
+public class AllinWeaponUnslottedConfig : TargetConfig
 {
     /// <summary>false 로 두면 그 모드가 데이터베이스를 건드리지 않는다.</summary>
     [JsonPropertyName("ModEnabled")]
