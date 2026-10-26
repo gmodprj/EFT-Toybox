@@ -806,3 +806,15 @@ SpecialScope, Stock). 칸 466개에 항목 67314개를 더했다.
 **`IncludeAttachmentSlots` 가 `false` 로 바뀌어 있다.** 기본값은 `true`(`src/SlotCategoryRelax/Config.cs:35`)이고 `.orig` 도 `true`였으며, 이 항목은 페이지에 스위치로 나와 있다(`SlotCategoryRelaxPanel.razor:22`) — 결함이 아니라 페이지에서 꺼진 것이다.
 
 그 결과를 수치로 확인했다. 꺼져 있으면 **무기 본체 칸만** 훑으므로 발견 분류가 25종이고(`discovered-categories.json`: AssaultScope 16 … TacticalCombo 20), 부품 하위 칸(마운트·레일)에만 붙는 `NightVision`·`ThermalVision` 은 발견되지 않는다. 설정에는 그 둘이 `true` 로 켜져 있어 "이 설치본에 없는 분류 2개: ThermalVision, NightVision" 경고가 난다 — 경고는 의도대로 동작한 것이고, **켜 둔 그 둘이 지금 조건에서 아무 효과가 없다**는 뜻이다. 야간투시경·열화상을 서로 바꿔 끼우려면 `부품 칸까지 포함` 을 켜야 한다.
+
+#### SlotCategoryRelax 게임 확인 완료 (2026-10-26)
+
+사용자가 게임에서 개조 화면을 확인했고 전부 의도대로였다.
+
+최종 설정 — 분류 28종 중 15종을 켰다: 조준 전부(AssaultScope, OpticScope, SpecialScope, Collimator, CompactCollimator, IronSight, NightVision, ThermalVision), 총구 전부(Silencer, FlashHider, MuzzleCombo), 구조 일부(Handguard, Stock, PistolGrip, Charge). `Mount`·`Foregrip`·`Bipod`·`TacticalCombo`·`AuxiliaryMod`·`Receiver`·`Barrel`·`Gasblock`·탄창 계열은 바닐라로 두었다. `IncludeAttachmentSlots` 켬.
+
+적용 결과: 칸 1310개에 항목 168044개. `IncludeAttachmentSlots` 를 끈 상태(466칸·67314항목)와 견주면 부품 하위 칸이 더해져 2.5배가 됐다.
+
+같은 실행의 클라이언트 로그: 플러그인 116개 로드, 오류는 기존 Fika 미설치 관련 1건뿐, `Direct load flow error` **0건** — 탄창 소실도 재발하지 않았다.
+
+조정이 필요해지면 서버 웹 페이지의 모드 설정 → "분류별 칸 열기" 에서 스위치로 바꾸고 서버를 다시 띄우면 된다. 목록이 길어 불편하면 구조 계열(Handguard·Stock·PistolGrip)을 먼저 끄는 것이 효과가 크고, 조준경이 보이는데 끼워지지 않으면 올릴 자리가 막힌 것이므로 `Mount` 를 켜면 풀린다.
