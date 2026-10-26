@@ -1,0 +1,34 @@
+{
+  "stage": "stage8-C",
+  "spt": "4.1.6",
+  "note": "8-C 결속. 프로필 백업 후 하나씩 설치·테스트.",
+  "mods": [
+    {
+      "group": "8C-1",
+      "id": 2943,
+      "name": "Death Shadow Tweaks",
+      "version": "1.0.0",
+      "size": 4516,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2943/death-shadow-tweaks/1.0.0"
+    },
+    {
+      "group": "8C-2",
+      "id": 505,
+      "name": "Olympus",
+      "version": "4.1.3",
+      "size": 54609,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/505/olympus/4.1.3"
+    },
+    {
+      "group": "8C-3",
+      "id": 2906,
+      "name": "SIM - Simple Item Modifier",
+      "version": "0.1.0",
+      "size": 1481798,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2906/sim-simple-item-modifier/0.1.0"
+    }
+  ]
+}
