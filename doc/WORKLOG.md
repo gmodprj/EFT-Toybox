@@ -657,3 +657,15 @@ F12 메뉴가 없는 설치 모드 99개를 전수 조사해 `doc/specs/2026-10-
 - `AllinWeaponUnslotted` 는 설정을 `OnLoadAsync` 에서 한 번만 읽는다. 웹에서 저장하면 파일은 즉시 바뀌지만 적용은 다음 서버 시작부터다. 표시명에 그 사실을 적었다.
 - 편집기가 JSON 으로 다시 쓰므로 원본 `config.jsonc` 의 주석이 사라진다. 값은 그 모드가 문제없이 읽는다. 원본은 `backup/allinweaponunslotted-config/` 에 있다.
 - `/configs` 는 Blazor Server 회로로 목록을 채운다. 평범한 HTTP 요청의 HTML 에는 SPT 자체 설정도 `TraderNamer` 도 나타나지 않으므로, 등록이 실제로 보이는지는 상호작용 가능한 브라우저로만 확인된다. 내장 브라우저는 로컬 주소를 거부했다.
+
+#### 모드 페이지로 정정 (2026-10-26)
+
+"서버페이지의 모드페이지에 추가" 를 설정 편집기(`/configs`)에 등록하는 것으로 잘못 읽어 그쪽을 먼저 만들었다. 홈 화면을 보고 나서야 **모드 페이지**가 별도 구역임을 알았다 — `Barter Items Stacks`·`ECOTI`·`jerobackpack` 이 그 자리에 있다.
+
+그 구역은 `SPTarkov.Server.Web.IModBlazorMetadata`(`WWWRootUrl`·`HomePage`·`HomePageDescription`)로 들어간다. 설치된 전례는 `JeroBackpack.ModMetadata` 로, `IModMetadata` 와 함께 구현하고 Razor 컴포넌트를 DLL 안에 담는다(모드 폴더에 DLL 하나뿐, 정적 자원 없음).
+
+그대로 따랐다 — csproj 를 `Microsoft.NET.Sdk.Razor` + `FrameworkReference Microsoft.AspNetCore.App` + MudBlazor 참조로 바꾸고, `Web/Pages/Home.razor`(`@page "/webconfigbridge"`)에 스위치 9개와 저장 버튼을 두었다. 설정 읽기·쓰기는 `ConfigStore` 로 뺐다. 설정 편집기 등록(`ConfigEditorProvider`)은 중복이라 제거했다.
+
+처음 저장할 때 원본을 `config.jsonc.orig` 로 남긴다 — 저장이 주석을 지우기 때문이다.
+
+실측: 모드 로드 오류 0, 홈 화면 HTML 에 `Web Config Bridge` 카드와 `/webconfigbridge` 링크 존재, 그 경로가 200 으로 열리고 본문에 대상 파일 경로(`config.jsonc`)가 찍힌다 — 설정을 실제로 읽어냈다는 뜻이다. 스위치가 화면에 제대로 그려지는지는 Blazor 회로가 필요해 확인하지 못했다.

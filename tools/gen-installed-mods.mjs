@@ -42,7 +42,7 @@ const side = (files) => {
 };
 const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 116개 (2026-10-26 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 97개 (2026-10-26 AllinWeaponUnslotted 복원 + WebConfigBridge 설치 후 재시작, 오류 0 — `server-tests/server-webconfigbridge.log`)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 116개 (2026-10-26 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 97개 (2026-10-26 AllinWeaponUnslotted 복원 + WebConfigBridge 설치 후 재시작, 오류 0 — `server-tests/server-webconfigbridge-modpage.log`)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];
@@ -68,7 +68,7 @@ md += `## 다른 경로로 설치된 것\n\n| 항목 | 위치 | 설치 주체 |\
 const langCount = fs.readdirSync(path.join(ROOT, 'src', 'SptKoreanConfig', 'lang')).filter(f => f.endsWith('.json')).length;
 md += `| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | \`BepInEx\\plugins\\SptKoreanConfig\\\` (DLL 1 + 번역 사전 ${langCount}) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 \`tools/install-koreanconfig.ps1\`. Forge 모드가 아니라 설치 기록에 없다 |\n`;
 md += `| HelmetSlotUnion 0.1.0 (헬멧 부착 칸 합집합) | \`SPT_Runtime\\user\\mods\\HelmetSlotUnion\\\` (DLL 1 + \`config.jsonc\`) | 이 저장소에서 직접 만든 것. 소스는 [../src/HelmetSlotUnion](../src/HelmetSlotUnion), 설치는 \`tools/install-helmetslotunion.ps1\`. Forge 모드가 아니라 설치 기록에 없다 |\n`;
-md += `| WebConfigBridge 0.1.0 (웹 설정 편집기 연결) | \`SPT_Runtime\\user\\mods\\WebConfigBridge\\\` (DLL 1) | 이 저장소에서 직접 만든 것. 소스는 [../src/WebConfigBridge](../src/WebConfigBridge), 설치는 \`tools/install-webconfigbridge.ps1\`. 자체 편집 수단이 없는 다른 서버 모드의 설정 파일을 서버 웹 페이지(\`/configs\`)의 설정 편집기에 등록한다. 현재 대상은 \`All In Weapon: Unslotted\`. Forge 모드가 아니라 설치 기록에 없다 |\n`;
+md += `| WebConfigBridge 0.1.0 (모드 페이지) | \`SPT_Runtime\\user\\mods\\WebConfigBridge\\\` (DLL 1) | 이 저장소에서 직접 만든 것. 소스는 [../src/WebConfigBridge](../src/WebConfigBridge), 설치는 \`tools/install-webconfigbridge.ps1\`. 서버 웹 페이지 첫 화면의 **모드 페이지** 구역에 카드를 만들고(\`/webconfigbridge\`), 거기서 \`All In Weapon: Unslotted\` 의 무기·부품·탄약 호환 설정을 스위치로 고친다. 저장은 즉시, 적용은 다음 서버 시작부터. Forge 모드가 아니라 설치 기록에 없다 |\n`;
 md += `| CompatToggle 0.1.0 (호환성 토글) | **설치 안 함** | 이 저장소에서 직접 만든 것. 소스는 [../src/CompatToggle](../src/CompatToggle). \`All In Weapon: Unslotted\`를 F12 토글로 대체하려 했으나 개조 화면의 부품 목록을 채우지 못해 철회했다. 경위는 [WORKLOG](../WORKLOG.md) 참고 |\n`;
 md += `| HideSpecialIconGrids 1.1.0.1 | \`BepInEx\\plugins\\HideSpecialIconGrids.dll\`, \`BepInEx\\config\\com.pandahhcorp.hidespecialicongrids.cfg\` | SVM \`Greed.exe\`가 프리셋 \`CSM.EnableCSM: true\` 적용 시 설치 (15:01). 설치 기록에 없음 |\n`;
 md += `| SVM 프리셋 \`Noname\` | \`SPT_Runtime\\user\\mods\\[SVM] Server Value Modifier\\Presets\\Noname.json\` | 사용자가 \`Greed.exe\`로 생성. 16:00에 \`Hideout.RemoveConstructionsRequirements\`만 false로 수정 |\n`;
