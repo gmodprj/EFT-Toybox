@@ -1,0 +1,42 @@
+{
+  "guid": "spt.compattoggle",
+  "name": "호환성 토글 (Compat Toggle)",
+  "sections": {
+    "General": "일반",
+    "Compatibility": "호환성"
+  },
+  "settings": {
+    "General/Master switch": {
+      "name": "전체 사용",
+      "desc": "아래 호환성 토글 전부를 한 번에 끈다. 끄면 게임 기본 규칙으로 돌아간다."
+    },
+    "General/Log decisions": {
+      "name": "판정 기록",
+      "desc": "원래 거부될 판정을 이 모드가 허용으로 바꾼 건을 BepInEx 기록에 남긴다. 어떤 조합이 기본 규칙에 걸리고 있었는지 확인할 때 쓴다."
+    },
+    "Compatibility/Weapon slots": {
+      "name": "무기 슬롯",
+      "desc": "무기 본체의 부착 슬롯에 어떤 부품이든 넣을 수 있게 한다."
+    },
+    "Compatibility/Attachment slots": {
+      "name": "부품 슬롯",
+      "desc": "부품의 하위 슬롯에 어떤 부품이든 넣을 수 있게 한다."
+    },
+    "Compatibility/Chamber ammo": {
+      "name": "약실 탄약",
+      "desc": "약실에 어떤 탄약이든 올릴 수 있게 한다. '탄창 탄약'을 끈 상태로 이것만 켜면 약실에는 아무 탄이나 올라가지만 탄창은 제 구경만 받는다."
+    },
+    "Compatibility/Magazine calibers": {
+      "name": "탄창 구경",
+      "desc": "어떤 탄창이든 어떤 무기에 넣을 수 있게 한다. '탄창 탄약'과 함께 켜는 것이 보통의 조합으로, 가진 탄창 중 가장 좋은 것을 아무 무기에나 쓸 수 있다."
+    },
+    "Compatibility/Magazine ammo": {
+      "name": "탄창 탄약",
+      "desc": "어떤 탄약이든 어떤 탄창에 채울 수 있게 한다. '약실 탄약'은 켜고 '탄창 구경'은 끈 경우, 무기에는 여전히 맞는 탄창만 들어간다."
+    },
+    "Compatibility/Ignore conflicts": {
+      "name": "충돌 무시",
+      "desc": "무기와 부품 사이의 ConflictingItems 충돌을 무시한다. 헬멧과 안면 장비는 건드리지 않으므로, 그 충돌을 써넣은 모드들이 계속 동작한다."
+    }
+  }
+}
