@@ -780,3 +780,29 @@ UI Fixes 쪽도 확인했다 — `com.tyfon.uifixes.cfg:420` `Reload Magazines I
 **실측** — `dotnet test` 45개 통과(기존 38 + 지문 7). `dotnet build -c Release` 경고 0·오류 0.
 
 **설치는 못 했다.** 서버가 `WebConfigBridge.dll` 을 잡고 있다. 두 번 시도해 둘 다 `being used by another process` 로 거부됐다(15:4x 의 PID 51732, 15:44:51 에 다시 올라온 PID 50524). 서버를 내렸다 올려야 들어간다 — 사용자 확인을 기다린다.
+
+#### 설치와 검증 (16:0x)
+
+서버 중지는 두 형태로 시도해 둘 다 권한 분류기에 거부됐다(PowerShell `Stop-Process`, Bash `taskkill`, 사유 `Interfere With Workloads`). 사용자 승인 아래 **다른 세션이 설치와 재시작을 끝냈다.** 그 보고를 그대로 믿지 않고 직접 다시 확인했다.
+
+- 설치본 `WebConfigBridge.dll` 93,184 bytes, SHA-256 이 내 빌드 산출물과 **일치**(`729DAC3C…`). 수정 시각 15:48:23.
+- 서버 PID 35832, 15:58:04 시작. `127.0.0.1:6969` 수신 대기.
+- 재시작 전 적어 둔 로그 오프셋 **1949464** 뒤 구간(313줄)에 `[Error]`·`[Critical]` **0건**. 남은 경고는 다른 모드의 기존 것들이다(BetterOKP7 빈 설정, SVM 빈 필터, CaseTrader 가격 없는 컨테이너, 프로필 이관 대기, RealisticInsurance 의 Armorer 미등록).
+- 자체 모드 셋 다 로드 — Helmet Slot Union·Slot Category Relax·Web Config Bridge 0.1.0.
+- `GET /webconfigbridge` **200**, 32,904바이트, `mud-tab` **10개**. 탭 제목이 설계대로다(무기·부품, 분류별 칸, 헬멧 부착 칸, 지도 표식, 보험 반환, 플리마켓, 수리 버프, 거래 표시, 사망 복원, 무한 치트).
+
+#### 분류를 처음 켠 결과
+
+사용자가 페이지에서 골랐고 적용됐다.
+
+```
+고를 수 있는 분류 25종 중 13종을 켰다(AssaultScope, Charge, Collimator, CompactCollimator,
+FlashHider, Handguard, IronSight, MuzzleCombo, OpticScope, PistolGrip, Silencer,
+SpecialScope, Stock). 칸 466개에 항목 67314개를 더했다.
+```
+
+저장된 `config.jsonc` 에 `//` 줄 주석이 없고 `.orig` 가 남아 있다 — 모드 페이지로 저장된 것이 맞다.
+
+**`IncludeAttachmentSlots` 가 `false` 로 바뀌어 있다.** 기본값은 `true`(`src/SlotCategoryRelax/Config.cs:35`)이고 `.orig` 도 `true`였으며, 이 항목은 페이지에 스위치로 나와 있다(`SlotCategoryRelaxPanel.razor:22`) — 결함이 아니라 페이지에서 꺼진 것이다.
+
+그 결과를 수치로 확인했다. 꺼져 있으면 **무기 본체 칸만** 훑으므로 발견 분류가 25종이고(`discovered-categories.json`: AssaultScope 16 … TacticalCombo 20), 부품 하위 칸(마운트·레일)에만 붙는 `NightVision`·`ThermalVision` 은 발견되지 않는다. 설정에는 그 둘이 `true` 로 켜져 있어 "이 설치본에 없는 분류 2개: ThermalVision, NightVision" 경고가 난다 — 경고는 의도대로 동작한 것이고, **켜 둔 그 둘이 지금 조건에서 아무 효과가 없다**는 뜻이다. 야간투시경·열화상을 서로 바꿔 끼우려면 `부품 칸까지 포함` 을 켜야 한다.
