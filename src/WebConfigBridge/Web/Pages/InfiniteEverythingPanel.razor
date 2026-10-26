@@ -1,5 +1,6 @@
 @inject ConfigStore Store
 @inject ISnackbar Snackbar
+@inject IDialogService Dialog
 
 <MudText Typo="Typo.h6" GutterBottom="true">Infinite Everything</MudText>
 <MudText Typo="Typo.body2" Class="mb-4">
@@ -31,15 +32,18 @@ else
 
 @code {
     private Dictionary<string, InfiniteEverythingProfile>? _state;
+    private readonly ConfigStamp _stamp = new();
 
     protected override void OnInitialized() => Reload();
 
     private void Reload() =>
-        _state = Store.Load<Dictionary<string, InfiniteEverythingProfile>>(ConfigStore.Targets.InfiniteEverything);
+        _state = Store.Load<Dictionary<string, InfiniteEverythingProfile>>(
+            ConfigStore.Targets.InfiniteEverything, _stamp);
 
-    private void Save()
+    private async Task Save()
     {
         if (_state is null) return;
-        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.InfiniteEverything, _state);
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.InfiniteEverything, _state, _stamp, Reload);
     }
 }

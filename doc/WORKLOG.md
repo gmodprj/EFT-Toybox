@@ -745,3 +745,38 @@ Headphones  < Equipment     < CompoundItem < Item       ← Mod 아님
 그래서 두 군데에 조건을 걸었다 — 고를 수 있는 분류는 `Mod` 계열만, 칸을 건드리는 대상은 무기와 무기 부품만. 57종 → 28종이 됐다.
 
 실측: 서버 오류 0, 분류 28종 발견, 기본값 전부 꺼짐이라 DB 변경 0. 모드 페이지 탭 10개.
+
+### 탄창 소실 재발 확인과 묵은 값 저장 결함 (2026-10-26 15:4x ~ 16:0x)
+
+#### 탄창 소실 — 이미 꺼져 있었다
+
+인계 문서는 `BepInEx/config/de.tosox.magretentionreload.cfg` 의 `Enabled` 가 **true** 로 돌아갔다고 적었는데, 이어받아 읽어 보니 **false** 였다. 파일 수정 시각은 인계 문서가 적은 것과 같은 **15:13:06** 이다. 즉 15:13 의 그 쓰기가 false 를 적었다 — 게임은 15:00 에 시작해 그때 실행 중이었으므로 F12 에서 끈 쓰기다.
+
+이번 실행의 `LogOutput.log`(2,959줄) 에 `Direct load flow error` 는 **2건**(1947·1976줄)뿐이고, 레이드 진입(1796줄 `/singleplayer/settings/raid/menu`) 직후에 몰려 있다. 그 뒤 980줄 동안은 없다. BepInEx 로그에 시각이 없어 두 오류가 15:13 앞인지 뒤인지는 **확정하지 못했다.** 다만 끈 뒤로 더 늘지 않은 것과는 맞는다.
+
+파일로 고치는 길은 쓰지 않았다 — 게임이 켜져 있었다(PID 28236, 15:00:21 시작). 그 상태에서 파일을 고치면 종료할 때 메모리 값으로 덮어써진다.
+
+**검증** — 15:43 에 게임이 종료됐다. 종료 뒤 그 cfg 의 수정 시각은 여전히 **15:13:06**, 값은 `Enabled = false` 다. BepInEx 가 종료 시 다시 쓰지 않았다는 것은 메모리 값이 파일 값과 같았다는 뜻이다. 다음 실행은 꺼진 상태로 읽는다.
+
+UI Fixes 쪽도 확인했다 — `com.tyfon.uifixes.cfg:420` `Reload Magazines In-Place = true`. 탄창 회수는 이쪽이 맡으므로 잃는 기능이 없다.
+
+재발했으므로 [MODS-GUIDE.md](MODS-GUIDE.md) 의 "알려진 충돌" 머리에 경고 상자를 넣고(켜지 말 것), 끄는 자리가 둘인데 게임 실행 중에는 F12 만 유효하다는 것을 적었다. 비교 표에 재발 줄을 더하고, 모드 표의 "현재 꺼 둠" 을 "꺼 둬야 한다 — 켜지 말 것" 으로 바꿨다.
+
+#### 모드 페이지가 묵은 값으로 저장을 되돌리던 것
+
+패널은 열릴 때 파일을 읽고 저장할 때 들고 있던 값을 그대로 썼다. 페이지를 열어둔 사이 파일이 밖에서 바뀌면 저장이 그 변경을 되돌린다. 실제로 `FckWeapons` 를 파일에서 끈 것이 나중에 켜져 있었다.
+
+고친 방식 — 읽을 때 파일 내용의 **SHA-256 지문**을 남기고, 쓰기 직전에 파일을 다시 읽어 견준다. 다르면 쓰지 않고 `SaveOutcome.Conflict` 로 돌아와 묻는다("화면 값으로 덮어쓰기" / "파일 값 불러오기"). 덮어쓰기를 고르지 않으면 쓰지 않고 파일 쪽을 다시 불러온다.
+
+- 새 파일 `ConfigStamp.cs` — 지문과 `SaveOutcome`. SPT 를 참조하지 않는 순수 코드라 테스트에서 링크해 쓴다.
+- `ConfigStore.Load/Save` 에 `ConfigStamp?` 를 더했다. 지문을 주지 않으면 검사하지 않으므로 기존 호출의 동작은 그대로다. `Save` 의 반환이 `bool` → `SaveOutcome` 으로 바뀌었다.
+- `SaveResult.ReportAsync` 가 충돌 때 물어보는 자리다. 패널 10개가 모두 이 하나를 지나므로 한 번에 고쳐졌다 — 직접 `Store.Save` 를 부르던 AllinWeaponUnslotted·HelmetSlotUnion 패널도 여기로 모았다.
+- 시각(mtime) 이 아니라 내용 해시를 쓴다. 같은 초 안에 바뀌거나 시각만 건드려지는 경우에 시각은 믿을 수 없다.
+
+막다른 길 하나 — `IDialogService.ShowMessageBox` 로 썼다가 빌드가 깨졌다. 설치본의 `MudBlazor.dll` 을 Mono.Cecil 로 열어 보니 **9.7.0** 이고 이름이 `ShowMessageBoxAsync` 다. 추측 대신 어셈블리를 읽어 확정했다.
+
+호스트가 대화상자를 그려 주는지도 확인했다 — `SPTarkov.Server.Web.dll` 에 `MudThemeProvider`·`MudDialogProvider`·`MudSnackbarProvider`·`MudPopoverProvider` 문자열이 인접 오프셋에 함께 있다. 같은 레이아웃에서 넷을 다 올린다.
+
+**실측** — `dotnet test` 45개 통과(기존 38 + 지문 7). `dotnet build -c Release` 경고 0·오류 0.
+
+**설치는 못 했다.** 서버가 `WebConfigBridge.dll` 을 잡고 있다. 두 번 시도해 둘 다 `being used by another process` 로 거부됐다(15:4x 의 PID 51732, 15:44:51 에 다시 올라온 PID 50524). 서버를 내렸다 올려야 들어간다 — 사용자 확인을 기다린다.

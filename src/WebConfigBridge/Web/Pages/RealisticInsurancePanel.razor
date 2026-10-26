@@ -1,5 +1,6 @@
 @inject ConfigStore Store
 @inject ISnackbar Snackbar
+@inject IDialogService Dialog
 
 <MudText Typo="Typo.h6" GutterBottom="true">Realistic Insurance</MudText>
 <MudText Typo="Typo.body2" Class="mb-4">
@@ -50,15 +51,17 @@ else
 
 @code {
     private RealisticInsuranceConfig? _config;
+    private readonly ConfigStamp _stamp = new();
 
     protected override void OnInitialized() => Reload();
 
     private void Reload() =>
-        _config = Store.Load<RealisticInsuranceConfig>(ConfigStore.Targets.RealisticInsurance);
+        _config = Store.Load<RealisticInsuranceConfig>(ConfigStore.Targets.RealisticInsurance, _stamp);
 
-    private void Save()
+    private async Task Save()
     {
         if (_config is null) return;
-        SaveResult.Report(Store, Snackbar, ConfigStore.Targets.RealisticInsurance, _config);
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.RealisticInsurance, _config, _stamp, Reload);
     }
 }
