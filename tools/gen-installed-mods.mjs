@@ -40,9 +40,9 @@ const side = (files) => {
   const d = files.some(f => /^EscapeFromTarkov_Data\\/i.test(f)), o = files.some(f => !/^(BepInEx|SPT_Runtime|EscapeFromTarkov_Data)\\/i.test(f));
   return [c && '게임', d && '게임 데이터', s && '서버', o && '루트'].filter(Boolean).join('+');
 };
-const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)' };
+const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)', 8: '8차 — OP·AI 동료·HUD 포팅본 (8-A 5 + 8-B 3 + 8-C 3 + 8-D 치트 2 + 8-E AI 동료 3 + 8-F 대형 1)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 116개 (2026-10-26 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 97개 (2026-10-26 AllinWeaponUnslotted 복원 + WebConfigBridge 설치 후 재시작, 오류 0 — `server-tests/server-webconfigbridge-modpage.log`)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 116개 (2026-10-26 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐 — 8-A 클라이언트 모드 2개를 넣은 뒤로는 아직 재확인하지 않음) / 서버 모드 로드: 101개 (2026-10-27 8-A 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8A-755.out.txt`)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];
@@ -52,7 +52,7 @@ md += `- 설치된 모드: **${total.length}개**, 설치 파일 **${total.reduc
 md += `${loadStatus}\n`;
 md += `- **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음\n\n`;
 
-for (const st of ['1', '2', '3', '4', '5', '6', '7']) {
+for (const st of ['1', '2', '3', '4', '5', '6', '7', '8']) {
   const list = all.filter(m => m.stage === st);
   if (!list.length) continue;
   md += `## ${stageTitle[st]}\n\n| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |\n| --- | --- | --- | --- | --- | --- |\n`;

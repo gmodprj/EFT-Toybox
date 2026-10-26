@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **165개**, 설치 파일 **3255개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 116개 (2026-10-26 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 97개 (2026-10-26 AllinWeaponUnslotted 복원 + WebConfigBridge 설치 후 재시작, 오류 0 — `server-tests/server-webconfigbridge-modpage.log`)
+- 설치된 모드: **170개**, 설치 파일 **3273개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 116개 (2026-10-26 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐 — 8-A 클라이언트 모드 2개를 넣은 뒤로는 아직 재확인하지 않음) / 서버 모드 로드: 101개 (2026-10-27 8-A 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8A-755.out.txt`)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -209,6 +209,28 @@
 | [Item Limits Begone!](https://sp-mod.com/mod/2524) | 1.1.0 | 서버 | - | 2 | `stage7A-2524` |
 | [SOMF - SitOnMyFace](https://sp-mod.com/mod/3105) | 0.1.2 | - | - | 0 | **미설치** |
 | [ArmorInfoPlus](https://sp-mod.com/mod/3049) | 1.0.0 | 게임 | - | 2 | `stage7A-3049` |
+
+## 8차 — OP·AI 동료·HUD 포팅본 (8-A 5 + 8-B 3 + 8-C 3 + 8-D 치트 2 + 8-E AI 동료 3 + 8-F 대형 1)
+
+| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
+| --- | --- | --- | --- | --- | --- |
+| [Dev Balaclava Fix](https://sp-mod.com/mod/1937) | 1.2.0 | 게임 | - | 2 | `stage8A-1937` |
+| [Headshot Damage Redirection](https://sp-mod.com/mod/2953) | 1.8.0 | 게임 | - | 1 | `stage8A-2953` |
+| [MeleeMultiplier](https://sp-mod.com/mod/2763) | 0.0.4 | 서버 | - | 2 | `stage8A-2763` |
+| [The Blacklist - flea market enhancements](https://sp-mod.com/mod/755) | 3.1.1 | 서버 | - | 5 | `stage8A-755` |
+| [Fujiwara Mokou (Touhou)](https://sp-mod.com/mod/1796) | 1.2.0 | 서버 | - | 8 | `stage8A-1796` |
+| [Recoil Rework (Legacy)](https://sp-mod.com/mod/2190) | 2.0.0 | - | - | 0 | **미설치** |
+| [Instant Insurance](https://sp-mod.com/mod/2394) | 1.1.2 | - | - | 0 | **미설치** |
+| [Shorter Magazines](https://sp-mod.com/mod/3186) | 1.1.0 | - | **결속** | 0 | **미설치** |
+| [Death Shadow Tweaks](https://sp-mod.com/mod/2943) | 1.0.0 | - | **결속** | 0 | **미설치** |
+| [Olympus](https://sp-mod.com/mod/505) | 4.1.3 | - | **결속** | 0 | **미설치** |
+| [SIM - Simple Item Modifier](https://sp-mod.com/mod/2906) | 0.1.0 | - | **결속** | 0 | **미설치** |
+| [MagicBullet](https://sp-mod.com/mod/3065) | 1.0.0 | - | - (치트 표시) | 0 | **미설치** |
+| [Tushonka-800: Combat Augmentation System](https://sp-mod.com/mod/3169) | 1.0.1 | - | - (치트 표시) | 0 | **미설치** |
+| [Waypoints - Expanded Navmesh](https://sp-mod.com/mod/827) | 1.9.0 | - | - | 0 | **미설치** |
+| [Miyako Carry Service](https://sp-mod.com/mod/2709) | 1.1.4 | - | - | 0 | **미설치** |
+| [PIT Fireteam](https://sp-mod.com/mod/2676) | 1.0.0 | - | - | 0 | **미설치** |
+| [Make Shotguns Great Again!](https://sp-mod.com/mod/1453) | 1.19.1 | - | **결속** | 0 | **미설치** |
 
 ## 다른 경로로 설치된 것
 

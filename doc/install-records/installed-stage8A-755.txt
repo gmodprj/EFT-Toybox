@@ -1,0 +1,5 @@
+755__platinum-theblacklist-3.1.1	SPT_Runtime\user\mods\platinum-theblacklist\TheBlacklist.dll
+755__platinum-theblacklist-3.1.1	SPT_Runtime\user\mods\platinum-theblacklist\Config\advancedConfig.jsonc
+755__platinum-theblacklist-3.1.1	SPT_Runtime\user\mods\platinum-theblacklist\Config\config.jsonc
+755__platinum-theblacklist-3.1.1	SPT_Runtime\user\mods\platinum-theblacklist\wwwroot\css\theblacklist.css
+755__platinum-theblacklist-3.1.1	SPT_Runtime\user\mods\MeleeMultiplier\Config\MeleeMultiplierConfig.json5

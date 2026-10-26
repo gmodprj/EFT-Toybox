@@ -1,0 +1,2 @@
+1937__acidphantasm-devbalaclavafix	BepInEx\plugins\acidphantasm-devbalaclavafix\acidphantasm-devbalaclavafix.dll
+1937__acidphantasm-devbalaclavafix	BepInEx\plugins\acidphantasm-devbalaclavafix\LICENSE
