@@ -59,6 +59,8 @@ namespace CompatToggle
 
             new Patches.SlotCompatibilityPatch().Enable();
             new Patches.ConflictPatch().Enable();
+            new Patches.StackSlotCompatibilityPatch().Enable();
+            new Patches.MagazineCompatibilityPatch().Enable();
 
             Logger.LogInfo("Compat Toggle loaded.");
         }
