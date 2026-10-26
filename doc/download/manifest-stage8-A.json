@@ -1,0 +1,52 @@
+{
+  "stage": "stage8-A",
+  "spt": "4.1.6",
+  "note": "8-A 비결속·소형. 설치본과 겹침 없음. 한 번에 복사하고 마지막에 서버 테스트 한 번.",
+  "mods": [
+    {
+      "group": "8A-1",
+      "id": 1937,
+      "name": "Dev Balaclava Fix",
+      "version": "1.2.0",
+      "size": 4213,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1937/dev-balaclava-fix/1.2.0"
+    },
+    {
+      "group": "8A-1",
+      "id": 2953,
+      "name": "Headshot Damage Redirection",
+      "version": "1.8.0",
+      "size": 8090,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2953/headshot-damage-redirection/1.8.0"
+    },
+    {
+      "group": "8A-1",
+      "id": 2763,
+      "name": "MeleeMultiplier",
+      "version": "0.0.4",
+      "size": 20831,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2763/meleemultiplier/0.0.4"
+    },
+    {
+      "group": "8A-1",
+      "id": 755,
+      "name": "The Blacklist - flea market enhancements",
+      "version": "3.1.1",
+      "size": 81507,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/755/the-blacklist-flea-market-enhancements/3.1.1"
+    },
+    {
+      "group": "8A-2",
+      "id": 1796,
+      "name": "Fujiwara Mokou (Touhou)",
+      "version": "1.2.0",
+      "size": 865564,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1796/fujiwara-mokou-touhou/1.2.0"
+    }
+  ]
+}

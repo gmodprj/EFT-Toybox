@@ -1,0 +1,16 @@
+{
+  "stage": "stage8-F",
+  "spt": "4.1.6",
+  "note": "8-F 대형. 결속. 선행 WTT CommonLib 는 설치본에 있음.",
+  "mods": [
+    {
+      "group": "8F-1",
+      "id": 1453,
+      "name": "Make Shotguns Great Again!",
+      "version": "1.19.1",
+      "size": 399225401,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/1453/make-shotguns-great-again/1.19.1"
+    }
+  ]
+}
