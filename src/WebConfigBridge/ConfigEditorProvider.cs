@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Web.Models.Configs;
@@ -15,7 +16,8 @@ namespace WebConfigBridge;
 /// 찾아낸다(같은 방식을 쓰는 설치된 전례: TraderNamer.ConfigEditorProvider).
 /// </summary>
 [Injectable]
-public class ConfigEditorProvider(ModHelper modHelper) : IConfigEditorConfigProvider
+public class ConfigEditorProvider(ModHelper modHelper, ISptLogger<ConfigEditorProvider> logger)
+    : IConfigEditorConfigProvider
 {
     private static readonly JsonSerializerOptions JsoncOptions = new()
     {
@@ -26,11 +28,17 @@ public class ConfigEditorProvider(ModHelper modHelper) : IConfigEditorConfigProv
 
     public IEnumerable<ConfigEditorConfigRegistration> GetConfigs()
     {
+        // 설정 편집기 페이지가 열릴 때 서버가 이것을 부른다. 등록이 실제로 나갔는지
+        // 브라우저 없이 확인할 수 있도록 결과를 남긴다.
         var registration = RegisterAllinWeaponUnslotted();
-        if (registration is not null)
+        if (registration is null)
         {
-            yield return registration;
+            logger.Warning("[WebConfigBridge] 등록할 설정이 없다 — 대상 모드 폴더나 설정 파일을 찾지 못했다.");
+            yield break;
         }
+
+        logger.Info($"[WebConfigBridge] 설정 등록: id='{registration.Id}' 파일='{registration.FilePath}'");
+        yield return registration;
     }
 
     /// <summary>
