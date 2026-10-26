@@ -669,3 +669,13 @@ F12 메뉴가 없는 설치 모드 99개를 전수 조사해 `doc/specs/2026-10-
 처음 저장할 때 원본을 `config.jsonc.orig` 로 남긴다 — 저장이 주석을 지우기 때문이다.
 
 실측: 모드 로드 오류 0, 홈 화면 HTML 에 `Web Config Bridge` 카드와 `/webconfigbridge` 링크 존재, 그 경로가 200 으로 열리고 본문에 대상 파일 경로(`config.jsonc`)가 찍힌다 — 설정을 실제로 읽어냈다는 뜻이다. 스위치가 화면에 제대로 그려지는지는 Blazor 회로가 필요해 확인하지 못했다.
+
+##### 스위치가 맨 동그라미로 나온 원인 (2026-10-26)
+
+페이지는 떴으나 MudBlazor 스위치가 스타일 없이 동그라미로만 나왔다. `jerobackpack.Web.Pages.Home` 의 컴파일된 어트리뷰트와 하나씩 대조해 원인을 찾았다. 그쪽에는 셋이 있고 우리에겐 없었다:
+
+- `[Authorize]`
+- `[Layout(SPTarkov.Server.Web.Layout.BaseMudBlazorLayout)]` ← 핵심. 이 레이아웃이 없으면 MudBlazor 테마·팝오버 공급자가 붙지 않는다
+- `__PrivateComponentRenderModeAttribute` (`@rendermode InteractiveServer`) — 없으면 정적 렌더라 토글이 먹지 않는다
+
+셋을 모두 맞춘 뒤 빌드 산출물의 어트리뷰트가 전례와 같아진 것을 확인했다. 실측: 페이지 길이 15,994 → 29,578 바이트, `mud-switch` 마크업 0 → 90회, `mud-theme` 1회, 서버 오류 0.

@@ -1,5 +1,10 @@
 @page "/webconfigbridge"
-@using SPTarkov.Common.Models.Logging
+@* 서버 웹 UI 의 다른 모드 페이지와 같은 조건으로 그린다(전례: jerobackpack.Web.Pages.Home).
+   레이아웃이 없으면 MudBlazor 공급자가 붙지 않아 스위치가 맨 동그라미로 나오고,
+   렌더 모드가 없으면 정적 렌더라 토글이 먹지 않는다. *@
+@attribute [Authorize]
+@layout SPTarkov.Server.Web.Layout.BaseMudBlazorLayout
+@rendermode InteractiveServer
 @inject ConfigStore Store
 @inject ISnackbar Snackbar
 

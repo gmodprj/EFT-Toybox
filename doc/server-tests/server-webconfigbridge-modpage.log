@@ -1,310 +1,322 @@
-[2026-10-26 03:47:56.412][Information][SPTarkov.Server.Modding.ModValidator] ModLoader: 총 97 개의 모드 불러오는 중...
-[2026-10-26 03:47:56.695][Information][SPTarkov.Server.Modding.ModValidator] 모드 7Bpencil.MagicOpticMount 버전 0.1.0 (GUID: 7Bpencil.MagicOpticMount | targets SPT: ~4.1.6) by 7Bpencil 불러옴
-[2026-10-26 03:47:56.696][Information][SPTarkov.Server.Modding.ModValidator] 모드 CantedAiming 버전 2.0.0 (GUID: ca.bushtail.cantedaiming | targets SPT: ~4.1.0) by bushtail 불러옴
-[2026-10-26 03:47:56.697][Information][SPTarkov.Server.Modding.ModValidator] 모드 500EuroForSkier 버전 2.0.0 (GUID: ca.bushtail.euroforskier | targets SPT: ~4.1.0) by bushtail 불러옴
-[2026-10-26 03:47:56.697][Information][SPTarkov.Server.Modding.ModValidator] 모드 SlimmerMagazines 버전 2.0.0 (GUID: ca.bushtail.slimmermagazines | targets SPT: ~4.1.0) by bushtail 불러옴
-[2026-10-26 03:47:56.698][Information][SPTarkov.Server.Modding.ModValidator] 모드 Repair Skill Extension 버전 1.4.1 (GUID: ciallo.repairextension | targets SPT: ~4.1.0) by CialloMako 불러옴
-[2026-10-26 03:47:56.698][Information][SPTarkov.Server.Modding.ModValidator] 모드 Bright Lasers 버전 3.0.0 (GUID: com.acidphantasm.brightlasers | targets SPT: ~4.1.0) by acidphantasm 불러옴
-[2026-10-26 03:47:56.699][Information][SPTarkov.Server.Modding.ModValidator] 모드 Default Firemode Fixer 버전 2.1.0 (GUID: com.acidphantasm.defaultfiremode | targets SPT: ~4.1.0) by acidphantasm 불러옴
-[2026-10-26 03:47:56.699][Information][SPTarkov.Server.Modding.ModValidator] 모드 Harry Hideout 버전 3.1.2 (GUID: com.acidphantasm.harryhideout | targets SPT: ~4.1.0) by acidphantasm 불러옴
-[2026-10-26 03:47:56.699][Information][SPTarkov.Server.Modding.ModValidator] 모드 Item Limits Begone 버전 1.1.0 (GUID: com.acidphantasm.itemlimitsbegone | targets SPT: ~4.1.0) by acidphantasm 불러옴
-[2026-10-26 03:47:56.700][Information][SPTarkov.Server.Modding.ModValidator] 모드 Ref Friendly Quests 버전 2.1.0 (GUID: com.acidphantasm.reffriendlyquests | targets SPT: ~4.1.0) by acidphantasm 불러옴
-[2026-10-26 03:47:56.700][Information][SPTarkov.Server.Modding.ModValidator] 모드 Scorpion 버전 1.1.1 (GUID: com.acidphantasm.scorpion | targets SPT: ~4.1.0) by acidphantasm 불러옴
-[2026-10-26 03:47:56.700][Information][SPTarkov.Server.Modding.ModValidator] 모드 give-ui 버전 5.0.1 (GUID: com.agavalda.giveui | targets SPT: ~4.1.0) by agavalda 불러옴
-[2026-10-26 03:47:56.701][Information][SPTarkov.Server.Modding.ModValidator] 모드 HolsterEverything 버전 2.0.0 (GUID: com.alanyung-yl.holstereverything | targets SPT: ~4.1.0) by alanyung-yl 불러옴
-[2026-10-26 03:47:56.701][Information][SPTarkov.Server.Modding.ModValidator] 모드 Limitless 버전 1.0.0 (GUID: com.amightytank.limitless | targets SPT: ~4.1.1) by AmightyTank 불러옴
-[2026-10-26 03:47:56.701][Information][SPTarkov.Server.Modding.ModValidator] 모드 AllWeaponsFlea 버전 1.0.1 (GUID: com.arion.allweaponsflea | targets SPT: =4.1.6) by Arion 불러옴
-[2026-10-26 03:47:56.702][Information][SPTarkov.Server.Modding.ModValidator] 모드 QuickSell 버전 4.3.0 (GUID: com.blackhawk.quicksell | targets SPT: >=4.1.3 <4.2.0) by BlackHawk 불러옴
-[2026-10-26 03:47:56.702][Information][SPTarkov.Server.Modding.ModValidator] 모드 Bluehead's AIO Trader 버전 5.3.0 (GUID: com.bluehead.aiotrader | targets SPT: ~4.1.0) by Bluehead 불러옴
-[2026-10-26 03:47:56.702][Information][SPTarkov.Server.Modding.ModValidator] 모드 .22 Long Rifle 버전 2.0.0 (GUID: com.c11.spt22lr | targets SPT: ~4.1.6) by C11 불러옴
-[2026-10-26 03:47:56.703][Information][SPTarkov.Server.Modding.ModValidator] 모드 TraderModding 버전 2.1.2 (GUID: com.choochoo.tradermodding | targets SPT: ~4.1.X) by Choo² 불러옴
-[2026-10-26 03:47:56.703][Information][SPTarkov.Server.Modding.ModValidator] 모드 Cobra's Ammo Stack 버전 1.1.0 (GUID: com.cobra.ammostack | targets SPT: ~4.1.0) by Cobra 불러옴
-[2026-10-26 03:47:56.703][Information][SPTarkov.Server.Modding.ModValidator] 모드 Cobra's Durability Tweaks 버전 1.0.0 (GUID: com.cobra.durabilitytweaks | targets SPT: ~4.1.0) by Cobra 불러옴
-[2026-10-26 03:47:56.703][Information][SPTarkov.Server.Modding.ModValidator] 모드 CobraSPTExplorer 버전 1.0.0 (GUID: com.cobra.sptexplorer | targets SPT: ~4.1.5) by Cobra 불러옴
-[2026-10-26 03:47:56.704][Information][SPTarkov.Server.Modding.ModValidator] 모드 Artem 버전 3.0.2 (GUID: com.crackbone.artem-wtt | targets SPT: ~4.1.0) by Crackbone 불러옴
-[2026-10-26 03:47:56.704][Information][SPTarkov.Server.Modding.ModValidator] 모드 Show Me The Money 버전 3.0.2 (GUID: com.dark.spt.showmethemoney | targets SPT: ~4.1.0) by SwiftXP 불러옴
-[2026-10-26 03:47:56.704][Information][SPTarkov.Server.Modding.ModValidator] 모드 Flexible Builds 버전 1.2.2 (GUID: com.deadlauncher.FlexibleBuilds | targets SPT: ~4.1.0) by DeadLauncher 불러옴
-[2026-10-26 03:47:56.705][Information][SPTarkov.Server.Modding.ModValidator] 모드 BetterAttachments 버전 2.0.0 (GUID: com.deadwolf.spt.betterattachments | targets SPT: ~4.1.0) by DeadW0Lf 불러옴
-[2026-10-26 03:47:56.705][Information][SPTarkov.Server.Modding.ModValidator] 모드 FullAutoGuns 버전 1.0.0 (GUID: com.deadwolf.spt.fullautoguns | targets SPT: ~4.1.5) by DeadW0Lf 불러옴
-[2026-10-26 03:47:56.705][Information][SPTarkov.Server.Modding.ModValidator] 모드 Gunwright 버전 1.3.0 (GUID: com.deadwolf.spt.gunwright | targets SPT: ~4.1.2) by DeadWolf 불러옴
-[2026-10-26 03:47:56.706][Information][SPTarkov.Server.Modding.ModValidator] 모드 RepairMaxDurability 버전 2.2.0 (GUID: com.egbog.repairmaxdurability | targets SPT: ~4.1.0) by egbog 불러옴
-[2026-10-26 03:47:56.706][Information][SPTarkov.Server.Modding.ModValidator] 모드 Ref Rework 버전 1.0.0 (GUID: com.elmerglue.refrework | targets SPT: ~4.1.0) by Elmer Glue 불러옴
-[2026-10-26 03:47:56.706][Information][SPTarkov.Server.Modding.ModValidator] 모드 Painter 버전 2.0.0 (GUID: com.emilanderss0n.painter | targets SPT: ~4.1.0) by MoxoPixel 불러옴
-[2026-10-26 03:47:56.707][Information][SPTarkov.Server.Modding.ModValidator] 모드 Tactical Gear Component 버전 3.0.0 (GUID: com.emilanderss0n.tgc | targets SPT: ~4.1.0) by MonoPixel 불러옴
-[2026-10-26 03:47:56.707][Information][SPTarkov.Server.Modding.ModValidator] 모드 Vanguard 버전 2.0.0 (GUID: com.epicrangetime.vanguard | targets SPT: ~4.1) by EpicRangeTime 불러옴
-[2026-10-26 03:47:56.707][Information][SPTarkov.Server.Modding.ModValidator] 모드 BetterOKP7 버전 1.1.0 (GUID: com.eukyre.betterokp7 | targets SPT: ~4.1.3) by probablyEukyre 불러옴
-[2026-10-26 03:47:56.708][Information][SPTarkov.Server.Modding.ModValidator] 모드 TraderRestockRefresh 버전 1.0.0 (GUID: com.fenrirthegray.traderrestockrefresh | targets SPT: ~4.1.0) by FenrirTheGray 불러옴
-[2026-10-26 03:47:56.708][Information][SPTarkov.Server.Modding.ModValidator] 모드 UnrestrictedArmorPlates 버전 2.1.0 (GUID: com.fivef.unrestrictedarmorplate | targets SPT: ~4.1.0) by FiveF 불러옴
-[2026-10-26 03:47:56.708][Information][SPTarkov.Server.Modding.ModValidator] 모드 BetterKeysNG 버전 1.8.0 (GUID: com.flir.betterkeys | targets SPT: ~4.1.0) by flir 불러옴
-[2026-10-26 03:47:56.709][Information][SPTarkov.Server.Modding.ModValidator] 모드 FoldThatStock 버전 2.1.0 (GUID: com.foldthatstock | targets SPT: ~4.1.0) by alanyung-yl 불러옴
-[2026-10-26 03:47:56.709][Information][SPTarkov.Server.Modding.ModValidator] 모드 Ultimate Trader Assort Editor 버전 2.1.0 (GUID: com.goatboy.ultimate-trader-assort-editor | targets SPT: ~4.1.0) by GoatBoy 불러옴
-[2026-10-26 03:47:56.709][Information][SPTarkov.Server.Modding.ModValidator] 모드 CaseTrader 버전 1.0.1 (GUID: com.hayk.casetrader | targets SPT: ~4.1.0) by Hayk 불러옴
-[2026-10-26 03:47:56.710][Information][SPTarkov.Server.Modding.ModValidator] 모드 Wolfiks Heavy Troopers 버전 1.2.0 (GUID: com.hood.wolfiksheavytroopers | targets SPT: ~4.1.0) by Hood 불러옴
-[2026-10-26 03:47:56.710][Information][SPTarkov.Server.Modding.ModValidator] 모드 AmmoBox1x1 버전 2.0.0 (GUID: com.jero.ammobox1x1 | targets SPT: ~4.1.6) by jero 불러옴
-[2026-10-26 03:47:56.710][Information][SPTarkov.Server.Modding.ModValidator] 모드 jerobackpack 버전 4.1.1 (GUID: com.jero.jerobackpack | targets SPT: ~4.1.6) by jero 불러옴
-[2026-10-26 03:47:56.710][Information][SPTarkov.Server.Modding.ModValidator] 모드 Gunsmith Trader 버전 1.0.2 (GUID: com.landon.gunsmithtrader | targets SPT: ~4.1.0) by Landon 불러옴
-[2026-10-26 03:47:56.711][Information][SPTarkov.Server.Modding.ModValidator] 모드 ECOTI 버전 3.4.2 (GUID: com.lennoxp90.coti.server | targets SPT: >=4.1.3 <4.2.0) by LennoxP90 불러옴
-[2026-10-26 03:47:56.711][Information][SPTarkov.Server.Modding.ModValidator] 모드 Lotus 버전 1.8.1 (GUID: com.Luna.LunnayalunaLotus | targets SPT: ~4.1.6) by LunnayalunaLotus 불러옴
-[2026-10-26 03:47:56.711][Information][SPTarkov.Server.Modding.ModValidator] 모드 LoadAmmoAnim 버전 2.0.0 (GUID: com.manimal.loadammoanim | targets SPT: ~4.1.5) by Manimal 불러옴
-[2026-10-26 03:47:56.712][Information][SPTarkov.Server.Modding.ModValidator] 모드 Airburst 버전 1.1.2 (GUID: com.maschine.Airburst | targets SPT: ~4.1.0) by maschine 불러옴
-[2026-10-26 03:47:56.712][Information][SPTarkov.Server.Modding.ModValidator] 모드 EasyMounting 버전 2.0.1 (GUID: com.maschine.EasyMounting | targets SPT: ~4.1.0) by maschine 불러옴
-[2026-10-26 03:47:56.713][Information][SPTarkov.Server.Modding.ModValidator] 모드 NATO Quartermaster 버전 1.1.3 (GUID: com.michael.spt.natoquartermaster | targets SPT: ~4.1.3) by Michael 불러옴
-[2026-10-26 03:47:56.713][Information][SPTarkov.Server.Modding.ModValidator] 모드 Dynamic Maps 버전 1.2.1 (GUID: com.mpstark.dynamicmaps | targets SPT: ~4.1.0) by mpstark 불러옴
-[2026-10-26 03:47:56.713][Information][SPTarkov.Server.Modding.ModValidator] 모드 Less Restricting Headwear 버전 4.0.0 (GUID: com.musicmaniac.lessrestrictingheadwear | targets SPT: ~4.1.0) by MusicManiac 불러옴
-[2026-10-26 03:47:56.714][Information][SPTarkov.Server.Modding.ModValidator] 모드 Realistic Suppressors 버전 1.0.0 (GUID: com.musicmaniac.realisticsuppressors | targets SPT: ~4.1.0) by MusicManiac 불러옴
-[2026-10-26 03:47:56.714][Information][SPTarkov.Server.Modding.ModValidator] 모드 Quick Trader Load Times 버전 1.0.0 (GUID: com.mybutthasarash.quicktraderloadtimes | targets SPT: ~4.1.0) by JoelHauser 불러옴
-[2026-10-26 03:47:56.714][Information][SPTarkov.Server.Modding.ModValidator] 모드 Realistic Insurance 버전 0.2.1 (GUID: com.mybutthasarash.realisticinsurance | targets SPT: ~4.1.0) by JoelHauser 불러옴
-[2026-10-26 03:47:56.715][Information][SPTarkov.Server.Modding.ModValidator] 모드 ItemInfo 버전 3.0.0 (GUID: com.odt.iteminfo | targets SPT: ~4.1.5) by ODT 불러옴
-[2026-10-26 03:47:56.715][Information][SPTarkov.Server.Modding.ModValidator] 모드 Foldables 버전 1.1.1 (GUID: com.ozen.foldables | targets SPT: ~4.1.2) by ozen 불러옴
-[2026-10-26 03:47:56.715][Information][SPTarkov.Server.Modding.ModValidator] 모드 Better Rear Sights 버전 1.8.0 (GUID: com.pein.betterrearsights | targets SPT: ~4.1.0) by pein 불러옴
-[2026-10-26 03:47:56.716][Information][SPTarkov.Server.Modding.ModValidator] 모드 PortableTraders 버전 1.1.0 (GUID: com.portabletraders.core | targets SPT: ~4.1.2) by PortableTraders 불러옴
-[2026-10-26 03:47:56.716][Information][SPTarkov.Server.Modding.ModValidator] 모드 AmmoStats 버전 4.1.0 (GUID: com.rairaitheraichu.ammostats | targets SPT: ~4.1.0) by RaiRaiTheRaichu 불러옴
-[2026-10-26 03:47:56.716][Information][SPTarkov.Server.Modding.ModValidator] 모드 Vanilla Traders Rework Reloaded 버전 1.0.0 (GUID: com.ricardoschurhaus.vanillatradersrework.reloaded | targets SPT: ~4.1.2) by Ricardo Schurhaus 불러옴
-[2026-10-26 03:47:56.718][Information][SPTarkov.Server.Modding.ModValidator] 모드 Direct Reload & Painless Meds 버전 1.3.2 (GUID: com.rz99.directreload | targets SPT: ~4.1.0) by RZ-99 불러옴
-[2026-10-26 03:47:56.718][Information][SPTarkov.Server.Modding.ModValidator] 모드 IncendiaryGrenade 버전 1.1.0 (GUID: com.sage.incendiarygrenade | targets SPT: ~4.1.0) by Sage 불러옴
-[2026-10-26 03:47:56.718][Information][SPTarkov.Server.Modding.ModValidator] 모드 AmmoGen 버전 2.4.0 (GUID: com.serenity.ammogen | targets SPT: ~4.1.1) by Serenity 불러옴
-[2026-10-26 03:47:56.719][Information][SPTarkov.Server.Modding.ModValidator] 모드 ItemGen 버전 1.5.1 (GUID: com.serenity.itemgen | targets SPT: ~4.1.1) by Serenity 불러옴
-[2026-10-26 03:47:56.719][Information][SPTarkov.Server.Modding.ModValidator] 모드 TraderGen 버전 2.4.1 (GUID: com.serenity.tradergen | targets SPT: ~4.1.0) by Serenity 불러옴
-[2026-10-26 03:47:56.719][Information][SPTarkov.Server.Modding.ModValidator] 모드 Peacemaker 버전 2.1.0 (GUID: com.sgtlaggy.peacemaker | targets SPT: ~4.1.0) by sgtlaggy 불러옴
-[2026-10-26 03:47:56.720][Information][SPTarkov.Server.Modding.ModValidator] 모드 Trader Namer 버전 4.1.0 (GUID: com.sgtlaggy.tradernamer | targets SPT: ~4.1.0) by sgtlaggy 불러옴
-[2026-10-26 03:47:56.720][Information][SPTarkov.Server.Modding.ModValidator] 모드 Barter Items Stacks 버전 1.4.3 (GUID: com.slpf.barteritemsstacks | targets SPT: ~4.1.0) by SLPF 불러옴
-[2026-10-26 03:47:56.720][Information][SPTarkov.Server.Modding.ModValidator] 모드 Boxes At Ref 버전 3.0.0 (GUID: com.SomeoneNamedAdam.barf | targets SPT: ~4.1.2) by SomoneNamedAdam 불러옴
-[2026-10-26 03:47:56.721][Information][SPTarkov.Server.Modding.ModValidator] 모드 PresetTrader 버전 1.2.0 (GUID: com.sp.bela.presettrader | targets SPT: ~4.1.2) by Bela 불러옴
-[2026-10-26 03:47:56.721][Information][SPTarkov.Server.Modding.ModValidator] 모드 Speedloader 버전 1.2.4 (GUID: com.sp.bela.speedloader | targets SPT: ~4.1.2) by Bela 불러옴
-[2026-10-26 03:47:56.721][Information][SPTarkov.Server.Modding.ModValidator] 모드 AllGoodsTrader 버전 2.0.0 (GUID: com.suntion.allgoodstrader | targets SPT: ~4.1.3) by Suntion 불러옴
-[2026-10-26 03:47:56.721][Information][SPTarkov.Server.Modding.ModValidator] 모드 All In Weapon: Unslotted 버전 1.2.0 (GUID: com.szonszczyk.allinweaponunslotted | targets SPT: ~4.1.2) by Szonszczyk 불러옴
-[2026-10-26 03:47:56.722][Information][SPTarkov.Server.Modding.ModValidator] 모드 Amonya 버전 2.2.0 (GUID: com.szonszczyk.amonya | targets SPT: ~4.1.2) by Szonszczyk 불러옴
-[2026-10-26 03:47:56.722][Information][SPTarkov.Server.Modding.ModValidator] 모드 CaliberSplitStorageSolutions 버전 1.0.1 (GUID: com.szonszczyk.calibersplitstoragesolutions | targets SPT: ~4.1.3) by Szonszczyk 불러옴
-[2026-10-26 03:47:56.722][Information][SPTarkov.Server.Modding.ModValidator] 모드 ColoredTracers 버전 3.0.1 (GUID: com.szonszczyk.coloredtracers | targets SPT: ~4.1.2) by Szonszczyk 불러옴
-[2026-10-26 03:47:56.723][Information][SPTarkov.Server.Modding.ModValidator] 모드 DefinitiveWeaponVariants 버전 4.3.2 (GUID: com.szonszczyk.definitiveweaponvariants | targets SPT: ~4.1.2) by Szonszczyk 불러옴
-[2026-10-26 03:47:56.723][Information][SPTarkov.Server.Modding.ModValidator] 모드 Tiltushkin-AllAmmo 버전 1.5.0 (GUID: com.tiltushkin.allammo | targets SPT: ~4.1.3) by Tiltushkin 불러옴
-[2026-10-26 03:47:56.723][Information][SPTarkov.Server.Modding.ModValidator] 모드 InfiniteEverything 버전 2.5.3 (GUID: com.trappuss.infiniteeverything | targets SPT: ~4.1.0) by trappuss 불러옴
-[2026-10-26 03:47:56.724][Information][SPTarkov.Server.Modding.ModValidator] 모드 Change Helmet Visor 버전 3.0.0 (GUID: com.trinagan.ChangeHelmetVisor | targets SPT: ~4.1.3) by Trinagan 불러옴
-[2026-10-26 03:47:56.724][Information][SPTarkov.Server.Modding.ModValidator] 모드 UI Fixes 버전 6.0.4 (GUID: com.tyfon.uifixes | targets SPT: ~4.1.0) by Tyfon 불러옴
-[2026-10-26 03:47:56.724][Information][SPTarkov.Server.Modding.ModValidator] 모드 Weapon Customizer 버전 4.0.0 (GUID: com.tyfon.weaponcustomizer | targets SPT: ~4.1.0) by Tyfon 불러옴
-[2026-10-26 03:47:56.725][Information][SPTarkov.Server.Modding.ModValidator] 모드 RestoreArmorPlates 버전 1.0.1 (GUID: com.wade.restorearmorplates | targets SPT: ~4.1.0) by Wade 불러옴
-[2026-10-26 03:47:56.725][Information][SPTarkov.Server.Modding.ModValidator] 모드 WTT-Armory 버전 2.0.5 (GUID: com.wtt.armory | targets SPT: ~4.1.0) by GrooveypenguinX 불러옴
-[2026-10-26 03:47:56.725][Information][SPTarkov.Server.Modding.ModValidator] 모드 WTT-ServerCommonLib 버전 3.0.6 (GUID: com.wtt.commonlib | targets SPT: ~4.1.3) by GrooveypenguinX 불러옴
-[2026-10-26 03:47:56.726][Information][SPTarkov.Server.Modding.ModValidator] 모드 WTT-PackNStrapServer 버전 2.1.1 (GUID: com.wtt.packnstrap | targets SPT: ~4.1.1) by GrooveypenguinX 불러옴
-[2026-10-26 03:47:56.726][Information][SPTarkov.Server.Modding.ModValidator] 모드 Ledger 버전 1.1.0 (GUID: com.zantetsukenar3.ledger | targets SPT: ~4.1.0) by ZantetsukenAR3 불러옴
-[2026-10-26 03:47:56.726][Information][SPTarkov.Server.Modding.ModValidator] 모드 UltimateFlea 버전 1.2.0 (GUID: com.zloymolodoy.ultimateflea | targets SPT: ~4.1.0) by ZloyMolodoy 불러옴
-[2026-10-26 03:47:56.726][Information][SPTarkov.Server.Modding.ModValidator] 모드 Black Exfil Revision 버전 1.1.0 (GUID: de.tosox.blackexfilrevision | targets SPT: ~4.1.0) by Tosox 불러옴
-[2026-10-26 03:47:56.727][Information][SPTarkov.Server.Modding.ModValidator] 모드 EquipmentIsEternal 버전 1.2.0 (GUID: eu.thescrewcollab.equipmentiseternal | targets SPT: ~4.1.0) by ScrewTSW 불러옴
-[2026-10-26 03:47:56.727][Information][SPTarkov.Server.Modding.ModValidator] 모드 SVM 버전 2.2.3 (GUID: fika.ghostfenixx.svm | targets SPT: ~4.1.3) by GhostFenixx 불러옴
-[2026-10-26 03:47:56.727][Information][SPTarkov.Server.Modding.ModValidator] 모드 Moe-TradeMarker 버전 1.2.6 (GUID: moe.trade.marker.server | targets SPT: ~4.1.0) by moe 불러옴
-[2026-10-26 03:47:56.728][Information][SPTarkov.Server.Modding.ModValidator] 모드 HideLockedFlea 버전 1.0.0 (GUID: net.liquidwarp.hidelockedflea | targets SPT: ~4.1.6) by Liquidwarp 불러옴
-[2026-10-26 03:47:56.728][Information][SPTarkov.Server.Modding.ModValidator] 모드 Helmet Slot Union 버전 0.1.0 (GUID: spt.helmetslotunion | targets SPT: ~4.1.6) by Qahnaarin 불러옴
-[2026-10-26 03:47:56.729][Information][SPTarkov.Server.Modding.ModValidator] 모드 Web Config Bridge 버전 0.1.0 (GUID: spt.webconfigbridge | targets SPT: ~4.1.6) by Qahnaarin 불러옴
-[2026-10-26 03:47:56.729][Information][SPTarkov.Server.Modding.ModValidator] 모드 Trader Level Requirements Editor 버전 1.1.0 (GUID: wozzy.spt.traderlevelrequirementseditor | targets SPT: ~4.1.0) by wozzy 불러옴
-[2026-10-26 03:47:56.743][Information][SPTarkov.Server.Helpers.DatabaseImporter] 데이터베이스를 추출 중...
-[2026-10-26 03:47:57.971][Information][SPTarkov.Server.Helpers.DatabaseImporter] 데이터베이스 추출 완료
-[2026-10-26 03:47:57.972][Information][SPTarkov.Server.Helpers.DatabaseImporter] Database import took 1228ms
-[2026-10-26 03:47:58.231][Information][SPTarkov.Server.Web.App] Mod ECOTI has a wwwroot, mapping to /coti-assets/
-[2026-10-26 03:47:58.236][Information][SPTarkov.Server.Core] 서버: 시작 콜백을 실행합니다...
-[2026-10-26 03:47:58.244][Information][HelmetSlotUnion.HelmetSlotUnion] [HelmetSlotUnion] 헬멧 64종, 칸 묶음 11개. 281개 칸에 항목 6224개를 더했다.
-[2026-10-26 03:47:58.264][Information][HelmetSlotUnion.HelmetSlotUnion] [HelmetSlotUnion] 충돌 정리(범위 안끼리만): 대상 240개 중 57개에서 295건을 지웠다. 남은 항목 623건.
-[2026-10-26 03:47:58.266][Information][SPTarkov.Server.Core.Utils.Watermark] ┌─────────────────────────────────────┐
-[2026-10-26 03:47:58.266][Information][SPTarkov.Server.Core.Utils.Watermark] │ SPT 4.1.6                           │
-[2026-10-26 03:47:58.267][Information][SPTarkov.Server.Core.Utils.Watermark] │ https://discord.sp-tushonka.com     │
-[2026-10-26 03:47:58.267][Information][SPTarkov.Server.Core.Utils.Watermark] │                                     │
-[2026-10-26 03:47:58.267][Information][SPTarkov.Server.Core.Utils.Watermark] │ 이 소프트웨어는 무료입니다                      │
-[2026-10-26 03:47:58.267][Information][SPTarkov.Server.Core.Utils.Watermark] │ 만약 금전적 대가를 지불하였다면, 사기에 당하신 겁니다.     │
-[2026-10-26 03:47:58.267][Information][SPTarkov.Server.Core.Utils.Watermark] │ 상업적 용도는 제한됩니다                       │
-[2026-10-26 03:47:58.268][Information][SPTarkov.Server.Core.Utils.Watermark] └─────────────────────────────────────┘
-[2026-10-26 03:47:58.651][Information][FlexibleBuilds.Server.ServerPlugin] Builds Fixes patches loaded!
-[2026-10-26 03:47:58.778][Information][_RepairMaxDurability.RepairMaxDurability] [RepairMaxDurability] Loaded successfully
-[2026-10-26 03:47:58.846][Information][Coti.Server.CotiItemFactory] [COTI] Item created, id 6a7f15387b68c336e18e8977
-[2026-10-26 03:47:58.969][Information][UltimateFlea.Patches.TradeHooksLoad] [UltimateFlea] Trade hooks enabled.
-[2026-10-26 03:47:58.977][Information][BlueheadsAioTrader.ReadJsonConfig] [Bluehead's AioTrader]Config: enable_aiotrader enabled
-[2026-10-26 03:47:58.977][Information][BlueheadsAioTrader.ReadJsonConfig] [Bluehead's AioTrader]Config: hide_all_builtin_inserts enabled
-[2026-10-26 03:47:59.250][Information][Spt22lr.Plugin] Loaded your Plinking Dreams
-[2026-10-26 03:47:59.254][Information][Coti.Server.ThermalRiserItemFactory] [COTI] Thermal riser created, id 6ad3016bab020957abb6ca3b (LennoxP90 TR-1 thermal sight riser)
-[2026-10-26 03:47:59.259][Information][Coti.Server.ThermalRiserItemFactory] [COTI] Thermal riser created, id 6ad408a96bf1f761d970a4ff (LennoxP90 TR-1 thermal sight riser (Tan))
-[2026-10-26 03:47:59.330][Information][AmmoStats.AmmoStatsMod] [AmmoStats] ColorConverterAPI Plugin detected?: True
-[2026-10-26 03:47:59.449][Information][InfiniteEverythingServer.InfiniteEverythingLoader] [Infinite Everything] server part 2.5.3 loaded (infinite money + hideout resource patches enabled)
-[2026-10-26 03:47:59.491][Information][_RestoreArmorPlates.RestoreArmorPlates] [RestoreArmorPlates] Loaded successfully
-[2026-10-26 03:47:59.509][Information][EquipmentIsEternal.EquipmentIsEternal] EquipmentIsEternal loaded
-[2026-10-26 03:47:59.509][Information][EquipmentIsEternal.EquipmentIsEternal]   OnlyRestoreInsured: False
-[2026-10-26 03:47:59.509][Information][EquipmentIsEternal.EquipmentIsEternal]   KeepQuestItems: False
-[2026-10-26 03:47:59.510][Information][EquipmentIsEternal.EquipmentIsEternal]   RestoreArmBand: False
-[2026-10-26 03:47:59.510][Information][EquipmentIsEternal.EquipmentIsEternal]   RestoreSpecialSlots: False
-[2026-10-26 03:47:59.510][Information][EquipmentIsEternal.EquipmentIsEternal]   RestoreScabbard: False
-[2026-10-26 03:47:59.511][Information][EquipmentIsEternal.EquipmentIsEternal]   RestoreSecuredContainer: False
-[2026-10-26 03:47:59.511][Information][EquipmentIsEternal.EquipmentIsEternal]   DeduplicateItems: True
-[2026-10-26 03:47:59.521][Information][MoeTradeMarker.Server.Services.TradeMarkerConfigService] Moe-TradeMarker 설정을 불러왔습니다.
-[2026-10-26 03:47:59.558][Information][MoeTradeMarker.Server.MoeTradeMarkerServer] Moe-TradeMarker 서버를 불러왔습니다.
-[2026-10-26 03:47:59.756][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad5739462c39577194eedc5 (LennoxP90 TSR-1 thermal scope ring 30mm)
-[2026-10-26 03:47:59.757][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad573a014ebd436fbd1dfda (LennoxP90 TSR-1 thermal scope ring 30mm (Tan))
-[2026-10-26 03:47:59.757][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad5775e327076f93b3b36bf (LennoxP90 TSR-2 thermal scope ring 34mm)
-[2026-10-26 03:47:59.758][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad57762f51afaf4379f19a2 (LennoxP90 TSR-2 thermal scope ring 34mm (Tan))
-[2026-10-26 03:47:59.758][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad577679385f594db176ad6 (LennoxP90 TSR-3 thermal scope ring 35mm)
-[2026-10-26 03:47:59.758][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad5776a93ea4db35ed55dcf (LennoxP90 TSR-3 thermal scope ring 35mm (Tan))
-[2026-10-26 03:48:00.164][Warning][WTTServerCommonLib.Services.WTTCustomItemServiceExtended] No valid item configs found in E:\Spt\SPT_Runtime\user\mods\Eukyre-BetterOKP7\db\CustomItems
-[2026-10-26 03:48:01.372][Information][WolfiksHeavyTroopers.WolfiksHeavyTroopers] [Wolfiks Heavy Trooper Masks] Successfully added to server!
-[2026-10-26 03:48:01.496][Warning][ServerValueModifier.SVM] [SVM] Remove backpack restrictions - empty filters detected on ID - 656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
-[2026-10-26 03:48:01.497][Warning][ServerValueModifier.SVM] [SVM] Remove backpack restrictions - empty filters detected on ID - 656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
-[2026-10-26 03:48:01.497][Warning][ServerValueModifier.SVM] [SVM] Remove backpack restrictions - empty filters detected on ID - 656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
-[2026-10-26 03:48:01.584][Information][ServerValueModifier.SVM] [SVM] Initialization complete. Makes your experience better since 2021!
-[2026-10-26 03:48:01.584][Information][ServerValueModifier.SVM] [SVM] Preset - Noname - successfully loaded
-[2026-10-26 03:48:01.587][Information][EuroForSkier.EuroForSkier] ExchangeRate: 158
-[2026-10-26 03:48:02.608][Information][DefinitiveWeaponVariants.DefinitiveWeaponVariants] [DefinitiveWeaponVariants.CustomClasses/AddVariantsToLooseLoot] There are 409 possible weapons in Marked Rooms
-[2026-10-26 03:48:02.612][Information][DefinitiveWeaponVariants.DefinitiveWeaponVariants] [DefinitiveWeaponVariants/OnLoadAsync] Mod finished loading. Created 776 custom items!
-[2026-10-26 03:48:04.453][Information][CaliberSplitStorageSolutions.CaliberSplitStorageSolutions] [CaliberSplitStorageSolutions/OnLoadAsync] Mod loaded successfully. Created 91 custom items!
-[2026-10-26 03:48:05.171][Information][Amonya.Amonya] [Amonya/OnLoadAsync] Mod finished loading. Created 193 custom items!
-[2026-10-26 03:48:05.172][Information][Amonya.Amonya] [Amonya/OnLoadAsync] Added 188 custom quests!
-[2026-10-26 03:48:05.242][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Prapor
-[2026-10-26 03:48:05.243][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Therapist
-[2026-10-26 03:48:05.243][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Skier
-[2026-10-26 03:48:05.243][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Peacekeeper
-[2026-10-26 03:48:05.243][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Mechanic
-[2026-10-26 03:48:05.243][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Ragman
-[2026-10-26 03:48:05.244][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Jaeger
-[2026-10-26 03:48:05.336][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] OS: 10.0.26300.0 | Win32NT
-[2026-10-26 03:48:05.336][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Pagefile: 4.00 GB
-[2026-10-26 03:48:05.336][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] RAM: 31.88 GB
-[2026-10-26 03:48:05.336][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Ran as admin: False
-[2026-10-26 03:48:05.336][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] CPU cores: 16
-[2026-10-26 03:48:05.337][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] PATH: RTpcU3B0XFNQVF9SdW50aW1lXFNQVC5TZXJ2ZXIuZXhl
-[2026-10-26 03:48:05.337][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Server: 4.1.6
-[2026-10-26 03:48:05.337][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Date: 20260918
-[2026-10-26 03:48:05.337][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Commit: 731d7a2
-[2026-10-26 03:48:05.386][Information][PortableTraders.Services.PortableTradersService] [PortableTraders] BTR Driver (APC) (656f0f98d80a697f855d34b1): main menu = True, unlocked = True, quest rewards by mail = True.
-[2026-10-26 03:48:05.386][Information][PortableTraders.Services.PortableTradersService] [PortableTraders] Lightkeeper (638f541a29ffd1183d187f57): main menu = True, unlocked = True, quest rewards by mail = True.
-[2026-10-26 03:48:05.389][Information][PortableTraders.Services.PortableTradersService] [PortableTraders] Loaded: 2 portable trader(s), 30 task(s) reachable from the main menu.
-[2026-10-26 03:48:05.409][Information][BlueheadsAioTrader.AIOTraderCommando] [Bluehead's AioTrader] AIOTraderCommando loaded — prefix: 'aio', commands: give
-[2026-10-26 03:48:05.416][Information][SlimmerMagazines.ReduceMagazineThickness] [SM] Putting magazines on a diet...
-[2026-10-26 03:48:05.418][Information][SlimmerMagazines.ReduceMagazineThickness] [SM] Slimmed down 44 magazines!
-[2026-10-26 03:48:05.505][Information][Gunwright.GunwrightRegistration] [Gunwright]: Registered trader 8b4f2d91c7a63e5f1d9a0b4c ahead of profile validation
-[2026-10-26 03:48:05.678][Warning][CaseTrader.ContainerScanner] [CaseTrader] Skipped container 5c0a5f6c86f774753654890e (Developer case): no handbook price and no override
-[2026-10-26 03:48:05.679][Warning][CaseTrader.ContainerScanner] [CaseTrader] Skipped container 688b2dba67bf6fa26c07e918 (item_container_moderator_toolbox): no handbook price and no override
-[2026-10-26 03:48:05.681][Information][CaseTrader.CaseTraderMod] [CaseTrader] Added Case trader with 120 container offers
-[2026-10-26 03:48:05.687][Information][GunsmithTrader.GunsmithTraderMod] [Gunsmith Trader] Loaded with 30 Gunsmith builds.
-[2026-10-26 03:48:05.703][Information][AmmoGen.AmmoGenPlugin] [AmmoGen] ====================================
-[2026-10-26 03:48:05.703][Information][AmmoGen.AmmoGenPlugin] [AmmoGen] AmmoGen Framework v2.4.0 loading...
-[2026-10-26 03:48:05.704][Information][AmmoGen.AmmoGenPlugin] [AmmoGen] ====================================
-[2026-10-26 03:48:05.723][Information][AmmoGen.Services.AmmoLoader] [AmmoGen] Skipping disabled pack 'example-pack.json'
-[2026-10-26 03:48:05.723][Information][AmmoGen.AmmoGenPlugin] [AmmoGen] No ammo packs found. Place ammo pack JSON files in: user/mods/AmmoGen/ammo/
-[2026-10-26 03:48:05.726][Information][ItemGen.ItemGenPlugin] [ItemGen] ====================================
-[2026-10-26 03:48:05.726][Information][ItemGen.ItemGenPlugin] [ItemGen] ItemGen Framework v1.5.1 loading...
-[2026-10-26 03:48:05.726][Information][ItemGen.ItemGenPlugin] [ItemGen] ====================================
-[2026-10-26 03:48:05.743][Information][ItemGen.Services.ItemLoader] [ItemGen] Skipping disabled pack 'ExamplePack.json'
-[2026-10-26 03:48:05.743][Information][ItemGen.ItemGenPlugin] [ItemGen] No item packs found. Place item pack JSON files in: user/mods/ItemGen/items/
-[2026-10-26 03:48:05.745][Information][PresetTrader.PresetTraderRegistration] [PresetTrader]: Registered trader 67a5e1c2f3d4b5a6c7d8e9f0 ahead of profile validation
-[2026-10-26 03:48:05.775][Information][_allAmmo.AddTraderWithAssortJson] [AllAmmo] Trader VAFELZ loaded successfully.
-[2026-10-26 03:48:06.089][Information][Ledger.LedgerMod] [Ledger] Loaded.
-[2026-10-26 03:48:06.091][Information][Painter.Painter] [Painter] Mod loaded successfully.
-[2026-10-26 03:48:06.501][Information][NATOQuartermaster.NATOQuartermasterMod] [NATO Quartermaster] V1.1.3 loaded: 49 curated offers and 6 quests.
-[2026-10-26 03:48:06.502][Information][NATOQuartermaster.NATOQuartermasterMod] [NATO Quartermaster] Quest unlocks: Q1=1, Q2=1, Q3=3, Q4=1, Q5=2, Q6=2.
-[2026-10-26 03:48:07.648][Information][TGC.TGC] [TGC] Mod loaded successfully.
-[2026-10-26 03:48:07.651][Information][Coti.Server.CotiTraderAssort] [COTI] COTI added to Peacekeeper LL4 at $2000, limit 3
-[2026-10-26 03:48:07.651][Information][Coti.Server.CotiTraderAssort] [COTI] TR-1 thermal sight riser (2 colourways) added to Peacekeeper LL3 at $1500, limit 3
-[2026-10-26 03:48:07.651][Information][Coti.Server.CotiTraderAssort] [COTI] TSR thermal scope rings (6) added to Peacekeeper LL3 at $1750, limit 3
-[2026-10-26 03:48:07.675][Information][RefReworkServer.PostDBLoader] Ref Rework: applied Ref dogtag/Lega medal -> GP coin changes.
-[2026-10-26 03:48:07.687][Information][BlueheadsAioTrader.AddAIOTrader] [Bluehead's AioTrader]Total 6447 items loaded
-[2026-10-26 03:48:08.104][Information][AllGoodsTrader.Models.TraderFactory] [AllGoodsTrader] Mod Loaded
-[2026-10-26 03:48:08.146][Information][BlueheadsAioTrader.PresetAssortService] [AIOTrader] Assort ready: 7365 listings (918 default presets)
-[2026-10-26 03:48:08.148][Information][UltimateFlea.Pricing.RagfairSettingsPatcher] [UltimateFlea] Handbook price regeneration disabled.
-[2026-10-26 03:48:08.162][Warning][SPTarkov.Server.Core.Services.Profile.ProfileMigrationService] 6adc26693f5b5290609ea366 has a pending profile migration: TraderGenPocketMigration
-[2026-10-26 03:48:08.253][Information][SPTarkov.Server.Core.Services.Profile.ProfileMigrationService] 6adc26693f5b5290609ea366 successfully ran profile migration: TraderGenPocketMigration
-[2026-10-26 03:48:08.697][Information][UltimateFlea.Pool.PoolManager] [UltimateFlea] Pool applied (mode=blacklist): +0 enabled, -0 removed
-[2026-10-26 03:48:08.699][Information][UltimateFlea.Pricing.PriceSourceRouter] [UltimateFlea] Price source: local.
-[2026-10-26 03:48:08.711][Information][UltimateFlea.Economy.EconomyEngine] [UltimateFlea] Economy initialized for 5690 items (0 fixed-price)
-[2026-10-26 03:48:08.752][Information][UltimateFlea.LevelLocks.LevelLockService] [UltimateFlea] Level locks applied: 1699 items, 17 handbook categories locked (buy=True, sell=True).
-[2026-10-26 03:48:08.752][Information][UltimateFlea.Entry.UltimateFleaLoad] [UltimateFlea] Loaded.
-[2026-10-26 03:48:08.755][Information][SPTarkov.Server.Core.Servers.RagfairServer] 플리마켓 상품 생성 중
-[2026-10-26 03:48:09.477][Information][Limitless.LimitlessMod] [Limitless] Applied to 27084 item(s) (personalLimits: unlimited, globalLimits: unlimited)
-[2026-10-26 03:48:09.516][Information][UltimateTraderAssortEditor.Server.OnLoad.UtaeServerBootstrap] [UTAE] Changes applied successfully. Loaded 0 additions, 0 modifications, and 0 removals.
-[2026-10-26 03:48:09.524][Warning][RealisticInsurance.RealisticInsuranceMod] [RealisticInsurance] trader 'Armorer' (68e24cdc607f5c9ae44c27b1) offers insurance but is not listed in insurance.json returnChancePercent. Vanilla SPT would throw on it; this mod will use the '90%' fallback instead.
-[2026-10-26 03:48:09.563][Information][RealisticInsurance.RealisticInsuranceMod] [RealisticInsurance] loaded - pmc 55% / playerScav 45% / scav 75% / boss 40% / other 90%, looter extracts 65% (+25% when they don't)
-[2026-10-26 03:48:09.564][Information][SPTBetterRearSights.BetterRearSights] Successfully loaded Better Rear Sights! Good luck!
-[2026-10-26 03:48:09.752][Information][Ciallo.RepairExpansion.BuffConfigLoader] [Ciallo] Repair buffs.jsonc applied successfully.
-[2026-10-26 03:48:09.757][Information][HolsterEverything.HolsterEverythingPatch] HolsterEverything: Applied holster category config. Added 1 new whitelist entry. Configured categories: Weapon (5422acb9af1c889c16000029).
-[2026-10-26 03:48:09.758][Information][BetterAttachments.BetterAttachments] [BetterAttachments] Initalizing BalancedMeds mod...
-[2026-10-26 03:48:09.762][Information][BetterAttachments.BetterAttachments] [BetterAttachments] Updated 1092 attachments...
-[2026-10-26 03:48:09.762][Information][BetterAttachments.BetterAttachments] [BetterAttachments] Loading BalancedMeds Mod Completed.
-[2026-10-26 03:48:09.764][Information][LogToConsole.FullAutoGuns] [FullAutoGuns] Loading FullAutoGuns Mod Completed. Modified 12 weapons.
-[2026-10-26 03:48:09.790][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Customs
-[2026-10-26 03:48:09.790][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Factory
-[2026-10-26 03:48:09.790][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Ground Zero
-[2026-10-26 03:48:09.791][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Interchange
-[2026-10-26 03:48:09.791][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Lighthouse
-[2026-10-26 03:48:09.792][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Reserve
-[2026-10-26 03:48:09.792][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Shoreline
-[2026-10-26 03:48:09.792][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Streets of Tarkov
-[2026-10-26 03:48:09.793][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: The Lab
-[2026-10-26 03:48:09.793][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Woods
-[2026-10-26 03:48:09.793][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: The Labyrinth
-[2026-10-26 03:48:10.070][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Processed 200 known keys and 44 junk keys
-[2026-10-26 03:48:10.070][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] modified 4,114 translations in 300 ms
-[2026-10-26 03:48:10.084][Information][FoldThatStock.Server.FoldThatStockServerPatch] FoldThatStock: Applied 19 weapon patch(es), 24 stock patch(es), and 44 fold compatibility patch(es).
-[2026-10-26 03:48:10.092][Information][EasyMounting.Mod] [EasyMounting] Applied preset 'AnySurface' to weapon mounting surface detection.
-[2026-10-26 03:48:10.113][Information][LessRestrictingHeadwear.LessRestrictingHeadwear] [LessRestrictingHeadwear] Changed 196 items: 137 block flags cleared and 4118 conflict entries removed.
-[2026-10-26 03:48:10.120][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] core_medical_surgical_kit: surgery keep-ratio set to 100%
-[2026-10-26 03:48:10.120][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] survival_first_aid_rollup_kit: surgery keep-ratio set to 100%
-[2026-10-26 03:48:10.120][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] sanitar_medical_surgical_kit: surgery keep-ratio set to 100%
-[2026-10-26 03:48:10.120][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] Surgery no-penalty applied to 3/3 surgical kits
-[2026-10-26 03:48:10.121][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] MedUseTime scaled on 44 items (x0.5, floor 0.8s)
-[2026-10-26 03:48:10.123][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] Drug effect durations scaled: 27 entries (x2)
-[2026-10-26 03:48:10.123][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] Stimulator positive-buff durations scaled: 147 entries (x2)
-[2026-10-26 03:48:10.126][Information][TraderGen.TraderGenPlugin] [TraderGen] ====================================
-[2026-10-26 03:48:10.126][Information][TraderGen.TraderGenPlugin] [TraderGen] TraderGen Framework v2.4.1 loading...
-[2026-10-26 03:48:10.126][Information][TraderGen.TraderGenPlugin] [TraderGen] ====================================
-[2026-10-26 03:48:10.134][Information][TraderGen.Services.TraderLoader] [TraderGen] Skipping disabled trader in 'trader.json'
-[2026-10-26 03:48:10.134][Information][TraderGen.TraderGenPlugin] [TraderGen] No trader packs found. Place trader pack folders in: user/mods/TraderGen/traders/
-[2026-10-26 03:48:10.138][Information][BoxesAtRef.BoxesAtRef] [BoxesAtRef] Mod loaded successfully.
-[2026-10-26 03:48:10.148][Information][PresetTrader.PresetTraderRefresher] [PresetTrader]: Loaded 1 weapon build(s), 27 gear preset(s) and 19 armor preset(s) to trader 67a5e1c2f3d4b5a6c7d8e9f0. Opening the trader or refreshing rotates through key packs and gunsmith/quest weapon presets.
-[2026-10-26 03:48:10.149][Information][Tosox.BlackExfilRevision.BlackExfilRevision] [Black Exfil Revision] Black Exfil can now attach face shields
-[2026-10-26 03:48:10.219][Information][ColoredTracers.ColoredTracers] [ColoredTracers/OnLoadAsync] Added 242 tracers to 428 bullets!
-[2026-10-26 03:48:10.221][Information][jeroAmmoBox1x1.AmmoBox1x1] [JERO] 36 ammo boxes adjusted!
-[2026-10-26 03:48:10.229][Information][JeroBackpack.BackpackResizer] [JERO] JeroBackpack: Starting backpack resizing...
-[2026-10-26 03:48:10.231][Information][JeroBackpack.BackpackResizer] [JERO] JeroBackpack: Completed! 42 backpacks modified, 10 backpacks ignored (blacklist or multiple grids).
-[2026-10-26 03:48:10.251][Information][Coti.Server.CotiDeviceStore] [COTI] Device store: 10 device(s) resolved, covering 10 host(s), from E:\Spt\SPT_Runtime\user\mods\LennoxP90-COTI\nvghostcompat
-[2026-10-26 03:48:10.260][Information][Coti.Server.CotiSlotInjector] [COTI] 10 host(s) fitted, 0 not installed
-[2026-10-26 03:48:10.307][Information][Coti.Server.ThermalRiserCompatibility] [COTI] Thermal riser: 8 denied (6 not in this database) from E:\Spt\SPT_Runtime\user\mods\LennoxP90-COTI\config\riser-sights.json
-[2026-10-26 03:48:10.312][Information][Coti.Server.ThermalRiserCompatibility] [COTI] Thermal riser (2 colourways): 55 sights and mounts (TGC-NG 7, vanilla 45, WTT-Armory 3), fits 155 slots with the LaRue and 161 more scope slots, conflicts with 106 rear sights
-[2026-10-26 03:48:10.398][Information][Coti.Server.ThermalScopeRingCompatibility] [COTI] Scope rings (6): fit 170 slots that take their base mounts; the riser taken out of 16 ring slot filters; 0 scopes taken from same-tube mounts; 0 denied by scope-rings.json
-[2026-10-26 03:48:10.612][Information][Coti.Server.CotiApbsPoolPatch] [COTI] APBS not installed: its bot pools are left alone
-[2026-10-26 03:48:10.613][Information][Coti.Server.CotiSlotLocale] [COTI] Slot names registered in 17 locale(s)
-[2026-10-26 03:48:10.615][Information][Coti.Server.CotiLootDistribution] [COTI] Loot spawns registered against 10 night vision template(s): COTI at 25% of their weight, thermal riser and scope rings at 30% each. The transformers are registered either way, so switching one on takes effect at the next raid.
-[2026-10-26 03:48:10.630][Information][Coti.Server.Web.Meshes.CotiHostMeshSync] [COTI] meshes: 0 converted, 5 unchanged, 0 removed, 0 failed
-[2026-10-26 03:48:10.634][Information][ChangeHelmetVisorServer.ChangeHelmetVisorServer] [Change Helmet Visor] Initialising changes...
-[2026-10-26 03:48:10.635][Information][ChangeHelmetVisorServer.ChangeHelmetVisorServer] [Change Helmet Visor] Changed the visor of all face shields to 'Wide'
-[2026-10-26 03:48:10.642][Information][RealisticSuppressors.RealisticSuppressors] [RealisticSuppressors] Applied stat multipliers to 111 suppressors.
-[2026-10-26 03:48:10.937][Information][ItemInfo.ItemInfo] [ItemInfo] Processing items...
-[2026-10-26 03:48:52.384][Information][ItemInfo.ItemInfo] [ItemInfo] Processing additional info...
-[2026-10-26 03:49:05.772][Information][ItemInfo.ItemInfo] [ItemInfo] Completed processing 6919 items in 54834 ms.
-[2026-10-26 03:49:05.772][Information][ItemInfo.ItemInfo] [ItemInfo] Item Info loaded!
-[2026-10-26 03:49:05.826][Information][BarterItemsStacks.BarterItemsStacks] [BarterItemsStacks] Config loaded.
-[2026-10-26 03:49:05.886][Information][Foldables.Foldables] [Foldables] Added foldable properties to 52 backpacks
-[2026-10-26 03:49:05.894][Information][Foldables.Foldables] [Foldables] Added foldable properties to 41 vests
-[2026-10-26 03:49:05.901][Information][Foldables.Foldables] [Foldables] Added foldable properties to 21 headphones
-[2026-10-26 03:49:05.911][Information][Foldables.Foldables] [Foldables] loaded successfully!
-[2026-10-26 03:49:07.164][Information][AllinWeaponUnslotted.AllinWeaponUnslotted] [AllinWeaponUnslotted/OnLoadAsync] Mod finished loading. Fcked: weapons, mods, chambers, calibers, magazines. Removed conflicting items in mod slots.
-[2026-10-26 03:49:07.170][Information][Speedloader.Main] [Speedloader]: Ammo(load 0.05s, stack x6), Raid 120min, Hideout ops 3s (capped 2436)
-[2026-10-26 03:49:07.269][Information][SPTarkov.Server.Web.Services.AuthService] Web authentication is enabled.
-[2026-10-26 03:49:07.274][Information][CobrasAmmoStack.CobrasAmmoStackMod] [Cobra's Ammo Stack] v1.1.0 loaded. Modified 444 ammunition items.
-[2026-10-26 03:49:07.279][Information][CobrasDurabilityTweaks.CobrasDurabilityTweaksMod] [Cobra's Durability Tweaks] v1.0.0 loaded. Modified 933 weapons. Durability burn: 12% of normal. Weapon malfunctions: unchanged.
-[2026-10-26 03:49:07.279][Information][CobrasSPTExplorer.Server.ExplorerServerMod] [Cobra's SPT Explorer] Server component loaded successfully.
-[2026-10-26 03:49:07.281][Information][SPTarkov.Server.Core.Services.Hosted.SPTStartupHostedService] 시작된 웹서버 https://127.0.0.1:6969
-[2026-10-26 03:49:07.281][Information][SPTarkov.Server.Core.Services.Hosted.SPTStartupHostedService] 시작된 웹소켓 서버 wss://127.0.0.1:6969
-[2026-10-26 03:49:07.281][Information][SPTarkov.Server.Core.Services.Hosted.SPTStartupHostedService] 서버가 시작되었습니다, 즐거운 시간 되세요.
-[2026-10-26 03:49:07.287][Information][System.Net.Http.HttpClient.Github.LogicalHandler] Start processing HTTP request GET https://api.github.com/repos/sp-tushonka/build/releases/latest
-[2026-10-26 03:49:07.288][Information][System.Net.Http.HttpClient.Github.ClientHandler] Sending HTTP request GET https://api.github.com/repos/sp-tushonka/build/releases/latest
-[2026-10-26 03:49:07.449][Information][SPTarkov.Server.Core.Helpers.Server.CertificateHelper] Loaded self-signed certificate (user\certs\server.crt)
-[2026-10-26 03:49:07.625][Information][System.Net.Http.HttpClient.Github.ClientHandler] Received HTTP response headers after 336.1991ms - 200
-[2026-10-26 03:49:07.628][Information][System.Net.Http.HttpClient.Github.LogicalHandler] End processing HTTP request after 341.8862ms - 200
-[2026-10-26 03:49:08.146][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/negotiate
-[2026-10-26 03:49:08.176][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [웹소켓 리퀘스트] /_blazor
-[2026-10-26 03:49:08.219][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /
-[2026-10-26 03:49:08.398][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/disconnect
-[2026-10-26 03:49:08.408][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_content/MudBlazor/MudBlazor.min.css
-[2026-10-26 03:49:08.409][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /SPTarkov.Server.Web/css/spt-theme.css
-[2026-10-26 03:49:08.430][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /SPTarkov.Server.Web/SPTushonka.Server.Web.styles.css
-[2026-10-26 03:49:08.439][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_content/MudBlazor/MudBlazor.min.js
-[2026-10-26 03:49:08.444][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_framework/blazor.web.js
-[2026-10-26 03:49:08.496][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/initializers
-[2026-10-26 03:49:08.552][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/negotiate
-[2026-10-26 03:49:08.556][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /favicon.ico
-[2026-10-26 03:49:08.564][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [웹소켓 리퀘스트] /_blazor
-[2026-10-26 03:49:23.123][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /
-[2026-10-26 03:49:23.163][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /webconfigbridge
+[2026-10-26 04:08:35.424][Information][SPTarkov.Server.Modding.ModValidator] ModLoader: 총 97 개의 모드 불러오는 중...
+[2026-10-26 04:08:35.688][Information][SPTarkov.Server.Modding.ModValidator] 모드 7Bpencil.MagicOpticMount 버전 0.1.0 (GUID: 7Bpencil.MagicOpticMount | targets SPT: ~4.1.6) by 7Bpencil 불러옴
+[2026-10-26 04:08:35.690][Information][SPTarkov.Server.Modding.ModValidator] 모드 CantedAiming 버전 2.0.0 (GUID: ca.bushtail.cantedaiming | targets SPT: ~4.1.0) by bushtail 불러옴
+[2026-10-26 04:08:35.690][Information][SPTarkov.Server.Modding.ModValidator] 모드 500EuroForSkier 버전 2.0.0 (GUID: ca.bushtail.euroforskier | targets SPT: ~4.1.0) by bushtail 불러옴
+[2026-10-26 04:08:35.690][Information][SPTarkov.Server.Modding.ModValidator] 모드 SlimmerMagazines 버전 2.0.0 (GUID: ca.bushtail.slimmermagazines | targets SPT: ~4.1.0) by bushtail 불러옴
+[2026-10-26 04:08:35.691][Information][SPTarkov.Server.Modding.ModValidator] 모드 Repair Skill Extension 버전 1.4.1 (GUID: ciallo.repairextension | targets SPT: ~4.1.0) by CialloMako 불러옴
+[2026-10-26 04:08:35.691][Information][SPTarkov.Server.Modding.ModValidator] 모드 Bright Lasers 버전 3.0.0 (GUID: com.acidphantasm.brightlasers | targets SPT: ~4.1.0) by acidphantasm 불러옴
+[2026-10-26 04:08:35.692][Information][SPTarkov.Server.Modding.ModValidator] 모드 Default Firemode Fixer 버전 2.1.0 (GUID: com.acidphantasm.defaultfiremode | targets SPT: ~4.1.0) by acidphantasm 불러옴
+[2026-10-26 04:08:35.692][Information][SPTarkov.Server.Modding.ModValidator] 모드 Harry Hideout 버전 3.1.2 (GUID: com.acidphantasm.harryhideout | targets SPT: ~4.1.0) by acidphantasm 불러옴
+[2026-10-26 04:08:35.693][Information][SPTarkov.Server.Modding.ModValidator] 모드 Item Limits Begone 버전 1.1.0 (GUID: com.acidphantasm.itemlimitsbegone | targets SPT: ~4.1.0) by acidphantasm 불러옴
+[2026-10-26 04:08:35.693][Information][SPTarkov.Server.Modding.ModValidator] 모드 Ref Friendly Quests 버전 2.1.0 (GUID: com.acidphantasm.reffriendlyquests | targets SPT: ~4.1.0) by acidphantasm 불러옴
+[2026-10-26 04:08:35.693][Information][SPTarkov.Server.Modding.ModValidator] 모드 Scorpion 버전 1.1.1 (GUID: com.acidphantasm.scorpion | targets SPT: ~4.1.0) by acidphantasm 불러옴
+[2026-10-26 04:08:35.694][Information][SPTarkov.Server.Modding.ModValidator] 모드 give-ui 버전 5.0.1 (GUID: com.agavalda.giveui | targets SPT: ~4.1.0) by agavalda 불러옴
+[2026-10-26 04:08:35.694][Information][SPTarkov.Server.Modding.ModValidator] 모드 HolsterEverything 버전 2.0.0 (GUID: com.alanyung-yl.holstereverything | targets SPT: ~4.1.0) by alanyung-yl 불러옴
+[2026-10-26 04:08:35.694][Information][SPTarkov.Server.Modding.ModValidator] 모드 Limitless 버전 1.0.0 (GUID: com.amightytank.limitless | targets SPT: ~4.1.1) by AmightyTank 불러옴
+[2026-10-26 04:08:35.694][Information][SPTarkov.Server.Modding.ModValidator] 모드 AllWeaponsFlea 버전 1.0.1 (GUID: com.arion.allweaponsflea | targets SPT: =4.1.6) by Arion 불러옴
+[2026-10-26 04:08:35.695][Information][SPTarkov.Server.Modding.ModValidator] 모드 QuickSell 버전 4.3.0 (GUID: com.blackhawk.quicksell | targets SPT: >=4.1.3 <4.2.0) by BlackHawk 불러옴
+[2026-10-26 04:08:35.695][Information][SPTarkov.Server.Modding.ModValidator] 모드 Bluehead's AIO Trader 버전 5.3.0 (GUID: com.bluehead.aiotrader | targets SPT: ~4.1.0) by Bluehead 불러옴
+[2026-10-26 04:08:35.695][Information][SPTarkov.Server.Modding.ModValidator] 모드 .22 Long Rifle 버전 2.0.0 (GUID: com.c11.spt22lr | targets SPT: ~4.1.6) by C11 불러옴
+[2026-10-26 04:08:35.696][Information][SPTarkov.Server.Modding.ModValidator] 모드 TraderModding 버전 2.1.2 (GUID: com.choochoo.tradermodding | targets SPT: ~4.1.X) by Choo² 불러옴
+[2026-10-26 04:08:35.696][Information][SPTarkov.Server.Modding.ModValidator] 모드 Cobra's Ammo Stack 버전 1.1.0 (GUID: com.cobra.ammostack | targets SPT: ~4.1.0) by Cobra 불러옴
+[2026-10-26 04:08:35.696][Information][SPTarkov.Server.Modding.ModValidator] 모드 Cobra's Durability Tweaks 버전 1.0.0 (GUID: com.cobra.durabilitytweaks | targets SPT: ~4.1.0) by Cobra 불러옴
+[2026-10-26 04:08:35.697][Information][SPTarkov.Server.Modding.ModValidator] 모드 CobraSPTExplorer 버전 1.0.0 (GUID: com.cobra.sptexplorer | targets SPT: ~4.1.5) by Cobra 불러옴
+[2026-10-26 04:08:35.697][Information][SPTarkov.Server.Modding.ModValidator] 모드 Artem 버전 3.0.2 (GUID: com.crackbone.artem-wtt | targets SPT: ~4.1.0) by Crackbone 불러옴
+[2026-10-26 04:08:35.697][Information][SPTarkov.Server.Modding.ModValidator] 모드 Show Me The Money 버전 3.0.2 (GUID: com.dark.spt.showmethemoney | targets SPT: ~4.1.0) by SwiftXP 불러옴
+[2026-10-26 04:08:35.698][Information][SPTarkov.Server.Modding.ModValidator] 모드 Flexible Builds 버전 1.2.2 (GUID: com.deadlauncher.FlexibleBuilds | targets SPT: ~4.1.0) by DeadLauncher 불러옴
+[2026-10-26 04:08:35.698][Information][SPTarkov.Server.Modding.ModValidator] 모드 BetterAttachments 버전 2.0.0 (GUID: com.deadwolf.spt.betterattachments | targets SPT: ~4.1.0) by DeadW0Lf 불러옴
+[2026-10-26 04:08:35.698][Information][SPTarkov.Server.Modding.ModValidator] 모드 FullAutoGuns 버전 1.0.0 (GUID: com.deadwolf.spt.fullautoguns | targets SPT: ~4.1.5) by DeadW0Lf 불러옴
+[2026-10-26 04:08:35.699][Information][SPTarkov.Server.Modding.ModValidator] 모드 Gunwright 버전 1.3.0 (GUID: com.deadwolf.spt.gunwright | targets SPT: ~4.1.2) by DeadWolf 불러옴
+[2026-10-26 04:08:35.699][Information][SPTarkov.Server.Modding.ModValidator] 모드 RepairMaxDurability 버전 2.2.0 (GUID: com.egbog.repairmaxdurability | targets SPT: ~4.1.0) by egbog 불러옴
+[2026-10-26 04:08:35.699][Information][SPTarkov.Server.Modding.ModValidator] 모드 Ref Rework 버전 1.0.0 (GUID: com.elmerglue.refrework | targets SPT: ~4.1.0) by Elmer Glue 불러옴
+[2026-10-26 04:08:35.700][Information][SPTarkov.Server.Modding.ModValidator] 모드 Painter 버전 2.0.0 (GUID: com.emilanderss0n.painter | targets SPT: ~4.1.0) by MoxoPixel 불러옴
+[2026-10-26 04:08:35.700][Information][SPTarkov.Server.Modding.ModValidator] 모드 Tactical Gear Component 버전 3.0.0 (GUID: com.emilanderss0n.tgc | targets SPT: ~4.1.0) by MonoPixel 불러옴
+[2026-10-26 04:08:35.700][Information][SPTarkov.Server.Modding.ModValidator] 모드 Vanguard 버전 2.0.0 (GUID: com.epicrangetime.vanguard | targets SPT: ~4.1) by EpicRangeTime 불러옴
+[2026-10-26 04:08:35.701][Information][SPTarkov.Server.Modding.ModValidator] 모드 BetterOKP7 버전 1.1.0 (GUID: com.eukyre.betterokp7 | targets SPT: ~4.1.3) by probablyEukyre 불러옴
+[2026-10-26 04:08:35.701][Information][SPTarkov.Server.Modding.ModValidator] 모드 TraderRestockRefresh 버전 1.0.0 (GUID: com.fenrirthegray.traderrestockrefresh | targets SPT: ~4.1.0) by FenrirTheGray 불러옴
+[2026-10-26 04:08:35.701][Information][SPTarkov.Server.Modding.ModValidator] 모드 UnrestrictedArmorPlates 버전 2.1.0 (GUID: com.fivef.unrestrictedarmorplate | targets SPT: ~4.1.0) by FiveF 불러옴
+[2026-10-26 04:08:35.702][Information][SPTarkov.Server.Modding.ModValidator] 모드 BetterKeysNG 버전 1.8.0 (GUID: com.flir.betterkeys | targets SPT: ~4.1.0) by flir 불러옴
+[2026-10-26 04:08:35.702][Information][SPTarkov.Server.Modding.ModValidator] 모드 FoldThatStock 버전 2.1.0 (GUID: com.foldthatstock | targets SPT: ~4.1.0) by alanyung-yl 불러옴
+[2026-10-26 04:08:35.702][Information][SPTarkov.Server.Modding.ModValidator] 모드 Ultimate Trader Assort Editor 버전 2.1.0 (GUID: com.goatboy.ultimate-trader-assort-editor | targets SPT: ~4.1.0) by GoatBoy 불러옴
+[2026-10-26 04:08:35.703][Information][SPTarkov.Server.Modding.ModValidator] 모드 CaseTrader 버전 1.0.1 (GUID: com.hayk.casetrader | targets SPT: ~4.1.0) by Hayk 불러옴
+[2026-10-26 04:08:35.703][Information][SPTarkov.Server.Modding.ModValidator] 모드 Wolfiks Heavy Troopers 버전 1.2.0 (GUID: com.hood.wolfiksheavytroopers | targets SPT: ~4.1.0) by Hood 불러옴
+[2026-10-26 04:08:35.703][Information][SPTarkov.Server.Modding.ModValidator] 모드 AmmoBox1x1 버전 2.0.0 (GUID: com.jero.ammobox1x1 | targets SPT: ~4.1.6) by jero 불러옴
+[2026-10-26 04:08:35.703][Information][SPTarkov.Server.Modding.ModValidator] 모드 jerobackpack 버전 4.1.1 (GUID: com.jero.jerobackpack | targets SPT: ~4.1.6) by jero 불러옴
+[2026-10-26 04:08:35.704][Information][SPTarkov.Server.Modding.ModValidator] 모드 Gunsmith Trader 버전 1.0.2 (GUID: com.landon.gunsmithtrader | targets SPT: ~4.1.0) by Landon 불러옴
+[2026-10-26 04:08:35.704][Information][SPTarkov.Server.Modding.ModValidator] 모드 ECOTI 버전 3.4.2 (GUID: com.lennoxp90.coti.server | targets SPT: >=4.1.3 <4.2.0) by LennoxP90 불러옴
+[2026-10-26 04:08:35.704][Information][SPTarkov.Server.Modding.ModValidator] 모드 Lotus 버전 1.8.1 (GUID: com.Luna.LunnayalunaLotus | targets SPT: ~4.1.6) by LunnayalunaLotus 불러옴
+[2026-10-26 04:08:35.705][Information][SPTarkov.Server.Modding.ModValidator] 모드 LoadAmmoAnim 버전 2.0.0 (GUID: com.manimal.loadammoanim | targets SPT: ~4.1.5) by Manimal 불러옴
+[2026-10-26 04:08:35.705][Information][SPTarkov.Server.Modding.ModValidator] 모드 Airburst 버전 1.1.2 (GUID: com.maschine.Airburst | targets SPT: ~4.1.0) by maschine 불러옴
+[2026-10-26 04:08:35.705][Information][SPTarkov.Server.Modding.ModValidator] 모드 EasyMounting 버전 2.0.1 (GUID: com.maschine.EasyMounting | targets SPT: ~4.1.0) by maschine 불러옴
+[2026-10-26 04:08:35.706][Information][SPTarkov.Server.Modding.ModValidator] 모드 NATO Quartermaster 버전 1.1.3 (GUID: com.michael.spt.natoquartermaster | targets SPT: ~4.1.3) by Michael 불러옴
+[2026-10-26 04:08:35.706][Information][SPTarkov.Server.Modding.ModValidator] 모드 Dynamic Maps 버전 1.2.1 (GUID: com.mpstark.dynamicmaps | targets SPT: ~4.1.0) by mpstark 불러옴
+[2026-10-26 04:08:35.706][Information][SPTarkov.Server.Modding.ModValidator] 모드 Less Restricting Headwear 버전 4.0.0 (GUID: com.musicmaniac.lessrestrictingheadwear | targets SPT: ~4.1.0) by MusicManiac 불러옴
+[2026-10-26 04:08:35.707][Information][SPTarkov.Server.Modding.ModValidator] 모드 Realistic Suppressors 버전 1.0.0 (GUID: com.musicmaniac.realisticsuppressors | targets SPT: ~4.1.0) by MusicManiac 불러옴
+[2026-10-26 04:08:35.707][Information][SPTarkov.Server.Modding.ModValidator] 모드 Quick Trader Load Times 버전 1.0.0 (GUID: com.mybutthasarash.quicktraderloadtimes | targets SPT: ~4.1.0) by JoelHauser 불러옴
+[2026-10-26 04:08:35.707][Information][SPTarkov.Server.Modding.ModValidator] 모드 Realistic Insurance 버전 0.2.1 (GUID: com.mybutthasarash.realisticinsurance | targets SPT: ~4.1.0) by JoelHauser 불러옴
+[2026-10-26 04:08:35.708][Information][SPTarkov.Server.Modding.ModValidator] 모드 ItemInfo 버전 3.0.0 (GUID: com.odt.iteminfo | targets SPT: ~4.1.5) by ODT 불러옴
+[2026-10-26 04:08:35.708][Information][SPTarkov.Server.Modding.ModValidator] 모드 Foldables 버전 1.1.1 (GUID: com.ozen.foldables | targets SPT: ~4.1.2) by ozen 불러옴
+[2026-10-26 04:08:35.708][Information][SPTarkov.Server.Modding.ModValidator] 모드 Better Rear Sights 버전 1.8.0 (GUID: com.pein.betterrearsights | targets SPT: ~4.1.0) by pein 불러옴
+[2026-10-26 04:08:35.709][Information][SPTarkov.Server.Modding.ModValidator] 모드 PortableTraders 버전 1.1.0 (GUID: com.portabletraders.core | targets SPT: ~4.1.2) by PortableTraders 불러옴
+[2026-10-26 04:08:35.709][Information][SPTarkov.Server.Modding.ModValidator] 모드 AmmoStats 버전 4.1.0 (GUID: com.rairaitheraichu.ammostats | targets SPT: ~4.1.0) by RaiRaiTheRaichu 불러옴
+[2026-10-26 04:08:35.709][Information][SPTarkov.Server.Modding.ModValidator] 모드 Vanilla Traders Rework Reloaded 버전 1.0.0 (GUID: com.ricardoschurhaus.vanillatradersrework.reloaded | targets SPT: ~4.1.2) by Ricardo Schurhaus 불러옴
+[2026-10-26 04:08:35.711][Information][SPTarkov.Server.Modding.ModValidator] 모드 Direct Reload & Painless Meds 버전 1.3.2 (GUID: com.rz99.directreload | targets SPT: ~4.1.0) by RZ-99 불러옴
+[2026-10-26 04:08:35.711][Information][SPTarkov.Server.Modding.ModValidator] 모드 IncendiaryGrenade 버전 1.1.0 (GUID: com.sage.incendiarygrenade | targets SPT: ~4.1.0) by Sage 불러옴
+[2026-10-26 04:08:35.711][Information][SPTarkov.Server.Modding.ModValidator] 모드 AmmoGen 버전 2.4.0 (GUID: com.serenity.ammogen | targets SPT: ~4.1.1) by Serenity 불러옴
+[2026-10-26 04:08:35.712][Information][SPTarkov.Server.Modding.ModValidator] 모드 ItemGen 버전 1.5.1 (GUID: com.serenity.itemgen | targets SPT: ~4.1.1) by Serenity 불러옴
+[2026-10-26 04:08:35.712][Information][SPTarkov.Server.Modding.ModValidator] 모드 TraderGen 버전 2.4.1 (GUID: com.serenity.tradergen | targets SPT: ~4.1.0) by Serenity 불러옴
+[2026-10-26 04:08:35.712][Information][SPTarkov.Server.Modding.ModValidator] 모드 Peacemaker 버전 2.1.0 (GUID: com.sgtlaggy.peacemaker | targets SPT: ~4.1.0) by sgtlaggy 불러옴
+[2026-10-26 04:08:35.713][Information][SPTarkov.Server.Modding.ModValidator] 모드 Trader Namer 버전 4.1.0 (GUID: com.sgtlaggy.tradernamer | targets SPT: ~4.1.0) by sgtlaggy 불러옴
+[2026-10-26 04:08:35.713][Information][SPTarkov.Server.Modding.ModValidator] 모드 Barter Items Stacks 버전 1.4.3 (GUID: com.slpf.barteritemsstacks | targets SPT: ~4.1.0) by SLPF 불러옴
+[2026-10-26 04:08:35.713][Information][SPTarkov.Server.Modding.ModValidator] 모드 Boxes At Ref 버전 3.0.0 (GUID: com.SomeoneNamedAdam.barf | targets SPT: ~4.1.2) by SomoneNamedAdam 불러옴
+[2026-10-26 04:08:35.714][Information][SPTarkov.Server.Modding.ModValidator] 모드 PresetTrader 버전 1.2.0 (GUID: com.sp.bela.presettrader | targets SPT: ~4.1.2) by Bela 불러옴
+[2026-10-26 04:08:35.714][Information][SPTarkov.Server.Modding.ModValidator] 모드 Speedloader 버전 1.2.4 (GUID: com.sp.bela.speedloader | targets SPT: ~4.1.2) by Bela 불러옴
+[2026-10-26 04:08:35.714][Information][SPTarkov.Server.Modding.ModValidator] 모드 AllGoodsTrader 버전 2.0.0 (GUID: com.suntion.allgoodstrader | targets SPT: ~4.1.3) by Suntion 불러옴
+[2026-10-26 04:08:35.715][Information][SPTarkov.Server.Modding.ModValidator] 모드 All In Weapon: Unslotted 버전 1.2.0 (GUID: com.szonszczyk.allinweaponunslotted | targets SPT: ~4.1.2) by Szonszczyk 불러옴
+[2026-10-26 04:08:35.715][Information][SPTarkov.Server.Modding.ModValidator] 모드 Amonya 버전 2.2.0 (GUID: com.szonszczyk.amonya | targets SPT: ~4.1.2) by Szonszczyk 불러옴
+[2026-10-26 04:08:35.715][Information][SPTarkov.Server.Modding.ModValidator] 모드 CaliberSplitStorageSolutions 버전 1.0.1 (GUID: com.szonszczyk.calibersplitstoragesolutions | targets SPT: ~4.1.3) by Szonszczyk 불러옴
+[2026-10-26 04:08:35.716][Information][SPTarkov.Server.Modding.ModValidator] 모드 ColoredTracers 버전 3.0.1 (GUID: com.szonszczyk.coloredtracers | targets SPT: ~4.1.2) by Szonszczyk 불러옴
+[2026-10-26 04:08:35.716][Information][SPTarkov.Server.Modding.ModValidator] 모드 DefinitiveWeaponVariants 버전 4.3.2 (GUID: com.szonszczyk.definitiveweaponvariants | targets SPT: ~4.1.2) by Szonszczyk 불러옴
+[2026-10-26 04:08:35.716][Information][SPTarkov.Server.Modding.ModValidator] 모드 Tiltushkin-AllAmmo 버전 1.5.0 (GUID: com.tiltushkin.allammo | targets SPT: ~4.1.3) by Tiltushkin 불러옴
+[2026-10-26 04:08:35.717][Information][SPTarkov.Server.Modding.ModValidator] 모드 InfiniteEverything 버전 2.5.3 (GUID: com.trappuss.infiniteeverything | targets SPT: ~4.1.0) by trappuss 불러옴
+[2026-10-26 04:08:35.717][Information][SPTarkov.Server.Modding.ModValidator] 모드 Change Helmet Visor 버전 3.0.0 (GUID: com.trinagan.ChangeHelmetVisor | targets SPT: ~4.1.3) by Trinagan 불러옴
+[2026-10-26 04:08:35.717][Information][SPTarkov.Server.Modding.ModValidator] 모드 UI Fixes 버전 6.0.4 (GUID: com.tyfon.uifixes | targets SPT: ~4.1.0) by Tyfon 불러옴
+[2026-10-26 04:08:35.717][Information][SPTarkov.Server.Modding.ModValidator] 모드 Weapon Customizer 버전 4.0.0 (GUID: com.tyfon.weaponcustomizer | targets SPT: ~4.1.0) by Tyfon 불러옴
+[2026-10-26 04:08:35.718][Information][SPTarkov.Server.Modding.ModValidator] 모드 RestoreArmorPlates 버전 1.0.1 (GUID: com.wade.restorearmorplates | targets SPT: ~4.1.0) by Wade 불러옴
+[2026-10-26 04:08:35.718][Information][SPTarkov.Server.Modding.ModValidator] 모드 WTT-Armory 버전 2.0.5 (GUID: com.wtt.armory | targets SPT: ~4.1.0) by GrooveypenguinX 불러옴
+[2026-10-26 04:08:35.718][Information][SPTarkov.Server.Modding.ModValidator] 모드 WTT-ServerCommonLib 버전 3.0.6 (GUID: com.wtt.commonlib | targets SPT: ~4.1.3) by GrooveypenguinX 불러옴
+[2026-10-26 04:08:35.719][Information][SPTarkov.Server.Modding.ModValidator] 모드 WTT-PackNStrapServer 버전 2.1.1 (GUID: com.wtt.packnstrap | targets SPT: ~4.1.1) by GrooveypenguinX 불러옴
+[2026-10-26 04:08:35.719][Information][SPTarkov.Server.Modding.ModValidator] 모드 Ledger 버전 1.1.0 (GUID: com.zantetsukenar3.ledger | targets SPT: ~4.1.0) by ZantetsukenAR3 불러옴
+[2026-10-26 04:08:35.719][Information][SPTarkov.Server.Modding.ModValidator] 모드 UltimateFlea 버전 1.2.0 (GUID: com.zloymolodoy.ultimateflea | targets SPT: ~4.1.0) by ZloyMolodoy 불러옴
+[2026-10-26 04:08:35.720][Information][SPTarkov.Server.Modding.ModValidator] 모드 Black Exfil Revision 버전 1.1.0 (GUID: de.tosox.blackexfilrevision | targets SPT: ~4.1.0) by Tosox 불러옴
+[2026-10-26 04:08:35.720][Information][SPTarkov.Server.Modding.ModValidator] 모드 EquipmentIsEternal 버전 1.2.0 (GUID: eu.thescrewcollab.equipmentiseternal | targets SPT: ~4.1.0) by ScrewTSW 불러옴
+[2026-10-26 04:08:35.720][Information][SPTarkov.Server.Modding.ModValidator] 모드 SVM 버전 2.2.3 (GUID: fika.ghostfenixx.svm | targets SPT: ~4.1.3) by GhostFenixx 불러옴
+[2026-10-26 04:08:35.721][Information][SPTarkov.Server.Modding.ModValidator] 모드 Moe-TradeMarker 버전 1.2.6 (GUID: moe.trade.marker.server | targets SPT: ~4.1.0) by moe 불러옴
+[2026-10-26 04:08:35.721][Information][SPTarkov.Server.Modding.ModValidator] 모드 HideLockedFlea 버전 1.0.0 (GUID: net.liquidwarp.hidelockedflea | targets SPT: ~4.1.6) by Liquidwarp 불러옴
+[2026-10-26 04:08:35.721][Information][SPTarkov.Server.Modding.ModValidator] 모드 Helmet Slot Union 버전 0.1.0 (GUID: spt.helmetslotunion | targets SPT: ~4.1.6) by Qahnaarin 불러옴
+[2026-10-26 04:08:35.722][Information][SPTarkov.Server.Modding.ModValidator] 모드 Web Config Bridge 버전 0.1.0 (GUID: spt.webconfigbridge | targets SPT: ~4.1.6) by Qahnaarin 불러옴
+[2026-10-26 04:08:35.722][Information][SPTarkov.Server.Modding.ModValidator] 모드 Trader Level Requirements Editor 버전 1.1.0 (GUID: wozzy.spt.traderlevelrequirementseditor | targets SPT: ~4.1.0) by wozzy 불러옴
+[2026-10-26 04:08:35.737][Information][SPTarkov.Server.Helpers.DatabaseImporter] 데이터베이스를 추출 중...
+[2026-10-26 04:08:36.987][Information][SPTarkov.Server.Helpers.DatabaseImporter] 데이터베이스 추출 완료
+[2026-10-26 04:08:36.988][Information][SPTarkov.Server.Helpers.DatabaseImporter] Database import took 1250ms
+[2026-10-26 04:08:37.245][Information][SPTarkov.Server.Web.App] Mod ECOTI has a wwwroot, mapping to /coti-assets/
+[2026-10-26 04:08:37.250][Information][SPTarkov.Server.Core] 서버: 시작 콜백을 실행합니다...
+[2026-10-26 04:08:37.259][Information][HelmetSlotUnion.HelmetSlotUnion] [HelmetSlotUnion] 헬멧 64종, 칸 묶음 11개. 281개 칸에 항목 6224개를 더했다.
+[2026-10-26 04:08:37.278][Information][HelmetSlotUnion.HelmetSlotUnion] [HelmetSlotUnion] 충돌 정리(범위 안끼리만): 대상 240개 중 57개에서 295건을 지웠다. 남은 항목 623건.
+[2026-10-26 04:08:37.280][Information][SPTarkov.Server.Core.Utils.Watermark] ┌─────────────────────────────────────┐
+[2026-10-26 04:08:37.280][Information][SPTarkov.Server.Core.Utils.Watermark] │ SPT 4.1.6                           │
+[2026-10-26 04:08:37.280][Information][SPTarkov.Server.Core.Utils.Watermark] │ https://discord.sp-tushonka.com     │
+[2026-10-26 04:08:37.281][Information][SPTarkov.Server.Core.Utils.Watermark] │                                     │
+[2026-10-26 04:08:37.281][Information][SPTarkov.Server.Core.Utils.Watermark] │ 이 소프트웨어는 무료입니다                      │
+[2026-10-26 04:08:37.281][Information][SPTarkov.Server.Core.Utils.Watermark] │ 만약 금전적 대가를 지불하였다면, 사기에 당하신 겁니다.     │
+[2026-10-26 04:08:37.281][Information][SPTarkov.Server.Core.Utils.Watermark] │ 상업적 용도는 제한됩니다                       │
+[2026-10-26 04:08:37.282][Information][SPTarkov.Server.Core.Utils.Watermark] └─────────────────────────────────────┘
+[2026-10-26 04:08:37.666][Information][FlexibleBuilds.Server.ServerPlugin] Builds Fixes patches loaded!
+[2026-10-26 04:08:37.778][Information][_RepairMaxDurability.RepairMaxDurability] [RepairMaxDurability] Loaded successfully
+[2026-10-26 04:08:37.866][Information][Coti.Server.CotiItemFactory] [COTI] Item created, id 6a7f15387b68c336e18e8977
+[2026-10-26 04:08:37.983][Information][UltimateFlea.Patches.TradeHooksLoad] [UltimateFlea] Trade hooks enabled.
+[2026-10-26 04:08:37.990][Information][BlueheadsAioTrader.ReadJsonConfig] [Bluehead's AioTrader]Config: enable_aiotrader enabled
+[2026-10-26 04:08:37.991][Information][BlueheadsAioTrader.ReadJsonConfig] [Bluehead's AioTrader]Config: hide_all_builtin_inserts enabled
+[2026-10-26 04:08:38.253][Information][Spt22lr.Plugin] Loaded your Plinking Dreams
+[2026-10-26 04:08:38.257][Information][Coti.Server.ThermalRiserItemFactory] [COTI] Thermal riser created, id 6ad3016bab020957abb6ca3b (LennoxP90 TR-1 thermal sight riser)
+[2026-10-26 04:08:38.262][Information][Coti.Server.ThermalRiserItemFactory] [COTI] Thermal riser created, id 6ad408a96bf1f761d970a4ff (LennoxP90 TR-1 thermal sight riser (Tan))
+[2026-10-26 04:08:38.334][Information][AmmoStats.AmmoStatsMod] [AmmoStats] ColorConverterAPI Plugin detected?: True
+[2026-10-26 04:08:38.457][Information][InfiniteEverythingServer.InfiniteEverythingLoader] [Infinite Everything] server part 2.5.3 loaded (infinite money + hideout resource patches enabled)
+[2026-10-26 04:08:38.497][Information][_RestoreArmorPlates.RestoreArmorPlates] [RestoreArmorPlates] Loaded successfully
+[2026-10-26 04:08:38.514][Information][EquipmentIsEternal.EquipmentIsEternal] EquipmentIsEternal loaded
+[2026-10-26 04:08:38.514][Information][EquipmentIsEternal.EquipmentIsEternal]   OnlyRestoreInsured: False
+[2026-10-26 04:08:38.514][Information][EquipmentIsEternal.EquipmentIsEternal]   KeepQuestItems: False
+[2026-10-26 04:08:38.515][Information][EquipmentIsEternal.EquipmentIsEternal]   RestoreArmBand: False
+[2026-10-26 04:08:38.515][Information][EquipmentIsEternal.EquipmentIsEternal]   RestoreSpecialSlots: False
+[2026-10-26 04:08:38.515][Information][EquipmentIsEternal.EquipmentIsEternal]   RestoreScabbard: False
+[2026-10-26 04:08:38.515][Information][EquipmentIsEternal.EquipmentIsEternal]   RestoreSecuredContainer: False
+[2026-10-26 04:08:38.516][Information][EquipmentIsEternal.EquipmentIsEternal]   DeduplicateItems: True
+[2026-10-26 04:08:38.525][Information][MoeTradeMarker.Server.Services.TradeMarkerConfigService] Moe-TradeMarker 설정을 불러왔습니다.
+[2026-10-26 04:08:38.549][Information][MoeTradeMarker.Server.MoeTradeMarkerServer] Moe-TradeMarker 서버를 불러왔습니다.
+[2026-10-26 04:08:38.746][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad5739462c39577194eedc5 (LennoxP90 TSR-1 thermal scope ring 30mm)
+[2026-10-26 04:08:38.747][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad573a014ebd436fbd1dfda (LennoxP90 TSR-1 thermal scope ring 30mm (Tan))
+[2026-10-26 04:08:38.747][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad5775e327076f93b3b36bf (LennoxP90 TSR-2 thermal scope ring 34mm)
+[2026-10-26 04:08:38.748][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad57762f51afaf4379f19a2 (LennoxP90 TSR-2 thermal scope ring 34mm (Tan))
+[2026-10-26 04:08:38.748][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad577679385f594db176ad6 (LennoxP90 TSR-3 thermal scope ring 35mm)
+[2026-10-26 04:08:38.748][Information][Coti.Server.ThermalScopeRingItemFactory] [COTI] Scope ring created, id 6ad5776a93ea4db35ed55dcf (LennoxP90 TSR-3 thermal scope ring 35mm (Tan))
+[2026-10-26 04:08:39.164][Warning][WTTServerCommonLib.Services.WTTCustomItemServiceExtended] No valid item configs found in E:\Spt\SPT_Runtime\user\mods\Eukyre-BetterOKP7\db\CustomItems
+[2026-10-26 04:08:40.283][Information][WolfiksHeavyTroopers.WolfiksHeavyTroopers] [Wolfiks Heavy Trooper Masks] Successfully added to server!
+[2026-10-26 04:08:40.459][Warning][ServerValueModifier.SVM] [SVM] Remove backpack restrictions - empty filters detected on ID - 656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[2026-10-26 04:08:40.460][Warning][ServerValueModifier.SVM] [SVM] Remove backpack restrictions - empty filters detected on ID - 656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[2026-10-26 04:08:40.460][Warning][ServerValueModifier.SVM] [SVM] Remove backpack restrictions - empty filters detected on ID - 656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
+[2026-10-26 04:08:40.594][Information][ServerValueModifier.SVM] [SVM] Initialization complete. GhostFenixx goes 'Not again' 
+[2026-10-26 04:08:40.595][Information][ServerValueModifier.SVM] [SVM] Preset - Noname - successfully loaded
+[2026-10-26 04:08:40.599][Information][EuroForSkier.EuroForSkier] ExchangeRate: 158
+[2026-10-26 04:08:41.585][Information][DefinitiveWeaponVariants.DefinitiveWeaponVariants] [DefinitiveWeaponVariants.CustomClasses/AddVariantsToLooseLoot] There are 409 possible weapons in Marked Rooms
+[2026-10-26 04:08:41.590][Information][DefinitiveWeaponVariants.DefinitiveWeaponVariants] [DefinitiveWeaponVariants/OnLoadAsync] Mod finished loading. Created 776 custom items!
+[2026-10-26 04:08:43.513][Information][CaliberSplitStorageSolutions.CaliberSplitStorageSolutions] [CaliberSplitStorageSolutions/OnLoadAsync] Mod loaded successfully. Created 91 custom items!
+[2026-10-26 04:08:44.327][Information][Amonya.Amonya] [Amonya/OnLoadAsync] Mod finished loading. Created 193 custom items!
+[2026-10-26 04:08:44.328][Information][Amonya.Amonya] [Amonya/OnLoadAsync] Added 188 custom quests!
+[2026-10-26 04:08:44.406][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Prapor
+[2026-10-26 04:08:44.407][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Therapist
+[2026-10-26 04:08:44.407][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Skier
+[2026-10-26 04:08:44.407][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Peacekeeper
+[2026-10-26 04:08:44.407][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Mechanic
+[2026-10-26 04:08:44.407][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Ragman
+[2026-10-26 04:08:44.408][Information][TraderLevelRequirementsEditor.TraderLevelRequirementsEditor] [Trader Level Requirements Editor] Updated Jaeger
+[2026-10-26 04:08:44.507][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] OS: 10.0.26300.0 | Win32NT
+[2026-10-26 04:08:44.508][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Pagefile: 4.00 GB
+[2026-10-26 04:08:44.508][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] RAM: 31.88 GB
+[2026-10-26 04:08:44.508][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Ran as admin: False
+[2026-10-26 04:08:44.508][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] CPU cores: 16
+[2026-10-26 04:08:44.508][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] PATH: RTpcU3B0XFNQVF9SdW50aW1lXFNQVC5TZXJ2ZXIuZXhl
+[2026-10-26 04:08:44.509][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Server: 4.1.6
+[2026-10-26 04:08:44.509][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Date: 20260918
+[2026-10-26 04:08:44.509][Information][SPTarkov.Server.Core.Services.Hosted.SystemInformationLogger] Commit: 731d7a2
+[2026-10-26 04:08:44.556][Information][PortableTraders.Services.PortableTradersService] [PortableTraders] BTR Driver (APC) (656f0f98d80a697f855d34b1): main menu = True, unlocked = True, quest rewards by mail = True.
+[2026-10-26 04:08:44.556][Information][PortableTraders.Services.PortableTradersService] [PortableTraders] Lightkeeper (638f541a29ffd1183d187f57): main menu = True, unlocked = True, quest rewards by mail = True.
+[2026-10-26 04:08:44.560][Information][PortableTraders.Services.PortableTradersService] [PortableTraders] Loaded: 2 portable trader(s), 30 task(s) reachable from the main menu.
+[2026-10-26 04:08:44.579][Information][BlueheadsAioTrader.AIOTraderCommando] [Bluehead's AioTrader] AIOTraderCommando loaded — prefix: 'aio', commands: give
+[2026-10-26 04:08:44.585][Information][SlimmerMagazines.ReduceMagazineThickness] [SM] Putting magazines on a diet...
+[2026-10-26 04:08:44.587][Information][SlimmerMagazines.ReduceMagazineThickness] [SM] Slimmed down 44 magazines!
+[2026-10-26 04:08:44.675][Information][Gunwright.GunwrightRegistration] [Gunwright]: Registered trader 8b4f2d91c7a63e5f1d9a0b4c ahead of profile validation
+[2026-10-26 04:08:44.887][Warning][CaseTrader.ContainerScanner] [CaseTrader] Skipped container 5c0a5f6c86f774753654890e (Developer case): no handbook price and no override
+[2026-10-26 04:08:44.888][Warning][CaseTrader.ContainerScanner] [CaseTrader] Skipped container 688b2dba67bf6fa26c07e918 (item_container_moderator_toolbox): no handbook price and no override
+[2026-10-26 04:08:44.890][Information][CaseTrader.CaseTraderMod] [CaseTrader] Added Case trader with 120 container offers
+[2026-10-26 04:08:44.897][Information][GunsmithTrader.GunsmithTraderMod] [Gunsmith Trader] Loaded with 30 Gunsmith builds.
+[2026-10-26 04:08:44.912][Information][AmmoGen.AmmoGenPlugin] [AmmoGen] ====================================
+[2026-10-26 04:08:44.912][Information][AmmoGen.AmmoGenPlugin] [AmmoGen] AmmoGen Framework v2.4.0 loading...
+[2026-10-26 04:08:44.912][Information][AmmoGen.AmmoGenPlugin] [AmmoGen] ====================================
+[2026-10-26 04:08:44.931][Information][AmmoGen.Services.AmmoLoader] [AmmoGen] Skipping disabled pack 'example-pack.json'
+[2026-10-26 04:08:44.931][Information][AmmoGen.AmmoGenPlugin] [AmmoGen] No ammo packs found. Place ammo pack JSON files in: user/mods/AmmoGen/ammo/
+[2026-10-26 04:08:44.934][Information][ItemGen.ItemGenPlugin] [ItemGen] ====================================
+[2026-10-26 04:08:44.934][Information][ItemGen.ItemGenPlugin] [ItemGen] ItemGen Framework v1.5.1 loading...
+[2026-10-26 04:08:44.934][Information][ItemGen.ItemGenPlugin] [ItemGen] ====================================
+[2026-10-26 04:08:44.950][Information][ItemGen.Services.ItemLoader] [ItemGen] Skipping disabled pack 'ExamplePack.json'
+[2026-10-26 04:08:44.950][Information][ItemGen.ItemGenPlugin] [ItemGen] No item packs found. Place item pack JSON files in: user/mods/ItemGen/items/
+[2026-10-26 04:08:44.952][Information][PresetTrader.PresetTraderRegistration] [PresetTrader]: Registered trader 67a5e1c2f3d4b5a6c7d8e9f0 ahead of profile validation
+[2026-10-26 04:08:44.980][Information][_allAmmo.AddTraderWithAssortJson] [AllAmmo] Trader VAFELZ loaded successfully.
+[2026-10-26 04:08:45.180][Information][Ledger.LedgerMod] [Ledger] Loaded.
+[2026-10-26 04:08:45.182][Information][Painter.Painter] [Painter] Mod loaded successfully.
+[2026-10-26 04:08:45.527][Information][NATOQuartermaster.NATOQuartermasterMod] [NATO Quartermaster] V1.1.3 loaded: 49 curated offers and 6 quests.
+[2026-10-26 04:08:45.528][Information][NATOQuartermaster.NATOQuartermasterMod] [NATO Quartermaster] Quest unlocks: Q1=1, Q2=1, Q3=3, Q4=1, Q5=2, Q6=2.
+[2026-10-26 04:08:46.699][Information][TGC.TGC] [TGC] Mod loaded successfully.
+[2026-10-26 04:08:46.702][Information][Coti.Server.CotiTraderAssort] [COTI] COTI added to Peacekeeper LL4 at $2000, limit 3
+[2026-10-26 04:08:46.702][Information][Coti.Server.CotiTraderAssort] [COTI] TR-1 thermal sight riser (2 colourways) added to Peacekeeper LL3 at $1500, limit 3
+[2026-10-26 04:08:46.702][Information][Coti.Server.CotiTraderAssort] [COTI] TSR thermal scope rings (6) added to Peacekeeper LL3 at $1750, limit 3
+[2026-10-26 04:08:46.725][Information][RefReworkServer.PostDBLoader] Ref Rework: applied Ref dogtag/Lega medal -> GP coin changes.
+[2026-10-26 04:08:46.737][Information][BlueheadsAioTrader.AddAIOTrader] [Bluehead's AioTrader]Total 6447 items loaded
+[2026-10-26 04:08:47.135][Information][AllGoodsTrader.Models.TraderFactory] [AllGoodsTrader] Mod Loaded
+[2026-10-26 04:08:47.165][Information][BlueheadsAioTrader.PresetAssortService] [AIOTrader] Assort ready: 7365 listings (918 default presets)
+[2026-10-26 04:08:47.167][Information][UltimateFlea.Pricing.RagfairSettingsPatcher] [UltimateFlea] Handbook price regeneration disabled.
+[2026-10-26 04:08:47.181][Warning][SPTarkov.Server.Core.Services.Profile.ProfileMigrationService] 6adc26693f5b5290609ea366 has a pending profile migration: TraderGenPocketMigration
+[2026-10-26 04:08:47.278][Information][SPTarkov.Server.Core.Services.Profile.ProfileMigrationService] 6adc26693f5b5290609ea366 successfully ran profile migration: TraderGenPocketMigration
+[2026-10-26 04:08:47.637][Information][UltimateFlea.Pool.PoolManager] [UltimateFlea] Pool applied (mode=blacklist): +0 enabled, -0 removed
+[2026-10-26 04:08:47.639][Information][UltimateFlea.Pricing.PriceSourceRouter] [UltimateFlea] Price source: local.
+[2026-10-26 04:08:47.652][Information][UltimateFlea.Economy.EconomyEngine] [UltimateFlea] Economy initialized for 5690 items (0 fixed-price)
+[2026-10-26 04:08:47.687][Information][UltimateFlea.LevelLocks.LevelLockService] [UltimateFlea] Level locks applied: 1699 items, 17 handbook categories locked (buy=True, sell=True).
+[2026-10-26 04:08:47.688][Information][UltimateFlea.Entry.UltimateFleaLoad] [UltimateFlea] Loaded.
+[2026-10-26 04:08:47.691][Information][SPTarkov.Server.Core.Servers.RagfairServer] 플리마켓 상품 생성 중
+[2026-10-26 04:08:48.336][Information][Limitless.LimitlessMod] [Limitless] Applied to 27084 item(s) (personalLimits: unlimited, globalLimits: unlimited)
+[2026-10-26 04:08:48.385][Information][UltimateTraderAssortEditor.Server.OnLoad.UtaeServerBootstrap] [UTAE] Changes applied successfully. Loaded 0 additions, 0 modifications, and 0 removals.
+[2026-10-26 04:08:48.398][Warning][RealisticInsurance.RealisticInsuranceMod] [RealisticInsurance] trader 'Armorer' (68e24cdc607f5c9ae44c27b1) offers insurance but is not listed in insurance.json returnChancePercent. Vanilla SPT would throw on it; this mod will use the '90%' fallback instead.
+[2026-10-26 04:08:48.458][Information][RealisticInsurance.RealisticInsuranceMod] [RealisticInsurance] loaded - pmc 55% / playerScav 45% / scav 75% / boss 40% / other 90%, looter extracts 65% (+25% when they don't)
+[2026-10-26 04:08:48.459][Information][SPTBetterRearSights.BetterRearSights] Successfully loaded Better Rear Sights! Good luck!
+[2026-10-26 04:08:48.886][Information][Ciallo.RepairExpansion.BuffConfigLoader] [Ciallo] Repair buffs.jsonc applied successfully.
+[2026-10-26 04:08:48.891][Information][HolsterEverything.HolsterEverythingPatch] HolsterEverything: Applied holster category config. Added 1 new whitelist entry. Configured categories: Weapon (5422acb9af1c889c16000029).
+[2026-10-26 04:08:48.892][Information][BetterAttachments.BetterAttachments] [BetterAttachments] Initalizing BalancedMeds mod...
+[2026-10-26 04:08:48.896][Information][BetterAttachments.BetterAttachments] [BetterAttachments] Updated 1092 attachments...
+[2026-10-26 04:08:48.896][Information][BetterAttachments.BetterAttachments] [BetterAttachments] Loading BalancedMeds Mod Completed.
+[2026-10-26 04:08:48.898][Information][LogToConsole.FullAutoGuns] [FullAutoGuns] Loading FullAutoGuns Mod Completed. Modified 12 weapons.
+[2026-10-26 04:08:48.925][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Customs
+[2026-10-26 04:08:48.926][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Factory
+[2026-10-26 04:08:48.926][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Ground Zero
+[2026-10-26 04:08:48.926][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Interchange
+[2026-10-26 04:08:48.927][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Lighthouse
+[2026-10-26 04:08:48.927][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Reserve
+[2026-10-26 04:08:48.927][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Shoreline
+[2026-10-26 04:08:48.928][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Streets of Tarkov
+[2026-10-26 04:08:48.928][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: The Lab
+[2026-10-26 04:08:48.929][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: Woods
+[2026-10-26 04:08:48.929][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Loaded: The Labyrinth
+[2026-10-26 04:08:49.178][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] Processed 200 known keys and 44 junk keys
+[2026-10-26 04:08:49.179][Information][BetterKeysNG.BetterKeys] [BetterKeysNG] modified 4,114 translations in 275 ms
+[2026-10-26 04:08:49.226][Information][FoldThatStock.Server.FoldThatStockServerPatch] FoldThatStock: Applied 19 weapon patch(es), 24 stock patch(es), and 44 fold compatibility patch(es).
+[2026-10-26 04:08:49.238][Information][EasyMounting.Mod] [EasyMounting] Applied preset 'AnySurface' to weapon mounting surface detection.
+[2026-10-26 04:08:49.268][Information][LessRestrictingHeadwear.LessRestrictingHeadwear] [LessRestrictingHeadwear] Changed 196 items: 137 block flags cleared and 4118 conflict entries removed.
+[2026-10-26 04:08:49.276][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] core_medical_surgical_kit: surgery keep-ratio set to 100%
+[2026-10-26 04:08:49.277][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] survival_first_aid_rollup_kit: surgery keep-ratio set to 100%
+[2026-10-26 04:08:49.277][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] sanitar_medical_surgical_kit: surgery keep-ratio set to 100%
+[2026-10-26 04:08:49.277][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] Surgery no-penalty applied to 3/3 surgical kits
+[2026-10-26 04:08:49.279][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] MedUseTime scaled on 44 items (x0.5, floor 0.8s)
+[2026-10-26 04:08:49.281][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] Drug effect durations scaled: 27 entries (x2)
+[2026-10-26 04:08:49.282][Information][RZDirectReload.Server.DirectReloadServer] [DirectReload] Stimulator positive-buff durations scaled: 147 entries (x2)
+[2026-10-26 04:08:49.286][Information][TraderGen.TraderGenPlugin] [TraderGen] ====================================
+[2026-10-26 04:08:49.286][Information][TraderGen.TraderGenPlugin] [TraderGen] TraderGen Framework v2.4.1 loading...
+[2026-10-26 04:08:49.286][Information][TraderGen.TraderGenPlugin] [TraderGen] ====================================
+[2026-10-26 04:08:49.298][Information][TraderGen.Services.TraderLoader] [TraderGen] Skipping disabled trader in 'trader.json'
+[2026-10-26 04:08:49.299][Information][TraderGen.TraderGenPlugin] [TraderGen] No trader packs found. Place trader pack folders in: user/mods/TraderGen/traders/
+[2026-10-26 04:08:49.304][Information][BoxesAtRef.BoxesAtRef] [BoxesAtRef] Mod loaded successfully.
+[2026-10-26 04:08:49.319][Information][PresetTrader.PresetTraderRefresher] [PresetTrader]: Loaded 1 weapon build(s), 27 gear preset(s) and 19 armor preset(s) to trader 67a5e1c2f3d4b5a6c7d8e9f0. Opening the trader or refreshing rotates through key packs and gunsmith/quest weapon presets.
+[2026-10-26 04:08:49.321][Information][Tosox.BlackExfilRevision.BlackExfilRevision] [Black Exfil Revision] Black Exfil can now attach face shields
+[2026-10-26 04:08:49.396][Information][ColoredTracers.ColoredTracers] [ColoredTracers/OnLoadAsync] Added 242 tracers to 428 bullets!
+[2026-10-26 04:08:49.399][Information][jeroAmmoBox1x1.AmmoBox1x1] [JERO] 36 ammo boxes adjusted!
+[2026-10-26 04:08:49.406][Information][JeroBackpack.BackpackResizer] [JERO] JeroBackpack: Starting backpack resizing...
+[2026-10-26 04:08:49.409][Information][JeroBackpack.BackpackResizer] [JERO] JeroBackpack: Completed! 42 backpacks modified, 10 backpacks ignored (blacklist or multiple grids).
+[2026-10-26 04:08:49.430][Information][Coti.Server.CotiDeviceStore] [COTI] Device store: 10 device(s) resolved, covering 10 host(s), from E:\Spt\SPT_Runtime\user\mods\LennoxP90-COTI\nvghostcompat
+[2026-10-26 04:08:49.438][Information][Coti.Server.CotiSlotInjector] [COTI] 10 host(s) fitted, 0 not installed
+[2026-10-26 04:08:49.484][Information][Coti.Server.ThermalRiserCompatibility] [COTI] Thermal riser: 8 denied (6 not in this database) from E:\Spt\SPT_Runtime\user\mods\LennoxP90-COTI\config\riser-sights.json
+[2026-10-26 04:08:49.490][Information][Coti.Server.ThermalRiserCompatibility] [COTI] Thermal riser (2 colourways): 55 sights and mounts (TGC-NG 7, vanilla 45, WTT-Armory 3), fits 155 slots with the LaRue and 161 more scope slots, conflicts with 106 rear sights
+[2026-10-26 04:08:49.574][Information][Coti.Server.ThermalScopeRingCompatibility] [COTI] Scope rings (6): fit 170 slots that take their base mounts; the riser taken out of 16 ring slot filters; 0 scopes taken from same-tube mounts; 0 denied by scope-rings.json
+[2026-10-26 04:08:49.785][Information][Coti.Server.CotiApbsPoolPatch] [COTI] APBS not installed: its bot pools are left alone
+[2026-10-26 04:08:49.786][Information][Coti.Server.CotiSlotLocale] [COTI] Slot names registered in 17 locale(s)
+[2026-10-26 04:08:49.788][Information][Coti.Server.CotiLootDistribution] [COTI] Loot spawns registered against 10 night vision template(s): COTI at 25% of their weight, thermal riser and scope rings at 30% each. The transformers are registered either way, so switching one on takes effect at the next raid.
+[2026-10-26 04:08:49.804][Information][Coti.Server.Web.Meshes.CotiHostMeshSync] [COTI] meshes: 0 converted, 5 unchanged, 0 removed, 0 failed
+[2026-10-26 04:08:49.808][Information][ChangeHelmetVisorServer.ChangeHelmetVisorServer] [Change Helmet Visor] Initialising changes...
+[2026-10-26 04:08:49.809][Information][ChangeHelmetVisorServer.ChangeHelmetVisorServer] [Change Helmet Visor] Changed the visor of all face shields to 'Wide'
+[2026-10-26 04:08:49.814][Information][RealisticSuppressors.RealisticSuppressors] [RealisticSuppressors] Applied stat multipliers to 111 suppressors.
+[2026-10-26 04:08:50.090][Information][ItemInfo.ItemInfo] [ItemInfo] Processing items...
+[2026-10-26 04:09:33.078][Information][ItemInfo.ItemInfo] [ItemInfo] Processing additional info...
+[2026-10-26 04:09:45.018][Information][ItemInfo.ItemInfo] [ItemInfo] Completed processing 6919 items in 54928 ms.
+[2026-10-26 04:09:45.019][Information][ItemInfo.ItemInfo] [ItemInfo] Item Info loaded!
+[2026-10-26 04:09:45.070][Information][BarterItemsStacks.BarterItemsStacks] [BarterItemsStacks] Config loaded.
+[2026-10-26 04:09:45.116][Information][Foldables.Foldables] [Foldables] Added foldable properties to 52 backpacks
+[2026-10-26 04:09:45.123][Information][Foldables.Foldables] [Foldables] Added foldable properties to 41 vests
+[2026-10-26 04:09:45.128][Information][Foldables.Foldables] [Foldables] Added foldable properties to 21 headphones
+[2026-10-26 04:09:45.139][Information][Foldables.Foldables] [Foldables] loaded successfully!
+[2026-10-26 04:09:46.428][Information][AllinWeaponUnslotted.AllinWeaponUnslotted] [AllinWeaponUnslotted/OnLoadAsync] Mod finished loading. Fcked: weapons, mods, chambers, calibers, magazines. Removed conflicting items in mod slots.
+[2026-10-26 04:09:46.434][Information][Speedloader.Main] [Speedloader]: Ammo(load 0.05s, stack x6), Raid 120min, Hideout ops 3s (capped 2436)
+[2026-10-26 04:09:46.536][Information][SPTarkov.Server.Web.Services.AuthService] Web authentication is enabled.
+[2026-10-26 04:09:46.541][Information][CobrasAmmoStack.CobrasAmmoStackMod] [Cobra's Ammo Stack] v1.1.0 loaded. Modified 444 ammunition items.
+[2026-10-26 04:09:46.546][Information][CobrasDurabilityTweaks.CobrasDurabilityTweaksMod] [Cobra's Durability Tweaks] v1.0.0 loaded. Modified 933 weapons. Durability burn: 12% of normal. Weapon malfunctions: unchanged.
+[2026-10-26 04:09:46.546][Information][CobrasSPTExplorer.Server.ExplorerServerMod] [Cobra's SPT Explorer] Server component loaded successfully.
+[2026-10-26 04:09:46.548][Information][SPTarkov.Server.Core.Services.Hosted.SPTStartupHostedService] 시작된 웹서버 https://127.0.0.1:6969
+[2026-10-26 04:09:46.548][Information][SPTarkov.Server.Core.Services.Hosted.SPTStartupHostedService] 시작된 웹소켓 서버 wss://127.0.0.1:6969
+[2026-10-26 04:09:46.548][Information][SPTarkov.Server.Core.Services.Hosted.SPTStartupHostedService] 서버가 시작되었습니다, 즐거운 시간 되세요.
+[2026-10-26 04:09:46.555][Information][System.Net.Http.HttpClient.Github.LogicalHandler] Start processing HTTP request GET https://api.github.com/repos/sp-tushonka/build/releases/latest
+[2026-10-26 04:09:46.556][Information][System.Net.Http.HttpClient.Github.ClientHandler] Sending HTTP request GET https://api.github.com/repos/sp-tushonka/build/releases/latest
+[2026-10-26 04:09:46.726][Information][SPTarkov.Server.Core.Helpers.Server.CertificateHelper] Loaded self-signed certificate (user\certs\server.crt)
+[2026-10-26 04:09:46.919][Information][System.Net.Http.HttpClient.Github.ClientHandler] Received HTTP response headers after 362.3783ms - 200
+[2026-10-26 04:09:46.922][Information][System.Net.Http.HttpClient.Github.LogicalHandler] End processing HTTP request after 368.2256ms - 200
+[2026-10-26 04:09:49.164][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/negotiate
+[2026-10-26 04:09:49.164][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/negotiate
+[2026-10-26 04:09:49.198][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [웹소켓 리퀘스트] /_blazor
+[2026-10-26 04:09:49.198][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [웹소켓 리퀘스트] /_blazor
+[2026-10-26 04:09:49.250][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /webconfigbridge
+[2026-10-26 04:09:49.250][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /
+[2026-10-26 04:09:49.411][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/disconnect
+[2026-10-26 04:09:49.435][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_content/MudBlazor/MudBlazor.min.css
+[2026-10-26 04:09:49.437][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /SPTarkov.Server.Web/css/spt-theme.css
+[2026-10-26 04:09:49.460][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/disconnect
+[2026-10-26 04:09:49.466][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /SPTarkov.Server.Web/SPTushonka.Server.Web.styles.css
+[2026-10-26 04:09:49.466][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_content/MudBlazor/MudBlazor.min.css
+[2026-10-26 04:09:49.467][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /SPTarkov.Server.Web/css/spt-theme.css
+[2026-10-26 04:09:49.471][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_content/MudBlazor/MudBlazor.min.js
+[2026-10-26 04:09:49.471][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_framework/blazor.web.js
+[2026-10-26 04:09:49.473][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /SPTarkov.Server.Web/SPTushonka.Server.Web.styles.css
+[2026-10-26 04:09:49.476][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_content/MudBlazor/MudBlazor.min.js
+[2026-10-26 04:09:49.482][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_framework/blazor.web.js
+[2026-10-26 04:09:49.489][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/initializers
+[2026-10-26 04:09:49.498][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/initializers
+[2026-10-26 04:09:49.507][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/negotiate
+[2026-10-26 04:09:49.507][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /favicon.ico
+[2026-10-26 04:09:49.516][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [웹소켓 리퀘스트] /_blazor
+[2026-10-26 04:09:49.533][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /_blazor/negotiate
+[2026-10-26 04:09:49.533][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /favicon.ico
+[2026-10-26 04:09:49.541][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [웹소켓 리퀘스트] /_blazor
+[2026-10-26 04:09:59.210][Information][SPTarkov.Server.Middleware.SptLoggerMiddleware] [클라이언트 요청] /webconfigbridge
