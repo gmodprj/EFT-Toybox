@@ -36,6 +36,8 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
         public const string RealisticInsurance = "RealisticInsurance";
         public const string RepairSkillExtension = "RepairSkillExtension";
         public const string InfiniteEverything = "InfiniteEverything";
+        public const string SlotCategoryRelax = "SlotCategoryRelax";
+        public const string SlotCategoryRelaxDiscovered = "SlotCategoryRelaxDiscovered";
     }
 
     /// <summary>
@@ -53,6 +55,8 @@ public class ConfigStore(ModHelper modHelper, ISptLogger<ConfigStore> logger)
         [Targets.RealisticInsurance] = ("RealisticInsurance", Path.Combine("config", "config.json")),
         [Targets.RepairSkillExtension] = ("RepairSkillExtension", "buffs.jsonc"),
         [Targets.InfiniteEverything] = ("InfiniteEverything", "state.json"),
+        [Targets.SlotCategoryRelax] = ("SlotCategoryRelax", "config.jsonc"),
+        [Targets.SlotCategoryRelaxDiscovered] = ("SlotCategoryRelax", "discovered-categories.json"),
     };
 
     /// <summary>대상 설정 파일의 절대경로. 모드나 파일이 없으면 null.</summary>

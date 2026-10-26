@@ -717,3 +717,31 @@ JSON 이 아닌 `//` 줄 주석은 이 방법으로도 살릴 수 없다. 그래
 **이 모드에는 "같은 총 계열만" 같은 중간 단계가 없다.** 분류별로 골라 넓히려면 우리가 따로 만들어야 한다.
 
 조치: `FckWeapons` 를 껐다(`FckMods` 는 사용자가 이미 꺼둔 상태였다). 그 모드가 남기는 로그가 `Fcked: weapons, mods, chambers, calibers, magazines` 에서 `Fcked: chambers,` 로 바뀐 것으로 확인했다. 서버 오류 0.
+
+## SlotCategoryRelax — 분류별로 골라 칸 열기 (2026-10-26)
+
+`AllinWeaponUnslotted` 는 칸 확장이 전부 아니면 전무다(§ 위 기록). "조준경·마운트는 열고 핸드가드는 닫는" 식의 구분을 하려고 직접 만들었다.
+
+**규칙** — 어떤 칸이 켠 분류의 부품을 하나라도 받고 있으면, 그 칸에 같은 분류의 부품을 모두 넣는다. 칸이 원래 받던 다른 분류는 그대로 둔다. 넓히기만 하고 좁히지 않는다.
+
+**분류 목록은 고정하지 않는다.** 서버 시작 때 DB 를 훑어 `discovered-categories.json` 으로 내놓고(분류 이름 + 아이템 수), 설정 화면이 그것을 보고 스위치를 만든다. 설치본이 바뀌거나 다른 모드가 분류를 더하면 화면도 따라간다.
+
+### 처음에 틀린 것 두 가지
+
+하나. 예시로 든 "조준경·마운트" 7개만 기본값으로 박아 넣었다. 분류를 **고를 수 있게** 해달라는 요구였는데 내가 고른 목록을 건넨 꼴이었다. 설정을 분류별 on/off 맵으로 바꾸고 기본을 전부 꺼짐으로 돌렸다.
+
+둘. 처음 훑었을 때 분류가 57종 나왔다. `Ammo`, `KeyMechanical`, `Jewelry`, `Money`, `Headphones`, `ArmorPlate` 가 섞여 있었다 — 보안 컨테이너·장비 칸까지 봤기 때문이다. 그대로 뒀으면 "탄약" 을 켜는 순간 보관 제한이 무너진다.
+
+조상 경로가 둘을 가른다:
+
+```
+Handguard   < MasterMod     < Mod < CompoundItem < Item
+OpticScope  < Sights        < FunctionalMod < Mod < CompoundItem < Item
+Mount       < GearMod       < Mod < CompoundItem < Item
+Ammo        < StackableItem < Item                      ← Mod 아님
+Headphones  < Equipment     < CompoundItem < Item       ← Mod 아님
+```
+
+그래서 두 군데에 조건을 걸었다 — 고를 수 있는 분류는 `Mod` 계열만, 칸을 건드리는 대상은 무기와 무기 부품만. 57종 → 28종이 됐다.
+
+실측: 서버 오류 0, 분류 28종 발견, 기본값 전부 꺼짐이라 DB 변경 0. 모드 페이지 탭 10개.
