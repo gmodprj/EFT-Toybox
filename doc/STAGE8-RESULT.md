@@ -54,8 +54,9 @@
 ## 남아 있는 것
 
 - **PIT Fireteam `LootPatrolLayer.GetDecision` NullReferenceException** — 레이드 중 3회.
-  모드가 스스로 억제해 AI 는 계속 돌지만, 동료의 전리품 순찰 판단이 간헐적으로 실패한다.
-  제작자에게 보고할 거리다
+  모드가 스스로 억제해 AI 는 계속 돈다. **동료를 데려간 레이드에서는 0회, 동료 없이 들어간
+  레이드에서 3회**라 직관과 반대다. 조사와 제작자 보고용 영문 정리는
+  [fixes/2026-10-27-pit-lootpatrol-nre.md](fixes/2026-10-27-pit-lootpatrol-nre.md)
 - **COTI 3.4.2 per-frame `ArgumentOutOfRangeException`** 1회 — 8차와 무관한 기존 모드
 - **Fika 미설치 관련 오류 1건** — 싱글 환경에서는 정상
 - MagicBullet·Recoil Rework 의 **체감**은 확인하지 않았다. 로드만 확인했다
