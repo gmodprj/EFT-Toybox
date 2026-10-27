@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **173개**, 설치 파일 **3316개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 120개 (2026-10-27 12:21 PIT Fireteam 정상 동작 확인 레이드 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 103개 (2026-10-27 Olympus 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8C-505.out.txt`). 8-C 는 Olympus 만 넣었다 — SIM 2906 은 아직, Death Shadow Tweaks 2943 은 중복으로 보류
+- 설치된 모드: **174개**, 설치 파일 **3351개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 120개 (2026-10-27 12:21 PIT Fireteam 정상 동작 확인 레이드 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 104개 (2026-10-27 SIM 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8C-2906.out.txt`). 8-C 는 Olympus·SIM 2개를 넣고 Death Shadow Tweaks 2943 은 중복이라 제외했다
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -224,7 +224,7 @@
 | [Shorter Magazines](https://sp-mod.com/mod/3186) | 1.1.0 | - | **결속** | 0 | **미설치** |
 | [Death Shadow Tweaks](https://sp-mod.com/mod/2943) | 1.0.0 | - | **결속** | 0 | **미설치** |
 | [Olympus](https://sp-mod.com/mod/505) | 4.1.3 | 서버 | **결속** | 4 | `stage8C-505` |
-| [SIM - Simple Item Modifier](https://sp-mod.com/mod/2906) | 0.1.0 | - | **결속** | 0 | **미설치** |
+| [SIM - Simple Item Modifier](https://sp-mod.com/mod/2906) | 0.1.0 | 서버+루트 | **결속** | 35 | `stage8C-2906` |
 | [MagicBullet](https://sp-mod.com/mod/3065) | 1.0.0 | - | - (치트 표시) | 0 | **미설치** |
 | [Tushonka-800: Combat Augmentation System](https://sp-mod.com/mod/3169) | 1.0.1 | - | - (치트 표시) | 0 | **미설치** |
 | [Waypoints - Expanded Navmesh](https://sp-mod.com/mod/827) | 1.9.0 | 게임 | - | 13 | `stage8E-827` |
