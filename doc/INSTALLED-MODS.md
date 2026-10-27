@@ -4,7 +4,7 @@
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 설치된 모드: **179개**, 설치 파일 **3591개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 123개 (2026-10-27 15:39 `LogOutput.log` — Recoil Rework·Make Shotguns Great Again·MagicBullet 로드 확인, 오류는 Fika 미설치 관련 1건뿐. Tushonka-800 과 8-G GamePanelHUD 포팅본은 설치 후 아직 게임을 켜지 않았다) / 서버 모드 로드: 106개 (2026-10-27 8-G GamePanelHUD 포팅본 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8G-gamepanelhud.out.txt`. 8-D·8-G 는 모두 게임 쪽 플러그인이라 서버 모드 수는 그대로). 8-C 는 Olympus·SIM 2개(2943 은 중복이라 제외), 8-B 는 2190 만(2394·3186 은 제외 — `COMPARE-STAGE8-B.md`)
+- 게임 쪽 플러그인 로드: 134개 (2026-10-27 16:51 `LogOutput.log` — 8차 설치분 전부 로드 확인, GamePanelHUD 포팅본 10개 포함. 오류 8건: Fika 미설치 1 + PIT Fireteam `LootPatrolLayer.GetDecision` NullReference 3(모드가 스스로 억제해 AI 는 계속 돈다) + COTI 3.4.2 per-frame 1, 나머지는 같은 것의 중복) / 서버 모드 로드: 106개 (2026-10-27 8-G 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8G-gamepanelhud.out.txt`)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
