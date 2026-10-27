@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **177개**, 설치 파일 **3560개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 120개 (2026-10-27 12:21 PIT Fireteam 정상 동작 확인 레이드 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 106개 (2026-10-27 MagicBullet 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8D-3065.out.txt`. MagicBullet 은 게임 쪽 플러그인이라 서버 모드 수는 그대로). 8-C 는 Olympus·SIM 2개(2943 은 중복이라 제외), 8-B 는 2190 만(2394·3186 은 제외 — `COMPARE-STAGE8-B.md`)
+- 설치된 모드: **178개**, 설치 파일 **3561개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 123개 (2026-10-27 15:39 `LogOutput.log` — Recoil Rework·Make Shotguns Great Again·MagicBullet 로드 확인, 오류는 Fika 미설치 관련 1건뿐. Tushonka-800 은 설치 후 아직 게임을 켜지 않았다) / 서버 모드 로드: 106개 (2026-10-27 Tushonka-800 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8D-3169.out.txt`. 8-D 두 모드 모두 게임 쪽 플러그인이라 서버 모드 수는 그대로). 8-C 는 Olympus·SIM 2개(2943 은 중복이라 제외), 8-B 는 2190 만(2394·3186 은 제외 — `COMPARE-STAGE8-B.md`)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -226,7 +226,7 @@
 | [Olympus](https://sp-mod.com/mod/505) | 4.1.3 | 서버 | **결속** | 4 | `stage8C-505` |
 | [SIM - Simple Item Modifier](https://sp-mod.com/mod/2906) | 0.1.0 | 서버+루트 | **결속** | 35 | `stage8C-2906` |
 | [MagicBullet](https://sp-mod.com/mod/3065) | 1.0.0 | 게임 | - (치트 표시) | 1 | `stage8D-3065` |
-| [Tushonka-800: Combat Augmentation System](https://sp-mod.com/mod/3169) | 1.0.1 | - | - (치트 표시) | 0 | **미설치** |
+| [Tushonka-800: Combat Augmentation System](https://sp-mod.com/mod/3169) | 1.0.1 | 게임 | - (치트 표시) | 1 | `stage8D-3169` |
 | [Waypoints - Expanded Navmesh](https://sp-mod.com/mod/827) | 1.9.0 | 게임 | - | 13 | `stage8E-827` |
 | [Miyako Carry Service](https://sp-mod.com/mod/2709) | 1.1.4 | - | - | 0 | **미설치** |
 | [PIT Fireteam](https://sp-mod.com/mod/2676) | 1.0.0 | 게임+서버 | - | 26 | `stage8E-2676` |
