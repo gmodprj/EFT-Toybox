@@ -1,0 +1,1 @@
+3065__MagicBullet	BepInEx\plugins\MagicBullet.dll
