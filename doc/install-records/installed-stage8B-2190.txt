@@ -1,0 +1,13 @@
+2190__SPTRecoilReworkLegacy	BepInEx\plugins\SPTRecoilReworkLegacy\SPTRecoilReworkLegacyClient.dll
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\SPTRecoilReworkLegacyServerMod.dll
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\strings.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\aug.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\autopistol.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\bolt_actions.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\deagle.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\hk416.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\m4a1.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\m60.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\mdr.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\sa58.json
+2190__SPTRecoilReworkLegacy	SPT_Runtime\user\mods\SPTRecoilReworkLegacy\config\weapondata\vector.json
