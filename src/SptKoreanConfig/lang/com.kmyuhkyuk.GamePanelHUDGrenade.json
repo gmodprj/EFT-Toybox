@@ -1,0 +1,37 @@
+{
+  "guid": "com.kmyuhkyuk.GamePanelHUDGrenade",
+  "name": "HUD 수류탄 (GamePanelHUD Grenade)",
+  "sections": {
+    "Color Settings": "색",
+    "Font Styles Settings": "글꼴 모양",
+    "Main Settings": "기본 설정",
+    "Position Scale Settings": "위치·크기"
+  },
+  "settings": {
+    "Color Settings/Frag": { "name": "파편 수류탄", "desc": "파편 수류탄 개수에 쓸 색." },
+    "Color Settings/Stun": { "name": "섬광탄", "desc": "섬광탄 개수에 쓸 색." },
+    "Color Settings/Smoke": { "name": "연막탄", "desc": "연막탄 개수에 쓸 색." },
+    "Color Settings/Warning": { "name": "경고", "desc": "개수가 0일 때 쓸 색." },
+
+    "Font Styles Settings/Frag": { "name": "파편 수류탄", "desc": "파편 수류탄 글꼴 모양." },
+    "Font Styles Settings/Stun": { "name": "섬광탄", "desc": "섬광탄 글꼴 모양." },
+    "Font Styles Settings/Smoke": { "name": "연막탄", "desc": "연막탄 글꼴 모양." },
+
+    "Main Settings/Grenade HUD display": {
+      "name": "수류탄 HUD 표시",
+      "desc": "들고 있는 수류탄 개수를 화면에 띄운다."
+    },
+    "Main Settings/Merge All Grenade Count": {
+      "name": "종류 합쳐 한 숫자로",
+      "desc": "종류별로 나누지 않고 전체 개수만 보여 준다."
+    },
+    "Main Settings/Grenade Count Zero Warning": {
+      "name": "개수 0 경고",
+      "desc": "남은 것이 없을 때 경고 색으로 바꾼다."
+    },
+
+    "Position Scale Settings/Anchored Position": { "name": "창 위치", "desc": "HUD 가 놓일 자리." },
+    "Position Scale Settings/Size Delta": { "name": "창 크기", "desc": "HUD 영역의 가로·세로." },
+    "Position Scale Settings/Local Scale": { "name": "확대 배율", "desc": "HUD 전체를 키우거나 줄인다." }
+  }
+}

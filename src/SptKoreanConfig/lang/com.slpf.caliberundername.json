@@ -32,16 +32,16 @@
     "3. Ammo Sorting/Secondary Sort": { "name": "2차 정렬 기준", "desc": "1차 기준이 같을 때 쓸 기준." },
     "3. Ammo Sorting/Secondary sort direction": { "name": "2차 정렬 방향", "desc": "2차 기준의 정렬 방향." },
 
-    "3. Ammo Sorting - Rarity Colors/0. Rarity color - rank 1": { "name": "등급 1 배경색" },
-    "3. Ammo Sorting - Rarity Colors/1. Rarity color - rank 2": { "name": "등급 2 배경색" },
-    "3. Ammo Sorting - Rarity Colors/2. Rarity color - rank 3": { "name": "등급 3 배경색" },
-    "3. Ammo Sorting - Rarity Colors/3. Rarity color - rank 4": { "name": "등급 4 배경색" },
-    "3. Ammo Sorting - Rarity Colors/4. Rarity color - rank 5": { "name": "등급 5 배경색" },
-    "3. Ammo Sorting - Rarity Colors/5. Rarity color - rank 6": { "name": "등급 6 배경색" },
-    "3. Ammo Sorting - Rarity Colors/6. Rarity color - rank 7": { "name": "등급 7 배경색" },
-    "3. Ammo Sorting - Rarity Colors/7. Rarity color - rank 8": { "name": "등급 8 배경색" },
-    "3. Ammo Sorting - Rarity Colors/8. Rarity color - rank 9": { "name": "등급 9 배경색" },
-    "3. Ammo Sorting - Rarity Colors/9. Rarity color - rank 10": { "name": "등급 10 배경색" },
+    "3. Ammo Sorting - Rarity Colors/0. Rarity color - rank 1": { "name": "등급 1 배경색", "desc": "희귀도 1등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/1. Rarity color - rank 2": { "name": "등급 2 배경색", "desc": "희귀도 2등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/2. Rarity color - rank 3": { "name": "등급 3 배경색", "desc": "희귀도 3등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/3. Rarity color - rank 4": { "name": "등급 4 배경색", "desc": "희귀도 4등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/4. Rarity color - rank 5": { "name": "등급 5 배경색", "desc": "희귀도 5등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/5. Rarity color - rank 6": { "name": "등급 6 배경색", "desc": "희귀도 6등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/6. Rarity color - rank 7": { "name": "등급 7 배경색", "desc": "희귀도 7등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/7. Rarity color - rank 8": { "name": "등급 8 배경색", "desc": "희귀도 8등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/8. Rarity color - rank 9": { "name": "등급 9 배경색", "desc": "희귀도 9등급 탄약의 바탕색." },
+    "3. Ammo Sorting - Rarity Colors/9. Rarity color - rank 10": { "name": "등급 10 배경색", "desc": "희귀도 10등급 탄약의 바탕색." },
 
     "4. Caliber Names/Caliber556x45NATO": { "name": "5.56×45 NATO", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
     "4. Caliber Names/Caliber9x18PM": { "name": "9×18 PM", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
@@ -81,6 +81,11 @@
     "4. Caliber Names/Caliber25x59": { "name": "25×59", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
     "4. Caliber Names/Caliber11x33R": { "name": ".44 매그넘 (11×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
     "4. Caliber Names/Caliber22LR": { "name": ".22 LR (5.6×15R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber1143x33mmR": { "name": ".45 롱 콜트 (11.43×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." }
+    "4. Caliber Names/Caliber1143x33mmR": { "name": ".45 롱 콜트 (11.43×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
+    "4. Caliber Names/Caliber58x42": { "name": "5.8×42", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
+    "4. Caliber Names/Caliber784x49": { "name": "7.84×49", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
+    "4. Caliber Names/Caliber93x64": { "name": "9.3×64", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
+    "4. Caliber Names/Caliber178x89": { "name": "17.8×89", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
+    "4. Caliber Names/Caliber410g": { "name": ".410 게이지", "desc": "이 구경을 화면에 어떻게 적을지 정한다." }
   }
 }

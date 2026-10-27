@@ -1,0 +1,100 @@
+{
+  "guid": "com.kmyuhkyuk.GamePanelHUDKill",
+  "name": "HUD 처치 알림 (GamePanelHUD Kill)",
+  "sections": {
+    "Animation Speed Settings": "애니메이션 속도",
+    "Distance Settings": "거리 단위",
+    "Font Styles Settings": "글꼴 모양",
+    "Kill Color Settings": "처치 알림 색",
+    "Main Settings": "기본 설정",
+    "Position Rotation Scale Settings": "위치·회전·크기"
+  },
+  "settings": {
+    "Animation Speed Settings/Kill Text Wait Speed": {
+      "name": "처치 문구 유지 시간",
+      "desc": "처치 알림을 남겨 두는 시간."
+    },
+    "Animation Speed Settings/Exp Wait Speed": {
+      "name": "경험치 유지 시간",
+      "desc": "획득 경험치 표시를 남겨 두는 시간."
+    },
+    "Animation Speed Settings/Kill Text Input Speed": {
+      "name": "첫 줄 나타나는 속도",
+      "desc": "처치 알림 첫 줄이 찍혀 나오는 속도."
+    },
+    "Animation Speed Settings/Kill Text 2 Input Speed": {
+      "name": "둘째 줄 나타나는 속도",
+      "desc": "처치 알림 둘째 줄이 찍혀 나오는 속도."
+    },
+    "Animation Speed Settings/Kill Text 2 Wait Time": {
+      "name": "둘째 줄 대기 시간",
+      "desc": "첫 줄 뒤 둘째 줄이 나오기까지 기다리는 시간."
+    },
+
+    "Distance Settings/Kill Distance display": {
+      "name": "거리 단위",
+      "desc": "처치 거리를 어떤 단위로 적을지 정한다."
+    },
+
+    "Font Styles Settings/Kill Info": { "name": "처치 정보", "desc": "처치 내용 글자의 글꼴 모양." },
+    "Font Styles Settings/Kill Distance": { "name": "거리", "desc": "거리 글자의 글꼴 모양." },
+    "Font Styles Settings/Kill Streak": { "name": "연속 처치", "desc": "연속 처치 글자의 글꼴 모양." },
+    "Font Styles Settings/Kill Other": { "name": "그 밖", "desc": "나머지 글자의 글꼴 모양." },
+    "Font Styles Settings/Kill Xp": { "name": "처치 경험치", "desc": "처치로 얻은 경험치 글꼴 모양." },
+    "Font Styles Settings/Exp": { "name": "획득 경험치", "desc": "경험치 알림의 글꼴 모양." },
+
+    "Kill Color Settings/Name": { "name": "이름", "desc": "쓰러뜨린 상대 이름에 쓸 색." },
+    "Kill Color Settings/Weapon": { "name": "쓴 총기", "desc": "사용한 총기 이름에 쓸 색." },
+    "Kill Color Settings/Distance": { "name": "거리", "desc": "처치 거리 숫자에 쓸 색." },
+    "Kill Color Settings/Level": { "name": "레벨", "desc": "상대 레벨 숫자에 쓸 색." },
+    "Kill Color Settings/Streak": { "name": "연속 처치", "desc": "연속 처치 숫자에 쓸 색." },
+    "Kill Color Settings/Body Part": { "name": "맞은 부위", "desc": "어디에 맞았는지 적는 글자 색." },
+    "Kill Color Settings/Meters": { "name": "거리 단위 글자", "desc": "m 같은 단위 글자에 쓸 색." },
+    "Kill Color Settings/Lvl": { "name": "레벨 글자", "desc": "Lv 같은 레벨 표기 글자에 쓸 색." },
+    "Kill Color Settings/Xp": { "name": "경험치", "desc": "처치 경험치 숫자에 쓸 색." },
+    "Kill Color Settings/Stats Streak": { "name": "기록상 연속 처치", "desc": "누적 연속 처치 표시에 쓸 색." },
+    "Kill Color Settings/Other": { "name": "그 밖", "desc": "나머지 글자에 쓸 색." },
+    "Kill Color Settings/Enemy Down": { "name": "적 제압", "desc": "죽이지 않고 쓰러뜨렸을 때 쓸 색." },
+    "Kill Color Settings/Kill Usec": { "name": "USEC 처치", "desc": "USEC 을 쓰러뜨렸을 때 쓸 색." },
+    "Kill Color Settings/Kill Bear": { "name": "BEAR 처치", "desc": "BEAR 를 쓰러뜨렸을 때 쓸 색." },
+    "Kill Color Settings/Kill Scav": { "name": "스캐브 처치", "desc": "스캐브를 쓰러뜨렸을 때 쓸 색." },
+    "Kill Color Settings/Kill Boss": { "name": "보스 처치", "desc": "보스를 쓰러뜨렸을 때 쓸 색." },
+    "Kill Color Settings/Kill Follower": { "name": "호위 처치", "desc": "보스 호위를 쓰러뜨렸을 때 쓸 색." },
+    "Kill Color Settings/Bracket": { "name": "괄호", "desc": "묶음 괄호 기호에 쓸 색." },
+    "Kill Color Settings/Exp": { "name": "획득 경험치", "desc": "경험치 알림 숫자에 쓸 색." },
+
+    "Main Settings/Draw Test Kill": {
+      "name": "시험 표시 켜기",
+      "desc": "자리를 잡기 위해 가짜 처치 알림을 띄워 둔다."
+    },
+    "Main Settings/Test Kill": {
+      "name": "시험 처치 한 번",
+      "desc": "가짜 처치 알림을 한 번 띄워 모양을 확인한다."
+    },
+    "Main Settings/Kill HUD display": { "name": "처치 HUD 표시", "desc": "상대를 쓰러뜨렸을 때 알림을 띄운다." },
+    "Main Settings/Wait Bottom Kill Destroy": {
+      "name": "아래쪽 알림 함께 유지",
+      "desc": "새 알림이 떠도 아래쪽 알림을 바로 지우지 않는다."
+    },
+    "Main Settings/Kill Distance display": { "name": "거리 표시", "desc": "몇 미터에서 맞혔는지 보여 준다." },
+    "Main Settings/Kill Other display": { "name": "그 밖 정보 표시", "desc": "나머지 부가 정보를 함께 보여 준다." },
+    "Main Settings/Kill Streak display": { "name": "연속 처치 표시", "desc": "연속으로 몇 명인지 보여 준다." },
+    "Main Settings/Kill Xp display": { "name": "경험치 표시", "desc": "처치로 얻은 경험치를 보여 준다." },
+    "Main Settings/Kill Level display": { "name": "레벨 표시", "desc": "쓰러뜨린 상대의 레벨을 보여 준다." },
+    "Main Settings/Kill Part display": { "name": "맞은 부위 표시", "desc": "어디에 맞아 죽었는지 보여 준다." },
+    "Main Settings/Kill Faction display": { "name": "소속 표시", "desc": "USEC·BEAR·스캐브 구분을 보여 준다." },
+    "Main Settings/Kill Weapon display": { "name": "쓴 총기 표시", "desc": "어떤 총으로 잡았는지 보여 준다." },
+    "Main Settings/Kill Scav Name To En": {
+      "name": "스캐브 이름 영문으로",
+      "desc": "스캐브 이름을 러시아어 대신 영문으로 적는다."
+    },
+    "Main Settings/Exp HUD display": { "name": "경험치 HUD 표시", "desc": "경험치가 들어올 때 알림을 띄운다." },
+
+    "Position Rotation Scale Settings/Kill Anchored Position": { "name": "처치 알림 위치", "desc": "처치 알림이 놓일 자리." },
+    "Position Rotation Scale Settings/Kill Size Delta": { "name": "처치 알림 크기", "desc": "처치 알림 영역의 가로·세로." },
+    "Position Rotation Scale Settings/Kill Local Scale": { "name": "처치 알림 배율", "desc": "처치 알림을 키우거나 줄인다." },
+    "Position Rotation Scale Settings/Exp Anchored Position": { "name": "경험치 알림 위치", "desc": "경험치 알림이 놓일 자리." },
+    "Position Rotation Scale Settings/Exp Size Delta": { "name": "경험치 알림 크기", "desc": "경험치 알림 영역의 가로·세로." },
+    "Position Rotation Scale Settings/Exp Local Scale": { "name": "경험치 알림 배율", "desc": "경험치 알림을 키우거나 줄인다." }
+  }
+}

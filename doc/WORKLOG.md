@@ -876,3 +876,73 @@ Miyako Carry Service 를 넣은 뒤 레이드에서 나중에 스폰되는 적 A
   조사와 제작자 보고문은 [fixes/2026-10-27-pit-lootpatrol-nre.md](fixes/2026-10-27-pit-lootpatrol-nre.md)
 - MagicBullet·Recoil Rework 의 **체감**은 확인하지 않았다. 로드만 확인했다
 - MagicBullet 의 근접 슬라이더는 **x1 로 둔다**. MeleeMultiplier 의 x10 과 곱해진다
+
+## F12 설정 창 한글화 마무리 (2026-10-28)
+
+F12 에 영어와 중국어가 섞여 보인다는 지적에서 시작했다. 사전이 붙은 모드는 이미 1457/1490
+항목이 한글이었고, 남은 것은 **사전이 아예 없는 21개 모드 517항목**이었다. 세어 보니 379항목이
+세 묶음(GamePanelHUD 포팅본 7개 213, 반동 재구성 103, PIT Fireteam 63)에 몰려 있었다.
+
+### 중국어의 정체
+
+미번역이 아니었다. 제작자가 **라벨 자체에 두 언어를 박아 둔** 것이다.
+
+- COTI 는 `Debug Logging | 调试日志` 꼴 — 사전이 없어 그대로 보였다. 사전을 새로 썼다
+- DirectReload 는 `启用直接装填 (Enable Direct Reload)` 꼴 — **이미 사전이 있어 F12 에서는
+  한글로 나온다**. cfg 파일만 중국어다. 고칠 것이 없었다
+
+사전은 문자열을 통째로 바꾸므로 열쇠에 `영문 | 中文` 덩어리를 한 글자도 바꾸지 않고 적어야
+한다. 전각 괄호(（）)까지 그대로다. COTI 49항목이 전부 맞은 것으로 확인했다.
+
+### 새로 쓴 사전 20개
+
+| 모드 | 항목 |
+| --- | --- |
+| GamePanelHUD Compass / Kill / Weapon / Hit / Health / Grenade / Core | 69 / 51 / 29 / 27 / 23 / 13 / 1 |
+| 반동 재구성 (Recoil Rework) | 103 |
+| PIT Fireteam | 63 |
+| COTI | 49 |
+| Make Shotguns Great Again | 24 |
+| ISB SOF Extras | 22 |
+| 머리 피해 분산 (HDR) | 17 |
+| 아이시 음악 헤드셋 / ISB 출현 알림 / Waypoints | 5 / 5 / 5 |
+| MagicBullet | 4 |
+| ISB Special Forces / SAIN | 2 / 2 |
+| Tactical Toaster | 1 |
+
+`spt.koreanconfig` 자신은 설정 2개를 처음부터 한글로 등록하므로 사전을 만들지 않았다.
+
+PIT 은 대부분의 항목을 **섹션 없이** 등록한다. 그래서 열쇠가 `/01 ScanDistance` 처럼 앞이
+비어 있다. 빈 섹션은 `"": ""` 로 두어 원문을 그대로 쓰게 했다.
+
+### 채운 빈 설명 34건
+
+이름만 한글이고 설명은 영어로 남아 있던 것들이다. 지도 표식 색 19, 탄약 희귀도 색 10,
+고정 퀘스트 색 5.
+
+**Amands' Sense 의 58건은 채우지 않았다.** 원문 cfg 에 설명이 아예 없어 번역할 것이 없다.
+F12 에도 설명이 뜨지 않는다.
+
+### 동적으로 생기는 항목
+
+고정 사전이 못 따라가는 것들이다. 지금 설치본에 있는 것만 채웠고, **모드를 더 깔면 또
+늘어난다**.
+
+- No Barrel Shadow — 손전등마다 `거리`·`밝기` 2항목이 생긴다. 28항목(손전등 14개)을 채웠다.
+  이름에 `☆` 가 들어간 것이 있어 cfg 에서 읽어 생성하는 방식으로 넣었다
+- CaliberUnderName — 구경이 늘면 항목도 늘어난다. 5개(5.8×42, 7.84×49, 9.3×64, 17.8×89,
+  .410 게이지)를 채웠다. 실제 탄종 이름을 단정하기 어려운 것은 모드 관례대로 숫자 표기만 썼다
+
+### 결과
+
+`node tools/check-lang-coverage.mjs` 가 **2005/2005 항목, 사전 104개**. 누락 0, 섹션 누락 0,
+cfg 에 없는 열쇠 0. 설치본(`BepInEx\plugins\SptKoreanConfig\lang`) 과 원본이 내용까지 같다.
+
+번역 JSON 만 바뀌었으므로 DLL 을 다시 빌드하지 않았다. **게임을 다시 켜지 않고 F12 를 다시
+열면 반영된다**(`TranslationStore.ReloadIfChanged`).
+
+### 남은 것
+
+- **F12 에서 눈으로 본 확인은 하지 않았다.** 사전 열쇠가 cfg 와 한 글자도 다르지 않은 것까지
+  확인했을 뿐이다
+- 동적 항목은 모드 구성이 바뀌면 다시 돌려야 한다 — `node tools/check-lang-coverage.mjs`

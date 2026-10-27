@@ -1,0 +1,70 @@
+{
+  "guid": "com.kmyuhkyuk.GamePanelHUDHit",
+  "name": "HUD 피격 표시 (GamePanelHUD Hit)",
+  "sections": {
+    "Animation Speed Settings": "애니메이션 속도",
+    "Direction Rate Settings": "방향 판정",
+    "Font Styles Settings": "글꼴 모양",
+    "Hit Color Settings": "피격 표시 색",
+    "Main Settings": "기본 설정",
+    "Position Rotation Scale Settings": "위치·회전·크기"
+  },
+  "settings": {
+    "Animation Speed Settings/Hit Active Speed": {
+      "name": "표시 나타나는 속도",
+      "desc": "맞았을 때 표시가 떠오르는 속도."
+    },
+    "Animation Speed Settings/Hit End Wait Speed": {
+      "name": "사라지기 전 유지 시간",
+      "desc": "표시를 남겨 두는 시간."
+    },
+    "Animation Speed Settings/Hit Dead Wait Speed": {
+      "name": "사살 표시 유지 시간",
+      "desc": "상대가 죽었을 때 표시를 남겨 두는 시간."
+    },
+
+    "Direction Rate Settings/Hit Left": {
+      "name": "왼쪽 판정 범위",
+      "desc": "이 각도 안쪽이면 왼쪽에서 맞은 것으로 본다."
+    },
+    "Direction Rate Settings/Hit Right": {
+      "name": "오른쪽 판정 범위",
+      "desc": "이 각도 안쪽이면 오른쪽에서 맞은 것으로 본다."
+    },
+
+    "Font Styles Settings/Damage": { "name": "피해량", "desc": "피해량 숫자의 글꼴 모양." },
+    "Font Styles Settings/Armor Damage": { "name": "방어구 피해량", "desc": "방어구 피해량 숫자의 글꼴 모양." },
+
+    "Hit Color Settings/Damage": { "name": "피해량", "desc": "피해량 숫자에 쓸 색." },
+    "Hit Color Settings/Armor Damage": { "name": "방어구 피해량", "desc": "방어구에 들어간 피해에 쓸 색." },
+    "Hit Color Settings/Dead": { "name": "사살", "desc": "상대를 죽였을 때 쓸 색." },
+    "Hit Color Settings/Head": { "name": "머리", "desc": "머리에 맞혔을 때 쓸 색." },
+    "Hit Color Settings/Damage Info": { "name": "피해 설명", "desc": "피해 내역 글자에 쓸 색." },
+    "Hit Color Settings/Armor Damage Info": { "name": "방어구 피해 설명", "desc": "방어구 피해 내역 글자에 쓸 색." },
+
+    "Main Settings/Draw Test Hit": {
+      "name": "시험 표시 켜기",
+      "desc": "자리를 잡기 위해 가짜 피격 표시를 띄워 둔다."
+    },
+    "Main Settings/Test Hit": {
+      "name": "시험 피격 한 번",
+      "desc": "가짜 피격을 한 번 일으켜 모양을 확인한다."
+    },
+    "Main Settings/Hit HUD display": { "name": "피격 HUD 표시", "desc": "맞혔을 때 표시를 띄운다." },
+    "Main Settings/Hit Damage HUD display": { "name": "피해량 표시", "desc": "들어간 피해 숫자를 함께 보여 준다." },
+    "Main Settings/Hit Head Separate Color": {
+      "name": "머리 피격 색 따로",
+      "desc": "머리에 맞힌 것만 다른 색으로 구분한다."
+    },
+    "Main Settings/Hit Direction": { "name": "피격 방향 표시", "desc": "어느 쪽에서 맞았는지 방향을 보여 준다." },
+
+    "Position Rotation Scale Settings/Hit Anchored Position": { "name": "피격 표시 위치", "desc": "피격 표시가 놓일 자리." },
+    "Position Rotation Scale Settings/Hit Size Delta": { "name": "피격 표시 크기", "desc": "피격 표시 영역의 가로·세로." },
+    "Position Rotation Scale Settings/Hit Local Scale": { "name": "피격 표시 배율", "desc": "피격 표시를 키우거나 줄인다." },
+    "Position Rotation Scale Settings/Hit Head Size Delta": { "name": "머리 표시 크기", "desc": "머리 피격 표시의 가로·세로." },
+    "Position Rotation Scale Settings/Hit Damage Anchored Position": { "name": "피해량 위치", "desc": "피해량 숫자가 놓일 자리." },
+    "Position Rotation Scale Settings/Hit Damage Size Delta": { "name": "피해량 크기", "desc": "피해량 영역의 가로·세로." },
+    "Position Rotation Scale Settings/Hit Damage Local Scale": { "name": "피해량 배율", "desc": "피해량 표시를 키우거나 줄인다." },
+    "Position Rotation Scale Settings/Hit Rotation": { "name": "회전", "desc": "피격 표시를 돌려 놓는 각도." }
+  }
+}

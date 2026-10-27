@@ -1,0 +1,84 @@
+{
+  "guid": "com.vinihns.makeshotgunsgreatagain",
+  "name": "산탄총 되살리기 (Make Shotguns Great Again)",
+  "sections": {
+    "Debug": "디버그",
+    "Dragon Breath": "드래곤 브레스",
+    "KS-23 Mount Calibration": "KS-23 조준기 보정",
+    "Malfunctions": "작동 불량"
+  },
+  "settings": {
+    "Debug/Enable Forced Malfunction Keys": {
+      "name": "강제 불량 단축키 사용",
+      "desc": "아래 단축키를 쓸 수 있게 한다. 누르면 다음 발에 그 불량이 일어나고, 다시 누르면 취소된다. 리볼버·중절식·단발 총기는 게임에 불량이 없다."
+    },
+    "Debug/Force Misfire": { "name": "불발 강제", "desc": "다음 발에 불발을 일으킨다. 위의 강제 불량 단축키가 켜져 있어야 한다." },
+    "Debug/Force Jam": { "name": "걸림 강제", "desc": "다음 발에 탄 걸림을 일으킨다. 위의 강제 불량 단축키가 켜져 있어야 한다." },
+    "Debug/Force Hard Slide": { "name": "노리쇠 심한 멈춤 강제", "desc": "다음 발에 노리쇠가 심하게 걸리게 한다. 위의 강제 불량 단축키가 켜져 있어야 한다." },
+    "Debug/Force Soft Slide": { "name": "노리쇠 가벼운 멈춤 강제", "desc": "다음 발에 노리쇠가 가볍게 걸리게 한다. 위의 강제 불량 단축키가 켜져 있어야 한다." },
+    "Debug/Force Feed Failure": { "name": "급탄 불량 강제", "desc": "다음 발에 급탄 불량을 일으킨다. 위의 강제 불량 단축키가 켜져 있어야 한다." },
+    "Debug/Log Pellet Spread": {
+      "name": "산탄 퍼짐 기록",
+      "desc": "여러 알이 나가는 사격마다 퍼짐을 BepInEx 로그에 적는다. 게임이 쓴 값과 실제 알에서 잰 퍼짐 각을 함께 남긴다."
+    },
+
+    "Dragon Breath/Trails Enabled": {
+      "name": "불꽃 꼬리 켜기",
+      "desc": "타는 불꽃이 꼬리를 남기게 한다. 끄면 성능에 낫다."
+    },
+    "Dragon Breath/Collision Enabled": {
+      "name": "불꽃 충돌 켜기",
+      "desc": "불꽃이 벽에 부딪혀 튀게 한다. 끄면 성능에 낫다."
+    },
+    "Dragon Breath/Lights Enabled": {
+      "name": "불꽃 조명 켜기",
+      "desc": "불꽃마다 빛을 내게 한다. 끄면 성능에 낫다."
+    },
+    "Dragon Breath/Max Particles": {
+      "name": "불꽃 최대 개수",
+      "desc": "한꺼번에 살아 있을 수 있는 불꽃 수. 낮추면 연발에서 성능이 낫다."
+    },
+    "Dragon Breath/Particles Per Shot": {
+      "name": "한 발당 불꽃 수",
+      "desc": "한 발에 터뜨릴 불꽃 수. 낮추면 성능이 낫다."
+    },
+    "Dragon Breath/Effect Duration": {
+      "name": "효과 유지 시간",
+      "desc": "효과가 사라지기까지의 시간(초). 낮추면 불꽃이 덜 쌓인다."
+    },
+    "Dragon Breath/Spread Angle": { "name": "퍼짐 각도", "desc": "불꽃이 뿜어 나가는 원뿔의 각도." },
+    "Dragon Breath/Noise Strength": { "name": "흔들림 세기", "desc": "불꽃이 불규칙하게 움직이는 정도." },
+    "Dragon Breath/Noise Frequency": { "name": "흔들림 빈도", "desc": "불규칙한 움직임이 일어나는 빈도." },
+    "Dragon Breath/Air Resistance": {
+      "name": "공기 저항",
+      "desc": "불꽃이 시간이 지나며 느려지는 정도(0~1). 높이면 구름처럼 퍼진다."
+    },
+    "Dragon Breath/Start Offset": { "name": "시작 거리", "desc": "총구에서 몇 미터 앞에서 효과가 시작되는지." },
+
+    "KS-23 Mount Calibration/Enable Mount Alignment Fix": {
+      "name": "조준선 보정 사용",
+      "desc": "KS-23 을 조준할 때 탄이 나가는 방향을 바로잡아, 레일에 올린 조준기의 조준점에 맞게 한다."
+    },
+    "KS-23 Mount Calibration/Shot Pitch Correction": {
+      "name": "상하 보정(도)",
+      "desc": "KS-23 조준 중 탄도의 상하 보정 각도. 사격장에서 탄착이 조준점 높이와 맞을 때까지 맞춘다. 발마다 적용되고 바꾸면 바로 반영된다."
+    },
+    "KS-23 Mount Calibration/Shot Yaw Correction": {
+      "name": "좌우 보정(도)",
+      "desc": "KS-23 조준 중 탄도의 좌우 보정 각도. 사격장에서 탄착이 조준점과 좌우로 맞을 때까지 맞춘다. 발마다 적용되고 바꾸면 바로 반영된다."
+    },
+    "KS-23 Mount Calibration/Debug Logging": {
+      "name": "보정 기록",
+      "desc": "적용한 보정값을 발마다 BepInEx 콘솔에 적는다."
+    },
+
+    "Malfunctions/Skip Inspection Before Clearing": {
+      "name": "점검 없이 불량 해소",
+      "desc": "총을 살펴보지 않고도 작동 불량을 바로 풀 수 있게 한다."
+    },
+    "Malfunctions/Remove Boss Forced Malfunctions": {
+      "name": "보스의 강제 불량 막기",
+      "desc": "보스가 내 총에 작동 불량을 강제로 일으키지 못하게 한다."
+    }
+  }
+}
