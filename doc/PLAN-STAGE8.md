@@ -198,3 +198,26 @@ node tools/gen-installed-mods.mjs
 ## 넣지 않기로 한 것
 
 - **SPT Stance Overhaul (3136)** — 2026-10-27 결정. Tylevo's Field Attachments(3125)가 게임 안에서 "STANCE OVERHAUL NOT DETECTED" 팝업을 띄우지만, 이건 누락이 아니라 선택 연동 안내다. 3125의 선언 의존성은 `UnityToolkit` 하나뿐이고 이미 설치돼 있다. 3136을 넣으면 **결속 모드 1개 + 미설치 라이브러리 2개**(`Fontaine's FOV Fix`, `SPT Realism Common Lib`)가 늘어나는데, 얻는 것은 애니메이션이 부드러워지는 것뿐이라 넣지 않는다.
+
+### 8-C 결과 — Death Shadow Tweaks 2943 은 넣지 않는다 (2026-10-27)
+
+중복이다. **측정으로 확인했다.**
+
+데스 섀도 마스크는 네 변형(기본·Gold·Gray·White)이 있고 각각 `ConflictingItems` 가 26개다.
+그 26개는 헬멧 24개 + Maska-1SCh 안면 보호대 2개(킬라 에디션, Olive Drab)다.
+
+설치된 **Less Restricting Headwear 4.0.0** 의 `debug` 를 잠시 켜고 서버를 띄워 확인한 결과,
+네 변형 모두에서 **26개가 전부 제거된다.**
+
+```
+[LessRestrictingHeadwear] Patched item_equipment_facecover_strikeball_mask
+(6570aead4d84f81fd002a033): 1 flags, 26 conflicts.
+... _gold_bp2 (68a9b821cdf661cc5a0626c6): 1 flags, 26 conflicts.
+... _grey_bp2 (68a9b852cdf661cc5a0626c9): 1 flags, 26 conflicts.
+... _white_bp2 (68a9b873a4b28d56c80a1818): 1 flags, 26 conflicts.
+```
+
+2943 이 하는 일은 `set_ConflictingItems` 하나뿐(DLL 4.5 KB)이라 **남는 효과가 없다.**
+결속 모드이므로 효과 없이 결속만 늘어난다. 넣지 않는다.
+
+확인 후 `debug` 는 `false` 로 되돌렸다(원본과 동일함을 diff 로 확인).
