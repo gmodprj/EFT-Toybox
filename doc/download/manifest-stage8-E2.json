@@ -1,0 +1,16 @@
+{
+  "stage": "stage8-E2",
+  "spt": "4.1.6",
+  "note": "8-E 대체본. Miyako 2709 는 봇 AI 먹통으로 제거했고, 그 자리에 PIT Fireteam 을 검토한다. 선행 Waypoints 1.9.0 + BigBrain 1.5.0 은 이미 설치돼 있다.",
+  "mods": [
+    {
+      "group": "8E-2",
+      "id": 2676,
+      "name": "PIT Fireteam",
+      "version": "1.0.0",
+      "size": 3120973,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2676/pit-fireteam/1.0.0"
+    }
+  ]
+}
