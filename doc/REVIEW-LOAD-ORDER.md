@@ -60,6 +60,11 @@ SPT 4.1.6 이 `SPTarkov.Server.Core.xml` 에 적어 둔 규칙은 이렇다.
 로그만으로는 단정할 수 없었다. 그래서 **누가 이기는지는 예측하지 말고 아래처럼 실측하는 것이
 맞다.**
 
+> **2026-10-28 서버 테스트로 확정됐다.** `[Cobra's Ammo Stack] v1.1.0 loaded. Modified 971
+> ammunition items.` 가 **로그의 거의 마지막**(웹서버 시작 직전)에 찍힌다. SVM 메시지는 훨씬
+> 앞이다. 그런데도 **DB 에 남은 값은 SVM 것**이다(아래 1번, 서버를 새로 띄워 다시 쟀다).
+> 즉 **로그에 찍히는 순서는 DB 에 쓰는 순서가 아니다.** 로그를 보고 순서를 추측하면 틀린다.
+
 ## 실측한 겹침 3건
 
 떠 있는 서버에 `POST /client/items` 로 최종 아이템 템플릿 9483개를 받아, 각 모드 설정값과
@@ -74,6 +79,13 @@ SPT 4.1.6 이 `SPTarkov.Server.Core.xml` 에 적어 둔 규칙은 이렇다.
 
 표본: 9x19 는 Cobra 가 500 을 쓰라는데 실제 150(SVM 권총값), 12게이지는 Cobra 100 인데 실제
 60(SVM 산탄값). **Cobra 가 쓰라는 500 은 DB 어디에도 없다.**
+
+2026-10-28 에 서버를 새로 띄워 같은 측정을 반복했다 — **다시 31개 중 반영 0개**. 측정한 값은
+하나도 빠짐없이 SVM 의 다섯 범주값(150·180·160·60·80) 가운데 하나였다. Cobra 설정은
+`Enabled: true` 이고 로그도 971개를 고쳤다고 말하므로, **쓰기는 하지만 뒤에 덮인다.**
+
+모드가 새로 만든 구경(20x1mm 200, 7.84x49 40, 9.3x64 30 …)은 SVM 도 Cobra 도 아닌 값이다.
+그 탄을 만든 콘텐츠 모드가 Cobra 보다 **뒤에** 아이템을 만들어 Cobra 가 보지 못한 것으로 보인다.
 
 ### 2. 화폐 스택 — SVM 쪽이 덮인다
 
@@ -105,10 +117,49 @@ BarterItemsStacks 는 지정한 460건 중 452건이 반영됐다(어긋난 8건
 다만 **커스텀 모드 제작자가 일부러 숨긴 아이템까지 플레아에 올라온다**는 것은 의도하지 않은
 쪽일 수 있다. 일부만 지키려면 같은 파일의 `excludedCategories` 에 분류를 더한다.
 
+## 서버 테스트에서 나온 것 (2026-10-28, 모드 114개)
+
+원문은 [server-tests/server-test-stage9-114mods.out.txt](server-tests/server-test-stage9-114mods.out.txt).
+콘솔에는 **오류가 없어 보이지만 로그 파일에는 `[Error]` 49건, `[Warning]` 58건**이 있다.
+서버 자체는 정상으로 시작했다(`서버가 시작되었습니다`). 로그 시각은 UTC 다.
+
+| 건수 | 내용 | 판단 |
+| --- | --- | --- |
+| **48** | `Could not add <id> to cache, it does not exist in the item database!` + 같은 id 의 경고 48건 | **고칠 것.** 아래 참조 |
+| 1 | `Unable to add bundle: ...barrel_vpo215_600mm_366tkm.bundle` | 번들 1개 누락 |
+| 3 | `[SVM] Remove backpack restrictions - empty filters` | 모드가 "오류 아니다"라고 직접 적어 둔 것 |
+| 1 | `트레이더 67d3a28a... 찾을 수 없음` → 기본 새로 고침 3600 으로 대체 | Moe-TradeMarker 의 택배 상인 |
+| 1 | `Trader 6747208e... not found, cannot import quest assort` | ISB Aishi |
+| 1 | `[RealisticInsurance] trader 'Armorer' ... not listed in insurance.json` → 90% 대체 | 모드가 대체값을 쓴다고 알림 |
+| 2 | `[CaseTrader] Skipped container ... no handbook price` | 가격 없는 컨테이너 2개 건너뜀 |
+| 1 | `No valid item configs found in ...Eukyre-BetterOKP7\db\CustomItems` | 빈 폴더 |
+| 1 | `TraderGenPocketMigration` 프로필 마이그레이션 실행됨 | 정상 처리 |
+
+### 48건의 정체 — Olympus 가 또 없는 것을 참조한다
+
+없는 아이템 id 48개를 모드 설정에서 되짚었더니 **41개가
+`MountOlympus/Modifiers/firearmMags.json`** 에 있었다. 나머지 7개는 어느 json 에도 없다
+(실행 중에 만들어지는 id 로 보인다).
+
+8차에서 이미 같은 파일을 고쳤다 — 그때는 **없는 총기** 12개를 뺐다
+([mod-patches/505-olympus-firearmMags.md](mod-patches/505-olympus-firearmMags.md)). 이번에 걸린
+41개는 **탄창 쪽**이다. 즉 같은 문제의 다른 면이 남아 있었다. 빼면 오류 48 → 7 로 줄어든다.
+
+그 밖에 눈에 띈 것.
+
+- **`[ItemInfo] Completed processing 9483 items in 92732 ms`** — 서버 시작 시간의 대부분이
+  이 한 모드다. 90초를 줄이고 싶으면 여기가 유일한 큰 덩어리다
+- `[MeleeMultiplier] damage multiplier x10!` — MagicBullet 의 근접 슬라이더를 x1 로 둬야 하는
+  이유가 그대로다
+- `Snapshot captured (8882 items), no enabled deltas found.` — SIM 은 여전히 아무것도 바꾸지 않는다
+- SlotCategoryRelax 가 **분류 14종**(이전 15종)으로 돌았다. Flashlight·Foregrip·TacticalCombo 가
+  켜지고 Handguard·PistolGrip·Stock 이 꺼져 더한 항목이 168044 → 91037 로 줄었다. 설정이 바뀐 것이다
+
 ## 그래서 무엇을 할까
 
 | 할 일 | 내용 |
 | --- | --- |
+| 0 | **Olympus `firearmMags.json` 에서 없는 탄창 41개를 뺀다.** 서버 오류 48건 중 41건이 이것이다. 8차 때와 같은 방법·같은 백업 자리 |
 | 1 | **CobrasAmmoStack 을 뺀다.** 지금 아무 일도 하지 않는다. 500 발 스택을 쓰고 싶다면 반대로 SVM 의 `Items.AmmoStacks` 를 비우고 Cobra 에 맡긴다 — 둘 다 켜 두는 것만은 피한다 |
 | 2 | **SVM 화폐 네 줄을 BarterItemsStacks 값과 맞추거나 포기한다.** 지금은 SVM 설정창에서 고쳐도 게임에 아무 변화가 없다 |
 | 3 | TheBlacklist 의 부작용을 받아들일지 정한다. 모드 전용 아이템을 숨기고 싶으면 `excludedCategories` 를 쓴다 |
