@@ -1,11 +1,12 @@
 # 문서 색인
 
 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743).
-**2026-10-27 기준 모드 179개** + 직접 만든 플러그인 4개. 8차까지 설치 완료.
+**2026-10-28 기준 모드 187개** + 직접 만든 플러그인 4개. 서버 모드 114개, 게임 플러그인 142개.
 
-> 2026-10-28 실측에서 **서버 모드 114개 · 게임 플러그인 142개**가 확인됐다. 아래 숫자와 어긋나는
-> 까닭은 절차 밖에서 추가된 8개에 설치 기록이 없어 자동 생성 문서에 잡히지 않기 때문이다.
-> 자세한 것은 [REVIEW-LOAD-ORDER.md](REVIEW-LOAD-ORDER.md).
+> 8차까지가 절차를 거친 설치고, 그 뒤 **절차 밖에서 들어온 8개**는 2026-10-28 에 설치 기록을
+> 뒤늦게 복원해 문서에 올렸다. 당시 기록이 아니라 "지금 가진 파일" 목록이다 —
+> [REVIEW-LOAD-ORDER.md](REVIEW-LOAD-ORDER.md) 와 INSTALLED-MODS.md 의 "절차 밖에서 들어온 것"
+> 절을 함께 본다.
 
 ## 먼저 볼 문서
 
@@ -94,6 +95,7 @@
 | `profiles-before-stage7A`~`stage7E` (+ `-<id>`) | 7차. C 조는 결속 26개를 모드별로 떴다 |
 | `profiles-before-stage8-A`·`-C`·`-E`·`-F`, `stage8C-2906` | 8차 |
 | `profiles-before-remove-miyako`, `profiles-before-ammo-fix` | Miyako 제거 직전, 프로필 탄약 수정 직전 |
+| `profiles-before-stage9-recovered` | 절차 밖 6개(결속 3개 포함)가 들어오기 전. **우리가 뜬 것이 아니라 SPT 자체 백업(`2026-10-27_08-34-54`, 현지 17:34)에서 건져 온 것**이다. `activeMods.json` 에 모드 106개만 적혀 있어 설치 전임을 확인했다 |
 | `firearmMags.json.orig`, `LRH-config.jsonc.orig` | 8차에서 고치기 전 모드 설정 원본 |
 | `svm-presets/`, `allinweaponunslotted-config`, `painter-assort-original.json` 등 | 모드 설정 수정 전 사본 |
 
