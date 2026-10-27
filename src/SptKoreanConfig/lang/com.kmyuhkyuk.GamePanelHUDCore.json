@@ -1,0 +1,13 @@
+{
+  "guid": "com.kmyuhkyuk.GamePanelHUDCore",
+  "name": "HUD 공통 (GamePanelHUD Core)",
+  "sections": {
+    "Main Settings": "기본 설정"
+  },
+  "settings": {
+    "Main Settings/All HUD Always display": {
+      "name": "모든 HUD 항상 표시",
+      "desc": "레이드가 아닐 때도 HUD 전체를 띄워 둔다. 자리를 잡을 때 쓴다."
+    }
+  }
+}

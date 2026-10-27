@@ -1,0 +1,105 @@
+{
+  "guid": "com.samc137.isbsofextras",
+  "name": "ISB 특수부대 음향·정전 (ISB SOF Extras)",
+  "sections": {
+    "Audio": "소리",
+    "Logging": "기록",
+    "USEC ISB Special Forces Audio Plugin Config": "음향 설정",
+    "USEC ISB Special Forces Blackout Config": "정전 사건 설정",
+    "USEC ISB Special Forces Subtitle Config": "자막 설정"
+  },
+  "settings": {
+    "Audio/Containment Breach Alarm Volume": {
+      "name": "격리 유출 경보 크기",
+      "desc": "경보 소리의 크기(0~100). 바꾸면 바로 반영된다."
+    },
+    "Audio/Laboratory Announcements Volume": {
+      "name": "연구소 안내 방송 크기",
+      "desc": "연구소 내부 방송의 크기(0~100). 방송이 나오는 중에도 바로 반영된다."
+    },
+    "Audio/Dead Man Switch Alarm Volume": {
+      "name": "데드맨 스위치 경보 크기",
+      "desc": "데드맨 스위치 경보와 경고 음성의 크기(0~100). 음성과 경보가 한 녹음이다. 바꾸면 바로 반영되고, 다른 방송과 종료 음성은 각자의 방송 크기를 따른다."
+    },
+    "Audio/ISB Radio Volume": {
+      "name": "ISB 무전 크기",
+      "desc": "ISB 무전 교신 전체의 크기(0~100). 교신 중에도 바로 반영된다."
+    },
+    "Audio/Blackout Sound Volume": {
+      "name": "정전 소리 크기",
+      "desc": "black_out_huge.wav 의 크기(0~100). 보통 정전에서는 전력이 끊길 때 쓰이고, 격리 유출 중에는 주 전원 복구 조작에만 쓰인다."
+    },
+    "Audio/ContainmentBreach Volume": {
+      "name": "격리 유출 발동음 크기",
+      "desc": "격리 유출이 시작될 때 나는 소리의 크기(0~100)."
+    },
+
+    "Logging/Diagnostic Logs": {
+      "name": "진단 기록",
+      "desc": "이 모드의 정보·디버그 기록을 켠다. 경고와 오류는 끄더라도 계속 남는다."
+    },
+
+    "USEC ISB Special Forces Audio Plugin Config/Enable Laboratory Announcements": {
+      "name": "연구소 안내 방송",
+      "desc": "연구소 레이드에 들어갈 때 ISB 대원이 있으면, 그들의 존재와 작전 개시를 알리는 방송이 내부 방송으로 흘러나온다."
+    },
+    "USEC ISB Special Forces Audio Plugin Config/Enable ISB Radio Comms": {
+      "name": "ISB 무전 교신",
+      "desc": "ISB 대원이 있는 레이드에서 대원끼리 주고받는 무전을 들을 수 있다. 분위기를 살리고 위치를 짚는 데도 쓸모가 있다."
+    },
+    "USEC ISB Special Forces Audio Plugin Config/Enable ISB KIA Comms": {
+      "name": "전사 보고 무전",
+      "desc": "ISB 대원이 쓰러질 때 아이시와 본부가 나머지 대원과 주고받는 교신을 들을 수 있다. 누가 당했는지 알아채는 데 좋다."
+    },
+    "USEC ISB Special Forces Audio Plugin Config/Enable ISB Heavy Damage Comms": {
+      "name": "중상 보고 무전",
+      "desc": "크게 다친 대원에 대해 아이시와 본부가 주고받는 교신을 들을 수 있다. 위치를 짚는 데도 쓸모가 있다."
+    },
+    "USEC ISB Special Forces Audio Plugin Config/Enable Aishi ISB Radio Comms": {
+      "name": "아이시 전용 무전",
+      "desc": "부대를 지휘하는 아이시의 전용 음성과 간혹 섞이는 도발 대사를 목록에 더한다."
+    },
+    "USEC ISB Special Forces Audio Plugin Config/Enable Aishi ISB KIA Comms": {
+      "name": "아이시 전사 보고 음성",
+      "desc": "아군 대원이 쓰러졌을 때 부대에 알리는 아이시 전용 음성을 목록에 더한다."
+    },
+    "USEC ISB Special Forces Audio Plugin Config/Enable Aishi ISB Heavy Damage Comms": {
+      "name": "아이시 중상 보고 음성",
+      "desc": "아군 대원이 크게 다쳤지만 살아 있을 때 알리는 아이시 전용 음성을 목록에 더한다."
+    },
+    "USEC ISB Special Forces Audio Plugin Config/Enable White Tusks Common Comms": {
+      "name": "화이트 터스크 전용 무전",
+      "desc": "화이트 터스크가 전용 무전·전사·중상 음성을 쓰게 한다. 해당 파일이 없으면 보통 ISB 음성으로 대신한다."
+    },
+    "USEC ISB Special Forces Audio Plugin Config/Enable White Tusk Aishi Comms": {
+      "name": "화이트 터스크 아이시 음성",
+      "desc": "화이트 터스크가 전용 아이시 무전·전사·중상 음성을 쓰게 한다. 해당 파일이 없으면 보통 아이시 음성으로 대신한다."
+    },
+
+    "USEC ISB Special Forces Blackout Config/Laboratory Blackout Event Chance": {
+      "name": "연구소 정전 확률",
+      "desc": "서버가 격리 유출을 고르지 않았을 때 보통 정전이 일어날 확률(0~100). Fika 에서는 호스트나 헤드리스가 모든 사람의 몫을 정한다."
+    },
+    "USEC ISB Special Forces Blackout Config/Containment Breach Event Chance": {
+      "name": "격리 유출 확률",
+      "desc": "다음 레이드들에 쓸 사건 확률. 서버 JSON 에 저장되며, 퀘스트로 확정된 경우가 늘 우선한다. 레이드를 시작하기 전에 바꿔야 한다(호스트 전용)."
+    },
+    "USEC ISB Special Forces Blackout Config/Restrict Laboratory Exits": {
+      "name": "탈출구 제한",
+      "desc": "정전이 시작되면 격납고 문과 주차장 문만 탈출구로 남긴다."
+    },
+    "USEC ISB Special Forces Blackout Config/Enable ContainmentBreach Event": {
+      "name": "격리 유출 사건 사용",
+      "desc": "이번 연구소 레이드에 서버의 격리 유출이 걸려 있으면 봉쇄 발동음을 재생한다."
+    },
+
+    "USEC ISB Special Forces Subtitle Config/Enable Map Announcement Subtitles": {
+      "name": "안내 방송 자막",
+      "desc": "연구소 안내 방송에 자막을 띄운다."
+    },
+    "USEC ISB Special Forces Subtitle Config/Subtitle Language": {
+      "name": "자막 언어",
+      "desc": "자막에 쓸 언어 코드. Auto 로 두면 게임 언어를 따른다. en·pt·ru·ch(중국어 간체, zh-CN 도 받는다) 를 지원한다."
+    }
+  }
+}

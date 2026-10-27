@@ -1,0 +1,149 @@
+{
+  "guid": "com.kmyuhkyuk.GamePanelHUDCompass",
+  "name": "HUD 나침반 (GamePanelHUD Compass)",
+  "sections": {
+    "Animation Speed Settings": "애니메이션 속도",
+    "Color Settings": "색",
+    "Font Styles Settings": "글꼴 모양",
+    "Main Settings": "기본 설정",
+    "Other Settings": "그 밖",
+    "Position Scale Settings": "위치·크기",
+    "Quest Display Settings": "퀘스트 지점 표시",
+    "Rate Settings": "비율"
+  },
+  "settings": {
+    "Animation Speed Settings/Compass Fire Active Speed": {
+      "name": "총성 표시 나타나는 속도",
+      "desc": "총소리가 난 방향 표시가 떠오르는 속도."
+    },
+    "Animation Speed Settings/Compass Fire Wait Speed": {
+      "name": "총성 표시 유지 시간",
+      "desc": "총성 표시를 큰 채로 남겨 두는 시간."
+    },
+    "Animation Speed Settings/Compass Fire To Small Speed": {
+      "name": "총성 표시 작아지는 속도",
+      "desc": "총성 표시가 작게 줄어드는 속도."
+    },
+    "Animation Speed Settings/Compass Fire Small Wait Speed": {
+      "name": "작아진 뒤 유지 시간",
+      "desc": "작아진 총성 표시를 남겨 두는 시간."
+    },
+    "Animation Speed Settings/Immersive Compass Wait Time": {
+      "name": "나침반 자동 숨김 시간",
+      "desc": "몰입 모드에서 나침반을 감추기까지 기다리는 시간."
+    },
+
+    "Color Settings/Arrow": { "name": "지침", "desc": "나침반 바늘에 쓸 색." },
+    "Color Settings/Azimuths": { "name": "방위 눈금", "desc": "눈금 선에 쓸 색." },
+    "Color Settings/Azimuths Angle": { "name": "방위각 숫자", "desc": "눈금 옆 각도 숫자에 쓸 색." },
+    "Color Settings/Direction": { "name": "방향 글자", "desc": "동·서·남·북 글자에 쓸 색." },
+    "Color Settings/Angle": { "name": "현재 각도", "desc": "지금 보고 있는 각도 숫자에 쓸 색." },
+    "Color Settings/Compass Fire": { "name": "총성 표시", "desc": "총소리 방향 표시에 쓸 색." },
+    "Color Settings/Compass Fire Outline": { "name": "총성 표시 테두리", "desc": "총성 표시 테두리에 쓸 색." },
+    "Color Settings/Compass Boss Fire": { "name": "보스 총성", "desc": "보스가 쏜 총성 표시에 쓸 색." },
+    "Color Settings/Compass Boss Fire Outline": { "name": "보스 총성 테두리", "desc": "보스 총성 표시 테두리 색." },
+    "Color Settings/Compass Follower Fire": { "name": "호위 총성", "desc": "보스 호위가 쏜 총성 표시 색." },
+    "Color Settings/Compass Follower Outline": { "name": "호위 총성 테두리", "desc": "호위 총성 표시 테두리 색." },
+    "Color Settings/Compass Static Name": { "name": "지점 이름", "desc": "탈출구·투하물 같은 지점 이름 색." },
+    "Color Settings/Compass Static Description": { "name": "지점 설명", "desc": "지점 설명 글자 색." },
+    "Color Settings/Compass Static Optional": { "name": "선택 조건", "desc": "꼭 필요하지 않은 조건 글자 색." },
+    "Color Settings/Compass Static Requirements": { "name": "필요 조건", "desc": "탈출에 필요한 조건 글자 색." },
+    "Color Settings/Compass Static Distance": { "name": "지점 거리", "desc": "지점까지 거리 숫자 색." },
+    "Color Settings/Compass Static Meters": { "name": "거리 단위 글자", "desc": "m 같은 단위 글자 색." },
+    "Color Settings/Compass Static InZone": { "name": "구역 안", "desc": "탈출 구역 안에 들어왔을 때 쓸 색." },
+
+    "Font Styles Settings/Azimuths Angle": { "name": "방위각 숫자", "desc": "각도 숫자의 글꼴 모양." },
+    "Font Styles Settings/Direction": { "name": "방향 글자", "desc": "동·서·남·북 글자의 글꼴 모양." },
+    "Font Styles Settings/Angle": { "name": "현재 각도", "desc": "현재 각도 숫자의 글꼴 모양." },
+    "Font Styles Settings/Compass Fire Direction": { "name": "총성 방향 글자", "desc": "총성 방향 글자의 글꼴 모양." },
+    "Font Styles Settings/Compass Static Name": { "name": "지점 이름", "desc": "지점 이름의 글꼴 모양." },
+    "Font Styles Settings/Compass Static Description": { "name": "지점 설명", "desc": "지점 설명의 글꼴 모양." },
+    "Font Styles Settings/Compass Static Distance": { "name": "지점 거리", "desc": "거리 숫자의 글꼴 모양." },
+
+    "Main Settings/Compass HUD display": { "name": "나침반 표시", "desc": "화면에 나침반 띠를 띄운다." },
+    "Main Settings/Compass Angle HUD display": { "name": "각도 숫자 표시", "desc": "지금 보는 방향의 각도를 숫자로 보여 준다." },
+    "Main Settings/Compass Fire HUD display": {
+      "name": "총성 방향 표시",
+      "desc": "총소리가 난 방향을 나침반에 찍어 준다."
+    },
+    "Main Settings/Compass Fire Direction HUD display": {
+      "name": "총성 방향 글자 표시",
+      "desc": "총성이 난 방향을 글자로도 적어 준다."
+    },
+    "Main Settings/Compass Fire Hide Silenced": {
+      "name": "소음기 총성은 감추기",
+      "desc": "소음기를 쓴 총소리는 표시하지 않는다."
+    },
+    "Main Settings/Compass Fire Dead Destroy": {
+      "name": "쏜 자가 죽으면 표시 지우기",
+      "desc": "총을 쏜 상대가 죽으면 그 표시를 바로 없앤다."
+    },
+    "Main Settings/Compass Static HUD display": {
+      "name": "지점 표시",
+      "desc": "탈출구·투하물 같은 고정 지점을 나침반에 띄운다."
+    },
+    "Main Settings/Compass Static Airdrop display": { "name": "공중 투하물 표시", "desc": "투하물 위치를 띄운다." },
+    "Main Settings/Compass Static Exfiltration display": { "name": "탈출구 표시", "desc": "탈출 지점을 띄운다." },
+    "Main Settings/Compass Static Quest display": { "name": "퀘스트 지점 표시", "desc": "퀘스트 목표 지점을 띄운다." },
+    "Main Settings/Compass Static Info HUD display": {
+      "name": "지점 상세 표시",
+      "desc": "지점 이름과 조건을 함께 보여 준다."
+    },
+    "Main Settings/Compass Static Distance HUD display": { "name": "지점 거리 표시", "desc": "지점까지 거리를 보여 준다." },
+    "Main Settings/Compass Static InZone HUD display": {
+      "name": "구역 진입 표시",
+      "desc": "탈출 구역 안에 들어왔음을 알려 준다."
+    },
+    "Main Settings/Compass Static Hide Requirements": { "name": "필요 조건 감추기", "desc": "탈출 조건 글자를 띄우지 않는다." },
+    "Main Settings/Compass Static Hide Optional": { "name": "선택 조건 감추기", "desc": "선택 조건 글자를 띄우지 않는다." },
+    "Main Settings/Compass Static Hide Already Searched Airdrop": {
+      "name": "이미 뒤진 투하물 감추기",
+      "desc": "열어 본 투하물은 목록에서 뺀다."
+    },
+    "Main Settings/Compass Auto Size Delta": {
+      "name": "나침반 크기 자동",
+      "desc": "화면 크기에 맞춰 나침반 폭을 스스로 정한다."
+    },
+    "Main Settings/Compass Static Info Auto Size Delta": {
+      "name": "지점 상세 크기 자동",
+      "desc": "지점 상세 영역 크기를 스스로 정한다."
+    },
+    "Main Settings/Immersive Compass": {
+      "name": "몰입 모드",
+      "desc": "나침반을 늘 띄우지 않고 필요할 때만 잠깐 보여 준다."
+    },
+
+    "Other Settings/Compass Fire Max Distance": {
+      "name": "총성 표시 최대 거리",
+      "desc": "이보다 먼 총소리는 표시하지 않는다."
+    },
+    "Other Settings/Compass Static Center Point Range": {
+      "name": "지점 중앙 판정 범위",
+      "desc": "나침반 가운데에 들어온 것으로 볼 각도 범위."
+    },
+
+    "Position Scale Settings/Anchored Position": { "name": "나침반 위치", "desc": "나침반이 놓일 자리." },
+    "Position Scale Settings/Size Delta": { "name": "나침반 크기", "desc": "나침반 영역의 가로·세로." },
+    "Position Scale Settings/Local Scale": { "name": "나침반 배율", "desc": "나침반을 키우거나 줄인다." },
+    "Position Scale Settings/Compass Fire Size Delta": { "name": "총성 표시 크기", "desc": "총성 표시의 가로·세로." },
+    "Position Scale Settings/Compass Fire Outline Size Delta": { "name": "총성 테두리 크기", "desc": "총성 표시 테두리의 가로·세로." },
+    "Position Scale Settings/Compass Fire Direction Anchored Position": { "name": "총성 방향 글자 위치", "desc": "총성 방향 글자가 놓일 자리." },
+    "Position Scale Settings/Compass Fire Direction Local Scale": { "name": "총성 방향 글자 배율", "desc": "총성 방향 글자를 키우거나 줄인다." },
+    "Position Scale Settings/Compass Static Info Anchored Position": { "name": "지점 상세 위치", "desc": "지점 상세가 놓일 자리." },
+    "Position Scale Settings/Compass Static Info Size Delta": { "name": "지점 상세 크기", "desc": "지점 상세 영역의 가로·세로." },
+    "Position Scale Settings/Compass Static Info Local Scale": { "name": "지점 상세 배율", "desc": "지점 상세를 키우거나 줄인다." },
+    "Position Scale Settings/Compass Fire Height": { "name": "총성 표시 높이", "desc": "총성 표시를 띠 위 어느 높이에 둘지." },
+    "Position Scale Settings/Compass Static Height": { "name": "지점 표시 높이", "desc": "지점 표시를 띠 위 어느 높이에 둘지." },
+
+    "Quest Display Settings/FindItem": { "name": "물건 찾기", "desc": "물건을 찾아오는 목표를 나침반에 띄운다." },
+    "Quest Display Settings/LeaveItemAtLocation": { "name": "물건 두기", "desc": "지정한 곳에 물건을 두는 목표를 띄운다." },
+    "Quest Display Settings/PlaceBeacon": { "name": "표식 설치", "desc": "표식을 설치하는 목표를 띄운다." },
+    "Quest Display Settings/VisitPlace": { "name": "장소 방문", "desc": "특정 장소에 가는 목표를 띄운다." },
+    "Quest Display Settings/InZone": { "name": "구역 진입", "desc": "지정 구역에 들어가는 목표를 띄운다." },
+
+    "Rate Settings/Auto Size Delta Rate": {
+      "name": "자동 크기 비율",
+      "desc": "크기를 자동으로 정할 때 화면 대비 비율."
+    }
+  }
+}

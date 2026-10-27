@@ -1,0 +1,31 @@
+{
+  "guid": "com.samc137.ISBinfo",
+  "name": "ISB 출현 알림 (ISB SOF Notifier)",
+  "sections": {
+    "Logging": "기록",
+    "Settings for the ISB SOF Notifier plugin": "알림 설정"
+  },
+  "settings": {
+    "Logging/Diagnostic Logs": {
+      "name": "진단 기록",
+      "desc": "이 모드의 정보·디버그 기록을 켠다. 경고와 오류는 끄더라도 계속 남는다."
+    },
+
+    "Settings for the ISB SOF Notifier plugin/Enable in-raid Notifier": {
+      "name": "레이드 중 알림",
+      "desc": "ISB 가 작전 중인 레이드에 들어가면 어떤 종류의 대원이 몇 명 있는지 알려 준다."
+    },
+    "Settings for the ISB SOF Notifier plugin/Only Show Initial Alert": {
+      "name": "첫 알림만 보기",
+      "desc": "레이드 시작 때 한 번만 알리고, 대원이 쓰러질 때마다 갱신되는 알림은 띄우지 않는다. 언제든 O 키로 직접 확인할 수 있다."
+    },
+    "Settings for the ISB SOF Notifier plugin/Enable Commander Alert": {
+      "name": "지휘관 경고",
+      "desc": "ISB 지휘관과 호위가 나를 사냥하러 투입되면 따로 경고를 띄운다. 끄면 이 경고만 빠지고 보통 알림은 그대로다."
+    },
+    "Settings for the ISB SOF Notifier plugin/Enable Commander KIA notification": {
+      "name": "지휘관 사살 알림",
+      "desc": "ISB 지휘관이나 호위가 쓰러지면 보통 철수 알림과 별도로 알려 준다."
+    }
+  }
+}

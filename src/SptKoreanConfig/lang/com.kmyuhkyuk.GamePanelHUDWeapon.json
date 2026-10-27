@@ -1,0 +1,81 @@
+{
+  "guid": "com.kmyuhkyuk.GamePanelHUDWeapon",
+  "name": "HUD 총기·탄약 (GamePanelHUD Weapon)",
+  "sections": {
+    "Animation Speed Settings": "애니메이션 속도",
+    "Color Settings": "색",
+    "Font Styles Settings": "글꼴 모양",
+    "Main Settings": "기본 설정",
+    "Position Scale Settings": "위치·크기",
+    "Warning Rate Settings": "경고 기준"
+  },
+  "settings": {
+    "Animation Speed Settings/Weapon Name Auto display Animation Speed": {
+      "name": "총기 이름 자동 표시 속도",
+      "desc": "총을 바꿀 때 이름이 떠오르고 사라지는 속도."
+    },
+    "Animation Speed Settings/Zero Warning Animation Speed": {
+      "name": "탄 없음 깜빡임 속도",
+      "desc": "탄이 떨어졌을 때 깜빡이는 빠르기."
+    },
+
+    "Color Settings/Current": { "name": "현재 탄수", "desc": "남은 탄 숫자에 쓸 색." },
+    "Color Settings/Maximum": { "name": "최대 탄수", "desc": "탄창 최대 숫자에 쓸 색." },
+    "Color Settings/Patron": { "name": "약실 탄", "desc": "약실에 든 탄 표시에 쓸 색." },
+    "Color Settings/Weapon Name": { "name": "총기 이름", "desc": "총기 이름에 쓸 색." },
+    "Color Settings/Ammo Type": { "name": "탄종", "desc": "탄 종류 글자에 쓸 색." },
+    "Color Settings/Fire Mode": { "name": "발사 모드", "desc": "단발·연발 표시에 쓸 색." },
+    "Color Settings/Zeros": { "name": "앞자리 0", "desc": "자리를 채우는 앞쪽 0 에 쓸 색." },
+    "Color Settings/Warning": { "name": "경고", "desc": "경고 기준 아래로 떨어졌을 때 쓸 색." },
+
+    "Font Styles Settings/Current": { "name": "현재 탄수", "desc": "남은 탄 숫자의 글꼴 모양." },
+    "Font Styles Settings/Maximum": { "name": "최대 탄수", "desc": "탄창 최대 숫자의 글꼴 모양." },
+    "Font Styles Settings/Patron": { "name": "약실 탄", "desc": "약실 탄 표시의 글꼴 모양." },
+    "Font Styles Settings/Weapon Name": { "name": "총기 이름", "desc": "총기 이름의 글꼴 모양." },
+    "Font Styles Settings/Ammo Type": { "name": "탄종", "desc": "탄 종류 글자의 글꼴 모양." },
+    "Font Styles Settings/Fire Mode": { "name": "발사 모드", "desc": "발사 모드 표시의 글꼴 모양." },
+
+    "Main Settings/Weapon HUD display": {
+      "name": "총기 HUD 표시",
+      "desc": "남은 탄과 총기 정보를 화면에 띄운다."
+    },
+    "Main Settings/Ammo Type HUD display": { "name": "탄종 표시", "desc": "장전된 탄 종류를 함께 보여 준다." },
+    "Main Settings/Fire Mode display": { "name": "발사 모드 표시", "desc": "단발·연발 상태를 보여 준다." },
+    "Main Settings/Weapon Name Always display": {
+      "name": "총기 이름 항상 표시",
+      "desc": "총기 이름을 늘 띄워 둔다. 끄면 필요할 때만 뜬다."
+    },
+    "Main Settings/Weapon ShortName": {
+      "name": "짧은 이름 사용",
+      "desc": "긴 정식 이름 대신 줄인 이름을 쓴다."
+    },
+    "Main Settings/Zero Warning Animation": {
+      "name": "탄 없음 깜빡임",
+      "desc": "탄이 떨어지면 숫자를 깜빡여 알린다."
+    },
+    "Main Settings/Weapon Name Inspect display": {
+      "name": "점검할 때 이름 표시",
+      "desc": "총을 살펴볼 때 이름을 띄운다."
+    },
+    "Main Settings/Weapon Name Auto display": {
+      "name": "총 바꿀 때 이름 표시",
+      "desc": "총을 꺼낼 때 이름을 잠깐 띄웠다 감춘다."
+    },
+    "Main Settings/Hide Game Ammo Panel": {
+      "name": "게임 기본 탄약 창 숨기기",
+      "desc": "타르코프가 원래 그리는 탄약 표시를 감춘다. 겹쳐 보일 때 켠다."
+    },
+
+    "Position Scale Settings/Anchored Position": { "name": "창 위치", "desc": "HUD 가 놓일 자리." },
+    "Position Scale Settings/Local Scale": { "name": "확대 배율", "desc": "HUD 전체를 키우거나 줄인다." },
+
+    "Warning Rate Settings/Max Ammo Within 10": {
+      "name": "10발 이하 탄창 경고 기준",
+      "desc": "최대 10발 이하인 탄창에서 이 수 아래로 남으면 경고한다."
+    },
+    "Warning Rate Settings/Max Ammo Within 100": {
+      "name": "100발 이하 탄창 경고 기준",
+      "desc": "최대 100발 이하인 탄창에서 이 수 아래로 남으면 경고한다."
+    }
+  }
+}

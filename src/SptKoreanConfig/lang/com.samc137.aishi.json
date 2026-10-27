@@ -1,0 +1,29 @@
+{
+  "guid": "com.samc137.aishi",
+  "name": "아이시 음악 헤드셋 (Aishi)",
+  "sections": {
+    "Music": "음악"
+  },
+  "settings": {
+    "Music/Pause or resume": {
+      "name": "멈춤·재생",
+      "desc": "음악을 멈추거나 다시 튼다. 착용한 아이시 음악 헤드셋 두 개만 소리를 낸다."
+    },
+    "Music/Open player": {
+      "name": "선곡 창 열기",
+      "desc": "창고나 메뉴를 열어 둔 채 선곡 창을 띄우고 감춘다. 헤드셋 살펴보기 창에서도 쓸 수 있다."
+    },
+    "Music/Volume": {
+      "name": "음악 크기",
+      "desc": "내 음악에만 적용되는 크기. 게임 소리와 헤드셋 소리는 그대로다."
+    },
+    "Music/Play next track": {
+      "name": "다음 곡 이어 재생",
+      "desc": "한 곡이 끝나면 설치된 다음 곡으로 넘어간다."
+    },
+    "Music/Shuffle playlist": {
+      "name": "목록 섞기",
+      "desc": "고른 목록을 섞어 틀되 남은 곡을 겹쳐 틀지 않는다. 선곡 창에서도 쓸 수 있다."
+    }
+  }
+}

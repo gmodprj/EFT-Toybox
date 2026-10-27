@@ -26,10 +26,10 @@
     "3. Appearance/Offset From Top": { "name": "위쪽 여백", "desc": "화면 위쪽 끝에서 띄울 거리(픽셀)." },
     "3. Appearance/Outline Strength": { "name": "외곽선 세기", "desc": "글자와 점 둘레의 어두운 테 진하기. 0이면 테를 두르지 않는다." },
 
-    "4. Colors/Number": { "name": "번호" },
-    "4. Colors/Title": { "name": "퀘스트 이름" },
-    "4. Colors/Trader": { "name": "상인 이름" },
-    "4. Colors/Objective": { "name": "남은 목표" },
-    "4. Colors/Objective Done": { "name": "완료한 목표" }
+    "4. Colors/Number": { "name": "번호", "desc": "퀘스트 번호에 쓸 색." },
+    "4. Colors/Title": { "name": "퀘스트 이름", "desc": "퀘스트 제목에 쓸 색." },
+    "4. Colors/Trader": { "name": "상인 이름", "desc": "제목 아래 상인 이름에 쓸 색." },
+    "4. Colors/Objective": { "name": "남은 목표", "desc": "아직 끝내지 않은 목표에 쓸 색." },
+    "4. Colors/Objective Done": { "name": "완료한 목표", "desc": "끝낸 목표에 쓸 색." }
   }
 }

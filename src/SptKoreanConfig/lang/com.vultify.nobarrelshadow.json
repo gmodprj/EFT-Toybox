@@ -378,6 +378,118 @@
     "3. Intensity Multipliers/WTT Armory (PMM 12 Laser Aiming Module) — Intensity": {
       "name": "WTT Armory (PMM 12 Laser Aiming Module) — 밝기",
       "desc": "WTT Armory (PMM 12 Laser Aiming Module) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/WTT ContentBackport (flashlight Surefire M600 Ultra Scout) — Range": {
+      "name": "WTT ContentBackport (flashlight Surefire M600 Ultra Scout) — 도달 거리",
+      "desc": "WTT ContentBackport (flashlight Surefire M600 Ultra Scout) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/WTT ContentBackport (tactical All L3harris Ngal ) — Range": {
+      "name": "WTT ContentBackport (tactical All L3harris Ngal ) — 도달 거리",
+      "desc": "WTT ContentBackport (tactical All L3harris Ngal ) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Aishi (SureFire M600 Ultra Scout Light (RAL 8000)) — Range": {
+      "name": "Aishi (SureFire M600 Ultra Scout Light (RAL 8000)) — 도달 거리",
+      "desc": "Aishi (SureFire M600 Ultra Scout Light (RAL 8000)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Aishi (L3Harris NGAL Tactical Device (Black)) — Range": {
+      "name": "Aishi (L3Harris NGAL Tactical Device (Black)) — 도달 거리",
+      "desc": "Aishi (L3Harris NGAL Tactical Device (Black)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Aishi (SureFire X400 Ultra Tactical Flashlight With Laser (Aishi)) — Range": {
+      "name": "Aishi (SureFire X400 Ultra Tactical Flashlight With Laser (Aishi)) — 도달 거리",
+      "desc": "Aishi (SureFire X400 Ultra Tactical Flashlight With Laser (Aishi)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Aishi (SureFire M600 Ultra Scout Light (Aishi)) — Range": {
+      "name": "Aishi (SureFire M600 Ultra Scout Light (Aishi)) — 도달 거리",
+      "desc": "Aishi (SureFire M600 Ultra Scout Light (Aishi)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Aishi (SureFire M600 Ultra Scout Light (Aishi)) (c31bbb) — Range": {
+      "name": "Aishi (SureFire M600 Ultra Scout Light (Aishi)) (c31bbb) — 도달 거리",
+      "desc": "Aishi (SureFire M600 Ultra Scout Light (Aishi)) (c31bbb) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/X300U — Range": {
+      "name": "X300U — 도달 거리",
+      "desc": "X300U 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/☆ M640-O — Range": {
+      "name": "☆ M640-O — 도달 거리",
+      "desc": "☆ M640-O 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/☆ M640-OF — Range": {
+      "name": "☆ M640-OF — 도달 거리",
+      "desc": "☆ M640-OF 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/☆ WMLX — Range": {
+      "name": "☆ WMLX — 도달 거리",
+      "desc": "☆ WMLX 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/☆ M640U — Range": {
+      "name": "☆ M640U — 도달 거리",
+      "desc": "☆ M640U 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/☆ FTX — Range": {
+      "name": "☆ FTX — 도달 거리",
+      "desc": "☆ FTX 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/LWRCI — Range": {
+      "name": "LWRCI — 도달 거리",
+      "desc": "LWRCI 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/WTT ContentBackport (flashlight Surefire M600 Ultra Scout) — Intensity": {
+      "name": "WTT ContentBackport (flashlight Surefire M600 Ultra Scout) — 밝기",
+      "desc": "WTT ContentBackport (flashlight Surefire M600 Ultra Scout) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/WTT ContentBackport (tactical All L3harris Ngal ) — Intensity": {
+      "name": "WTT ContentBackport (tactical All L3harris Ngal ) — 밝기",
+      "desc": "WTT ContentBackport (tactical All L3harris Ngal ) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Aishi (SureFire M600 Ultra Scout Light (RAL 8000)) — Intensity": {
+      "name": "Aishi (SureFire M600 Ultra Scout Light (RAL 8000)) — 밝기",
+      "desc": "Aishi (SureFire M600 Ultra Scout Light (RAL 8000)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Aishi (L3Harris NGAL Tactical Device (Black)) — Intensity": {
+      "name": "Aishi (L3Harris NGAL Tactical Device (Black)) — 밝기",
+      "desc": "Aishi (L3Harris NGAL Tactical Device (Black)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Aishi (SureFire X400 Ultra Tactical Flashlight With Laser (Aishi)) — Intensity": {
+      "name": "Aishi (SureFire X400 Ultra Tactical Flashlight With Laser (Aishi)) — 밝기",
+      "desc": "Aishi (SureFire X400 Ultra Tactical Flashlight With Laser (Aishi)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Aishi (SureFire M600 Ultra Scout Light (Aishi)) — Intensity": {
+      "name": "Aishi (SureFire M600 Ultra Scout Light (Aishi)) — 밝기",
+      "desc": "Aishi (SureFire M600 Ultra Scout Light (Aishi)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Aishi (SureFire M600 Ultra Scout Light (Aishi)) (c31bbb) — Intensity": {
+      "name": "Aishi (SureFire M600 Ultra Scout Light (Aishi)) (c31bbb) — 밝기",
+      "desc": "Aishi (SureFire M600 Ultra Scout Light (Aishi)) (c31bbb) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/X300U — Intensity": {
+      "name": "X300U — 밝기",
+      "desc": "X300U 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/☆ M640-O — Intensity": {
+      "name": "☆ M640-O — 밝기",
+      "desc": "☆ M640-O 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/☆ M640-OF — Intensity": {
+      "name": "☆ M640-OF — 밝기",
+      "desc": "☆ M640-OF 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/☆ WMLX — Intensity": {
+      "name": "☆ WMLX — 밝기",
+      "desc": "☆ WMLX 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/☆ M640U — Intensity": {
+      "name": "☆ M640U — 밝기",
+      "desc": "☆ M640U 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/☆ FTX — Intensity": {
+      "name": "☆ FTX — 밝기",
+      "desc": "☆ FTX 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/LWRCI — Intensity": {
+      "name": "LWRCI — 밝기",
+      "desc": "LWRCI 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
     }
   }
 }

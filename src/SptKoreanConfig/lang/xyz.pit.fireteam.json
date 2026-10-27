@@ -1,0 +1,264 @@
+{
+  "guid": "xyz.pit.fireteam",
+  "name": "AI 동료 분대 (PIT Fireteam)",
+  "comment": "이 모드는 대부분의 항목을 섹션 없이 등록한다. 그래서 열쇠가 '/이름' 꼴로 앞이 비어 있다.",
+  "sections": {
+    "": "",
+    "Miscellaneous": "그 밖"
+  },
+  "settings": {
+    "/00 GameplayMode": {
+      "name": "00 운영 방식",
+      "desc": "동료를 어떤 규칙으로 얻고 다루는지 정하는 전체 모드."
+    },
+    "/01 ScanDistance": {
+      "name": "01 적 지목 거리",
+      "desc": "'접촉' 신호를 보낼 때 집어낼 수 있는 보이는 적까지의 최대 거리."
+    },
+    "/02 PatrolRadius": {
+      "name": "02 정찰 반경",
+      "desc": "동료가 내 주위를 돌아다니는 최대 거리."
+    },
+    "/02 FollowDistance": {
+      "name": "02 따라오는 간격",
+      "desc": "따라올 때 동료가 나와 유지하는 거리."
+    },
+    "/03 EnemyRemember": {
+      "name": "03 적 기억 시간",
+      "desc": "접촉한 적을 기억하는 시간(초). 현실적 추적에서는 수색이 끝나지 않은 동안 최대 400초까지 늘어난다. 레이드 시작 때 적용된다."
+    },
+    "/03 EnemyTracking": {
+      "name": "03 적 추적 방식",
+      "desc": "단순은 마지막으로 본 때와 무관하게 적의 현재 위치를 쫓는다. 현실적은 보거나 들어 보고된 위치, 또는 마지막으로 알려진 위치만 쓴다."
+    },
+    "/04 FriendlyEncounterChance": {
+      "name": "04 우호적 조우 확률",
+      "desc": "레이드에서 우호적인 상대를 만날 기본 확률. 용병 모드에서는 같은 편 PMC 에만 적용되고, 우호 PMC 진영이나 무적 모드가 켜져 있으면 효과가 없다. 연합 모드에서는 내 편이 이 확률, 반대편은 절반이며 스캐브는 펜스 평판에 따라 오르내린다."
+    },
+    "/04 FriendlyScavEncounters": {
+      "name": "04 우호적 스캐브 조우",
+      "desc": "연합 모드에서만, 반대 진영과 같은 규칙으로 우호적 스캐브를 만날 수 있게 한다."
+    },
+    "/04 HealthMultiplier": {
+      "name": "04 동료 체력 배율",
+      "desc": "함께 들어가는 동료의 체력 배율. 신체 부위마다 따로 적용된다."
+    },
+    "/05 StatusSound": {
+      "name": "05 적 표식 소리 크기",
+      "desc": "교전 중 적 위치 표식이 뜰 때 나는 핑 소리의 크기."
+    },
+    "/06 EnemyMarker": {
+      "name": "06 적 위치 표식",
+      "desc": "상황 보고와 자동 교전 표시에 쓰는 적 위치 표식을 켠다. 끄면 표식 소리도 함께 꺼진다."
+    },
+    "/06 AutoDisplayCombatStatus": {
+      "name": "06 교전 중 자동 표시",
+      "desc": "동료가 교전 중인 동안 적 표식을 계속 띄운다. 보이지 않는 적은 5초마다, 보이는 적은 실시간으로 갱신된다."
+    },
+    "/06 AutoDisplayKillMarker": {
+      "name": "06 사살 표식 자동 표시",
+      "desc": "나나 동료가 추적 중인 적을 죽이면 해골 표식을 자동으로 띄운다. 끄면 상황 보고로만 볼 수 있다."
+    },
+    "/06 EnemyKilledDisplayTime": {
+      "name": "06 사살 표식 표시 시간",
+      "desc": "해골 표식을 띄워 두는 시간(초). 아래의 사살 기억 시간보다 길게는 뜨지 않는다."
+    },
+    "/06 EnemyKilledRetainTime": {
+      "name": "06 사살 기억 시간",
+      "desc": "죽인 적의 위치를 기억하는 시간(초). 해골 표식이 남을 수 있는 최대 시간이기도 하다. 0 이면 사살 표식을 쓰지 않는다."
+    },
+    "/07 Pickup": {
+      "name": "07 현장 영입",
+      "desc": "레이드 중에 같은 편 봇을 동료로 끌어들일 수 있게 한다."
+    },
+    "/08 TieredPickup": {
+      "name": "08 레벨 차 규칙 적용",
+      "desc": "봇이 영입 요청을 받아들일지 정할 때 나와 봇의 레벨 차를 따진다."
+    },
+    "/09 MaximumPickup": {
+      "name": "09 현장 영입 최대 인원",
+      "desc": "레이드 한 번에 끌어들일 수 있는 분대 밖 같은 편 봇의 최대 수."
+    },
+    "/10 RecruitPickup": {
+      "name": "10 영입 동료의 친구 요청",
+      "desc": "함께 무사히 탈출한 현장 영입 동료가 친구 요청을 보내게 한다. 레벨 차 규칙을 따른다."
+    },
+    "/10 TeamEscape": {
+      "name": "10 사망 후 동료 탈출",
+      "desc": "내가 죽은 뒤 살아남은 동료가 탈출을 시도하게 한다. 탈출한 동료는 잃었을 전리품과 장비 일부를 가져온다."
+    },
+    "/10 TeamEscapeUseAnyExtract": {
+      "name": "10 아무 탈출구나 사용",
+      "desc": "동료 탈출 계산에서 맵의 쓸 수 있는 탈출구를 모두 후보로 둔다. 끄면 내게 배정된 탈출구만 쓴다."
+    },
+    "/10 LootMinimumPrice": {
+      "name": "10 수거 최소 가격",
+      "desc": "시체나 상자에서 집어 올 물건의 최소 루블 값. 0 이면 하한을 두지 않는다."
+    },
+    "/10 LootMaximumPrice": {
+      "name": "10 수거 최대 가격",
+      "desc": "시체나 상자에서 집어 올 물건의 최대 루블 값. 0 이면 상한을 두지 않는다."
+    },
+    "/10 LootFilterFood": {
+      "name": "10 음식·음료 수거",
+      "desc": "시체와 상자에서 먹을 것과 마실 것을 집어 오게 한다."
+    },
+    "/10 LootFilterMeds": {
+      "name": "10 의료품 수거",
+      "desc": "의료품·약·주사기·구급킷을 집어 오게 한다."
+    },
+    "/10 LootFilterValuables": {
+      "name": "10 귀중품·잡화 수거",
+      "desc": "교환품·열쇠·특수품·정보품·현금 등 장비가 아닌 것을 집어 오게 한다."
+    },
+    "/10 LootFilterGear": {
+      "name": "10 방어 장비 수거",
+      "desc": "헬멧·방탄복·방탄조끼·전술조끼를 집어 오게 한다."
+    },
+    "/10 LootFilterWeapons": {
+      "name": "10 총기·탄약 수거",
+      "desc": "총기·탄약·탄창·부품·수류탄을 집어 오게 한다."
+    },
+    "/11 NpcSendMessage": {
+      "name": "11 레이드 뒤 쪽지",
+      "desc": "모두 살아 나왔는지, 영입한 동료를 살려 왔는지 같은 조건에 따라 동료가 레이드 뒤 쪽지를 보낸다. 물건 반환 쪽지는 빠진다."
+    },
+    "/12 PitFireTeam": {
+      "name": "12 같은 편 PMC 항상 우호",
+      "desc": "같은 진영 PMC 봇끼리 늘 우호적으로 둔다. 끄면 게임의 원래 적대 판정에 맡긴다."
+    },
+    "/13 BadGuy": {
+      "name": "13 모든 PMC 적대",
+      "desc": "진영을 가리지 않고 모든 PMC 봇을 적으로 돌린다."
+    },
+    "/13 FactionHostilities": {
+      "name": "13 진영 적대 보정",
+      "desc": "진영 간 적대 관계가 간혹 작동하지 않는 것을 바로잡는 패치를 켠다."
+    },
+    "/14 EnglishBear": {
+      "name": "14 BEAR 영어만 쓰기",
+      "desc": "BEAR 봇이 러시아어 대신 영어만 말하게 한다."
+    },
+    "/14 PmcArmbands": {
+      "name": "14 PMC 완장 착용",
+      "desc": "PMC 봇에 완장을 달아 준다(BEAR 빨강, USEC 파랑)."
+    },
+    "/14 LoadoutManagement": {
+      "name": "14 동료 장비 관리 방식",
+      "desc": "동료의 장비를 어떻게 고르고, 쓰고, 남겨 둘지 정한다."
+    },
+    "/15 BotGrenades": {
+      "name": "15 동료 수류탄 사용",
+      "desc": "동료가 수류탄을 쓰게 한다."
+    },
+    "/15 RegroupRadius": {
+      "name": "15 재집결 반경",
+      "desc": "교전 중 동료가 내 쪽으로 저절로 모이는 거리. 저격 동료는 이 값의 1.5배쯤을 쓴다."
+    },
+    "/16 PingSquad": {
+      "name": "16 상황 보고 단축키",
+      "desc": "'상황 보고' 빠른 명령에 쓸 대체 단축키."
+    },
+    "/17 PingRadioVolume": {
+      "name": "17 무전 소리 크기",
+      "desc": "상황 보고를 부를 때 나는 무전 소리의 크기."
+    },
+    "/18 PingTime": {
+      "name": "18 상황 보고 표시 시간",
+      "desc": "동료 상태를 보여 주는 시간(초)."
+    },
+    "/18 StatusReportHighlight": {
+      "name": "18 동료 외곽선 강조",
+      "desc": "상황 보고 중 살아 있는 동료를 외곽선으로 표시한다. 성능이 떨어지면 끈다."
+    },
+    "/18 StatusReportHighlightColor": {
+      "name": "18 강조 색",
+      "desc": "상황 보고 글자와 동료 외곽선 색. 16진수 RGB(#00FF00) 로 적는다."
+    },
+    "/18 StatusReportHealthColoring": {
+      "name": "18 체력에 따라 색 바꾸기",
+      "desc": "동료 체력 상태에 따라 강조 색을 달리한다."
+    },
+    "/18 StatusReportFullHealthColor": {
+      "name": "18 체력 충분 색",
+      "desc": "체력이 가득한 동료의 강조 색. 16진수 RGB(#00FF00)."
+    },
+    "/18 StatusReportMediumHealthColor": {
+      "name": "18 체력 보통 색",
+      "desc": "체력이 중간인 동료의 강조 색. 16진수 RGB(#FFFF00)."
+    },
+    "/18 StatusReportLowHealthColor": {
+      "name": "18 체력 위험 색",
+      "desc": "체력이 적은 동료의 강조 색. 16진수 RGB(#FF0000)."
+    },
+    "/18 StatusReportAlwaysHighlight": {
+      "name": "18 강조 항상 켜기",
+      "desc": "상황 보고와 무관하게 동료 강조를 늘 켜 둔다."
+    },
+    "/18 StatusReportShowName": {
+      "name": "18 이름 보이기",
+      "desc": "상황 보고에 동료 이름을 넣는다."
+    },
+    "/18 StatusReportShowDistance": {
+      "name": "18 거리 보이기",
+      "desc": "상황 보고에 동료까지 거리를 넣는다."
+    },
+    "/18 StatusReportShowHealth": {
+      "name": "18 체력 보이기",
+      "desc": "상황 보고에 동료의 현재·최대 체력을 넣는다."
+    },
+    "/18 StatusReportShowTactic": {
+      "name": "18 전술 보이기",
+      "desc": "상황 보고에 동료가 지금 쓰는 전술을 넣는다."
+    },
+    "/18 StatusReportShowCombatStatus": {
+      "name": "18 교전 상태 보이기",
+      "desc": "치료 중인지, 치료하고 싶은지, 교전 중인지, 적을 찾았는지를 상황 보고에 넣는다."
+    },
+    "/19 EnemyContact": {
+      "name": "19 적 접촉 단축키",
+      "desc": "'접촉' 빠른 명령에 쓸 대체 단축키."
+    },
+    "/20 OverThere": {
+      "name": "20 저쪽 지시 단축키",
+      "desc": "'저쪽' 손짓에 쓸 대체 단축키."
+    },
+    "/21 BotTeleport": {
+      "name": "21 동료 불러오기 단축키",
+      "desc": "동료 전원을 내 자리로 옮긴다."
+    },
+    "/22 BotHeal": {
+      "name": "22 동료 치료 단축키",
+      "desc": "동료 전원을 치료하고 망가진 팔다리를 되살린다."
+    },
+    "/23 BotPrefetch": {
+      "name": "23 동료 자료 미리 읽기",
+      "desc": "동료 자료를 미리 읽어 생성 시간을 줄인다. 동료가 제대로 생성되지 않으면 끄고 다시 해 본다. 끄면 생성이 느려진다."
+    },
+    "/24 BotTalk": {
+      "name": "24 동료 잡담 빈도",
+      "desc": "교전 중 동료가 떠드는 빈도. 0 이면 떠들지 않는다."
+    },
+    "/25 SpawnPoint": {
+      "name": "25 협동 생성 지점 사용",
+      "desc": "동료와 함께 들어갈 때 협동용 생성 지점을 쓴다."
+    },
+    "/26 GoToDistance": {
+      "name": "26 이동 지시 최대 거리",
+      "desc": "'저기' 나 '전진' 을 지시했을 때 동료가 움직이는 최대 거리."
+    },
+    "/HideUnSupportedCommands": {
+      "name": "쓸 수 없는 명령 감추기",
+      "desc": "게임 손짓 메뉴에 실제로 등록되지 않은 문구를 목록에서 뺀다."
+    },
+
+    "Miscellaneous/27 BattleRecorder": {
+      "name": "27 교전 기록 남기기",
+      "desc": "동료의 교전 과정을 JSONL 파일로 자세히 적는다. 레이드를 분석할 때 쓴다."
+    },
+    "Miscellaneous/28 BattleRecorderSnapshotIntervalMs": {
+      "name": "28 교전 기록 간격(ms)",
+      "desc": "교전 기록이 동료 위치를 찍는 주기(밀리초)."
+    }
+  }
+}

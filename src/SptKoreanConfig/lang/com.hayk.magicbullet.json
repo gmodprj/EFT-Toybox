@@ -1,0 +1,25 @@
+{
+  "guid": "com.hayk.magicbullet",
+  "name": "피해 배율 (MagicBullet · 치트)",
+  "sections": {
+    "MagicBullet": "피해 배율"
+  },
+  "settings": {
+    "MagicBullet/Enable": {
+      "name": "사용",
+      "desc": "내가 주는 탄환·근접 피해에만 아래 설정을 적용한다."
+    },
+    "MagicBullet/Bullet damage multiplier": {
+      "name": "탄환 피해 배율",
+      "desc": "방어구를 뚫고 남은 체력 피해를 배로 늘린다(x1~x100). 한 방 사살이 켜져 있으면 무시된다."
+    },
+    "MagicBullet/Melee damage multiplier": {
+      "name": "근접 피해 배율",
+      "desc": "방어구를 뚫고 남은 체력 피해를 배로 늘린다(x1~x100). 한 방 사살이 켜져 있으면 무시된다. 서버에서 MeleeMultiplier 가 이미 배율을 걸고 있으면 층이 달라 곱해지니 x1 로 두는 편이 낫다."
+    },
+    "MagicBullet/One hit kill": {
+      "name": "한 방 사살",
+      "desc": "내가 맞히면 탄이든 근접이든 무조건 죽는다. 방어구가 피해를 다 막았어도 죽는다. 위의 배율을 덮어쓴다."
+    }
+  }
+}

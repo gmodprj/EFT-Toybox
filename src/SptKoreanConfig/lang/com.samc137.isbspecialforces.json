@@ -1,0 +1,18 @@
+{
+  "guid": "com.samc137.isbspecialforces",
+  "name": "ISB 특수부대 (ISB Special Forces)",
+  "sections": {
+    "Logging": "기록",
+    "Performance": "성능"
+  },
+  "settings": {
+    "Logging/Diagnostic Logs": {
+      "name": "진단 기록",
+      "desc": "이 모드의 정보·디버그 기록을 켠다. 경고와 오류는 끄더라도 계속 남는다."
+    },
+    "Performance/Incremental Memory Budget": {
+      "name": "점진 메모리 정리",
+      "desc": "실험 기능이다. 레이드 기준보다 768MB 늘어난 뒤부터 0.5ms 씩 나눠 메모리를 정리한다. 다만 엔진이 이 예산을 넘겨 프레임이 튈 수 있어 기본으로 꺼져 있다."
+    }
+  }
+}
