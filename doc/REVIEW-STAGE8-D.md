@@ -106,7 +106,44 @@ x1 로 두고 총탄 쪽만 쓰거나, 2763 의 배율을 먼저 낮추는 편�
 
 - **둘 다 받지 않았다.** Forge 의 설명과 설치본 설정만 비교했다. 8-B 때처럼 DLL 을 열어
   보지 않았으므로, 실제로 어떤 후킹을 하는지는 확인하지 않았다
-- 3169 의 F12 설정 항목이 실제로 무엇이 있는지는 모른다. 기능별로 끌 수 있다는 것은
-  **추정이지 확인이 아니다**
+- ~~3169 의 F12 설정 항목이 실제로 무엇이 있는지는 모른다~~ → **확인했다. 아래 참조**
 - 3065 의 근접 배율이 2763 과 곱해진다는 것은 두 모드가 건드리는 층이 다르다는 데서 나온
   판단이다. 실제 수치는 쏴 봐야 안다
+
+---
+
+## 설치 후 확정 (2026-10-27)
+
+게임을 한 번 켜자 `BepInEx/config/com.rz99.combat-augmentation-system.cfg` 가 생겼다(18 KB,
+항목 49개). 앞서 "추정"으로 남긴 것을 이걸로 확정한다.
+
+**기능별 on/off 토글은 없다.** 섹션은 기능별로 나뉘어 있지만 전부 수치 설정이고, `Enable`
+같은 켜고 끄는 항목이 Scan·Shield·Overdrive 어디에도 없다.
+
+| 섹션 | 항목 수 |
+| --- | --- |
+| `4. Scan \| 扫描` | 20 |
+| `6. Overdrive \| 超频` | 11 |
+| `5. Shield \| 立场盾` | 8 |
+| `3. Resources \| 资源` | 6 |
+| `2. Wheel & Input \| 轮盘与输入` | 3 |
+| `1. General \| 通用` | 1 |
+
+참/거짓 항목은 다섯뿐이다 — `Debug Logging`, `Swallow CapsLock Toggle`, `Energy Cost`,
+`Show Distance`(스캔), `Block Explosions`(실드).
+
+**대신 기능은 레이드에서 스킬 휠로 골라 쓴다.** `Skill Key | 技能键 = V`, 길게 누르는 기준은
+`Wheel Hold Threshold (ms) = 180`. 즉 끄는 설정이 없어도 **안 쓰면 그만**이다.
+
+굳이 스캔을 무력화하려면 수치로 눌러야 한다.
+
+- `Max Visible Distance (m) = 600` → 낮춘다
+- `Max Occluded Distance (m) = 50` → 벽 너머 탐지 거리
+- `Min Energy to Activate = 5`, `Energy Drain (per s) = 0.5` → 올린다
+- `Off Cooldown (s) = 15`
+
+기본값 중 눈에 띄는 것: 실드 `Durability = 2000`, `Armor Class = 2`, 오버드라이브
+`Health Regen (per s) = 6`, `Damage Reduction (%) = 20`, `Stamina Capacity Bonus = 15`.
+자원은 물·에너지를 쓴다(`Water Threshold = 10`, `Boost Water Drain (per s) = 2`).
+
+언어는 영어·중국어 병기다. 한국어는 없다.
