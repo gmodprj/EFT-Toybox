@@ -125,7 +125,7 @@ BarterItemsStacks 는 지정한 460건 중 452건이 반영됐다(어긋난 8건
 
 | 건수 | 내용 | 판단 |
 | --- | --- | --- |
-| **48** | `Could not add <id> to cache, it does not exist in the item database!` + 같은 id 의 경고 48건 | **고칠 것.** 아래 참조 |
+| **48** | `Could not add <id> to cache, it does not exist in the item database!` + 같은 id 의 경고 48건 | **원인 미해결.** 아래 참조 — Olympus 를 고쳐도 그대로였다 |
 | 1 | `Unable to add bundle: ...barrel_vpo215_600mm_366tkm.bundle` | 번들 1개 누락 |
 | 3 | `[SVM] Remove backpack restrictions - empty filters` | 모드가 "오류 아니다"라고 직접 적어 둔 것 |
 | 1 | `트레이더 67d3a28a... 찾을 수 없음` → 기본 새로 고침 3600 으로 대체 | Moe-TradeMarker 의 택배 상인 |
@@ -135,7 +135,26 @@ BarterItemsStacks 는 지정한 460건 중 452건이 반영됐다(어긋난 8건
 | 1 | `No valid item configs found in ...Eukyre-BetterOKP7\db\CustomItems` | 빈 폴더 |
 | 1 | `TraderGenPocketMigration` 프로필 마이그레이션 실행됨 | 정상 처리 |
 
-### 48건의 정체 — Olympus 가 모드 총기에 없는 탄창을 끼운다
+### 48건의 정체 — **Olympus 때문이 아니었다** (2026-10-28 정정)
+
+> 아래는 처음에 세운 진단이고, **인과는 틀렸다.** 2026-10-28 에 Olympus 쪽 없는 탄창을 실제로
+> 빼고 서버를 다시 띄웠더니 **오류는 48건 그대로**였다. 없는 id 목록도 이전과 한 글자도 다르지
+> 않았다. 패치 뒤 DB 를 다시 읽어 보면 48개를 참조하는 칸·탄창·격자 필터가 **0건**인데도
+> 오류가 그대로 난다 — 즉 플레아 캐시가 그 id 를 **아이템 DB 가 아닌 다른 곳에서** 가져온다.
+>
+> 오류를 내는 주체는 `SPTarkov.Server.Core.Services.Items.ItemBaseClassService` 이고, 바로 앞
+> 줄이 `플리마켓 상품 생성 중` 이다. 그 앞에서 UltimateFlea 가 8503개로 경제를 초기화하고
+> The Blacklist 가 1307개를 손본다. 둘 중 하나가 없는 id 를 목록에 넣는 것으로 의심되지만
+> **아직 가리지 못했다.** 48개 id 는 디스크 어디에도 없다(모드 파일·`SPT_Data`·프로필·캐시
+> 전부 확인) — 실행 중에 만들어지는 것이다.
+>
+> 과거 로그로 보면 7-E(모드 95개)에서 **4건**이던 것이 8-B(105개)에서 **48건**으로 뛰고 그 뒤
+> 줄곧 48건이다. 7-E 의 4건은 id 가 아예 달라 다른 문제다.
+>
+> **Olympus 쪽 패치 자체는 의미가 있었다** — 없는 탄창을 가리키던 참조가 사라졌다. 다만
+> 서버 오류는 그것 때문이 아니었다. 아래 내용은 "없는 참조가 있었다"는 사실 기록으로만 읽는다.
+
+### 처음 진단: Olympus 가 모드 총기에 없는 탄창을 끼운다
 
 없는 아이템 id 48개를 되짚었더니 **41개가 `MountOlympus/Modifiers/firearmMags.json` 의 탄창
 값**이었다(총기 열쇠는 아니다). 나머지 7개는 뒤에 따로 적는다.
@@ -212,7 +231,8 @@ id 가 어긋난다). 그래서 **빼는 것이 맞다.** 빼면 오류 48 → 7
 
 | 할 일 | 내용 |
 | --- | --- |
-| 0 | **Olympus `firearmMags.json` 에서 없는 탄창 41개를 뺀다.** 서버 오류 48건 중 41건이 이것이다. 모드 총기 쪽만 해당하고, 그 총기들은 자기 탄창을 이미 갖고 있다. 다른 모드를 깔아 메울 길은 없다(위 절 참조). 8차 때와 같은 방법·같은 백업 자리 |
+| 0 | ~~Olympus `firearmMags.json` 에서 없는 탄창 41개를 뺀다~~ → **2026-10-28 완료.** 209 → 166 총기, 참조 384 → 321. 없는 참조는 0 이 됐다. 다만 **서버 오류 48건은 줄지 않았다** — 원인이 Olympus 가 아니었다. 경위는 [mod-patches/505-olympus-firearmMags-mags.md](mod-patches/505-olympus-firearmMags-mags.md) |
+| 0-2 | **48건의 진짜 원인을 가린다.** 남은 후보는 UltimateFlea 와 The Blacklist 다. 한 번에 하나씩 빼고 서버를 띄워 보는 수밖에 없다(부팅 2분) |
 | 1 | **CobrasAmmoStack 을 뺀다.** 지금 아무 일도 하지 않는다. 500 발 스택을 쓰고 싶다면 반대로 SVM 의 `Items.AmmoStacks` 를 비우고 Cobra 에 맡긴다 — 둘 다 켜 두는 것만은 피한다 |
 | 2 | **SVM 화폐 네 줄을 BarterItemsStacks 값과 맞추거나 포기한다.** 지금은 SVM 설정창에서 고쳐도 게임에 아무 변화가 없다 |
 | 3 | TheBlacklist 의 부작용을 받아들일지 정한다. 모드 전용 아이템을 숨기고 싶으면 `excludedCategories` 를 쓴다 |
