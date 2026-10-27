@@ -65,5 +65,18 @@ $t -split "`n" | Where-Object { $_ -match 'ModLoader|WTT|CommonLib|Armory|Artem|
 $e = Get-Content $err -Raw -ErrorAction SilentlyContinue; if ($e) { "=== stderr"; $e.Substring(0, [math]::Min(3000, $e.Length)) }
 
 # 3) 서버 실행 중 새로 생긴 파일 (되돌리기 목록에 추가)
+# 이 모드가 깐 폴더(루트) 목록. 다른 모드가 서버 시작 때 다시 만든 파일을 이 모드 것으로
+# 적으면 기록이 겹친다(SIM 의 current.snapshot.json 이 실제로 그랬다).
+$roots = $pairs | ForEach-Object {
+  if ($_.Rel -match '^(SPT_Runtime\\user\\mods\\[^\\]+|BepInEx\\plugins\\[^\\]+)\\') { $Matches[1] }
+} | Sort-Object -Unique
 $new = Get-ChildItem -LiteralPath 'E:\Spt\SPT_Runtime\user\mods' -Recurse -File | Where-Object { $_.CreationTime -gt $before }
-foreach ($n in $new) { "$($d.Name)`t$($n.FullName.Substring('E:\Spt\'.Length))" | Add-Content -Encoding utf8 $rec; "NEWFILE $($n.FullName)" }
+foreach ($n in $new) {
+  $rel = $n.FullName.Substring('E:\Spt\'.Length)
+  if ($roots | Where-Object { $rel.StartsWith("$_\") }) {
+    "$($d.Name)`t$rel" | Add-Content -Encoding utf8 $rec
+    "NEWFILE $($n.FullName)"
+  } else {
+    "OTHERMOD $rel (다른 모드가 만든 파일 — 기록하지 않음)"
+  }
+}

@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **174개**, 설치 파일 **3351개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 120개 (2026-10-27 12:21 PIT Fireteam 정상 동작 확인 레이드 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 104개 (2026-10-27 SIM 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8C-2906.out.txt`). 8-C 는 Olympus·SIM 2개를 넣고 Death Shadow Tweaks 2943 은 중복이라 제외했다
+- 설치된 모드: **175개**, 설치 파일 **3364개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 120개 (2026-10-27 12:21 PIT Fireteam 정상 동작 확인 레이드 `LogOutput.log`, 오류는 Fika 미설치 관련 1건뿐) / 서버 모드 로드: 105개 (2026-10-27 Recoil Rework 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8B-2190.out.txt`). 8-C 는 Olympus·SIM 2개(2943 은 중복이라 제외), 8-B 는 2190 만(2394·3186 은 제외 — `COMPARE-STAGE8-B.md`)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -219,7 +219,7 @@
 | [MeleeMultiplier](https://sp-mod.com/mod/2763) | 0.0.4 | 서버 | - | 2 | `stage8A-2763` |
 | [The Blacklist - flea market enhancements](https://sp-mod.com/mod/755) | 3.1.1 | 서버 | - | 5 | `stage8A-755` |
 | [Fujiwara Mokou (Touhou)](https://sp-mod.com/mod/1796) | 1.2.0 | 서버 | - | 8 | `stage8A-1796` |
-| [Recoil Rework (Legacy)](https://sp-mod.com/mod/2190) | 2.0.0 | - | - | 0 | **미설치** |
+| [Recoil Rework (Legacy)](https://sp-mod.com/mod/2190) | 2.0.0 | 게임+서버 | - | 13 | `stage8B-2190` |
 | [Instant Insurance](https://sp-mod.com/mod/2394) | 1.1.2 | - | - | 0 | **미설치** |
 | [Shorter Magazines](https://sp-mod.com/mod/3186) | 1.1.0 | - | **결속** | 0 | **미설치** |
 | [Death Shadow Tweaks](https://sp-mod.com/mod/2943) | 1.0.0 | - | **결속** | 0 | **미설치** |
