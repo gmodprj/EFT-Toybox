@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **178개**, 설치 파일 **3561개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 123개 (2026-10-27 15:39 `LogOutput.log` — Recoil Rework·Make Shotguns Great Again·MagicBullet 로드 확인, 오류는 Fika 미설치 관련 1건뿐. Tushonka-800 은 설치 후 아직 게임을 켜지 않았다) / 서버 모드 로드: 106개 (2026-10-27 Tushonka-800 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8D-3169.out.txt`. 8-D 두 모드 모두 게임 쪽 플러그인이라 서버 모드 수는 그대로). 8-C 는 Olympus·SIM 2개(2943 은 중복이라 제외), 8-B 는 2190 만(2394·3186 은 제외 — `COMPARE-STAGE8-B.md`)
+- 설치된 모드: **179개**, 설치 파일 **3591개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 123개 (2026-10-27 15:39 `LogOutput.log` — Recoil Rework·Make Shotguns Great Again·MagicBullet 로드 확인, 오류는 Fika 미설치 관련 1건뿐. Tushonka-800 과 8-G GamePanelHUD 포팅본은 설치 후 아직 게임을 켜지 않았다) / 서버 모드 로드: 106개 (2026-10-27 8-G GamePanelHUD 포팅본 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8G-gamepanelhud.out.txt`. 8-D·8-G 는 모두 게임 쪽 플러그인이라 서버 모드 수는 그대로). 8-C 는 Olympus·SIM 2개(2943 은 중복이라 제외), 8-B 는 2190 만(2394·3186 은 제외 — `COMPARE-STAGE8-B.md`)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -231,6 +231,7 @@
 | [Miyako Carry Service](https://sp-mod.com/mod/2709) | 1.1.4 | - | - | 0 | **미설치** |
 | [PIT Fireteam](https://sp-mod.com/mod/2676) | 1.0.0 | 게임+서버 | - | 26 | `stage8E-2676` |
 | [Make Shotguns Great Again!](https://sp-mod.com/mod/1453) | 1.19.1 | 게임+서버 | **결속** | 195 | `stage8F-1453` |
+| [Game Panel HUD (SPT 4.1.6 포팅본, KmyTarkovApi 2.0.0 포함)](https://arca.live/b/tarkovspt/185302366) | 4.1.6-port | 게임 | - | 30 | `stage8G-gamepanelhud` |
 
 ## 다른 경로로 설치된 것
 

@@ -42,7 +42,7 @@ const side = (files) => {
 };
 const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)', 8: '8차 — OP·AI 동료·HUD 포팅본 (8-A 5 + 8-B 3 + 8-C 3 + 8-D 치트 2 + 8-E AI 동료 3 + 8-F 대형 1)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 123개 (2026-10-27 15:39 `LogOutput.log` — Recoil Rework·Make Shotguns Great Again·MagicBullet 로드 확인, 오류는 Fika 미설치 관련 1건뿐. Tushonka-800 은 설치 후 아직 게임을 켜지 않았다) / 서버 모드 로드: 106개 (2026-10-27 Tushonka-800 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8D-3169.out.txt`. 8-D 두 모드 모두 게임 쪽 플러그인이라 서버 모드 수는 그대로). 8-C 는 Olympus·SIM 2개(2943 은 중복이라 제외), 8-B 는 2190 만(2394·3186 은 제외 — `COMPARE-STAGE8-B.md`)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 123개 (2026-10-27 15:39 `LogOutput.log` — Recoil Rework·Make Shotguns Great Again·MagicBullet 로드 확인, 오류는 Fika 미설치 관련 1건뿐. Tushonka-800 과 8-G GamePanelHUD 포팅본은 설치 후 아직 게임을 켜지 않았다) / 서버 모드 로드: 106개 (2026-10-27 8-G GamePanelHUD 포팅본 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8G-gamepanelhud.out.txt`. 8-D·8-G 는 모두 게임 쪽 플러그인이라 서버 모드 수는 그대로). 8-C 는 Olympus·SIM 2개(2943 은 중복이라 제외), 8-B 는 2190 만(2394·3186 은 제외 — `COMPARE-STAGE8-B.md`)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];

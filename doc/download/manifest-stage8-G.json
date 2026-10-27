@@ -1,0 +1,18 @@
+{
+  "stage": "stage8-G",
+  "spt": "4.1.6",
+  "note": "Forge 밖. arca.live SPT 채널의 4.1.6 포팅본. 원본(456)과 선행 KmyTarkovApi(898) 모두 Forge 에 4.1.x 대응이 없어, 둘을 새로 빌드해 함께 배포한 판이다. 출처·해시·라이선스 검토는 doc/external-mods/stage8-G-GamePanelHUD-port.md.",
+  "mods": [
+    {
+      "group": "8G",
+      "id": "gh-gamepanelhud-port",
+      "name": "Game Panel HUD (SPT 4.1.6 포팅본, KmyTarkovApi 2.0.0 포함)",
+      "version": "4.1.6-port",
+      "size": 275287,
+      "sha256": "07d8b2b0214efd45296b62077642628263e5d6eaa00203333325db81b28a0bc7",
+      "profileBinding": false,
+      "homepage": "https://arca.live/b/tarkovspt/185302366",
+      "link": "https://kio.ac/c/d5X6ebTrgAUQLZkqMLikeb (Kiosk 파일 공유, 스크립트로 받을 수 없음 — 사용자가 직접 내려받음)"
+    }
+  ]
+}
