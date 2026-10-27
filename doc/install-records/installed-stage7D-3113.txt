@@ -1,0 +1,9 @@
+3113__IncendiaryGrenade	BepInEx\plugins\IncendiaryGrenade\IncendiaryGrenade.dll
+3113__IncendiaryGrenade	SPT_Runtime\user\mods\IncendiaryGrenade\bundles.json
+3113__IncendiaryGrenade	SPT_Runtime\user\mods\IncendiaryGrenade\IncendiaryGrenade.dll
+3113__IncendiaryGrenade	SPT_Runtime\user\mods\IncendiaryGrenade\bundles\assets\content\weapons\saga6\incendiary_audio.bundle
+3113__IncendiaryGrenade	SPT_Runtime\user\mods\IncendiaryGrenade\bundles\assets\content\weapons\saga6\incendiary_fx.bundle
+3113__IncendiaryGrenade	SPT_Runtime\user\mods\IncendiaryGrenade\bundles\assets\content\weapons\saga6\weapon_grenade_saga6_container.bundle
+3113__IncendiaryGrenade	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Images\quest.png
+3113__IncendiaryGrenade	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Locales\en.json
+3113__IncendiaryGrenade	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Quests\quest_definitions.json

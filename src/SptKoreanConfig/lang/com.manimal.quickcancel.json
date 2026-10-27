@@ -1,0 +1,13 @@
+{
+  "guid": "com.manimal.quickcancel",
+  "name": "사용 빠른 취소 (Manimal's Quick Cancel)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Enabled": {
+      "name": "모드 사용",
+      "desc": "게임의 빠른 재장전 명령(기본은 R 두 번 누르기)으로 쓰는 중인 소모품을 내려놓고 곧바로 취소할 수 있게 한다."
+    }
+  }
+}

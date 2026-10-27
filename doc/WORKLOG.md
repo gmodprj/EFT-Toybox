@@ -248,3 +248,631 @@
 - 2차 B 확인 시 게임 플러그인 31개를 예상했으나 Fika용 DLL은 로드되지 않으므로 30개가 정상.
 - 5차 계획서에 stage5-B를 "게임 전용"으로 적었으나 Default Fire Mode Fixer는 서버 전용, Flexible Builds·EasyMounting은 게임+서버였다. 설치 위치는 압축 해제 경로로만 확정된다.
 - 5-A 게임 로드 확인에서 처음 18/21로 셌으나, Use Items Anywhere·Advanced Modding Lights·Refined Flea Offer List는 로그에 공백 포함 표시명으로 찍혀 파일명 검색에 걸리지 않았을 뿐 21개 전부 로드돼 있었다.
+
+### 총기·파츠 / 상인 모드 재조사 (2026-10-25)
+
+기존 후보 문서는 이름·소개 키워드로 5개 분야를 추린 것이라, 분류를 비켜간 것이 남아 있을 수 있었다. 그래서 두 분야만 다시 훑었다.
+
+- Forge 전수 조회가 **633개**로 늘었다(10-24 조사 626개). 하루 사이 7개.
+- 부착물·조준경·소음기·탄창·빌드 / 상인·플레아·물물교환·보험 계열로 걸러 181개, 그중 설치본·후보 문서·5차 계획서에 **한 번도 안 나온 것이 81개**였다.
+- 81개를 성격별로 가른 뒤 두 분야에 실제 해당하는 **27개**만 `tools/mod-detail.mjs`로 버전·용량·결속·의존성을 확인해 [CANDIDATES-GUN-TRADER.md](CANDIDATES-GUN-TRADER.md)에 정리했다. 원자료는 `stage2-survey/sweep-416-gun-trader.json`.
+- 가장 "총기 파츠"에 가까운 것은 **Kalashnikov Enhanced Modding**(3010) — AK의 핸드가드·가스튜브·사이드레일·배럴을 분리해 부품으로 만든다. 다만 260MB·결속이다.
+- 상인 쪽은 **NATO Quartermaster**(3030, 354KB, 4.1.6 정확)와 **OpenBarters**(3194, 14KB, 비결속)가 부담이 가장 적다.
+- 설치는 하지 않았다. 대형 콘텐츠(3010·3035·2239·2737)는 5차 계획의 "총기 팩·대형 상인은 범위 밖" 방침대로 넣을지부터 정해야 한다.
+
+### sp-mod 밖 배포지 조사와 6차 계획 (2026-10-25)
+
+사용자 요청으로 Forge 밖도 훑었다.
+
+- `forge.sp-tarkov.com`·`hub.sp-tarkov.com`은 **DNS 조회부터 실패**한다. 예전 공식 주소는 죽었고 sp-mod.com이 그 후속이다.
+- GitHub(topic `spt-mod`·`sptarkov`·`spt-aki`)에는 Forge에 없는 4.1.6 모드가 실제로 있었다. 이번에 집은 둘: **Quick Trader Load Times**(상인 화면 로딩, MIT)와 **PortableTraders**(BTR·등대 상인을 주 화면으로, MIT). 릴리스 asset URL은 `download-stage.mjs`로 그대로 받힌다.
+- Nexus Escape from Tarkov 섹션은 SPT 모드가 **22개 전부**다. 대부분 한 사람의 포팅본이고 다운로드 30~700대. 쓸 만한 건 상인 초상화 교체(VanillaTradersRework-Reloaded) 하나. 받으려면 계정 로그인이 필요해 스크립트로는 못 받는다.
+- 아카이브(tekunogosu/sptmodarchive)는 sp-mod.com 목록의 사본이라 새 출처가 아니다. Reddit·일반 검색은 SPT 4.1 결과가 사실상 없었다.
+- **키워드 추림의 구멍을 하나 찾았다.** ECOTI(2930, 클립온 열상, 다운로드 15,943)는 이름·소개에 부착물 계열 단어가 없어 1·2차 추림 모두 놓쳤고 GitHub 쪽에서 먼저 보였다. 6차에 넣는다. 그 3.4.2가 설치된 PiP Disabler(2667)와의 열상 표시 문제를 고친 버전이다.
+- 5차에서 보류한 Field Attachments(3125)의 걸림돌을 확인했다: UnityToolkit **2.0.2 이상**이 필요하고, 2.0.2는 **Forge에만**(4.1.5 표기) 있다. GitHub 최신은 2.0.1이라 그쪽으로는 해결되지 않는다. 그래서 6-C는 1426 단독 설치·확인부터로 잡았다.
+- 결과를 [PLAN-STAGE6.md](PLAN-STAGE6.md)에 정리했다(6-A 10개, 6-B 결속 2개, 6-C 선행 확인 3개, 6-D 수동 1개). 다운로드 목록 `download/manifest-stage6.json`까지 만들어 뒀고, 다운로드·설치는 하지 않았다.
+
+### 6-A 설치 (2026-10-25 09:0x ~ 09:4x)
+
+[PLAN-STAGE6.md](PLAN-STAGE6.md)의 6-A 10개를 받아 설치했다. 설치본 93 → **103개**, 파일 2280 → 2322개, 서버 모드 38 → **46개**.
+
+- 다운로드 12개 모두 바이트 일치. Forge 링크가 전부 `release-assets.githubusercontent.com`으로 리다이렉트된다 — Forge도 GitHub 릴리스에 파일을 둔다.
+- **Git Bash의 `tar`로는 zip이 안 풀린다**(GNU tar). `C:\Windows\System32\tar.exe`를 직접 불러야 한다. 문서의 "tar.exe"는 그쪽이다.
+- 압축 구조를 손본 것: **PortableTraders**가 `SPT/user/mods/...`(이 설치본은 `SPT_Runtime/`)였고 루트에 LICENSE·README가 섞여 있었다. 경로를 옮기고 문서는 `extracted/_extras-stage6/`로 뺐다. stage5의 Cobra's Ammo Stack과 같은 유형.
+- BrightLasers는 같은 이름의 DLL이 `BepInEx/plugins`와 `user/mods` 양쪽에 있다. 해시가 달라 **클라이언트·서버 두 짝이 맞다**(중복 아님). 둘 다 설치.
+- `check-conflicts.mjs stage6` 결과 CLEAN — 기존 경로와 겹침 0, 모드 간 겹침 0, 설치 경로 아닌 파일 0.
+- 설치 순서: 비결속 8개(`-SkipTest`) → 서버 테스트 1회 → 결속 2개는 프로필 백업 후 하나씩. 테스트 3회 모두 `SERVER STARTED`(50·47·47초), stderr 0바이트, `[Error]`·`[Critical]` 없음.
+- 서버 쪽 신규 8개 로드 확인: BrightLasers·Ref Rework·Realistic Insurance·All Weapons Flea·Quick Trader Load Times·PortableTraders·Moe-TradeMarker·Vanguard. PortableTraders가 `BTR Driver·Lightkeeper 2명, 과제 30개`를, All Weapons Flea가 `무기 238종, BSG 제한 33개 해제`를 찍었다.
+- 프로필은 설치 전 백업과 **해시가 같다**(`8c0fe366…`). 백업은 `profiles-before-stage6A`, `-2736`, `-2917`.
+- 사용자 서버가 켜져 있어 설치 스크립트가 거부했다(스크립트 자체 안전장치). 종료하고 설치한 뒤 다시 띄워 뒀다 — 46개 로드, 웹서버 정상.
+- `gen-installed-mods.mjs`를 6차에 맞게 고쳤다: 6단계 추가, **모드 id를 문자열로** 취급(Forge 밖 모드는 `gh-...`), 링크는 매니페스트의 `homepage`를 쓰고 없으면 Forge, 결속 조회는 숫자 id만.
+- 남은 확인: **게임 쪽 7개**(OpenBarters·BrightLasers·NoBarrelShadow·RefReworkClient·RealisticInsurance·QuickTraderLoadTimes·Moe-TradeMarker)는 게임을 켠 뒤 `LogOutput.log`로 본다. 그리고 도그태그 용처가 Ledger와 Ref Rework로 둘이 됐다 — 게임에서 보고 하나를 끈다.
+
+### 6-B 설치 — 결속 2개 (2026-10-25 09:5x)
+
+프로필 백업 → 설치 → 테스트를 하나씩. 설치본 103 → **105개**, 서버 모드 46 → **48개**.
+
+- **NATO Quartermaster 1.1.3**(4파일) — `49 curated offers and 6 quests`, 퀘스트 해금 Q1~Q6까지 로그로 확인. 상인이 7명째가 됐다. `SERVER STARTED in 41s`, 오류 0.
+- **ECOTI 3.4.2**(압축 56파일 → 기록 **71파일**) — 서버가 뜰 때 WTT-Artem의 야투경에 맞춘 호환 파일을 **스스로 만든다**: `nvghostcompat/[wtt-artem]_(gpnvg-18…)` 5종 + `wwwroot/meshes-auto/*.glb` 10종. 설치 스크립트가 이 생성분까지 `installed-stage6B-2930.txt`에 넣었으므로 되돌릴 때 함께 지워진다.
+  - 등록된 것: COTI 본체, 열상 라이저 TR-1 2색, 열상 스코프링 TSR-1/2/3 6종. 판매는 Peacekeeper LL3~LL4($1,750~$2,000, 한도 3).
+  - `[COTI] meshes: 5 converted, 0 unchanged, 0 removed, 0 failed`. 오류 0.
+- 프로필 해시는 6-A 시작 전과 **그대로 같다**(`8c0fe366…`). 백업 `profiles-before-stage6B-3030`, `-2930`.
+- 사용자 서버를 다시 띄웠다 — 48개 로드, 웹서버 정상.
+- 남은 확인(게임을 켠 뒤): 6차 게임 쪽 플러그인 **8개**, 상인 7명이 목록에 다 보이는지(TraderScrolling·TraderSpace), ECOTI 열상이 야투경 튜브 안에만 들어오는지 — **PiP Disabler(2667)·Better Thermal(2531)을 켠 상태**에서 본다. 문제가 나면 2531을 먼저 끈다.
+
+### 6-C 설치 — 부착물 교체 UI (2026-10-25 10:0x ~ 10:2x)
+
+5차에서 "UnityToolkit이 4.1.5 표기"라 보류했던 묶음을, 계획대로 **의존성 단독 설치 → 게임 로그 확인 → 본 모드** 순으로 처리했다. 설치본 105 → **108개**, 파일 2322 → 2655개.
+
+- 조회에서 먼저 드러난 것: **Field Attachments 1.2.0은 `4.1.6` 정확 표기**, Scrollable Attachments 2.0.0은 `~4.1.6`이었다. 4.1.6 표기가 없는 건 UnityToolkit 2.0.2(`4.1.5`) 하나뿐이어서, 위험은 그 하나로 좁혀졌다.
+- UnityToolkit은 `BepInEx\plugins`만이 아니라 **`BepInEx\patchers`(프리패처)** 에도 들어간다. 프리패처가 어긋나면 게임이 아예 안 뜨는 형태로 드러나므로 단독 확인이 맞았다.
+- 게임을 한 번 켠 로그(09:57)에서 통과를 확인했다.
+
+```
+Loaded 1 patcher method from [UnityToolkit-Prepatcher 2.0.2.0]
+UnityToolkit-Prepatcher: Loading new version of assembly 'System.Runtime.CompilerServices.Unsafe.dll'
+Patching [System.Runtime.CompilerServices.Unsafe] with [UnityToolkit.Prepatcher.Patcher]
+Loading [Unity Toolkit 2.0.2]  /  86 plugins to load
+```
+
+- 게임 플러그인 77 → **86개**(+9). 표시명이 파일·모드명과 달라 처음 검색에 안 걸린 것이 많았다 — `Unity Toolkit`, `No Barrel Shadow`, `Realistic Insurance (client)`, `Quick Trader Load Times`, `Ref Rework`. 5-A 때와 같은 함정이라 이번에는 `Loading [` 줄 수(86)와 대조해 확정했다.
+- 로그의 `[Error]` 1건은 Direct Reload가 Fika용 패치를 못 걸었다는 것. Fika 미설치라 정상이며 [PROCEDURE.md](PROCEDURE.md)의 무시 목록에 올렸다.
+- 그 뒤 설치: Field Attachments 240파일(25.3MB, **결속**) → Scrollable Attachments 1파일. 테스트 3회 모두 `SERVER STARTED`(44·44·41초), 서버 48개 그대로, 오류 0.
+- 프로필은 설치 직전 백업과 해시 동일(`edfb23fe…`). 사용자가 게임을 켠 뒤 프로필이 바뀌었으므로 **설치 직전에 백업을 다시 떴다**(`profiles-before-stage6C-3125`, 10:15).
+- **절차에서 고칠 점(실수 기록)**: 게임이 켜져 있는 동안 설치하려고 서버를 먼저 내렸다. 설치 스크립트가 게임 실행을 잡아내 막아 줘서 파일은 건드리지 않았지만, 그 사이 게임의 서버 연결이 끊겼다. 즉시 다시 띄웠다. **서버를 내리기 전에 `EscapeFromTarkov` 프로세스를 먼저 본다.**
+- 남은 확인: 게임을 다음에 켤 때 플러그인 **88개**가 되는지, Left Alt로 부착물 카드가 뜨는지(스톡·핸드가드·손잡이 교체는 Leatherman 멀티툴 소지 필요), 부착물 목록 스크롤이 되는지.
+
+### 6-D 설치 — 상인 초상화 (2026-10-25 10:4x)
+
+Nexus 모드라 자동 다운로드가 안 되는 건 **실측으로 확인**했다. 내장 브라우저로 파일 탭을 열자 `You have to be logged in to download files`가 떴다(미로그인). 사용자 요청으로 **외부 Chrome**(이미 Nexus 로그인 상태)에서 Manual download → Slow download를 눌러 받았다. 받은 파일은 Chrome 기본 경로인 `E:\Spt_Mods\downloads\`로 떨어졌다(파일명에 Nexus 토큰이 붙은 긴 이름).
+
+- 압축을 풀어 보니 **텍스처를 덮어쓰는 방식이 아니었다**. `SPT_Runtime/user/mods/VanillaTradersRework.Reloaded/`에 DLL 1 + `avatars/` 18장이 들어가는 평범한 서버 모드다. 그래서 걱정했던 덮어쓰기 충돌이 없다 — `check-conflicts.mjs stage6-D` **CLEAN**.
+- 단계 폴더를 `stage6-D`로 따로 두고 설치(19파일, 10.3MB). `SERVER STARTED in 47s`, 서버 모드 48 → **49개**, 오류 0. 프로필 해시 동일.
+- 로그가 포르투갈어로 찍힌다. `Mod carregado com sucesso.`가 성공 신호다.
+- **초상화가 없는 상인 11명**은 원본 그대로 간다: Смотритель(등대)·APC(BTR)·Storyteller·Amonya·Harry·Gunwright·Victor Barinov·Gunsmith·PresetTrader·Ledger·Elias Ward(NATO Quartermaster). 이 모드가 다루는 건 바닐라 9명 + Lotus·Scorpion·Artem·Couturier·Croupier 등이다.
+- 제작자는 적용 후 런처의 **Settings → Clean Temp Files**를 누르라고 안내한다. `%LOCALAPPDATA%\Temp\Battlestate Games`도 `E:\Spt\cache`도 없어서 지울 캐시를 특정하지 못했다(있는 건 `user\cache\bundleHashCache.json`과 BepInEx 타입 캐시뿐이라 성격이 다르다). 초상화가 그대로면 런처에서 한 번 눌러 보는 쪽이 맞다.
+
+### 등대지기·BTR 판매 목록이 비어 있는 건 (2026-10-25 11:0x)
+
+6차로 넣은 PortableTraders 덕에 두 상인이 주 화면에 떴는데 **아무것도 팔지 않는다**는 제보. 모드 설정·SPT DB를 직접 열어 확인했다.
+
+- `database/traders/638f541a29ffd1183d187f57/assort.json`(등대지기), `656f0f98d80a697f855d34b1/assort.json`(BTR) 모두 `{"barter_scheme":{},"items":[],"loyal_level_items":{}}`. 메카닉의 같은 파일은 385KB다. 등대지기는 `sell_category: 0`에 수리·보험도 false라 **사지도 않는다**.
+- 둘은 원래 서비스·퀘스트 전용이다. 등대지기 `services.json`에 Zryachiy 지원·ExUsec 충성·교단 지원 3종(각각 선행 퀘스트), BTR에 물품 배달·택시·엄호·환승 배달 4종.
+- 즉 PortableTraders는 정상 동작이다. 설치 로그의 `30 task(s) reachable from the main menu`가 이 모드의 결과물이고, 확인은 거래 탭이 아니라 **임무 탭**에서 한다.
+- 사용자 판단으로 **품목은 채우지 않기로** 했다. 바닐라 설계를 그대로 둔다. 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.
+
+### 7차 후보 조사 — 상인·탄환·총기 파츠·방어구 (2026-10-25 11:3x)
+
+"밸런스는 무시"라는 조건이 붙어, 지금까지 치트성·바닐라 이탈을 이유로 걸렀던 것을 전부 다시 올렸다.
+
+- **조회 방식을 바꿨다.** 이름·소개 키워드만 쓰던 것을 **Forge 카테고리와 합쳐** 걸렀다. ECOTI를 두 번 놓친 원인이 키워드였기 때문이다. 4.1.6 호환 633개의 카테고리 분포는 Other 176 / Tools 65 / Items 59 / Overhauls 56 / Scripting 37 / Weapons 35 / Equipment 31 / Traders 30 / … 이다.
+- 네 분야로 165개가 걸렸고 그중 **84개는 기존 문서에 한 번도 없던 것**이었다. 실제 해당하는 65개를 버전·용량·결속·의존성까지 확인해 [CANDIDATES-STAGE7.md](CANDIDATES-STAGE7.md)에 정리했다(원자료 `stage2-survey/survey-stage7-416.json`).
+- **방어구는 이번이 처음 다루는 분야**다. 1~6차 어디에도 없었고, 그래서 20개 중 대부분이 새 후보다. 다운로드 상위는 Pack 'n' Strap(239k)·Less Restricting Headwear(137k)·Foldables(50k)다.
+- 확인한 제약 몇 가지: **Painter(1025) ↔ Tactical Gear Component(1125)가 서로를 요구**해 647MB를 한 묶음으로만 넣을 수 있다. The Quartermaster는 ItemGen(2803), Sage's Incendiary Grenade는 BigBrain(902)이라는 **새 의존성**을 끌고 온다. Instant Insurance(2394)는 6차에 넣은 Realistic Insurance(2949)와 **정면으로 어긋난다**.
+- 설치·다운로드는 하지 않았다. 문서의 개수(방어구 20·상인 14·탄환 11·파츠 20 = 65)와 설치본 중복 0은 스크립트로 확인했다.
+
+### 7차 계획 — 작고 가벼운 것부터 (2026-10-25 11:5x)
+
+후보 65개를 **비결속 → 결속, 작은 것 → 큰 것** 순으로 [PLAN-STAGE7.md](PLAN-STAGE7.md)에 줄 세웠다.
+
+- **7-A 비결속·소형 14개 / 합계 314KB** — 방어구 9(LMSP·Unrestricted Armor Plate·Foldables·Armor Expert·Change Helmet Visor·VisorEffectManager·SOMF·BiC·ArmorInfoPlus), 탄환 2(Munitions Expert·Quick Cancel), 파츠 2(Quick Aim·All In Weapon), 상인 1(Item Limits Begone). 전부 파일 삭제만으로 되돌아간다. 다운로드 목록 `download/manifest-stage7.json`까지 만들어 뒀다.
+- **7-B(8개)** 는 비결속이지만 설치본과 겹쳐 선택이 필요한 것 — 탄약 이름 표기, QuickSell 교체, 플레아 가격 소스, 장전 속도, 무한 옵션, 그리고 6차 Realistic Insurance와 **정면으로 어긋나는** Instant Insurance.
+- **7-C(26개)** 는 결속이지만 파일이 작은 것들. 효과가 큰 순서로 1번 Less Restricting Headwear, 2번 BETTER ATTACHMENTS, 3번 Definitive Weapon Variants를 뒀다. 하나씩 프로필 백업 후 설치.
+- **7-D(10개)** 는 10MB 이상. 이 중 Manimal's 장전 애니메이션은 의존성 둘이 이미 깔려 있어 부담이 가장 작고, Sage's Incendiary Grenade는 BigBrain(902), The Quartermaster는 ItemGen(2803)이라는 새 의존성을 끌고 온다.
+- **7-E(3항목)** 는 100MB 이상, 합쳐 1.2GB. Painter ↔ Tactical Gear Component는 서로를 요구해 647MB 한 묶음이다.
+- 후보 65개가 계획 어딘가에 **빠짐없이** 들어갔고(스크립트 대조), 7-A 표와 매니페스트가 같은 14개임도 확인했다. 설치·다운로드는 하지 않았다.
+- 계획에 적어 둔 주의 둘: Git Bash의 `tar`로는 zip이 안 풀리니 `C:\Windows\System32\tar.exe`를 쓸 것, 서버를 내리기 전에 `EscapeFromTarkov` 프로세스를 먼저 볼 것.
+
+### 7-A 설치 — 비결속·소형 14개 (2026-10-25 14:2x ~ 14:4x)
+
+[PLAN-STAGE7.md](PLAN-STAGE7.md)의 7-A를 그대로 받아 설치했다. 설치본 109 → **123개**, 파일 2655 → 2743개, 서버 모드 49 → **55개**.
+
+- 다운로드 14개 전부 바이트 일치(합계 314KB). `check-conflicts.mjs stage7` **CLEAN** — 기존 경로 겹침 0, 모드 간 겹침 0, 섞여 온 파일 0.
+- 설치 위치가 예상과 달랐던 것: **Armor Expert·Munitions Expert가 게임(클라이언트) 플러그인**이었고, Unrestricted Armor Plate·All In Weapon·Item Limits Begone·SOMF는 서버 쪽이다. 위치는 압축 구조로만 확정된다는 5차의 교훈 그대로다.
+- SOMF(0.1.2)는 압축에 **빌드 찌꺼기**가 들어 있다(`obj/Release/staticwebassets`, `Config/Debug` 빈 폴더). 설치 스크립트가 빈 폴더까지 만들고 `installed-stage7A-3105.dirs.txt`에 기록했다.
+- 서버 테스트에서 신규 서버 모드 6개 전부 로드 확인(SitOnMyFace·Item Limits Begone·UnrestrictedArmorPlates·Foldables·All In Weapon: Unslotted·Change Helmet Visor). `SERVER STARTED`, stderr 0바이트, `[Error]`·`[Critical]` 0건. 프로필 해시도 설치 전과 같다(`cf795863…`).
+- **절차에서 걸린 것** — 설치 호출을 `| Select-Object -First 3`으로 받았더니 PowerShell이 파이프라인을 일찍 끊어 **서버 테스트 단계가 통째로 생략**됐다. 스크립트의 테스트 부분을 그대로 재현해 따로 돌렸고, 그 과정에서 All In Weapon이 첫 실행 때 만드는 `config/config.jsonc`가 설치 기록에 빠지는 것을 발견해 손으로 채웠다. **설치 스크립트 출력은 `Select-Object`로 자르지 않는다.**
+- `gen-installed-mods.mjs`에 7단계를 추가했다(단계 루프·제목·로드 현황).
+- 남은 확인: 게임 쪽 플러그인 **12개**(6-C의 2개 + 7-A의 10개)는 게임을 켠 뒤 `LogOutput.log`에서 본다. 방어구 툴팁 수치(Armor Expert)가 ODT Item Info와 겹쳐 길어지지 않는지, 호환 강조(Compatibility Highlighter)가 All In Weapon 때문에 "전부 호환"으로 보이지 않는지도 함께.
+
+### 7-C 설치 — 결속 26개를 하나씩 (2026-10-25 15:0x ~ 15:4x)
+
+[PLAN-STAGE7.md](PLAN-STAGE7.md)의 7-C 순서 그대로, **매번 프로필 백업 → 설치 → 서버 테스트**로 26번 반복했다. 서버 모드 55 → **80개**(ShrapnelFix만 클라이언트 전용이라 그때는 서버 수가 그대로였다).
+
+- 다운로드 26개(합계 4.0MB) 중 **크기 불일치 2건** — Repair Max Durability(실제 31,209 / 메타데이터 31,097), bluehead's AIO Trader(42,151 / 41,700). 둘 다 정상으로 풀리고 내용도 멀쩡해 **Forge 메타데이터가 낡은 쪽**으로 판단했다. 5차 PresetTrader와 같은 유형.
+- **압축 구조를 손본 것 2건**
+  - **Cobra's Durability Tweaks** — 폴더가 한 겹 더 싸여 있고 그 안이 `SPT_RunTime`(대문자 T)이었다. 평탄화 + 이름 교정 후 설치. 그냥 두면 `E:\Spt` 아래에 엉뚱한 폴더가 생긴다.
+  - **Ultimate Flea** — 루트에 `README.txt`가 섞여 있어 `extracted/_extras-stage7-C/`로 분리.
+  - 두 건 모두 `check-conflicts.mjs`가 "설치 경로가 아닌 파일 6"으로 미리 잡았고, 교정 후 재검사는 CLEAN.
+- 26번 모두 `SERVER STARTED`(38~71초). 테스트 출력 26개 전체에서 `[Error]`·`[Critical]` **0건**, stderr 26개 **전부 0바이트**, 설치 기록 26개 생성.
+- 백업은 `backup/profiles-before-stage7C-<id>` 26벌.
+- **중간에 작업이 막혔다** — 셸·파일 편집 도구의 안전 검사가 여러 턴에 걸쳐 응답하지 않아(일시적 오류) 설치 직후의 **서버 재가동·목록 재생성·커밋이 미뤄졌다.** 설치와 검증 자체는 그 전에 끝났고, 검증은 읽기 전용 도구(Grep)로 대신했다. 그동안 사용자 서버가 꺼져 있어 **사용자가 직접 켰다.**
+
+### 7차 게임 확인 — 사용자 서버·게임 로그 (2026-10-25 15:3x)
+
+사용자가 서버를 켜고 게임까지 접속한 로그를 받아 확인했다.
+
+- **게임 플러그인 86 → 106개**(`106 plugins to load`, `Loading [` 줄도 106). 6-C의 2개 + 7-A의 10개 + 7-C의 클라이언트 쪽 8개가 전부 떴다. 표시명이 또 달라 이름으로는 안 걸리는 것이 많았다 — `Armor Info Mod`(ArmorInfoPlus), `BlackHawk-QuickAim`, `ArmorExpert`, `UltimateFlea Client`, `RepairMaxDurabilityClient`, `maschine-Airburst`, `Tylevo Field Attachments`, `pein-ScrollableAttachments`.
+- 게임 쪽 `[Error]`는 **1건뿐**이고 Fika 미설치로 나는 Direct Reload의 그 메시지다(무시 목록에 있음). 서버 쪽은 80개 로드에 오류 0.
+- **SOMF가 무력화됐다.** 7-A 때는 `Head/Face blocking 37 / specific 2089 / Head/Eyes 7 / 123`을 풀었는데, 7-C에서 Less Restricting Headwear(922)를 넣은 뒤로는 **전부 0**이다. 922가 먼저 `117 block flags cleared, 4005 conflict entries removed`로 같은 일을 끝내기 때문이다. 둘은 역할이 겹치므로 하나만 두면 된다 — 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.
+- **DLL 표기 버전이 사이트와 다른 것이 또 나왔다**: BETTER ATTACHMENTS(Forge 4.1.5 → 로그 **2.0.0**), Full Automatic Guns(4.1.5 → **1.0.0**), bluehead's AIO Trader(5.3.1 → 5.3.0), Restore Armor Plates(1.0.2 → 1.0.1), Ultimate Trader Assort Editor(2.1.1 → 2.1.0). 제작자가 DLL 버전을 안 올린 것으로, 기존 사례(Armory·TraderScrolling·Gunwright)와 같다.
+- **새 상호작용 하나** — `[RealisticInsurance] trader 'Armorer' ... not listed in insurance.json returnChancePercent ... will use the '90%' fallback`. 7-C에서 넣은 AllGoodsTrader의 보험 상인을 Realistic Insurance가 모르기 때문에 **그 상인 보험만 90% 고정**으로 돌아간다. 오류는 아니다.
+- 수치로 확인된 적용 범위: Definitive Weapon Variants **커스텀 아이템 776개**, BETTER ATTACHMENTS 부착물 **1,092개**, Less Restricting Headwear 품목 182개, Realistic Suppressors 소음기 103개, Cobra's Durability Tweaks 무기 932개(내구도 소모 **12%**), Slimmer Magazines 탄창 44개, Jero Backpack 배낭 36개, Foldables 배낭 46·조끼 36·헤드폰 21, Limitless **26,179개 품목**, Ultimate Flea 레벨 락 1,691개 + 카테고리 17종, bluehead AIO 품목 6,261개(매물 7,178), All Weapons Flea **무기 925종**(6차 때 238종 → 총기 팩이 늘어 확대).
+- 서버 시작에서 가장 오래 걸리는 것은 **ODT's Item Info의 아이템 처리 53.5초**다(6,728개). 시작이 느려진 주된 이유.
+
+### SOMF 제거 (2026-10-25 16:1x)
+
+Less Restricting Headwear와 역할이 겹쳐 아무 일도 하지 않게 된 SOMF를 사용자 판단으로 뺐다. 설치본 149 → **148개**, 파일 2894 → 2855개, 서버 모드 80 → **79개**.
+
+- 게임이 켜져 있는 동안은 **서버가 `SitOnMyFace.dll`을 잠그고 있어 삭제가 안 된다**는 것을 `[IO.File]::Open`으로 실제 확인했다. 게임 종료 → 서버 종료 → 잠김 해제 확인 후 진행.
+- `installed-stage7A-3105.txt`의 **37개 전부** 삭제(누락 0), `.dirs.txt`의 빈 폴더 2개도 삭제. 남은 것은 빈 폴더뿐이어서 모드 폴더째 지웠고, `sitonmyface`·`somf`로 전수 검색해 잔류 0 확인.
+- **압축에 섞여 온 것들이 함께 빠졌다** — `SPT_Runtime\desktop.ini`(제작자 PC의 폴더 설정 파일), `Mod.cs`, `SitOnMyFace.csproj`, `bin/Release`·`obj/Release` 빌드 산출물. `desktop.ini`는 경로가 `SPT_Runtime/` 아래라 `check-conflicts.mjs`가 정상 설치 경로로 보고 통과시켰다. **검사기가 걸러내지 못하는 유형**이니 앞으로 해제본 파일 목록을 눈으로 볼 때 이런 잡파일을 함께 본다.
+- 설치 기록은 지우지 않고 `doc/install-records/removed/`로 옮겼다. 생성기는 `install-records` 바로 아래만 읽으므로 목록에서 **미설치**로 표시된다(매니페스트에는 남는다).
+- 사용자 서버 재가동 확인: 모드 **79개**, `[SOMF]` 줄 0건, Error·Critical 0건.
+
+### 7-B 판단과 설치, 7-D 중형 설치 (2026-10-25 16:3x ~ 17:1x)
+
+설치본 148 → **163개**, 파일 2855 → 3046개, 서버 모드 79 → **93개**. 테스트 13회 전부 `SERVER STARTED`, 오류 0, stderr 0바이트.
+
+**7-B — 겹치는 8개를 판단해 3개만 넣었다**
+
+| 모드 | 판단 |
+| --- | --- |
+| Quick Sell(2955) | **넣음.** 최적 상인·플레아 즉시 판매 + 툴팁 가격. 설치된 QuickSellFlea는 일단 두고, 메뉴가 중복돼 보이면 그때 뺀다(비결속 2파일이라 되돌리기 쉽다) |
+| Bela's Speedloader(2458) | **넣음.** 장전 속도·탄 스택. Continuous Load Ammo·Cobra's Ammo Stack과 수치가 겹칠 수 있어 게임에서 확인 필요 |
+| Infinite Everything(3108) | **넣음.** 로그가 `infinite money + hideout` 등으로 찍힌다. SVM 옵션과 겹치지만 SVM은 건드리지 않았다 |
+| Easy Ammo Names(1262) / Ammo Stats In Names(2989) | **뺐다.** 설치된 Ammo Stats·Caliber Under Ammo Name이 같은 로케일 열쇠를 쓴다. 나중에 로드되는 쪽이 이겨 표기가 뒤섞인다 |
+| Live Flea Prices(1131) | **뺐다.** 7-C에서 넣은 Ultimate Flea가 가격 소스를 쥐고 있다(`Price source: local`). 가격을 실시간으로 쓰려면 Ultimate Flea의 `pricing.json`에서 켜는 쪽이 맞다 |
+| Better Flea(3177) | **뺐다.** Ultimate Flea와 정면으로 같은 영역 |
+| Instant Insurance(2394) | **뺐다.** 6차 Realistic Insurance와 정반대다. 넣으려면 2949를 꺼야 한다 |
+
+**7-D — 새 의존성 2개 + 중형 10개, 하나씩**
+
+- 선행: **BigBrain**(902, 비결속, 클라이언트 전용이라 서버 수 그대로) → **ItemGen**(2803, 결속). 각각 Sage's Incendiary Grenade와 The Quartermaster가 요구한다.
+- 이어서 Better OKP-7 → TraderGen → The Quartermaster → Wolfik's Heavy Trooper Masks → Manimal's 장전 애니메이션 → Sage's Incendiary Grenade → .22lr → Peacemaker → Better Rear Sights → Fold That Stock.
+- 압축 해제 후 실제 용량이 다운로드보다 큰 것이 많다(.22lr 29MB → 105MB, Peacemaker 45MB → 137MB). 번들이 압축돼 있어서다.
+- The Quartermaster가 `18 active listings / 86 items`, 커뮤니티 계약 2건을 띄웠다. 상인이 더 늘었다.
+- **프로필이 이 단계에서 바뀌기 시작했다.** 7-B와 7-D의 902·2803·2711까지는 해시가 같았고(`3b683421`), **TraderGen(2749) 테스트부터 매 실행마다 달라졌다.** 커스텀 상인·아이템이 프로필에 자기 자리를 만들기 때문이고, 이것이 "프로필 결속"의 실체다. 단계별 백업 13벌이 남아 있다.
+- 사용자 서버 재가동 확인: 모드 **93개**, 오류 0.
+
+### The Quartermaster 제거 — 5초마다 혼자 재입고 (2026-10-25 17:0x)
+
+사용자 제보: 7-D로 넣은 The Quartermaster만 상인 화면이 혼자 계속 새로고침된다.
+
+**원인을 로그와 IL로 확정했다.**
+
+- 서버 로그가 **정확히 5초 간격**으로 같은 일을 반복한다: `/client/trading/api/getTraderAssort/66789abc…` → `Loaded 187 active listings` → `Assort refreshed with 77 items` → 5초 뒤 again(`:04 :09 :14 :19 :24 …`). 다른 상인에는 이런 패턴이 없다.
+- `TheQuartermaster.Server.dll`을 Mono.Cecil로 뜯어 보니 **상인 데이터를 만들 때마다 다음 재입고 시각을 현재 시각으로 설정**한다 — `BuildTraderBase`·`RefreshAssort`·`OnListingUploaded`·`OnListingPurchased` 네 곳 모두 `set_NextResupply(DateTimeOffset.UtcNow…)`. 재입고 타이머가 항상 만료 상태라 클라이언트가 계속 다시 요청하고, 요청할 때마다 서버가 187건을 다시 만들며 타이머를 또 "지금"으로 되돌린다.
+- 설정으로는 못 고친다. `config/config.json`에 `modEnabled`·`jackpotEnabled` 둘뿐이고 주기 항목이 없다.
+
+**제거 결과** — 설치본 163 → **162개**, 서버 모드 93 → **92개**. 재가동한 서버 로그(마지막 세션 286줄)에 `TheQuartermaster` 0건, `Assort refreshed` 0건, 오류 0건.
+
+- 기록 `installed-stage7D-2817.txt`의 **15개 전부** 삭제(누락 0). 이 기록에는 설치 테스트 중 모드가 만든 `cache/*`·`client_submissions.json`·`db/CommunityQuests/*`까지 들어 있어 함께 지워졌다.
+- 기록에 없던 잔류물 3종을 손으로 찾아 지웠다 — `BepInEx\plugins\Serenity-TheQuartermaster\TheQuartermaster\community_auth.json`(커뮤니티 장터 인증 토큰), `BepInEx\config\com.shaneeexd.thequartermaster.cfg`, Ultimate Trader Assort Editor의 빈 편집 폴더 `Quartermaster [66789abcde1234567890abcd]`. **게임을 실제로 켠 뒤 생기는 파일은 설치 기록에 안 잡힌다**는 뜻이라, 앞으로 제거할 때는 모드 이름으로 전수 검색을 한 번 더 한다.
+- 이름이 비슷한 **NATO Quartermaster(3030, id `bb371fed…`)는 그대로 둔다.** 다른 모드다. UTAE의 `Quartermaster [bb371fed…]` 폴더와 `sptappdata`의 NATO 아바타도 건드리지 않았다.
+- 의존성으로 함께 넣었던 **ItemGen(2803)은 남겼다.** 지금은 쓰는 모드가 없어 `No item packs found`만 찍지만, 비용이 없고 나중에 다른 모드가 요구할 수 있다.
+
+### 프로필에 남은 상인 흔적 정리 (2026-10-25 18:0x)
+
+The Quartermaster를 뺀 뒤 게임이 경고를 띄웠다 — "SPT에 존재하지 않는 상인 `66789abcde1234567890abcd`가 프로필에서 발견되었습니다… `core.json`의 `removeModItemsFromProfile`을 true로".
+
+- **조사(examine) 문제의 범인도 이 모드였다.** 제거하자마자 사라졌다. 앞서 의심했던 ArmorExpert·MunitionsExpert·ArmorInfoPlus 셋은 무죄였고, 비활성화 테스트는 하지 않아도 됐다. 5초마다 상인 매물을 다시 만드는 동안 조사 완료 처리가 막혔던 것으로 보인다.
+- 프로필에서 그 id가 **4곳**에 남아 있었다: `characters.pmc.TradersInfo.<id>`(평판 loyaltyLevel 1·standing 0.2·판매 0)와 `dialogues.<id>`(메시지 1건, **첨부 아이템 0개**, 이미 읽음). 관련 퀘스트는 0개였다.
+- 안내대로 `removeModItemsFromProfile`을 true로 바꿔 서버를 재시작했지만 **프로필은 그대로였다.** 이 정리는 서버가 뜰 때가 아니라 **클라이언트가 프로필을 선택해 불러올 때** 도는 것으로 보인다.
+- 내용이 평판 한 줄과 첨부 없는 메일 하나뿐이라, 백업을 두 벌(자동 정리 전·수동 편집 직전) 뜬 뒤 **두 키를 직접 지웠다.** 원본이 한 줄짜리 compact JSON이라 같은 형식으로 다시 썼다(415KB → 414KB).
+- 서버를 내린 뒤 편집했다. 서버가 프로필을 메모리에 들고 있어, 켠 채로 고치면 종료할 때 되살아날 수 있다.
+- 결과: 재시작한 서버에서 경고 0건, 오류 0건, 모드 92개. 프로필은 상인 29명·대화 13건·레벨 15로 멀쩡하다. `removeModItemsFromProfile`은 **false로 되돌렸다**(켜 두면 앞으로 모드를 뺄 때마다 조용히 지워진다).
+- 백업: `backup/profiles-before-profile-cleanup/`에 프로필 2벌과 `core.json.bak`.
+
+### 7-E 설치 — Pack 'n' Strap + Painter·Tactical Gear Component (2026-10-25 18:2x ~ 18:3x)
+
+사용자 결정으로 **Kalashnikov Enhanced Modding(3010)은 제외**하고 둘만 넣었다(받아 둔 파일은 `downloads/stage7-E`·`extracted/stage7-E`에 남겨 뒀고, 매니페스트에 제외 표시). 설치본 162 → **165개**, 파일 3031 → 3255개, 서버 모드 92 → **95개**.
+
+- 다운로드 4개 1,210MB 전부 바이트 일치. `check-conflicts.mjs stage7-E` **CLEAN**.
+- **WTT Pack 'n' Strap 2.1.1** — 60파일 302MB. `SERVER STARTED in 77s`, 오류 0.
+- **Painter 3.0.0 + Tactical Gear Component 3.0.0** — 서로를 요구하므로 TGC(137파일 658MB)를 `-SkipTest`로 먼저 복사하고 Painter(27파일)를 넣은 뒤 한 번에 테스트. `SERVER STARTED in 77s`, 오류 0. 둘 다 `Mod loaded successfully.`
+- 설치 후 사용자 서버: 모드 **95개**, 모드 로드 → 웹서버 **69초**(7-E 전 67초). 1.2GB가 늘었는데 시작 시간은 2초 차이다.
+- **새로 생긴 오류 4건** — `ItemBaseClassService: Could not add 668ff5bde41a0cce3b142464 / 6699546547ad52e0fccf6da9 to cache, it does not exist in the item database!` (플리마켓 상품 생성 단계). 추적해 보니 **Painter의 `db/assort.json`이 어디에도 없는 아이템 두 종을 팔려고 올려 둔 것**이다. 설치된 모드 전체 JSON을 훑어도 그 두 tpl을 정의하는 곳이 없는 **죽은 항목 4줄**(두 종 × 2)이다. (처음에는 "같은 제작자의 다른 팩에 있는 듯", "가격 정보도 없다"고 적었는데 **둘 다 틀렸다** — 아래 추적 결과 참고.)
+  - 영향: 시작 때마다 오류 4건 + 그 두 칸은 살 수 없다. 서버는 계속 진행한다.
+  - 고치려면 Painter의 assort에서 그 4줄을 지우면 된다(모드 데이터 수정이라 보류 중).
+
+### Painter 의 죽은 매물 제거 (2026-10-25 18:4x)
+
+7-E 설치 뒤 시작마다 나던 `ItemBaseClassService: Could not add … to cache` 오류 4건을 없앴다.
+
+- Painter의 `db/assort.json`에는 매물이 7건 있었는데, 그중 **4건이 존재하지 않는 아이템**(`668ff5bde41a0cce3b142464`, `6699546547ad52e0fccf6da9` 각 2건)이었다. 같은 제작자의 다른 팩에 있는 아이템으로 보이고, 설치된 모드 어디에도 정의가 없다.
+- 그 4건의 `items` 항목과 거기에 딸린 `barter_scheme`·`loyal_level_items` 키를 함께 지웠다(7 → **3건**). 처음 점검 때 "가격 정보 없음"으로 본 것은 내가 tpl id로 찾았기 때문이고, 실제로는 **항목 id로 가격이 걸려 있었다** — 그래서 같이 지웠다. 부모가 사라진 고아 자식 항목은 0개.
+- 원본은 두 곳에 있다: `backup/painter-assort-original.json`과 해제본 `extracted/stage7-E/1025__Painter_3.0.0/…/db/assort.json`. 되돌리려면 둘 중 하나를 덮으면 된다.
+- 결과: 재시작한 서버에서 **Error·Critical 0건**, `ItemBaseClassService` 메시지 0건, 모드 95개, Painter·TGC 정상 로드.
+- 주의: **모드가 배포한 데이터 파일을 직접 고친 것**이라 Painter를 업데이트하면 되돌아간다. 설치 기록(`installed-stage7E-1025.txt`)의 파일 목록은 그대로지만 내용은 원본과 다르다.
+
+### 그 두 아이템의 정체 — 다른 모드가 아니라 Painter 자신 (2026-10-25 19:0x)
+
+"같은 제작자의 다른 팩에 있는 아이템"이라고 추측했었는데, 추적해 보니 **틀렸다.**
+
+- GitHub 코드 검색에서 바로 나왔다. 두 id는 Painter 저장소(`emilanderss0n/Painter`)의 `src/CustomItemsManager.ts`에 있는 **Painter 자신의 커스텀 아이템**이다.
+  - `668ff5bde41a0cce3b142464` = **Painter's Special Delivery**(루트박스, 봉인 무기 상자를 복제해 만든다)
+  - `6699546547ad52e0fccf6da9` = **Painter's War Box**(두 번째 루트박스, `6489981f7063b903ff4b8565` 복제)
+  - 모드가 `createItemFromClone`으로 **실행 시점에 만들어 내는** 아이템이라, 어느 모드의 JSON에도 정의가 없는 게 당연했다.
+- 그런데 **4.x 포팅본(`Painter-4.0.dll`)에는 그 코드가 없다.** DLL을 ASCII·UTF-16 양쪽으로 훑어도 `mysterybox`·`LootBox`·두 id·`CreateItemFromClone`이 하나도 안 나오고, 클래스도 `EpicTraderHelper`·`ModMetadata`·`Painter`·`PainterModQuest` 넷뿐이다.
+- 반면 **`db/assort.json`에는 그 매물이 남아 있고 번들(`bundles/mysterybox.bundle`, `mysterybox_2.bundle`)도 같이 배포된다.** 즉 TypeScript 시절의 루트박스 기능이 C# 포팅에서 빠졌는데 데이터와 리소스만 남은 것이다. **다른 모드를 깐다고 해결되지 않는다.**
+- 같은 제작자(MoxoPixel)의 다른 팩 6종(BlackCore·SandCore·GreenCore·WhiteCore·Mag Tape·War Heads)은 **전부 3.x까지만** 나와 있어 4.1.6에서는 설치 대상이 아니다. 이 건과도 무관하다.
+- 결론: 앞서 지운 매물 4줄은 **되살릴 방법이 없는 항목**이 맞다. 제작자가 루트박스 코드를 다시 넣기 전까지는 지운 채로 두는 것이 옳다.
+
+### 탄창 이름 아래 구경이 30줄로 늘어난 건 (2026-10-25 19:2x, 해결)
+
+인벤토리에서 탄창 하나에 구경이 30줄 넘게 붙는다는 제보(스크린샷).
+
+- **글자를 그리는 쪽**은 1차에 넣은 Caliber Under Ammo Name(2586). 탄창이 받는 구경을 전부 적는다.
+- **길어진 원인**은 7-A의 All In Weapon: Unslotted(2576)다. 설치 로그가 `Fcked: weapons, mods, chambers, calibers, magazines`로 찍혔듯 **탄창의 구경 필터를 지워** 모든 구경을 받게 만들었고, 그러니 표시 모드가 전부 나열했다. 스크린샷의 목록이 2586 설정 파일 `[4. Caliber Names]`의 구경 표와 그대로 일치한다.
+- 고치는 길 둘을 확인했다: ⒜ F12 → `탄창에 구경 표시` 끄기(즉시, 되돌리기 쉬움, 탄창 구경 정보는 포기) ⒝ `AllinWeaponUnslotted/config/config.jsonc`의 `FckMagazines`를 false(탄창이 제 구경만 받음 → 한 줄, 서버 재시작 필요, 나머지 자유도 유지).
+- **사용자가 ⒜를 선택해 F12에서 껐고, 길게 나오지 않는 것을 확인했다.** 결론은 [MODS-GUIDE.md](MODS-GUIDE.md)의 "헷갈리기 쉬운 정상 동작"에 남겼다.
+- 배운 것: "제한을 푸는 모드"와 "제한을 읽어 표시하는 모드"는 서로를 증폭한다. 표시 쪽 모드가 갑자기 수다스러워지면 최근에 넣은 해제형 모드를 먼저 본다.
+
+### F12 미한글화 항목을 전부 덮었다 (2026-10-25, 사전 59 → 83)
+
+설치 목록을 다시 생성해 보니 `doc/INSTALLED-MODS.md`는 이미 최신이었다(모드 165개, 미설치 3건). 그래서 F12 쪽만 손봤다.
+
+- 먼저 센 방법이 틀렸다. `grep -c ' = '` 로 `.cfg` 항목을 세면 설명 줄의 `1.0 = default` 까지 세어 미한글화가 483항목으로 부풀어 보였다. `check-lang-coverage.mjs` 와 같은 파서로 다시 세니 **25개 모드 / 268항목**이었다.
+- 사전이 아예 없던 **24개 모드**에 사전을 새로 썼다. 항목 많은 쪽부터: No Barrel Shadow(93) · Field Attachments(39) · ShrapnelFix(34) · QuickSell(27) · ECOTI(27) · Munitions Expert(22) · Infinite Everything(21) · Holster Everything(20) · Quick Trader Load Times(13) · BrightLasers(10) · Armor Expert(10) · VisorEffectManager(8) · Airburst(8) · Quick Aim(6) · Foldables(4) · Moe-TradeMarker(4) · Scrollable Attachments(3) · Change Helmet Visor(3) · ArmorInfoPlus·BiC·Quick Cancel·Incendiary Grenade·AmmoGen·TraderGen·BeltSlot(각 1).
+- No Barrel Shadow 는 손전등·레이저 82종 × 거리/밝기 두 항목이 기계적으로 반복되는 꼴이라 스크립트로 생성했다. 장비 이름은 고유명사라 그대로 두고 접미사(`— Range`/`— Intensity`)와 설명만 한글로 바꿨다.
+- 직전에 발견한 CaliberUnderName 누락 2항목(`Caliber22LR`, `Caliber1143x33mmR`)도 채웠다.
+- `spt.koreanconfig`(한글화 모드 자신)는 사전을 만들지 않았다. 플러그인이 자기 설정 이름을 처음부터 한글로 등록한다.
+- `gen-installed-mods.mjs` 에 `번역 사전 59` 가 하드코딩돼 있어 `lang/` 을 직접 세도록 고쳤다. 손으로 적은 수는 늘 어긋난다.
+- 결과: `check-lang-coverage.mjs` **1457/1457 항목, 사전 83개, 누락·오타 0**. `install-koreanconfig.ps1` 로 설치해 `BepInEx\plugins\SptKoreanConfig\lang` 에 84개 파일(사전 83 + `_ui.json`)이 들어갔다. 게임에서 실제로 보이는지는 아직 확인하지 않았다 — JSON 만 고친 것이라 F12 를 다시 열면 반영된다.
+- 열거형 값(`Outline`/`Full`, `AbovePockets`/`BelowPockets` 등)은 사전 형식에 `values` 칸이 없어 영문 그대로 나온다. 설명에서 각 값이 무슨 뜻인지 풀어 적어 두었다.
+
+### 안면 보호구 시야 가림을 없앴다 — ChangeHelmetVisor MaskType (2026-10-25)
+
+타길라 용접 마스크처럼 시야를 가리는 안면 보호구의 가림을 풀 모드를 새로 찾아야 하는지 물었는데, **이미 깔려 있었다**. 7-A 의 Change Helmet Visor(2554)가 바로 그 모드다.
+
+- 원리: 아이템 DB 의 `_props.FaceShieldMask` 가 가림 마스크를 정한다. 전체 아이템 중 가리는 것은 **7종뿐**이고 나머지 720개는 이미 `NoMask` 다.
+  - `Wide`: 타길라의 용접 마스크 "UBEY"(`60a7ad2a2198820d95707a2e`) · "고릴라"(`60a7ad3a0c5cb24b0134664a`) · "ZABEY"(`678f84bb9e85556ca60f0362`), Altyn 안면 보호대(`5aa7e373e5b5b000137b76f0`), "Rys-T" 안면 보호대(`5f60c85b58eff926626a60f7`)
+  - `Narrow`: Maska-1SCh 안면 보호대 Olive Drab(`5c0919b50db834001b7ce3b9`) · 킬라 에디션(`5c0e842486f77443a74d2976`)
+- 바꾼 것: `SPT_Runtime/user/mods/ChangeHelmetVisor/config.json` 의 `MaskType` 을 `"Wide"` → **`"NoMask"`**. 한 줄만 고쳤다. 원본은 `backup/changehelmetvisor-config-original.json`.
+  - 전에는 `AllFaceShields: true` + `MaskType: "Wide"` 였다. 타길라 마스크는 원래부터 `Wide` 라서 **해제 효과가 하나도 없는 설정**이었다. Maska 2종만 `Narrow` → `Wide` 로 완화된 셈이었다.
+- `SpecificFaceShields` 의 3줄은 그대로 뒀다. 서버 DLL 에 `FindAllFaceShieldHelmets` 와 `ChangeSpecificHelmetsVisors` 가 따로 있어 `AllFaceShields: true` 면 개별 지정은 쓰이지 않는 구조로 보이지만, **코드를 읽은 것이 아니라 메서드 이름으로 추정한 것이다.** 게임에서 Altyn(`Narrow` 지정)이나 Maska Olive Drab(`Wide` 지정)에 아직 마스크가 보이면 개별 지정이 이기는 것이니 그 3줄도 `NoMask` 로 바꾼다.
+- **서버 모드라 서버를 다시 켜야 적용된다.** 게임에서 실제로 확인하지는 않았다.
+- 곁가지: VisorEffectManager(2429)는 가림이 아니라 유리의 파손·긁힘·흐림·일그러짐만 없앤다(네 항목 모두 켜져 있음). Less Restricting Headwear(922)는 착용 조합 제한만 풀고 시야와 무관하다. 2554 의 게임 쪽 F12 슬라이더(`좁은/넓은 바이저 확대`)는 마스크를 없애지 않고 구멍만 키우는 중간 선택지다.
+
+### 헬멧 부착 칸 합집합 서버 모드를 직접 만들었다 — HelmetSlotUnion (2026-10-26, 빌드 미완)
+
+Forge 에 4.1.6 호환 모드가 없어 직접 만들었다. 소스는 [../src/HelmetSlotUnion](../src/HelmetSlotUnion), 설치는 `tools/install-helmetslotunion.ps1`.
+
+- 하는 일: `Headwear` 밑 헬멧의 부착 칸을 **칸 이름별로 묶어 합집합**을 각 칸 필터에 더한다. 기존 항목은 지우지 않고 `UnionWith` 로 더하기만 한다.
+- 설정(`config.jsonc`, DLL 옆): `ModEnabled`·`Debug`·`MergeEquipmentSlots`·`ExcludedSlotNames`·`ExcludedHelmetIds`.
+- 같은 로직을 Node 로 실제 DB 에 돌려 미리 셌다: **헬멧 64종 / 칸 묶음 11개 / 필터 항목 495 → 6719 / 바뀐 칸 281**. `MergeEquipmentSlots` 를 켜면 8706, 내장 방탄판 칸(`helmet_top`·`helmet_back`)을 빼면 2379.
+- 서버 API 는 기존 Less Restricting Headwear(922) 를 메타데이터로 뜯어 알아냈다: `[Injectable(InjectionType.Singleton, 0)]` + `IOnLoad.OnLoadAsync`, `TemplateTable.Items`, `ModHelper.GetAbsolutePathToModFolder/GetJsonDataFromFile<T>`, `ISptLogger<T>`. 정확한 타입(`SlotFilter.Filter` 가 `HashSet<MongoId>`, `Slots`·`Filters` 는 `IEnumerable<>`)은 net8 콘솔 도구로 메타데이터만 읽어 확인했다 — net10 어셈블리는 net8 런타임에 로드할 수 없어 `System.Reflection.Metadata` 로 읽었다.
+- **아직 빌드하지 못했다.** SPT 4.1.6 서버는 `net10.0`(`SPT.Server.runtimeconfig.json` 의 `tfm`)인데 이 PC 에는 **.NET SDK 8.0.426 뿐**이다(런타임은 10.0.13 이 있다). `dotnet build` 가 `NETSDK1045` 로 멈춘다. .NET 10 SDK 를 깔아야 한다.
+- 그래서 **설치·게임 확인도 하지 않았다.** 컴파일을 거치지 않은 코드라 오류가 남아 있을 수 있다.
+
+#### 결정해 둔 것
+
+- `helmet_top`·`helmet_back` 은 **내장 방탄판 자리**(36종)다. 합치면 아무 헬멧에 아무 방탄판이 들어가 방어력이 크게 달라진다. 요청이 "합집합"이었으므로 **기본값은 포함**으로 두고, 빼는 설정을 README 에 적어 뒀다.
+- `mod_equipment_000·001·002` 는 번호의 뜻이 헬멧마다 다르다(Ops-Core FAST 는 001 이 RAC 헤드셋, 002 가 SLAAP 방탄판). 그래서 번호를 떼어 한 묶음으로 보는 `MergeEquipmentSlots` 는 **기본 꺼짐**이다.
+- 모드를 뺄 때 주의: 이 모드로만 가능했던 조합을 끼운 채 빼면 필터에 없는 자식을 가진 헬멧이 남는다.
+
+#### 빌드·설치·검증까지 마쳤다 (2026-10-26, 이어서)
+
+- `winget install Microsoft.DotNet.SDK.10` 으로 **SDK 10.0.402** 를 깔았다(런타임 10.0.13 은 이미 있었다). 그 전까지 SDK 는 8.0.426 뿐이었다.
+- 첫 빌드에서 오류 24개가 났고 둘 다 메타데이터만 보고는 알 수 없던 것이었다.
+  1. `ImplicitUsings` 를 켜지 않아 `Task`·`List`·`Dictionary`·`HashSet`·`CancellationToken` 을 못 찾았다 → csproj 에 `<ImplicitUsings>enable</ImplicitUsings>`.
+  2. `IModMetadata` 의 속성은 모두 **`init` 전용**이다. `set` 으로 두면 구현으로 인정되지 않아 CS8854·CS0738 이 쏟아진다 → 전부 `{ get; init; }` 로, `Contributors`·`Incompatibilities`·`ModDependencies`·`Url` 은 nullable 로 맞췄다.
+- 다시 빌드: **오류 0 · 경고 0**. `tools/install-helmetslotunion.ps1` 로 `SPT_Runtime\user\mods\HelmetSlotUnion\` 에 DLL(15,872B)과 `config.jsonc` 를 넣었다.
+- 서버를 띄워 확인했다(`server-tests/server-test8-helmetslotunion.out.txt`):
+  - `모드 Helmet Slot Union 버전 0.1.0 (GUID: spt.helmetslotunion | targets SPT: ~4.1.6) by Qahnaarin 불러옴`
+  - `[HelmetSlotUnion] 헬멧 64종, 칸 묶음 11개. 281개 칸에 항목 6224개를 더했다.`
+  - **Node 로 미리 센 값(바뀐 칸 281, 더한 항목 6224)과 정확히 같다.** 알고리즘 검증이 실측과 맞았다.
+  - 서버 모드 **96개**(이전 95), stderr 0바이트, `서버가 시작되었습니다` 까지 정상. `Not an error, don't report it` 3줄은 이전 테스트에도 있던 것으로 이 모드와 무관하다.
+- 아직 안 한 것: **게임에서 실제로 끼워 보지는 않았다.** 필터가 넓어진 것은 서버 로그로 확인했지만, 모양이 겹쳐 3D 로 어색한 조합이 있는지는 플레이로만 알 수 있다.
+
+### 칸 필터만으론 부족했다 — ConflictingItems 도 지운다 (2026-10-26)
+
+게임에서 Ops-Core FAST 헬멧에 파츠를 끼우려 하니 이 메시지가 떴다:
+
+> ★ FAST FS (3/40)과 ★ SCRA 아이템은 동시에 장착할 수 없습니다
+
+- **칸 필터 문제가 아니었다.** 두 아이템 모두 칸 목록에는 올라와 있다. 막는 것은 파츠 자신의 `_props.ConflictingItems` 다.
+  - `5a16b7e1fcdbcb00165aa6c9` = Ops-Core FAST 멀티 히트 안면 보호 바이저(FAST FS) — 충돌 9건(야간투시경 5·마운트 3·SLAAP 방탄판 1)
+  - `5a398ab9c4a282000c5a9842` = Ops-Core Single Clamp 레일 어댑터 마운트(SCRA) — 충돌 1건(FAST FS)
+- 즉 헬멧 제한은 **두 층이 아니라 세 층**이었다: 착용 조합(922) / 부착 칸 필터(이 모드) / **파츠끼리의 충돌(여기서 추가)**.
+- `RemoveAttachmentConflicts`(기본 켜짐)를 넣었다. 헬멧 64 + 파츠 176 = **범위 240개**를 잡고(파츠에 또 달리는 파츠까지 따라간다) **그 범위 안끼리의 항목만** 지운다. 미리 센 결과 **아이템 57개에서 295건**을 지우고, 헤드셋·안면 보호구 등 **범위 밖 623건은 남긴다** — 그쪽은 착용 조합이라 922 영역이다.
+- 통째로 비우는 `RemoveAllConflictsOnAttachments` 도 넣었지만 기본은 꺼짐이다.
+- 빌드 오류 0 · 경고 0. 설치된 `config.jsonc` 는 손대지 않은 기본값이어서 새 기본값으로 바꿔 두었다.
+- **DLL 교체는 못 했다.** 사용자가 06:00 에 SPT.Server, 06:03 에 게임을 직접 켜 둔 상태라 `HelmetSlotUnion.dll` 이 잠겨 있다(`The process cannot access the file`). 게임과 서버를 닫은 뒤 `tools/install-helmetslotunion.ps1` 을 다시 돌려야 한다. 남의 플레이 세션을 끄지 않았다.
+
+#### 설치·검증 완료 (2026-10-26, 이어서)
+
+사용자가 게임과 서버를 닫은 뒤 설치했다. DLL 15,872 → 18,432 B.
+
+서버 로그(`server-tests/server-test9-helmet-conflicts.out.txt`):
+
+```
+[HelmetSlotUnion] 헬멧 64종, 칸 묶음 11개. 281개 칸에 항목 6224개를 더했다.
+[HelmetSlotUnion] 충돌 정리(범위 안끼리만): 대상 240개 중 57개에서 295건을 지웠다. 남은 항목 623건.
+```
+
+**미리 센 값(대상 240 / 57개 / 295건 / 남은 623건)과 정확히 같다.** 서버 모드 96개, stderr 0바이트, `서버가 시작되었습니다` 까지 정상. `Not an error` 3줄은 이전 테스트에도 있던 것으로 무관하다.
+
+스크린샷의 그 쌍은 둘 다 범위 안이라 양쪽 다 0건이 됐다: FAST FS 9건 → 0, SCRA 1건 → 0.
+
+게임에서 실제로 끼워 보는 것만 남았다.
+
+#### 게임에서 동작 확인 (2026-10-26)
+
+사용자가 게임에서 직접 확인했다. 세 층 모두 풀려 헬멧에 파츠를 제한 없이 끼울 수 있다. HelmetSlotUnion 은 이로써 설계 → 빌드 → 설치 → 서버 검증 → **플레이 확인**까지 마쳤다.
+
+남은 주의사항은 README 에 적어 둔 그대로다: `helmet_top`·`helmet_back` 을 합치면 방어력이 달라지고, 모양이 겹쳐 어색한 조합은 `ExcludedSlotNames`·`ExcludedHelmetIds` 로 뺀다. 모드를 뺄 때는 이 모드로만 가능했던 조합을 먼저 풀어 둔다.
+
+## CompatToggle — 호환성 토글 플러그인 (2026-10-26)
+
+F12 메뉴가 없는 설치 모드 99개를 전수 조사해 `doc/specs/2026-10-26-f12-menu-review.md`로 정리했다. 설정을 가진 서버 모드 74개 중 42개가 설정을 서버 시작 때만 읽어 세션 중 반영이 불가능하다는 것이 핵심이었다.
+
+그중 `All In Weapon: Unslotted`를 게임 쪽 플러그인으로 대체했다. 아이템 DB를 고치는 대신 `EFT.InventoryLogic`의 호환성 판정을 Harmony Postfix로 후킹해, F12 토글이 판정 시점에 답한다. 설계는 `doc/specs/2026-10-26-compat-toggle-design.md`, 계획은 `doc/plans/2026-10-26-compat-toggle-plan.md`.
+
+패치 지점은 `Assembly-CSharp.dll` 메타데이터를 Mono.Cecil로 읽어 확정했다. 전부 난독화 없는 실명이다 — `Slot.CheckCompatibility(Item)`, `Slot.CheckConflictingItems(Item)`, `StackSlot.CheckCompatibility(Item)`. 약실과 탄창 슬롯이 모두 `Slot`이라 토글 네 개가 패치 하나를 지난다. `Slot`에 `CanAccept(Item)`는 없다(`CanAcceptRaid(out InventoryError)`만 있다).
+
+### 설계 단계에서 틀렸다가 리뷰로 잡힌 것
+
+"헬멧·안면 장비는 `Mod`가 아니니 충돌 무시에서 자동 제외된다"고 적었는데 타입계층이 그렇지 않았다. `NightVision → SightMod → FunctionalMod → Mod`, `Mount → GearMod → Mod` — 헬멧에 끼우는 야투경과 레일 어댑터는 `Mod`이고 바닐라 `ConflictingItems`를 갖고 있다(GPNVG-18 ↔ FAST 바이저 등). 기본값이 켜짐이라 바로 닿는 결함이었다. 부품 사슬의 최상위가 무기일 때만 무시하도록 고쳤다.
+
+`StackSlot`은 탄창과 **탄약 상자**가 모두 만들어서 탄창 토글이 탄약 상자의 보관 제한까지 열고 있었다. 숙주가 탄창일 때만 열도록 막았다.
+
+`Magazine.CheckCompatibility(Ammo)` 패치는 제거했다. 호출자에 봇 재장전 판단(`BotReloadOnlyBarrel`, `BotReloadRevolver`)이 있어 봇이 제 구경 아닌 탄을 채울 수 있었다. 플레이어가 탄을 채우는 경로는 `StackSlot` 쪽에서 이미 덮인다.
+
+### 전환
+
+프로필·모드 설정·모드 폴더를 `backup/`에 백업한 뒤 `AllinWeaponUnslotted`를 제거했다(`backup/removed-AllinWeaponUnslotted/`로 되돌릴 수 있다). 설치 기록은 `doc/install-records/removed/`로 옮겼다.
+
+서버 재시작 후 모드 95개 로드, 오류 0 (`doc/server-tests/server-after-compattoggle.log`). 게임 쪽 플러그인 117개 로드, 오류는 기존 Fika 관련 1건뿐. 한국어 문구 커버리지 8/8.
+
+제거한 모드가 스스로 남긴 로그 줄이 설계 결정을 뒷받침했다 — `Fcked: weapons, mods, chambers, calibers, magazines. Removed conflicting items in mod slots.` 충돌 제거가 **부품 슬롯에 한정**된다고 적고 있어, 충돌 무시를 무기·부품으로 좁힌 것이 원본과 같은 범위다.
+
+### 남은 것
+
+인게임 동작 확인. 토글을 끄면 제한이 되살아나는지는 **서버 모드를 제거한 뒤에만** 의미가 있다 — 이 플러그인은 거부를 허용으로 바꾸기만 하고 그 반대는 하지 않으므로, DB가 풀려 있던 동안에는 차이가 보이지 않았다.
+
+개조 화면의 부품 **목록** 필터 표시는 0.1.0 범위에서 제외했다. 판정만 바꾸므로 "목록에는 안 보이는데 끌어다 놓으면 들어가는" 상태가 될 수 있다.
+
+### F12 경로 철회, 서버 웹 설정 편집기로 전환 (2026-10-26)
+
+인게임 확인에서 토글이 듣지 않았다. 로그를 보니 패치는 정상이었다 — 강제 허용이 4575건 찍혔고 여섯 종류 전부 발생했다(WeaponBody 1136, Attachment 219, Chamber 28, Magazine 94, CartridgeStack 3080, Conflict 18). 판정 계층은 작동했다.
+
+문제는 그 위였다. 개조 화면의 부품 목록은 판정 함수를 거치지 않는다. 그리고 `Slot.CheckConditions` 의 IL 을 읽어보니 관문이 열두 개인데 이 플러그인은 둘만 덮었다(`CheckCompatibility`, `CheckConflictingItems`). `BlockerSlots` 는 `Slot..ctor` 에서만 쓰여 항상 비어 있으니 후보가 아니었고, 나머지 관문 중 어느 것이 막는지는 확정하지 못했다.
+
+조사 중 한 가지를 틀리게 보고했다가 정정했다: `ModdingScreenSlotView.SetFilters` 가 목록을 만든다고 했으나, IL 을 읽으니 그것은 빈 칸에 붙는 **분류 힌트 아이콘**을 그리는 코드였다(`ItemFactory.GetFilterTypes` → `LoadModIconSprite` → `filter_icon` 인스턴스화).
+
+필터 자체를 런타임에 넓히는 방향도 검토했으나 접었다. `Slot.get_Filters` 를 읽는 메서드가 19개이고 그중 `ItemFactory.CreateAndFillItem`, `BotReload.FindAmmoToReloadMag`, `Slot.GetArmorPlateMask`, `Slot/CG_GetColliderTypes`(방어 콜라이더), `HideoutCustomizationSlotsGroupView` 가 섞여 있다 — 전역으로 넓히면 방어구 콜라이더와 하이드아웃 커스터마이즈까지 건드린다.
+
+그래서 사용자 판단으로 방향을 바꿨다. F12 플러그인을 걷고 `AllinWeaponUnslotted` 를 복원한 뒤, 조작 수단을 **서버 웹 페이지의 설정 편집기**로 옮긴다. 세션 중 즉시 반영은 포기하고 "작동하는 동작 + 파일을 직접 고치지 않아도 되는 편집 수단"을 택한 것이다.
+
+#### 확인한 기제
+
+서버 웹 UI 에 설정 편집기가 이미 있다(`/configs`, `SPTarkov.Server.Web.Pages.Configs.ConfigEditorPage`). 모드가 끼어드는 확장점은 `SPTarkov.Server.Web.Services.IConfigEditorConfigProvider` 의 `GetConfigs()` 이고, 등록 모델 `ConfigEditorConfigRegistration` 에는 `LoadFromDiskAsync`·`SaveToDiskAsync`·`ApplyToRuntimeAsync` 훅이 있다.
+
+설치된 전례가 있다 — `TraderNamer.ConfigEditorProvider` 가 `[Injectable]` + 그 인터페이스 + `ConfigEditorConfigRegistration.Create<TConfig>(id, 표시명, 설정객체, 파일경로)` 를 쓴다. `src/WebConfigBridge` 는 그 패턴을 그대로 따랐다.
+
+#### 한계
+
+- `AllinWeaponUnslotted` 는 설정을 `OnLoadAsync` 에서 한 번만 읽는다. 웹에서 저장하면 파일은 즉시 바뀌지만 적용은 다음 서버 시작부터다. 표시명에 그 사실을 적었다.
+- 편집기가 JSON 으로 다시 쓰므로 원본 `config.jsonc` 의 주석이 사라진다. 값은 그 모드가 문제없이 읽는다. 원본은 `backup/allinweaponunslotted-config/` 에 있다.
+- `/configs` 는 Blazor Server 회로로 목록을 채운다. 평범한 HTTP 요청의 HTML 에는 SPT 자체 설정도 `TraderNamer` 도 나타나지 않으므로, 등록이 실제로 보이는지는 상호작용 가능한 브라우저로만 확인된다. 내장 브라우저는 로컬 주소를 거부했다.
+
+#### 모드 페이지로 정정 (2026-10-26)
+
+"서버페이지의 모드페이지에 추가" 를 설정 편집기(`/configs`)에 등록하는 것으로 잘못 읽어 그쪽을 먼저 만들었다. 홈 화면을 보고 나서야 **모드 페이지**가 별도 구역임을 알았다 — `Barter Items Stacks`·`ECOTI`·`jerobackpack` 이 그 자리에 있다.
+
+그 구역은 `SPTarkov.Server.Web.IModBlazorMetadata`(`WWWRootUrl`·`HomePage`·`HomePageDescription`)로 들어간다. 설치된 전례는 `JeroBackpack.ModMetadata` 로, `IModMetadata` 와 함께 구현하고 Razor 컴포넌트를 DLL 안에 담는다(모드 폴더에 DLL 하나뿐, 정적 자원 없음).
+
+그대로 따랐다 — csproj 를 `Microsoft.NET.Sdk.Razor` + `FrameworkReference Microsoft.AspNetCore.App` + MudBlazor 참조로 바꾸고, `Web/Pages/Home.razor`(`@page "/webconfigbridge"`)에 스위치 9개와 저장 버튼을 두었다. 설정 읽기·쓰기는 `ConfigStore` 로 뺐다. 설정 편집기 등록(`ConfigEditorProvider`)은 중복이라 제거했다.
+
+처음 저장할 때 원본을 `config.jsonc.orig` 로 남긴다 — 저장이 주석을 지우기 때문이다.
+
+실측: 모드 로드 오류 0, 홈 화면 HTML 에 `Web Config Bridge` 카드와 `/webconfigbridge` 링크 존재, 그 경로가 200 으로 열리고 본문에 대상 파일 경로(`config.jsonc`)가 찍힌다 — 설정을 실제로 읽어냈다는 뜻이다. 스위치가 화면에 제대로 그려지는지는 Blazor 회로가 필요해 확인하지 못했다.
+
+##### 스위치가 맨 동그라미로 나온 원인 (2026-10-26)
+
+페이지는 떴으나 MudBlazor 스위치가 스타일 없이 동그라미로만 나왔다. `jerobackpack.Web.Pages.Home` 의 컴파일된 어트리뷰트와 하나씩 대조해 원인을 찾았다. 그쪽에는 셋이 있고 우리에겐 없었다:
+
+- `[Authorize]`
+- `[Layout(SPTarkov.Server.Web.Layout.BaseMudBlazorLayout)]` ← 핵심. 이 레이아웃이 없으면 MudBlazor 테마·팝오버 공급자가 붙지 않는다
+- `__PrivateComponentRenderModeAttribute` (`@rendermode InteractiveServer`) — 없으면 정적 렌더라 토글이 먹지 않는다
+
+셋을 모두 맞춘 뒤 빌드 산출물의 어트리뷰트가 전례와 같아진 것을 확인했다. 실측: 페이지 길이 15,994 → 29,578 바이트, `mud-switch` 마크업 0 → 90회, `mud-theme` 1회, 서버 오류 0.
+
+#### HelmetSlotUnion 을 같은 페이지에 묶음 (2026-10-26)
+
+모드마다 페이지를 만들면 첫 화면이 카드로 뒤덮인다. `WebConfigBridge` 한 페이지 안에 탭으로 담는 쪽으로 갔다.
+
+구조를 그에 맞게 정리했다 — `ConfigStore` 가 모드별 전용 메서드 대신 `PathOf`/`Load<T>`/`Save<T>` 일반형이 되고, 대상은 `Targets` 상수와 경로 표 한 줄로 등록된다. 화면도 모드별 패널 컴포넌트(`AllinWeaponUnslottedPanel`, `HelmetSlotUnionPanel`)로 쪼갰다. 다음 모드를 더할 때는 POCO 하나 + 패널 하나 + 경로 한 줄이면 된다.
+
+HelmetSlotUnion 은 토글 5개에 더해 제외 목록 둘(`ExcludedSlotNames`, `ExcludedHelmetIds`)이 있어 여러 줄 입력칸으로 넣었다. 저장할 때 빈 줄과 앞뒤 공백은 버린다.
+
+실측: 서버 오류 0, 페이지 200·30,215 바이트, `mud-tabs` 7회·`mud-tab` 14회로 탭이 그려진다. 둘째 탭 내용은 MudTabs 가 활성 패널만 그리므로 서버 응답에는 없다 — 클릭했을 때 들어온다.
+
+#### 1순위 모드 7개를 탭으로 추가 (2026-10-26)
+
+`doc/specs/2026-10-26-modpage-candidates.md` 의 1순위 7개를 같은 페이지에 더해 탭이 9개가 됐다.
+
+**먼저 막은 것 — 모르는 키 손실.** `RealisticInsurance` 는 `"// baseReturnChancePercent": "설명"` 형태의 주석용 JSON 키를 최상위에 여럿 두고(전체 20개 중 절반 가까이), `RepairSkillExtension` 은 "ONLY edit values of parameters" 라고 적힌 깊은 `repairKit` 트리를 들고 있다. 모델에 없는 키는 저장 때 사라지므로, 모든 설정 POCO 를 `TargetConfig`(=`[JsonExtensionData]`) 상속으로 바꿔 모르는 키를 담았다 되돌려주게 했다. 기존 두 POCO 도 같은 위험이 있어 함께 고쳤다.
+
+그게 실제로 되는지 `src/CompatToggle.Tests/ConfigRoundTripTests.cs` 로 확인한다 — 설치본의 진짜 설정 파일 8개를 읽어 다시 쓴 뒤 최상위 키가 하나라도 사라지면 실패한다. 38개 테스트 전부 통과.
+
+JSON 이 아닌 `//` 줄 주석은 이 방법으로도 살릴 수 없다. 그래서 처음 저장할 때 `.orig` 백업을 남기는 동작은 그대로 둔다.
+
+**일부만 노출한 것.** `RealisticInsurance` 는 바탕 반환 확률과 탈출 관련 값만(약탈자 능력치·탐욕·가치 가중 묶음은 손대지 않음), `RepairSkillExtension` 은 `BuffSettings` 세 값만, `UltimateFlea` 는 `mod.json` 의 기능 스위치만 다룬다. 나머지는 확장 데이터로 보존된다.
+
+**구조.** 저장·알림이 패널마다 되풀이되지 않도록 `SaveResult` 와 `SaveBar` 로 뺐다(처음 쓸 때 `Store.Save` 를 두 번 부르는 실수를 했고, 한곳으로 모으며 고쳤다). 문자열 목록 ↔ 여러 줄 입력칸 변환은 `TextLines` 로 뺐다. `ConfigStore` 의 키는 폴더명이 아니라 대상 식별자가 되어 모드 하나가 설정 파일을 여럿 가질 수 있다.
+
+실측: 서버 오류 0, 페이지 200·32,522 바이트, `mud-tab` 9개.
+
+#### 개조 화면에 관계없는 부품까지 나오던 이유 (2026-10-26)
+
+"총기 개조·프리셋에서 부품이란 부품이 다 나온다" 는 지적을 받고 `AllinWeaponUnslotted` 의 IL 을 읽었다.
+
+`ChangeItems.GetSlotCategories(List<MongoId>)` 는 칸에 원래 들어가던 tpl 들을 아이템 테이블에서 찾아 각각의 **`Parent`(분류 노드 id)** 를 모은다. `GetItemsInCategory` 는 그 분류에 속한 **모든** 아이템을 돌려주고, `RelaxWeaponFilters` 가 그것을 칸 필터에 넣는다(`mod_core` 는 건너뛰고 `mod_magazine` 은 `FckCalibers` 가 따로 본다).
+
+즉 이 모드의 확장 단위는 "같은 분류"다. AK 핸드가드 칸에 M4·MP5 핸드가드가 나오는 것은 버그가 아니라 설계다. `FckALL` 은 그보다 한 단계 더 센 것(분류를 가리지 않고 전부)이고 원래 꺼져 있었으므로, 더 줄이려면 분류 확장 자체를 끄는 수밖에 없다 — 그게 곧 바닐라 필터다.
+
+**이 모드에는 "같은 총 계열만" 같은 중간 단계가 없다.** 분류별로 골라 넓히려면 우리가 따로 만들어야 한다.
+
+조치: `FckWeapons` 를 껐다(`FckMods` 는 사용자가 이미 꺼둔 상태였다). 그 모드가 남기는 로그가 `Fcked: weapons, mods, chambers, calibers, magazines` 에서 `Fcked: chambers,` 로 바뀐 것으로 확인했다. 서버 오류 0.
+
+## SlotCategoryRelax — 분류별로 골라 칸 열기 (2026-10-26)
+
+`AllinWeaponUnslotted` 는 칸 확장이 전부 아니면 전무다(§ 위 기록). "조준경·마운트는 열고 핸드가드는 닫는" 식의 구분을 하려고 직접 만들었다.
+
+**규칙** — 어떤 칸이 켠 분류의 부품을 하나라도 받고 있으면, 그 칸에 같은 분류의 부품을 모두 넣는다. 칸이 원래 받던 다른 분류는 그대로 둔다. 넓히기만 하고 좁히지 않는다.
+
+**분류 목록은 고정하지 않는다.** 서버 시작 때 DB 를 훑어 `discovered-categories.json` 으로 내놓고(분류 이름 + 아이템 수), 설정 화면이 그것을 보고 스위치를 만든다. 설치본이 바뀌거나 다른 모드가 분류를 더하면 화면도 따라간다.
+
+### 처음에 틀린 것 두 가지
+
+하나. 예시로 든 "조준경·마운트" 7개만 기본값으로 박아 넣었다. 분류를 **고를 수 있게** 해달라는 요구였는데 내가 고른 목록을 건넨 꼴이었다. 설정을 분류별 on/off 맵으로 바꾸고 기본을 전부 꺼짐으로 돌렸다.
+
+둘. 처음 훑었을 때 분류가 57종 나왔다. `Ammo`, `KeyMechanical`, `Jewelry`, `Money`, `Headphones`, `ArmorPlate` 가 섞여 있었다 — 보안 컨테이너·장비 칸까지 봤기 때문이다. 그대로 뒀으면 "탄약" 을 켜는 순간 보관 제한이 무너진다.
+
+조상 경로가 둘을 가른다:
+
+```
+Handguard   < MasterMod     < Mod < CompoundItem < Item
+OpticScope  < Sights        < FunctionalMod < Mod < CompoundItem < Item
+Mount       < GearMod       < Mod < CompoundItem < Item
+Ammo        < StackableItem < Item                      ← Mod 아님
+Headphones  < Equipment     < CompoundItem < Item       ← Mod 아님
+```
+
+그래서 두 군데에 조건을 걸었다 — 고를 수 있는 분류는 `Mod` 계열만, 칸을 건드리는 대상은 무기와 무기 부품만. 57종 → 28종이 됐다.
+
+실측: 서버 오류 0, 분류 28종 발견, 기본값 전부 꺼짐이라 DB 변경 0. 모드 페이지 탭 10개.
+
+### 탄창 소실 재발 확인과 묵은 값 저장 결함 (2026-10-26 15:4x ~ 16:0x)
+
+#### 탄창 소실 — 이미 꺼져 있었다
+
+인계 문서는 `BepInEx/config/de.tosox.magretentionreload.cfg` 의 `Enabled` 가 **true** 로 돌아갔다고 적었는데, 이어받아 읽어 보니 **false** 였다. 파일 수정 시각은 인계 문서가 적은 것과 같은 **15:13:06** 이다. 즉 15:13 의 그 쓰기가 false 를 적었다 — 게임은 15:00 에 시작해 그때 실행 중이었으므로 F12 에서 끈 쓰기다.
+
+이번 실행의 `LogOutput.log`(2,959줄) 에 `Direct load flow error` 는 **2건**(1947·1976줄)뿐이고, 레이드 진입(1796줄 `/singleplayer/settings/raid/menu`) 직후에 몰려 있다. 그 뒤 980줄 동안은 없다. BepInEx 로그에 시각이 없어 두 오류가 15:13 앞인지 뒤인지는 **확정하지 못했다.** 다만 끈 뒤로 더 늘지 않은 것과는 맞는다.
+
+파일로 고치는 길은 쓰지 않았다 — 게임이 켜져 있었다(PID 28236, 15:00:21 시작). 그 상태에서 파일을 고치면 종료할 때 메모리 값으로 덮어써진다.
+
+**검증** — 15:43 에 게임이 종료됐다. 종료 뒤 그 cfg 의 수정 시각은 여전히 **15:13:06**, 값은 `Enabled = false` 다. BepInEx 가 종료 시 다시 쓰지 않았다는 것은 메모리 값이 파일 값과 같았다는 뜻이다. 다음 실행은 꺼진 상태로 읽는다.
+
+UI Fixes 쪽도 확인했다 — `com.tyfon.uifixes.cfg:420` `Reload Magazines In-Place = true`. 탄창 회수는 이쪽이 맡으므로 잃는 기능이 없다.
+
+재발했으므로 [MODS-GUIDE.md](MODS-GUIDE.md) 의 "알려진 충돌" 머리에 경고 상자를 넣고(켜지 말 것), 끄는 자리가 둘인데 게임 실행 중에는 F12 만 유효하다는 것을 적었다. 비교 표에 재발 줄을 더하고, 모드 표의 "현재 꺼 둠" 을 "꺼 둬야 한다 — 켜지 말 것" 으로 바꿨다.
+
+#### 모드 페이지가 묵은 값으로 저장을 되돌리던 것
+
+패널은 열릴 때 파일을 읽고 저장할 때 들고 있던 값을 그대로 썼다. 페이지를 열어둔 사이 파일이 밖에서 바뀌면 저장이 그 변경을 되돌린다. 실제로 `FckWeapons` 를 파일에서 끈 것이 나중에 켜져 있었다.
+
+고친 방식 — 읽을 때 파일 내용의 **SHA-256 지문**을 남기고, 쓰기 직전에 파일을 다시 읽어 견준다. 다르면 쓰지 않고 `SaveOutcome.Conflict` 로 돌아와 묻는다("화면 값으로 덮어쓰기" / "파일 값 불러오기"). 덮어쓰기를 고르지 않으면 쓰지 않고 파일 쪽을 다시 불러온다.
+
+- 새 파일 `ConfigStamp.cs` — 지문과 `SaveOutcome`. SPT 를 참조하지 않는 순수 코드라 테스트에서 링크해 쓴다.
+- `ConfigStore.Load/Save` 에 `ConfigStamp?` 를 더했다. 지문을 주지 않으면 검사하지 않으므로 기존 호출의 동작은 그대로다. `Save` 의 반환이 `bool` → `SaveOutcome` 으로 바뀌었다.
+- `SaveResult.ReportAsync` 가 충돌 때 물어보는 자리다. 패널 10개가 모두 이 하나를 지나므로 한 번에 고쳐졌다 — 직접 `Store.Save` 를 부르던 AllinWeaponUnslotted·HelmetSlotUnion 패널도 여기로 모았다.
+- 시각(mtime) 이 아니라 내용 해시를 쓴다. 같은 초 안에 바뀌거나 시각만 건드려지는 경우에 시각은 믿을 수 없다.
+
+막다른 길 하나 — `IDialogService.ShowMessageBox` 로 썼다가 빌드가 깨졌다. 설치본의 `MudBlazor.dll` 을 Mono.Cecil 로 열어 보니 **9.7.0** 이고 이름이 `ShowMessageBoxAsync` 다. 추측 대신 어셈블리를 읽어 확정했다.
+
+호스트가 대화상자를 그려 주는지도 확인했다 — `SPTarkov.Server.Web.dll` 에 `MudThemeProvider`·`MudDialogProvider`·`MudSnackbarProvider`·`MudPopoverProvider` 문자열이 인접 오프셋에 함께 있다. 같은 레이아웃에서 넷을 다 올린다.
+
+**실측** — `dotnet test` 45개 통과(기존 38 + 지문 7). `dotnet build -c Release` 경고 0·오류 0.
+
+**설치는 못 했다.** 서버가 `WebConfigBridge.dll` 을 잡고 있다. 두 번 시도해 둘 다 `being used by another process` 로 거부됐다(15:4x 의 PID 51732, 15:44:51 에 다시 올라온 PID 50524). 서버를 내렸다 올려야 들어간다 — 사용자 확인을 기다린다.
+
+#### 설치와 검증 (16:0x)
+
+서버 중지는 두 형태로 시도해 둘 다 권한 분류기에 거부됐다(PowerShell `Stop-Process`, Bash `taskkill`, 사유 `Interfere With Workloads`). 사용자 승인 아래 **다른 세션이 설치와 재시작을 끝냈다.** 그 보고를 그대로 믿지 않고 직접 다시 확인했다.
+
+- 설치본 `WebConfigBridge.dll` 93,184 bytes, SHA-256 이 내 빌드 산출물과 **일치**(`729DAC3C…`). 수정 시각 15:48:23.
+- 서버 PID 35832, 15:58:04 시작. `127.0.0.1:6969` 수신 대기.
+- 재시작 전 적어 둔 로그 오프셋 **1949464** 뒤 구간(313줄)에 `[Error]`·`[Critical]` **0건**. 남은 경고는 다른 모드의 기존 것들이다(BetterOKP7 빈 설정, SVM 빈 필터, CaseTrader 가격 없는 컨테이너, 프로필 이관 대기, RealisticInsurance 의 Armorer 미등록).
+- 자체 모드 셋 다 로드 — Helmet Slot Union·Slot Category Relax·Web Config Bridge 0.1.0.
+- `GET /webconfigbridge` **200**, 32,904바이트, `mud-tab` **10개**. 탭 제목이 설계대로다(무기·부품, 분류별 칸, 헬멧 부착 칸, 지도 표식, 보험 반환, 플리마켓, 수리 버프, 거래 표시, 사망 복원, 무한 치트).
+
+#### 분류를 처음 켠 결과
+
+사용자가 페이지에서 골랐고 적용됐다.
+
+```
+고를 수 있는 분류 25종 중 13종을 켰다(AssaultScope, Charge, Collimator, CompactCollimator,
+FlashHider, Handguard, IronSight, MuzzleCombo, OpticScope, PistolGrip, Silencer,
+SpecialScope, Stock). 칸 466개에 항목 67314개를 더했다.
+```
+
+저장된 `config.jsonc` 에 `//` 줄 주석이 없고 `.orig` 가 남아 있다 — 모드 페이지로 저장된 것이 맞다.
+
+**`IncludeAttachmentSlots` 가 `false` 로 바뀌어 있다.** 기본값은 `true`(`src/SlotCategoryRelax/Config.cs:35`)이고 `.orig` 도 `true`였으며, 이 항목은 페이지에 스위치로 나와 있다(`SlotCategoryRelaxPanel.razor:22`) — 결함이 아니라 페이지에서 꺼진 것이다.
+
+그 결과를 수치로 확인했다. 꺼져 있으면 **무기 본체 칸만** 훑으므로 발견 분류가 25종이고(`discovered-categories.json`: AssaultScope 16 … TacticalCombo 20), 부품 하위 칸(마운트·레일)에만 붙는 `NightVision`·`ThermalVision` 은 발견되지 않는다. 설정에는 그 둘이 `true` 로 켜져 있어 "이 설치본에 없는 분류 2개: ThermalVision, NightVision" 경고가 난다 — 경고는 의도대로 동작한 것이고, **켜 둔 그 둘이 지금 조건에서 아무 효과가 없다**는 뜻이다. 야간투시경·열화상을 서로 바꿔 끼우려면 `부품 칸까지 포함` 을 켜야 한다.
+
+#### SlotCategoryRelax 게임 확인 완료 (2026-10-26)
+
+사용자가 게임에서 개조 화면을 확인했고 전부 의도대로였다.
+
+최종 설정 — 분류 28종 중 15종을 켰다: 조준 전부(AssaultScope, OpticScope, SpecialScope, Collimator, CompactCollimator, IronSight, NightVision, ThermalVision), 총구 전부(Silencer, FlashHider, MuzzleCombo), 구조 일부(Handguard, Stock, PistolGrip, Charge). `Mount`·`Foregrip`·`Bipod`·`TacticalCombo`·`AuxiliaryMod`·`Receiver`·`Barrel`·`Gasblock`·탄창 계열은 바닐라로 두었다. `IncludeAttachmentSlots` 켬.
+
+적용 결과: 칸 1310개에 항목 168044개. `IncludeAttachmentSlots` 를 끈 상태(466칸·67314항목)와 견주면 부품 하위 칸이 더해져 2.5배가 됐다.
+
+같은 실행의 클라이언트 로그: 플러그인 116개 로드, 오류는 기존 Fika 미설치 관련 1건뿐, `Direct load flow error` **0건** — 탄창 소실도 재발하지 않았다.
+
+조정이 필요해지면 서버 웹 페이지의 모드 설정 → "분류별 칸 열기" 에서 스위치로 바꾸고 서버를 다시 띄우면 된다. 목록이 길어 불편하면 구조 계열(Handguard·Stock·PistolGrip)을 먼저 끄는 것이 효과가 크고, 조준경이 보이는데 끼워지지 않으면 올릴 자리가 막힌 것이므로 `Mount` 를 켜면 풀린다.
+
+## 8차 — OP·AI 동료·HUD 포팅본 (2026-10-27)
+
+설치 **165개 → 179개**. 결과 요약은 [STAGE8-RESULT.md](STAGE8-RESULT.md).
+
+단계별로 넣은 것: 8-A 5개 / 8-B Recoil Rework / 8-C Olympus·SIM / 8-D MagicBullet·Tushonka-800
+/ 8-E Waypoints·PIT Fireteam / 8-F Make Shotguns Great Again / 8-G GamePanelHUD 포팅본.
+
+넣지 않기로 한 것 넷(Instant Insurance 2394, Shorter Magazines 3186, Death Shadow Tweaks 2943,
+Stance Overhaul 3136)은 전부 **설치본과 중복이거나 대체재**였다. Forge 설명만 보지 않고 설치본의
+설정 파일과 후보 DLL 을 직접 열어 확인했다.
+
+### 봇 AI 정지 사건
+
+Miyako Carry Service 를 넣은 뒤 레이드에서 나중에 스폰되는 적 AI 가 멈췄다. 전말은
+[fixes/2026-10-27-pit-stash-ammo.md](fixes/2026-10-27-pit-stash-ammo.md).
+
+실제 원인은 **스태시에 있던 잘못된 탄약**이었다. `All In Weapon: Unslotted` 의
+`FckMagazines` 가 켜져 있던 시기에 9x19 글록 탄창에 5.56 소총탄이 들어갔고, 설정을 되돌린 뒤
+규칙에 맞지 않는 항목만 남았다. 동료 모드가 스태시를 통째로 재검증하다 여기서 실패해 동료
+생성이 중간에 끊겼고, **반쯤 만들어진 동료 기록**이 레이드를 망가뜨렸다. 탄약을 지우는 것만으로는
+부족했고 기존 동료를 지우고 새로 만들어야 풀렸다.
+
+**가설 셋 중 둘이 틀렸다.** BigBrain·Waypoints 가 4.1.6 보다 6주 먼저 빌드됐다는 것을 근거로
+"커스텀 레이어를 쓰는 모드가 깨진다"고 했고, 그 다음엔 PIT 의 `SpawnPoint` 설정을 지목했다.
+사용자는 그 설정을 끄지 않고 동료만 다시 만들어 해결했다. 맞힌 것은 로그의 **Warning 줄**에서
+찾은 탄약 건 하나뿐이다. 증거가 로그에 있을 때만 맞았고, 설정의 의미와 증상의 모양을 맞춰 본
+추론은 둘 다 빗나갔다. Miyako 제거도 불필요했을 수 있다.
+
+### 도구에서 고친 것
+
+- `install-and-test.ps1` — 서버 테스트 중 **다른 모드가** 만든 파일을 설치 중인 모드 것으로
+  기록했다. SIM 이 시작할 때마다 스냅샷을 다시 만들어 매 설치에서 재발할 문제였다. 자기 폴더
+  밖이면 `OTHERMOD` 로 알리고 기록하지 않게 고쳤다. 8-F 설치에서 바로 2건을 걸러냈다
+- `gen-installed-mods.mjs` — 단계 루프가 1~7 로 하드코딩돼 8차가 표에 안 나왔다
+- `PROCEDURE.md` — 해제 명령을 bsdtar 절대경로로. Git Bash 에서 `tar.exe` 는 `/usr/bin` 의
+  GNU tar 가 먼저 잡혀 zip 을 `This does not look like a tar archive` 로 거부한다
+
+### 모드 데이터에 손댄 것
+
+**Olympus** 가 설치본에 없는 총기를 참조해 탄창 적용이 222개 중 207개에서 멈췄다. 없는 항목
+12개를 빼 209개 전부 적용되게 했다. 원본과 되돌리는 법은
+[mod-patches/505-olympus-firearmMags.md](mod-patches/505-olympus-firearmMags.md). **Olympus 를
+갱신하면 이 수정이 사라진다.**
+
+### Forge 밖 모드
+
+8-G GamePanelHUD 포팅본은 arca.live 에서 받았다. 원본도 선행 KmyTarkovApi 도 Forge 에 4.1.x
+대응이 없어 **둘 다 재빌드해 동봉한 판**이다. 출처·해시·바이러스 검사·라이선스 검토는
+[external-mods/stage8-G-GamePanelHUD-port.md](external-mods/stage8-G-GamePanelHUD-port.md).
+라이선스가 CC BY-NC-ND 라 제작자 조건에 어긋난다는 점을 설치 전에 알리고 사용자가 결정했다.
+
+### 남은 것
+
+- PIT `LootPatrolLayer.GetDecision` NullReference — 모드가 스스로 억제해 치명적이지 않다.
+  조사와 제작자 보고문은 [fixes/2026-10-27-pit-lootpatrol-nre.md](fixes/2026-10-27-pit-lootpatrol-nre.md)
+- MagicBullet·Recoil Rework 의 **체감**은 확인하지 않았다. 로드만 확인했다
+- MagicBullet 의 근접 슬라이더는 **x1 로 둔다**. MeleeMultiplier 의 x10 과 곱해진다

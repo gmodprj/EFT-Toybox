@@ -1,0 +1,67 @@
+@inject ConfigStore Store
+@inject ISnackbar Snackbar
+@inject IDialogService Dialog
+
+<MudText Typo="Typo.h6" GutterBottom="true">Realistic Insurance</MudText>
+<MudText Typo="Typo.body2" Class="mb-4">
+    보험 물건이 돌아올 확률을 무엇에게 죽었는지에 따라 나눈다.
+</MudText>
+
+@if (_config is null)
+{
+    <MudAlert Severity="Severity.Warning">
+        설정 파일을 찾지 못했다. <code>user/mods/RealisticInsurance</code> 를 확인하라.
+    </MudAlert>
+}
+else
+{
+    <MudAlert Severity="Severity.Info" Class="mb-4" Dense="true">
+        여기서는 바탕 확률만 다룬다. 약탈자 능력치·탐욕·가치 가중 묶음은 손대지 않고 그대로 둔다.
+    </MudAlert>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudSwitch T="bool" @bind-Value="_config.Enabled" Color="Color.Primary" Label="모드 사용" />
+        <MudSwitch T="bool" @bind-Value="_config.LogRolls" Color="Color.Primary" Label="굴림 기록 남기기" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">무엇에게 죽었나 — 기본 반환 확률 (%)</MudText>
+        <MudNumericField T="double" @bind-Value="_config.BaseReturnChancePercent.Pmc"
+                         Label="PMC" Min="0" Max="100" Variant="Variant.Outlined" Class="mt-2" />
+        <MudNumericField T="double" @bind-Value="_config.BaseReturnChancePercent.PlayerScav"
+                         Label="플레이어 스캐브 — 잘 털고 잘 빠져나간다" Min="0" Max="100" Variant="Variant.Outlined" Class="mt-2" />
+        <MudNumericField T="double" @bind-Value="_config.BaseReturnChancePercent.Scav"
+                         Label="AI 스캐브 — 조금만 집어가고 자주 죽는다" Min="0" Max="100" Variant="Variant.Outlined" Class="mt-2" />
+        <MudNumericField T="double" @bind-Value="_config.BaseReturnChancePercent.Boss"
+                         Label="보스" Min="0" Max="100" Variant="Variant.Outlined" Class="mt-2" />
+        <MudNumericField T="double" @bind-Value="_config.BaseReturnChancePercent.Other"
+                         Label="그 밖" Min="0" Max="100" Variant="Variant.Outlined" Class="mt-2" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">죽인 쪽의 탈출 여부 (%)</MudText>
+        <MudNumericField T="double" @bind-Value="_config.LooterExtractedChancePercent"
+                         Label="탈출했을 기본 확률" Min="0" Max="100" Variant="Variant.Outlined" Class="mt-2" />
+        <MudNumericField T="double" @bind-Value="_config.LooterDiedBonusPercent"
+                         Label="탈출하지 못했을 때 더해지는 값" Min="0" Max="100" Variant="Variant.Outlined" Class="mt-2" />
+    </MudPaper>
+
+    <SaveBar OnSave="Save" OnReload="Reload" Path="@Store.PathOf(ConfigStore.Targets.RealisticInsurance)" />
+}
+
+@code {
+    private RealisticInsuranceConfig? _config;
+    private readonly ConfigStamp _stamp = new();
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload() =>
+        _config = Store.Load<RealisticInsuranceConfig>(ConfigStore.Targets.RealisticInsurance, _stamp);
+
+    private async Task Save()
+    {
+        if (_config is null) return;
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.RealisticInsurance, _config, _stamp, Reload);
+    }
+}

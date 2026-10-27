@@ -1,0 +1,3 @@
+2955__QuickSell-v4.3.0	BepInEx\plugins\QuickSell\config.json
+2955__QuickSell-v4.3.0	BepInEx\plugins\QuickSell\QuickSell.dll
+2955__QuickSell-v4.3.0	SPT_Runtime\user\mods\QuickSell\BlackHawk.QuickSell.Server.dll

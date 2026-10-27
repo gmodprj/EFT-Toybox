@@ -1,0 +1,43 @@
+{
+  "stage": "stage7-E",
+  "spt": "4.1.6",
+  "note": "7-E 대형. 사용자 결정으로 Pack n Strap + Painter·Tactical Gear Component 만 설치. Kalashnikov(3010)는 제외(기존 AK 관련 모드와 간섭 우려) — 받아 둔 파일은 downloads/extracted 에 남아 있다",
+  "mods": [
+    {
+      "group": "7E-1",
+      "id": 1278,
+      "name": "WTT - Pack 'n' Strap",
+      "version": "2.1.1",
+      "size": 316944826,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/1278/wtt-pack-n-strap/2.1.1"
+    },
+    {
+      "group": "7E-제외",
+      "id": 3010,
+      "name": "Kalashnikov Enhanced Modding ",
+      "version": "4.1.2",
+      "size": 272992528,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/3010/kalashnikov-enhanced-modding/4.1.2"
+    },
+    {
+      "group": "7E-3a",
+      "id": 1125,
+      "name": "Tactical Gear Component",
+      "version": "3.0.0",
+      "size": 656654851,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/1125/tactical-gear-component/3.0.0"
+    },
+    {
+      "group": "7E-3b",
+      "id": 1025,
+      "name": "Painter",
+      "version": "3.0.0",
+      "size": 22220369,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/1025/painter/3.0.0"
+    }
+  ]
+}

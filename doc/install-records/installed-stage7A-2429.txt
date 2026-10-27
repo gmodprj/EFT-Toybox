@@ -1,0 +1,1 @@
+2429__VisorEffectManager	BepInEx\plugins\VisorEffectManager.dll

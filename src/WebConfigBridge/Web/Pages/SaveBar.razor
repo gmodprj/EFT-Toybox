@@ -1,0 +1,19 @@
+@* 패널마다 같은 저장·다시 불러오기 줄과 파일 경로를 쓴다. *@
+
+<MudStack Row="true" Spacing="2">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnSave">저장</MudButton>
+    <MudButton Variant="Variant.Outlined" OnClick="OnReload">다시 불러오기</MudButton>
+</MudStack>
+
+<MudText Typo="Typo.caption" Class="mt-4">파일: <code>@Path</code></MudText>
+
+@code {
+    [Parameter, EditorRequired]
+    public EventCallback OnSave { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback OnReload { get; set; }
+
+    [Parameter]
+    public string? Path { get; set; }
+}

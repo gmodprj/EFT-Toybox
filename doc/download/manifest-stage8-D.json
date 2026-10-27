@@ -1,0 +1,25 @@
+{
+  "stage": "stage8-D",
+  "spt": "4.1.6",
+  "note": "8-D Forge 치트 경고 모드. 넣을지 따로 결정한다.",
+  "mods": [
+    {
+      "group": "8D-1",
+      "id": 3065,
+      "name": "MagicBullet",
+      "version": "1.0.0",
+      "size": 4027,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3065/magicbullet/1.0.0"
+    },
+    {
+      "group": "8D-2",
+      "id": 3169,
+      "name": "Tushonka-800: Combat Augmentation System",
+      "version": "1.0.1",
+      "size": 43577,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3169/tushonka-800-combat-augmentation-system/1.0.1"
+    }
+  ]
+}

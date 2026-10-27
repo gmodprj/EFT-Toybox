@@ -1,0 +1,35 @@
+[
+  {
+    "id": 2458,
+    "name": "Bela.s.Speedloader",
+    "version": "1.2.4",
+    "file": "2458__SPTarkov.Speedloader.zip",
+    "bytes": 25774,
+    "expected": 23781,
+    "sizeOk": false,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2955,
+    "name": "Quick Sell",
+    "version": "4.3.0",
+    "file": "2955__QuickSell-v4.3.0.zip",
+    "bytes": 51017,
+    "expected": 51017,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3108,
+    "name": "Infinite Everything",
+    "version": "2.5.3",
+    "file": "3108__InfiniteEverything-2.5.3.zip",
+    "bytes": 56870,
+    "expected": 56870,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

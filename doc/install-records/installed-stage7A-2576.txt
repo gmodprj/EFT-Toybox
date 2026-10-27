@@ -1,0 +1,3 @@
+2576__AllinWeaponUnslotted	SPT_Runtime\user\mods\AllinWeaponUnslotted\AllinWeaponUnslotted.dll
+2576__AllinWeaponUnslotted	SPT_Runtime\user\mods\AllinWeaponUnslotted\config\defaultConfig.jsonc
+2576__AllinWeaponUnslotted	SPT_Runtime\user\mods\AllinWeaponUnslotted\config\config.jsonc

@@ -1,0 +1,49 @@
+{
+  "guid": "net.liquidwarp.armorexpert",
+  "name": "방어구 정보 (Armor Expert)",
+  "sections": {
+    "Inspect Stats": "살펴보기 수치"
+  },
+  "settings": {
+    "Inspect Stats/Deflection chance": {
+      "name": "도탄 확률",
+      "desc": "입사각에 따라 방탄이 탄을 튕겨낼 확률을 보여 준다."
+    },
+    "Inspect Stats/Penetrated at 50/100%": {
+      "name": "관통 50/100% 기준",
+      "desc": "지금 내구도에서 방탄을 50%, 100% 확률로 뚫는 데 필요한 관통력을 보여 준다. 탄이 맞을 때의 관통력과 비교하면 되는데, 그 값은 거리가 멀어지면 떨어진다."
+    },
+    "Inspect Stats/Blunt at pen": {
+      "name": "둔력 피해 비율",
+      "desc": "둔력 피해 비율과 그것이 적용되는 관통력 구간을 보여 준다. 탄이 뚫지 못했을 때 피해 중 둔력으로 들어오는 비율이다."
+    },
+    "Inspect Stats/Soft blunt reduction": {
+      "name": "연성 방탄 둔력 감소",
+      "desc": "탈착식 방탄판이 연성 방탄 위에 있을 때 줄여 주는 둔력 피해를 보여 준다. 이 판 뒤에 연성 방탄이 있으면 둔력 피해가 그만큼 줄어든다."
+    },
+    "Inspect Stats/Effective durability": {
+      "name": "실효 내구도",
+      "desc": "재질의 파괴 난이도를 반영한 방탄 내구도를 보여 준다."
+    },
+    "Inspect Stats/Sound reduction": {
+      "name": "소리 감소",
+      "desc": "헬멧과 얼굴 보호구가 줄이는 소리를 보여 준다. 헤드셋을 쓰지 않은 때만 적용되고, 부착물에 따라 달라질 수 있다."
+    },
+    "Inspect Stats/Self noise": {
+      "name": "내 소리 크기",
+      "desc": "헤드셋에서 자기 소리가 들리는 크기를 보여 준다. 발소리, 옷 스치는 소리 등이다."
+    },
+    "Inspect Stats/Ambient noise": {
+      "name": "주변 소리 크기",
+      "desc": "헤드셋에서 주변 소리가 들리는 크기를 보여 준다."
+    },
+    "Inspect Stats/Distortion": {
+      "name": "소리 일그러짐",
+      "desc": "헤드셋의 소리 일그러짐 정도를 보여 준다."
+    },
+    "Inspect Stats/Tone": {
+      "name": "음색",
+      "desc": "헤드셋의 이퀄라이저 설정을 보여 준다."
+    }
+  }
+}

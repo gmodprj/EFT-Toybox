@@ -1,0 +1,54 @@
+@page "/webconfigbridge"
+@* 서버 웹 UI 의 다른 모드 페이지와 같은 조건으로 그린다(전례: jerobackpack.Web.Pages.Home).
+   레이아웃이 없으면 MudBlazor 공급자가 붙지 않아 스위치가 맨 동그라미로 나오고,
+   렌더 모드가 없으면 정적 렌더라 토글이 먹지 않는다. *@
+@attribute [Authorize]
+@layout SPTarkov.Server.Web.Layout.BaseMudBlazorLayout
+@rendermode InteractiveServer
+
+<PageTitle>모드 설정 — SPT 서버</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-6">
+
+    <MudText Typo="Typo.h4" GutterBottom="true">모드 설정</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">
+        자체 편집 수단이 없는 서버 모드의 설정을 여기서 고친다.
+        저장하면 파일은 바로 바뀌지만 <b>적용은 다음 서버 시작부터</b>다 —
+        이 모드들은 설정을 서버 시작 때 한 번만 읽는다.
+        처음 저장할 때 원본을 <code>.orig</code> 로 남긴다. 저장은 주석을 지운다.
+    </MudText>
+
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-4">
+        <MudTabPanel Text="무기·부품·탄약 호환">
+            <AllinWeaponUnslottedPanel />
+        </MudTabPanel>
+        <MudTabPanel Text="분류별 칸 열기">
+            <SlotCategoryRelaxPanel />
+        </MudTabPanel>
+        <MudTabPanel Text="헬멧 부착 칸">
+            <HelmetSlotUnionPanel />
+        </MudTabPanel>
+        <MudTabPanel Text="지도 표식">
+            <DynamicMapsPanel />
+        </MudTabPanel>
+        <MudTabPanel Text="보험 반환">
+            <RealisticInsurancePanel />
+        </MudTabPanel>
+        <MudTabPanel Text="플리마켓">
+            <UltimateFleaPanel />
+        </MudTabPanel>
+        <MudTabPanel Text="수리 버프">
+            <RepairSkillPanel />
+        </MudTabPanel>
+        <MudTabPanel Text="거래 표시">
+            <TradeMarkerPanel />
+        </MudTabPanel>
+        <MudTabPanel Text="사망 복원">
+            <EquipmentIsEternalPanel />
+        </MudTabPanel>
+        <MudTabPanel Text="무한 치트">
+            <InfiniteEverythingPanel />
+        </MudTabPanel>
+    </MudTabs>
+
+</MudContainer>

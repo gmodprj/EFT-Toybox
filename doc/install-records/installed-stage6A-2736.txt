@@ -1,0 +1,9 @@
+2736__Moe-TradeMarker-1.2.6	BepInEx\plugins\Moe-TradeMarker\MoeTradeMarker.Client.dll
+2736__Moe-TradeMarker-1.2.6	BepInEx\plugins\Moe-TradeMarker\MoeTradeMarker.Client.pdb
+2736__Moe-TradeMarker-1.2.6	SPT_Runtime\user\mods\Moe-TradeMarker\config.json
+2736__Moe-TradeMarker-1.2.6	SPT_Runtime\user\mods\Moe-TradeMarker\MoeTradeMarker.Server.deps.json
+2736__Moe-TradeMarker-1.2.6	SPT_Runtime\user\mods\Moe-TradeMarker\MoeTradeMarker.Server.dll
+2736__Moe-TradeMarker-1.2.6	SPT_Runtime\user\mods\Moe-TradeMarker\MoeTradeMarker.Server.pdb
+2736__Moe-TradeMarker-1.2.6	SPT_Runtime\user\mods\Moe-TradeMarker\MoeTradeMarker.Server.staticwebassets.endpoints.json
+2736__Moe-TradeMarker-1.2.6	SPT_Runtime\user\mods\Moe-TradeMarker\MoeTradeMarker.Shared.dll
+2736__Moe-TradeMarker-1.2.6	SPT_Runtime\user\mods\Moe-TradeMarker\MoeTradeMarker.Shared.pdb

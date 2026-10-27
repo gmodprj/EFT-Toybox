@@ -1,0 +1,737 @@
+{
+ "generated": "2026-10-25",
+ "total416": 633,
+ "matched": 181,
+ "unlisted": 81,
+ "mods": [
+  {
+   "id": 701,
+   "name": "Fontaine's FOV Fix",
+   "dl": 356989,
+   "up": "2026-10-12",
+   "cat": "G",
+   "known": false,
+   "teaser": "Removes the FOV change on aiming by default, and lets you customize the FOV change amount. Has options for modifying FOV scale, view model FOV, ADS ca"
+  },
+  {
+   "id": 1125,
+   "name": "Tactical Gear Component",
+   "dl": 308550,
+   "up": "2026-09-19",
+   "cat": "G",
+   "known": false,
+   "teaser": "Adds a lot more unique gear and attachments for E*****************"
+  },
+  {
+   "id": 1131,
+   "name": "Live Flea Prices",
+   "dl": 297986,
+   "up": "2026-08-04",
+   "cat": "T",
+   "known": false,
+   "teaser": "Keep your flea prices up to date with data processed from Tarkov.dev"
+  },
+  {
+   "id": 2003,
+   "name": "HollywoodFX",
+   "dl": 225855,
+   "up": "2026-09-17",
+   "cat": "G",
+   "known": false,
+   "teaser": "Make battles look cinematic and immersive by rebuilding almost every single impact and special effect from scratch. Realism is not the aim, but the mo"
+  },
+  {
+   "id": 1358,
+   "name": "BrightLasers",
+   "dl": 130787,
+   "up": "2026-08-13",
+   "cat": "G",
+   "known": false,
+   "teaser": "Brighter lasers for your guns. No more blue laser, best laser. (It's still the best)"
+  },
+  {
+   "id": 1873,
+   "name": "Bot Callsigns - Reloaded",
+   "dl": 70681,
+   "up": "2026-09-29",
+   "cat": "T",
+   "known": false,
+   "teaser": "Adds a big (and sometimes funny) variety of bot names for flea and game."
+  },
+  {
+   "id": 2239,
+   "name": "Couturier - gear and clothing pack",
+   "dl": 51099,
+   "up": "2026-08-19",
+   "cat": "T",
+   "known": false,
+   "teaser": "Backpacks, helmets, armors and chestrigs (retextures) + trader for them + some clothing"
+  },
+  {
+   "id": 814,
+   "name": "Late to the Party",
+   "dl": 47764,
+   "up": "2026-09-23",
+   "cat": "G",
+   "known": false,
+   "teaser": "Make your SPT experience closer to live T***** with loot disappearing, doors opening, switches being turned on, and car extracts leaving throughout th"
+  },
+  {
+   "id": 2021,
+   "name": "Item Valuation",
+   "dl": 30451,
+   "up": "2026-08-06",
+   "cat": "T",
+   "known": false,
+   "teaser": "Lightweight quick reference valuation tool. Items will be coloured based on configurable values (price, armour class, penetration, etc). Automatically"
+  },
+  {
+   "id": 2483,
+   "name": "Boxes At Ref (BARF) - NG",
+   "dl": 24158,
+   "up": "2026-08-12",
+   "cat": "T",
+   "known": false,
+   "teaser": "Missed this mod? Well, I did too, so it's back! This mod adds lootboxes and other items from E∗∗:Arena to the new trader Ref."
+  },
+  {
+   "id": 2235,
+   "name": "Sharper Tushonka Better Life",
+   "dl": 19561,
+   "up": "2026-09-19",
+   "cat": "G",
+   "known": false,
+   "teaser": "A simple and lightweight ReShade preset that improves visibility and enhances the overall look of E∗∗ by making the game sharper without over-sharpeni"
+  },
+  {
+   "id": 2780,
+   "name": "No Barrel Shadow",
+   "dl": 17337,
+   "up": "2026-09-20",
+   "cat": "G",
+   "known": false,
+   "teaser": "Removes the barrel shadow cast by flashlights and tactical devices on all weapons."
+  },
+  {
+   "id": 2737,
+   "name": "JSOC Service Weapon Replacment Program",
+   "dl": 16983,
+   "up": "2026-09-25",
+   "cat": "G",
+   "known": false,
+   "teaser": "You've been chosen to select the next JSOC assault rifle and DMR. Choose wisely."
+  },
+  {
+   "id": 1866,
+   "name": "Gunsmith Tweaks",
+   "dl": 14555,
+   "up": "2026-08-02",
+   "cat": "G",
+   "known": false,
+   "teaser": "Makes Mechanic actually gives guns."
+  },
+  {
+   "id": 1171,
+   "name": "Make PL-15 Great Again!",
+   "dl": 12949,
+   "up": "2026-10-19",
+   "cat": "G",
+   "known": false,
+   "teaser": "The PL-15 is a great weapon, but it has some flaws. This mod aims to fix them"
+  },
+  {
+   "id": 1175,
+   "name": "Make VPO-101 Great Again!",
+   "dl": 12915,
+   "up": "2026-10-19",
+   "cat": "G",
+   "known": false,
+   "teaser": "The VEPR-Hunter (Molot VPO-101) is a great weapon, but it has a flaw. This mod aims to fix it"
+  },
+  {
+   "id": 1946,
+   "name": "Arse Scratching Service (ASS)",
+   "dl": 11985,
+   "up": "2026-09-04",
+   "cat": "GT",
+   "known": false,
+   "teaser": "Restore armour and weapon durability after gunfights in raid over time."
+  },
+  {
+   "id": 2788,
+   "name": "VisitAPI Framework",
+   "dl": 11871,
+   "up": "2026-10-06",
+   "cat": "T",
+   "known": false,
+   "teaser": "Recreating Storyline and Dialog feature from the Offcial to SPT. Easy to apply to native or custom Trader with a sign file."
+  },
+  {
+   "id": 2779,
+   "name": "Cooler Stims ",
+   "dl": 11275,
+   "up": "2026-09-20",
+   "cat": "T",
+   "known": false,
+   "teaser": "Five custom stims, each built for a different way to play — entry fragging, sustained healing, tanking, looting, limb repair. Now with their own model"
+  },
+  {
+   "id": 2049,
+   "name": "Add Secret Exfil Notes to Caches",
+   "dl": 11226,
+   "up": "2026-08-06",
+   "cat": "G",
+   "known": false,
+   "teaser": "Simple mod that adds the Secret Exfil Code Notes to Barrel/Wood caches as well as dead PMC/SCAV bodies on maps that have Secret Exfils. At the configu"
+  },
+  {
+   "id": 2475,
+   "name": "Restore The Old Number Of Medical Uses",
+   "dl": 10579,
+   "up": "2026-08-21",
+   "cat": "T",
+   "known": false,
+   "teaser": "The number of uses of medicine is like in the good old days"
+  },
+  {
+   "id": 2425,
+   "name": "SamSWAT's Anime Rear Sights - 4.0 Port",
+   "dl": 10532,
+   "up": "2026-08-12",
+   "cat": "G",
+   "known": false,
+   "teaser": "Adds 24 anime styled rear sights that are sold by Mechanic."
+  },
+  {
+   "id": 3026,
+   "name": "Quest Backport",
+   "dl": 9823,
+   "up": "2026-10-17",
+   "cat": "G",
+   "known": false,
+   "teaser": "Rebuilding and porting select quests from the official E∗∗ release for compatibility with SPT."
+  },
+  {
+   "id": 3035,
+   "name": "Russian Special Forces Pack",
+   "dl": 9341,
+   "up": "2026-09-23",
+   "cat": "G",
+   "known": false,
+   "teaser": "Compilation of guns from the russian federation"
+  },
+  {
+   "id": 757,
+   "name": "SPT Mini-Launcher",
+   "dl": 8536,
+   "up": "2026-08-24",
+   "cat": "G",
+   "known": false,
+   "teaser": "A comprehensive SPT-AKI launcher with third party app support and other cool features."
+  },
+  {
+   "id": 2576,
+   "name": "All In Weapon: Unslotted",
+   "dl": 7952,
+   "up": "2026-10-08",
+   "cat": "G",
+   "known": false,
+   "teaser": "\"Unslot\" your weapons. Slot your mistakes. No filters. No rules. Only cursed weapons"
+  },
+  {
+   "id": 2642,
+   "name": "Vagabond",
+   "dl": 7349,
+   "up": "2026-09-27",
+   "cat": "T",
+   "known": false,
+   "teaser": "Vagabond is an overhaul mod, which aims to turn the game into an open world. You start with limited money to buy a simple loadout, and your challenge "
+  },
+  {
+   "id": 2616,
+   "name": "Better (Picatinny) OKP",
+   "dl": 6541,
+   "up": "2026-08-12",
+   "cat": "G",
+   "known": false,
+   "teaser": "No more gigantic red dot with the picatinny OKP optic!"
+  },
+  {
+   "id": 1867,
+   "name": "QCAdjustments",
+   "dl": 6089,
+   "up": "2026-09-23",
+   "cat": "G",
+   "known": false,
+   "teaser": "Customize quest requirements with adjustable item amounts and new Gunsmith options. Add kill objectives, skip weapon turn-ins, and tailor tasks to you"
+  },
+  {
+   "id": 2016,
+   "name": "Delayed Flea Sales",
+   "dl": 5847,
+   "up": "2026-08-07",
+   "cat": "T",
+   "known": false,
+   "teaser": "If you are tired of having your flea offers being sold instantly, maybe you don't like money - I don't know, this mod is for you."
+  },
+  {
+   "id": 1973,
+   "name": "Event Auto Profile Backup",
+   "dl": 5394,
+   "up": "2026-08-14",
+   "cat": "T",
+   "known": false,
+   "teaser": "No more worries to backup your profile. Automatic event-based profile backup system with easy restore system."
+  },
+  {
+   "id": 2785,
+   "name": "Receive All Chats",
+   "dl": 5261,
+   "up": "2026-10-17",
+   "cat": "G",
+   "known": false,
+   "teaser": "Makes the \"Receive all\" button actually receive all attachments from all chats"
+  },
+  {
+   "id": 3054,
+   "name": "Quest Codex",
+   "dl": 4753,
+   "up": "2026-10-22",
+   "cat": "T",
+   "known": false,
+   "teaser": "Quest wiki that includes custom quest & trader mods. Maps, raid prep and unlock paths, kappa tracker too."
+  },
+  {
+   "id": 2763,
+   "name": "MeleeMultiplier",
+   "dl": 4584,
+   "up": "2026-10-18",
+   "cat": "G",
+   "known": false,
+   "teaser": "Damage multiplier for melee weapons"
+  },
+  {
+   "id": 1170,
+   "name": "Make STM9 Great Again!",
+   "dl": 4419,
+   "up": "2026-10-19",
+   "cat": "G",
+   "known": false,
+   "teaser": "The STM-9 is a great weapon, but it has some flaws. This mod aims to fix them"
+  },
+  {
+   "id": 3030,
+   "name": "NATO Quartermaster — Western Gear Trader, Presets & Quest Unlocks",
+   "dl": 4418,
+   "up": "2026-09-21",
+   "cat": "GT",
+   "known": false,
+   "teaser": "A custom NATO-themed trader offering premium Western weapons, armor, ammo, presets, supplies, and quest-gated high-end gear."
+  },
+  {
+   "id": 2631,
+   "name": "Softcore Meds",
+   "dl": 4369,
+   "up": "2026-09-12",
+   "cat": "T",
+   "known": false,
+   "teaser": "Fast-Paced Healing: Restore Black Limbs With Stim, Restore All Black Limbs With Surgical In One Go"
+  },
+  {
+   "id": 2705,
+   "name": "Hideout Shootout",
+   "dl": 4138,
+   "up": "2026-08-15",
+   "cat": "G",
+   "known": false,
+   "teaser": "Enables use of your weapon in the Hideout outside of the shooting range"
+  },
+  {
+   "id": 3141,
+   "name": "BackpackGunSlot",
+   "dl": 3907,
+   "up": "2026-10-18",
+   "cat": "GT",
+   "known": false,
+   "teaser": "adds a slot to backpacks to store a gun"
+  },
+  {
+   "id": 2982,
+   "name": "Hideout Overhaul",
+   "dl": 3784,
+   "up": "2026-09-20",
+   "cat": "G",
+   "known": false,
+   "teaser": "Replaces hideout construction recipes into something much more sensible. Because last time I checked, you don't build a door with two bricks of TNT."
+  },
+  {
+   "id": 2844,
+   "name": "Ultimate Flea",
+   "dl": 3752,
+   "up": "2026-09-27",
+   "cat": "T",
+   "known": false,
+   "teaser": "Full flea control for SPT 4.1: manage the item pool, set prices, pull Tarkov.dev averages, and run a local supply/demand economy with early-wipe scali"
+  },
+  {
+   "id": 2953,
+   "name": "Headshot Damage Redirection",
+   "dl": 3675,
+   "up": "2026-09-17",
+   "cat": "G",
+   "known": false,
+   "teaser": "Survive headshots by redirecting damage to other body parts. Fully configurable split ratios, thresholds, and RNG options. Stop getting one-tapped and"
+  },
+  {
+   "id": 1972,
+   "name": "Full Automatic Guns",
+   "dl": 3674,
+   "up": "2026-10-14",
+   "cat": "G",
+   "known": false,
+   "teaser": "Few SMGs, Assault Rifle, Carbines are now automatic"
+  },
+  {
+   "id": 2810,
+   "name": "Kill&Bill - Quest Condition Overhaul",
+   "dl": 3611,
+   "up": "2026-08-13",
+   "cat": "T",
+   "known": false,
+   "teaser": "Turns existing quests into kill, dogtag, or money handover objectives while preserving quest chains, traders, and rewards."
+  },
+  {
+   "id": 2973,
+   "name": "Restore Armor Plates",
+   "dl": 3365,
+   "up": "2026-08-31",
+   "cat": "T",
+   "known": false,
+   "teaser": "Restore fully repaired detachable armor plates to their original maximum durability with a dedicated refurbishment kit."
+  },
+  {
+   "id": 1936,
+   "name": "No Unfair Trade System (NUTS)",
+   "dl": 3323,
+   "up": "2026-09-11",
+   "cat": "T",
+   "known": false,
+   "teaser": "NUTS (No Unfair Trade System) removes access to the Flea Market (customizable), ensuring a fairer, more balanced gameplay experience!"
+  },
+  {
+   "id": 3135,
+   "name": "SPT Realism Common Lib",
+   "dl": 2816,
+   "up": "2026-10-11",
+   "cat": "G",
+   "known": false,
+   "teaser": "Dependency and common library for Realism-related mods, addons and third-party mods. Does nothing on its own."
+  },
+  {
+   "id": 3014,
+   "name": "Ref Rework",
+   "dl": 2765,
+   "up": "2026-09-11",
+   "cat": "T",
+   "known": false,
+   "teaser": "Sell dogtags to Ref for GP coins!"
+  },
+  {
+   "id": 1778,
+   "name": "RCTA - Gundam [CODMW3]",
+   "dl": 2686,
+   "up": "2026-08-08",
+   "cat": "G",
+   "known": false,
+   "teaser": "Mobile Suit – XVX-016 Gundam from the Call of Duty X Gundam Collaboration from MW3"
+  },
+  {
+   "id": 3064,
+   "name": "Realistic PMC Names",
+   "dl": 2632,
+   "up": "2026-10-19",
+   "cat": "T",
+   "known": false,
+   "teaser": "8,000 realistic PMC identities. Unique callsigns. Plus 300 realistic Flea Market identities."
+  },
+  {
+   "id": 2917,
+   "name": "Vanguard",
+   "dl": 2590,
+   "up": "2026-08-18",
+   "cat": "G",
+   "known": false,
+   "teaser": "A mod requested by Vanguard, adds the WMLX light and Sandman X suppressor"
+  },
+  {
+   "id": 2947,
+   "name": "BringBackContainers",
+   "dl": 2504,
+   "up": "2026-08-22",
+   "cat": "T",
+   "known": false,
+   "teaser": "Restores the abundance of Loot Containers from older versions of SPT."
+  },
+  {
+   "id": 3010,
+   "name": "Kalashnikov Enhanced Modding ",
+   "dl": 2204,
+   "up": "2026-09-10",
+   "cat": "G",
+   "known": false,
+   "teaser": "Separated handguards and barrels on AK's? It's now a thing!"
+  },
+  {
+   "id": 3100,
+   "name": "POMSix",
+   "dl": 2038,
+   "up": "2026-10-05",
+   "cat": "T",
+   "known": false,
+   "teaser": "Adds parallax occlusion mapping and optional tessellation to the terrain/roads"
+  },
+  {
+   "id": 2949,
+   "name": "Realistic Insurance",
+   "dl": 2037,
+   "up": "2026-09-12",
+   "cat": "T",
+   "known": false,
+   "teaser": "Your killer decides what comes back. Prapor just does the paperwork."
+  },
+  {
+   "id": 3127,
+   "name": "MassivesoftWeapons Updates for SPT 4.1.x",
+   "dl": 1953,
+   "up": "2026-10-15",
+   "cat": "G",
+   "known": false,
+   "teaser": "MassivesoftWeapons Update Patch for SPT 4.1.x"
+  },
+  {
+   "id": 3063,
+   "name": "Walther WA 2000 Sniper Rifle Continued",
+   "dl": 1933,
+   "up": "2026-09-30",
+   "cat": "T",
+   "known": false,
+   "teaser": "Restores Choccy Milk’s Walther WA 2000 for SPT 4.0.13 and 4.1.6."
+  },
+  {
+   "id": 3056,
+   "name": "China Lake Grenade Launcher Continued",
+   "dl": 1824,
+   "up": "2026-09-28",
+   "cat": "T",
+   "known": false,
+   "teaser": "Restores Choccy Milk’s China Lake pump-action grenade launcher for SPT 4.0.13 and 4.1.6."
+  },
+  {
+   "id": 2985,
+   "name": "Quick Aim",
+   "dl": 1763,
+   "up": "2026-10-02",
+   "cat": "G",
+   "known": false,
+   "teaser": "Hold your aim longer when crouched, prone, or with the weapon mounted on something."
+  },
+  {
+   "id": 2963,
+   "name": "CreatureComforts",
+   "dl": 1607,
+   "up": "2026-09-26",
+   "cat": "T",
+   "known": false,
+   "teaser": "Assortment of small, but impactful changes."
+  },
+  {
+   "id": 3077,
+   "name": "PityLoot",
+   "dl": 1366,
+   "up": "2026-09-30",
+   "cat": "G",
+   "known": false,
+   "teaser": "Can't find that one quest item? Every raid without it makes it more likely to spawn. Pity loot for quests, hideout upgrades, quest keys and Gunsmith p"
+  },
+  {
+   "id": 3070,
+   "name": "Flea Price Progression",
+   "dl": 1303,
+   "up": "2026-10-10",
+   "cat": "T",
+   "known": false,
+   "teaser": "Realistic flea prices derived from live data that scale with player level"
+  },
+  {
+   "id": 3150,
+   "name": "SSPTMM - Steamified SPT Mod Manager",
+   "dl": 1141,
+   "up": "2026-10-17",
+   "cat": "T",
+   "known": false,
+   "teaser": "Steam Workshop Style Mod Manager"
+  },
+  {
+   "id": 2736,
+   "name": "Moe-TradeMarker",
+   "dl": 1003,
+   "up": "2026-09-07",
+   "cat": "T",
+   "known": false,
+   "teaser": "Shows NPC trader-bought items, can block flea resale, and now supports QuickSell."
+  },
+  {
+   "id": 3096,
+   "name": "ebz7-BlackoutAddons",
+   "dl": 913,
+   "up": "2026-10-06",
+   "cat": "T",
+   "known": false,
+   "teaser": "Turns Vultify's Blackout into a survival event: restart failing generators, fix breakers, repair a burnt control, race a 3-minute emergency-power esca"
+  },
+  {
+   "id": 2906,
+   "name": "SIM - Simple Item Modifier",
+   "dl": 805,
+   "up": "2026-08-13",
+   "cat": "G",
+   "known": false,
+   "teaser": "Inspect your current modded database, build reusable rules, and rebalance items without editing server JSON by hand."
+  },
+  {
+   "id": 2633,
+   "name": "SPT Scaffold",
+   "dl": 713,
+   "up": "2026-10-19",
+   "cat": "G",
+   "known": false,
+   "teaser": "Interactive TUI wizard to create ready-to-build SPT 4.1.x mod projects in seconds."
+  },
+  {
+   "id": 2766,
+   "name": "Quest Experience Multiplier",
+   "dl": 627,
+   "up": "2026-10-02",
+   "cat": "G",
+   "known": false,
+   "teaser": "Multiplies the experience amount given by quest by a factor."
+  },
+  {
+   "id": 3039,
+   "name": "SPT Dev Kit",
+   "dl": 626,
+   "up": "2026-09-24",
+   "cat": "T",
+   "known": false,
+   "teaser": "SPT Dev Kit for quests, assorts, items and etc."
+  },
+  {
+   "id": 3167,
+   "name": "Hideout Uncensored",
+   "dl": 625,
+   "up": "2026-10-20",
+   "cat": "GT",
+   "known": false,
+   "teaser": "Walk around it with your weapons out, go prone, vault, throw grenades, fire a rocket launcher, use inventory, shop, and keep using every hideout area "
+  },
+  {
+   "id": 2854,
+   "name": "Resound",
+   "dl": 552,
+   "up": "2026-10-12",
+   "cat": "G",
+   "known": false,
+   "teaser": "a mod swapping a few guns to sounds from other games mainly black ops 2"
+  },
+  {
+   "id": 3194,
+   "name": "OpenBarters",
+   "dl": 385,
+   "up": "2026-10-22",
+   "cat": "T",
+   "known": false,
+   "teaser": "Pay for trader barters with any items the trader is willing to buy, as long as their combined value meets the barter’s requirements."
+  },
+  {
+   "id": 3000,
+   "name": "Moe Flea Refresh",
+   "dl": 365,
+   "up": "2026-09-06",
+   "cat": "T",
+   "known": false,
+   "teaser": "Regenerate AI flea market offers after raids or on configurable schedules. / 在战局结束或按计划重新生成 AI 跳蚤市场报价。"
+  },
+  {
+   "id": 2965,
+   "name": "Ironman",
+   "dl": 336,
+   "up": "2026-09-20",
+   "cat": "G",
+   "known": false,
+   "teaser": "Ironman Profiles to apply rules and modifiers to make the game scoped to \"Ironman\" adjacent. Similar to Ironman modes in other games."
+  },
+  {
+   "id": 3200,
+   "name": "All Weapons Flea",
+   "dl": 306,
+   "up": "2026-10-23",
+   "cat": "GT",
+   "known": false,
+   "teaser": "Unlock restricted weapons on the flea market while preserving SPT pricing and non-weapon restrictions."
+  },
+  {
+   "id": 3028,
+   "name": "FIR Flea only",
+   "dl": 293,
+   "up": "2026-09-14",
+   "cat": "T",
+   "known": false,
+   "teaser": "Is the flea market a breeze? Install this mod."
+  },
+  {
+   "id": 3120,
+   "name": "TrueHardcoreRules",
+   "dl": 211,
+   "up": "2026-10-07",
+   "cat": "T",
+   "known": false,
+   "teaser": "No flea. No insurance. No mercy. Hardcore economy."
+  },
+  {
+   "id": 3188,
+   "name": "DailyGunsmith",
+   "dl": 188,
+   "up": "2026-10-21",
+   "cat": "G",
+   "known": false,
+   "teaser": "Gunlovin` content for you everyday"
+  },
+  {
+   "id": 3195,
+   "name": "SPT Barterizer",
+   "dl": 119,
+   "up": "2026-10-24",
+   "cat": "T",
+   "known": false,
+   "teaser": "Turns cash trader offers into item barters while preserving existing barters. Optional OpenBarters and HardcoreRules support. For SPT 4.1.6."
+  },
+  {
+   "id": 3206,
+   "name": "No Insurance Screen",
+   "dl": 107,
+   "up": "2026-10-24",
+   "cat": "T",
+   "known": false,
+   "teaser": "Skips the insurance screen when queuing for a raid as a PMC."
+  },
+  {
+   "id": 3208,
+   "name": "Hardcore Progression",
+   "dl": 18,
+   "up": "2026-10-24",
+   "cat": "T",
+   "known": false,
+   "teaser": "Quest recovery barters unlocked through PMC raids, with persistent progress and English/Russian counters. Standalone; optional HardcoreRules and Barte"
+  }
+ ]
+}

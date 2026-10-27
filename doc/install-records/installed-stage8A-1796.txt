@@ -1,0 +1,8 @@
+1796__JSM.-.Mokou.TOUHOU	SPT_Runtime\user\mods\JSM - Mokou [TOUHOU]\bundles.json
+1796__JSM.-.Mokou.TOUHOU	SPT_Runtime\user\mods\JSM - Mokou [TOUHOU]\JSM.Mokou.dll
+1796__JSM.-.Mokou.TOUHOU	SPT_Runtime\user\mods\JSM - Mokou [TOUHOU]\bundles\clothing\moko_hand.bundle
+1796__JSM.-.Mokou.TOUHOU	SPT_Runtime\user\mods\JSM - Mokou [TOUHOU]\bundles\clothing\moko_lower.bundle
+1796__JSM.-.Mokou.TOUHOU	SPT_Runtime\user\mods\JSM - Mokou [TOUHOU]\bundles\clothing\moko_upper.bundle
+1796__JSM.-.Mokou.TOUHOU	SPT_Runtime\user\mods\JSM - Mokou [TOUHOU]\bundles\heads\moko_head.bundle
+1796__JSM.-.Mokou.TOUHOU	SPT_Runtime\user\mods\JSM - Mokou [TOUHOU]\db\CustomClothing\Clothes.json
+1796__JSM.-.Mokou.TOUHOU	SPT_Runtime\user\mods\JSM - Mokou [TOUHOU]\db\CustomHeads\Heads.json

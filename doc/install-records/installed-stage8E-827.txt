@@ -1,0 +1,13 @@
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\DrakiaXYZ-Waypoints.dll
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\LICENSE
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\bigmap-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\factory4-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\interchange-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\laboratory-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\labyrinth-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\lighthouse-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\rezervbase-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\sandbox-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\shoreline-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\tarkovstreets-navmesh.bundle
+827__DrakiaXYZ-Waypoints-1.9.0	BepInEx\plugins\DrakiaXYZ-Waypoints\navmesh\woods-navmesh.bundle

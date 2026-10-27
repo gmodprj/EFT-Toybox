@@ -1,0 +1,23 @@
+stage6: 모드 12개 / 설치 대상 경로 102개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 0
+
+[4] 모드별 설치 위치
+    1358__acidphantasm-brightlasers -> 게임+서버
+    2736__Moe-TradeMarker-1.2.6 -> 게임+서버
+    2780__NoBarrelShadow_v2.0.1 -> 게임
+    2917__Vanguard-2.0.0 -> 서버
+    2930__COTI-3.4.2-spt4.1 -> 게임+서버
+    2949__RealisticInsurance-0.2.1-SPT4.1 -> 게임+서버
+    3014__Ref.Rework.1.0.0 -> 게임+서버
+    3030__Michael-NATOQuartermaster-1.1.3 -> 서버
+    3194__OpenBarters-1.0.1 -> 게임
+    3200__AllWeaponsFlea_SPT_4.1.6_v1.0.1 -> 서버
+    gh-portabletraders__PortableTraders-1.1.0 -> 서버
+    gh-quicktraderloadtimes__QuickTraderLoadTimes-1.0.0 -> 게임+서버
+
+CLEAN (0)

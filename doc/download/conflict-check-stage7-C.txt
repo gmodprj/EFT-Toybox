@@ -1,0 +1,37 @@
+stage7-C: 모드 26개 / 설치 대상 경로 147개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 0
+
+[4] 모드별 설치 위치
+    1305__egbog-RepairMaxDurability-2.2.0 -> 게임+서버
+    1554__Tiltushkin-AllAmmo.1.5.0 -> 서버
+    1939__BetterAttachments_v4_1_5 -> 서버
+    1972__FullAutoGuns_v4_1_5 -> 서버
+    2010__DefinitiveWeaponVariants.4.3.2 -> 서버
+    2175__Limitless-1.0.0 -> 서버
+    2369__JeroBackpack -> 서버
+    2373__bushtail-SlimmerMagazines_v2.0.0 -> 서버
+    2380__Tosox.BlackExfilRevision-v1.1.0 -> 서버
+    2415__bushtail-CantedAiming_v2.0.0 -> 서버
+    2434__bushtail-500EuroForSkier_v2.0.0 -> 서버
+    2483__BoxesAtRef-4.1_3.0.0 -> 서버
+    2556__RepairSkillExtension_1.4.1 -> 서버
+    2648__Suntion-AllGoodsTrader-2.0.0 -> 서버
+    2650__HolsterEverything-v2.0.0 -> 게임+서버
+    2777__AmmoGen-2.4.0 -> 게임+서버
+    2844__UltimateFlea-1.2.0 -> 게임+서버
+    2897__EquipmentIsEternal-1.2.0 -> 서버
+    2948__maschine-Airburst-1.1.2 -> 게임+서버
+    2973__RestoreArmorPlates-1.0.2 -> 게임+서버
+    3019__CobrasDurabilityTweaks-v1.0.0 -> 서버
+    3101__7Bpencil.MagicOpticMount.0.1.0 -> 게임+서버
+    3118__ShrapnelFix-1.0.0 -> 게임
+    3171__RealisticSuppressors-1.0-SPT-4.1 -> 서버
+    374__bluehead-AIOTrader.5.3.1 -> 서버
+    922__LessRestrictingHeadwear-4.0.0-SPT-4.1 -> 서버
+
+CLEAN (0)

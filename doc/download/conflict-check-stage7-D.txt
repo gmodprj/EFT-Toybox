@@ -1,0 +1,23 @@
+stage7-D: 모드 12개 / 설치 대상 경로 148개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 0
+
+[4] 모드별 설치 위치
+    1569__WolfiksHeavyTroopers1.2.0 -> 서버
+    1591__SPTBetterRearSights -> 서버
+    2414__Peacemaker-2.1.0 -> 서버
+    2516__22lr -> 서버
+    2681__LoadAmmoAnim-2.0.0 -> 게임+서버
+    2691__FoldThatStock-v2.1.0 -> 게임+서버
+    2711__Eukyre-BetterOKP7v1.1.0 -> 서버
+    2749__TraderGen-2.4.1 -> 게임+서버
+    2803__ItemGen-1.5.1 -> 게임+서버
+    2817__TheQuartermaster-1.4.3 -> 게임+서버
+    3113__IncendiaryGrenade -> 게임+서버
+    902__DrakiaXYZ-BigBrain-1.5.0 -> 게임
+
+CLEAN (0)

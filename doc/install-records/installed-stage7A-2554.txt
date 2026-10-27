@@ -1,0 +1,5 @@
+2554__ChangeHelmetVisor	BepInEx\plugins\ChangeHelmetVisorClient\ChangeHelmetVisorClient.dll
+2554__ChangeHelmetVisor	BepInEx\plugins\ChangeHelmetVisorClient\textures\VisorMask_maska_sch.png
+2554__ChangeHelmetVisor	BepInEx\plugins\ChangeHelmetVisorClient\textures\VisorMask.png
+2554__ChangeHelmetVisor	SPT_Runtime\user\mods\ChangeHelmetVisor\ChangeHelmetVisor.dll
+2554__ChangeHelmetVisor	SPT_Runtime\user\mods\ChangeHelmetVisor\config.json

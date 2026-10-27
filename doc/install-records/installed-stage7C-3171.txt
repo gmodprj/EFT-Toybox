@@ -1,0 +1,3 @@
+3171__RealisticSuppressors-1.0-SPT-4.1	SPT_Runtime\user\mods\RealisticSuppressors\config.jsonc
+3171__RealisticSuppressors-1.0-SPT-4.1	SPT_Runtime\user\mods\RealisticSuppressors\LICENSE
+3171__RealisticSuppressors-1.0-SPT-4.1	SPT_Runtime\user\mods\RealisticSuppressors\RealisticSuppressors.dll

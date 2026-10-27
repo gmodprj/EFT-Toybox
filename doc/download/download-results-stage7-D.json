@@ -1,0 +1,134 @@
+[
+  {
+    "id": 902,
+    "name": "BigBrain",
+    "version": "1.5.0",
+    "file": "902__DrakiaXYZ-BigBrain-1.5.0.7z",
+    "bytes": 16790,
+    "expected": 16790,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2803,
+    "name": "ItemGen",
+    "version": "1.5.1",
+    "file": "2803__ItemGen-1.5.1.zip",
+    "bytes": 54104,
+    "expected": 54104,
+    "sizeOk": true,
+    "host": "drive.usercontent.google.com",
+    "seconds": 2
+  },
+  {
+    "id": 2749,
+    "name": "TraderGen",
+    "version": "2.4.1",
+    "file": "2749__TraderGen-2.4.1.zip",
+    "bytes": 1353638,
+    "expected": 1353638,
+    "sizeOk": true,
+    "host": "drive.usercontent.google.com",
+    "seconds": 3
+  },
+  {
+    "id": 2711,
+    "name": "Better OKP-7",
+    "version": "1.1.0",
+    "file": "2711__Eukyre-BetterOKP7v1.1.0.7z",
+    "bytes": 4183538,
+    "expected": 4183538,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2817,
+    "name": "The Quartermaster",
+    "version": "1.4.3",
+    "file": "2817__TheQuartermaster-1.4.3.zip",
+    "bytes": 5933548,
+    "expected": 5933548,
+    "sizeOk": true,
+    "host": "drive.usercontent.google.com",
+    "seconds": 3
+  },
+  {
+    "id": 1569,
+    "name": "Wolfik's Heavy Trooper Masks",
+    "version": "1.2.0",
+    "file": "1569__WolfiksHeavyTroopers1.2.0.zip",
+    "bytes": 19342911,
+    "expected": 19342911,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2681,
+    "name": "Manimal's Ammo Loading Animations",
+    "version": "2.0.0",
+    "file": "2681__LoadAmmoAnim-2.0.0.zip",
+    "bytes": 19454509,
+    "expected": 19454509,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3113,
+    "name": "Sage's Incendiary Grenade",
+    "version": "1.1.0",
+    "file": "3113__IncendiaryGrenade.zip",
+    "bytes": 25319070,
+    "expected": 25319070,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2516,
+    "name": ".22lr Ammunition",
+    "version": "2.0.0",
+    "file": "2516__22lr.7z",
+    "bytes": 30264753,
+    "expected": 30264753,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2414,
+    "name": "Peacemaker Continued",
+    "version": "2.1.0",
+    "file": "2414__Peacemaker-2.1.0.zip",
+    "bytes": 46952912,
+    "expected": 46952912,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 3
+  },
+  {
+    "id": 1591,
+    "name": "Better Rear Sights",
+    "version": "1.8.0",
+    "file": "1591__SPTBetterRearSights.7z",
+    "bytes": 54074476,
+    "expected": 54074476,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 3
+  },
+  {
+    "id": 2691,
+    "name": "Fold That Stock",
+    "version": "2.1.0",
+    "file": "2691__FoldThatStock-v2.1.0.7z",
+    "bytes": 59009192,
+    "expected": 59009192,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 3
+  }
+]

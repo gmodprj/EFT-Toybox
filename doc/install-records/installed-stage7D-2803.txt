@@ -1,0 +1,4 @@
+2803__ItemGen-1.5.1	BepInEx\plugins\Serenity-ItemGen\ItemGen.Client.dll
+2803__ItemGen-1.5.1	SPT_Runtime\user\mods\ItemGen\ItemGen.Server.dll
+2803__ItemGen-1.5.1	SPT_Runtime\user\mods\ItemGen\config\config.json
+2803__ItemGen-1.5.1	SPT_Runtime\user\mods\ItemGen\items\ExamplePack.json

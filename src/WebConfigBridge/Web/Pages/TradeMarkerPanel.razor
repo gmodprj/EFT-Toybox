@@ -1,0 +1,60 @@
+@inject ConfigStore Store
+@inject ISnackbar Snackbar
+@inject IDialogService Dialog
+
+<MudText Typo="Typo.h6" GutterBottom="true">Trade Marker</MudText>
+<MudText Typo="Typo.body2" Class="mb-4">상인에게 판 물건에 표시를 남기고, 플리마켓 재판매를 제한한다.</MudText>
+
+@if (_config is null)
+{
+    <MudAlert Severity="Severity.Warning">
+        설정 파일을 찾지 못했다. <code>user/mods/Moe-TradeMarker</code> 를 확인하라.
+    </MudAlert>
+}
+else
+{
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">거래 표시</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.Marking.Enabled" Color="Color.Primary" Label="표시 사용" />
+        <MudTextField T="string" @bind-Value="_markingExcluded" Lines="3" Variant="Variant.Outlined"
+                      Class="mt-2" Label="표시하지 않을 상인 id"
+                      HelperText="한 줄에 하나씩. 비워두면 모든 상인에 표시한다." />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">플리마켓 제한</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.RagfairRestriction.Enabled" Color="Color.Primary" Label="제한 사용" />
+        <MudTextField T="string" @bind-Value="_ragfairExcluded" Lines="3" Variant="Variant.Outlined"
+                      Class="mt-2" Label="제한하지 않을 상인 id"
+                      HelperText="한 줄에 하나씩." />
+    </MudPaper>
+
+    <SaveBar OnSave="Save" OnReload="Reload" Path="@Store.PathOf(ConfigStore.Targets.TradeMarker)" />
+}
+
+@code {
+    private TradeMarkerConfig? _config;
+    private readonly ConfigStamp _stamp = new();
+    private string _markingExcluded = string.Empty;
+    private string _ragfairExcluded = string.Empty;
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload()
+    {
+        _config = Store.Load<TradeMarkerConfig>(ConfigStore.Targets.TradeMarker, _stamp);
+        _markingExcluded = TextLines.Join(_config?.Marking.DisabledTraderIds);
+        _ragfairExcluded = TextLines.Join(_config?.RagfairRestriction.DisabledTraderIds);
+    }
+
+    private async Task Save()
+    {
+        if (_config is null) return;
+
+        _config.Marking.DisabledTraderIds = TextLines.Split(_markingExcluded);
+        _config.RagfairRestriction.DisabledTraderIds = TextLines.Split(_ragfairExcluded);
+
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.TradeMarker, _config, _stamp, Reload);
+    }
+}

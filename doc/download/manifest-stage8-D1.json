@@ -1,0 +1,16 @@
+{
+  "stage": "stage8-D1",
+  "spt": "4.1.6",
+  "note": "8-D 치트 표시. 3065 만 먼저 넣는다. 근접 슬라이더는 x1 로 둔다 — 설치된 MeleeMultiplier 0.0.4 의 x10 과 곱해진다. 검토는 doc/REVIEW-STAGE8-D.md.",
+  "mods": [
+    {
+      "group": "8D-1",
+      "id": 3065,
+      "name": "MagicBullet",
+      "version": "1.0.0",
+      "size": 4027,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3065/magicbullet/1.0.0"
+    }
+  ]
+}

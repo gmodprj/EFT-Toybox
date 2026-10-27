@@ -1,0 +1,98 @@
+{
+  "guid": "net.liquidwarp.munitionsexpert",
+  "name": "탄약 정보 (Munitions Expert)",
+  "sections": {
+    "Background Colors": "배경 색",
+    "Inspect Stats": "살펴보기 수치"
+  },
+  "settings": {
+    "Background Colors/Enabled": {
+      "name": "배경 색 사용",
+      "desc": "탄약 아이콘의 배경을 방탄 관통 등급에 따라 색칠한다."
+    },
+    "Background Colors/Unarmored": {
+      "name": "비방탄 (관통 10 미만)",
+      "desc": "관통력이 10 보다 낮은 탄약의 배경 색."
+    },
+    "Background Colors/Class 1": {
+      "name": "1등급 (관통 20 미만)",
+      "desc": "관통력이 20 보다 낮은 탄약의 배경 색."
+    },
+    "Background Colors/Class 2": {
+      "name": "2등급 (관통 30 미만)",
+      "desc": "관통력이 30 보다 낮은 탄약의 배경 색."
+    },
+    "Background Colors/Class 3": {
+      "name": "3등급 (관통 40 미만)",
+      "desc": "관통력이 40 보다 낮은 탄약의 배경 색."
+    },
+    "Background Colors/Class 4": {
+      "name": "4등급 (관통 50 미만)",
+      "desc": "관통력이 50 보다 낮은 탄약의 배경 색."
+    },
+    "Background Colors/Class 5": {
+      "name": "5등급 (관통 60 미만)",
+      "desc": "관통력이 60 보다 낮은 탄약의 배경 색."
+    },
+    "Background Colors/Class 6+": {
+      "name": "6등급 이상 (관통 60 이상)",
+      "desc": "관통력이 60 이상인 탄약의 배경 색."
+    },
+    "Inspect Stats/Armor damage": {
+      "name": "방탄 손상",
+      "desc": "방탄에 주는 손상 비율을 보여 준다. 참고값이며, 실제 내구도 감소는 관통력·방탄 등급·재질에 따라 달라진다."
+    },
+    "Inspect Stats/Durability burn": {
+      "name": "총기 내구도 소모",
+      "desc": "총기 내구도를 깎는 정도의 배율을 보여 준다."
+    },
+    "Inspect Stats/Heat": {
+      "name": "총열 가열",
+      "desc": "총열을 달구는 정도의 배율을 보여 준다."
+    },
+    "Inspect Stats/Fragmentation chance": {
+      "name": "파편화 확률",
+      "desc": "탄이 몸 안에서 쪼개질 확률을 보여 준다. 참고값이며, 실제 확률은 뚫은 표면에 따라 달라진다."
+    },
+    "Inspect Stats/Ricochet chance": {
+      "name": "도탄 확률",
+      "desc": "탄이 튕겨 나갈 확률을 보여 준다. 지형 표면에만 해당하고 방탄에는 영향이 없다. 참고값이며, 실제 확률은 표면과 입사각에 따라 달라진다."
+    },
+    "Inspect Stats/Misfire chance": {
+      "name": "불발 확률",
+      "desc": "불발 고장이 날 확률을 보여 준다."
+    },
+    "Inspect Stats/Feed failure chance": {
+      "name": "급탄 불량 확률",
+      "desc": "급탄 불량 고장이 날 확률을 보여 준다."
+    },
+    "Inspect Stats/Blast damage": {
+      "name": "폭발 피해",
+      "desc": "폭발탄의 폭발 피해를 보여 준다. 내부 폭발 반경 안에서 노출된 신체 부위마다 적용되며, 거리와 엄폐에 따라 줄어든다."
+    },
+    "Inspect Stats/Explosion radius": {
+      "name": "폭발 반경",
+      "desc": "폭발탄의 폭발 반경을 보여 준다."
+    },
+    "Inspect Stats/Fuse arming": {
+      "name": "신관 작동",
+      "desc": "폭발탄의 신관이 작동하기까지 걸리는 시간과 거리를 보여 준다."
+    },
+    "Inspect Stats/Fragment count": {
+      "name": "파편 수",
+      "desc": "폭발탄의 파편 수를 보여 준다. 참고값이며, 게임은 폭발 한 번에 최대 30 발만 쏜다."
+    },
+    "Inspect Stats/Fragment damage": {
+      "name": "파편 피해",
+      "desc": "폭발탄과 수류탄의 파편 피해를 보여 준다."
+    },
+    "Inspect Stats/Fragment penetration": {
+      "name": "파편 관통력",
+      "desc": "폭발탄과 수류탄의 파편 관통력을 보여 준다."
+    },
+    "Inspect Stats/Fragment armor damage": {
+      "name": "파편 방탄 손상",
+      "desc": "폭발탄과 수류탄 파편이 방탄에 주는 손상을 보여 준다. 참고값이며, 실제 내구도 감소는 관통력·방탄 등급·재질에 따라 달라진다."
+    }
+  }
+}

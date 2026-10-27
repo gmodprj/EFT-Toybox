@@ -1,0 +1,98 @@
+{
+  "guid": "com.trappuss.infiniteeverything",
+  "name": "무한 모드 (Infinite Everything)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Weapons": "2. 총기",
+    "3. Grenades, items and money": "3. 수류탄·아이템·돈",
+    "4. Player": "4. 플레이어",
+    "5. Turrets (stationary weapons)": "5. 고정 기관총",
+    "6. Hideout": "6. 은신처"
+  },
+  "settings": {
+    "1. General/Enabled": {
+      "name": "모드 사용",
+      "desc": "아래 모든 항목을 한꺼번에 켜고 끈다. 전환 단축키가 이 값을 뒤집는다."
+    },
+    "1. General/Toggle hotkey": {
+      "name": "전환 단축키",
+      "desc": "게임 중에 모드 전체를 켜고 끈다. 기본으로는 비어 있다."
+    },
+    "1. General/Show on/off message": {
+      "name": "켜짐·꺼짐 알림 표시",
+      "desc": "단축키로 모드를 켜거나 끌 때 알림을 띄운다."
+    },
+    "2. Weapons/Infinite ammo (reloads never use anything up)": {
+      "name": "무한 탄약 (재장전에 아무것도 쓰지 않음)",
+      "desc": "재장전은 그대로 하지만 아무것도 소모하지 않는다. 탄창은 빼낸 것이 조끼·주머니·배낭으로 돌아가(두 번 눌러 빠르게 재장전할 때도) 가득 채워진다. 빈 탄창만 남았으면 그중 하나를 채워 쓰고, 여분이 아예 없으면 총에 꽂힌 탄창을 채워 다시 끼운다(동작은 그대로, 인벤토리에는 아무 변화 없음). 낱알로 넣는 것(산탄총 튜브, 내장 탄창, 리볼버, 중절식 약실, 약실에 한 발 넣기)은 인벤토리에서 빠지지 않고 총으로 들어가며 늘 가득 채워진다. 맞는 탄이 없으면 임시 탄으로 장전하고 곧바로 치운다(조끼·주머니에 빈자리가 필요하지만, 튜브와 내장 탄창은 빈자리 없이 바로 채운다). 유탄 발사기(하부·독립형)와 신호탄 권총도 같은 방식이다. RShG-2 는 게임에 재장전이 없어, 쏜 뒤 R 을 누르면 튜브에 새 로켓이 들어간다."
+    },
+    "2. Weapons/Infinite Magazine Options (Hold-R Scroll Menu)": {
+      "name": "무한 탄창 선택 (R 길게 누르기 메뉴)",
+      "desc": "무한 탄약이 켜져 있으면 작전 중 R 을 길게 눌러 나오는 재장전 메뉴에 그 총에 맞는 모든 탄창과 모든 탄종이 나온다. 갖고 있지 않은 것, 모드로 추가된 것도 포함된다. 없는 탄창은 빌려 쓰는 식이다. 총에 있던 것은 따로 보관되고(빈자리 필요 없음), 빌린 탄창은 총에서 빠지는 순간(재장전·탄창 비우기)이나 작전 끝에 반납되며 원래 탄창이 총에 돌아가, 인벤토리는 시작과 같은 상태로 끝난다. 고른 것은 유지되므로, R 을 다시 누르면 원래대로 돌아가지 않고 그 탄창·탄종으로 다시 장전한다. 총을 집어넣거나 바꿔 든 뒤에도 그렇다."
+    },
+    "2. Weapons/Infinite magazine (rounds are never used up)": {
+      "name": "무한 탄창 (탄이 줄지 않음)",
+      "desc": "쏴도 탄창에서 탄이 빠지지 않아 재장전할 일이 없다. 이미 비어 있는 총은 손이 빈 틈에 채워지고 약실까지 장전된다. 탄창식·튜브식 총기와 RShG-2(쏘면 새 로켓)에 적용되고, 리볼버 실린더·유탄 발사기·신호탄 권총·중절식은 해당하지 않는다. 고정 기관총은 따로 항목이 있다."
+    },
+    "2. Weapons/Infinite weapon durability": {
+      "name": "무한 총기 내구도",
+      "desc": "쏴도 총기의 내구도와 최대 내구도가 깎이지 않는다."
+    },
+    "2. Weapons/Weapon reliability (no malfunctions, no overheating)": {
+      "name": "총기 신뢰성 (고장·과열 없음)",
+      "desc": "걸림·불발·급탄 불량·노리쇠 고장이 없고 총열도 달지 않는다. 과열로 연사 속도가 바뀌거나 노리쇠가 멈추거나 저절로 발사되는 일도 없다."
+    },
+    "3. Grenades, items and money/Infinite grenades": {
+      "name": "무한 수류탄",
+      "desc": "던진 수류탄이 같은 자리(같은 빠른 칸)에 같은 종류로 새로 채워진다."
+    },
+    "3. Grenades, items and money/Infinite item usage (meds, food, drinks, stims)": {
+      "name": "무한 아이템 사용 (의료품·음식·음료·주사제)",
+      "desc": "의료품·음식·음료·각성제·주사기가 소모되지 않는다. 쓸 때마다 사용량이 되돌아오고, 한 번만 쓰는 아이템은 그대로 남는다. 열쇠·수류탄·탄약은 따로 항목이 있다."
+    },
+    "3. Grenades, items and money/Infinite key usage": {
+      "name": "무한 열쇠 사용",
+      "desc": "열쇠와 카드키의 사용 횟수가 줄지 않는다. 작전 시작 때 쓰는 연구소 출입 카드도 포함된다."
+    },
+    "3. Grenades, items and money/Infinite money (incl. GP coins)": {
+      "name": "무한 돈 (GP 코인 포함)",
+      "desc": "GP 코인을 포함한 모든 화폐로 값을 치르지 않고 살 수 있다. 상인 거래, 플리마켓 구매, 플리 등록·갱신 수수료, 수리, 보험, 치료, 은신처 개선과 스캐브 상자가 해당한다. 작전 중에는 유료 탈출구와 BTR·상인 서비스가 돈을 되돌려 준다(갖고는 있어야 한다). 돈에 손을 대지 않으므로 이 항목을 끄면 원래 갖고 있던 그대로 남는다. 작전 밖에서 쓰려면 이 모드의 서버 쪽(SPT_Runtime/user/mods/InfiniteEverything)이 필요하다. 의류와 은신처 제작·공사는 해당하지 않는다."
+    },
+    "4. Player/Infinite health (god mode)": {
+      "name": "무한 체력 (무적)",
+      "desc": "피해·출혈·골절·사망이 없다. 켜는 순간 체력이 모두 차고 나쁜 상태도 사라진다."
+    },
+    "4. Player/Infinite energy and hydration": {
+      "name": "무한 기력·수분",
+      "desc": "기력과 수분이 가득한 상태로 유지된다."
+    },
+    "4. Player/Infinite stamina": {
+      "name": "무한 스태미너",
+      "desc": "몸 스태미너, 팔 스태미너, 조준 중 숨 참기가 가득한 상태로 유지된다."
+    },
+    "4. Player/Infinite armor durability": {
+      "name": "무한 방탄 내구도",
+      "desc": "맞아도 착용한 방탄복·방탄판·헬멧의 내구도가 깎이지 않는다. 방어력은 그대로 작동한다."
+    },
+    "4. Player/Infinite carry weight": {
+      "name": "무한 소지 무게",
+      "desc": "과적 상태가 되지 않는다. 짐 때문에 걷기·질주가 제한되거나 스태미너가 더 빨리 빠지거나 관성이 붙는 일이 없다."
+    },
+    "4. Player/Infinite raid time": {
+      "name": "무한 작전 시간",
+      "desc": "작전 시간이 다 돼도 작전이 끝나지 않는다. 시간이 지난 뒤 이 항목을 끄면 60초 뒤에 작전이 끝난다. Fika 에서는 참가자마다 이 항목을 켜야 한다. 장갑 열차는 원래 시간표대로 떠난다."
+    },
+    "5. Turrets (stationary weapons)/Turret ammo (belt refills when empty)": {
+      "name": "기관총 탄약 (비면 탄띠 재장전)",
+      "desc": "고정 기관총의 탄띠가 다 떨어지면 곧바로 채워져 계속 쏠 수 있다(타르코프에는 기관총 재장전이 없다). 남은 탄 수 표시는 그대로 줄어든다."
+    },
+    "5. Turrets (stationary weapons)/Turret magazine (rounds are never used up)": {
+      "name": "기관총 탄창 (탄이 줄지 않음)",
+      "desc": "고정 기관총을 쏴도 탄띠에서 탄이 빠지지 않는다. 비어 있는 탄띠는 올라타는 순간 채워진다."
+    },
+    "6. Hideout/Infinite fuel and filters": {
+      "name": "무한 연료·필터",
+      "desc": "발전기 연료, 정수 필터, 공기 필터가 소모되지 않는다(끼워 두기는 해야 한다). 이 모드의 서버 쪽이 필요하다. 켜 두는 동안에는 소모로 얻는 은신처 관리 경험치가 들어오지 않는다."
+    }
+  }
+}

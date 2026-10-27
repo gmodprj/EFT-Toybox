@@ -1,0 +1,16 @@
+{
+  "stage": "stage8-B1",
+  "spt": "4.1.6",
+  "note": "8-B 택일 결과. 2190 만 넣는다 — 2394 는 Equipment Is Eternal 과 중복, 3186 은 Slimmer Magazines 와 대체재라 교체 이유가 약하다. 근거는 doc/COMPARE-STAGE8-B.md.",
+  "mods": [
+    {
+      "group": "8B-1",
+      "id": 2190,
+      "name": "Recoil Rework (Legacy)",
+      "version": "2.0.0",
+      "size": 35403,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2190/recoil-rework-legacy/2.0.0"
+    }
+  ]
+}

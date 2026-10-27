@@ -1,0 +1,33 @@
+{
+  "guid": "com.blackhawk.quickaim",
+  "name": "조준 스태미너 (Quick Aim)",
+  "sections": {
+    "1. Aim stamina": "1. 조준 스태미너"
+  },
+  "settings": {
+    "1. Aim stamina/Enabled": {
+      "name": "모드 사용",
+      "desc": "이 모드 전체를 켜고 끈다. 끄면 조준 스태미너가 게임 기본 속도로 빠진다."
+    },
+    "1. Aim stamina/Standing": {
+      "name": "서 있을 때",
+      "desc": "서 있을 때 조준 스태미너가 빠지는 속도. 100 이 게임 기본값이고, 낮추면 더 오래 조준할 수 있다."
+    },
+    "1. Aim stamina/Crouching": {
+      "name": "앉았을 때",
+      "desc": "앉은 자세에서 조준 스태미너가 빠지는 속도. 무릎에 팔꿈치를 댈 수 있으니 기본값이 서 있을 때보다 낮다."
+    },
+    "1. Aim stamina/Prone": {
+      "name": "엎드렸을 때",
+      "desc": "엎드린 자세에서 조준 스태미너가 빠지는 속도. 총을 바닥에 받치므로 기본값이 낮다."
+    },
+    "1. Aim stamina/Mounted or on a bipod": {
+      "name": "거치했을 때",
+      "desc": "총을 어딘가에 거치했거나 양각대를 펼쳤을 때 조준 스태미너가 빠지는 속도. 어느 자세든 총이 받쳐지므로 자세보다 이 값이 우선한다."
+    },
+    "1. Aim stamina/Log details to console": {
+      "name": "자세한 기록",
+      "desc": "스태미너 소모 속도가 바뀔 때마다 BepInEx 기록에 남긴다. 버그를 신고할 때만 필요하다."
+    }
+  }
+}

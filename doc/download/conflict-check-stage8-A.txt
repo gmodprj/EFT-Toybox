@@ -1,0 +1,16 @@
+stage8-A: 모드 5개 / 설치 대상 경로 17개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 0
+
+[4] 모드별 설치 위치
+    1796__JSM.-.Mokou.TOUHOU -> 서버
+    1937__acidphantasm-devbalaclavafix -> 게임
+    2763__MeleeMultiplier_004 -> 서버
+    2953__HeadShotDamageRedirect -> 게임
+    755__platinum-theblacklist-3.1.1 -> 서버
+
+CLEAN (0)

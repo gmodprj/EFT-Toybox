@@ -1,0 +1,25 @@
+stage7: 모드 14개 / 설치 대상 경로 66개
+
+[1] E:\Spt에 이미 있는 경로: 0
+
+[2] 모드끼리 겹치는 경로: 0
+
+[3] 설치 경로가 아닌 파일(압축에 섞여 온 것): 0
+
+[4] 모드별 설치 위치
+    1878__FiveF-UnrestrictedArmorPlate-2.1.0 -> 서버
+    2422__ozen.Foldables-1.1.1 -> 게임+서버
+    2429__VisorEffectManager -> 게임
+    2524__acidphantasm-itemlimitsbegone -> 서버
+    2554__ChangeHelmetVisor -> 게임+서버
+    2576__AllinWeaponUnslotted -> 서버
+    2814__LMSP -> 게임
+    2969__Manimal-QuickCancel-2.0.0 -> 게임
+    2985__QuickAim.v1.0 -> 게임
+    3006__Liquidwarp-MunitionsExpert-3.1.0 -> 게임
+    3049__ArmorInfoPlus4.1.x -> 게임
+    3105__SOMF-Sit.OnMyFace-0.1.2 -> 서버
+    3106__Liquidwarp-ArmorExpert-3.1.0 -> 게임
+    3190__BindInContainer-1.0.1 -> 게임
+
+CLEAN (0)

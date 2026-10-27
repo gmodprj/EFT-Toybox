@@ -1,0 +1,4 @@
+3108__InfiniteEverything-2.5.3	BepInEx\plugins\InfiniteEverything\InfiniteEverything.dll
+3108__InfiniteEverything-2.5.3	BepInEx\plugins\InfiniteEverything\LICENSE
+3108__InfiniteEverything-2.5.3	SPT_Runtime\user\mods\InfiniteEverything\InfiniteEverythingServer.dll
+3108__InfiniteEverything-2.5.3	SPT_Runtime\user\mods\InfiniteEverything\LICENSE

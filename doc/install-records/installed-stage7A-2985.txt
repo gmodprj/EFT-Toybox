@@ -1,0 +1,1 @@
+2985__QuickAim.v1.0	BepInEx\plugins\QuickAim\QuickAim.dll

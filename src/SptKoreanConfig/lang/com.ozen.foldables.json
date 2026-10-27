@@ -1,0 +1,26 @@
+{
+  "guid": "com.ozen.foldables",
+  "name": "장비 접기 (Foldables)",
+  "sections": {
+    "Experimental": "실험 기능",
+    "General": "일반"
+  },
+  "settings": {
+    "Experimental/Fold While Dragging": {
+      "name": "끌면서 접기",
+      "desc": "아이템을 끌고 가는 중에 단축키로 접고 펼 수 있게 한다."
+    },
+    "Experimental/Dragging Hotkey": {
+      "name": "끌면서 접기 키",
+      "desc": "아이템을 끌고 가는 중에 접고 펴는 데 쓰는 키."
+    },
+    "General/Fold While Equipped": {
+      "name": "착용한 채로 접기",
+      "desc": "장비를 착용한 상태에서도 접을 수 있게 한다."
+    },
+    "General/Spill Confirmation": {
+      "name": "내용물 쏟기 확인",
+      "desc": "내용물이 든 수납 장비를 접을 때 쏟아도 되는지 묻는다. 끄면 묻지 않고 늘 쏟는다."
+    }
+  }
+}

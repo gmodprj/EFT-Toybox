@@ -1,0 +1,1 @@
+3106__Liquidwarp-ArmorExpert-3.1.0	BepInEx\plugins\Liquidwarp-ArmorExpert.dll

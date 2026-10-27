@@ -1,0 +1,17 @@
+{
+  "stage": "stage6-D",
+  "spt": "4.1.6",
+  "note": "6-D — Nexus 상인 초상화. 로그인 필요라 사람이 받은 뒤 처리(Chrome으로 받음)",
+  "mods": [
+    {
+      "group": "6D",
+      "id": "nexus-vanillatradersrework",
+      "name": "VanillaTradersRework-Reloaded (Nexus)",
+      "version": "1.0.0",
+      "size": 10783707,
+      "profileBinding": false,
+      "homepage": "https://www.nexusmods.com/escapefromtarkov/mods/10",
+      "link": "https://www.nexusmods.com/escapefromtarkov/mods/10?tab=files (로그인 필요, 스크립트로 받을 수 없음)"
+    }
+  ]
+}

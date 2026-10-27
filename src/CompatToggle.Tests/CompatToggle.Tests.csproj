@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <!-- WebConfigBridge 의 POCO 들이 암시적 using 을 전제로 쓰였다 -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <!--
+    게임 어셈블리를 참조하지 않는다. 플러그인의 순수 파일만 링크 컴파일해
+    EFT 없이 판정 로직을 테스트한다. EFT 의존부(SlotClassifier.Eft.cs 등)는
+    여기에 넣지 않는다.
+  -->
+  <ItemGroup>
+    <Compile Include="..\CompatToggle\ToggleSet.cs" />
+    <Compile Include="..\CompatToggle\CompatGate.cs" />
+    <Compile Include="..\CompatToggle\SlotClassifier.cs" />
+    <!-- WebConfigBridge 의 설정 POCO 들. SPT 를 참조하지 않는 순수 코드라 여기서 시험할 수 있다. -->
+    <Compile Include="..\WebConfigBridge\TargetConfig.cs" />
+    <Compile Include="..\WebConfigBridge\ConfigStamp.cs" />
+    <Compile Include="..\WebConfigBridge\Tier1Configs.cs" />
+    <Compile Include="..\WebConfigBridge\AllinWeaponUnslottedConfig.cs" />
+    <Compile Include="..\WebConfigBridge\HelmetSlotUnionConfig.cs" />
+    <Compile Include="*.cs" />
+  </ItemGroup>
+
+</Project>

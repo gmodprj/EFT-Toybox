@@ -32,7 +32,7 @@
    - `link`는 Forge `.../mod/download/<id>/<slug>/<version>` (GitHub 릴리스 등으로 리다이렉트)
 2. `node tools/download-stage.mjs <stage>` → `downloads/<stage>/`, 결과 `doc/download/download-results-<stage>.json`
    - 스트리밍 저장(수 GB 대응), `size`와 바이트 단위 비교.
-3. 해제: Windows 기본 `tar.exe -xf <파일> -C extracted/<stage>/<파일명>` (zip·7z 모두 가능, 7-Zip 불필요)
+3. 해제: Windows 기본 bsdtar 를 **절대경로로** 부른다 — `/c/Windows/System32/tar.exe -xf <파일> -C extracted/<stage>/<파일명>` (zip·7z 모두 가능, 7-Zip 불필요). Git Bash 에서 `tar.exe` 로만 쓰면 `/usr/bin/tar.exe` 의 GNU tar 가 먼저 잡혀 zip 을 `This does not look like a tar archive` 로 거부한다
 4. 구조·충돌 검사: 각 파일의 상대경로가 `E:\Spt`에 이미 있는지, 모드끼리 겹치는지 확인 → 둘 다 없어야 진행.
 
 ## 3. 설치
@@ -88,6 +88,7 @@
 | --- | --- | --- |
 | 게임 | `HarmonyX ... You should only patch implemented methods` | 패치 방식 안내 (UI Fixes, WTT 등) |
 | 게임 | `FixPluginTypesSerialization ... references Fika.Core which doesn't exist` | Fika 미설치라 Fika 연동 DLL 제외 |
+| 게임 | `[Error][DirectReload] Patch FAILED to enable: FikaHostReloadMirror — Fika ObservedFirearmController not found` | 같은 이유. **Error 등급으로 찍히지만 정상**이다. Fika를 쓰지 않으면 이 패치는 걸 대상이 없다 |
 | 게임 | `WTT-ClientCommonLib [HideoutIcons]/[MarkTextures] No ... in manifest` | 해당 리소스를 쓰는 모드 없음 |
 | 게임 | `DanW-OpenSesame Cannot find translations for locale "xx"` | 번역 없는 언어는 영어 사용(한국어는 해당 없음) |
 | 서버 | `[SVM] Initialization cancelled: Preset or/and Loader is not found` (Error 등급) | 프리셋 미생성. 지금은 해당 없음 |

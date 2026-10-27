@@ -1,0 +1,56 @@
+@inject ConfigStore Store
+@inject ISnackbar Snackbar
+@inject IDialogService Dialog
+
+<MudText Typo="Typo.h6" GutterBottom="true">Repair Skill Extension</MudText>
+<MudText Typo="Typo.body2" Class="mb-4">수리할 때 붙는 버프의 확률 계산값이다.</MudText>
+
+@if (_config is null)
+{
+    <MudAlert Severity="Severity.Warning">
+        설정 파일을 찾지 못했다. <code>user/mods/RepairSkillExtension/buffs.jsonc</code> 를 확인하라.
+    </MudAlert>
+}
+else
+{
+    <MudAlert Severity="Severity.Info" Class="mb-4" Dense="true">
+        원본이 "값만 고치라" 고 적어둔 파일이다. 여기서는 확률 계산의 세 값만 다루고,
+        장비 종류별 버프 표(<code>repairKit</code>)는 손대지 않고 그대로 둔다.
+    </MudAlert>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">버프 확률</MudText>
+        <MudText Typo="Typo.caption" Class="mb-2">
+            확률 = 최소값 + 스킬 레벨 × 레벨 보너스 × 수리킷 점수 / (내구 상한% / 100 × 아이템 최대내구)
+        </MudText>
+
+        <MudNumericField T="double" @bind-Value="_config.BuffSettings.CommonBuffMinChanceValue"
+                         Label="최소 확률" Step="0.01" Variant="Variant.Outlined" Class="mt-2"
+                         HelperText="게임 기본값 0.15" />
+        <MudNumericField T="double" @bind-Value="_config.BuffSettings.CommonBuffChanceLevelBonus"
+                         Label="레벨당 보너스" Step="0.001" Variant="Variant.Outlined" Class="mt-2"
+                         HelperText="게임 기본값 0.005" />
+        <MudNumericField T="double" @bind-Value="_config.BuffSettings.ReceivedDurabilityMaxPercent"
+                         Label="내구 상한 (%)" Step="1" Variant="Variant.Outlined" Class="mt-2"
+                         HelperText="게임 기본값 30. 낮출수록 확률이 올라간다" />
+    </MudPaper>
+
+    <SaveBar OnSave="Save" OnReload="Reload" Path="@Store.PathOf(ConfigStore.Targets.RepairSkillExtension)" />
+}
+
+@code {
+    private RepairSkillExtensionConfig? _config;
+    private readonly ConfigStamp _stamp = new();
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload() =>
+        _config = Store.Load<RepairSkillExtensionConfig>(ConfigStore.Targets.RepairSkillExtension, _stamp);
+
+    private async Task Save()
+    {
+        if (_config is null) return;
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.RepairSkillExtension, _config, _stamp, Reload);
+    }
+}

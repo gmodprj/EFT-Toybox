@@ -1,0 +1,50 @@
+{
+  "guid": "com.acidphantasm.brightlasers",
+  "name": "밝은 레이저 (BrightLasers)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Color": "2. 색"
+  },
+  "settings": {
+    "1. General/Enable Mod": {
+      "name": "모드 사용",
+      "desc": "이 모드 전체를 켜고 끈다."
+    },
+    "1. General/Beam Width Multiplier": {
+      "name": "빔 굵기 배율",
+      "desc": "레이저 빔의 굵기에 곱하는 값."
+    },
+    "1. General/Intensity Multiplier": {
+      "name": "밝기 배율",
+      "desc": "레이저가 보이는 밝기와 비추는 빛의 세기에 곱하는 값."
+    },
+    "1. General/Factor Multiplier": {
+      "name": "재질 계수 배율",
+      "desc": "레이저 재질의 _Factor 값에 곱하는 값."
+    },
+    "2. Color/Override Laser Color": {
+      "name": "레이저 색 바꾸기",
+      "desc": "원래 레이저 색을 아래에서 고른 색으로 덮어쓴다."
+    },
+    "2. Color/Laser Color": {
+      "name": "레이저 색",
+      "desc": "'레이저 색 바꾸기'를 켰을 때 쓰는 색."
+    },
+    "2. Color/RGB Cycle": {
+      "name": "무지개색 순환",
+      "desc": "레이저 색을 무지개색으로 계속 바꾼다. 직접 고른 레이저 색보다 우선한다."
+    },
+    "2. Color/RGB Cycle Speed": {
+      "name": "순환 속도",
+      "desc": "무지개색이 바뀌는 속도."
+    },
+    "2. Color/Enable Original Color Shift": {
+      "name": "원래 색 진하게",
+      "desc": "원래 레이저 색을 그 색의 주된 채널 쪽으로 밀어 진하게 만든다. '레이저 색 바꾸기'나 '무지개색 순환'을 켜면 무시된다."
+    },
+    "2. Color/Original Color Shift Amount": {
+      "name": "진하게 하는 정도",
+      "desc": "원래 레이저 색을 주된 채널 쪽으로 얼마나 밀지 정한다."
+    }
+  }
+}

@@ -1,0 +1,97 @@
+@inject ConfigStore Store
+@inject ISnackbar Snackbar
+@inject IDialogService Dialog
+
+<MudText Typo="Typo.h6" GutterBottom="true">Helmet Slot Union</MudText>
+<MudText Typo="Typo.body2" Class="mb-4">헬멧의 부착 칸을 합집합으로 만들어, 한 칸에만 맞던 파츠를 다른 칸에도 끼울 수 있게 한다.</MudText>
+
+@if (_config is null)
+{
+    <MudAlert Severity="Severity.Warning">
+        설정 파일을 찾지 못했다. 그 모드가 <code>user/mods/HelmetSlotUnion</code> 에 설치되어 있는지 확인하라.
+    </MudAlert>
+}
+else
+{
+    <MudPaper Class="pa-4 mb-4">
+        <MudSwitch T="bool" @bind-Value="_config.ModEnabled" Color="Color.Primary"
+                   Label="모드 사용 — 끄면 이 모드가 데이터베이스를 건드리지 않는다" />
+        <MudSwitch T="bool" @bind-Value="_config.Debug" Color="Color.Primary"
+                   Label="자세한 기록 — 칸마다 무엇이 몇 개로 늘었는지 남긴다. 문제를 볼 때만" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">충돌 정리</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.RemoveAttachmentConflicts" Color="Color.Primary"
+                   Label="파츠끼리의 충돌 지우기 — 칸을 넓혀도 이것이 남으면 '동시에 장착할 수 없습니다' 가 뜬다" />
+        <MudSwitch T="bool" @bind-Value="_config.RemoveAllConflictsOnAttachments" Color="Color.Warning"
+                   Label="충돌 통째로 비우기 — 범위 밖 항목까지 사라져 다른 모드와 부딪힐 수 있다" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">장비 칸 합치기</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.MergeEquipmentSlots" Color="Color.Warning"
+                   Label="mod_equipment 번호를 한 묶음으로 — 칸 번호의 뜻이 헬멧마다 달라 기본은 꺼짐" />
+        <MudText Typo="Typo.caption">
+            Ops-Core FAST 는 001 이 RAC 헤드셋, 002 가 SLAAP 방탄판이다. 켜면 헤드셋 자리에 방탄판이 들어가는 조합까지 열린다.
+        </MudText>
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">건드리지 않을 것</MudText>
+        <MudText Typo="Typo.caption" Class="mb-2">한 줄에 하나씩 적는다. 비워두면 전부 건드린다.</MudText>
+
+        <MudTextField T="string" @bind-Value="_excludedSlotNames" Lines="4" Variant="Variant.Outlined"
+                      Label="제외할 칸 이름"
+                      HelperText="helmet_top·helmet_back 은 헬멧 내장 방탄판 자리다. 합치면 방어력이 크게 달라진다." />
+
+        <MudTextField T="string" @bind-Value="_excludedHelmetIds" Lines="4" Variant="Variant.Outlined"
+                      Class="mt-4" Label="제외할 헬멧 아이템 id"
+                      HelperText="예: 5c0919b50db834001b7ce3b9" />
+    </MudPaper>
+
+    <MudStack Row="true" Spacing="2">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save">저장</MudButton>
+        <MudButton Variant="Variant.Outlined" OnClick="Reload">다시 불러오기</MudButton>
+    </MudStack>
+
+    <MudText Typo="Typo.caption" Class="mt-4">파일: <code>@Store.PathOf(ConfigStore.Targets.HelmetSlotUnion)</code></MudText>
+}
+
+@code {
+    private HelmetSlotUnionConfig? _config;
+    private readonly ConfigStamp _stamp = new();
+    private string _excludedSlotNames = string.Empty;
+    private string _excludedHelmetIds = string.Empty;
+
+    protected override void OnInitialized() => Reload();
+
+    private void Reload()
+    {
+        _config = Store.Load<HelmetSlotUnionConfig>(ConfigStore.Targets.HelmetSlotUnion, _stamp);
+        _excludedSlotNames = ToLines(_config?.ExcludedSlotNames);
+        _excludedHelmetIds = ToLines(_config?.ExcludedHelmetIds);
+    }
+
+    private async Task Save()
+    {
+        if (_config is null)
+        {
+            return;
+        }
+
+        _config.ExcludedSlotNames = FromLines(_excludedSlotNames);
+        _config.ExcludedHelmetIds = FromLines(_excludedHelmetIds);
+
+        await SaveResult.ReportAsync(
+            Store, Snackbar, Dialog, ConfigStore.Targets.HelmetSlotUnion, _config, _stamp, Reload);
+    }
+
+    private static string ToLines(List<string>? values) =>
+        values is null ? string.Empty : string.Join(Environment.NewLine, values);
+
+    /// <summary>빈 줄과 앞뒤 공백은 버린다. 사람이 적는 칸이라 그대로 넘기면 설정이 더러워진다.</summary>
+    private static List<string> FromLines(string text) =>
+        text.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+}

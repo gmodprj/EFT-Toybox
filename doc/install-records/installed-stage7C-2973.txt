@@ -1,0 +1,4 @@
+2973__RestoreArmorPlates-1.0.2	BepInEx\plugins\RestoreArmorPlatesClient.dll
+2973__RestoreArmorPlates-1.0.2	SPT_Runtime\user\mods\Wade-RestoreArmorPlates\LICENSE
+2973__RestoreArmorPlates-1.0.2	SPT_Runtime\user\mods\Wade-RestoreArmorPlates\README.md
+2973__RestoreArmorPlates-1.0.2	SPT_Runtime\user\mods\Wade-RestoreArmorPlates\RestoreArmorPlatesServer.dll

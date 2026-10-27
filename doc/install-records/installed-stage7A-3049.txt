@@ -1,0 +1,2 @@
+3049__ArmorInfoPlus4.1.x	BepInEx\plugins\ArmorInfo\ArmorInfo.dll
+3049__ArmorInfoPlus4.1.x	BepInEx\plugins\ArmorInfo\package.json

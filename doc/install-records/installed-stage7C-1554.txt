@@ -1,0 +1,5 @@
+1554__Tiltushkin-AllAmmo.1.5.0	SPT_Runtime\user\mods\Tiltushkin-AllAmmo\tiltushkin-allammo.dll
+1554__Tiltushkin-AllAmmo.1.5.0	SPT_Runtime\user\mods\Tiltushkin-AllAmmo\data\assort.json
+1554__Tiltushkin-AllAmmo.1.5.0	SPT_Runtime\user\mods\Tiltushkin-AllAmmo\data\base.json
+1554__Tiltushkin-AllAmmo.1.5.0	SPT_Runtime\user\mods\Tiltushkin-AllAmmo\data\vafelz.jpg
+1554__Tiltushkin-AllAmmo.1.5.0	SPT_Runtime\user\mods\Tiltushkin-AllAmmo\config\config.json

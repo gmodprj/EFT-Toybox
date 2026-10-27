@@ -1,0 +1,2 @@
+2763__MeleeMultiplier_004	SPT_Runtime\user\mods\MeleeMultiplier\MeleeMultiplier.dll
+2763__MeleeMultiplier_004	SPT_Runtime\user\mods\MeleeMultiplier\MeleeMultiplier.pdb
