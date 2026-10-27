@@ -1,0 +1,4 @@
+505__MountOlympus-4.1.3.10	SPT_Runtime\user\mods\MountOlympus\MOConfig.jsonc
+505__MountOlympus-4.1.3.10	SPT_Runtime\user\mods\MountOlympus\MountOlympus.dll
+505__MountOlympus-4.1.3.10	SPT_Runtime\user\mods\MountOlympus\Modifiers\firearmMags.json
+505__MountOlympus-4.1.3.10	SPT_Runtime\user\mods\MountOlympus\Modifiers\globals.json
