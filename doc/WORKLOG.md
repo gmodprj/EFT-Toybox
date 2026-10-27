@@ -818,3 +818,61 @@ SpecialScope, Stock). 칸 466개에 항목 67314개를 더했다.
 같은 실행의 클라이언트 로그: 플러그인 116개 로드, 오류는 기존 Fika 미설치 관련 1건뿐, `Direct load flow error` **0건** — 탄창 소실도 재발하지 않았다.
 
 조정이 필요해지면 서버 웹 페이지의 모드 설정 → "분류별 칸 열기" 에서 스위치로 바꾸고 서버를 다시 띄우면 된다. 목록이 길어 불편하면 구조 계열(Handguard·Stock·PistolGrip)을 먼저 끄는 것이 효과가 크고, 조준경이 보이는데 끼워지지 않으면 올릴 자리가 막힌 것이므로 `Mount` 를 켜면 풀린다.
+
+## 8차 — OP·AI 동료·HUD 포팅본 (2026-10-27)
+
+설치 **165개 → 179개**. 결과 요약은 [STAGE8-RESULT.md](STAGE8-RESULT.md).
+
+단계별로 넣은 것: 8-A 5개 / 8-B Recoil Rework / 8-C Olympus·SIM / 8-D MagicBullet·Tushonka-800
+/ 8-E Waypoints·PIT Fireteam / 8-F Make Shotguns Great Again / 8-G GamePanelHUD 포팅본.
+
+넣지 않기로 한 것 넷(Instant Insurance 2394, Shorter Magazines 3186, Death Shadow Tweaks 2943,
+Stance Overhaul 3136)은 전부 **설치본과 중복이거나 대체재**였다. Forge 설명만 보지 않고 설치본의
+설정 파일과 후보 DLL 을 직접 열어 확인했다.
+
+### 봇 AI 정지 사건
+
+Miyako Carry Service 를 넣은 뒤 레이드에서 나중에 스폰되는 적 AI 가 멈췄다. 전말은
+[fixes/2026-10-27-pit-stash-ammo.md](fixes/2026-10-27-pit-stash-ammo.md).
+
+실제 원인은 **스태시에 있던 잘못된 탄약**이었다. `All In Weapon: Unslotted` 의
+`FckMagazines` 가 켜져 있던 시기에 9x19 글록 탄창에 5.56 소총탄이 들어갔고, 설정을 되돌린 뒤
+규칙에 맞지 않는 항목만 남았다. 동료 모드가 스태시를 통째로 재검증하다 여기서 실패해 동료
+생성이 중간에 끊겼고, **반쯤 만들어진 동료 기록**이 레이드를 망가뜨렸다. 탄약을 지우는 것만으로는
+부족했고 기존 동료를 지우고 새로 만들어야 풀렸다.
+
+**가설 셋 중 둘이 틀렸다.** BigBrain·Waypoints 가 4.1.6 보다 6주 먼저 빌드됐다는 것을 근거로
+"커스텀 레이어를 쓰는 모드가 깨진다"고 했고, 그 다음엔 PIT 의 `SpawnPoint` 설정을 지목했다.
+사용자는 그 설정을 끄지 않고 동료만 다시 만들어 해결했다. 맞힌 것은 로그의 **Warning 줄**에서
+찾은 탄약 건 하나뿐이다. 증거가 로그에 있을 때만 맞았고, 설정의 의미와 증상의 모양을 맞춰 본
+추론은 둘 다 빗나갔다. Miyako 제거도 불필요했을 수 있다.
+
+### 도구에서 고친 것
+
+- `install-and-test.ps1` — 서버 테스트 중 **다른 모드가** 만든 파일을 설치 중인 모드 것으로
+  기록했다. SIM 이 시작할 때마다 스냅샷을 다시 만들어 매 설치에서 재발할 문제였다. 자기 폴더
+  밖이면 `OTHERMOD` 로 알리고 기록하지 않게 고쳤다. 8-F 설치에서 바로 2건을 걸러냈다
+- `gen-installed-mods.mjs` — 단계 루프가 1~7 로 하드코딩돼 8차가 표에 안 나왔다
+- `PROCEDURE.md` — 해제 명령을 bsdtar 절대경로로. Git Bash 에서 `tar.exe` 는 `/usr/bin` 의
+  GNU tar 가 먼저 잡혀 zip 을 `This does not look like a tar archive` 로 거부한다
+
+### 모드 데이터에 손댄 것
+
+**Olympus** 가 설치본에 없는 총기를 참조해 탄창 적용이 222개 중 207개에서 멈췄다. 없는 항목
+12개를 빼 209개 전부 적용되게 했다. 원본과 되돌리는 법은
+[mod-patches/505-olympus-firearmMags.md](mod-patches/505-olympus-firearmMags.md). **Olympus 를
+갱신하면 이 수정이 사라진다.**
+
+### Forge 밖 모드
+
+8-G GamePanelHUD 포팅본은 arca.live 에서 받았다. 원본도 선행 KmyTarkovApi 도 Forge 에 4.1.x
+대응이 없어 **둘 다 재빌드해 동봉한 판**이다. 출처·해시·바이러스 검사·라이선스 검토는
+[external-mods/stage8-G-GamePanelHUD-port.md](external-mods/stage8-G-GamePanelHUD-port.md).
+라이선스가 CC BY-NC-ND 라 제작자 조건에 어긋난다는 점을 설치 전에 알리고 사용자가 결정했다.
+
+### 남은 것
+
+- PIT `LootPatrolLayer.GetDecision` NullReference — 모드가 스스로 억제해 치명적이지 않다.
+  조사와 제작자 보고문은 [fixes/2026-10-27-pit-lootpatrol-nre.md](fixes/2026-10-27-pit-lootpatrol-nre.md)
+- MagicBullet·Recoil Rework 의 **체감**은 확인하지 않았다. 로드만 확인했다
+- MagicBullet 의 근접 슬라이더는 **x1 로 둔다**. MeleeMultiplier 의 x10 과 곱해진다
