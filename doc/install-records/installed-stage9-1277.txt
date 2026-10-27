@@ -1,0 +1,4 @@
+1277__WTT-HeadVoiceSelector	BepInEx\plugins\WTT-HeadVoiceSelector\Icons\icon_face_selector.png
+1277__WTT-HeadVoiceSelector	BepInEx\plugins\WTT-HeadVoiceSelector\Icons\icon_voice_selector.png
+1277__WTT-HeadVoiceSelector	BepInEx\plugins\WTT-HeadVoiceSelector\WTT-HeadVoiceSelector.dll
+1277__WTT-HeadVoiceSelector	SPT_Runtime\user\mods\WTT-HeadVoiceSelector\WTT-HeadVoiceSelector.dll

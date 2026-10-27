@@ -1,0 +1,11 @@
+791__SAIN	BepInEx\plugins\SAIN\EditorDefaults.json
+791__SAIN	BepInEx\plugins\SAIN\LICENSE
+791__SAIN	BepInEx\plugins\SAIN\SAIN.Preset.Shared.dll
+791__SAIN	BepInEx\plugins\SAIN\SAIN.dll
+791__SAIN	SPT_Runtime\user\mods\Solarint-SAIN-ServerMod\CoreOverrides.json
+791__SAIN	SPT_Runtime\user\mods\Solarint-SAIN-ServerMod\Data\NicknamePersonalities.json
+791__SAIN	SPT_Runtime\user\mods\Solarint-SAIN-ServerMod\LICENSE
+791__SAIN	SPT_Runtime\user\mods\Solarint-SAIN-ServerMod\SAIN.Preset.Shared.dll
+791__SAIN	SPT_Runtime\user\mods\Solarint-SAIN-ServerMod\SAIN.ServerInterop.dll
+791__SAIN	SPT_Runtime\user\mods\Solarint-SAIN-ServerMod\SAINServerMod.dll
+791__SAIN	SPT_Runtime\user\mods\Solarint-SAIN-ServerMod\wwwroot\css\sain.css

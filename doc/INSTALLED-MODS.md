@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **179개**, 설치 파일 **3591개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 134개 (2026-10-27 16:51 `LogOutput.log` — 8차 설치분 전부 로드 확인, GamePanelHUD 포팅본 10개 포함. 오류 8건: Fika 미설치 1 + PIT Fireteam `LootPatrolLayer.GetDecision` NullReference 3(모드가 스스로 억제해 AI 는 계속 돈다) + COTI 3.4.2 per-frame 1, 나머지는 같은 것의 중복) / 서버 모드 로드: 106개 (2026-10-27 8-G 설치 후 테스트, 오류 0 — `server-tests/server-test-stage8G-gamepanelhud.out.txt`)
+- 설치된 모드: **187개**, 설치 파일 **10635개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 142개 (2026-10-28 07:37 `LogOutput.log` — 메뉴까지 로드 확인. 오류 1건: Fika 미설치 관련 DirectReload 패치 1. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 와 COTI per-frame 오류가 더 날 수 있다) / 서버 모드: 114개 (2026-10-28 실측. 마지막 서버 테스트는 106개 시점 — `server-tests/server-test-stage8G-gamepanelhud.out.txt`. 절차 밖 6개가 들어온 뒤로는 테스트를 돌리지 않았다)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -232,6 +232,19 @@
 | [PIT Fireteam](https://sp-mod.com/mod/2676) | 1.0.0 | 게임+서버 | - | 26 | `stage8E-2676` |
 | [Make Shotguns Great Again!](https://sp-mod.com/mod/1453) | 1.19.1 | 게임+서버 | **결속** | 195 | `stage8F-1453` |
 | [Game Panel HUD (SPT 4.1.6 포팅본, KmyTarkovApi 2.0.0 포함)](https://arca.live/b/tarkovspt/185302366) | 4.1.6-port | 게임 | - | 30 | `stage8G-gamepanelhud` |
+
+## 절차 밖에서 들어온 것 (설치 기록을 뒤늦게 복원 — 당시 기록이 아니다)
+
+| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
+| --- | --- | --- | --- | --- | --- |
+| [More Energy Drinks](https://sp-mod.com/mod/1688) | 1.3.2 | 서버 | **결속** | 87 | `stage9-1688` |
+| [MoreBotsAPI](https://sp-mod.com/mod/2426) | 2.1.1 | 게임+서버 | - | 4 | `stage9-2426` |
+| [WTT - Content Backport](https://sp-mod.com/mod/2512) | 2.0.5 | 게임+서버 | **결속** | 1637 | `stage9-2512` |
+| [SAIN - Solarint's AI Modifications](https://sp-mod.com/mod/791) | 4.5.1 | 게임+서버 | - | 11 | `stage9-791` |
+| [ISB Aishi](https://sp-mod.com/mod/2478) | 2.0.4 | 게임+서버 | **결속** | 3659 | `stage9-2478` |
+| [ISB Special Forces](https://sp-mod.com/mod/2485) | 2.0.1 | 게임+서버 | - | 1584 | `stage9-2485` |
+| [GF2 Skin Pack](https://sp-mod.com/mod/3156) | 1.0.0 | 서버 | - | 58 | `stage9-3156` |
+| [WTT - Head and Voice Selector](https://sp-mod.com/mod/1277) | 1.1.0 | 게임+서버 | - | 4 | `stage9-1277` |
 
 ## 다른 경로로 설치된 것
 
