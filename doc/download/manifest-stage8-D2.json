@@ -1,0 +1,16 @@
+{
+  "stage": "stage8-D2",
+  "spt": "4.1.6",
+  "note": "8-D 치트 표시 둘째. 적 스캔·방향성 실드·오버드라이브. 8-G HUD 포팅본과 화면을 같이 쓰므로 한쪽씩 확인한다. 검토는 doc/REVIEW-STAGE8-D.md.",
+  "mods": [
+    {
+      "group": "8D-2",
+      "id": 3169,
+      "name": "Tushonka-800: Combat Augmentation System",
+      "version": "1.0.1",
+      "size": 43577,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3169/tushonka-800-combat-augmentation-system/1.0.1"
+    }
+  ]
+}
