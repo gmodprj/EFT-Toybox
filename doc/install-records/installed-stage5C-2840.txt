@@ -1,5 +1,0 @@
-2840__CobrasAmmoStack-v1.1.0	SPT_Runtime\user\mods\CobrasAmmoStack\CHANGELOG.md
-2840__CobrasAmmoStack-v1.1.0	SPT_Runtime\user\mods\CobrasAmmoStack\CobrasAmmoStack.dll
-2840__CobrasAmmoStack-v1.1.0	SPT_Runtime\user\mods\CobrasAmmoStack\config.json
-2840__CobrasAmmoStack-v1.1.0	SPT_Runtime\user\mods\CobrasAmmoStack\LICENSE
-2840__CobrasAmmoStack-v1.1.0	SPT_Runtime\user\mods\CobrasAmmoStack\README.md

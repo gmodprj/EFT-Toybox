@@ -101,9 +101,9 @@ public class IntegrationService : IOnLoad { ... }
 
 | 할 일 | 왜 |
 | --- | --- |
-| **CobrasAmmoStack 제거** | 0/31 완전히 죽어 있다. 설치만 돼 있고 아무 효과가 없다 |
-| SVM 의 죽은 화폐 스택 4건을 BarterItemsStacks 값과 맞추기 | 설정 화면과 실제가 다른 상태를 없앤다 |
-| TheBlacklist `disableBsgBlacklist` 를 끌지 결정 | ISB-Aishi 243건의 판매 금지를 되살릴지 정하는 문제다 |
+| ~~**CobrasAmmoStack 제거**~~ **했다 (2026-10-28)** | 0/31 완전히 죽어 있었다. 제거 뒤 다시 재 보니 구경 31개의 값이 하나도 변하지 않았다 |
+| ~~SVM 의 죽은 화폐 스택 4건~~ **껐다 (2026-10-28)** | 값을 맞추는 대신 `EnableCurrency` 를 꺼서 BarterItemsStacks 를 유일한 주인으로 만들었다 |
+| TheBlacklist `disableBsgBlacklist` **결정: 켜 둔다 (2026-10-28)** | 죽은 설정이 아니라 모드의 본래 기능이다. 끄면 모드를 쓰는 이유가 사라진다. 아이템 하나씩 되살리는 길은 `customItemConfigs` 다 |
 
 ## 5. 아직 재지 않은 것
 

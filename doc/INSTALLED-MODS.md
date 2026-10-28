@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **187개**, 설치 파일 **10635개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 143개 (2026-10-28 11:38 `LogOutput.log` — 창고까지 확인. 오류 1건: Fika 미설치 관련 DirectReload 패치 1. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 와 COTI per-frame 오류가 더 날 수 있다) / 서버 모드 로드: 114개 (2026-10-28 테스트, 정상 시작 — `server-tests/server-test-stage9-114mods.out.txt`. 로그 파일에 `[Error]` 49건: 없는 아이템을 플레아 캐시에 넣으려다 실패 48(원인은 `MountOlympus.dll` — 모드가 만들지 않는 아이템 id 48개를 들고 있다) + 번들 1개 누락. 자세한 것은 `REVIEW-LOAD-ORDER.md`)
+- 설치된 모드: **186개**, 설치 파일 **10630개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: 143개 (2026-10-28 11:38 `LogOutput.log` — 창고까지 확인. 오류 1건: Fika 미설치 관련 DirectReload 패치 1. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 와 COTI per-frame 오류가 더 날 수 있다) / 서버 모드 로드: 113개 (2026-10-28 CobrasAmmoStack 제거 후 테스트, 정상 시작 — `server-tests/server-test-cleanup-113mods.out.txt`. `Could not add` 48건 그대로 — 원인은 `MountOlympus.dll` 로, 모드가 만들지 않는 아이템 id 48개를 들고 있다. 자세한 것은 `REVIEW-LOAD-ORDER.md`)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
@@ -106,7 +106,7 @@
 | [Direct Reload & Painless Meds](https://sp-mod.com/mod/3074) | 1.3.2 | 게임+서버 | - | 3 | `stage5C-3074` |
 | [Low Ammo Cue](https://sp-mod.com/mod/3046) | 1.0.0 | 게임 | - | 1 | `stage5C-3046` |
 | [BarterItemsStacks](https://sp-mod.com/mod/2480) | 1.4.3 | 게임+서버 | - | 5 | `stage5C-2480` |
-| [Cobra's Ammo Stack](https://sp-mod.com/mod/2840) | 1.1.0 | 서버 | **결속** | 5 | `stage5C-2840` |
+| [Cobra's Ammo Stack](https://sp-mod.com/mod/2840) | 1.1.0 | - | **결속** | 0 | **미설치** |
 | [Caliber Split Storage Solutions](https://sp-mod.com/mod/2990) | 1.0.1 | 서버 | **결속** | 12 | `stage5C-2990` |
 | [SPT Trader Restock Refresh](https://sp-mod.com/mod/3098) | 1.0.0 | 게임+서버 | - | 4 | `stage5D-3098` |
 | [Trader Level Requirements Editor](https://sp-mod.com/mod/3005) | 1.1.0 | 서버 | - | 2 | `stage5D-3005` |
