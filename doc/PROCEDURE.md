@@ -105,3 +105,5 @@
 | 상인 줄이 플레이어 패널 뒤로 넘침 | 커스텀 상인 증가 | Kaeno-TraderScrolling + TraderSpace |
 | 테스트 서버 `Failed to start the web server ... 6969 AddressAlreadyInUse` | 다른 서버가 포트 사용 중 | 사용자 서버를 끄고 테스트하거나, 모드 로드만 확인 |
 | Forge API 429 | 호출 제한 | 스크립트가 `retry-after`(기본 15초)만큼 기다렸다 재시도 |
+| 서버 `SPT에 존재하지않는 상인 <id>가 프로필에서 발견되었습니다`가 로그인마다 | 상인 모드를 지웠으나 프로필 `characters.pmc.TradersInfo`에 평판 항목이 남음 (`6952ced4bcc1dd1e3c80dfcb` = The Quartermaster) | 경고 1줄뿐이므로 두어도 된다. 지우려면 프로필 백업 후 그 키 하나만 뺀다. **서버가 안내하는 `core.json`의 `removeModItemsFromProfile: true`는 켜지 않는다** — 결속 모드의 멀쩡한 아이템까지 지울 수 있다 |
+| 게임 `[UTAE] Could not load the editor baseline` + `HandbookFilterPanel.RegisterItem` 인덱스 범위 | UTAE가 퀘스트로 잠긴 매물까지 한 번에 그리드에 띄워 바닐라 가정을 깸 | 그 상인의 편집 화면만 안 뜨고 게임은 정상. 조정용 도구라 평소 플레이에는 영향 없음 |

@@ -1927,3 +1927,57 @@ reload normally.* **빈 자리가 있어도 반드시 자리를 맞바꾸는 식
   관련된 설정까지 본다.
 - 모드 cfg 도 **바뀌기 전에 떠 둔다.** 그러면 "무엇이 언제 바뀌었나" 를 비교로 답할 수 있다.
   이번에 `user/sptSettings` 는 떠 뒀지만 `BepInEx/config` 는 사고가 난 뒤에야 한 벌 떴다.
+
+## 2026-10-28 — 20:09 로그에서 새로 보인 오류 2건
+
+문서가 적어 둔 확인 시각은 11:38 인데 `LogOutput.log` 와 서버 로그는 **20:09** 까지 돌았다.
+그 사이 세션에 문서에 없던 오류가 둘 있다. 둘 다 게임·서버가 멈추지는 않는다.
+
+### 1. UTAE 편집 기준선 로드 실패 (게임, 1건)
+
+```
+[Error  :Ultimate Trader Assort Editor] [UTAE] Could not load the editor baseline:
+  System.ArgumentOutOfRangeException: Index was out of range.
+  at EFT.UI.HandbookFilterPanel.RegisterItem (Item item)
+  ← TradingGridView.Show ← TraderDealScreen.UpdateGridViews
+  ← TraderEditorController.ShowQuestLockedTraderOffers
+  ← TraderEditorController.EnsureBaselineLoadedAsync
+```
+
+바로 앞 줄이 `[REQUEST SUCCESSFUL] /utae/editor/assort/690766de550bc322a810ea1e` 다. 상인
+`690766de…` 의 편집 화면을 열어 서버에서 어소트를 받아 온 **뒤**, **퀘스트로 잠긴 매물**을
+핸드북 필터 패널에 등록하다 터졌다. 터지는 자리는 UTAE 코드가 아니라 바닐라
+`HandbookFilterPanel.RegisterItem` 안의 인덱스다 — UTAE 가 정상 거래 화면이 만들지 않는
+조합(잠긴 매물까지 한 번에)으로 그리드를 띄우면서 바닐라 쪽 가정을 깬 것으로 보인다.
+
+결과는 **그 상인의 편집 기준선만 안 뜨는 것**이고 게임은 계속 돌았다. UTAE 는 조정용 도구라
+평소 플레이에는 쓰지 않으므로 지금은 그대로 둔다. 다시 쓸 일이 생기면 그 상인이 무엇인지
+(퀘스트 잠금 매물이 있는 커스텀 상인인지) 부터 본다.
+
+### 2. 프로필에 남은 유령 상인 (서버, 로그인마다 1건)
+
+```
+[Error] SPT에 존재하지않는 상인 6952ced4bcc1dd1e3c80dfcb가 프로필에서 발견되었습니다.
+```
+
+프로필(`6adc26693f5b5290609ea366.json`)을 전수로 뒤져 보니 **이 id 는 딱 한 자리에만** 있다.
+
+```
+characters.pmc.TradersInfo.6952ced4bcc1dd1e3c80dfcb
+  { loyaltyLevel: 1, salesSum: 0, standing: 0.2, nextResupply: 1793062479,
+    unlocked: true, disabled: false }
+```
+
+메시지(`dialogues`)도, 그 상인에게서 온 아이템도 없다. **상인 평판 껍데기 하나뿐이다.**
+`nextResupply` 가 2026-10-26 쯤이라, 2026-10-25 에 지운 **The Quartermaster(2817, 결속)** 가
+남긴 것으로 본다(제거 경위는 위 "The Quartermaster 제거" 절). 그때 설치 기록 15개는 전부
+지웠지만 **프로필에 쓰인 평판 항목은 기록에 없으니 남았다** — "게임을 실제로 켠 뒤 생기는
+것은 설치 기록에 안 잡힌다" 는 그때의 교훈이 프로필에도 똑같이 적용된다는 뜻이다.
+
+**서버가 안내하는 `core.json` 의 `removeModItemsFromProfile: true` 는 켜지 않는다.** 그 설정은
+"DB 에 없는 모드 아이템" 을 프로필에서 **싸잡아 지운다.** 지금 설치본에는 결속 모드가 여럿이고
+(ODT's Item Info, WTT 계열, ISB 계열 등) 로드 순서나 일시적 실패로 DB 가 덜 찬 상태에서
+저 설정이 켜져 있으면 **멀쩡한 아이템까지 날아갈 수 있다.** 경고 1줄과 바꿀 위험이 아니다.
+
+실제 피해는 **매 로그인 경고 1줄**이 전부다. 지우고 싶으면 프로필 백업 후
+`characters.pmc.TradersInfo` 에서 저 키 하나만 빼는 쪽이 안전하다 — 지금은 하지 않았다.
