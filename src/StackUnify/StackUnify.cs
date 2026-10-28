@@ -91,6 +91,10 @@ public class StackUnify(
             var props = item.Properties;
             if (props is null) continue;
 
+            // 클래스 정의 노드는 아이템이 아니다. 여기에 값을 쓰면 그 아래 모든 아이템의
+            // 상속이 틀어진다 — 실제로 Ammo 노드에 150 을 써서 게임 쪽이 깨진 적이 있다.
+            if (string.Equals(item.Type, "Node", StringComparison.OrdinalIgnoreCase)) { skipped++; continue; }
+
             var id = item.Id.ToString();
             if (excluded.Contains(id)) { skipped++; continue; }
 
@@ -115,18 +119,22 @@ public class StackUnify(
             }
 
             var current = props.StackMaxSize;
+
+            // 값이 없던 것에는 넣지 않는다. 없다는 것도 뜻이 있고, 없던 자리에 값을 만들면
+            // 게임이 그 아이템을 다르게 다룰 수 있다.
+            if (current is null) { skipped++; continue; }
+
             if (current == want) { already++; continue; }
 
-            // 값이 이미 있고 내가 정한 것과 다르면, 그 자리를 누군가 건드려 둔 것이다.
-            if (current is not null)
+            // 내가 정한 것과 다르면 그 자리를 누군가 건드려 둔 것이다.
+            overridden++;
             {
-                overridden++;
                 var key = props.Caliber ?? "(구경 없음)";
                 overriddenByCaliber[key] = overriddenByCaliber.GetValueOrDefault(key) + 1;
             }
 
             if (config.Debug)
-                logger.Info($"[StackUnify] {id} {props.Name ?? item.Name} : {current?.ToString() ?? "없음"} -> {want}");
+                logger.Info($"[StackUnify] {id} {props.Name ?? item.Name} : {current} -> {want}");
 
             if (!config.ReportOnly) props.StackMaxSize = want;
             set++;
