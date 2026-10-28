@@ -1499,3 +1499,51 @@ TheBlacklist 의 `disableBsgBlacklist` 는 끄지 않기로 하고, 대신 **콘
 
 자세한 것과 되돌리는 법은
 [mod-patches/theblacklist-restore-author-bans.md](mod-patches/theblacklist-restore-author-bans.md).
+
+## 2026-10-28 — 남은 114건을 가렸다: AllWeaponsFlea 41건 + 핸드북에 없는 73건
+
+전 작업에서 858건을 넣어 744건이 막히고 114건이 남았다. 그 114건을 가렸다.
+
+### 순서를 코드부터 잡았다
+
+콘텐츠 모드를 함부로 빼면 프로필이 위험하다(이 설치본을 한 번 망가뜨린 유형이다). 그래서
+먼저 `CanSellOnRagfair` 를 **쓰는** 모드만 코드로 추렸다.
+
+| 모드 | 무엇을 쓰나 | 후보 |
+| --- | --- | --- |
+| AllWeaponsFlea | `Mod::Unlock` 에서 **무조건 `true`** | O |
+| UltimateFlea | `PoolManager::Apply` 에서 조건부 `true`/`false` | O |
+| ItemGen · COTI | 자기가 만든 아이템에만 | X |
+| TraderGen | 자리채움 아이템에 `false` 로 | X |
+| ODT-ItemInfo | 읽기만 | X |
+
+둘 다 플레아 동작 모드라 프로필에 안전하다. 그 둘만 빼고 쟀다.
+
+| 띄운 상태 | 막힘 | 열림 |
+| --- | --- | --- |
+| 전부 (113) | 744 | 114 |
+| 두 모드 뺌 (111) | 785 | 73 |
+| **AllWeaponsFlea 만 뺌 (112)** | **785** | **73** |
+
+세 번째가 답이다 — **41건은 AllWeaponsFlea 단독, UltimateFlea 는 무죄.**
+
+### 남은 73건은 충돌이 아니었다
+
+핸드북과 대조하니 깨끗하게 갈렸다 — **막힌 785건은 전부 핸드북에 있고, 열린 73건은 전부
+없다.** TheBlacklist 의 `PricingService::ApplyPrices` 는 핸드북 항목을 돌며 값을 쓰므로
+핸드북에 없는 아이템에는 닿지 못한다. 다른 모드가 덮은 것이 아니라 **기능이 닿지 않는
+자리**였다.
+
+그래도 그 73건의 id 는 SPT 의 `RagfairBlacklist.Custom` 에 들어갔고, 핸드북 값이 없으면
+플레아 가격도 못 매긴다. 아레나 이벤트 품목·배틀패스 상자 같은 것들이라 애초에 플레아에 뜰
+물건이 아니다.
+
+### 배운 것
+
+전 기록에 "Info 36·CultistAmulet 7 은 설명되지 않는다. 모드가 일곱 개 더 있다"고 적었다.
+**모드를 더 뒤질 일이 아니었다.** 분류를 보고 모드를 의심하기보다, 그 기능이 **무엇을 돌며**
+값을 쓰는지(여기서는 핸드북)를 먼저 읽는 쪽이 빨랐다. 48건 때와 같은 교훈이다 —
+의심 목록을 늘리기 전에 코드가 도는 길을 본다.
+
+환경은 원복했다(모드 113개, `mods-disabled` 폴더 제거, 서버 재시작). 남는 선택은 하나다 —
+**AllWeaponsFlea 를 쓰는 동안 41건은 계속 열려 있다.**
