@@ -192,10 +192,22 @@ BarterItemsStacks 는 지정한 460건 중 452건이 반영됐다(어긋난 8건
 > 앞의 두 건과 달리 이것은 **죽은 설정이 아니라 설정대로 동작하는 것**이라, 치울 대상이
 > 아니라 고를 대상이다.
 >
-> 되살릴 가치가 분명한 것은 **Lotus 의 개조 랩 키카드 1건**이다(키카드가 플레아에 올라오는
-> 것은 값이 큰 변화다). ISB-Aishi 의 243건은 그 모드의 경제를 되돌리는 일이라 사용자가
-> 고를 문제로 남겨 뒀다 — 되살리려면 위 `customItemConfigs` 에 244줄을 넣으면 되고,
-> 목록은 최종 DB 와 대조해 뽑을 수 있다.
+> **되살렸다 (2026-10-28).** 사용자가 전부 되살리기로 정해, 제작자가 막아 둔 것을 아이템
+> 단위로 다시 막았다. 바닐라 블랙리스트는 계속 풀려 있다.
+>
+> **그 과정에서 위 표의 숫자가 틀렸다는 것이 드러났다.** "ISB-Aishi 243건 + Lotus 1건" 이
+> 아니다. 다시 재 보니 제작자가 막아 둔 것은 **887건**이고 그중 **858건**이 풀려 있었다 —
+> ISB-Aishi 438, WTT-ContentBackport 366, WTT-Armory 39, WTT-Artem 12, Airburst 2,
+> LoadAmmoAnimServer 1. **Lotus 는 한 건도 없다.** 처음에는 ISB-Aishi 만 세고 WTT 계열
+> 417건을 빠뜨렸고, 아이템 정의 꼴이 모드마다 달라(`overrideProperties` 와 `_props`)
+> 스캔이 한쪽만 보고 있었다.
+>
+> 858건을 넣고 서버를 다시 띄워 확인했다 — **744건이 막혔고 114건은 아직 플래그가 `true`**
+> 다. 남은 것은 총기 41정쯤(AllWeaponsFlea 가 설명할 수 있다)과 Info 36·CultistAmulet 7 등
+> 설명되지 않는 것이 섞여 있다. 어느 모드가 뒤에 쓰는지는 아직 가리지 않았다.
+>
+> 넣은 꼴·되돌리는 법·남은 114건의 분류는
+> [mod-patches/theblacklist-restore-author-bans.md](mod-patches/theblacklist-restore-author-bans.md).
 
 ## 서버 테스트에서 나온 것 (2026-10-28, 모드 114개)
 
