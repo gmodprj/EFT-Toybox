@@ -1391,3 +1391,62 @@ REVIEW-LOAD-ORDER.md 에 "로드 순서는 밖에서 바꿀 수 없다"고 적�
 통합 모드를 만들지 않더라도 지금 바로 할 수 있는 더 싼 일이 있다 — **CobrasAmmoStack 제거**
 (0/31 완전히 죽어 있다), SVM 의 죽은 화폐 스택 4건 맞추기, TheBlacklist `disableBsgBlacklist`
 결정.
+
+## 2026-10-28 — 죽은 설정 세 가지를 치웠다
+
+[REVIEW-INTEGRATION-MOD.md](REVIEW-INTEGRATION-MOD.md) 가 꼽은 "지금 바로 할 수 있는 더 싼 일"
+셋을 처리했다. 통합 모드를 만들지 않아도 상태가 나아지는 것들이다.
+
+### 1. CobrasAmmoStack 제거 — 값이 하나도 변하지 않았다
+
+결속 모드라 먼저 떠 뒀다 — 프로필은 `backup/profiles-before-cleanup-2026-10-28/`, 모드 파일
+전체는 `backup/removed-cobrasammostack-2026-10-28/`, 설치 기록은 git 에 남아 있다.
+
+설치 기록 `installed-stage5C-2840.txt` 에 적힌 **파일 5개만** 지우고 빈 폴더를 치웠다(기록에
+없는 것은 건드리지 않는 스크립트로). 그다음 서버를 다시 띄워 같은 측정을 반복했다.
+
+| 본 것 | 값 |
+| --- | --- |
+| 서버 모드 | **113개** 정상 시작 (`server-tests/server-test-cleanup-113mods.out.txt`) |
+| Cobra 가 쓰라던 구경 31개 | **Cobra 값과 일치 0/31** — 제거 전과 같다 |
+| 그 31개의 실제 값 | SVM 다섯 값 중 하나 25개, 콘텐츠 모드가 정한 값 6개 |
+| `Could not add` | 48건 그대로 (Olympus 쪽이라 무관) |
+
+즉 **제거로 바뀐 것이 아무것도 없다.** 죽어 있다는 측정이 맞았다.
+
+프로필의 `spt.mods` 목록에는 이름이 남는다. "한때 켜져 있었다"는 기록일 뿐이고 서버가 아무
+경고도 내지 않으므로 손대지 않았다. kazusa-SimpleItemModifier 가 `(Removed 1 mods: Cobra's
+Ammo Stack (1.1.0))` 를 찍는데, 그 모드가 모드 목록 변화를 적어 두는 것이라 정상이다.
+
+### 2. SVM 화폐 스택 — 맞추는 대신 껐다
+
+처음엔 "SVM 값을 BarterItemsStacks 와 맞추기"로 생각했는데, 그러면 **같은 필드에 주인이 둘인
+상태가 그대로 남는다.** 한쪽만 바뀌면 다시 조용히 어긋난다. 그래서 SVM 프리셋의
+`EnableCurrency` 를 꺼서 네 줄을 재웠다 — 이제 BarterItemsStacks 가 유일한 주인이다.
+
+서버를 다시 띄워 확인했다 — 루블·달러·유로 50,000,000, GP 코인 5,000. 전부
+BarterItemsStacks 값 그대로다. **SVM 의 네 줄은 정말로 아무 일도 하지 않고 있었다.**
+
+값 네 줄은 지우지 않고 뒀다. BarterItemsStacks 를 빼면 다시 켜기만 하면 된다. 자세한 것은
+[mod-patches/svm-currency-off.md](mod-patches/svm-currency-off.md).
+
+### 3. TheBlacklist — 치울 것이 아니라 고를 것이었다
+
+`disableBsgBlacklist: true` 는 **죽은 설정이 아니다.** 그 모드의 본래 기능이고(주석도
+"Main feature of the mod") 설정대로 동작하고 있다. 끄면 모드를 설치한 이유가 대부분 사라진다.
+**그대로 켜 두기로 했다.**
+
+ISB-Aishi 243건과 Lotus 키카드 1건이 플레아에 올라오는 것은 그 결과다. 되살리는 길은 따로
+있다 — `config.jsonc` 의 `customItemConfigs` 에
+`{ "type": "item", "itemId": "…", "blacklisted": true }` 를 넣는다(그 모드가 이미 쓰는
+방식이고 `"type": "parent"` 로 분류째 묶을 수도 있다). 244줄을 넣는 것은 그 모드의 경제를
+되돌리는 일이라 사용자가 고를 문제로 남겨 뒀다.
+
+### 곁들여 바로잡은 것 둘
+
+- **SVM 화폐 값 세 개가 문서에 틀리게 적혀 있었다.** 달러·유로를 500,000, GP 코인을 1,000 으로
+  적어 뒀는데 프리셋의 실제 값은 5,000,000·5,000,000·2,000 이다.
+- **`excludedCategories` 가 있는 파일을 틀리게 적었다.** "같은 파일(`config.jsonc`)" 이라고
+  했지만 그 열쇠는 `Config/advancedConfig.jsonc` 에 있다. `config.jsonc` 에는 없다.
+
+둘 다 "그때 실제로 열어 보지 않고 적은" 것이다. 숫자와 파일 이름은 쓸 때 확인한다.
