@@ -1450,3 +1450,52 @@ ISB-Aishi 243건과 Lotus 키카드 1건이 플레아에 올라오는 것은 그
   했지만 그 열쇠는 `Config/advancedConfig.jsonc` 에 있다. `config.jsonc` 에는 없다.
 
 둘 다 "그때 실제로 열어 보지 않고 적은" 것이다. 숫자와 파일 이름은 쓸 때 확인한다.
+
+## 2026-10-28 — 제작자가 막아 둔 아이템을 되살렸다 (244건이 아니라 858건이었다)
+
+TheBlacklist 의 `disableBsgBlacklist` 는 끄지 않기로 하고, 대신 **콘텐츠 모드 제작자가 자기
+데이터에 `CanSellOnRagfair: false` 로 적어 둔 아이템만** `customItemConfigs` 로 다시 막았다.
+바닐라 블랙리스트는 계속 풀려 있다.
+
+### 숫자가 틀려 있었다
+
+"ISB-Aishi 243건 + Lotus 키카드 1건 = 244건"으로 적어 뒀는데 **틀렸다.**
+
+| 모드 | 막아 둔 것 | 풀려 있던 것 |
+| --- | --- | --- |
+| ISB-Aishi | 458 | 438 |
+| WTT-ContentBackport | 374 | 366 |
+| WTT-Armory | 39 | 39 |
+| WTT-Artem | 12 | 12 |
+| Airburst | 2 | 2 |
+| LoadAmmoAnimServer | 1 | 1 |
+| TGC-NG | 1 | 0 |
+| **합** | **887** | **858** |
+
+**Lotus 는 한 건도 없다.** 처음에는 ISB-Aishi 만 세고 WTT 계열 417건을 빠뜨렸다.
+
+원인은 스캔 방법이었다. 모드마다 아이템 정의 꼴이 다르다 — ISB-Aishi·WTT 는 **id 가 객체의
+열쇠이고 속성이 `overrideProperties` 안**에 있는데, 내 첫 스캔은 `_id` + `_props` 꼴만
+찾았다. 그래서 0건이 나왔다. 두 꼴을 다 받게 고치자 887건이 나왔다.
+
+덤으로 하나 더 걸렀다 — `kazusa-SimpleItemModifier` 폴더에는 **아이템 DB 사본**(스냅샷
+8882개)이 있어 거기서 1956건이 잡혔는데, 그것은 제작자 의도가 아니라 바닐라 블랙리스트다.
+건너뛰어야 한다.
+
+### 결과
+
+858건을 넣고 서버를 다시 띄워 쟀다 — **744건이 막혔고 114건은 아직 플래그가 `true`** 다.
+대조군(`.338 AP`·`SJ6`, 원래 바닐라 블랙리스트)은 그대로 열려 있어 **모드의 본래 기능은
+살아 있다.**
+
+남은 114건은 원인이 하나가 아니다. 총기 41정쯤은 AllWeaponsFlea 가 설명할 수 있지만
+(그 모드의 일이 바로 그것이다), Info 36·CultistAmulet 7·SpecItem 6 은 설명되지 않는다.
+`CanSellOnRagfair` 를 건드리는 모드가 일곱 개 더 있어, 하나씩 빼 보지 않고는 못 가린다.
+
+정확히 말해 둘 것 — `blacklisted: true` 는 두 갈래로 동작한다. id 를 SPT 의
+`RagfairConfig.Dynamic.Blacklist.Custom` 에 넣고, 아이템의 `CanSellOnRagfair` 를 손본다.
+114건은 **아이템 플래그가 `true` 라는 뜻**이고 플레아 생성 쪽에서는 걸러질 수도 있다.
+플래그만 보고 "플레아에 뜬다"고 단정하지 않는다.
+
+자세한 것과 되돌리는 법은
+[mod-patches/theblacklist-restore-author-bans.md](mod-patches/theblacklist-restore-author-bans.md).
