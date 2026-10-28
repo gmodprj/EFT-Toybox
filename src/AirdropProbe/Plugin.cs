@@ -34,6 +34,12 @@ namespace AirdropProbe
         /// <summary>레이드마다 자동 측정을 한 번만 하기 위한 표시.</summary>
         private bool _autoMeasuredThisRaid;
 
+        /// <summary>
+        /// 키를 꾹 누르면 프레임마다 재던 것을 막는다. 한 번 재는 데 씬 전체를 훑고
+        /// (Customs 기준 지점 608개) 4KB 를 쓰므로, 5초에 14번은 낭비였다.
+        /// </summary>
+        private float _nextMeasureAllowedAt;
+
         private string _logFilePath;
 
         private void Awake()
@@ -74,8 +80,9 @@ namespace AirdropProbe
                 Measure(world, manager, "레이드 시작");
             }
 
-            if (_measureKey.Value.IsDown())
+            if (_measureKey.Value.IsDown() && Time.unscaledTime >= _nextMeasureAllowedAt)
             {
+                _nextMeasureAllowedAt = Time.unscaledTime + 1f;
                 Measure(world, manager, "키 누름");
             }
         }
@@ -216,20 +223,54 @@ namespace AirdropProbe
                               + " / " + Fmt(r.Position, inv));
             }
 
-            if (rows.Count > detail)
+            // 거리 603개를 한 줄로 쏟으면 파일만 커지고 읽히지 않는다. 구간별로 센다.
+            var edges = new[] { 25f, 50f, 100f, 200f, 400f, 800f };
+            var buckets = new int[edges.Length + 1];
+            foreach (var r in rows)
             {
-                var rest = new StringBuilder();
-                for (var i = detail; i < rows.Count; i++)
+                var slot = edges.Length;
+                for (var e = 0; e < edges.Length; e++)
                 {
-                    if (rest.Length > 0)
+                    if (r.Distance <= edges[e])
                     {
-                        rest.Append(", ");
+                        slot = e;
+                        break;
                     }
-
-                    rest.Append(rows[i].Distance.ToString("0", inv));
                 }
 
-                sb.AppendLine("나머지 " + (rows.Count - detail) + "개 거리(m): " + rest);
+                buckets[slot]++;
+            }
+
+            var hist = new StringBuilder("거리 분포: ");
+            for (var e = 0; e < edges.Length; e++)
+            {
+                hist.Append("≤").Append(edges[e].ToString("0", inv)).Append("m ").Append(buckets[e]).Append("  ");
+            }
+
+            hist.Append("그 밖 ").Append(buckets[edges.Length]);
+            sb.AppendLine(hist.ToString());
+
+            // 한 번 떨어뜨리면 AirdropPointDeactivateDistance 안의 지점이 통째로 비활성된다.
+            // 그래서 "연달아 부르면 두 번째는 얼마나 멀어지나" 가 이 숫자로 답해진다.
+            var deactivate = p?.AirdropPointDeactivateDistance ?? 0;
+            if (deactivate > 0)
+            {
+                var within = 0;
+                var firstOutside = -1f;
+                foreach (var r in rows)
+                {
+                    if (r.Distance <= deactivate)
+                    {
+                        within++;
+                    }
+                    else if (firstOutside < 0f)
+                    {
+                        firstOutside = r.Distance;
+                    }
+                }
+
+                sb.AppendLine("한 번 쓰면: " + deactivate + "m 안 지점 " + within + "개가 비활성 → "
+                              + "다음 드롭은 " + (firstOutside < 0f ? "쓸 지점이 없어 전부 되살아난다" : firstOutside.ToString("0.0", inv) + "m 밖"));
             }
 
             sb.AppendLine("요약: 가장 가까운 지점 " + rows[0].Distance.ToString("0.0", inv) + "m"
