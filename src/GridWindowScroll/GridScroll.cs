@@ -126,10 +126,40 @@ namespace GridWindowScroll
         }
 
         /// <summary>손잡이를 끌 때 그 자리에서 다시 맞춘다. 스크롤 위치는 건드리지 않는다.</summary>
+        /// <remarks>
+        /// 창은 가운데를 기준으로 커지고 작아진다. 그대로 두면 한 칸 바뀔 때마다 왼위 모서리가
+        /// 반 칸씩 밀려, 끄는 오른아래 모서리는 커서의 절반만 움직인다(실측 — 한 칸 63 에
+        /// 왼위가 32 이동). 그래서 크기를 바꾼 뒤 창을 그만큼 되밀어 **왼위를 붙잡아 둔다.**
+        /// </remarks>
         internal static void ApplyCells(RectTransform viewport, RectTransform content, int columns, int rows)
         {
             if (viewport == null || content == null) return;
+
+            var windowTransform = WindowTransformOf(viewport);
+            var before = TopLeftWorld(viewport);
+
             Fit(viewport, content, MeasureContent(content), columns, rows, false);
+
+            if (windowTransform == null) return;
+
+            // 되밀 양을 재려면 레이아웃이 지금 바로 돌아야 한다.
+            LayoutRebuilder.ForceRebuildLayoutImmediate(windowTransform);
+            windowTransform.position += before - TopLeftWorld(viewport);
+        }
+
+        /// <summary>창의 뿌리. 뷰포트의 조상이 아니면 되밀어도 소용이 없으니 그때는 포기한다.</summary>
+        private static RectTransform WindowTransformOf(RectTransform viewport)
+        {
+            var window = viewport.GetComponentInParent<GridWindow>();
+            var windowTransform = window != null ? window.WindowTransform : null;
+            return windowTransform != null && viewport.IsChildOf(windowTransform) ? windowTransform : null;
+        }
+
+        private static Vector3 TopLeftWorld(RectTransform rt)
+        {
+            var corners = new Vector3[4];
+            rt.GetWorldCorners(corners);
+            return corners[1];   // 0=왼아래 1=왼위 2=오른위 3=오른아래
         }
 
         /// <summary>상자별로 기억한 값이 있으면 그것, 없으면 전체 기본값.</summary>
