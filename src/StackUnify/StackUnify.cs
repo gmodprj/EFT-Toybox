@@ -14,9 +14,23 @@ namespace StackUnify;
 /// 예측할 수 없었다. 이 모드는 <b>모든 모드 뒤</b>에 돌아 설정에 적힌 값으로 못박는다.
 /// 중복 작업을 없애는 것이 아니라 <b>최종값의 주인을 하나로 만드는 것</b>이다.
 ///
-/// 맨 뒤에 서는 방법은 `Injectable.TypePriority` 다. SPT 는 그 값으로 오름차순 정렬하고
-/// (`DependencyInjectionHandler.InjectAll`), `OnLoadOrder.PostLoad` 가 가장 큰 단계다.
-/// 설치된 서버 모드 113개의 선언은 전부 0 이므로 이 모드가 마지막이다.
+/// 순서는 `Injectable.TypePriority` 로 정해진다. SPT 는 그 값으로 오름차순 정렬한다
+/// (`DependencyInjectionHandler.InjectAll`).
+///
+/// <b>늦으면 늦을수록 좋은 것이 아니다.</b> 클라이언트에 보낼 아이템 목록이 굳는 지점이
+/// 중간에 있어서, 그보다 뒤에 쓰면 DB 는 바뀌어도 클라이언트는 못 받는다. 실측으로 잡았다.
+///
+/// | 우선순위 | 모드가 본 값 | 모드가 쓴 값 | 클라이언트가 받은 값 |
+/// | --- | --- | --- | --- |
+/// | `OnLoadOrder.PostLoad` (1,000,000) | 150 | 137 | **137 (38개 중 37개)** |
+/// | `int.MaxValue` (2,147,483,647) | 900 | 137 | 150 (하나도 안 옴) |
+///
+/// `int.MaxValue` 에서 본 값이 900 이라는 것이 열쇠다 — 목록이 굳은 뒤에도 DB 는 계속
+/// 바뀌고 있다. 그래서 **굳기 전의 가장 늦은 자리**인 `PostLoad` 를 쓴다.
+///
+/// `Injectable` 의 생성자 기본값은 `typePriority = int.MaxValue` 다(인수 없이 붙이면 그 값).
+/// 설치된 서버 모드의 선언 603개 중 304개가 거기 있다 — 즉 **그 모드들은 DB 를 고쳐도
+/// 클라이언트 목록에는 닿지 않는 자리에서 돈다.**
 ///
 /// 설정에 적지 않은 것은 건드리지 않는다. 기본 설정은 비어 있어 아무 일도 하지 않는다.
 /// </summary>
@@ -29,10 +43,20 @@ public class StackUnify(
 {
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {
-        var config = modHelper.GetJsonDataFromFile<Config>(
-            modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly()),
-            "config.jsonc"
-        );
+        Config config;
+        try
+        {
+            config = modHelper.GetJsonDataFromFile<Config>(
+                modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly()),
+                "config.jsonc"
+            );
+        }
+        catch (Exception e)
+        {
+            // 설정이 깨졌다고 서버를 죽일 이유가 없다. 아무것도 바꾸지 않고 넘어간다.
+            logger.Error($"[StackUnify] config.jsonc 를 읽지 못해 아무것도 바꾸지 않는다: {e.Message}");
+            return Task.CompletedTask;
+        }
 
         if (!config.ModEnabled)
         {
