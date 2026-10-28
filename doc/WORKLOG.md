@@ -1874,3 +1874,27 @@ weapons". **최종 DB 에는 하나도 적용돼 있지 않다.**
 
 곁들여 `user/sptSettings/` 를 `backup/sptsettings-2026-10-28/` 에 떠 뒀다. `Control.ini`
 (게임 키 설정)는 그동안 백업이 없어서 **바뀌었는지 비교할 수가 없었다.** 이제는 비교할 수 있다.
+
+## 2026-10-28 — 유탄을 5개로 바꾼 것은 BarterItemsStacks 다
+
+스택 출처 산정에서 "미상 9개" 로 남겨 둔 것을 가렸다 —
+[mod-patches/stackunify-pinned-stacks.md](mod-patches/stackunify-pinned-stacks.md).
+
+id 로 모드 폴더를 뒤지니 설정 파일에는 없고 **`BarterItemsStacks.dll` 안에 박혀** 있었다.
+바이트에서 UTF-16 문자열로 찾는 방법(Olympus 48건 때 배운 것)으로 DLL 296개를 훑었다.
+
+| DLL | 9개 중 |
+| --- | --- |
+| **`BarterItemsStacks.dll`** | **8** |
+| `WTT-ContentBackport.dll` · `ShrapnelFix.dll` | 각 7 |
+| 그 밖 4개 | 각 1 |
+
+근거 셋으로 BarterItemsStacks 로 본다 — 8개를 들고 있고, 스택 크기를 관리하는 모드이며,
+`PostLoad` 보다 뒤에 쓴다는 것을 이미 실측했다(화폐 겨루기에서 못 이겼다).
+
+`patron_30x29_vog_30` 하나는 그 DLL 에 없어 **확정하지 않았다.** 값이 다른 유탄과 같은 5 라
+분류로 묶는 것일 수도 있다.
+
+곁들여 알게 된 것 — **이 설치본에서 스택 값의 최종 주인은 둘이다.** 탄약 대부분은 SVM(76%),
+유탄·화폐 같은 몇 가지는 BarterItemsStacks 다. 내가 만든 StackUnify 는 SVM 을 이기지만
+BarterItemsStacks 는 못 이긴다.
