@@ -185,16 +185,33 @@ SVM 이 덮었다 — 바닐라 탄의 **85%** 다.
 
 즉 **모드가 자기 탄에 적어 둔 값조차 74%는 SVM 이 덮고 있었다.**
 
-### 미상 9개
+### 미상이던 9개 — **8개는 BarterItemsStacks 다** (2026-10-28 확정)
 
 바닐라 값에서 바뀌었는데 SVM 값도 아닌 것들이다. 전부 유탄·특수탄이다.
 
-| 아이템 | 바닐라 → 고정 전 |
-| --- | --- |
-| `40 VOG-25`, `patron_30x29_vog_30`, `patron_40x46_m406/m441/m381/m576/m386/m433` | 1 → **5** |
-| `patron_20x1mm` | 50 → **200** |
+| 아이템 | 바닐라 → 고정 전 | 누가 |
+| --- | --- | --- |
+| `40 VOG-25`, `patron_40x46_m406/m441/m381/m576/m386/m433` | 1 → **5** | **BarterItemsStacks** |
+| `patron_20x1mm` | 50 → **200** | **BarterItemsStacks** |
+| `patron_30x29_vog_30` | 1 → **5** | 미상 (아래) |
 
-유탄을 5개씩 쌓게 한 모드가 있다는 뜻인데 어느 것인지는 가리지 않았다.
+**id 가 설정 파일이 아니라 DLL 안에 박혀 있다.** `config.jsonc`·`params.json`·`wc.json` 에는
+없고, DLL 바이트에서 UTF-16 문자열로 찾으면 나온다 — Olympus 48건과 같은 모양이다.
+
+| DLL | 9개 중 몇 개를 들고 있나 |
+| --- | --- |
+| **`BarterItemsStacks.dll`** | **8** (VOG-30 만 없다) |
+| `WTT-ContentBackport.dll` | 7 |
+| `ShrapnelFix.dll` | 7 |
+| `AllinWeaponUnslotted` · `Amonya` · `MountOlympus` · `WTT-ServerCommonLib` | 각 1 |
+
+BarterItemsStacks 로 보는 근거 셋이다 — 8개를 들고 있고, **스택 크기를 관리하는 모드**이며
+(설정에 460건), **`PostLoad` 보다 뒤에 쓴다**는 것을 화폐 겨루기로 실측했다(그래서 이 모드가
+고정해도 못 이긴다).
+
+`patron_30x29_vog_30` 하나는 BarterItemsStacks 에 없다. 값이 다른 유탄과 같은 5 이므로 분류로
+묶어 적용하는 것일 수도 있으나 **확정하지 않았다.** 그 id 를 들고 있는 것은 ShrapnelFix ·
+AllinWeaponUnslotted · Amonya 다.
 
 ### 한계
 
