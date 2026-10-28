@@ -1,0 +1,233 @@
+using System;
+using System.Collections;
+using EFT.UI;
+using EFT.UI.DragAndDrop;
+using HarmonyLib;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace GridWindowScroll
+{
+    /// <summary>
+    /// 창이 내용을 채운 직후를 잡는다. 격자 GameObject 는 그 프레임에 막 만들어지고
+    /// 크기는 레이아웃이 한 번 돌아야 정해지므로, 한 프레임 뒤에 손을 댄다.
+    /// </summary>
+    [HarmonyPatch]
+    internal static class GridWindowPatch
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(GridWindow), nameof(GridWindow.ShowContents))]
+        private static void AfterShowContents(GridWindow __instance) => Schedule(__instance);
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(GridWindow), nameof(GridWindow.ShowGrids))]
+        private static void AfterShowGrids(GridWindow __instance) => Schedule(__instance);
+
+        private static void Schedule(GridWindow window)
+        {
+            if (window == null) return;
+            window.StartCoroutine(ApplyNextFrame(window));
+        }
+
+        private static IEnumerator ApplyNextFrame(GridWindow window)
+        {
+            yield return null;
+            if (window == null) yield break;
+
+            try
+            {
+                GridScroll.Apply(window);
+            }
+            catch (Exception e)
+            {
+                GridWindowScrollPlugin.Log.LogError("격자 스크롤 적용 실패 — 창은 그대로 둔다: " + e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 격자 묶음(<see cref="ContainedGridsView"/>)을 잘라 내는 뷰포트로 감싼다.
+    /// 격자 자체는 건드리지 않는다 — 칸 좌표와 드래그 판정이 격자의 지역 좌표로 계산되기 때문이다.
+    /// 뷰포트는 한 번만 만들고, 창을 다시 열 때마다 크기만 다시 잡는다.
+    /// </summary>
+    internal static class GridScroll
+    {
+        private const string ViewportName = "GridScrollViewport";
+
+        internal static void Apply(GridWindow window)
+        {
+            foreach (var contained in window.GetComponentsInChildren<ContainedGridsView>(true))
+            {
+                if (!contained.gameObject.activeInHierarchy) continue;
+                Handle(contained);
+            }
+
+            DropEmptyViewports(window);
+        }
+
+        /// <summary>
+        /// 창이 격자 묶음을 새로 만들어 붙이면 먼저 쓰던 뷰포트가 빈 채로 남는다.
+        /// 남아 있으면 그 크기만큼 창이 커지므로 치운다.
+        /// </summary>
+        private static void DropEmptyViewports(GridWindow window)
+        {
+            foreach (var rt in window.GetComponentsInChildren<RectTransform>(true))
+            {
+                if (rt.name != ViewportName || rt.childCount != 0) continue;
+                GridWindowScrollPlugin.Log.LogInfo("빈 격자 뷰포트를 치웠다");
+                UnityEngine.Object.Destroy(rt.gameObject);
+            }
+        }
+
+        private static void Handle(ContainedGridsView contained)
+        {
+            if (!(contained.transform is RectTransform content)) return;
+            if (!(content.parent is RectTransform parent)) return;
+
+            var viewport = parent.name == ViewportName ? parent : null;
+
+            // 격자들이 실제로 차지하는 크기. 창이 내용을 다시 채웠을 수 있으므로 매번 다시 잰다.
+            LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+            var natural = MeasureContent(content);
+            if (natural.x <= 1f || natural.y <= 1f) return;
+
+            var cap = CapPixels();
+            var target = new Vector2(Mathf.Min(natural.x, cap.x), Mathf.Min(natural.y, cap.y));
+            var needsScroll = natural.x > target.x + 0.5f || natural.y > target.y + 0.5f;
+
+            if (viewport == null)
+            {
+                if (!needsScroll)
+                {
+                    Trace(contained, natural, target, "격자가 한 화면에 들어가므로 그대로 둔다");
+                    return;
+                }
+                viewport = CreateViewport(content, parent, target);
+            }
+
+            Fit(viewport, content, natural, target);
+            Trace(contained, natural, target, needsScroll ? "스크롤" : "자르지 않음");
+        }
+
+        /// <summary>격자·칸들이 차지하는 범위. 뷰포트가 가둔 뒤에는 묶음 자신의 크기를 믿을 수 없어 자식으로 잰다.</summary>
+        private static Vector2 MeasureContent(RectTransform content)
+        {
+            var any = false;
+            var total = default(Bounds);
+
+            foreach (Transform child in content)
+            {
+                if (!(child is RectTransform rt) || !child.gameObject.activeSelf) continue;
+                var b = RectTransformUtility.CalculateRelativeRectTransformBounds(content, rt);
+                if (!any) { total = b; any = true; }
+                else total.Encapsulate(b);
+            }
+
+            if (!any) return content.rect.size;
+
+            var size = new Vector2(total.size.x, total.size.y);
+
+            // 레이아웃 그룹의 여백은 자식 범위에 들어가지 않으므로 더해 준다.
+            var group = content.GetComponent<LayoutGroup>();
+            if (group != null)
+            {
+                size.x += group.padding.left + group.padding.right;
+                size.y += group.padding.top + group.padding.bottom;
+            }
+
+            return size;
+        }
+
+        /// <summary>설정한 칸 수를 게임 자신의 공식으로 픽셀로 바꾼다. 꺼져 있으면 사실상 무한.</summary>
+        private static Vector2 CapPixels()
+        {
+            if (!GridWindowScrollPlugin.Enabled.Value) return new Vector2(float.MaxValue, float.MaxValue);
+
+            var px = ItemViewFactory.GetCellPixelSize(
+                new IntVec2(GridWindowScrollPlugin.MaxColumns.Value, GridWindowScrollPlugin.MaxRows.Value));
+            return new Vector2(px.X, px.Y);
+        }
+
+        private static float CellPixels()
+        {
+            // 공식에 상수항이 있어 두 크기의 차로 한 칸 크기를 구한다.
+            return ItemViewFactory.GetCellPixelSize(new IntVec2(2, 1)).X
+                 - ItemViewFactory.GetCellPixelSize(new IntVec2(1, 1)).X;
+        }
+
+        private static RectTransform CreateViewport(RectTransform content, RectTransform parent, Vector2 target)
+        {
+            var index = content.GetSiblingIndex();
+
+            var go = new GameObject(ViewportName, typeof(RectTransform));
+            var viewport = (RectTransform)go.transform;
+            viewport.SetParent(parent, false);
+            viewport.SetSiblingIndex(index);
+            viewport.anchorMin = viewport.anchorMax = viewport.pivot = new Vector2(0f, 1f);
+            viewport.anchoredPosition = Vector2.zero;
+            viewport.sizeDelta = target;
+
+            if (GridWindowScrollPlugin.UseStencilMask.Value)
+            {
+                // 칸 아이콘이 RectMask2D 를 무시하고 비어져 나올 때 쓰는 길. 스텐실은 셰이더와 무관하게 자른다.
+                var image = go.AddComponent<Image>();
+                image.color = new Color(0f, 0f, 0f, 0f);
+                go.AddComponent<Mask>().showMaskGraphic = false;
+            }
+            else
+            {
+                go.AddComponent<RectMask2D>();
+            }
+
+            content.SetParent(viewport, false);
+            content.anchorMin = content.anchorMax = content.pivot = new Vector2(0f, 1f);
+            content.anchoredPosition = Vector2.zero;
+
+            var scroll = go.AddComponent<ScrollRect>();
+            scroll.content = content;
+            scroll.viewport = viewport;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.inertia = false;
+            scroll.horizontalScrollbar = null;
+            scroll.verticalScrollbar = null;
+
+            GridWindowScrollPlugin.Log.LogInfo($"격자 뷰포트를 만들었다 — {parent.name}/{content.name}");
+            return viewport;
+        }
+
+        /// <summary>뷰포트와 내용의 크기를 지금 격자에 맞춘다.</summary>
+        private static void Fit(RectTransform viewport, RectTransform content, Vector2 natural, Vector2 target)
+        {
+            content.sizeDelta = natural;              // 앵커가 한 점이므로 sizeDelta 가 곧 실제 크기다
+            viewport.sizeDelta = target;
+
+            // 창 전체 크기는 부모 레이아웃이 정한다. 뷰포트가 자른 크기를 그대로 요구해야 창이 커지지 않는다.
+            var element = viewport.GetComponent<LayoutElement>() ?? viewport.gameObject.AddComponent<LayoutElement>();
+            element.minWidth = element.preferredWidth = target.x;
+            element.minHeight = element.preferredHeight = target.y;
+            element.flexibleWidth = element.flexibleHeight = 0f;
+
+            var scroll = viewport.GetComponent<ScrollRect>();
+            if (scroll != null)
+            {
+                scroll.horizontal = natural.x > target.x + 0.5f;
+                scroll.vertical = natural.y > target.y + 0.5f;
+                scroll.scrollSensitivity = CellPixels() * GridWindowScrollPlugin.WheelCells.Value;
+                if (scroll.horizontal || scroll.vertical)
+                    scroll.normalizedPosition = new Vector2(0f, 1f);   // 늘 왼쪽 위에서 시작한다
+            }
+
+            LayoutRebuilder.MarkLayoutForRebuild(viewport);
+        }
+
+        private static void Trace(ContainedGridsView contained, Vector2 natural, Vector2 target, string what)
+        {
+            if (!GridWindowScrollPlugin.Verbose.Value) return;
+
+            var cell = CellPixels();
+            GridWindowScrollPlugin.Log.LogInfo(
+                $"{contained.name}: 격자 {natural.x / cell:0.#}x{natural.y / cell:0.#}칸 ({natural.x:0}x{natural.y:0}px) "
+              + $"→ 보임 {target.x / cell:0.#}x{target.y / cell:0.#}칸 ({target.x:0}x{target.y:0}px) — {what}");
+        }
+    }
+}

@@ -1,7 +1,7 @@
 # 문서 색인
 
 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743).
-**2026-10-28 기준 모드 187개** + 직접 만든 플러그인 4개. 서버 모드 114개, 게임 플러그인 142개.
+**2026-10-28 기준 모드 187개** + 직접 만든 플러그인 5개. 서버 모드 114개, 게임 플러그인 142개.
 
 > 8차까지가 절차를 거친 설치고, 그 뒤 **절차 밖에서 들어온 8개**는 2026-10-28 에 설치 기록을
 > 뒤늦게 복원해 문서에 올렸다. 당시 기록이 아니라 "지금 가진 파일" 목록이다 —
@@ -48,9 +48,10 @@
 | [SERVER-WEB-KOREAN.md](SERVER-WEB-KOREAN.md) | 서버 웹 설정창(SIC) 한글 로케일 |
 | [HANDOVER-2026-10-26.md](HANDOVER-2026-10-26.md) | 2026-10-26 세션 인계 |
 | [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 |
+| [../src/GridWindowScroll/README.md](../src/GridWindowScroll/README.md) | 가방·상자 내부 인벤 창을 화면 안에 가두는 플러그인 (보이는 칸 수 제한 + 스크롤) |
 
-직접 만든 플러그인 4개(`SptKoreanConfig`, `HelmetSlotUnion`, `SlotCategoryRelax`,
-`WebConfigBridge`)는 Forge 모드가 아니라 설치 기록에 없다. INSTALLED-MODS.md 의
+직접 만든 플러그인 5개(`SptKoreanConfig`, `GridWindowScroll`, `HelmetSlotUnion`,
+`SlotCategoryRelax`, `WebConfigBridge`)는 Forge 모드가 아니라 설치 기록에 없다. INSTALLED-MODS.md 의
 "다른 경로로 설치된 것" 표를 본다.
 
 ## 기록 폴더
