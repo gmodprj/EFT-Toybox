@@ -1,0 +1,114 @@
+# 중복 기능을 통합 모드로 모을 수 있나 — 검토
+
+2026-10-28. 브레인스토밍 4번. "설치 모드들의 기능을 확인하고 중복되는 기능(총탄 등의 스택변경
+등)은 마지막에 로드되는 별도의 통합 관리 모드로 관리하자"를 검토했다.
+
+**결론부터 — 된다.** 다만 되는 것과 안 되는 것이 갈린다. 아래 "무엇까지 되나"를 먼저 본다.
+
+## 1. 마지막에 로드되는 모드를 만들 수 있나 — 된다 (서버 코드로 확정)
+
+전제가 하나 틀려 있었다. [REVIEW-LOAD-ORDER.md](REVIEW-LOAD-ORDER.md) 에 "로드 순서는 밖에서
+바꿀 수 없다"고 적었는데, 그것은 **남의 모드**에만 맞는 말이다. 자작 모드의
+`Injectable.TypePriority` 는 내가 정하고, 그게 순서의 1차 기준이다.
+
+SPT 서버 DLL 을 읽어 확정했다.
+
+| 읽은 곳 | 무엇이 나왔나 |
+| --- | --- |
+| `SPTarkov.DI.DependencyInjectionHandler::InjectAll` | `OrderBy(TypePriority)` — **오름차순** |
+| `SPT.Server.ProgramExtensions::RunPreSptLoadCallbacks` | `0 <= TypePriority < 200000` 인 `IOnLoad` 만 |
+| `SPTStartupHostedService::StartAsync` | `TypePriority >= 200000` 인 `IOnLoad` 만 |
+| `SPTarkov.Server.Core.DI.OnLoadOrder` (public) | 단계 상수가 이미 있다 (`Watermark` 0 … `PostLoad` 1000000) |
+
+**설치된 서버 모드 114개의 `[Injectable]` 선언 603개가 전부 `TypePriority = 0`** 이다(앞서
+실측). 그러니
+
+```csharp
+[Injectable(InjectionType.Singleton, OnLoadOrder.PostLoad)]
+public class IntegrationService : IOnLoad { ... }
+```
+
+하나로 **모든 설치 모드 뒤, SPT 자신의 콜백 뒤**에 설 수 있다. 설정 파일로 순서를 적는 길은
+없지만, 내 모드를 맨 뒤에 놓는 손잡이는 분명히 있다.
+
+## 2. 무엇까지 되나 — 값은 되고, 행동은 안 된다
+
+통합 모드가 할 수 있는 일은 **마지막에 값을 덮어쓰는 것**뿐이다. 다른 모드가 자기 일을 하는
+것을 막지는 못한다. 그래서 겹침의 종류에 따라 갈린다.
+
+| 겹침의 종류 | 통합으로 되나 | 왜 |
+| --- | --- | --- |
+| **덮어쓰기형** — 탄약 스택, 내구도, 화폐 스택, 아이템 크기 | **된다** | 마지막 값이 곧 결과다. 통합 모드가 유일한 출처가 된다 |
+| **집합 계산형** — 칸 필터 합집합, 플레아 금지 목록 | **되지만 전부 다시 계산해야** | 남이 더하고 뺀 뒤의 상태에 또 더하는 꼴이라, 통합 모드가 "최종 집합"을 통째로 써야 뜻이 분명해진다 |
+| **행동형** — 봇 AI, 상인 재입고 주기, 레이드 중 로직 | **안 된다** | DB 값이 아니라 코드 경로다. 통합 모드가 끌 수 없다. 그 모드를 빼는 것 말고는 방법이 없다 |
+
+즉 통합 모드는 **"중복을 없애는 것"이 아니라 "최종값을 한 곳에서 정하는 것"** 이다. 중복 작업
+자체는 그대로 돌고(서버 시작이 그만큼 느려지는 것도 그대로), 결과만 내가 정한 값이 된다.
+
+## 3. 어디가 겹치나
+
+### 실측된 것 3건 (이것만 확실하다)
+
+[REVIEW-LOAD-ORDER.md](REVIEW-LOAD-ORDER.md) 의 "실측한 겹침 3건" 을 본다. 떠 있는 서버에서
+최종 DB 를 받아 각 모드 설정과 대조한 결과다.
+
+| 겹침 | 지금 상태 | 종류 |
+| --- | --- | --- |
+| 탄약 스택 — CobrasAmmoStack vs SVM | Cobra 쪽이 **0/31 완전히 죽어 있다** | 덮어쓰기형 |
+| 화폐 스택 — SVM vs BarterItemsStacks | SVM 의 4건이 덮인다 (BarterItemsStacks 452/460 살아 있음) | 덮어쓰기형 |
+| 플레아 판매 금지 — ISB-Aishi 243 + Lotus 1 vs TheBlacklist | TheBlacklist 의 `disableBsgBlacklist: true` 가 뒤집는다 | 집합 계산형 |
+
+### 참조 신호 (약한 근거 — 확정이 아니다)
+
+서버 모드 DLL 114개에서 아이템 템플릿 **필드 이름이 문자열로 남는 성질**을 써서, 같은 필드를
+건드리는 모드를 세어 봤다. **이름만 읽고 쓰지는 않는 모드도 걸리므로 후보 목록일 뿐이다.**
+
+| 필드 | 모드 수 | 통합 후보로서 |
+| --- | --- | --- |
+| `Filter` | 45 | 집합 계산형. 자작 `HelmetSlotUnion`·`SlotCategoryRelax` 도 여기 있다 |
+| `Slots` | 42 | 집합 계산형 |
+| `StackObjectsCount` | 43 | 대부분 상인 판매 목록을 만들며 쓰는 것이라 겹침이 아닐 수 있다 |
+| `Durability` 23 / `MaxDurability` 15 | 23 | 덮어쓰기형. **통합 1순위** |
+| `Grids`·`CellsH`·`CellsV` | 20 / 14 / 14 | 덮어쓰기형 |
+| `Width`·`Height` | 19 / 17 | 덮어쓰기형 |
+| `Damage` 17 / `PenetrationPower` 7 | 17 | 덮어쓰기형. AmmoStats·Amonya·AmmoGen·ISB-Aishi 가 겹친다 |
+| `Cartridges` | 17 | 집합 계산형 |
+| `StackMaxSize` | 13 | 덮어쓰기형. **이미 실측된 겹침이 여기 있다** |
+| `CanSellOnRagfair` | 7 | 집합 계산형. AllWeaponsFlea·TheBlacklist·UltimateFlea 가 겹친다 |
+
+이 표는 **어디를 재 볼지 정하는 데에만** 쓴다. 통합 대상으로 올리기 전에 3건처럼 최종 DB 와
+대조해 실제로 겹치는지 확인해야 한다.
+
+## 4. 그래서 만들까 — 권하는 범위
+
+전부 통합하는 것은 권하지 않는다. 필드 45개짜리 모드를 만들면 그것 자체가 다음 사람이 풀어야
+할 수수께끼가 된다. **실측으로 겹침이 확인된 덮어쓰기형부터, 좁게** 만드는 것이 맞다.
+
+| 단계 | 범위 | 근거 |
+| --- | --- | --- |
+| 1 | 탄약·화폐 **스택 크기** (`StackMaxSize`) | 겹침 2건이 이미 실측됐다. 모드 13개가 같은 필드를 건드린다 |
+| 2 | **내구도** (`MaxDurability`·`Durability`) | 모드 15~23개. CobrasDurabilityTweaks·SVM·RepairMaxDurability 가 같은 자리를 본다 |
+| 3 | **탄 성능** (`Damage`·`PenetrationPower`) | AmmoStats·Amonya·AmmoGen·ISB-Aishi 가 겹친다 |
+| 안 함 | 칸 필터·플레아 금지 | 집합 계산형이라 자작 모드 둘(`HelmetSlotUnion`·`SlotCategoryRelax`)과 또 겹친다. 그 둘을 합치는 쪽이 먼저다 |
+| 안 함 | 행동형 전부 | 통합 모드로 끌 수 없다 |
+
+설정은 `config.jsonc` 에 **"내가 정하는 값만" 적고, 안 적은 것은 손대지 않는** 꼴이어야 한다.
+전부 적게 만들면 다른 모드의 의도를 통째로 지우게 된다.
+
+### 지금 바로 할 수 있는 더 싼 일
+
+통합 모드를 만들기 전에, 이미 알고 있는 것만 치워도 상태가 나아진다.
+
+| 할 일 | 왜 |
+| --- | --- |
+| **CobrasAmmoStack 제거** | 0/31 완전히 죽어 있다. 설치만 돼 있고 아무 효과가 없다 |
+| SVM 의 죽은 화폐 스택 4건을 BarterItemsStacks 값과 맞추기 | 설정 화면과 실제가 다른 상태를 없앤다 |
+| TheBlacklist `disableBsgBlacklist` 를 끌지 결정 | ISB-Aishi 243건의 판매 금지를 되살릴지 정하는 문제다 |
+
+## 5. 아직 재지 않은 것
+
+- 2단계·3단계 후보가 **실제로** 겹치는지(최종 DB 대조). 참조 신호만 있다.
+- `OnLoadOrder.PostLoad` 단계에서 아이템 DB 를 고치면 **클라이언트에 그대로 가는지**. SPT 가
+  그 전에 아이템 목록을 캐시해 둔다면 늦을 수 있다. 통합 모드를 만들기로 하면 **이것을 가장
+  먼저 재야 한다** — 값 하나를 바꿔 보고 `POST /client/items` 로 확인하면 된다.
+- 플레아 가격·상인 판매 목록처럼 DB 가 아니라 생성 시점에 만들어지는 것들.

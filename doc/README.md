@@ -14,6 +14,7 @@
 | --- | --- |
 | [MODS-GUIDE.md](MODS-GUIDE.md) | 설치된 모드가 무엇을 하는지 — 기능별 묶음, 직접 만든 것, 결속 목록, **알려진 충돌**, 지우면 안 되는 파일, 손볼 설정 |
 | [REVIEW-LOAD-ORDER.md](REVIEW-LOAD-ORDER.md) | **로드 순서와 기능 겹침 점검** — 순서를 바꿀 수 있는지, 어느 설정이 죽어 있는지. 실측 방법도 적었다 |
+| [REVIEW-INTEGRATION-MOD.md](REVIEW-INTEGRATION-MOD.md) | **중복 기능을 통합 모드로 모을 수 있나** — 마지막에 로드되는 모드를 만들 수 있다는 것을 서버 코드로 확정하고(`OnLoadOrder`), 무엇까지 되고 무엇이 안 되는지와 권하는 범위를 적었다 |
 | [INSTALLED-MODS.md](INSTALLED-MODS.md) | 지금 설치된 모드 전체 — 버전, 게임/서버 위치, 프로필 결속 여부, 설치 기록 (**자동 생성**, 직접 고치지 않는다) |
 | [WORKLOG.md](WORKLOG.md) | 단계별 작업 이력, 발생한 문제와 조치, 바로잡은 안내 |
 | [PROCEDURE.md](PROCEDURE.md) | 모드 추가 절차(조회→다운로드→해제→충돌 검사→설치→검증→되돌리기), SVM 메모, 무시해도 되는 로그 메시지 |
