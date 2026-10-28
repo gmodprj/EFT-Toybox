@@ -14,12 +14,15 @@ using UnityEngine;
 namespace AirdropProbe
 {
     /// <summary>
-    /// 보급 지점(AirdropPoint)이 맵에 몇 개 있고 플레이어에게서 얼마나 먼지 잰다.
-    /// 보급 호출기(AirdropCaller) 설계의 §10-9 를 답하기 위한 측정 전용 도구다 —
-    /// 아무것도 바꾸지 않고 읽어서 적기만 한다. 측정이 끝나면 지운다.
-    /// 근거: doc/specs/2026-10-29-airdrop-stage1-findings.md
+    /// 보급 호출기(AirdropCaller) 1단계용 시험 도구. 두 가지를 한다.
+    ///
+    /// 1. **측정** — 보급 지점(AirdropPoint)이 맵에 몇 개 있고 얼마나 먼지 잰다. 읽기만 한다.
+    /// 2. **드롭 시험** — 키를 누르면 `ClientGameWorld.InitAirdrop` 을 직접 불러 상자를
+    ///    떨어뜨린다. **이쪽은 게임을 실제로 바꾼다.** 키를 누를 때만 일어난다.
+    ///
+    /// 둘 다 끝나면 지운다. 근거: doc/specs/2026-10-29-airdrop-stage1-findings.md
     /// </summary>
-    [BepInPlugin(PluginGuid, "보급 지점 측정기", "0.1.0")]
+    [BepInPlugin(PluginGuid, "보급 지점 측정기 + 드롭 시험", "0.2.0")]
     public class AirdropProbePlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.airdropprobe";
@@ -31,8 +34,17 @@ namespace AirdropProbe
         private ConfigEntry<int> _nearestCount;
         private ConfigEntry<bool> _writeFile;
 
+        private ConfigEntry<KeyboardShortcut> _dropKey;
+        private ConfigEntry<string> _lootTemplateId;
+
         /// <summary>레이드마다 자동 측정을 한 번만 하기 위한 표시.</summary>
         private bool _autoMeasuredThisRaid;
+
+        /// <summary>드롭 키도 꾹 누르면 비행기가 여러 대 뜬다. 3초는 막는다.</summary>
+        private float _nextDropAllowedAt;
+
+        /// <summary>이 레이드에서 몇 번 떨어뜨렸나. 지점 소모를 눈으로 보려고 센다.</summary>
+        private int _dropsThisRaid;
 
         /// <summary>
         /// 키를 꾹 누르면 프레임마다 재던 것을 막는다. 한 번 재는 데 씬 전체를 훑고
@@ -60,9 +72,22 @@ namespace AirdropProbe
             _writeFile = Config.Bind("측정", "따로 파일에도 적기", true,
                 "BepInEx 로그 말고 plugins\\AirdropProbe\\probe.log 에도 같은 내용을 쌓는다. 끄면 로그에만 적는다.");
 
+            _dropKey = Config.Bind("드롭 시험", "드롭 키", new KeyboardShortcut(KeyCode.D, KeyCode.LeftControl, KeyCode.LeftAlt),
+                "누르면 지금 자리에서 가장 가까운 보급 지점으로 상자를 떨어뜨린다. "
+                + "**게임을 실제로 바꾼다.** 레이드 안에서만 듣는다.");
+
+            // 기본값을 일부러 가짜 id 로 둔다. 서버는 모르는 id 를 받으면 경고를 찍고
+            // 무작위 전리품으로 넘어가므로(AirdropService.GenerateCustomAirdropLoot),
+            // 상자는 그대로 채워지면서 "우리가 넘긴 id 가 서버까지 갔다" 가 증명된다.
+            // 순수 바닐라 경로만 보고 싶으면 이 값을 비운다 → null 을 넘긴다.
+            _lootTemplateId = Config.Bind("드롭 시험", "전리품 id", "aabbccdd0000000000000001",
+                "InitAirdrop 에 넘길 lootTemplateId. 비워 두면 null 을 넘겨 순수 바닐라 경로로 간다. "
+                + "기본값은 아무 데도 없는 가짜 id 다 — 서버 로그에 이 값이 그대로 찍히면 "
+                + "id 왕복이 증명된 것이고, 상자는 무작위 전리품으로 채워진다.");
+
             _logFilePath = Path.Combine(Path.GetDirectoryName(Info.Location) ?? ".", "probe.log");
 
-            _log.LogInfo("[Probe] 보급 지점 측정기 준비됨. 측정 키: " + _measureKey.Value + " (레이드 안에서)");
+            _log.LogInfo("[Probe] 준비됨. 측정 " + _measureKey.Value + " / 드롭 " + _dropKey.Value + " (레이드 안에서)");
         }
 
         private void Update()
@@ -71,6 +96,7 @@ namespace AirdropProbe
             {
                 // 레이드를 나갔으면 다음 레이드에서 다시 자동 측정한다.
                 _autoMeasuredThisRaid = false;
+                _dropsThisRaid = 0;
                 return;
             }
 
@@ -84,6 +110,115 @@ namespace AirdropProbe
             {
                 _nextMeasureAllowedAt = Time.unscaledTime + 1f;
                 Measure(world, manager, "키 누름");
+            }
+
+            if (_dropKey.Value.IsDown() && Time.unscaledTime >= _nextDropAllowedAt)
+            {
+                _nextDropAllowedAt = Time.unscaledTime + 3f;
+                Drop(world, manager);
+            }
+        }
+
+        /// <summary>
+        /// 조사에서 찾은 호출을 그대로 해 본다 — 이것이 1단계의 전부다.
+        ///   ClientGameWorld.InitAirdrop(lootTemplateId, takeNearbyPoint: true, position)
+        /// 설계서 §7.4 / 조사 문서 §1.
+        /// </summary>
+        private void Drop(ClientGameWorld world, ServerAirdropManager manager)
+        {
+            var sb = new StringBuilder();
+            var inv = CultureInfo.InvariantCulture;
+
+            sb.AppendLine();
+            sb.AppendLine("===== 드롭 시험 #" + (_dropsThisRaid + 1) + " "
+                          + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", inv) + " =====");
+
+            var player = world.MainPlayer;
+            if (player == null)
+            {
+                sb.AppendLine("MainPlayer 가 null — 부르지 않았다.");
+                Emit(sb.ToString());
+                return;
+            }
+
+            var me = player.Transform.position;
+            var id = string.IsNullOrWhiteSpace(_lootTemplateId.Value) ? null : _lootTemplateId.Value.Trim();
+
+            // 부르기 전 상태. 부른 뒤와 견줘 보면 지점이 실제로 소모되는지 보인다.
+            var availableBefore = manager._airdropPoints.Count;
+            var deactivatedBefore = manager._deactivatedAirdropPoints.Count;
+            var nearest = NearestAvailable(manager, me);
+
+            sb.AppendLine("내 위치: " + Fmt(me, inv));
+            sb.AppendLine("넘길 lootTemplateId: " + (id ?? "(null — 바닐라 무작위)"));
+            sb.AppendLine("부르기 전: 쓸 수 있음 " + availableBefore + " / 비활성 " + deactivatedBefore
+                          + " / 가장 가까운 지점 " + (nearest < 0f ? "없음" : nearest.ToString("0.0", inv) + "m"));
+            sb.AppendLine("CanSummonAirdrop=" + manager.CanSummonAirdrop);
+
+            try
+            {
+                world.InitAirdrop(id, takeNearbyPoint: true, position: me);
+                _dropsThisRaid++;
+                sb.AppendLine("InitAirdrop 호출 — 예외 없음.");
+            }
+            catch (Exception e)
+            {
+                sb.AppendLine("InitAirdrop 이 터졌다: " + e);
+                Emit(sb.ToString());
+                return;
+            }
+
+            // TakeAirdropPoint 가 지점을 빼 갔으면 숫자가 줄어 있어야 한다.
+            var availableAfter = manager._airdropPoints.Count;
+            var deactivatedAfter = manager._deactivatedAirdropPoints.Count;
+            sb.AppendLine("부른 뒤: 쓸 수 있음 " + availableAfter + " (" + (availableAfter - availableBefore) + ")"
+                          + " / 비활성 " + deactivatedAfter + " (+" + (deactivatedAfter - deactivatedBefore) + ")");
+            sb.AppendLine("다음 드롭의 가장 가까운 지점: "
+                          + Describe(NearestAvailable(manager, me), inv));
+            sb.AppendLine("이제 하늘을 본다. 비행기 소리 → 낙하산 → 착지 순서다. "
+                          + "상자를 열어 내용물이 무엇인지 적어 두면 좋다.");
+            sb.AppendLine("===== 끝 =====");
+            Emit(sb.ToString());
+        }
+
+        private static float NearestAvailable(ServerAirdropManager manager, Vector3 from)
+        {
+            var best = -1f;
+            foreach (var point in manager._airdropPoints)
+            {
+                if (point == null || point.gameObject == null)
+                {
+                    continue;
+                }
+
+                var d = Vector3.Distance(from, point.transform.position);
+                if (best < 0f || d < best)
+                {
+                    best = d;
+                }
+            }
+
+            return best;
+        }
+
+        private static string Describe(float distance, IFormatProvider inv)
+        {
+            return distance < 0f ? "없음" : distance.ToString("0.0", inv) + "m";
+        }
+
+        private void Emit(string text)
+        {
+            _log.LogInfo(text);
+            if (_writeFile.Value)
+            {
+                try
+                {
+                    File.AppendAllText(_logFilePath, text + Environment.NewLine, Encoding.UTF8);
+                }
+                catch (Exception e)
+                {
+                    _log.LogError("[Probe] 파일에 못 적었다: " + e.Message);
+                }
             }
         }
 
@@ -120,13 +255,7 @@ namespace AirdropProbe
         {
             try
             {
-                var report = BuildReport(world, manager, why);
-                _log.LogInfo(report);
-
-                if (_writeFile.Value)
-                {
-                    File.AppendAllText(_logFilePath, report + Environment.NewLine, Encoding.UTF8);
-                }
+                Emit(BuildReport(world, manager, why));
             }
             catch (Exception e)
             {

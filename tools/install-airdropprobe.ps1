@@ -36,5 +36,7 @@ Copy-Item $dll -Destination $dest -Force
 Get-ChildItem $dest -Recurse -File | ForEach-Object {
     "  {0,-28} {1,7} bytes" -f $_.Name, $_.Length
 }
-"게임을 다시 켜야 적용된다. 레이드에서 Ctrl+Alt+A 를 누르면 측정한다."
+"게임을 다시 켜야 적용된다."
+"  레이드에서 Ctrl+Alt+A : 보급 지점 거리를 잰다 (읽기만 한다)"
+"  레이드에서 Ctrl+Alt+D : 상자를 떨어뜨린다 (게임을 실제로 바꾼다)"
 "결과는 BepInEx\LogOutput.log 와 $dest\probe.log 둘 다에 쌓인다."
