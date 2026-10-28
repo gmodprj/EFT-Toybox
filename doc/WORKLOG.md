@@ -1713,3 +1713,52 @@ TheBlacklist 의 `disableBsgBlacklist` 는 끄지 않기로 하고, 대신 **콘
 `src/StackUnify/config.jsonc` 는 **비어 있는 그대로** 두었다. 다른 설치본에서는 다수 값이
 다를 수 있어, 값을 베껴 쓰는 것보다 `ReportOnly` 로 다시 재는 쪽이 맞다. 적용한 설정 자체는
 `doc/mod-patches/stackunify-pinned-config.jsonc` 에 증거로 남겼다.
+
+## 2026-10-28 — 2단계(내구도)는 필요 없었다. 대신 죽은 모드가 또 나왔다
+
+1단계를 끝내고 2단계로 넘어가, **만들기 전에 겹침이 있는지부터** 쟀다. 없었다.
+
+### `MaxDurability`·`Durability` 는 템플릿 다툼이 아니다
+
+`set_` 호출로 찾으면 12개·9개 모드가 걸린다. 그런데 들여다보면 거의 전부 **아이템 개체**
+(`UpdRepairable` — 수리·복원), **상인 물건 개체**(판매 목록 정리), **퀘스트 조건 객체**, 또는
+**자기가 만든 새 아이템**이다. 같은 템플릿 칸을 두 모드가 다투는 구도가 아니다 — 스택 때와
+다르다.
+
+템플릿을 쓰는 것은 `egbog-RepairMaxDurabilityServer` 의 `MaxRepairResource` 하나뿐이고 수리
+키트 자원이라 겹치지 않는다.
+
+**그래서 내구도 통합 모드는 만들지 않는다.** 만들 이유가 없다.
+
+### 전역 내구도를 바꾸려던 모드가 죽어 있다
+
+`CobrasDurabilityTweaks` — 설정은 `DurabilityBurnMultiplier: 0.12`, 로그는 "Modified 1002
+weapons". **최종 DB 에는 하나도 적용돼 있지 않다.**
+
+| | |
+| --- | --- |
+| 기본 DB·최종 DB 양쪽에 있는 아이템 | 176 |
+| 값이 그대로 | **176** |
+| x0.12 적용됨 | **0** |
+
+`weapon_colt_m4a1_556x45` 기본 1.15 → 최종 1.15. 곱했다면 0.138 이어야 한다.
+
+단서는 있다 — 이 모드는 리플렉션으로
+`TryMultiplyNumericProperty(props, "DurabilityBurnRatio", 0.12)` 를 부른다. 속성 이름은 맞다.
+다만 그 속성이 `double?` 이라 숫자형을 가정한 변환이 조용히 실패하는 것으로 보인다
+(`Try…` 가 실패를 삼킨다). **확정은 하지 않았다.**
+
+**CobrasAmmoStack 에 이어 두 번째다.** 치울 거리다.
+
+### 방법 메모 — 리플렉션 쓰는 모드는 `set_` 스캔에 안 걸린다
+
+`CobrasDurabilityTweaks` 는 `set_` 목록에 한 줄도 안 나왔다(잡힌 것은
+`JsonSerializerOptions.PropertyNameCaseInsensitive` 하나). "누가 이 필드를 쓰나" 를 `set_` 으로만
+세면 이런 모드를 통째로 놓친다. 이 세션에서 도구가 틀린 네 번째 경우다 — 인쇄 문자열 추출,
+해석기 없는 속성 인수, `overrideProperties` 꼴, 그리고 이번.
+
+### 곁들여 본 것
+
+`DurabilityBurnModificator` 는 소음기 133개에서 값이 제각각이다(1.071·1.075·1.06 …). 그것은
+`RealisticSuppressors` 가 소음기마다 다른 값을 넣는 것이라 겹침이 아니다 — 로그의
+"Applied stat multipliers to 133 suppressors" 와 수가 맞는다.

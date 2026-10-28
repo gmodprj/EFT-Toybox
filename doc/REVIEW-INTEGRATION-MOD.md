@@ -87,7 +87,7 @@ public class IntegrationService : IOnLoad { ... }
 | 단계 | 범위 | 근거 |
 | --- | --- | --- |
 | 1 | 탄약·화폐 **스택 크기** (`StackMaxSize`) | 겹침 2건이 이미 실측됐다. 모드 13개가 같은 필드를 건드린다 |
-| 2 | **내구도** (`MaxDurability`·`Durability`) | 모드 15~23개. CobrasDurabilityTweaks·SVM·RepairMaxDurability 가 같은 자리를 본다 |
+| 2 | ~~**내구도**~~ **필요 없다 (2026-10-28 실측)** | 템플릿 겹침이 없다. 아래 "2단계는 필요 없었다" 참고 |
 | 3 | **탄 성능** (`Damage`·`PenetrationPower`) | AmmoStats·Amonya·AmmoGen·ISB-Aishi 가 겹친다 |
 | 안 함 | 칸 필터·플레아 금지 | 집합 계산형이라 자작 모드 둘(`HelmetSlotUnion`·`SlotCategoryRelax`)과 또 겹친다. 그 둘을 합치는 쪽이 먼저다 |
 | 안 함 | 행동형 전부 | 통합 모드로 끌 수 없다 |
@@ -104,6 +104,52 @@ public class IntegrationService : IOnLoad { ... }
 | ~~**CobrasAmmoStack 제거**~~ **했다 (2026-10-28)** | 0/31 완전히 죽어 있었다. 제거 뒤 다시 재 보니 구경 31개의 값이 하나도 변하지 않았다 |
 | ~~SVM 의 죽은 화폐 스택 4건~~ **껐다 (2026-10-28)** | 값을 맞추는 대신 `EnableCurrency` 를 꺼서 BarterItemsStacks 를 유일한 주인으로 만들었다 |
 | TheBlacklist `disableBsgBlacklist` **켜 둔 채 858건을 되살렸다 (2026-10-28)** | 죽은 설정이 아니라 모드의 본래 기능이다. 그래서 끄지 않고, 제작자가 막아 둔 것만 `customItemConfigs` 로 다시 막았다 — 858건 중 744건 반영. 세어 보니 244건이 아니라 858건이었다 |
+
+## 4.5 2단계(내구도)는 필요 없었다 — 겹침이 없고, 대신 죽은 모드가 또 나왔다
+
+1단계를 끝내고 2단계를 재 보니 **통합할 겹침이 없었다.**
+
+### `MaxDurability`·`Durability` 를 쓰는 곳은 템플릿이 아니다
+
+`set_` 호출을 찾아 보니 MaxDurability 12개 모드, Durability 9개 모드가 걸렸다. 그러나
+**들여다보면 거의 전부 아이템 개체나 다른 객체다.**
+
+| 무엇을 쓰나 | 어디 | 보기 |
+| --- | --- | --- |
+| 아이템 **개체** (`UpdRepairable`) | 수리·복원 | `RepairMaxService::RepairMaxItemByKit`, `PlateRestorationService::Restore`, `RepairCallbacks::HandleRepairWithKit` |
+| 상인 물건 개체 | 판매 목록 정리 | `GunwrightRefresher::NormalizeDurability`, `PresetTraderRefresher::NormalizeDurability`, `TraderWeaponDurabilityService` |
+| 퀘스트 조건 객체 | 조건 생성 | `LedgerMod::BuildFinishConditions`, `NATOQuartermasterMod::CreateHandoverCondition`, `RepeatableQuestGenerator::BuildFindItemCondition` |
+| **자기가 만든 새 아이템** | 아이템 생성 | `MountOlympus/AddItemsRigsHelper`, `WolfiksHeavyTrooperMasks/ItemCreator` |
+
+즉 **같은 템플릿 칸을 두 모드가 다투는 구도가 아니다.** 스택 때와 다르다. 템플릿을 쓰는 것은
+`egbog-RepairMaxDurabilityServer` 의 `MaxRepairResource` 하나뿐이고, 그것은 수리 키트 자원이라
+다른 모드와 겹치지 않는다.
+
+### 전역 내구도를 바꾸려던 모드는 죽어 있다
+
+`CobrasDurabilityTweaks` 는 설정이 `DurabilityBurnMultiplier: 0.12` 이고 로그도
+"Modified 1002 weapons" 라고 말한다. **그런데 최종 DB 에 적용된 것이 하나도 없다.**
+
+| | |
+| --- | --- |
+| SPT 기본 DB 와 최종 DB 에 다 있는 아이템 | 176 |
+| 값이 그대로 | **176** |
+| x0.12 이 적용됨 | **0** |
+
+표본: `weapon_colt_m4a1_556x45` 는 기본 1.15 → 최종 1.15. 0.12 를 곱했다면 0.138 이어야 한다.
+
+왜 안 먹는지는 코드에 단서가 있다. 이 모드는 속성을 **리플렉션**으로 고친다 —
+`TryMultiplyNumericProperty(props, "DurabilityBurnRatio", 0.12)`. 이름은 맞다(그 속성이
+실제로 있다). 다만 그 속성의 형이 `double?`(`Nullable`)이라, 숫자형을 가정한 변환이 조용히
+실패하는 것으로 보인다 — `Try…` 라는 이름대로 실패를 삼킨다. **확정은 하지 않았다.**
+
+**CobrasAmmoStack 에 이어 두 번째 죽은 Cobra 모드다.** 치우는 것이 맞다.
+
+### 방법 메모 — 리플렉션으로 쓰는 모드는 `set_` 스캔에 안 걸린다
+
+`CobrasDurabilityTweaks` 는 `set_` 호출 목록에 **한 줄도 나오지 않았다**(쓰는 속성이
+`JsonSerializerOptions.PropertyNameCaseInsensitive` 하나로 잡혔다). 리플렉션을 쓰기 때문이다.
+"누가 이 필드를 쓰나" 를 `set_` 으로만 세면 이런 모드를 통째로 놓친다.
 
 ## 5. 아직 재지 않은 것
 
