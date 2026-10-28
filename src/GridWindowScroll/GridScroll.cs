@@ -76,7 +76,8 @@ namespace GridWindowScroll
         {
             foreach (var rt in window.GetComponentsInChildren<RectTransform>(true))
             {
-                if (rt.name != ViewportName || rt.childCount != 0) continue;
+                // 스크롤바도 뷰포트의 자식이라 자식 수로는 못 센다. 격자 묶음이 있는지로 본다.
+                if (rt.name != ViewportName || rt.GetComponentInChildren<ContainedGridsView>(true) != null) continue;
 
                 var grip = FindGrip(rt);
                 if (grip != null) UnityEngine.Object.Destroy(grip.gameObject);
@@ -276,8 +277,7 @@ namespace GridWindowScroll
             scroll.viewport = viewport;
             scroll.movementType = ScrollRect.MovementType.Clamped;
             scroll.inertia = false;
-            scroll.horizontalScrollbar = null;
-            scroll.verticalScrollbar = null;
+            ScrollBars.Attach(viewport, scroll);
 
             GridWindowScrollPlugin.Log.LogInfo($"격자 뷰포트를 만들었다 — {parent.name}/{content.name}");
             return viewport;
@@ -306,6 +306,8 @@ namespace GridWindowScroll
                 scroll.scrollSensitivity = CellPixels() * GridWindowScrollPlugin.WheelCells.Value;
                 if (resetScroll && (scroll.horizontal || scroll.vertical))
                     scroll.normalizedPosition = new Vector2(0f, 1f);   // 열 때는 왼쪽 위에서 시작한다
+
+                ScrollBars.UpdateVisibility(scroll);
             }
 
             LayoutRebuilder.MarkLayoutForRebuild(viewport);
