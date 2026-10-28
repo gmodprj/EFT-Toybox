@@ -218,12 +218,21 @@ namespace GridWindowScroll
             return size;
         }
 
+        /// <remarks>
+        /// 격자가 차지하는 크기는 칸 수의 배수보다 조금 크다(실측 18칸 1135px 에 실제 1144px —
+        /// 레이아웃 여백 몇 픽셀). 칸 수로만 자르면 끝까지 늘려도 9px 짜리 스크롤이 남아
+        /// 스크롤바가 괜히 붙으므로, 칸 수가 격자만큼이면 자르지 않는다.
+        /// </remarks>
         private static Vector2 TargetSize(Vector2 natural, int columns, int rows)
         {
             if (!GridWindowScrollPlugin.Enabled.Value) return natural;
 
+            var cell = CellPixels();
             var px = ItemViewFactory.GetCellPixelSize(new IntVec2(Math.Max(columns, MinCells), Math.Max(rows, MinCells)));
-            return new Vector2(Mathf.Min(natural.x, px.X), Mathf.Min(natural.y, px.Y));
+
+            var x = columns >= Mathf.RoundToInt((natural.x - 1f) / cell) ? natural.x : Mathf.Min(natural.x, px.X);
+            var y = rows >= Mathf.RoundToInt((natural.y - 1f) / cell) ? natural.y : Mathf.Min(natural.y, px.Y);
+            return new Vector2(x, y);
         }
 
         internal static float CellPixels()
