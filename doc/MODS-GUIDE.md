@@ -304,6 +304,22 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 
 ## 알려진 충돌
 
+### UI Fixes 의 `Reload Weapon Shortcut` 이 R 을 가져간다 (2026-10-28)
+
+**증상:** 게임에서 **R(장전)이 먹지 않는다.**
+
+**원인:** UI Fixes(`com.tyfon.uifixes`)의 `[F. Item Keybinds]` → **`Reload Weapon Shortcut` 의
+기본값이 `R`** 이다. 설정 설명에는 "메뉴에서만 쓰이고 평소 장전키에는 영향이 없다"
+(*solely in the menus, and doesn't affect the normal reload key*)고 적혀 있지만 **실제로는 R 을
+가져간다.**
+
+**조치:** F12 → UI Fixes → `[F. Item Keybinds]` → **`Reload Weapon Shortcut` 을 비운다.**
+그러면 R 이 돌아온다.
+
+**가려낸 방법:** 설정 파일에서 BepInEx 가 적어 둔 `# Default value:` 와 현재 값을 비교해
+"기본값과 다른 항목"을 뽑았다. 138개 중 실제로 다른 것은 이 한 줄이었다
+(나머지 13개는 빈 값과 `None` 을 다르게 읽은 집계 쪽 오차다).
+
 ### Mag Retention Reload × Direct Reload — 탄창 소실 (2026-10-25 확인 / 2026-10-26 재발)
 
 > **⚠ Mag Retention Reload의 `1. 일반` → `모드 사용`은 켜지 말 것.**
