@@ -304,19 +304,24 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 
 ## 알려진 충돌
 
-### R(장전)이 먹지 않던 것 — UI Fixes 설정 (2026-10-28, 해결)
+### R(장전)이 먹지 않던 것 — UI Fixes `Always Reload Magazines In-Place` (2026-10-28, 해결)
 
 **증상:** 게임에서 **R(장전)이 먹지 않는다.**
 
-**원인:** **UI Fixes(`com.tyfon.uifixes`)의 설정 하나.** 사용자가 찾아 바꿔서 해결했다.
-**어느 항목인지는 기록하지 못했다** — 나는 `[F. Item Keybinds]` 의
-`Reload Weapon Shortcut`(기본값 `R`)으로 짚었지만 **그것은 아니었다.**
+**원인:** UI Fixes(`com.tyfon.uifixes`)의 **`Always Reload Magazines In-Place`**
+(= "탄창 항상 제자리 교체")를 **켜 둔 것**. 기본값은 **꺼짐**이다.
 
-**조치:** 같은 증상이 다시 나오면 **F12 → UI Fixes 의 설정부터** 본다. 특히 키·입력 관련
-항목(`[F. Item Keybinds]`, 스크롤·Home/End·PageUp/PageDown)을 하나씩 끊어 본다.
+설정 설명은 이렇다 — *Force the reload to always be in-place, even if there's space to reload
+normally. Note that in-place reloads are slower.* 즉 **빈 자리가 있어도 반드시 새 탄창과 헌
+탄창의 자리를 맞바꾸는 식으로만** 장전하게 만든다. 맞바꿀 수 있는 자리가 없으면 **장전이
+성립하지 않아 R 이 아무 일도 하지 않는다.**
 
-> **다음에 이 증상이 오면 그때 어느 항목이었는지 꼭 적는다.** 이 항목이 비어 있는 것은
-> 그래서다.
+**조치:** F12 → UI Fixes → `[K. Inventory]` 쪽의 **`Always Reload Magazines In-Place` 를 끈다**
+(기본값으로 돌린다). 바로 아래 `Reload Magazines In-Place`(기본 켜짐)는 "필요할 때만" 맞바꾸는
+것이라 켜 둬도 된다.
+
+> 같은 증상이 또 나오면 **먼저 이 항목을 본다.** DirectReload 도 "주머니·탄띠에 빈 칸이 없으면
+> 장전을 거부"하므로, 둘이 겹치면 더 잘 막힌다.
 
 ### Mag Retention Reload × Direct Reload — 탄창 소실 (2026-10-25 확인 / 2026-10-26 재발)
 
