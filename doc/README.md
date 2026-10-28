@@ -1,7 +1,7 @@
 # 문서 색인
 
 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743).
-**2026-10-28 기준 모드 186개** + 직접 만든 플러그인 5개. 서버 모드 113개, 게임 플러그인 143개.
+**2026-10-28 기준 모드 186개** + 직접 만든 플러그인 6개. 서버 모드 114개, 게임 플러그인 143개.
 
 > 8차까지가 절차를 거친 설치고, 그 뒤 **절차 밖에서 들어온 8개**는 2026-10-28 에 설치 기록을
 > 뒤늦게 복원해 문서에 올렸다. 당시 기록이 아니라 "지금 가진 파일" 목록이다 —
@@ -39,6 +39,7 @@
 | --- | --- |
 | [fixes/2026-10-27-pit-stash-ammo.md](fixes/2026-10-27-pit-stash-ammo.md) | **봇 AI 정지 사건 전말** — 9x19 탄창의 5.56 탄 때문에 PIT 동료 생성이 깨지고, 반쯤 만들어진 동료 기록이 레이드를 망가뜨렸다. 내가 세운 가설 셋 중 둘이 틀린 경위도 적었다 |
 | [fixes/2026-10-27-pit-lootpatrol-nre.md](fixes/2026-10-27-pit-lootpatrol-nre.md) | PIT `LootPatrolLayer.GetDecision` NullReference 조사 + 제작자 보고용 영문 정리 |
+| [mod-patches/stackunify-pinned-stacks.md](mod-patches/stackunify-pinned-stacks.md) | 구경 43종의 최대 스택을 **지금 쓰이던 값으로 고정**했다 — 한 구경 안에서 값이 갈려 있던 15종을 포함. 넣은 값 전체와 되돌리는 법 |
 | [mod-patches/theblacklist-restore-author-bans.md](mod-patches/theblacklist-restore-author-bans.md) | 콘텐츠 모드 제작자가 막아 둔 아이템 858건을 플레아에서 다시 막았다 — **244건이라던 숫자가 틀렸던 경위**와 아직 열려 있는 114건 |
 | [mod-patches/svm-currency-off.md](mod-patches/svm-currency-off.md) | SVM 과 BarterItemsStacks 가 같은 화폐 스택을 쓰고 있었다 — SVM 쪽 네 줄을 껐다. **되돌리는 법과 Greed 로 저장할 때 주의** |
 | [mod-patches/505-olympus-firearmMags.md](mod-patches/505-olympus-firearmMags.md) | Olympus 가 없는 총기를 참조해 탄창 적용이 중간에 멈추던 것 — 12개 제거. **되돌리는 법과 원본 보관 위치** |
@@ -52,9 +53,10 @@
 | [HANDOVER-2026-10-26.md](HANDOVER-2026-10-26.md) | 2026-10-26 세션 인계 |
 | [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 |
 | [../src/GridWindowScroll/README.md](../src/GridWindowScroll/README.md) | 가방·상자 내부 인벤 창을 화면 안에 가두는 플러그인 (보이는 칸 수 제한 + 스크롤) |
+| [../src/StackUnify/README.md](../src/StackUnify/README.md) | 최대 스택 크기를 한 곳에서 정하는 서버 모드. **`PostLoad` 단계가 클라이언트에 닿는다는 실측**도 여기 있다 |
 
-직접 만든 플러그인 5개(`SptKoreanConfig`, `GridWindowScroll`, `HelmetSlotUnion`,
-`SlotCategoryRelax`, `WebConfigBridge`)는 Forge 모드가 아니라 설치 기록에 없다. INSTALLED-MODS.md 의
+직접 만든 플러그인 6개(`SptKoreanConfig`, `GridWindowScroll`, `StackUnify`,
+`HelmetSlotUnion`, `SlotCategoryRelax`, `WebConfigBridge`)는 Forge 모드가 아니라 설치 기록에 없다. INSTALLED-MODS.md 의
 "다른 경로로 설치된 것" 표를 본다.
 
 ## 기록 폴더
