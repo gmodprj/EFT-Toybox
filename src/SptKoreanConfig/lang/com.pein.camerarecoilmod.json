@@ -1,0 +1,202 @@
+{
+  "guid": "com.pein.camerarecoilmod",
+  "name": "반동 재구성 (Recoil Rework)",
+  "sections": {
+    "00. Debug": "00. 디버그",
+    "01. General": "01. 일반",
+    "02. Real Recoil": "02. 실제 반동",
+    "03. Camera Recoil": "03. 화면 반동",
+    "04. Additional Camera Recoil": "04. 추가 화면 반동",
+    "05. Recoil Settings": "05. 반동 설정",
+    "06. Pistol Recoil Settings": "06. 권총 반동 설정"
+  },
+  "settings": {
+    "00. Debug/Enable Debug": { "name": "디버그 기록 켜기", "desc": "디버그 로그를 남긴다." },
+
+    "01. General/Enable Crank Recoil": {
+      "name": "총기 밀림 반동",
+      "desc": "총이 화면 쪽으로 밀려 오게 할지 정한다."
+    },
+    "01. General/Camera Snap Speed": {
+      "name": "조준 위치 따라오는 속도",
+      "desc": "총의 회전 반동을 조준 자세가 따라잡는 속도."
+    },
+    "01. General/Pistol Camera Snap Speed": {
+      "name": "권총 조준 위치 따라오는 속도",
+      "desc": "권총에서 회전 반동을 조준 자세가 따라잡는 속도."
+    },
+    "01. General/Allow Lean Camera Tilt": {
+      "name": "기울이기 화면 회전",
+      "desc": "몸을 기울일 때 화면도 함께 돌지 정한다."
+    },
+    "01. General/Allow Vanilla Stable Recoil": {
+      "name": "기본 반동 안정화 사용",
+      "desc": "타르코프 원래의 반동 안정화를 쓴다. 손 회전 반동 설정에 영향을 받는다."
+    },
+
+    "02. Real Recoil/Enable Real Recoil": {
+      "name": "실제 반동 켜기",
+      "desc": "화면을 실제로 돌려 반동을 흉내 낸다. 양은 총기의 반동 수치와 아래 배율로 정해진다."
+    },
+    "02. Real Recoil/Use 1.7.2 Recoil Values": {
+      "name": "1.7.2 반동 수치 사용",
+      "desc": "(임시) 실제 반동 계산에 대체로 1.7.2 수치를 쓴다. 설정을 함께 바꿔야 한다 — 기준값은 수직 2.0, 수평 0.7, 분류별 배율은 전부 기본값."
+    },
+    "02. Real Recoil/Real Recoil Vertical Mult": { "name": "실제 반동 수직 배율", "desc": "위로 솟는 양을 배로 늘리거나 줄인다." },
+    "02. Real Recoil/Real Recoil Horizontal Mult": { "name": "실제 반동 수평 배율", "desc": "좌우로 흔들리는 양을 배로 늘리거나 줄인다." },
+    "02. Real Recoil/Real Recoil Decay Speed": { "name": "실제 반동 가라앉는 속도", "desc": "솟은 반동이 제자리로 돌아오는 속도." },
+    "02. Real Recoil/Enable Alternate Real Recoil": {
+      "name": "대체 실제 반동 켜기",
+      "desc": "용수철 방식으로 돌아가며 자동 보정이 붙은 다른 실제 반동을 쓴다."
+    },
+    "02. Real Recoil/Alternate Real Recoil Spring Speed": { "name": "대체 반동 용수철 속도", "desc": "대체 실제 반동 용수철이 움직이는 속도." },
+    "02. Real Recoil/Alternate Real Recoil Spring Stiffness": { "name": "대체 반동 용수철 세기", "desc": "용수철이 얼마나 단단한지." },
+    "02. Real Recoil/Alternate Real Recoil Spring Damping": { "name": "대체 반동 용수철 감쇠", "desc": "용수철 떨림이 얼마나 빨리 죽는지." },
+    "02. Real Recoil/Real Recoil Mounted Multiplier": { "name": "거치·양각대 배율", "desc": "총을 걸치거나 양각대를 쓸 때의 반동 양." },
+    "02. Real Recoil/Real Recoil Crouch Multiplier": { "name": "앉은 자세 배율", "desc": "앉아 쏠 때의 반동 양." },
+    "02. Real Recoil/Real Recoil Prone Multiplier": { "name": "엎드린 자세 배율", "desc": "엎드려 쏠 때의 반동 양." },
+    "02. Real Recoil/Real Recoil Aiming Multiplier": { "name": "조준 중 배율", "desc": "조준하고 쏠 때의 반동 양." },
+    "02. Real Recoil/Enable Weapon Class Multipliers": {
+      "name": "총기 분류별 배율 켜기",
+      "desc": "총기 분류마다 다른 배율을 쓴다. 권총 반동 수치가 지나치게 커서 켜 두기를 권한다."
+    },
+    "02. Real Recoil/Rifle Real Recoil Multiplier": { "name": "소총 배율", "desc": "소총의 실제 반동 배율." },
+    "02. Real Recoil/Carbine Real Recoil Multiplier": { "name": "카빈 배율", "desc": "카빈의 실제 반동 배율." },
+    "02. Real Recoil/Pistol Real Recoil Multiplier": { "name": "권총 배율", "desc": "권총의 실제 반동 배율." },
+    "02. Real Recoil/SMG Real Recoil Multiplier": { "name": "기관단총 배율", "desc": "기관단총의 실제 반동 배율." },
+    "02. Real Recoil/Shotgun Real Recoil Multiplier": { "name": "산탄총 배율", "desc": "산탄총의 실제 반동 배율." },
+    "02. Real Recoil/Sniper Real Recoil Multiplier": { "name": "저격총 배율", "desc": "볼트액션 저격총의 실제 반동 배율." },
+    "02. Real Recoil/Marksman Real Recoil Multiplier": { "name": "지정사수총 배율", "desc": "반자동 지정사수총의 실제 반동 배율." },
+    "02. Real Recoil/Machine Gun Real Recoil Multiplier": { "name": "기관총 배율", "desc": "기관총의 실제 반동 배율." },
+    "02. Real Recoil/Grenade Launcher Real Recoil Multiplier": { "name": "유탄발사기 배율", "desc": "유탄발사기의 실제 반동 배율." },
+
+    "03. Camera Recoil/Camera Recoil Up Mult": { "name": "화면 반동 수직 배율", "desc": "화면이 위로 튀는 양." },
+    "03. Camera Recoil/Camera Recoil Side Mult": { "name": "화면 반동 수평 배율", "desc": "화면이 옆으로 튀는 양." },
+    "03. Camera Recoil/Camera Recoil Intensity": { "name": "화면 반동 세기", "desc": "화면 반동 전체의 세기." },
+    "03. Camera Recoil/Camera Recoil Return Speed": { "name": "화면 복귀 속도", "desc": "튄 화면이 제자리로 돌아오는 속도." },
+    "03. Camera Recoil/Camera Recoil Damping": { "name": "화면 반동 감쇠", "desc": "화면 흔들림이 죽는 정도." },
+
+    "04. Additional Camera Recoil/Additional Camera Recoil": {
+      "name": "추가 화면 반동 켜기",
+      "desc": "기본 화면 반동 위에 한 겹 더 얹는다."
+    },
+    "04. Additional Camera Recoil/Additional Recoil Ironsight Multiplier": { "name": "기계식 조준기 배율", "desc": "기계식 가늠자로 조준할 때의 추가 반동 양." },
+    "04. Additional Camera Recoil/Additional Recoil Optics Multiplier": { "name": "광학 조준기 배율", "desc": "조준경으로 조준할 때의 추가 반동 양." },
+    "04. Additional Camera Recoil/Enable Slow Spring": {
+      "name": "느린 용수철 켜기",
+      "desc": "천천히 돌아오는 추가 화면 반동을 쓴다. 손댈 용수철이 하나 더 필요할 때."
+    },
+    "04. Additional Camera Recoil/Slow Spring Speed": { "name": "느린 용수철 속도", "desc": "느린 용수철이 움직이는 속도." },
+    "04. Additional Camera Recoil/Slow Spring Stiffness": { "name": "느린 용수철 세기", "desc": "느린 용수철이 얼마나 단단한지." },
+    "04. Additional Camera Recoil/Slow Spring Damping": { "name": "느린 용수철 감쇠", "desc": "느린 용수철 떨림이 죽는 정도." },
+    "04. Additional Camera Recoil/Slow Spring Direction Angle": {
+      "name": "느린 용수철 방향 각도",
+      "desc": "최소·최대 각도. X 가 최소, Y 가 최대이며 0 은 오른쪽, 90 은 위, 180 은 왼쪽, 270 은 아래."
+    },
+    "04. Additional Camera Recoil/Slow Spring Vertical Mult Min/Max": { "name": "느린 용수철 수직 배율 범위", "desc": "수직 힘 배율의 최소·최대." },
+    "04. Additional Camera Recoil/Slow Spring Horizontal Mult Min/Max": { "name": "느린 용수철 수평 배율 범위", "desc": "수평 힘 배율의 최소·최대." },
+    "04. Additional Camera Recoil/Slow Spring Use Real Recoil": {
+      "name": "느린 용수철에 실제 반동 방향 쓰기",
+      "desc": "충격 방향을 실제 반동의 방향에서 가져온다."
+    },
+    "04. Additional Camera Recoil/Slow Spring Real Recoil Direction Normalize": {
+      "name": "느린 용수철 힘 고르게",
+      "desc": "실제 반동 힘을 고르게 맞춰 모든 총이 같은 크기로 용수철을 밀게 한다."
+    },
+    "04. Additional Camera Recoil/Slow Spring Real Recoil Vertical Min/Max": { "name": "느린 용수철 수직 반동 범위", "desc": "수직 반동 배율의 범위. X 가 최소, Y 가 최대." },
+    "04. Additional Camera Recoil/Slow Spring Real Recoil Horizontal Min/Max": { "name": "느린 용수철 수평 반동 범위", "desc": "수평 반동 배율의 범위. X 가 최소, Y 가 최대." },
+    "04. Additional Camera Recoil/Enable Fast Spring": { "name": "빠른 용수철 켜기", "desc": "빠르게 돌아오는 추가 화면 반동을 쓴다." },
+    "04. Additional Camera Recoil/Fast Spring Speed": { "name": "빠른 용수철 속도", "desc": "빠른 용수철이 움직이는 속도." },
+    "04. Additional Camera Recoil/Fast Spring Stiffness": { "name": "빠른 용수철 세기", "desc": "빠른 용수철이 얼마나 단단한지." },
+    "04. Additional Camera Recoil/Fast Spring Damping": { "name": "빠른 용수철 감쇠", "desc": "빠른 용수철 떨림이 죽는 정도." },
+    "04. Additional Camera Recoil/Fast Spring Direction Angle": {
+      "name": "빠른 용수철 방향 각도",
+      "desc": "최소·최대 각도. X 가 최소, Y 가 최대이며 0 은 오른쪽, 90 은 위, 180 은 왼쪽, 270 은 아래."
+    },
+    "04. Additional Camera Recoil/Fast Vertical Mult Min/Max": { "name": "빠른 용수철 수직 배율 범위", "desc": "수직 힘 배율의 최소·최대." },
+    "04. Additional Camera Recoil/Fast Horizontal Mult Min/Max": { "name": "빠른 용수철 수평 배율 범위", "desc": "수평 힘 배율의 최소·최대." },
+    "04. Additional Camera Recoil/Fast Spring Use Real Recoil": {
+      "name": "빠른 용수철에 실제 반동 방향 쓰기",
+      "desc": "충격 방향을 실제 반동의 방향에서 가져온다."
+    },
+    "04. Additional Camera Recoil/Fast Spring Real Recoil Direction Normalize": {
+      "name": "빠른 용수철 힘 고르게",
+      "desc": "실제 반동 힘을 고르게 맞춰 모든 총이 같은 크기로 용수철을 밀게 한다."
+    },
+    "04. Additional Camera Recoil/Fast Spring Real Recoil Vertical Min/Max": { "name": "빠른 용수철 수직 반동 범위", "desc": "수직 반동 배율의 범위. X 가 최소, Y 가 최대." },
+    "04. Additional Camera Recoil/Fast Spring Real Recoil Horizontal Min/Max": { "name": "빠른 용수철 수평 반동 범위", "desc": "수평 반동 배율의 범위. X 가 최소, Y 가 최대." },
+    "04. Additional Camera Recoil/Enable Camera Spring": { "name": "화면 용수철 켜기", "desc": "화면 자체에 용수철 반동을 더한다." },
+    "04. Additional Camera Recoil/Camera Spring Speed": { "name": "화면 용수철 속도", "desc": "화면 용수철이 움직이는 속도." },
+    "04. Additional Camera Recoil/Camera Spring Stiffness": { "name": "화면 용수철 세기", "desc": "화면 용수철이 얼마나 단단한지." },
+    "04. Additional Camera Recoil/Camera Spring Damping": { "name": "화면 용수철 감쇠", "desc": "화면 용수철 떨림이 죽는 정도." },
+    "04. Additional Camera Recoil/Camera Spring Direction": {
+      "name": "화면 용수철 방향",
+      "desc": "X 는 위아래(피치), Y 는 좌우(요), Z 는 좌우 기울기(롤)."
+    },
+    "04. Additional Camera Recoil/Camera Spring Vertical Min/Max": { "name": "화면 용수철 수직 힘 범위", "desc": "수직 힘의 최소·최대." },
+    "04. Additional Camera Recoil/Camera Spring Horizontal Min/Max": { "name": "화면 용수철 수평 힘 범위", "desc": "수평 힘의 최소·최대." },
+    "04. Additional Camera Recoil/Camera Spring Rotation Min/Max": { "name": "화면 용수철 회전 범위", "desc": "회전량의 최소·최대." },
+
+    "05. Recoil Settings/Recoil Position Backwards Mult": { "name": "손 뒤로 밀림 배율", "desc": "총이 뒤로 밀려 손이 당겨지는 양." },
+    "05. Recoil Settings/Recoil Position Intensity": { "name": "손 반동 세기", "desc": "반동 세기. 배율이 하나 더 붙는 셈이다." },
+    "05. Recoil Settings/Recoil Position Return Speed": { "name": "손 위치 복귀 속도", "desc": "밀린 손이 제자리로 돌아오는 속도." },
+    "05. Recoil Settings/Recoil Position Damping": { "name": "손 위치 감쇠", "desc": "손 흔들림이 죽는 정도." },
+    "05. Recoil Settings/Recoil Rotation Up Mult": { "name": "손 회전 수직 배율", "desc": "총구가 위아래로 들리는 양." },
+    "05. Recoil Settings/Recoil Rotation Side Mult": { "name": "손 회전 수평 배율", "desc": "총구가 옆으로 돌아가는 양." },
+    "05. Recoil Settings/Recoil Rotation Return Speed": { "name": "손 회전 복귀 속도", "desc": "돌아간 총구가 제자리로 오는 속도." },
+    "05. Recoil Settings/Recoil Rotation Damping": { "name": "손 회전 감쇠", "desc": "총구 흔들림이 죽는 정도." },
+    "05. Recoil Settings/Roll Multiplier": { "name": "기울기 배율", "desc": "조준하지 않을 때 총이 좌우로 기우는 양." },
+    "05. Recoil Settings/Roll Aiming Multiplier": { "name": "조준 중 기울기 배율", "desc": "조준할 때 총이 좌우로 기우는 양." },
+    "05. Recoil Settings/Roll Speed Multiplier": { "name": "기울기 속도 배율", "desc": "기울기가 움직이는 빠르기." },
+    "05. Recoil Settings/Hipfire Penalty Mult (Laser On)": {
+      "name": "비조준 벌점 배율 (장비 켬)",
+      "desc": "전술 장비를 켠 상태로 허리 사격할 때 붙는 벌점 배율."
+    },
+    "05. Recoil Settings/Hipfire Penalty Mult (Laser Off)": {
+      "name": "비조준 벌점 배율 (장비 끔)",
+      "desc": "전술 장비를 끈 상태로 허리 사격할 때 붙는 벌점 배율."
+    },
+    "05. Recoil Settings/Allow Dynamic Adjustments": {
+      "name": "총기별 자동 보정",
+      "desc": "든 총의 반동 수치에 맞춰 배율·감쇠·복귀 속도를 저절로 조절한다."
+    },
+    "05. Recoil Settings/Dynamic Recoil Range": {
+      "name": "자동 보정 기준 범위",
+      "desc": "보정에 쓰는 수평 반동 수치의 최소·최대. X 에서 보정이 시작되고 Y 에서 끝난다."
+    },
+    "05. Recoil Settings/Dynamic Multiplier Range": { "name": "자동 보정 배율 범위", "desc": "뒤로 밀림에 적용할 보정값의 최소·최대." },
+    "05. Recoil Settings/Dynamic Return Speed Multiplier Range": { "name": "자동 보정 복귀 속도 범위", "desc": "뒤로 밀림 복귀 속도에 적용할 보정값의 최소·최대." },
+    "05. Recoil Settings/Dynamic Damping Multiplier Range": { "name": "자동 보정 감쇠 범위", "desc": "뒤로 밀림 감쇠에 적용할 보정값의 최소·최대." },
+
+    "06. Pistol Recoil Settings/Pistol Recoil Position Backwards Mult": { "name": "권총 뒤로 밀림 배율", "desc": "권총이 뒤로 밀리는 양." },
+    "06. Pistol Recoil Settings/Pistol Recoil Position Intensity": { "name": "권총 위치 반동 세기", "desc": "위치 반동 세기. 배율이 하나 더 붙는 셈이다." },
+    "06. Pistol Recoil Settings/Pistol Recoil Position Return Speed": { "name": "권총 위치 복귀 속도", "desc": "밀린 권총이 제자리로 오는 속도." },
+    "06. Pistol Recoil Settings/Pistol Recoil Position Damping": { "name": "권총 위치 감쇠", "desc": "권총 위치 흔들림이 죽는 정도." },
+    "06. Pistol Recoil Settings/Pistol Recoil Rotation Up Mult": { "name": "권총 회전 수직 배율", "desc": "총구가 위로 들리는 양." },
+    "06. Pistol Recoil Settings/Pistol Recoil Rotation Side Mult": { "name": "권총 회전 수평 배율", "desc": "총구가 옆으로 돌아가는 양." },
+    "06. Pistol Recoil Settings/Pistol Recoil Rotation Return Speed": { "name": "권총 회전 복귀 속도", "desc": "돌아간 총구가 제자리로 오는 속도." },
+    "06. Pistol Recoil Settings/Pistol Recoil Rotation Damping": { "name": "권총 회전 감쇠", "desc": "총구 흔들림이 죽는 정도." },
+    "06. Pistol Recoil Settings/Roll Multiplier": { "name": "기울기 배율", "desc": "조준하지 않을 때 권총이 좌우로 기우는 양." },
+    "06. Pistol Recoil Settings/Roll Aiming Multiplier": { "name": "조준 중 기울기 배율", "desc": "조준할 때 권총이 좌우로 기우는 양." },
+    "06. Pistol Recoil Settings/Roll Speed Multiplier": { "name": "기울기 속도 배율", "desc": "기울기가 움직이는 빠르기." },
+    "06. Pistol Recoil Settings/Hipfire Penalty Mult (Laser On)": {
+      "name": "비조준 벌점 배율 (장비 켬)",
+      "desc": "전술 장비를 켠 상태로 허리 사격할 때 붙는 벌점 배율."
+    },
+    "06. Pistol Recoil Settings/Hipfire Penalty Mult (Laser Off)": {
+      "name": "비조준 벌점 배율 (장비 끔)",
+      "desc": "전술 장비를 끈 상태로 허리 사격할 때 붙는 벌점 배율."
+    },
+    "06. Pistol Recoil Settings/Allow Dynamic Adjustments": {
+      "name": "총기별 자동 보정",
+      "desc": "든 권총의 반동 수치에 맞춰 배율·감쇠·복귀 속도를 저절로 조절한다."
+    },
+    "06. Pistol Recoil Settings/Dynamic Recoil Range": {
+      "name": "자동 보정 기준 범위",
+      "desc": "보정에 쓰는 수직 반동 수치의 최소·최대. X 에서 보정이 시작되고 Y 에서 끝난다."
+    },
+    "06. Pistol Recoil Settings/Dynamic Multiplier Range": { "name": "자동 보정 배율 범위", "desc": "총구가 위로 들리는 각도 배율에 적용할 보정값의 최소·최대." },
+    "06. Pistol Recoil Settings/Dynamic Return Speed Multiplier Range": { "name": "자동 보정 복귀 속도 범위", "desc": "위로 들린 각도의 복귀 속도에 적용할 보정값의 최소·최대." },
+    "06. Pistol Recoil Settings/Dynamic Damping Multiplier Range": { "name": "자동 보정 감쇠 범위", "desc": "위로 들린 각도의 감쇠에 적용할 보정값의 최소·최대." }
+  }
+}

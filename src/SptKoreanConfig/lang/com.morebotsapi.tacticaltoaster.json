@@ -1,0 +1,13 @@
+{
+  "guid": "com.morebotsapi.tacticaltoaster",
+  "name": "봇 구역 표시 (Tactical Toaster)",
+  "sections": {
+    "Bot Zones": "봇 구역"
+  },
+  "settings": {
+    "Bot Zones/Draw Bot Zones": {
+      "name": "봇 구역 그리기",
+      "desc": "봇이 배정된 구역을 맵 안에 표시한다."
+    }
+  }
+}

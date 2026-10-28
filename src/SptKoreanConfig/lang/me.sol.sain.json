@@ -1,0 +1,11 @@
+{
+  "guid": "me.sol.sain",
+  "name": "SAIN 편집기 (SAIN)",
+  "sections": {
+    "SAIN Editor": "SAIN 편집기"
+  },
+  "settings": {
+    "SAIN Editor/Open Editor": { "name": "편집기 열기", "desc": "누르면 편집기를 띄운다." },
+    "SAIN Editor/Open Editor Shortcut": { "name": "편집기 단축키", "desc": "편집기를 띄우고 감출 키." }
+  }
+}
