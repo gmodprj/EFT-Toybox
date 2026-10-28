@@ -1,3 +1,4 @@
+using System.IO;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -20,8 +21,13 @@ namespace GridWindowScroll
         internal static ConfigEntry<int> MaxColumns;
         internal static ConfigEntry<int> MaxRows;
         internal static ConfigEntry<float> WheelCells;
+        internal static ConfigEntry<bool> RememberPerContainer;
+        internal static ConfigEntry<bool> ShowGrip;
+        internal static ConfigEntry<bool> ForgetSizes;
         internal static ConfigEntry<bool> UseStencilMask;
         internal static ConfigEntry<bool> Verbose;
+
+        internal static SizeStore Sizes;
 
         private void Awake()
         {
@@ -45,14 +51,36 @@ namespace GridWindowScroll
                     "마우스 휠을 한 칸 돌릴 때 움직일 칸 수.",
                     new AcceptableValueRange<float>(0.5f, 10f)));
 
+            RememberPerContainer = Config.Bind("일반", "상자별 크기 기억", true,
+                "모서리를 끌어 정한 칸 수를 상자 종류마다 따로 기억한다. 끄면 끌었을 때 위의 기본값이 바뀐다.");
+
+            ShowGrip = Config.Bind("일반", "모서리 손잡이 보이기", true,
+                "창 오른쪽 아래의 작은 손잡이. 꺼도 끌 수는 있고 보이지 않을 뿐이다.");
+
+            ForgetSizes = Config.Bind("일반", "기억한 크기 지우기", false,
+                "켜면 상자별로 기억한 크기를 모두 지우고 다시 꺼진다. 전부 기본값으로 돌아간다.");
+
             UseStencilMask = Config.Bind("고급", "스텐실 마스크 사용", false,
                 "칸이 창 밖으로 비어져 나와 보이면 켠다. 기본 방식(RectMask2D)을 Mask 로 바꾼다. 켜고 끈 뒤에는 창을 다시 열어야 한다.");
 
             Verbose = Config.Bind("고급", "자세한 기록", false,
                 "창을 열 때마다 격자 크기와 자른 크기를 BepInEx 로그에 남긴다.");
 
+            var dir = Path.GetDirectoryName(Info.Location) ?? ".";
+            Sizes = new SizeStore(Path.Combine(dir, "sizes.json"));
+
+            // 지우기는 버튼이 아니라 스위치라, 켜면 지우고 스스로 꺼진다.
+            ForgetSizes.SettingChanged += (_, __) =>
+            {
+                if (!ForgetSizes.Value) return;
+                var had = Sizes.Count;
+                Sizes.Clear();
+                ForgetSizes.Value = false;
+                Log.LogInfo($"상자별로 기억한 크기 {had}개를 지웠다");
+            };
+
             new Harmony(PluginGuid).PatchAll(typeof(GridWindowPatch));
-            Log.LogInfo($"EFT.UI.GridWindow.ShowContents 패치 완료 — 보이는 칸 최대 {MaxColumns.Value}x{MaxRows.Value}");
+            Log.LogInfo($"EFT.UI.GridWindow.ShowContents 패치 완료 — 보이는 칸 최대 {MaxColumns.Value}x{MaxRows.Value}, 상자별 기억 {Sizes.Count}개");
         }
     }
 }
