@@ -4,7 +4,7 @@
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 설치된 모드: **187개**, 설치 파일 **10635개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 142개 (2026-10-28 07:37 `LogOutput.log` — 메뉴까지 로드 확인. 오류 1건: Fika 미설치 관련 DirectReload 패치 1. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 와 COTI per-frame 오류가 더 날 수 있다) / 서버 모드 로드: 114개 (2026-10-28 테스트, 정상 시작 — `server-tests/server-test-stage9-114mods.out.txt`. 로그 파일에 `[Error]` 49건: 없는 아이템을 플레아 캐시에 넣으려다 실패 48(41건이 Olympus `firearmMags.json` 의 없는 탄창 참조) + 번들 1개 누락. 자세한 것은 `REVIEW-LOAD-ORDER.md`)
+- 게임 쪽 플러그인 로드: 143개 (2026-10-28 11:38 `LogOutput.log` — 창고까지 확인. 오류 1건: Fika 미설치 관련 DirectReload 패치 1. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 와 COTI per-frame 오류가 더 날 수 있다) / 서버 모드 로드: 114개 (2026-10-28 테스트, 정상 시작 — `server-tests/server-test-stage9-114mods.out.txt`. 로그 파일에 `[Error]` 49건: 없는 아이템을 플레아 캐시에 넣으려다 실패 48(원인은 `MountOlympus.dll` — 모드가 만들지 않는 아이템 id 48개를 들고 있다) + 번들 1개 누락. 자세한 것은 `REVIEW-LOAD-ORDER.md`)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의

@@ -42,7 +42,7 @@ const side = (files) => {
 };
 const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)', 8: '8차 — OP·AI 동료·HUD 포팅본 (8-A 5 + 8-B 3 + 8-C 3 + 8-D 치트 2 + 8-E AI 동료 3 + 8-F 대형 1)', 9: '절차 밖에서 들어온 것 (설치 기록을 뒤늦게 복원 — 당시 기록이 아니다)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 142개 (2026-10-28 07:37 `LogOutput.log` — 메뉴까지 로드 확인. 오류 1건: Fika 미설치 관련 DirectReload 패치 1. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 와 COTI per-frame 오류가 더 날 수 있다) / 서버 모드 로드: 114개 (2026-10-28 테스트, 정상 시작 — `server-tests/server-test-stage9-114mods.out.txt`. 로그 파일에 `[Error]` 49건: 없는 아이템을 플레아 캐시에 넣으려다 실패 48(41건이 Olympus `firearmMags.json` 의 없는 탄창 참조) + 번들 1개 누락. 자세한 것은 `REVIEW-LOAD-ORDER.md`)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 143개 (2026-10-28 11:38 `LogOutput.log` — 창고까지 확인. 오류 1건: Fika 미설치 관련 DirectReload 패치 1. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 와 COTI per-frame 오류가 더 날 수 있다) / 서버 모드 로드: 114개 (2026-10-28 테스트, 정상 시작 — `server-tests/server-test-stage9-114mods.out.txt`. 로그 파일에 `[Error]` 49건: 없는 아이템을 플레아 캐시에 넣으려다 실패 48(원인은 `MountOlympus.dll` — 모드가 만들지 않는 아이템 id 48개를 들고 있다) + 번들 1개 누락. 자세한 것은 `REVIEW-LOAD-ORDER.md`)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];
