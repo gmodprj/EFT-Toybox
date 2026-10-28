@@ -54,6 +54,9 @@ namespace GridWindowScroll
     {
         private const string ViewportName = "GridScrollViewport";
 
+        /// <summary>이보다 줄이면 아무것도 보이지 않는다. F12 설정 범위의 아래끝과 같다.</summary>
+        internal const int MinCells = 3;
+
         internal static void Apply(GridWindow window)
         {
             foreach (var contained in window.GetComponentsInChildren<ContainedGridsView>(true))
@@ -74,6 +77,10 @@ namespace GridWindowScroll
             foreach (var rt in window.GetComponentsInChildren<RectTransform>(true))
             {
                 if (rt.name != ViewportName || rt.childCount != 0) continue;
+
+                var grip = FindGrip(rt);
+                if (grip != null) UnityEngine.Object.Destroy(grip.gameObject);
+
                 GridWindowScrollPlugin.Log.LogInfo("빈 격자 뷰포트를 치웠다");
                 UnityEngine.Object.Destroy(rt.gameObject);
             }
@@ -91,8 +98,13 @@ namespace GridWindowScroll
             var natural = MeasureContent(content);
             if (natural.x <= 1f || natural.y <= 1f) return;
 
-            var cap = CapPixels();
-            var target = new Vector2(Mathf.Min(natural.x, cap.x), Mathf.Min(natural.y, cap.y));
+            var cell = CellPixels();
+            var naturalCells = new Vector2((natural.x - 1f) / cell, (natural.y - 1f) / cell);
+
+            var templateId = TemplateIdOf(contained);
+            ResolveCells(templateId, out var columns, out var rows);
+
+            var target = TargetSize(natural, columns, rows);
             var needsScroll = natural.x > target.x + 0.5f || natural.y > target.y + 0.5f;
 
             if (viewport == null)
@@ -105,8 +117,75 @@ namespace GridWindowScroll
                 viewport = CreateViewport(content, parent, target);
             }
 
-            Fit(viewport, content, natural, target);
+            Fit(viewport, content, natural, columns, rows, true);
+
+            var grip = FindGrip(viewport) ?? ResizeGrip.Attach(viewport);
+            grip.Refresh(content, templateId, naturalCells, columns, rows);
+
             Trace(contained, natural, target, needsScroll ? "스크롤" : "자르지 않음");
+        }
+
+        /// <summary>손잡이를 끌 때 그 자리에서 다시 맞춘다. 스크롤 위치는 건드리지 않는다.</summary>
+        /// <remarks>
+        /// 창은 가운데를 기준으로 커지고 작아진다. 그대로 두면 한 칸 바뀔 때마다 왼위 모서리가
+        /// 반 칸씩 밀려, 끄는 오른아래 모서리는 커서의 절반만 움직인다(실측 — 한 칸 63 에
+        /// 왼위가 32 이동). 그래서 크기를 바꾼 뒤 창을 그만큼 되밀어 **왼위를 붙잡아 둔다.**
+        /// </remarks>
+        internal static void ApplyCells(RectTransform viewport, RectTransform content, int columns, int rows)
+        {
+            if (viewport == null || content == null) return;
+
+            var windowTransform = WindowTransformOf(viewport);
+            var before = TopLeftWorld(viewport);
+
+            Fit(viewport, content, MeasureContent(content), columns, rows, false);
+
+            if (windowTransform == null) return;
+
+            // 되밀 양을 재려면 레이아웃이 지금 바로 돌아야 한다.
+            LayoutRebuilder.ForceRebuildLayoutImmediate(windowTransform);
+            windowTransform.position += before - TopLeftWorld(viewport);
+        }
+
+        /// <summary>창의 뿌리. 뷰포트의 조상이 아니면 되밀어도 소용이 없으니 그때는 포기한다.</summary>
+        private static RectTransform WindowTransformOf(RectTransform viewport)
+        {
+            var window = viewport.GetComponentInParent<GridWindow>();
+            var windowTransform = window != null ? window.WindowTransform : null;
+            return windowTransform != null && viewport.IsChildOf(windowTransform) ? windowTransform : null;
+        }
+
+        private static Vector3 TopLeftWorld(RectTransform rt)
+        {
+            var corners = new Vector3[4];
+            rt.GetWorldCorners(corners);
+            return corners[1];   // 0=왼아래 1=왼위 2=오른위 3=오른아래
+        }
+
+        /// <summary>상자별로 기억한 값이 있으면 그것, 없으면 전체 기본값.</summary>
+        private static void ResolveCells(string templateId, out int columns, out int rows)
+        {
+            if (GridWindowScrollPlugin.RememberPerContainer.Value
+                && GridWindowScrollPlugin.Sizes.TryGet(templateId, out columns, out rows))
+                return;
+
+            columns = GridWindowScrollPlugin.MaxColumns.Value;
+            rows = GridWindowScrollPlugin.MaxRows.Value;
+        }
+
+        /// <summary>격자 묶음이 속한 아이템의 템플릿 id. 칸(슬롯)만 있는 묶음은 없을 수 있다.</summary>
+        private static string TemplateIdOf(ContainedGridsView contained)
+        {
+            var views = contained.GridViews;
+            if (views == null) return null;
+
+            foreach (var view in views)
+            {
+                var parentItem = view?.Grid?.ParentItem;
+                if (parentItem != null) return parentItem.StringTemplateId;
+            }
+
+            return null;
         }
 
         /// <summary>격자·칸들이 차지하는 범위. 뷰포트가 가둔 뒤에는 묶음 자신의 크기를 믿을 수 없어 자식으로 잰다.</summary>
@@ -138,21 +217,30 @@ namespace GridWindowScroll
             return size;
         }
 
-        /// <summary>설정한 칸 수를 게임 자신의 공식으로 픽셀로 바꾼다. 꺼져 있으면 사실상 무한.</summary>
-        private static Vector2 CapPixels()
+        private static Vector2 TargetSize(Vector2 natural, int columns, int rows)
         {
-            if (!GridWindowScrollPlugin.Enabled.Value) return new Vector2(float.MaxValue, float.MaxValue);
+            if (!GridWindowScrollPlugin.Enabled.Value) return natural;
 
-            var px = ItemViewFactory.GetCellPixelSize(
-                new IntVec2(GridWindowScrollPlugin.MaxColumns.Value, GridWindowScrollPlugin.MaxRows.Value));
-            return new Vector2(px.X, px.Y);
+            var px = ItemViewFactory.GetCellPixelSize(new IntVec2(Math.Max(columns, MinCells), Math.Max(rows, MinCells)));
+            return new Vector2(Mathf.Min(natural.x, px.X), Mathf.Min(natural.y, px.Y));
         }
 
-        private static float CellPixels()
+        internal static float CellPixels()
         {
             // 공식에 상수항이 있어 두 크기의 차로 한 칸 크기를 구한다.
             return ItemViewFactory.GetCellPixelSize(new IntVec2(2, 1)).X
                  - ItemViewFactory.GetCellPixelSize(new IntVec2(1, 1)).X;
+        }
+
+        private static ResizeGrip FindGrip(RectTransform viewport)
+        {
+            if (!(viewport.parent is RectTransform parent)) return null;
+
+            // 한 부모 아래에 뷰포트가 둘 이상일 수 있어 이름이 아니라 짝으로 찾는다.
+            foreach (var grip in parent.GetComponentsInChildren<ResizeGrip>(true))
+                if (grip.Viewport == viewport) return grip;
+
+            return null;
         }
 
         private static RectTransform CreateViewport(RectTransform content, RectTransform parent, Vector2 target)
@@ -195,9 +283,12 @@ namespace GridWindowScroll
             return viewport;
         }
 
-        /// <summary>뷰포트와 내용의 크기를 지금 격자에 맞춘다.</summary>
-        private static void Fit(RectTransform viewport, RectTransform content, Vector2 natural, Vector2 target)
+        /// <summary>뷰포트와 내용의 크기를 지금 격자와 칸 수에 맞춘다.</summary>
+        private static void Fit(RectTransform viewport, RectTransform content, Vector2 natural,
+                                int columns, int rows, bool resetScroll)
         {
+            var target = TargetSize(natural, columns, rows);
+
             content.sizeDelta = natural;              // 앵커가 한 점이므로 sizeDelta 가 곧 실제 크기다
             viewport.sizeDelta = target;
 
@@ -213,8 +304,8 @@ namespace GridWindowScroll
                 scroll.horizontal = natural.x > target.x + 0.5f;
                 scroll.vertical = natural.y > target.y + 0.5f;
                 scroll.scrollSensitivity = CellPixels() * GridWindowScrollPlugin.WheelCells.Value;
-                if (scroll.horizontal || scroll.vertical)
-                    scroll.normalizedPosition = new Vector2(0f, 1f);   // 늘 왼쪽 위에서 시작한다
+                if (resetScroll && (scroll.horizontal || scroll.vertical))
+                    scroll.normalizedPosition = new Vector2(0f, 1f);   // 열 때는 왼쪽 위에서 시작한다
             }
 
             LayoutRebuilder.MarkLayoutForRebuild(viewport);
