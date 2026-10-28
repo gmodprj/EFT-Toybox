@@ -21,6 +21,8 @@ namespace GridWindowScroll
         internal static ConfigEntry<int> MaxColumns;
         internal static ConfigEntry<int> MaxRows;
         internal static ConfigEntry<float> WheelCells;
+        internal static ConfigEntry<bool> ShowScrollBars;
+        internal static ConfigEntry<float> ScrollBarThickness;
         internal static ConfigEntry<bool> RememberPerContainer;
         internal static ConfigEntry<bool> ShowGrip;
         internal static ConfigEntry<bool> ForgetSizes;
@@ -53,6 +55,14 @@ namespace GridWindowScroll
 
             RememberPerContainer = Config.Bind("일반", "상자별 크기 기억", true,
                 "모서리를 끌어 정한 칸 수를 상자 종류마다 따로 기억한다. 끄면 끌었을 때 위의 기본값이 바뀐다.");
+
+            ShowScrollBars = Config.Bind("일반", "스크롤바 보이기", true,
+                "스크롤이 필요한 쪽에만 가느다란 바가 붙는다. 꺼도 마우스 휠로 움직일 수 있다.");
+
+            ScrollBarThickness = Config.Bind("일반", "스크롤바 굵기", 6f,
+                new ConfigDescription(
+                    "스크롤바 굵기(픽셀). 끝 칸 위로 이만큼 겹친다.",
+                    new AcceptableValueRange<float>(2f, 20f)));
 
             ShowGrip = Config.Bind("일반", "모서리 손잡이 보이기", true,
                 "창 오른쪽 아래의 작은 손잡이. 꺼도 끌 수는 있고 보이지 않을 뿐이다.");

@@ -76,7 +76,8 @@ namespace GridWindowScroll
         {
             foreach (var rt in window.GetComponentsInChildren<RectTransform>(true))
             {
-                if (rt.name != ViewportName || rt.childCount != 0) continue;
+                // 스크롤바도 뷰포트의 자식이라 자식 수로는 못 센다. 격자 묶음이 있는지로 본다.
+                if (rt.name != ViewportName || rt.GetComponentInChildren<ContainedGridsView>(true) != null) continue;
 
                 var grip = FindGrip(rt);
                 if (grip != null) UnityEngine.Object.Destroy(grip.gameObject);
@@ -217,12 +218,21 @@ namespace GridWindowScroll
             return size;
         }
 
+        /// <remarks>
+        /// 격자가 차지하는 크기는 칸 수의 배수보다 조금 크다(실측 18칸 1135px 에 실제 1144px —
+        /// 레이아웃 여백 몇 픽셀). 칸 수로만 자르면 끝까지 늘려도 9px 짜리 스크롤이 남아
+        /// 스크롤바가 괜히 붙으므로, 칸 수가 격자만큼이면 자르지 않는다.
+        /// </remarks>
         private static Vector2 TargetSize(Vector2 natural, int columns, int rows)
         {
             if (!GridWindowScrollPlugin.Enabled.Value) return natural;
 
+            var cell = CellPixels();
             var px = ItemViewFactory.GetCellPixelSize(new IntVec2(Math.Max(columns, MinCells), Math.Max(rows, MinCells)));
-            return new Vector2(Mathf.Min(natural.x, px.X), Mathf.Min(natural.y, px.Y));
+
+            var x = columns >= Mathf.RoundToInt((natural.x - 1f) / cell) ? natural.x : Mathf.Min(natural.x, px.X);
+            var y = rows >= Mathf.RoundToInt((natural.y - 1f) / cell) ? natural.y : Mathf.Min(natural.y, px.Y);
+            return new Vector2(x, y);
         }
 
         internal static float CellPixels()
@@ -276,8 +286,7 @@ namespace GridWindowScroll
             scroll.viewport = viewport;
             scroll.movementType = ScrollRect.MovementType.Clamped;
             scroll.inertia = false;
-            scroll.horizontalScrollbar = null;
-            scroll.verticalScrollbar = null;
+            ScrollBars.Attach(viewport, scroll);
 
             GridWindowScrollPlugin.Log.LogInfo($"격자 뷰포트를 만들었다 — {parent.name}/{content.name}");
             return viewport;
@@ -306,6 +315,8 @@ namespace GridWindowScroll
                 scroll.scrollSensitivity = CellPixels() * GridWindowScrollPlugin.WheelCells.Value;
                 if (resetScroll && (scroll.horizontal || scroll.vertical))
                     scroll.normalizedPosition = new Vector2(0f, 1f);   // 열 때는 왼쪽 위에서 시작한다
+
+                ScrollBars.UpdateVisibility(scroll);
             }
 
             LayoutRebuilder.MarkLayoutForRebuild(viewport);
