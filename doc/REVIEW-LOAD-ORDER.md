@@ -37,7 +37,7 @@
 2026-10-28 07:37 에 켠 게임 로그에서는 **플러그인 142개 로드, 오류 1건**(Fika 미설치 관련
 DirectReload)뿐이다. 새로 들어온 6개도 전부 로드됐다.
 
-## 로드 순서는 밖에서 바꿀 수 없다
+## 남의 모드 로드 순서는 밖에서 바꿀 수 없다
 
 SPT 4.1.6 이 `SPTarkov.Server.Core.xml` 에 적어 둔 규칙은 이렇다.
 
@@ -64,6 +64,47 @@ SPT 4.1.6 이 `SPTarkov.Server.Core.xml` 에 적어 둔 규칙은 이렇다.
 > ammunition items.` 가 **로그의 거의 마지막**(웹서버 시작 직전)에 찍힌다. SVM 메시지는 훨씬
 > 앞이다. 그런데도 **DB 에 남은 값은 SVM 것**이다(아래 1번, 서버를 새로 띄워 다시 쟀다).
 > 즉 **로그에 찍히는 순서는 DB 에 쓰는 순서가 아니다.** 로그를 보고 순서를 추측하면 틀린다.
+
+## 바로잡음 (2026-10-28) — 내가 만드는 모드는 **맨 끝에 돌릴 수 있다**
+
+위 절의 제목("밖에서 바꿀 수 없다")은 **남의 모드**에만 맞다. 그 모드의 `TypePriority` 는
+DLL 안에 박혀 있어 내가 못 바꾼다. 하지만 **내가 만드는 모드의 값은 내가 정한다.** 그게 순서를
+정하는 1차 기준이므로, 전부 0 인 설치본에서는 0 보다 큰 값 하나로 **모든 모드 뒤에** 설 수 있다.
+
+위에서 "TypePriority 가 높으면 늦게 도는지는 재지 않았다"고 적었던 것을 SPT 서버 코드를 읽어
+확정했다.
+
+| 읽은 곳 | 무엇이 나왔나 |
+| --- | --- |
+| `SPTarkov.DI.DependencyInjectionHandler::InjectAll` | `OrderBy(c => c.InjectableAttribute.TypePriority)` — **오름차순**. 값이 크면 뒤로 간다 |
+| `SPT.Server.ProgramExtensions::RunPreSptLoadCallbacks` | `IOnLoad` 중 `0 <= TypePriority < 200000` 만 돌린다 |
+| `SPTStartupHostedService::StartAsync` | `IOnLoad` 중 `TypePriority >= 200000` 만 돌린다 |
+| `SPTarkov.Server.Core.DI.OnLoadOrder` (public) | 단계 상수가 이미 정의돼 있다 |
+
+`OnLoadOrder` 의 값은 이렇다.
+
+| 상수 | 값 | |
+| --- | --- | --- |
+| `Watermark` | 0 | **설치된 서버 모드 114개가 전부 여기 있다** |
+| `Preload` | 100000 | |
+| `GameCallbacks` | 200000 | 여기부터 두 번째 단계 |
+| `TraderRegistration` | 300000 | |
+| `Routers` | 400000 | |
+| `HandbookCallbacks` | 500000 | |
+| `SaveCallbacks` | 600000 | |
+| `TraderCallbacks` | 700000 | |
+| `PresetCallbacks` | 800000 | |
+| `RagfairCallbacks` | 900000 | |
+| `PostLoad` | 1000000 | **마지막** |
+
+즉 **`[Injectable(InjectionType.Singleton, OnLoadOrder.PostLoad)]` 를 붙인 모드는 설치된 모든
+모드와 SPT 자신의 콜백까지 끝난 뒤에 돈다.** 순서를 바꾸는 설정 파일이 없다는 것은 맞지만,
+"순서를 어떻게 할 수 없다"는 것은 틀렸다. 자작 모드 쪽에는 분명한 손잡이가 있다.
+
+같은 값끼리는 `OrderBy` 가 안정 정렬이라 원래 발견 순서를 지킨다 — 그래서 **0 인 모드들끼리의
+순서는 여전히 내가 못 정한다.** 바꿀 수 있는 것은 "내 모드를 그들 뒤에 놓는 것"뿐이다.
+
+이 결론으로 4번(중복 기능 통합)을 검토했다 — [REVIEW-INTEGRATION-MOD.md](REVIEW-INTEGRATION-MOD.md).
 
 ## 실측한 겹침 3건
 
