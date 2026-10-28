@@ -108,7 +108,9 @@ public class IntegrationService : IOnLoad { ... }
 ## 5. 아직 재지 않은 것
 
 - 2단계·3단계 후보가 **실제로** 겹치는지(최종 DB 대조). 참조 신호만 있다.
-- `OnLoadOrder.PostLoad` 단계에서 아이템 DB 를 고치면 **클라이언트에 그대로 가는지**. SPT 가
-  그 전에 아이템 목록을 캐시해 둔다면 늦을 수 있다. 통합 모드를 만들기로 하면 **이것을 가장
-  먼저 재야 한다** — 값 하나를 바꿔 보고 `POST /client/items` 로 확인하면 된다.
+- ~~`OnLoadOrder.PostLoad` 단계에서 아이템 DB 를 고치면 클라이언트에 그대로 가는지~~
+  **쟀다 (2026-10-28): 온다.** `Caliber9x19PARA` 를 137 로 못박고 `POST /client/items` 로
+  받아 보니 38개 중 **37개가 137** 이었다(건드리지 않은 구경은 그대로). 1단계를
+  `StackUnify` 로 만들었다 — [../src/StackUnify/README.md](../src/StackUnify/README.md).
+  남은 1개(`[Aishi]_(9x19mm RIP AP)`)는 로그상 바꿨는데도 150 으로 오는데, 아직 가리지 않았다.
 - 플레아 가격·상인 판매 목록처럼 DB 가 아니라 생성 시점에 만들어지는 것들.
