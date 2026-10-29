@@ -534,10 +534,11 @@ tools/install-airdropcaller.ps1
    `MinPlayersCountToSpawnAirdrop: 6`)이다. 우리는 셋 다 고치지 않는다.
 8. ~~`MinPlayersCountToSpawnAirdrop: 6` — 바닐라 보급기가 안 오는 것 같다~~ →
    **틀린 추론이었다. 재니까 런타임 값은 1 이다.** 사람 1명 >= 1 이므로 시간 기반 갈래도
-   조건을 통과한다 — **바닐라 보급기는 온다.** DB 파일과 게임 쪽 기본값이 둘 다 6 인데
-   런타임이 1 이니 누군가 바꿔서 보내는 것이고, 클라이언트 플러그인에는 없으므로 서버
-   자신이다(싱글플레이 포크로서 자연스럽다). §8 의 "평소대로 보급기가 오는가" 는 기준으로
-   쓸 수 있다.
+   조건을 통과한다 — **바닐라 보급기는 온다.** 바꾸는 곳도 찾았다:
+   `SPTarkov.Server.Core.Services.Server.PostDbLoadService.SetLocationAirdropMinimumPlayers()`
+   가 DB 를 읽은 뒤 **모든 맵**의 값을 1 로 낮춘다("6명은 싱글플레이에서 매우 있을 법하지
+   않다" 는 주석까지 달려 있다). §8 의 "평소대로 보급기가 오는가" 는 기준으로 쓸 수 있다.
+   **설정 파일만 보고 판단하면 틀린다**는 사례다.
 9. ~~가장 가까운 보급 지점이 얼마나 가까운지 모른다~~ → **쟀다. Customs 에 608개,
    가장 가까운 것이 9~13m 다.** "머리 위" 라는 약속이 사실상 지켜진다. 다만
    `AirdropPointDeactivateDistance: 50` 때문에 **두 번째 드롭은 50m 밖**이 된다(실측 52·54m).

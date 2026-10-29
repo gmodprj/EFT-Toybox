@@ -298,8 +298,28 @@ else if (HasLeftPlayersCount(MinPlayersCountToSpawnAirdrop) && ...)
 
 다른 설정값(시작 300~900, 끝 1200, 쿨다운 600~700, 비활성 50)은 **DB 와 정확히 일치**하므로
 역직렬화가 멀쩡하다. 게임 쪽 기본값도 6 이다. 즉 **누군가 1 로 바꿔서 보낸다.**
-클라이언트 플러그인 중에는 없다(전수 검색 0건). SVM 은 프리셋에서 airdrop 이 꺼져 있다.
-남은 것은 SPT 서버 자신이고, 싱글플레이 포크로서 자연스러운 일이다.
+
+**누구인지 찾았다 — SPT 서버 자신이다.**
+
+```csharp
+// SPTarkov.Server.Core.Services.Server.PostDbLoadService
+/// Default values for minimum player count is 6, which is very unlikely.
+/// Adjust them to 1 if they are over 1 and exist.
+protected void SetLocationAirdropMinimumPlayers()
+{
+    foreach (Location value in locationTable.GetDictionary().Values)
+    {
+        if (value.Base.AirdropParameters == null) continue;
+        foreach (AirdropParameter p in value.Base.AirdropParameters)
+            if (p.MinimumPlayersCountToSpawnAirdrop > 1)
+                p.MinimumPlayersCountToSpawnAirdrop = 1;
+    }
+}
+```
+
+DB 를 읽은 뒤(`PostDbLoad`) **모든 맵**에 대해 1 로 낮춘다. 주석이 이유까지 적어 뒀다 —
+6명은 싱글플레이에서 "매우 있을 법하지 않다". 그래서 **바닐라 보급기는 모든 맵에서 온다.**
+설정 파일만 보고 판단하면 틀린다는 사례로 남겨 둔다.
 
 §6 은 "재 보지 않았다, 추론이다" 라고 적어 두었고 **그 단서가 맞았다.** 재니까 뒤집혔다.
 
