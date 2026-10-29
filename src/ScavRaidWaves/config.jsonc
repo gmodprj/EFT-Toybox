@@ -1,0 +1,37 @@
+{
+  // false 로 두면 이 모드는 아무것도 바꾸지 않는다. 서버를 다시 켜야 적용된다.
+  "ModEnabled": true,
+
+  // 맵마다 무엇을 어떻게 바꿨는지 한 줄씩 기록한다. 문제를 볼 때만 켠다.
+  "Debug": false,
+
+  // 바꾸지 않고 "바꿀 것"만 기록한다. 다른 모드가 지금 어떤 값을 넣어 뒀는지
+  // 먼저 보고 싶을 때 쓴다.
+  "ReportOnly": false,
+
+  // 모든 맵에 적용할 기본값. 아래 Maps 에 같은 맵이 있으면 그쪽이 이긴다.
+  // null 로 두면 그 항목은 건드리지 않는다.
+  //
+  // ReducedChancePercent — 스캐브 레이드의 시간을 깎을 확률(%). 바닐라는 75~100.
+  //   0 이면 시간을 깎지 않으므로 PMC 웨이브가 전부 산다. 이것이 확실한 쪽이다.
+  //   대신 스캐브 레이드가 정규 레이드와 같은 길이가 된다.
+  //
+  // AdjustWaves — 시간을 깎을 때 봇 웨이브도 같이 조정할지. 바닐라는 true.
+  //   짧은 스캐브 레이드를 유지하고 싶으면 ReducedChancePercent 를 null 로 되돌리고
+  //   이것을 false 로 바꾼다. 그러면 레이드는 짧아지되 웨이브 시각표는 원래대로 남아
+  //   짧아진 길이 안에 드는 PMC 웨이브만 나온다.
+  "Default": {
+    "ReducedChancePercent": 0,
+    "AdjustWaves": null
+  },
+
+  // 맵별 예외. 맵 id 는 SPT 가 쓰는 이름 그대로다 —
+  // bigmap(커스텀), interchange, woods, shoreline, rezervbase, lighthouse,
+  // tarkovstreets, laboratory, sandbox, sandbox_high, factory4_day,
+  // factory4_night, labyrinth.
+  //
+  // 보기: 팩토리만 바닐라대로 두고 싶을 때
+  //   "factory4_day":   { "ReducedChancePercent": 95, "AdjustWaves": true },
+  //   "factory4_night": { "ReducedChancePercent": 75, "AdjustWaves": true }
+  "Maps": {}
+}
