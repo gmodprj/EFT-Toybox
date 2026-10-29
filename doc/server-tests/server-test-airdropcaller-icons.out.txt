@@ -241,7 +241,7 @@ wozzy.spt.traderlevelrequirementseditor | targets SPT: ~4.1.0) by wozzy 불러�
 PitAlex 불러옴
 데이터베이스를 추출 중...
 데이터베이스 추출 완료
-Database import took 1197ms
+Database import took 2047ms
 Mod ECOTI has a wwwroot, mapping to /coti-assets/
 Mod The Blacklist has a wwwroot, mapping to /TheBlacklist/
 Mod SAIN has a wwwroot, mapping to /SAIN/
@@ -312,8 +312,8 @@ E:\Spt\SPT_Runtime\user\mods\Eukyre-BetterOKP7\db\CustomItems
 656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
 [SVM] Remove backpack restrictions - empty filters detected on ID - 
 656ddcf0f02d7bcea90bf395 - Ignoring; Not an error, don't report it
-[SVM] Initialization complete. Remember kids, there is no Tooth Fairy, no Santa,
-and most importantly - no Terminal or Icebreaker
+[SVM] Initialization complete. You know if you won't report issues to 
+GhostFenixx they won't be fixed.
 
 [SVM] Preset - Noname - successfully loaded
 ExchangeRate: 158
@@ -351,7 +351,7 @@ Trader 6747208ef022cbbfc65c41bf not found in database, cannot import quest
 assort
 [38;2;200;80;220m[ISB Aishi Loaded] “Do you think the Black Division will negotiate? Join us, and 
 let’s show them our bargaining chip.”[0m
-[SCORPION] Hello. My name is Inigo Montoya. You killed my father. Prepare to die.
+[SCORPION] Thanks for signing up for Cat Facts! You will now receive fun daily facts about CATS!
 [Gunwright]: Registered trader 8b4f2d91c7a63e5f1d9a0b4c ahead of profile 
 validation
 [CaseTrader] Skipped container 5c0a5f6c86f774753654890e (Developer case): no 
@@ -392,8 +392,8 @@ validation
 $1500, limit 3
 [COTI] TSR thermal scope rings (6) added to Peacekeeper LL3 at $1750, limit 3
 Ref Rework: applied Ref dogtag/Lega medal -> GP coin changes.
-[VanillaTradersRework] Avatar personalizado não encontrado para: APC
 [VanillaTradersRework] Avatar personalizado não encontrado para: Смотритель
+[VanillaTradersRework] Avatar personalizado não encontrado para: APC
 [VanillaTradersRework] Avatar personalizado não encontrado para: Storyteller
 [VanillaTradersRework] Avatar personalizado não encontrado para: -P|T- Comms
 [VanillaTradersRework] Avatar personalizado não encontrado para: Amonya
@@ -416,10 +416,6 @@ Ref Rework: applied Ref dogtag/Lega medal -> GP coin changes.
 TraderGenPocketMigration
 6adc26693f5b5290609ea366 successfully ran profile migration: 
 TraderGenPocketMigration
-Unable to randomise armor items 6a576f2105af50743903b74c Back_plate slot as it 
-cannot be found, skipping
-Unable to randomise armor items 6a576f2105af50743903b74c Back_plate slot as it 
-cannot be found, skipping
 트레이더: 트레이더: 67d3a28a3d6f4f7dbd09ed13 찾을 수 없음, 기본 새로 고침 
 시간으로 임시 항목을 생성합니다: 3600
 [All Weapons Flea] 994 weapons enabled; 105 BSG restrictions removed.
@@ -665,7 +661,7 @@ Configured categories: Weapon (5422acb9af1c889c16000029).
 [BetterKeysNG] Loaded: Woods
 [BetterKeysNG] Loaded: The Labyrinth
 [BetterKeysNG] Processed 200 known keys and 87 junk keys
-[BetterKeysNG] modified 4,845 translations in 467 ms
+[BetterKeysNG] modified 4,845 translations in 447 ms
 FoldThatStock: Applied 19 weapon patch(es), 24 stock patch(es), and 55 fold 
 compatibility patch(es).
 [Olympus][AddMagazinesToFirearms] Added 5 magazines to firearm 
@@ -1021,7 +1017,7 @@ compatibility patch(es).
 conflict entries removed.
 Quick Trader Load Times 1.0.0 loaded
 Successfully loaded Recoil Rework! Loaded custom weapon data for 23 weapons. 
-Good luck!
+Thanks for installing!
 [DirectReload] core_medical_surgical_kit: surgery keep-ratio set to 100%
 [DirectReload] survival_first_aid_rollup_kit: surgery keep-ratio set to 100%
 [DirectReload] sanitar_medical_surgical_kit: surgery keep-ratio set to 100%
@@ -1073,7 +1069,7 @@ registered either way, so switching one on takes effect at the next raid.
 [RealisticSuppressors] Applied stat multipliers to 133 suppressors.
 [ItemInfo] Processing items...
 [ItemInfo] Processing additional info...
-[ItemInfo] Completed processing 9483 items in 101093 ms.
+[ItemInfo] Completed processing 9483 items in 110953 ms.
 [ItemInfo] Item Info loaded!
 [BarterItemsStacks] Config loaded.
 [Foldables] Added foldable properties to 70 backpacks
@@ -1093,9 +1089,48 @@ burn: 12% of normal. Weapon malfunctions: unchanged.
 서버가 시작되었습니다, 즐거운 시간 되세요.
 Loaded self-signed certificate (user\certs\server.crt)
 [클라이언트 요청] /airdrop-caller/categories
+[클라이언트 요청] /airdrop-caller/presets
+[클라이언트 요청] /airdrop-caller/items
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/items
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
 [클라이언트 요청] /airdrop-caller/categories
 [클라이언트 요청] /airdrop-caller/presets
 [클라이언트 요청] /airdrop-caller/items
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/categories
+[클라이언트 요청] /airdrop-caller/presets
+[클라이언트 요청] /airdrop-caller/items
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
+[클라이언트 요청] /airdrop-caller/state
 [클라이언트 요청] /airdrop-caller/state
 [클라이언트 요청] /airdrop-caller/state
 [클라이언트 요청] /airdrop-caller/state

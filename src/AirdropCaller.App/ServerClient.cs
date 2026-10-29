@@ -32,7 +32,7 @@ public record PresetListResponse
     [JsonPropertyName("presets")] public List<Preset> Presets { get; set; } = [];
 }
 
-public record FoundItem
+public record FoundItem : System.ComponentModel.INotifyPropertyChanged
 {
     [JsonPropertyName("tpl")] public string Tpl { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
@@ -57,6 +57,25 @@ public record FoundItem
 
     /// <summary>즐겨찾기 표시. 서버가 주는 값이 아니라 창이 채운다.</summary>
     [JsonIgnore] public string Star { get; set; } = string.Empty;
+
+    private System.Windows.Media.ImageSource? _itemIcon;
+
+    /// <summary>
+    /// 아이템 그림. 서버가 주는 값이 아니라 창이 뒤늦게 채운다(받아 오는 데 시간이 걸린다).
+    /// 그래서 알림이 필요하다 — 목록을 다시 그리지 않고 그림만 나타나게 한다.
+    /// </summary>
+    [JsonIgnore]
+    public System.Windows.Media.ImageSource? ItemIcon
+    {
+        get => _itemIcon;
+        set
+        {
+            _itemIcon = value;
+            PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(ItemIcon)));
+        }
+    }
+
+    public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
 
     public string Size => $"{Width}×{Height}"
                           + (MaxStack > 1 ? $" ·{MaxStack}" : string.Empty)

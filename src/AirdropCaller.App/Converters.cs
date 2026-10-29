@@ -18,7 +18,9 @@ public class FileToIconConverter : IValueConverter
     /// <summary>`E:\Spt` 같은 설치 폴더. 창이 뜰 때 한 번 정한다.</summary>
     public static string SptDir { get; set; } = string.Empty;
 
+    // 그림 받기를 한꺼번에 돌리면서 여기서도 불린다. 사전은 잠가야 한다.
     private readonly Dictionary<string, BitmapImage?> _cache = [];
+    private readonly object _lock = new();
 
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
@@ -27,9 +29,12 @@ public class FileToIconConverter : IValueConverter
             return null;
         }
 
-        if (_cache.TryGetValue(file, out var cached))
+        lock (_lock)
         {
-            return cached;
+            if (_cache.TryGetValue(file, out var cached))
+            {
+                return cached;
+            }
         }
 
         BitmapImage? image = null;
@@ -54,7 +59,11 @@ public class FileToIconConverter : IValueConverter
             image = null;
         }
 
-        _cache[file] = image;
+        lock (_lock)
+        {
+            _cache[file] = image;
+        }
+
         return image;
     }
 

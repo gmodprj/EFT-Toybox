@@ -21,8 +21,17 @@ public class ItemRow : INotifyPropertyChanged
     /// <summary>안에 다른 품목을 담을 수 있는가. 서버가 알려 준 값이다.</summary>
     public bool CanContain { get; set; }
 
-    /// <summary>분류 아이콘 파일 이름. 품목 표에서 그림으로 보여 준다.</summary>
+    /// <summary>분류 아이콘 파일 이름. 아이템 그림을 못 구했을 때 이걸 쓴다.</summary>
     public string CategoryIcon { get; set; } = string.Empty;
+
+    private System.Windows.Media.ImageSource? _itemIcon;
+
+    /// <summary>아이템 그림. 받아 오는 데 시간이 걸려 뒤늦게 채워진다.</summary>
+    public System.Windows.Media.ImageSource? ItemIcon
+    {
+        get => _itemIcon;
+        set { _itemIcon = value; Changed(nameof(ItemIcon)); }
+    }
 
     /// <summary>
     /// 이 품목을 담을 곳. null 이면 보급 상자에 직접 넣는다.
@@ -91,6 +100,46 @@ public partial class MainWindow : Window
 
     /// <summary>"담을 곳" 칸이 보여 주는 선택지. 맨 앞이 "상자(직접)" 다.</summary>
     public ObservableCollection<ContainerChoice> ContainerChoices { get; } = [];
+
+    private IconService? _icons;
+    private readonly FileToIconConverter _categoryIcons = new();
+
+    /// <summary>
+    /// 목록에 그림을 채운다. 받아 오는 데 시간이 걸리므로 보여 준 **뒤에** 따로 돈다 —
+    /// 그림 때문에 목록이 늦게 뜨면 안 된다. 못 구한 것은 분류 아이콘으로 넘어간다.
+    /// </summary>
+    private Task FillIconsAsync(IReadOnlyList<FoundItem> items) =>
+        FillAsync(items, i => i.Tpl, i => i.CategoryIcon, (i, icon) => i.ItemIcon = icon);
+
+    private Task FillRowIconsAsync(IReadOnlyList<ItemRow> rows) =>
+        FillAsync(rows, r => r.Tpl, r => r.CategoryIcon, (r, icon) => r.ItemIcon = icon);
+
+    /// <summary>
+    /// 그림을 **한꺼번에** 받는다. 하나씩 기다리면 400줄짜리 목록이 몇 분 걸린다
+    /// (한 번 재 봤더니 20초에 하나였다). 동시 수 제한은 <see cref="IconService"/> 가 쥔다.
+    /// </summary>
+    private async Task FillAsync<T>(
+        IReadOnlyList<T> rows,
+        Func<T, string> tpl,
+        Func<T, string> categoryIcon,
+        Action<T, System.Windows.Media.ImageSource?> set)
+    {
+        if (_icons is null)
+        {
+            return;
+        }
+
+        await Task.WhenAll(rows.Select(async row =>
+        {
+            var icon = await _icons.GetAsync(tpl(row), CancellationToken.None);
+
+            // CDN 에 없는 아이템이 있다(새로 들어온 방어판 등). 분류 아이콘으로 넘어간다.
+            icon ??= _categoryIcons.Convert(categoryIcon(row), typeof(object), null,
+                         System.Globalization.CultureInfo.CurrentCulture) as System.Windows.Media.ImageSource;
+
+            set(row, icon);
+        }));
+    }
 
     /// <summary>
     /// 담을 수 있는 줄이 바뀔 때마다 선택지를 다시 만든다.
@@ -163,6 +212,7 @@ public partial class MainWindow : Window
 
         // 분류 아이콘은 설치본의 SPT_Data\images\handbook 에서 직접 읽는다.
         FileToIconConverter.SptDir = _config.SptDir;
+        _icons = new IconService(_config.ResolveIconCacheFolder(), _config.DownloadItemIcons);
 
         Topmost = _config.AlwaysOnTop;
         TopmostBox.IsChecked = _config.AlwaysOnTop;
@@ -233,8 +283,17 @@ public partial class MainWindow : Window
             // 첫 분류를 골라 두어 바로 뭔가 보이게 한다.
             if (CategoryBox.SelectedIndex < 0)
             {
-                // 즐겨찾기가 있으면 거기부터. 없으면 첫 진짜 분류.
-                CategoryBox.SelectedIndex = _config.Favorites.Count > 0 ? 0 : Math.Min(2, all.Count - 1);
+                // 즐겨찾기가 있으면 거기부터. 없으면 **가장 큰 분류**를 연다 —
+                // 가나다 순 첫 줄은 "방어판·삽입물" 인데, 하필 그 품목들은 아이콘
+                // 제공처에도 없어서 처음 여는 사람에게 가장 안 좋은 첫인상이었다.
+                var biggest = all
+                    .Select((c, i) => (c, i))
+                    .Where(x => x.c.Id.Length > 0 && x.c.Id != FavoriteCategoryId)
+                    .OrderByDescending(x => x.c.Count)
+                    .Select(x => x.i)
+                    .FirstOrDefault();
+
+                CategoryBox.SelectedIndex = _config.Favorites.Count > 0 ? 0 : biggest;
             }
         }
         catch (Exception e)
@@ -364,6 +423,7 @@ public partial class MainWindow : Window
         }
 
         AddRows(preset.Items, null, known);
+        _ = FillRowIconsAsync(_items.ToList());
         RebuildContainerChoices();
         UpdateFitHint();
     }
@@ -603,6 +663,9 @@ public partial class MainWindow : Window
         SearchHint.Text = items.Count == 0
             ? "  없다"
             : truncated ? $"  {items.Count}개 — 더 있다. 좁혀 본다" : $"  {items.Count}개";
+
+        // 그림은 뒤따라 온다. 목록이 그림 때문에 늦게 뜨면 안 된다.
+        _ = FillIconsAsync(items);
     }
 
     private void OnAddItem(object sender, RoutedEventArgs e)
