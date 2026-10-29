@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>AirdropCaller</AssemblyName>
+    <RootNamespace>AirdropCaller.App</RootNamespace>
+    <Version>0.1.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!--
+      Give Ui 와 같은 자리에 exe 하나로 둔다.
+
+      자체 포함(SelfContained)으로 받으면 139MB 가 된다 — WPF 런타임을 통째로 싣기
+      때문이다. 이 PC 에는 .NET 10 SDK 가 깔려 있어 데스크톱 런타임이 이미 있으므로
+      **런타임 의존**으로 둔다. 몇 MB 면 끝나고, 런타임이 없으면 띄울 때 무엇을
+      깔아야 하는지 분명히 말해 준다. 다른 PC 로 옮길 일이 생기면 SelfContained 를
+      켜서 다시 게시한다.
+    -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+  </PropertyGroup>
+
+</Project>

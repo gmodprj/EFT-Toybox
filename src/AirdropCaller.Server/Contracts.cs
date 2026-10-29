@@ -12,7 +12,13 @@ namespace AirdropCaller.Server;
 /// </summary>
 public record QueueRequest : IRequestData
 {
-    /// <summary>상자 종류. 비우면 설정의 기본 상자를 따른다.</summary>
+    /// <summary>
+    /// 저장해 둔 프리셋으로 부를 때 그 id. 주면 <see cref="Icon"/>·<see cref="Items"/> 는 무시한다.
+    /// </summary>
+    [JsonPropertyName("presetId")]
+    public string? PresetId { get; set; }
+
+    /// <summary>상자 종류. 비우면 `Common`.</summary>
     [JsonPropertyName("icon")]
     public string? Icon { get; set; }
 
