@@ -1,0 +1,34 @@
+{
+  // false 면 모든 요청을 바닐라에 그대로 넘긴다. 설치해 둔 채 끌 수 있다.
+  "ModEnabled": true,
+
+  // 요청마다 어느 상자였고 무엇을 담았는지 서버 로그에 적는다.
+  "Debug": true,
+
+  // 상자 id → 담을 것.
+  //
+  // 이 id 는 게임이 InitAirdrop(lootTemplateId, ...) 에 넘긴 값이 그대로 돌아온 것이다.
+  // 여기에 없는 id 는 건드리지 않고 바닐라가 만든 답을 그대로 흘려보낸다.
+  //
+  // 아래 id 는 AirdropProbe(측정기)의 "전리품 id" 기본값과 같다.
+  // 레이드에서 Ctrl+Alt+D 를 누르면 이 상자가 떨어진다.
+  "Drops": {
+    "aabbccdd0000000000000001": {
+      // Common / Supply / Medical / Weapon
+      "Icon": "Medical",
+
+      // 무작위로는 절대 이렇게 안 나오는 조합을 넣어 둔다 —
+      // 이것이 나오면 우리가 넘긴 id 가 서버의 답을 바꿨다는 뜻이다.
+      "Items": [
+        { "Tpl": "5449016a4bdc2d6f028b456f", "Count": 2, "StackSize": 250000 }, // 루블
+        { "Tpl": "5696686a4bdc2da3298b456a", "Count": 2, "StackSize": 5000 },   // 달러
+        { "Tpl": "569668774bdc2da2298b4568", "Count": 2, "StackSize": 5000 },   // 유로
+        { "Tpl": "5d02778e86f774203e7dedbe", "Count": 2 },                      // CMS 휴대용 수술 키트
+        { "Tpl": "544fb3f34bdc2d03748b456a", "Count": 4 },                      // 모르핀 주사기
+        { "Tpl": "5751a89d24597722aa0e8db0", "Count": 4 },                      // 골든스타 연고
+        { "Tpl": "590c5d4b86f774784e1b9c45", "Count": 4 },                      // Iskra 전투식량
+        { "Tpl": "5e8f3423fd7471236e6e3b64", "Count": 4 }                       // 프리미엄 크바스
+      ]
+    }
+  }
+}

@@ -122,9 +122,19 @@ if (ammoTemplate.ContainsType(FlareEventType.Airdrop))
         profileId, flarePosition, ammoTemplate.AirDropTemplateId);
 ```
 
-플레어 탄의 `AmmoTemplate.AirDropTemplateId` 가 전리품 id 다. 그래서 `airdrop.json` 의
-`customAirdropMapping` 에 적힌 두 id(`66da1b49099cf6adcc07a36b`, `66da1b546916142b3b022777`
-→ `radar`)는 **플레어 탄 두 종류**의 `AirDropTemplateId` 다.
+플레어 탄의 `AmmoTemplate.AirDropTemplateId` 가 그 id 다.
+
+**그 id 의 정체는 "상자 템플릿" 이다** (2단계에서 밝혀졌다). `customAirdropMapping` 의 두
+id 를 `ItemTpl` 에서 찾아보면 둘 다 상자다.
+
+```csharp
+LOOTCONTAINER_AIRDROP_TECHNICAL_SUPPLY_CRATE_EVENT_1 = "66da1b49099cf6adcc07a36b"
+LOOTCONTAINER_AIRDROP_TECHNICAL_SUPPLY_CRATE_EVENT_2 = "66da1b546916142b3b022777"
+```
+
+즉 사슬은 **플레어 탄 → 상자 템플릿 → (`customAirdropMapping`) → 전리품 종류** 다.
+`lootTemplateId` 라는 이름 때문에 "전리품 묶음의 id" 로 읽히지만 실제로는 **상자 tpl** 이다.
+(처음에 "플레어 탄 두 종류의 id" 라고 적었던 것을 바로잡는다)
 
 **우리 id 는 그 표에 없는 값이면 된다.** 없으면 서버가 경고를 찍고 무작위를 돌리는데,
 우리 라우트가 그보다 먼저 답하므로 그 경고까지 안 가게 된다.
