@@ -22,7 +22,7 @@ namespace AirdropProbe
     ///
     /// 둘 다 끝나면 지운다. 근거: doc/specs/2026-10-29-airdrop-stage1-findings.md
     /// </summary>
-    [BepInPlugin(PluginGuid, "보급 지점 측정기 + 드롭 시험", "0.3.0")]
+    [BepInPlugin(PluginGuid, "보급 지점 측정기 + 드롭 시험", "0.3.1")]
     public class AirdropProbePlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.airdropprobe";
@@ -91,16 +91,21 @@ namespace AirdropProbe
                 + "기본값은 아무 데도 없는 가짜 id 다 — 서버 로그에 이 값이 그대로 찍히면 "
                 + "id 왕복이 증명된 것이고, 상자는 무작위 전리품으로 채워진다.");
 
-            // 조합 키가 안 먹는 경우를 위한 대안. 조합이 왜 안 먹는지는 _logKeys 로 가린다.
-            _dropKeySimple = Config.Bind("드롭 시험", "드롭 키(단일)", KeyCode.F8,
-                "조합 키가 안 먹을 때 쓰는 단일 키. None 으로 두면 끈다.");
+            // 조합 키가 안 먹는 줄 알고 넣은 대안인데, 조합은 멀쩡했다. **기본은 꺼 둔다** —
+            // 기본값을 주면 위에서 사용자가 조합 키에 지정한 키와 겹칠 수 있다(F7 이 실제로 그랬다).
+            // 쓰고 싶으면 F12 에서 키를 넣는다.
+            _dropKeySimple = Config.Bind("드롭 시험", "드롭 키(단일)", KeyCode.None,
+                "조합 키 말고 단일 키로도 받고 싶을 때 쓴다. None 이면 끈 것이다. "
+                + "위의 조합 키와 겹치지 않게 정한다.");
 
-            _measureKeySimple = Config.Bind("측정", "측정 키(단일)", KeyCode.F7,
-                "조합 키가 안 먹을 때 쓰는 단일 키. None 으로 두면 끈다.");
+            _measureKeySimple = Config.Bind("측정", "측정 키(단일)", KeyCode.None,
+                "조합 키 말고 단일 키로도 받고 싶을 때 쓴다. None 이면 끈 것이다. "
+                + "위의 조합 키와 겹치지 않게 정한다.");
 
-            _logKeys = Config.Bind("진단", "눌린 키를 로그에 찍기", true,
+            // 키가 안 먹는 줄 알았을 때 쓰던 진단이다. 멀쩡한 것이 확인됐으니 기본은 꺼 둔다.
+            _logKeys = Config.Bind("진단", "눌린 키를 로그에 찍기", false,
                 "레이드 안에서 키를 누를 때마다 무엇이 눌렸는지 BepInEx 로그에 적는다(1초에 한 번). "
-                + "게임이 키를 삼키는지 플러그인이 못 읽는지를 가리기 위한 것이다. 다 가리면 끈다.");
+                + "키가 안 먹는 것 같을 때만 켠다 — 게임이 삼키는지 플러그인이 못 읽는지 가려진다.");
 
             _logFilePath = Path.Combine(Path.GetDirectoryName(Info.Location) ?? ".", "probe.log");
 
