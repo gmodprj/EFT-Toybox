@@ -42,7 +42,7 @@ const side = (files) => {
 };
 const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)', 8: '8차 — OP·AI 동료·HUD 포팅본 (8-A 5 + 8-B 3 + 8-C 3 + 8-D 치트 2 + 8-E AI 동료 3 + 8-F 대형 1)', 9: '절차 밖에서 들어온 것 (설치 기록을 뒤늦게 복원 — 당시 기록이 아니다)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: 144개 (2026-10-29, AirdropProbe 추가 후. 오류 3건: ①Fika 미설치 관련 DirectReload 패치 ②COTI per-frame ③UTAE 편집 기준선 로드 실패. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 가 더 날 수 있다) / 서버 모드 로드: 115개 (2026-10-29 AirdropCaller 추가 후 테스트, 정상 시작 147초 — `server-tests/server-test-airdropcaller.out.txt`. **오류 0건**, `Could not add` 48건 그대로 — 원인은 `MountOlympus.dll` 로, 모드가 만들지 않는 아이템 id 48개를 들고 있다(`REVIEW-LOAD-ORDER.md`). 프로필은 SPT 자체 마이그레이션 시각 한 줄 말고 그대로다)';
+const loadStatus = '- 게임 쪽 플러그인 로드: 145개 (2026-10-29, AirdropCaller.Plugin 추가 후. 마지막 기동은 메뉴까지만 돌아 오류 2건: ①Fika 미설치 관련 DirectReload 패치 ②Show Me The Money 툴팁 NullReference. 레이드에 들어가면 COTI per-frame 과 PIT `LootPatrolLayer.GetDecision` NullReference 가, UTAE 편집 화면을 열면 기준선 로드 실패가 더 날 수 있다) / 서버 모드 로드: 115개 (2026-10-29 AirdropCaller 추가 후 테스트, 정상 시작 147초 — `server-tests/server-test-airdropcaller.out.txt`. **오류 0건**, `Could not add` 48건 그대로 — 원인은 `MountOlympus.dll` 로, 모드가 만들지 않는 아이템 id 48개를 들고 있다(`REVIEW-LOAD-ORDER.md`). 프로필은 SPT 자체 마이그레이션 시각 한 줄 말고 그대로다)';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];

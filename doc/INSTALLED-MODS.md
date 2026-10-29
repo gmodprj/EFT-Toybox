@@ -4,7 +4,7 @@
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 설치된 모드: **186개**, 설치 파일 **10630개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 144개 (2026-10-29, AirdropProbe 추가 후. 오류 3건: ①Fika 미설치 관련 DirectReload 패치 ②COTI per-frame ③UTAE 편집 기준선 로드 실패. 레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 가 더 날 수 있다) / 서버 모드 로드: 115개 (2026-10-29 AirdropCaller 추가 후 테스트, 정상 시작 147초 — `server-tests/server-test-airdropcaller.out.txt`. **오류 0건**, `Could not add` 48건 그대로 — 원인은 `MountOlympus.dll` 로, 모드가 만들지 않는 아이템 id 48개를 들고 있다(`REVIEW-LOAD-ORDER.md`). 프로필은 SPT 자체 마이그레이션 시각 한 줄 말고 그대로다)
+- 게임 쪽 플러그인 로드: 145개 (2026-10-29, AirdropCaller.Plugin 추가 후. 마지막 기동은 메뉴까지만 돌아 오류 2건: ①Fika 미설치 관련 DirectReload 패치 ②Show Me The Money 툴팁 NullReference. 레이드에 들어가면 COTI per-frame 과 PIT `LootPatrolLayer.GetDecision` NullReference 가, UTAE 편집 화면을 열면 기준선 로드 실패가 더 날 수 있다) / 서버 모드 로드: 115개 (2026-10-29 AirdropCaller 추가 후 테스트, 정상 시작 147초 — `server-tests/server-test-airdropcaller.out.txt`. **오류 0건**, `Could not add` 48건 그대로 — 원인은 `MountOlympus.dll` 로, 모드가 만들지 않는 아이템 id 48개를 들고 있다(`REVIEW-LOAD-ORDER.md`). 프로필은 SPT 자체 마이그레이션 시각 한 줄 말고 그대로다)
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
