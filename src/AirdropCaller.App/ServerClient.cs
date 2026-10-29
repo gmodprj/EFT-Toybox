@@ -52,6 +52,9 @@ public record FoundItem
     /// <summary>담을 수 있으면 그 칸 수. 보급 상자는 120칸이다.</summary>
     [JsonPropertyName("cells")] public int Cells { get; set; }
 
+    /// <summary>분류 아이콘 파일 이름. 아이템마다의 아이콘은 없다(게임 번들 안).</summary>
+    [JsonPropertyName("categoryIcon")] public string CategoryIcon { get; set; } = string.Empty;
+
     /// <summary>즐겨찾기 표시. 서버가 주는 값이 아니라 창이 채운다.</summary>
     [JsonIgnore] public string Star { get; set; } = string.Empty;
 
@@ -67,6 +70,8 @@ public record CategoryInfo
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
     [JsonPropertyName("count")] public int Count { get; set; }
+
+    [JsonPropertyName("icon")] public string Icon { get; set; } = string.Empty;
 
     public string Display => Id.Length == 0 ? Name : $"{Name}  ({Count})";
 }

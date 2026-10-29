@@ -6,6 +6,7 @@
              StartupUri="MainWindow.xaml">
   <Application.Resources>
     <local:HexToBrushConverter x:Key="HexToBrush" />
+    <local:FileToIconConverter x:Key="FileToIcon" />
     <!-- 게임 옆에 띄워 두는 창이다. 어두운 바탕이 눈에 덜 튄다. -->
     <SolidColorBrush x:Key="Bg" Color="#1E1E1E" />
     <SolidColorBrush x:Key="Panel" Color="#252526" />

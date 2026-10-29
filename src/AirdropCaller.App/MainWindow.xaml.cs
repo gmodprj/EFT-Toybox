@@ -21,6 +21,9 @@ public class ItemRow : INotifyPropertyChanged
     /// <summary>안에 다른 품목을 담을 수 있는가. 서버가 알려 준 값이다.</summary>
     public bool CanContain { get; set; }
 
+    /// <summary>분류 아이콘 파일 이름. 품목 표에서 그림으로 보여 준다.</summary>
+    public string CategoryIcon { get; set; } = string.Empty;
+
     /// <summary>
     /// 이 품목을 담을 곳. null 이면 보급 상자에 직접 넣는다.
     ///
@@ -157,6 +160,10 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         _config = AppConfig.LoadOrCreate(out _startupError);
+
+        // 분류 아이콘은 설치본의 SPT_Data\images\handbook 에서 직접 읽는다.
+        FileToIconConverter.SptDir = _config.SptDir;
+
         Topmost = _config.AlwaysOnTop;
         TopmostBox.IsChecked = _config.AlwaysOnTop;
         ItemGrid.ItemsSource = _items;
@@ -381,6 +388,7 @@ public partial class MainWindow : Window
                 Tpl = spec.Tpl,
                 Name = info?.Name ?? spec.Tpl,
                 CanContain = info?.CanContain ?? false,
+                CategoryIcon = info?.CategoryIcon ?? string.Empty,
                 Count = spec.Count,
                 StackSize = spec.StackSize,
                 Parent = parent,
@@ -608,6 +616,8 @@ public partial class MainWindow : Window
         {
             Tpl = found.Tpl,
             Name = found.Name,
+            CanContain = found.CanContain,
+            CategoryIcon = found.CategoryIcon,
             Count = 1,
             // 묶이는 물건이면 가득 채운 한 칸이 기본값으로 쓸 만하다.
             StackSize = found.MaxStack > 1 ? found.MaxStack : null,

@@ -1,8 +1,66 @@
 using System.Globalization;
+using System.IO;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace AirdropCaller.App;
+
+/// <summary>
+/// 분류 아이콘 파일 이름을 그림으로 바꾼다. `SPT_Data\images\handbook` 에서 읽는다.
+///
+/// **아이템마다의 아이콘은 없다.** 게임 번들 안에 있어 서버도 못 준다. 여기 있는
+/// 것은 분류 아이콘 83개뿐이라 같은 분류의 아이템은 같은 그림을 단다 — 없는 것보다
+/// 훑기 쉽다.
+/// </summary>
+public class FileToIconConverter : IValueConverter
+{
+    /// <summary>`E:\Spt` 같은 설치 폴더. 창이 뜰 때 한 번 정한다.</summary>
+    public static string SptDir { get; set; } = string.Empty;
+
+    private readonly Dictionary<string, BitmapImage?> _cache = [];
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not string file || file.Length == 0 || SptDir.Length == 0)
+        {
+            return null;
+        }
+
+        if (_cache.TryGetValue(file, out var cached))
+        {
+            return cached;
+        }
+
+        BitmapImage? image = null;
+        try
+        {
+            var path = Path.Combine(SptDir, "SPT_Runtime", "SPT_Data", "images", "handbook", file);
+            if (File.Exists(path))
+            {
+                image = new BitmapImage();
+                image.BeginInit();
+                // 파일을 붙잡고 있지 않도록 통째로 읽어 둔다.
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.UriSource = new Uri(path);
+                image.DecodePixelHeight = 20;
+                image.EndInit();
+                image.Freeze();
+            }
+        }
+        catch
+        {
+            // 그림 하나 없다고 목록을 못 보여 줄 이유는 없다.
+            image = null;
+        }
+
+        _cache[file] = image;
+        return image;
+    }
+
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+        throw new NotSupportedException();
+}
 
 /// <summary>
 /// 서버가 준 `#RRGGBB` 를 붓으로 바꾼다. 없거나 읽을 수 없으면 기본 글자색.
