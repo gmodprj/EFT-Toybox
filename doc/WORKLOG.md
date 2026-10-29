@@ -1981,3 +1981,57 @@ characters.pmc.TradersInfo.6952ced4bcc1dd1e3c80dfcb
 
 실제 피해는 **매 로그인 경고 1줄**이 전부다. 지우고 싶으면 프로필 백업 후
 `characters.pmc.TradersInfo` 에서 저 키 하나만 빼는 쪽이 안전하다 — 지금은 하지 않았다.
+
+## 레이드 중 화면이 깜빡인 것 — 우리 플러그인이었다 (2026-10-29)
+
+사용자가 "`/airdrop-caller/heartbeat` 로그가 찍힐 때마다 화면이 깜빡인다" 고 했다.
+처음에 나는 빈도(초당 1.5회)와 "비동기라 프레임을 안 막는다" 를 근거로 **우리가 아니라고
+단정했다. 두 번 틀렸다.** 사용자가 본 상관관계가 데이터였고 내 추론이 틀린 쪽이었다.
+
+### 원인
+
+`SPT.Common.Http.Client.SendAsync` 는 첫 `await` **앞에서** 이것을 한다.
+
+```csharp
+if (zipped) data = Zlib.Compress(data, ZlibCompression.Maximum);
+```
+
+`Zlib.Compress` 는 zlib.NET 의 `ZOutputStream` 을 **최대 압축(level 9)으로 새로 만든다.**
+호출마다 deflate 상태 버퍼를 통째로 할당한다. `async` 메서드라도 첫 `await` 전까지는
+**부른 스레드**에서 도므로, `Update()` 에서 부르면 **Unity 메인 스레드**가 그 할당과 GC 를
+떠안는다. 프레임이 한 번 튀고, 그게 화면 깜빡임으로 보인다.
+
+**GET 은 `data` 가 null 이라 이 줄을 건너뛴다.** 그래서 `/pending`(GET)은 멀쩡했고
+보고(POST)만 튀었다 — 사용자가 `heartbeat` 만 짚은 것이 정확했다.
+
+### 고친 것
+
+`Task.Run` 으로 감싸 압축·요청 조립까지 전부 스레드풀에서 돌게 했다.
+
+```csharp
+_heartbeatCall = Task.Run(() =>
+    RequestHandler.PostJsonAsync(HeartbeatUrl, JsonConvert.SerializeObject(body)));
+```
+
+**SPT 플러그인을 쓰는 사람에게 일반화되는 교훈이다 — `RequestHandler` 의 POST 계열을
+`Update()`·`LateUpdate()` 에서 그냥 부르면 안 된다.** GET 은 괜찮다.
+
+### 어떻게 좁혔나
+
+추측을 멈추고 하나씩 뺐다 넣었다. 사용자는 매번 "깜빡인다/안 깜빡인다" 만 답했다.
+
+| 설치 상태 | 결과 |
+|---|---|
+| 오늘 넣은 것 전부 제거 | 안 깜빡임 |
+| `AirdropProbe` 만 (키 전부 없앰) | 안 깜빡임 |
+| + `AirdropCaller` 플러그인·서버 모드 (고친 판) | **안 깜빡임** |
+
+마지막 판이 실제로 올라가 돌았는지 확인했다 — 플러그인 기동 로그, 요청 194줄,
+보고 간격 10.0초.
+
+### 남는 의문
+
+"아직 깜빡인다" 고 한 판(18:24~)은 고친 dll 이 이미 들어가 있었고 `켜기 = false` 라
+요청이 0건이었다. 그 판의 깜빡임은 설명하지 못한다. 그때 내가 이 PC 에서 ilspycmd 로
+60MB 어셈블리를 돌리고 빌드를 반복하고 서버를 몇 번 내렸다 올렸으니 **그쪽일 가능성이
+높지만 증명하지 못했다.** 게임 중에 무거운 작업을 돌리지 않는다.
