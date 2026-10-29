@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -72,7 +73,11 @@ public partial class MainWindow : Window
         _timer.Tick += async (_, _) => await RefreshStateAsync();
         _timer.Start();
 
-        Loaded += async (_, _) => await LoadPresetsAsync();
+        Loaded += async (_, _) =>
+        {
+            await LoadPresetsAsync();
+            await LoadCategoriesAsync();
+        };
     }
 
     // ── 상태 ───────────────────────────────────────────────────────────────
@@ -147,7 +152,7 @@ public partial class MainWindow : Window
         }
         catch (Exception e)
         {
-            DetailLine.Text = "프리셋을 못 읽었다: " + e.Message;
+            MessageLine.Text = "프리셋을 못 읽었다: " + e.Message;
         }
     }
 
@@ -192,7 +197,7 @@ public partial class MainWindow : Window
         var name = PresetNameBox.Text.Trim();
         if (name.Length == 0)
         {
-            DetailLine.Text = "프리셋 이름이 비었다.";
+            MessageLine.Text = "프리셋 이름이 비었다.";
             return;
         }
 
@@ -207,7 +212,7 @@ public partial class MainWindow : Window
         await Guard(async () =>
         {
             var result = await _client.SavePresetAsync(preset, CancellationToken.None);
-            DetailLine.Text = result?.Ok == true ? $"'{name}' 저장했다." : result?.Reason ?? "저장하지 못했다.";
+            MessageLine.Text = result?.Ok == true ? $"'{name}' 저장했다." : result?.Reason ?? "저장하지 못했다.";
             await LoadPresetsAsync();
         });
     }
@@ -228,7 +233,7 @@ public partial class MainWindow : Window
         await Guard(async () =>
         {
             var result = await _client.DeletePresetAsync(preset.Id, CancellationToken.None);
-            DetailLine.Text = result?.Ok == true ? $"'{preset.Name}' 지웠다." : result?.Reason ?? "지우지 못했다.";
+            MessageLine.Text = result?.Ok == true ? $"'{preset.Name}' 지웠다." : result?.Reason ?? "지우지 못했다.";
             OnNewPreset(sender, e);
             await LoadPresetsAsync();
         });
@@ -241,20 +246,78 @@ public partial class MainWindow : Window
 
     // ── 검색 ───────────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// 분류 목록을 받아 콤보에 채운다. **레이드와 무관하다** — 레이드 밖에서 미리
+    /// 프리셋을 짜 두는 것이 이 창의 본래 쓰임이다.
+    /// </summary>
+    private async Task LoadCategoriesAsync()
+    {
+        if (_client is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var list = await _client.ListCategoriesAsync(CancellationToken.None);
+            var all = new List<CategoryInfo> { new() { Id = string.Empty, Name = "(분류 고르기 — 또는 아래에서 이름으로 찾기)" } };
+            all.AddRange(list?.Categories ?? []);
+            CategoryBox.ItemsSource = all;
+            CategoryBox.SelectedIndex = 0;
+        }
+        catch (Exception e)
+        {
+            MessageLine.Text = "분류를 못 읽었다: " + e.Message;
+        }
+    }
+
+    private async void OnCategoryChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (CategoryBox.SelectedItem is CategoryInfo { Id.Length: > 0 })
+        {
+            await RunSearchAsync();
+        }
+    }
+
+    private async void OnSearch(object sender, RoutedEventArgs e) => await RunSearchAsync();
+
     private async void OnSearchKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key != Key.Enter || _client is null)
+        if (e.Key == Key.Enter)
         {
+            await RunSearchAsync();
+        }
+    }
+
+    private async Task RunSearchAsync()
+    {
+        if (_client is null)
+        {
+            return;
+        }
+
+        var category = (CategoryBox.SelectedItem as CategoryInfo)?.Id ?? string.Empty;
+        var query = SearchBox.Text.Trim();
+
+        if (query.Length == 0 && category.Length == 0)
+        {
+            SearchHint.Text = "  분류를 고르거나 이름을 적는다";
             return;
         }
 
         await Guard(async () =>
         {
-            var found = await _client.SearchAsync(SearchBox.Text, 100, CancellationToken.None);
-            SearchList.ItemsSource = found?.Items ?? [];
-            SearchHint.Text = found is null || found.Items.Count == 0
+            var found = await _client.SearchAsync(query, category, 400, CancellationToken.None);
+            var items = found?.Items ?? [];
+
+            // 분류별로 묶어 보여 준다. 2만 개를 한 줄씩 훑게 둘 수는 없다.
+            var view = new CollectionViewSource { Source = items };
+            view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(FoundItem.Category)));
+            SearchList.ItemsSource = view.View;
+
+            SearchHint.Text = items.Count == 0
                 ? "  없다"
-                : found.Truncated ? "  너무 많다 — 더 좁혀 본다" : $"  {found.Items.Count}개";
+                : found!.Truncated ? $"  {items.Count}개 — 더 있다. 좁혀 본다" : $"  {items.Count}개";
         });
     }
 
@@ -310,7 +373,7 @@ public partial class MainWindow : Window
 
             if (result?.Ok != true)
             {
-                DetailLine.Text = result?.Reason ?? "예약하지 못했다.";
+                MessageLine.Text = result?.Reason ?? "예약하지 못했다.";
                 return;
             }
 
@@ -321,7 +384,7 @@ public partial class MainWindow : Window
                 text += $" 못 담은 것 {result.Skipped.Count}개: {string.Join(", ", result.Skipped)}";
             }
 
-            DetailLine.Text = text;
+            MessageLine.Text = text;
         });
     }
 
@@ -335,7 +398,7 @@ public partial class MainWindow : Window
         await Guard(async () =>
         {
             var result = await _client.CancelAsync(CancellationToken.None);
-            DetailLine.Text = result?.Ok == true ? "예약을 취소했다." : result?.Reason ?? "취소하지 못했다.";
+            MessageLine.Text = result?.Ok == true ? "예약을 취소했다." : result?.Reason ?? "취소하지 못했다.";
         });
     }
 
@@ -356,7 +419,7 @@ public partial class MainWindow : Window
         }
         catch (Exception e)
         {
-            DetailLine.Text = "서버 호출이 실패했다: " + e.Message;
+            MessageLine.Text = "서버 호출이 실패했다: " + e.Message;
         }
         finally
         {

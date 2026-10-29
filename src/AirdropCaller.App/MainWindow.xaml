@@ -62,15 +62,35 @@
       </DataGrid>
     </DockPanel>
 
-    <!-- ③ 한국어 검색 -->
+    <!-- ③ 아이템 찾기 — 분류로 훑거나 이름으로 찾는다 -->
     <DockPanel Grid.Row="0" Grid.Column="2">
-      <Label DockPanel.Dock="Top" Content="아이템 찾기 (한국어 이름)" />
-      <TextBox DockPanel.Dock="Top" x:Name="SearchBox" KeyDown="OnSearchKeyDown" Margin="0,0,0,6" />
+      <Label DockPanel.Dock="Top" Content="아이템 찾기" />
+      <ComboBox DockPanel.Dock="Top" x:Name="CategoryBox" DisplayMemberPath="Display"
+                SelectionChanged="OnCategoryChanged" Margin="0,0,0,4" />
+      <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Column="0" x:Name="SearchBox" KeyDown="OnSearchKeyDown" />
+        <Button Grid.Column="1" x:Name="SearchButton" Content="찾기" Click="OnSearch" Margin="6,0,0,0" />
+      </Grid>
       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
         <Button x:Name="AddItemButton" Content="품목에 넣기" Click="OnAddItem" />
         <TextBlock x:Name="SearchHint" Foreground="{StaticResource Dim}" VerticalAlignment="Center" />
       </StackPanel>
-      <ListBox x:Name="SearchList" DisplayMemberPath="Display" MouseDoubleClick="OnAddItem" />
+      <ListBox x:Name="SearchList" DisplayMemberPath="Display" MouseDoubleClick="OnAddItem">
+        <ListBox.GroupStyle>
+          <GroupStyle>
+            <GroupStyle.HeaderTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Name}" Foreground="{StaticResource Accent}"
+                           FontWeight="SemiBold" Margin="0,8,0,2" />
+              </DataTemplate>
+            </GroupStyle.HeaderTemplate>
+          </GroupStyle>
+        </ListBox.GroupStyle>
+      </ListBox>
     </DockPanel>
 
     <!-- 상태줄 + 드롭 -->
@@ -84,7 +104,11 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" VerticalAlignment="Center">
           <TextBlock x:Name="StateLine" Text="서버에 붙는 중…" FontSize="14" />
+          <!-- 상태(2초마다 갱신)와 내가 한 일의 결과를 따로 둔다. 섞어 두었더니
+               "저장했다" 같은 문구가 2초 만에 지워졌다. -->
           <TextBlock x:Name="DetailLine" Foreground="{StaticResource Dim}" FontSize="12" Margin="0,3,0,0" />
+          <TextBlock x:Name="MessageLine" Foreground="{StaticResource Accent}" FontSize="12"
+                     Margin="0,3,0,0" TextWrapping="Wrap" />
         </StackPanel>
         <Button Grid.Column="1" x:Name="CancelButton" Content="예약 취소" Click="OnCancel" IsEnabled="False" />
         <Button Grid.Column="2" x:Name="DropButton" Content="떨어뜨리기" Click="OnDrop" IsEnabled="False"
