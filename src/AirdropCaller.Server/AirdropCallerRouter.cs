@@ -35,27 +35,25 @@ public class AirdropCallerRouter : StaticRouter
     public AirdropCallerRouter(
         JsonUtil jsonUtil,
         ISptLogger<AirdropCallerRouter> logger,
-        ModHelper modHelper,
+        ConfigStore store,
         HttpResponseUtil httpResponseUtil,
         CrateBuilder crateBuilder)
-        : base(jsonUtil, BuildRoutes(logger, modHelper, httpResponseUtil, crateBuilder))
+        : base(jsonUtil, BuildRoutes(logger, store, httpResponseUtil, crateBuilder))
     {
     }
 
     private static List<RouteAction> BuildRoutes(
         ISptLogger<AirdropCallerRouter> logger,
-        ModHelper modHelper,
+        ConfigStore store,
         HttpResponseUtil httpResponseUtil,
         CrateBuilder crateBuilder)
     {
-        var config = LoadConfig(logger, modHelper);
-
         return
         [
             new RouteAction<GetAirdropLootRequest>(
                 "/client/airdrop/loot",
                 (url, info, sessionId, output, ct) =>
-                    ValueTask.FromResult(Handle(logger, httpResponseUtil, crateBuilder, config, info, output))),
+                    ValueTask.FromResult(Handle(logger, httpResponseUtil, crateBuilder, store.Config, info, output))),
         ];
     }
 
