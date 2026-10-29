@@ -36,8 +36,11 @@ public class AirdropCallerRouter : StaticRouter
         HttpResponseUtil httpResponseUtil,
         CrateBuilder crateBuilder,
         DropQueue queue,
-        RaidState raidState)
-        : base(jsonUtil, BuildRoutes(jsonUtil, logger, store, httpResponseUtil, crateBuilder, queue, raidState))
+        RaidState raidState,
+        ItemSearch itemSearch,
+        PresetStore presets)
+        : base(jsonUtil, BuildRoutes(
+            jsonUtil, logger, store, httpResponseUtil, crateBuilder, queue, raidState, itemSearch, presets))
     {
     }
 
@@ -48,7 +51,9 @@ public class AirdropCallerRouter : StaticRouter
         HttpResponseUtil httpResponseUtil,
         CrateBuilder crateBuilder,
         DropQueue queue,
-        RaidState raidState)
+        RaidState raidState,
+        ItemSearch itemSearch,
+        PresetStore presets)
     {
         string Json<T>(T value) => jsonUtil.Serialize(value) ?? "{}";
 
@@ -67,7 +72,31 @@ public class AirdropCallerRouter : StaticRouter
             new RouteAction<QueueRequest>(
                 "/airdrop-caller/queue",
                 (url, info, sessionId, output, ct) => ValueTask.FromResult(
-                    Json(HandleQueue(logger, store.Config, crateBuilder, queue, raidState, info)))),
+                    Json(HandleQueue(logger, store.Config, crateBuilder, queue, raidState, presets, sessionId.ToString(), info)))),
+
+            new RouteAction<SearchRequest>(
+                "/airdrop-caller/items",
+                (url, info, sessionId, output, ct) => ValueTask.FromResult(
+                    Json(itemSearch.Search(info.Query, info.Limit)))),
+
+            new RouteAction(
+                "/airdrop-caller/presets",
+                (url, info, sessionId, output, ct) => ValueTask.FromResult<object>(
+                    Json(new PresetListResponse { Presets = presets.List(sessionId.ToString()) }))),
+
+            new RouteAction<PresetSaveRequest>(
+                "/airdrop-caller/presets/save",
+                (url, info, sessionId, output, ct) => ValueTask.FromResult(
+                    Json(info.Preset is not null && presets.Save(sessionId.ToString(), info.Preset)
+                        ? new SimpleResponse { Ok = true }
+                        : new SimpleResponse { Ok = false, Reason = "프리셋을 저장하지 못했다. 서버 로그를 본다." }))),
+
+            new RouteAction<PresetIdRequest>(
+                "/airdrop-caller/presets/delete",
+                (url, info, sessionId, output, ct) => ValueTask.FromResult(
+                    Json(info.Id is not null && presets.Delete(sessionId.ToString(), info.Id)
+                        ? new SimpleResponse { Ok = true }
+                        : new SimpleResponse { Ok = false, Reason = "그런 프리셋이 없다." }))),
 
             new RouteAction(
                 "/airdrop-caller/pending",
@@ -211,6 +240,8 @@ public class AirdropCallerRouter : StaticRouter
         CrateBuilder crateBuilder,
         DropQueue queue,
         RaidState raidState,
+        PresetStore presets,
+        string profileId,
         QueueRequest request)
     {
         var state = BuildState(config, queue, raidState);
@@ -219,15 +250,31 @@ public class AirdropCallerRouter : StaticRouter
             return new QueueResponse { Ok = false, Reason = state.BlockedBy };
         }
 
-        if (request.Items is null || request.Items.Count == 0)
+        var icon = request.Icon;
+        var items = request.Items;
+
+        // 프리셋으로 불렀으면 거기서 읽어 온다. 외부 창이 품목을 다시 보낼 필요가 없다.
+        if (!string.IsNullOrWhiteSpace(request.PresetId))
+        {
+            var preset = presets.Get(profileId, request.PresetId!);
+            if (preset is null)
+            {
+                return new QueueResponse { Ok = false, Reason = $"프리셋 '{request.PresetId}' 을 찾지 못했다." };
+            }
+
+            icon = preset.Icon;
+            items = preset.Items;
+        }
+
+        if (items is null || items.Count == 0)
         {
             return new QueueResponse { Ok = false, Reason = "담을 품목이 없다." };
         }
 
         var spec = new DropSpec
         {
-            Icon = string.IsNullOrWhiteSpace(request.Icon) ? "Common" : request.Icon,
-            Items = request.Items,
+            Icon = string.IsNullOrWhiteSpace(icon) ? "Common" : icon,
+            Items = items,
         };
 
         // 조립을 **지금** 끝낸다. 전리품 요청은 상자가 생기자마자 날아온다(착지 때가 아니다).
