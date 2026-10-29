@@ -271,6 +271,48 @@ exe → 서버: 드롭 예약          서버가 dropId 를 발급하고 Item[] 
 - 테스트(`AirdropCaller.Tests`)는 **가짜 DB 를 주입**해 격자 배치와 스택 분할을 검증한다.
   DB 를 읽는다고 해서 게임 없이 못 볼 이유는 없다 — 읽는 경로를 인터페이스로 끊어 둔다.
 
+#### 상자 종류(`icon`)는 겉모습뿐이다 — 용량을 늘리지 못한다 (2026-10-29 조사로 확정)
+
+위 응답의 `icon` 이 창의 "상자" 드롭다운(`Common`·`Supply`·`Medical`·`Weapon`)이다.
+**용량을 고르는 값이 아니다.** 바꾸는 것은 둘뿐이다.
+
+**(ㄱ) 상자 겉면의 마크.** 클라이언트가 문자열을 그대로 받아 데칼 재질을 갈아 끼운다
+(`ServerAirdropManager.InitContainerLoot` → `ClientAirDrop.UpdateContainerType`).
+
+```csharp
+Enum.TryParse<EAirdropType>(value.Icon, ignoreCase: true, out var result);
+container.AirdropType = result;
+...
+case EAirdropType.Common:  SwitchAirdropContainerDecals(_syncObject, null);               // 민짜
+case EAirdropType.Supply:  SwitchAirdropContainerDecals(_syncObject, _syncObject.SupplyDecal);
+case EAirdropType.Medical: SwitchAirdropContainerDecals(_syncObject, _syncObject.MedicineDecal);
+case EAirdropType.Weapon:  SwitchAirdropContainerDecals(_syncObject, _syncObject.GunDecal);
+```
+
+떨어지는 동안에도 보이므로 멀리서 어느 상자인지 가늠하는 쓸모가 있다.
+
+**(ㄴ) 루팅 창 제목.** `CrateBuilder.CrateTemplateFor` 가 고르는 루트 템플릿의 이름을
+게임이 그대로 쓴다(`LootItem.CreateLootContainer(…, item.ShortName.Localized(), …)`).
+
+**용량은 넷이 똑같다.** 아이템 DB 에서 직접 떠서 확인했다.
+
+| `icon` | 루트 tpl | 이름 | 격자 |
+|---|---|---|---|
+| Common | `6223349b3136504a544d1608` | `air_drop_common` | 10×12 = 120칸 |
+| Supply | `622334fa3136504a544d160c` | `air_drop_supply` | 10×12 = 120칸 |
+| Medical | `622334c873090231d904a9fc` | `air_drop_medical` | 10×12 = 120칸 |
+| Weapon | `6223351bb5d97a7b2c635ca7` | `air_drop_weapon` | 10×12 = 120칸 |
+
+그래서 `Weapon` 으로 둔다고 무기가 더 들어가지 않는다. 120칸을 넘기는 길은 §7.5 의
+**중첩**(격자를 가진 품목 안에 담기)뿐이다.
+
+로케일도 네 이름 모두 영어 그대로다(`kr.json` 에 번역이 없다). 창에서 한국어로
+보이게 하려면 우리가 이름을 들고 있어야 한다 — 지금은 하지 않는다.
+
+모르는 문자열은 여기까지 오지 않는다. `CrateBuilder` 가 먼저 `Enum.TryParse` 로 걸러
+`상자 종류 '…' 을 모른다.` 로 거절한다. 게임 쪽 `TryParse` 는 실패해도 조용히
+`default`(= `Common`)로 넘어가므로, 거르는 자리를 서버에 둔 것이 맞다.
+
 ### 7.6 프로필에 쓰지 않는다
 
 **우리 모드는 프로필을 건드리지 않는다.** 상자는 레이드 안의 월드 오브젝트로 생기고,
