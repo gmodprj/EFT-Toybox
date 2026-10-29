@@ -19,7 +19,11 @@ public record ItemSpec
     [JsonPropertyName("Items")] public List<ItemSpec>? Items { get; set; }
 }
 
-public record Preset
+/// <summary>
+/// `record` 가 아니라 `class` 다. 창의 목록에 **그대로 얹히는 것**은 전부 그렇다 —
+/// 이유는 <see cref="FoundItem"/> 에 적어 뒀다.
+/// </summary>
+public class Preset
 {
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
@@ -32,7 +36,23 @@ public record PresetListResponse
     [JsonPropertyName("presets")] public List<Preset> Presets { get; set; } = [];
 }
 
-public record FoundItem : System.ComponentModel.INotifyPropertyChanged
+/// <summary>
+/// **`record` 로 두면 안 된다.** 한 번 `record` 로 뒀다가 다음을 겪었다.
+///
+/// `record` 는 값으로 같은지 본다 — 모든 필드를 견준다. 그런데 이 물건은 목록에 얹힌
+/// **뒤에** <see cref="ItemIcon"/> 이 채워진다(그림은 뒤따라 온다). 그래서 WPF 가
+/// "선택된 것" 으로 적어 둔 그 순간의 값과, 그림이 들어온 뒤의 값이 **서로 달라진다.**
+///
+/// 목록 내용을 갈아 끼울 때 `Selector` 는 적어 둔 값으로 옛 선택을 찾아 지우는데,
+/// 값이 달라져 못 찾는다. 지워지지 않은 선택이 그대로 남고, 새로 고른 것이 뒤에
+/// 덧붙는다. 단일 선택 목록인데 선택이 **여섯 개까지 쌓인 것**을 실측했다.
+/// 그 상태에서 `SelectedItem` 은 **가장 오래된 것**을 돌려준다 — 무엇을 눌러도
+/// 맨 처음에 골랐던 아이템이 품목에 들어가던 까닭이다.
+///
+/// 목록에 얹히는 물건은 **자기 자신으로 구별돼야** 한다. `class` 는 참조로 견주니
+/// 안의 값이 아무리 바뀌어도 같은 것이 같은 것으로 남는다.
+/// </summary>
+public class FoundItem : System.ComponentModel.INotifyPropertyChanged
 {
     [JsonPropertyName("tpl")] public string Tpl { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
@@ -84,7 +104,8 @@ public record FoundItem : System.ComponentModel.INotifyPropertyChanged
     public string Display => $"{Name}   [{Size}]";
 }
 
-public record CategoryInfo
+/// <summary>분류 칸에 그대로 얹힌다. 그래서 `class` 다 — <see cref="FoundItem"/> 참고.</summary>
+public class CategoryInfo
 {
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
