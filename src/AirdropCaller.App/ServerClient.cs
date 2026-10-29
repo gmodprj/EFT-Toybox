@@ -14,6 +14,9 @@ public record ItemSpec
     [JsonPropertyName("Tpl")] public string Tpl { get; set; } = string.Empty;
     [JsonPropertyName("Count")] public int Count { get; set; } = 1;
     [JsonPropertyName("StackSize")] public int? StackSize { get; set; }
+
+    /// <summary>이 품목 안에 넣을 것. 격자를 가진 컨테이너일 때만 뜻이 있다.</summary>
+    [JsonPropertyName("Items")] public List<ItemSpec>? Items { get; set; }
 }
 
 public record Preset
@@ -43,10 +46,18 @@ public record FoundItem
     [JsonPropertyName("height")] public int Height { get; set; } = 1;
     [JsonPropertyName("maxStack")] public int MaxStack { get; set; } = 1;
 
+    /// <summary>안에 다른 품목을 담을 수 있는가(격자가 있는가).</summary>
+    [JsonPropertyName("canContain")] public bool CanContain { get; set; }
+
+    /// <summary>담을 수 있으면 그 칸 수. 보급 상자는 120칸이다.</summary>
+    [JsonPropertyName("cells")] public int Cells { get; set; }
+
     /// <summary>즐겨찾기 표시. 서버가 주는 값이 아니라 창이 채운다.</summary>
     [JsonIgnore] public string Star { get; set; } = string.Empty;
 
-    public string Size => $"{Width}×{Height}" + (MaxStack > 1 ? $" ·{MaxStack}" : string.Empty);
+    public string Size => $"{Width}×{Height}"
+                          + (MaxStack > 1 ? $" ·{MaxStack}" : string.Empty)
+                          + (CanContain ? $" ·담을 수 있음 {Cells}칸" : string.Empty);
 
     public string Display => $"{Name}   [{Size}]";
 }
@@ -217,6 +228,10 @@ public sealed class ServerClient : IDisposable
 
     public Task<SearchResponse?> SearchAsync(string query, string? category, int limit, CancellationToken ct) =>
         PostAsync<SearchResponse>("/airdrop-caller/items", new { query, category, limit }, ct);
+
+    /// <summary>tpl 묶음으로 한 번에 찾는다. 프리셋을 불러올 때 쓴다.</summary>
+    public Task<SearchResponse?> LookupAsync(List<string> tpls, CancellationToken ct) =>
+        PostAsync<SearchResponse>("/airdrop-caller/items", new { tpls }, ct);
 
     public Task<CategoryListResponse?> ListCategoriesAsync(CancellationToken ct) =>
         GetAsync<CategoryListResponse>("/airdrop-caller/categories", ct);

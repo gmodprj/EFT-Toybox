@@ -20,6 +20,13 @@ public record SearchRequest : IRequestData
 
     [JsonPropertyName("limit")]
     public int Limit { get; set; } = 200;
+
+    /// <summary>
+    /// 이 tpl 들만 찾아 온다. 프리셋을 불러올 때 이름·크기·담을 수 있는지를
+    /// 한 번에 받으려고 쓴다 — 하나씩 묻는 것보다 낫다.
+    /// </summary>
+    [JsonPropertyName("tpls")]
+    public List<string>? Tpls { get; set; }
 }
 
 public record FoundItem
@@ -45,6 +52,12 @@ public record FoundItem
 
     /// <summary>한 칸에 묶을 수 있는 최대 개수. 1 이면 묶이지 않는 물건이다.</summary>
     [JsonPropertyName("maxStack")] public int MaxStack { get; set; } = 1;
+
+    /// <summary>안에 다른 품목을 담을 수 있는가(격자가 있는가). 창이 "담을 곳" 을 고를 때 쓴다.</summary>
+    [JsonPropertyName("canContain")] public bool CanContain { get; set; }
+
+    /// <summary>담을 수 있으면 그 칸 수(첫 격자 기준). 상자는 10x12=120 이다.</summary>
+    [JsonPropertyName("cells")] public int Cells { get; set; }
 }
 
 public record SearchResponse
@@ -207,9 +220,27 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
         return new CategoryListResponse { Categories = list };
     }
 
-    public SearchResponse Search(string? query, string? category, int limit)
+    public SearchResponse Search(string? query, string? category, int limit, List<string>? tpls = null)
     {
         var response = new SearchResponse();
+
+        // tpl 묶음 조회. 찾는 말·분류와 섞지 않는다 — 부르는 쪽 뜻이 분명하다.
+        if (tpls is { Count: > 0 })
+        {
+            var byTpl = localeService.GetLocaleDb("kr");
+            EnsureCategories(byTpl);
+            foreach (var tpl in tpls)
+            {
+                var raw = byTpl.GetValueOrDefault(tpl + NameSuffix) ?? string.Empty;
+                var one = Describe(tpl, StripTags(raw), ExtractColor(raw), byTpl);
+                if (one is not null)
+                {
+                    response.Items.Add(one);
+                }
+            }
+
+            return response;
+        }
         var needle = query?.Trim() ?? string.Empty;
         var wantCategory = category?.Trim() ?? string.Empty;
 
@@ -359,6 +390,11 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
 
         var categoryId = _categoryOfItem!.GetValueOrDefault(tpl, string.Empty);
         var props = template.Properties;
+
+        // 첫 격자가 있으면 컨테이너다. CrateBuilder 도 첫 격자만 쓴다 — 같은 규칙이어야
+        // 창이 "담을 수 있다" 고 보여 준 것을 서버가 거절하지 않는다.
+        var grid = props.Grids?.FirstOrDefault(g => g.Properties?.CellsH > 0 && g.Properties?.CellsV > 0);
+
         return new FoundItem
         {
             Tpl = tpl,
@@ -369,6 +405,8 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             Width = props.Width ?? 1,
             Height = props.Height ?? 1,
             MaxStack = props.StackMaxSize ?? 1,
+            CanContain = grid is not null,
+            Cells = grid is null ? 0 : (grid.Properties!.CellsH ?? 0) * (grid.Properties!.CellsV ?? 0),
         };
     }
 }

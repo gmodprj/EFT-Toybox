@@ -13,9 +13,28 @@ public class ItemRow : INotifyPropertyChanged
 {
     private int _count = 1;
     private int? _stackSize;
+    private ItemRow? _parent;
 
     public string Tpl { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+
+    /// <summary>안에 다른 품목을 담을 수 있는가. 서버가 알려 준 값이다.</summary>
+    public bool CanContain { get; set; }
+
+    /// <summary>
+    /// 이 품목을 담을 곳. null 이면 보급 상자에 직접 넣는다.
+    ///
+    /// 보급 상자는 10×12=120칸으로 고정이라, 더 담으려면 가방·케이스를 넣고
+    /// 그 안에 담아야 한다. 무기를 케이스에 넣을지 말지도 이걸로 고른다.
+    /// </summary>
+    public ItemRow? Parent
+    {
+        get => _parent;
+        set { _parent = value; Changed(nameof(Parent)); }
+    }
+
+    /// <summary>표에서 고르는 이름. 담을 수 있는 물건만 다른 줄의 선택지가 된다.</summary>
+    public string Label => Name.Length > 24 ? Name[..24] + "…" : Name;
 
     public int Count
     {
@@ -37,6 +56,16 @@ public class ItemRow : INotifyPropertyChanged
     public ItemSpec ToSpec() => new() { Tpl = Tpl, Count = Count, StackSize = StackSize };
 }
 
+/// <summary>
+/// 담을 곳 고르기 칸의 한 줄. `null` 인 줄이 "상자(직접)" 다.
+/// </summary>
+public class ContainerChoice(ItemRow? row)
+{
+    public ItemRow? Row { get; } = row;
+
+    public string Label => Row is null ? "상자" : "↳ " + Row.Label;
+}
+
 public partial class MainWindow : Window
 {
     private readonly AppConfig _config;
@@ -56,6 +85,72 @@ public partial class MainWindow : Window
 
     /// <summary>글자를 칠 때마다 서버를 때리지 않도록 멈춘 뒤 한 번만 보낸다.</summary>
     private readonly DispatcherTimer _searchDebounce = new() { Interval = TimeSpan.FromMilliseconds(250) };
+
+    /// <summary>"담을 곳" 칸이 보여 주는 선택지. 맨 앞이 "상자(직접)" 다.</summary>
+    public ObservableCollection<ContainerChoice> ContainerChoices { get; } = [];
+
+    /// <summary>
+    /// 담을 수 있는 줄이 바뀔 때마다 선택지를 다시 만든다.
+    /// 자기 자신은 뺀다 — 자기 안에 자기를 담을 수는 없다.
+    /// </summary>
+    private void RebuildContainerChoices()
+    {
+        ContainerChoices.Clear();
+        ContainerChoices.Add(new ContainerChoice(null));
+        foreach (var row in _items.Where(r => r.CanContain))
+        {
+            ContainerChoices.Add(new ContainerChoice(row));
+        }
+
+        // 지워진 줄을 가리키고 있던 것은 상자 직접으로 되돌린다.
+        foreach (var row in _items.Where(r => r.Parent is not null && !_items.Contains(r.Parent!)))
+        {
+            row.Parent = null;
+        }
+    }
+
+    /// <summary>
+    /// 평평한 줄 목록을 중첩 트리로 바꾼다. 고리(A 안에 B, B 안에 A)가 생기면
+    /// 그 줄을 상자 직접으로 되돌린다 — 서버에 보내서 터뜨리느니 여기서 푼다.
+    /// </summary>
+    private List<ItemSpec> BuildSpecTree()
+    {
+        var specs = _items.ToDictionary(r => r, r => r.ToSpec());
+        var roots = new List<ItemSpec>();
+
+        foreach (var row in _items)
+        {
+            var parent = row.Parent;
+            if (parent is not null && (parent == row || !_items.Contains(parent) || MakesCycle(row)))
+            {
+                parent = null;
+            }
+
+            if (parent is null)
+            {
+                roots.Add(specs[row]);
+                continue;
+            }
+
+            (specs[parent].Items ??= []).Add(specs[row]);
+        }
+
+        return roots;
+    }
+
+    private bool MakesCycle(ItemRow row)
+    {
+        var seen = new HashSet<ItemRow>();
+        for (var at = row.Parent; at is not null; at = at.Parent)
+        {
+            if (at == row || !seen.Add(at))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public MainWindow()
     {
@@ -220,33 +315,87 @@ public partial class MainWindow : Window
     // ── 프리셋 ─────────────────────────────────────────────────────────────
 
 
-    private void OnPresetSelected(object sender, SelectionChangedEventArgs e)
+    private async void OnPresetSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (PresetList.SelectedItem is not Preset preset)
+        if (PresetList.SelectedItem is Preset preset)
         {
-            return;
+            await LoadPresetIntoEditorAsync(preset, preset.Name);
         }
+    }
 
-        PresetNameBox.Text = preset.Name;
-        IconBox.SelectedIndex = preset.Icon switch
-        {
-            "Supply" => 1, "Medical" => 2, "Weapon" => 3, _ => 0,
-        };
+    /// <summary>
+    /// 프리셋을 편집 칸으로 옮긴다.
+    ///
+    /// 프리셋에는 tpl 만 들어 있다. 이름·크기·담을 수 있는지는 서버에 **한 번에**
+    /// 물어 채운다 — 예전에는 품목 칸에 24자리 tpl 이 그대로 보였다.
+    /// </summary>
+    private async Task LoadPresetIntoEditorAsync(Preset preset, string name)
+    {
+        PresetNameBox.Text = name;
+        IconBox.SelectedIndex = preset.Icon switch { "Supply" => 1, "Medical" => 2, "Weapon" => 3, _ => 0 };
 
         _items.Clear();
-        foreach (var item in preset.Items)
+
+        var tpls = new List<string>();
+        CollectTpls(preset.Items, tpls);
+
+        var known = new Dictionary<string, FoundItem>();
+        if (tpls.Count > 0 && _client is not null)
         {
-            _items.Add(new ItemRow { Tpl = item.Tpl, Name = item.Tpl, Count = item.Count, StackSize = item.StackSize });
+            try
+            {
+                var found = await _client.LookupAsync(tpls, CancellationToken.None);
+                foreach (var item in found?.Items ?? [])
+                {
+                    known[item.Tpl] = item;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageLine.Text = "품목 이름을 못 받았다(목록은 그대로 쓸 수 있다): " + e.Message;
+            }
         }
 
+        AddRows(preset.Items, null, known);
+        RebuildContainerChoices();
         UpdateFitHint();
+    }
+
+    private static void CollectTpls(IEnumerable<ItemSpec>? specs, List<string> into)
+    {
+        foreach (var spec in specs ?? [])
+        {
+            into.Add(spec.Tpl);
+            CollectTpls(spec.Items, into);
+        }
+    }
+
+    /// <summary>중첩된 프리셋을 평평한 줄 목록으로 편다. 담을 곳은 Parent 로 남는다.</summary>
+    private void AddRows(IEnumerable<ItemSpec>? specs, ItemRow? parent, IReadOnlyDictionary<string, FoundItem> known)
+    {
+        foreach (var spec in specs ?? [])
+        {
+            known.TryGetValue(spec.Tpl, out var info);
+            var row = new ItemRow
+            {
+                Tpl = spec.Tpl,
+                Name = info?.Name ?? spec.Tpl,
+                CanContain = info?.CanContain ?? false,
+                Count = spec.Count,
+                StackSize = spec.StackSize,
+                Parent = parent,
+            };
+
+            _items.Add(row);
+            AddRows(spec.Items, row, known);
+        }
     }
 
     /// <summary>
     /// 고른 프리셋을 그대로 베껴 새것으로 만든다. 저장을 눌러야 서버에 올라간다 —
     /// 베끼자마자 이름을 고치는 것이 보통이라 한 번 더 묻지 않는다.
     /// </summary>
-    private void OnCopyPreset(object sender, RoutedEventArgs e)
+    private async void OnCopyPreset(object sender, RoutedEventArgs e)
     {
         if (PresetList.SelectedItem is not Preset preset)
         {
@@ -254,17 +403,10 @@ public partial class MainWindow : Window
             return;
         }
 
+        // 고른 것을 풀어 두고 선택을 지운다. 저장하면 새 id 로 올라간다.
+        var copy = preset;
         PresetList.SelectedItem = null;
-        PresetNameBox.Text = preset.Name + " 사본";
-        IconBox.SelectedIndex = preset.Icon switch { "Supply" => 1, "Medical" => 2, "Weapon" => 3, _ => 0 };
-
-        _items.Clear();
-        foreach (var item in preset.Items)
-        {
-            _items.Add(new ItemRow { Tpl = item.Tpl, Name = item.Tpl, Count = item.Count, StackSize = item.StackSize });
-        }
-
-        UpdateFitHint();
+        await LoadPresetIntoEditorAsync(copy, copy.Name + " 사본");
         MessageLine.Text = "베꼈다. 이름을 고치고 저장을 누른다.";
     }
 
@@ -274,6 +416,7 @@ public partial class MainWindow : Window
         PresetNameBox.Text = "새 프리셋";
         IconBox.SelectedIndex = 0;
         _items.Clear();
+        RebuildContainerChoices();
         UpdateFitHint();
     }
 
@@ -296,7 +439,7 @@ public partial class MainWindow : Window
             Id = (PresetList.SelectedItem as Preset)?.Id ?? MakeId(),
             Name = name,
             Icon = SelectedIcon(),
-            Items = _items.Select(i => i.ToSpec()).ToList(),
+            Items = BuildSpecTree(),
         };
 
         await Guard(async () =>
@@ -470,6 +613,7 @@ public partial class MainWindow : Window
             StackSize = found.MaxStack > 1 ? found.MaxStack : null,
         });
 
+        RebuildContainerChoices();
         UpdateFitHint();
     }
 
@@ -478,7 +622,8 @@ public partial class MainWindow : Window
         if (ItemGrid.SelectedItem is ItemRow row)
         {
             _items.Remove(row);
-            UpdateFitHint();
+            RebuildContainerChoices();
+        UpdateFitHint();
         }
     }
 
@@ -502,7 +647,7 @@ public partial class MainWindow : Window
         await Guard(async () =>
         {
             var result = await _client.QueueAsync(
-                null, SelectedIcon(), _items.Select(i => i.ToSpec()).ToList(), CancellationToken.None);
+                null, SelectedIcon(), BuildSpecTree(), CancellationToken.None);
 
             if (result?.Ok != true)
             {
