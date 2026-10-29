@@ -94,11 +94,19 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             }
 
             var handbook = templateTable.Handbook;
+
+            // 이름은 kr → en → 우리 표 → 자리표시자 순으로 찾는다. **순서가 중요하다** —
+            // 자리표시자를 먼저 넣어 두면 우리 표가 영영 안 쓰인다(한 번 그렇게 틀렸다).
+            var fallback = localeService.GetLocaleDb("en");
             var names = new Dictionary<string, string>();
             foreach (var category in handbook.Categories ?? [])
             {
                 var id = category.Id.ToString();
-                names[id] = locale.TryGetValue(id, out var n) && !string.IsNullOrWhiteSpace(n) ? n : id;
+                var name = Named(locale, id) ?? Named(fallback, id) ?? KnownNames.GetValueOrDefault(id);
+                if (name is not null)
+                {
+                    names[id] = name;
+                }
             }
 
             var ofItem = new Dictionary<string, string>();
@@ -111,6 +119,46 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             _categoryOfItem = ofItem;
         }
     }
+
+    /// <summary>
+    /// 로케일에서 쓸 만한 이름을 꺼낸다.
+    ///
+    /// 값이 비어 있는 것만 거르면 안 된다 — **id 를 값으로 들고 있는 항목이 있다**
+    /// (실측: `5795f317245977243854e041` 의 kr·en 값이 그 id 자신이다). 그런 값은
+    /// 이름이 아니므로 없는 것으로 친다.
+    /// </summary>
+    private static string? Named(IReadOnlyDictionary<string, string> locale, string id)
+    {
+        if (!locale.TryGetValue(id, out var value) || string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var looksLikeId = value.Length == 24 && value.All(c => char.IsAsciiHexDigitLower(c));
+        return looksLikeId ? null : value;
+    }
+
+    /// <summary>
+    /// 분류 id 의 표시 이름.
+    ///
+    /// **핸드북 `Items[].ParentId` 중에는 `Categories` 에 없는 id 가 있다**
+    /// (실측: `5795f317245977243854e041`, 아이템 1개). 그래서 분류 표를 만들 때만이
+    /// 아니라 **아이템에서 거슬러 올라올 때도** 같은 규칙으로 이름을 붙여야 한다 —
+    /// 한 곳만 고쳤다가 24자리 id 가 그대로 목록에 남았다.
+    /// </summary>
+    private string NameOfCategory(string id) =>
+        _categoryNames!.TryGetValue(id, out var known) ? known
+        : KnownNames.TryGetValue(id, out var ours) ? ours
+        : $"(이름 없는 분류 {id[..Math.Min(6, id.Length)]})";
+
+    /// <summary>
+    /// 로케일에도 핸드북에도 이름이 없는데 **큰** 분류는 우리가 이름을 붙인다.
+    /// 아래 것은 아이템 454개짜리다(아라미드·강철 삽입물 등) — id 로 두면 못 찾는다.
+    /// </summary>
+    private static readonly Dictionary<string, string> KnownNames = new()
+    {
+        ["6564b96a189fe36f356d177c"] = "방어판·삽입물",
+    };
 
     public CategoryListResponse ListCategories()
     {
@@ -129,7 +177,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             list.Add(new CategoryInfo
             {
                 Id = id,
-                Name = _categoryNames!.GetValueOrDefault(id, id),
+                Name = NameOfCategory(id),
                 Count = count,
             });
         }
@@ -229,7 +277,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             Tpl = tpl,
             Name = name,
             ShortName = locale.TryGetValue(tpl + " ShortName", out var s) ? s : string.Empty,
-            Category = categoryId.Length > 0 ? _categoryNames!.GetValueOrDefault(categoryId, categoryId) : "(분류 없음)",
+            Category = categoryId.Length > 0 ? NameOfCategory(categoryId) : "(분류 없음)",
             Width = props.Width ?? 1,
             Height = props.Height ?? 1,
             MaxStack = props.StackMaxSize ?? 1,
