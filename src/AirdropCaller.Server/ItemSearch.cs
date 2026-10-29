@@ -58,6 +58,15 @@ public record FoundItem
 
     /// <summary>담을 수 있으면 그 칸 수(첫 격자 기준). 상자는 10x12=120 이다.</summary>
     [JsonPropertyName("cells")] public int Cells { get; set; }
+
+    /// <summary>
+    /// 분류 아이콘 파일 이름(`icon_provisions_food.png`). 없으면 빈 값.
+    ///
+    /// **아이템마다의 아이콘은 서버가 줄 수 없다** — 게임 번들 안에 있고
+    /// `SPT_Data/images` 에는 분류 아이콘 83개뿐이다. 그래서 같은 분류의 아이템은
+    /// 같은 그림을 단다. 창이 그 폴더에서 직접 읽는다.
+    /// </summary>
+    [JsonPropertyName("categoryIcon")] public string CategoryIcon { get; set; } = string.Empty;
 }
 
 public record SearchResponse
@@ -75,6 +84,9 @@ public record CategoryInfo
 
     /// <summary>이 분류에 담긴 아이템 수. 0 인 분류는 돌려주지 않는다.</summary>
     [JsonPropertyName("count")] public int Count { get; set; }
+
+    /// <summary>분류 아이콘 파일 이름. 없으면 빈 값.</summary>
+    [JsonPropertyName("icon")] public string Icon { get; set; } = string.Empty;
 }
 
 public record CategoryListResponse
@@ -99,6 +111,9 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
 
     private Dictionary<string, string>? _categoryOfItem;
     private Dictionary<string, string>? _categoryNames;
+
+    /// <summary>분류 id → 아이콘 파일 이름. 핸드북의 `Icon` 경로에서 파일 이름만 뗀 것.</summary>
+    private Dictionary<string, string>? _categoryIcons;
     private readonly object _lock = new();
 
     /// <summary>
@@ -120,6 +135,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             // 자리표시자를 먼저 넣어 두면 우리 표가 영영 안 쓰인다(한 번 그렇게 틀렸다).
             var fallback = localeService.GetLocaleDb("en");
             var names = new Dictionary<string, string>();
+            var icons = new Dictionary<string, string>();
             foreach (var category in handbook.Categories ?? [])
             {
                 var id = category.Id.ToString();
@@ -128,7 +144,18 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
                 {
                     names[id] = name;
                 }
+
+                // `Icon` 은 "/files/handbook/icon_provisions_food.png" 꼴이다.
+                // 파일 이름만 보낸다 — 창이 자기 쪽 경로로 찾는다.
+                // 값이 "/files/handbook/" 뿐인 분류도 있어 빈 것은 거른다.
+                var file = (category.Icon ?? string.Empty).Split('/').LastOrDefault() ?? string.Empty;
+                if (file.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                {
+                    icons[id] = file;
+                }
             }
+
+            _categoryIcons = icons;
 
             var ofItem = new Dictionary<string, string>();
             foreach (var item in handbook.Items ?? [])
@@ -200,6 +227,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
                 Id = id,
                 Name = NameOfCategory(id),
                 Count = count,
+                Icon = _categoryIcons!.GetValueOrDefault(id, string.Empty),
             });
         }
 
@@ -405,6 +433,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             Width = props.Width ?? 1,
             Height = props.Height ?? 1,
             MaxStack = props.StackMaxSize ?? 1,
+            CategoryIcon = _categoryIcons!.GetValueOrDefault(categoryId, string.Empty),
             CanContain = grid is not null,
             Cells = grid is null ? 0 : (grid.Properties!.CellsH ?? 0) * (grid.Properties!.CellsV ?? 0),
         };
