@@ -35,11 +35,20 @@ public record FoundItem
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
     [JsonPropertyName("shortName")] public string ShortName { get; set; } = string.Empty;
     [JsonPropertyName("category")] public string Category { get; set; } = string.Empty;
+
+    /// <summary>이름에 붙어 있던 등급 색(`#RRGGBB`). 없으면 빈 값.</summary>
+    [JsonPropertyName("color")] public string Color { get; set; } = string.Empty;
+
     [JsonPropertyName("width")] public int Width { get; set; } = 1;
     [JsonPropertyName("height")] public int Height { get; set; } = 1;
     [JsonPropertyName("maxStack")] public int MaxStack { get; set; } = 1;
 
-    public string Display => $"{Name}   [{Width}×{Height}{(MaxStack > 1 ? $", 최대 {MaxStack}" : "")}]";
+    /// <summary>즐겨찾기 표시. 서버가 주는 값이 아니라 창이 채운다.</summary>
+    [JsonIgnore] public string Star { get; set; } = string.Empty;
+
+    public string Size => $"{Width}×{Height}" + (MaxStack > 1 ? $" ·{MaxStack}" : string.Empty);
+
+    public string Display => $"{Name}   [{Size}]";
 }
 
 public record CategoryInfo

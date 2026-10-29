@@ -21,8 +21,9 @@
     <DockPanel Grid.Row="0" Grid.Column="0">
       <Label DockPanel.Dock="Top" Content="프리셋" />
       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
-        <Button x:Name="NewPresetButton" Content="새로" Click="OnNewPreset" />
-        <Button x:Name="DeletePresetButton" Content="삭제" Click="OnDeletePreset" />
+        <Button x:Name="NewPresetButton" Content="새로" Click="OnNewPreset" Padding="8,5" />
+        <Button x:Name="CopyPresetButton" Content="복사" Click="OnCopyPreset" Padding="8,5" />
+        <Button x:Name="DeletePresetButton" Content="삭제" Click="OnDeletePreset" Padding="8,5" />
       </StackPanel>
       <ListBox x:Name="PresetList" DisplayMemberPath="Name" SelectionChanged="OnPresetSelected" />
     </DockPanel>
@@ -84,16 +85,11 @@
       </Grid>
       <ComboBox DockPanel.Dock="Top" x:Name="CategoryBox" DisplayMemberPath="Display"
                 SelectionChanged="OnCategoryChanged" Margin="0,4,0,4" MaxDropDownHeight="420" />
-      <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <TextBox Grid.Column="0" x:Name="SearchBox" KeyDown="OnSearchKeyDown" />
-        <Button Grid.Column="1" x:Name="SearchButton" Content="찾기" Click="OnSearch" Margin="6,0,0,0" />
-      </Grid>
+      <!-- 입력과 동시에 거른다. 찾기 버튼을 눌러야만 되는 것은 안 되는 것과 같다. -->
+      <TextBox DockPanel.Dock="Top" x:Name="SearchBox" TextChanged="OnSearchTextChanged" Margin="0,0,0,6" />
       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
         <Button x:Name="AddItemButton" Content="품목에 넣기" Click="OnAddItem" />
+        <Button x:Name="FavoriteButton" Content="즐겨찾기 ☆" Click="OnToggleFavorite" />
         <TextBlock x:Name="SearchHint" Foreground="{StaticResource Dim}" VerticalAlignment="Center" />
       </StackPanel>
       <ListBox x:Name="SearchList" MouseDoubleClick="OnAddItem"
@@ -101,7 +97,13 @@
         <ListBox.ItemTemplate>
           <DataTemplate>
             <!-- 가로 스크롤 대신 줄을 접는다. 이름이 길어 잘려 나가던 것을 막는다. -->
-            <TextBlock Text="{Binding Display}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding Star}" Width="18" Foreground="{StaticResource Accent}" />
+              <TextBlock Text="{Binding Name}" TextWrapping="Wrap"
+                         Foreground="{Binding Color, Converter={StaticResource HexToBrush}}" />
+              <TextBlock Text="{Binding Size}" Foreground="{StaticResource Dim}"
+                         FontSize="11" Margin="8,2,0,0" />
+            </StackPanel>
           </DataTemplate>
         </ListBox.ItemTemplate>
         <ListBox.GroupStyle>
