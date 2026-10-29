@@ -5,8 +5,10 @@
 - 소스 예정 위치: `src/AirdropCaller.Server`, `src/AirdropCaller.Plugin`, `src/AirdropCaller.App`
 - 상태: **설계만**. 구현 전.
 
-> **2026-10-29 — 1단계 통과.** 상자가 실제로 떨어지고 열렸다
-> ([조사 문서 §6-2](2026-10-29-airdrop-stage1-findings.md)). 이 설계는 성립한다.
+> **2026-10-29 — 1·2단계 통과.** 상자가 떨어지고 열렸고
+> ([1단계 §6-2](2026-10-29-airdrop-stage1-findings.md)), 그 안에 **내가 정한 것만**
+> 담겼다 ([2단계 결과](2026-10-29-airdrop-stage2-result.md)). 이 설계는 성립한다.
+> 남은 것은 3단계(외부 창)다.
 >
 > **1단계 조사로 이 문서의 가정 몇 개가 바뀌었다.**
 > [2026-10-29-airdrop-stage1-findings.md](2026-10-29-airdrop-stage1-findings.md) 를 **함께**
@@ -328,8 +330,11 @@ tools/install-airdropcaller.ps1
 1. **1단계 — 길이 뚫리는지만 본다.** 서버 라우트 `GET /pending` 하나, 플러그인이 폴링해
    로그만 찍기, exe 없이 `curl` 로 밀어 넣기. 여기서 §7.4 의 1→2→3 을 시험해 **빈 상자라도
    떨어지는지** 확인한다. 안 떨어지면 나머지는 의미가 없다.
-2. **2단계 — 내용물.** `CrateBuilder` + 프리셋 저장 + 격자 배치 테스트.
-3. **3단계 — 외부 창.** WPF, 한국어 검색, 드롭 버튼.
+2. ~~**2단계 — 내용물.**~~ → **통과.** 서버 모드가 바닐라 전리품 라우트에 뒤에서 끼어들어
+   우리 상자에만 우리 내용물로 답한다 ([2단계 결과](2026-10-29-airdrop-stage2-result.md)).
+   프리셋 저장과 격자 배치 테스트는 아직 — 지금은 `config.jsonc` 를 손으로 고친다.
+3. **3단계 — 외부 창.** WPF, 한국어 검색, 드롭 버튼. 대기열 라우트(`POST /queue`·
+   `GET /pending`)도 여기서 붙는다 — 2단계는 측정기가 id 를 직접 넘기는 것으로 때웠다.
 4. **4단계 — 다듬기.** 레이드 상태 표시, 거절 메시지, F12 설정, 설치 스크립트, 문서.
 
 **1단계에서 막히면 멈추고 보고한다.** §10-1 의 약한 대안(레이드 시작 때 미리 정한 좌표에
@@ -544,10 +549,13 @@ tools/install-airdropcaller.ps1
    `AirdropPointDeactivateDistance: 50` 때문에 **두 번째 드롭은 50m 밖**이 된다(실측 52·54m).
    측정값은 [조사 문서 §6-1](2026-10-29-airdrop-stage1-findings.md) 에 있다. 다른 맵은
    아직 안 쟀다 — `AirdropProbe` 를 들고 들어가면 된다.
-10. **커스텀 라우터가 바닐라 라우터보다 먼저 답하게 하는 방법을 확인하지 않았다.**
-    `LocationStaticRouter` 는 `[Injectable(Transient, int.MaxValue, TypePriority = 400000)]`
-    이고 DI 는 `orderby TypePriority` 오름차순으로 돈다. 같은 URL 을 두 라우터가 claim 할 때
-    어느 쪽이 이기는지, 그리고 우리가 바닐라 처리를 **위임**할 수 있는지를 봐야 한다.
+10. ~~커스텀 라우터가 바닐라보다 먼저 답하게 하는 방법을 모른다~~ → **풀렸다. 먼저가
+    아니라 나중이 답이었다.** `HttpRouter.HandleRouteAsync` 는 같은 URL 을 잡는 라우터에서
+    멈추지 않고 전부 돌리며, 앞선 결과를 다음 라우터에 `output` 으로 넘긴다. **마지막이
+    이긴다.** 바닐라 `LocationStaticRouter` 가 `TypePriority = 400000`, `Injectable` 기본값이
+    `int.MaxValue` 라 인수 없이 `[Injectable]` 만 붙이면 우리가 뒤에 선다. 우리 것이 아니면
+    받은 `output` 을 그대로 돌려주면 바닐라가 그대로 산다.
+    ([2단계 결과](2026-10-29-airdrop-stage2-result.md))
 
 ## 11. 뒤에 정한 것
 
