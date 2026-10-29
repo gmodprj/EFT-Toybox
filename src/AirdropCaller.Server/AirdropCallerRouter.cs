@@ -77,7 +77,12 @@ public class AirdropCallerRouter : StaticRouter
             new RouteAction<SearchRequest>(
                 "/airdrop-caller/items",
                 (url, info, sessionId, output, ct) => ValueTask.FromResult(
-                    Json(itemSearch.Search(info.Query, info.Limit)))),
+                    Json(itemSearch.Search(info.Query, info.Category, info.Limit)))),
+
+            new RouteAction(
+                "/airdrop-caller/categories",
+                (url, info, sessionId, output, ct) => ValueTask.FromResult<object>(
+                    Json(itemSearch.ListCategories()))),
 
             new RouteAction(
                 "/airdrop-caller/presets",

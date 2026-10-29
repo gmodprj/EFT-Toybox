@@ -34,11 +34,26 @@ public record FoundItem
     [JsonPropertyName("tpl")] public string Tpl { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
     [JsonPropertyName("shortName")] public string ShortName { get; set; } = string.Empty;
+    [JsonPropertyName("category")] public string Category { get; set; } = string.Empty;
     [JsonPropertyName("width")] public int Width { get; set; } = 1;
     [JsonPropertyName("height")] public int Height { get; set; } = 1;
     [JsonPropertyName("maxStack")] public int MaxStack { get; set; } = 1;
 
     public string Display => $"{Name}   [{Width}×{Height}{(MaxStack > 1 ? $", 최대 {MaxStack}" : "")}]";
+}
+
+public record CategoryInfo
+{
+    [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("count")] public int Count { get; set; }
+
+    public string Display => Id.Length == 0 ? Name : $"{Name}  ({Count})";
+}
+
+public record CategoryListResponse
+{
+    [JsonPropertyName("categories")] public List<CategoryInfo> Categories { get; set; } = [];
 }
 
 public record SearchResponse
@@ -191,8 +206,11 @@ public sealed class ServerClient : IDisposable
     public Task<SimpleResponse?> DeletePresetAsync(string id, CancellationToken ct) =>
         PostAsync<SimpleResponse>("/airdrop-caller/presets/delete", new { id }, ct);
 
-    public Task<SearchResponse?> SearchAsync(string query, int limit, CancellationToken ct) =>
-        PostAsync<SearchResponse>("/airdrop-caller/items", new { query, limit }, ct);
+    public Task<SearchResponse?> SearchAsync(string query, string? category, int limit, CancellationToken ct) =>
+        PostAsync<SearchResponse>("/airdrop-caller/items", new { query, category, limit }, ct);
+
+    public Task<CategoryListResponse?> ListCategoriesAsync(CancellationToken ct) =>
+        GetAsync<CategoryListResponse>("/airdrop-caller/categories", ct);
 
     public Task<QueueResponse?> QueueAsync(string? presetId, string icon, List<ItemSpec> items, CancellationToken ct) =>
         PostAsync<QueueResponse>("/airdrop-caller/queue", new { presetId, icon, items }, ct);

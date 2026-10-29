@@ -6,6 +6,7 @@ using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
 using EFT.Airdrop;
+using EFT.SynchronizableObjects;
 using Newtonsoft.Json;
 using SPT.Common.Http;
 using UnityEngine;
@@ -111,7 +112,7 @@ namespace AirdropCaller.Plugin
                 inRaid = inRaid,
                 map = inRaid ? world.LocationId : null,
                 canSummon = inRaid && manager.CanSummonAirdrop,
-                crateInFlight = inRaid && HasAirObject(world),
+                crateInFlight = inRaid && HasPlaneInAir(world),
                 availablePoints = inRaid ? manager._airdropPoints.Count : 0,
             };
 
@@ -131,10 +132,17 @@ namespace AirdropCaller.Plugin
         }
 
         /// <summary>
-        /// 비행기나 보급 상자가 아직 살아 있는가. 서버가 "지금 또 부르면 안 된다" 를
-        /// 판단하는 근거다. 시간으로 어림잡지 않고 **실제 객체를 센다.**
+        /// 비행기가 아직 떠 있는가. 서버가 "지금 또 부르면 안 된다" 를 판단하는 근거다.
+        ///
+        /// **보급 상자(AirDrop)는 세지 않는다.** 처음에는 "Air" 가 들어간 객체를 모두
+        /// 셌는데, 착지한 상자가 `_activeSynchronizableObjects` 에 계속 남아 있어
+        /// (상자는 레이드가 끝날 때까지 주울 수 있는 물건이다) 한 번 부르고 나면 영영
+        /// "비행 중" 이 됐다. 실측에서 `비행중=True` 가 13분 넘게 이어졌고, 그래서
+        /// 두 번째 드롭이 막혔다.
+        ///
+        /// 막아야 하는 것은 **비행기가 두 대 뜨는 것**이지 상자가 땅에 있는 것이 아니다.
         /// </summary>
-        private static bool HasAirObject(ClientGameWorld world)
+        private static bool HasPlaneInAir(ClientGameWorld world)
         {
             var active = world.ClientSynchronizableObjectLogicProcessor?._activeSynchronizableObjects;
             if (active == null)
@@ -144,7 +152,7 @@ namespace AirdropCaller.Plugin
 
             foreach (var so in active)
             {
-                if (so != null && so.Type.ToString().IndexOf("Air", StringComparison.OrdinalIgnoreCase) >= 0)
+                if (so != null && so.Type == SynchronizableObjectType.AirPlane)
                 {
                     return true;
                 }
