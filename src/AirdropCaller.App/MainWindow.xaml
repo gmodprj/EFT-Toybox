@@ -64,8 +64,8 @@
           <DataGridTemplateColumn Header="" Width="28" IsReadOnly="True">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
-                <Image Source="{Binding CategoryIcon, Converter={StaticResource FileToIcon}}"
-                       Width="18" Height="18" />
+                <!-- 아이템 그림. 못 구하면 분류 아이콘이 들어온다(코드에서 채운다). -->
+                <Image Source="{Binding ItemIcon}" Width="22" Height="22" />
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
@@ -130,8 +130,8 @@
             <!-- 가로 스크롤 대신 줄을 접는다. 이름이 길어 잘려 나가던 것을 막는다. -->
             <StackPanel Orientation="Horizontal">
               <!-- 분류 아이콘. 아이템마다의 아이콘은 게임 번들 안이라 못 쓴다. -->
-              <Image Source="{Binding CategoryIcon, Converter={StaticResource FileToIcon}}"
-                     Width="18" Height="18" Margin="0,0,4,0" VerticalAlignment="Center" />
+              <Image Source="{Binding ItemIcon}" Width="22" Height="22"
+                     Margin="0,0,4,0" VerticalAlignment="Center" />
               <TextBlock Text="{Binding Star}" Width="16" Foreground="{StaticResource Accent}" />
               <TextBlock Text="{Binding Name}" TextWrapping="Wrap"
                          Foreground="{Binding Color, Converter={StaticResource HexToBrush}}" />

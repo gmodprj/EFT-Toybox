@@ -12,11 +12,13 @@ $ErrorActionPreference = 'Stop'
 
 $exe = Join-Path $SptDir 'AirdropCaller.exe'
 $cfg = Join-Path $SptDir 'airdrop-caller.config.json'
+# 창이 tarkov.dev 에서 받아 쌓아 두는 아이템 아이콘. 지울 때 같이 치운다.
+$iconCache = Join-Path $SptDir 'icon-cache'
 
 if ($Remove) {
-    foreach ($path in @($exe, $cfg)) {
+    foreach ($path in @($exe, $cfg, $iconCache)) {
         if (Test-Path $path) {
-            Remove-Item $path -Force -Confirm:$false
+            Remove-Item $path -Recurse -Force -Confirm:$false
             "지웠다: $path"
         } else {
             "없다(건너뜀): $path"

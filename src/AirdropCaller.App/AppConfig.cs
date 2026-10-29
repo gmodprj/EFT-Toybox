@@ -33,6 +33,29 @@ public class AppConfig
     public List<string> Favorites { get; set; } = [];
 
     /// <summary>
+    /// 아이템 아이콘을 tarkov.dev 에서 받아 올지. **밖으로 나가는 통신이다** —
+    /// 아이템 id 가 그쪽으로 가고 그림을 받아 온다. 끄면 분류 아이콘만 쓴다.
+    /// 받은 것은 <see cref="IconCacheFolder"/> 에 쌓여 다시 받지 않는다.
+    /// </summary>
+    [JsonPropertyName("downloadItemIcons")]
+    public bool DownloadItemIcons { get; set; } = true;
+
+    /// <summary>비우면 exe 옆 `icon-cache` 폴더.</summary>
+    [JsonPropertyName("iconCacheFolder")]
+    public string IconCacheFolder { get; set; } = string.Empty;
+
+    public string ResolveIconCacheFolder()
+    {
+        if (!string.IsNullOrWhiteSpace(IconCacheFolder))
+        {
+            return IconCacheFolder;
+        }
+
+        var dir = Path.GetDirectoryName(Environment.ProcessPath) ?? AppContext.BaseDirectory;
+        return Path.Combine(dir, "icon-cache");
+    }
+
+    /// <summary>
     /// 기본은 **꺼짐**이다. 켜 두면 다른 창을 이 창 위에 올릴 수 없어 가린 채로
     /// 일하게 된다. 레이드 중에만 켜고 싶은 것이므로 창의 체크상자로 켠다.
     /// </summary>
