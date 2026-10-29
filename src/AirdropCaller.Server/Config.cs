@@ -14,6 +14,13 @@ public class Config
     public bool Debug { get; set; } = true;
 
     /// <summary>
+    /// 상자가 착지한 뒤 다음 예약을 받기까지 기다리는 시간(초).
+    /// 연타로 비행기를 여러 대 띄우는 것을 막는다. 0 이면 끈다.
+    /// </summary>
+    [JsonPropertyName("CooldownSeconds")]
+    public int CooldownSeconds { get; set; } = 30;
+
+    /// <summary>
     /// 상자 id → 그 상자에 담을 것.
     ///
     /// 이 id 는 게임이 `InitAirdrop(lootTemplateId, ...)` 에 넘긴 값이 그대로 돌아온 것이다
