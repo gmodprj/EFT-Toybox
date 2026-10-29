@@ -4,20 +4,38 @@
 # config.jsonc 는 이미 있으면 그대로 둔다(사용자가 고친 값을 덮지 않는다).
 param(
     [string]$SptDir = 'E:\Spt',
-    [switch]$Remove
+    [switch]$Remove,
+    # 프리셋까지 싹 지운다. -Remove 는 프리셋을 남긴다.
+    [switch]$Purge
 )
 
 $ErrorActionPreference = 'Stop'
 
 $dest = Join-Path $SptDir 'SPT_Runtime\user\mods\AirdropCaller'
+# 프리셋은 **사용자가 만든 것**이다. 모드 폴더 안에 있다고 해서 모드 파일이 아니다.
+# 한 번 -Remove 로 통째로 날려 먹어서 이렇게 갈라 둔다 (2026-10-29).
+$presets = Join-Path $dest 'presets'
 
-if ($Remove) {
-    if (Test-Path $dest) {
+if ($Remove -or $Purge) {
+    if (-not (Test-Path $dest)) {
+        "없다(건너뜀): $dest"
+        "서버를 다시 켜야 빠진다."
+        return
+    }
+
+    $keep = (-not $Purge) -and (Test-Path $presets)
+    if ($keep) {
+        # 모드 파일만 걷어내고 프리셋은 그 자리에 둔다.
+        Get-ChildItem $dest -Force | Where-Object { $_.FullName -ne $presets } |
+            Remove-Item -Recurse -Force -Confirm:$false
+        $n = (Get-ChildItem $presets -Recurse -File -Filter *.json -ErrorAction SilentlyContinue).Count
+        "지웠다: $dest 의 모드 파일"
+        "남겼다: $presets  (프리셋 $n 개 — 싹 지우려면 -Purge)"
+    } else {
         Remove-Item $dest -Recurse -Force -Confirm:$false
         "지웠다: $dest"
-    } else {
-        "없다(건너뜀): $dest"
     }
+
     "서버를 다시 켜야 빠진다."
     return
 }
