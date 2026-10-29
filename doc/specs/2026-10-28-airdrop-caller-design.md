@@ -514,8 +514,11 @@ tools/install-airdropcaller.ps1
    `doc/PROCEDURE.md` 에 "서버의 웹 인증이 켜져 있어 API로 상점 목록 등을 직접 조회할 수
    없음" 이라고 적혀 있는데 `Give Ui` 는 되고 있다. **이 메모와 실제가 어긋난다** — 어느
    쪽이 맞는지 1단계에서 밝힌다. (요구할 경우 어떻게 할지는 §7.13 에서 정해 뒀다)
-5. 설치 모드가 186개다. 에어드롭을 건드리는 모드가 이미 있는지 전수로 보지 않았다
-   (`Airburst` 는 이름만 비슷하고 수류탄 모드로 보인다). 1단계 전에 한 번 훑는다.
+5. ~~에어드롭을 건드리는 모드가 있는지 전수로 보지 않았다~~ → **하나 있다. Dynamic Maps 다.**
+   게임 로그의 `Enabled patch AirdropBoxOnBoxLandPatch` 가
+   `plugins\mpstark-dynamicmaps\DynamicMaps.dll` 것으로, 상자가 착지하면 지도에 표시를
+   찍는다. **우리 드롭도 같은 상자를 쓰므로 지도에 함께 뜬다** — 공짜로 얻는 편의다.
+   (`Airburst` 는 이름만 비슷한 수류탄 모드였다)
 6. ~~우리 상자를 어떤 값으로 식별할지 모른다~~ → **풀렸다.** 우리가 `InitAirdrop` 에 넘긴
    `lootTemplateId` 가 `POST /client/airdrop/loot` 의 `containerId` 로 그대로 돌아온다.
    알아볼 방법을 찾는 문제가 아니라 **이름을 붙여 보내는** 문제였다 (§7.5).
