@@ -41,8 +41,15 @@ public class RaidState
     private HeartbeatRequest _last = new();
     private DateTime _lastAt = DateTime.MinValue;
 
-    /// <summary>이만큼 보고가 없으면 게임이 꺼진 것으로 본다.</summary>
-    public static readonly TimeSpan StaleAfter = TimeSpan.FromSeconds(15);
+    /// <summary>
+    /// 이만큼 보고가 없으면 게임이 꺼진 것으로 본다.
+    ///
+    /// **느린 보고 주기보다 넉넉히 길어야 한다.** 창이 꺼져 있으면 플러그인은
+    /// <see cref="Config.IdleHeartbeatSeconds"/>(10초)마다만 보고한다. 이 값이 그와
+    /// 비슷하면, 게임이 멀쩡히 돌아가는데도 창이 "게임 안 켜짐" 과 레이드 상태를
+    /// 오락가락하게 된다.
+    /// </summary>
+    public static readonly TimeSpan StaleAfter = TimeSpan.FromSeconds(30);
 
     public void Report(HeartbeatRequest report)
     {

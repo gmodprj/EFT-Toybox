@@ -38,9 +38,11 @@ public class AirdropCallerRouter : StaticRouter
         DropQueue queue,
         RaidState raidState,
         ItemSearch itemSearch,
-        PresetStore presets)
+        PresetStore presets,
+        WindowWatch windowWatch)
         : base(jsonUtil, BuildRoutes(
-            jsonUtil, logger, store, httpResponseUtil, crateBuilder, queue, raidState, itemSearch, presets))
+            jsonUtil, logger, store, httpResponseUtil, crateBuilder, queue, raidState, itemSearch, presets,
+            windowWatch))
     {
     }
 
@@ -53,7 +55,8 @@ public class AirdropCallerRouter : StaticRouter
         DropQueue queue,
         RaidState raidState,
         ItemSearch itemSearch,
-        PresetStore presets)
+        PresetStore presets,
+        WindowWatch windowWatch)
     {
         string Json<T>(T value) => jsonUtil.Serialize(value) ?? "{}";
 
@@ -66,8 +69,12 @@ public class AirdropCallerRouter : StaticRouter
 
             new RouteAction(
                 "/airdrop-caller/state",
-                (url, info, sessionId, output, ct) => ValueTask.FromResult<object>(
-                    Json(BuildState(store.Config, queue, raidState)))),
+                (url, info, sessionId, output, ct) =>
+                {
+                    // 창이 아직 보고 있다는 표시. 플러그인의 보고 주기가 여기에 달렸다.
+                    windowWatch.Note();
+                    return ValueTask.FromResult<object>(Json(BuildState(store.Config, queue, raidState)));
+                }),
 
             new RouteAction<QueueRequest>(
                 "/airdrop-caller/queue",
@@ -127,9 +134,38 @@ public class AirdropCallerRouter : StaticRouter
                         queue.Clear();
                     }
 
-                    return ValueTask.FromResult(Json(new SimpleResponse { Ok = true }));
+                    // 예약은 **레이드 안에서만** 꺼내 간다. 밖에서 꺼내면 떨어뜨릴 곳이 없다.
+                    var dropId = info.InRaid ? queue.Pop() : null;
+
+                    return ValueTask.FromResult(Json(new HeartbeatResponse
+                    {
+                        DropId = dropId,
+                        NextSeconds = NextHeartbeatSeconds(store.Config, queue, windowWatch, dropId),
+                    }));
                 }),
         ];
+    }
+
+    /// <summary>
+    /// 플러그인이 다음 보고까지 쉴 시간.
+    ///
+    /// 빠르게 받아야 하는 때는 **둘뿐**이다 — 창이 열려 상태를 보고 있을 때(곧
+    /// 떨어뜨리기를 누를 수 있다)와, 이미 예약이 걸려 있을 때. 그 밖에는 아무도
+    /// 안 읽는 보고라 천천히 받는다.
+    ///
+    /// 창은 상태를 2초마다 물어보므로, 창을 켜면 늦어도 한 번의 느린 주기 안에
+    /// 다시 빨라진다.
+    /// </summary>
+    private static double NextHeartbeatSeconds(
+        Config config, DropQueue queue, WindowWatch windowWatch, string? justPopped)
+    {
+        if (justPopped is not null || windowWatch.Watching)
+        {
+            return config.FastHeartbeatSeconds;
+        }
+
+        var (hasPending, _, _) = queue.Status();
+        return hasPending ? config.FastHeartbeatSeconds : config.IdleHeartbeatSeconds;
     }
 
     // ── 바닐라 전리품 라우트 ────────────────────────────────────────────────

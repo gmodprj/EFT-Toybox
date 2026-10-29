@@ -93,6 +93,29 @@ public record PendingResponse
     public string? DropId { get; set; }
 }
 
+/// <summary>
+/// 상태 보고에 대한 답.
+///
+/// 예약을 **여기에 실어 보낸다.** 전에는 플러그인이 1초마다 `/pending` 을 따로
+/// 물어봤는데, 보고를 이미 주고받는 자리가 있는데 길을 하나 더 쓸 이유가 없었다.
+/// </summary>
+public record HeartbeatResponse
+{
+    [JsonPropertyName("ok")]
+    public bool Ok { get; set; } = true;
+
+    /// <summary>꺼내 간 예약. 없으면 null.</summary>
+    [JsonPropertyName("dropId")]
+    public string? DropId { get; set; }
+
+    /// <summary>
+    /// 다음 보고까지 쉴 시간. **서버가 정한다** — 창이 꺼져 있으면 아무도 안 읽는
+    /// 보고라 천천히 받는다. 창이 다시 열리면 바로 빨라진다.
+    /// </summary>
+    [JsonPropertyName("nextSeconds")]
+    public double NextSeconds { get; set; }
+}
+
 public record SimpleResponse
 {
     [JsonPropertyName("ok")]
