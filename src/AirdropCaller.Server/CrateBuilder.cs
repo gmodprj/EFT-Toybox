@@ -40,10 +40,15 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
     };
 
     /// <summary>
-    /// 조립 결과. 안 들어간 품목이 있으면 <see cref="Skipped"/> 에 남는다 —
-    /// 조용히 버리지 않는다.
+    /// 조립 결과. 조용히 버리거나 조용히 고치지 않는다.
+    ///
+    /// 둘을 **따로** 둔다. <see cref="Skipped"/> 는 못 담은 것이고,
+    /// <see cref="Adjusted"/> 는 담기는 했는데 적어 낸 대로는 아닌 것이다.
+    /// 한 자루에 넣었더니 창이 "못 담은 것 1개" 라고 말하는데 정작 상자에는
+    /// 들어 있는 꼴이 됐다.
     /// </summary>
-    public record Result(GetAirdropLootResponse Response, int Placed, List<string> Skipped);
+    public record Result(
+        GetAirdropLootResponse Response, int Placed, List<string> Skipped, List<string> Adjusted);
 
     public Result? Build(string dropId, DropSpec spec)
     {
@@ -70,14 +75,25 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
 
         var items = new List<Item> { crate };
         var skipped = new List<string>();
+        var adjusted = new List<string>();
 
-        Place(spec.Items, crate, crateMap!, crateSlot, items, skipped, depth: 0);
+        Place(spec.Items, crate, crateMap!, crateSlot, items, skipped, adjusted, depth: 0);
 
         return new Result(
             new GetAirdropLootResponse { Icon = icon, Container = items },
             items.Count - 1,
-            skipped);
+            Collapse(skipped),
+            Collapse(adjusted));
     }
+
+    /// <summary>
+    /// 같은 말을 여러 줄로 늘어놓지 않는다. 방탄복 20개를 120칸 상자에 넣으면
+    /// "자리 없음" 이 열네 줄로 돌아왔다 — 창에서 읽을 수 있는 문구가 아니다.
+    /// </summary>
+    private static List<string> Collapse(List<string> lines) =>
+        lines.GroupBy(line => line)
+             .Select(g => g.Count() > 1 ? $"{g.Key} ×{g.Count()}" : g.Key)
+             .ToList();
 
     /// <summary>
     /// <paramref name="parent"/> 안에 <paramref name="entries"/> 를 넣는다.
@@ -90,6 +106,7 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
         string parentSlot,
         List<Item> items,
         List<string> skipped,
+        List<string> adjusted,
         int depth)
     {
         if (entries is null || entries.Count == 0)
@@ -110,7 +127,7 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                 continue;
             }
 
-            var stack = StackFor(entry, skipped);
+            var stack = StackFor(entry, adjusted);
 
             for (var i = 0; i < Math.Max(1, entry.Count); i++)
             {
@@ -157,7 +174,7 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                     continue;
                 }
 
-                Place(entry.Items, item, childMap!, childSlot, items, skipped, depth + 1);
+                Place(entry.Items, item, childMap!, childSlot, items, skipped, adjusted, depth + 1);
             }
         }
     }
@@ -172,7 +189,7 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
     /// 최대치는 아이템 DB 에서 읽는다. 스택을 바꾸는 서버 모드가 여럿 깔려 있어
     /// (BarterItemsStacks 등) 어느 설정 파일도 진실이 아니다 — 다 지나간 뒤의 DB 만 맞다.
     /// </summary>
-    private double StackFor(ItemSpec entry, List<string> skipped)
+    private double StackFor(ItemSpec entry, List<string> adjusted)
     {
         var wanted = entry.StackSize is > 0 ? entry.StackSize.Value : 1;
 
@@ -189,7 +206,7 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
             return wanted;
         }
 
-        skipped.Add($"{entry.Tpl} (묶음 {wanted} → {max} 로 깎았다 — 이 아이템은 그만큼만 묶인다)");
+        adjusted.Add($"{entry.Tpl} (묶음 {wanted} → {max} 로 깎았다 — 이 아이템은 그만큼만 묶인다)");
         return max;
     }
 

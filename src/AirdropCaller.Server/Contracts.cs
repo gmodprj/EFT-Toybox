@@ -41,8 +41,16 @@ public record QueueResponse
     public int Placed { get; set; }
 
     /// <summary>격자에 안 들어가 못 담은 것. **조용히 버리지 않는다.**</summary>
+    /// <summary>못 담은 것. 상자에 들어가지 않았다.</summary>
     [JsonPropertyName("skipped")]
     public List<string> Skipped { get; set; } = [];
+
+    /// <summary>
+    /// 담기는 했는데 적어 낸 대로는 아닌 것(묶음을 깎았다 등).
+    /// <see cref="Skipped"/> 와 섞으면 "못 담았다" 고 말해 놓고 상자에는 들어 있게 된다.
+    /// </summary>
+    [JsonPropertyName("adjusted")]
+    public List<string> Adjusted { get; set; } = [];
 
     /// <summary>거절했을 때 그 이유를 사람이 읽는 문장으로.</summary>
     [JsonPropertyName("reason")]

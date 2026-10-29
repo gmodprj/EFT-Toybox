@@ -146,6 +146,23 @@ public class AirdropCallerRouter : StaticRouter
         ];
     }
 
+    /// <summary>로그 한 줄에 덧붙일 말. 못 담은 것과 고친 것을 따로 적는다.</summary>
+    private static string Note(CrateBuilder.Result built)
+    {
+        var parts = new List<string>();
+        if (built.Skipped.Count > 0)
+        {
+            parts.Add($"못 담은 것: {string.Join(", ", built.Skipped)}");
+        }
+
+        if (built.Adjusted.Count > 0)
+        {
+            parts.Add($"고친 것: {string.Join(", ", built.Adjusted)}");
+        }
+
+        return parts.Count == 0 ? "." : $" ({string.Join(" / ", parts)})";
+    }
+
     /// <summary>
     /// 플러그인이 다음 보고까지 쉴 시간.
     ///
@@ -221,9 +238,7 @@ public class AirdropCallerRouter : StaticRouter
         }
 
         logger.Info($"[AirdropCaller] {containerId} → {spec.Icon} 상자에 {built.Placed}개를 담았다"
-                    + (built.Skipped.Count > 0
-                        ? $" (못 담은 것 {built.Skipped.Count}개: {string.Join(", ", built.Skipped)})"
-                        : "."));
+                    + Note(built));
 
         return httpResponseUtil.GetBody(built.Response);
     }
@@ -351,7 +366,7 @@ public class AirdropCallerRouter : StaticRouter
         ISptLogger<AirdropCallerRouter> logger, string dropId, DropSpec spec, CrateBuilder.Result built)
     {
         logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon} 상자에 {built.Placed}개"
-                    + (built.Skipped.Count > 0 ? $" (못 담은 것 {built.Skipped.Count}개)" : "."));
+                    + Note(built));
 
         return new QueueResponse
         {
@@ -359,6 +374,7 @@ public class AirdropCallerRouter : StaticRouter
             DropId = dropId,
             Placed = built.Placed,
             Skipped = built.Skipped,
+            Adjusted = built.Adjusted,
         };
     }
 }

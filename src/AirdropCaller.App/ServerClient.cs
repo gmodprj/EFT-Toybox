@@ -147,6 +147,9 @@ public record QueueResponse
     [JsonPropertyName("dropId")] public string? DropId { get; set; }
     [JsonPropertyName("placed")] public int Placed { get; set; }
     [JsonPropertyName("skipped")] public List<string> Skipped { get; set; } = [];
+
+    /// <summary>담기는 했는데 적어 낸 대로는 아닌 것(묶음을 깎았다 등).</summary>
+    [JsonPropertyName("adjusted")] public List<string> Adjusted { get; set; } = [];
     [JsonPropertyName("reason")] public string? Reason { get; set; }
 }
 

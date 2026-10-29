@@ -737,11 +737,17 @@ public partial class MainWindow : Window
                 return;
             }
 
+            // 조용히 버리지도, 조용히 고치지도 않는다. 둘을 **따로** 말한다 —
+            // 한데 묶었더니 "못 담은 것 1개" 라면서 정작 상자에는 들어 있었다.
             var text = $"예약했다 — {result.Placed}개를 담았다.";
             if (result.Skipped.Count > 0)
             {
-                // 조용히 버리지 않는다. 무엇이 안 들어갔는지 그대로 말한다.
-                text += $" 못 담은 것 {result.Skipped.Count}개: {string.Join(", ", result.Skipped)}";
+                text += $" 못 담은 것 {result.Skipped.Count}가지: {string.Join(", ", result.Skipped)}";
+            }
+
+            if (result.Adjusted.Count > 0)
+            {
+                text += $" 고친 것 {result.Adjusted.Count}가지: {string.Join(", ", result.Adjusted)}";
             }
 
             MessageLine.Text = text;
