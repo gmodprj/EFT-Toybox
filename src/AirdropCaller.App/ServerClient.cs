@@ -1,5 +1,7 @@
+using System.IO;
+using System.IO.Compression;
 using System.Net.Http;
-using System.Net.Http.Json;
+
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -111,18 +113,70 @@ public sealed class ServerClient : IDisposable
         PropertyNameCaseInsensitive = true,
     };
 
+    /// <summary>
+    /// SPT 는 응답 본문을 zlib 으로 **압축해서 보내면서 `Content-Encoding` 을 달지 않는다.**
+    /// 그래서 `HttpClient` 의 자동 해제가 걸리지 않는다. 게임 클라이언트
+    /// (`SPT.Common.Http.Client`)도 바이트로 받아 `Zlib.IsCompressed` 로 보고 직접 푼다 —
+    /// 같은 방식을 따른다.
+    ///
+    /// 보내는 쪽은 평범한 JSON 이어도 받아 준다(실측).
+    /// </summary>
+    private static async Task<T?> ReadAsync<T>(HttpResponseMessage response, CancellationToken ct)
+    {
+        response.EnsureSuccessStatusCode();
+        var bytes = await response.Content.ReadAsByteArrayAsync(ct);
+        if (bytes.Length == 0)
+        {
+            return default;
+        }
+
+        if (LooksLikeZlib(bytes))
+        {
+            using var input = new MemoryStream(bytes);
+            using var zlib = new ZLibStream(input, CompressionMode.Decompress);
+            return await JsonSerializer.DeserializeAsync<T>(zlib, Options, ct);
+        }
+
+        return JsonSerializer.Deserialize<T>(bytes, Options);
+    }
+
+    /// <summary>
+    /// zlib 머리글: 첫 바이트가 0x78 이고 두 바이트를 묶은 값이 31 로 나누어떨어진다.
+    /// JSON 은 `{` 나 `[` 로 시작하므로 섞일 일이 없다.
+    /// </summary>
+    private static bool LooksLikeZlib(byte[] bytes) =>
+        bytes.Length >= 2 && bytes[0] == 0x78 && ((bytes[0] << 8) | bytes[1]) % 31 == 0;
+
+    /// <summary>
+    /// **요청 본문도 zlib 으로 압축해야 한다.** 평범한 JSON 을 보내면 서버가 200 을
+    /// 돌려주지만 본문을 못 읽어 빈 응답이 온다(실측). 게임 클라이언트도
+    /// `Zlib.Compress` 로 보낸다 — 같은 방식을 따른다.
+    /// </summary>
+    private static ByteArrayContent Compress(object body)
+    {
+        var json = JsonSerializer.SerializeToUtf8Bytes(body, Options);
+        using var output = new MemoryStream();
+        using (var zlib = new ZLibStream(output, CompressionLevel.Optimal, leaveOpen: true))
+        {
+            zlib.Write(json, 0, json.Length);
+        }
+
+        var content = new ByteArrayContent(output.ToArray());
+        content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+        return content;
+    }
+
     private async Task<T?> PostAsync<T>(string path, object? body, CancellationToken ct)
     {
-        using var response = await _http.PostAsJsonAsync(path, body ?? new { }, Options, ct);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<T>(Options, ct);
+        using var content = Compress(body ?? new { });
+        using var response = await _http.PostAsync(path, content, ct);
+        return await ReadAsync<T>(response, ct);
     }
 
     private async Task<T?> GetAsync<T>(string path, CancellationToken ct)
     {
         using var response = await _http.GetAsync(path, ct);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<T>(Options, ct);
+        return await ReadAsync<T>(response, ct);
     }
 
     public Task<StateResponse?> GetStateAsync(CancellationToken ct) =>
