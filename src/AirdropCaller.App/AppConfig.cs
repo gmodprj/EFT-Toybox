@@ -26,6 +26,13 @@ public class AppConfig
     public double StatePollSeconds { get; set; } = 2;
 
     /// <summary>
+    /// 즐겨찾기한 아이템 tpl. 창의 분류 목록 맨 위에 "★ 즐겨찾기" 로 모아 보여 준다.
+    /// 서버에 두지 않는다 — 이것은 **이 창을 쓰는 사람의 취향**이지 프로필 자료가 아니다.
+    /// </summary>
+    [JsonPropertyName("favorites")]
+    public List<string> Favorites { get; set; } = [];
+
+    /// <summary>
     /// 기본은 **꺼짐**이다. 켜 두면 다른 창을 이 창 위에 올릴 수 없어 가린 채로
     /// 일하게 된다. 레이드 중에만 켜고 싶은 것이므로 창의 체크상자로 켠다.
     /// </summary>

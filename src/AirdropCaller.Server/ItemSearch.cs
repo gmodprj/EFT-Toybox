@@ -31,6 +31,14 @@ public record FoundItem
     /// <summary>핸드북 분류 이름. 외부 창이 이것으로 묶어 보여 준다.</summary>
     [JsonPropertyName("category")] public string Category { get; set; } = string.Empty;
 
+    /// <summary>
+    /// 이름에 붙어 있던 색(`#RRGGBB`). 없으면 빈 값.
+    ///
+    /// 다른 모드가 `&lt;color=#2694da&gt;` 로 등급을 색으로 표시한다. 태그를 글자에서
+    /// 떼되 **그 정보까지 버리지는 않는다** — 창이 이 색으로 이름을 칠한다.
+    /// </summary>
+    [JsonPropertyName("color")] public string Color { get; set; } = string.Empty;
+
     /// <summary>격자에서 차지하는 칸.</summary>
     [JsonPropertyName("width")] public int Width { get; set; }
     [JsonPropertyName("height")] public int Height { get; set; }
@@ -233,7 +241,8 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
 
             // 태그를 먼저 뗀다. 안 그러면 "color" 나 "2694da" 로도 걸리고,
             // 이름 안의 글자를 찾을 때 태그가 끼어든다.
-            var name = StripTags(value ?? string.Empty);
+            var raw = value ?? string.Empty;
+            var name = StripTags(raw);
             if (needle.Length > 0
                 && name.IndexOf(needle, StringComparison.OrdinalIgnoreCase) < 0
                 && tpl.IndexOf(needle, StringComparison.OrdinalIgnoreCase) < 0)
@@ -241,7 +250,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
                 continue;
             }
 
-            var found = Describe(tpl, name, locale);
+            var found = Describe(tpl, name, ExtractColor(raw), locale);
             if (found is null)
             {
                 continue;
@@ -274,6 +283,30 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
     /// 처럼. 게임 안에서는 그 태그가 색으로 보이지만 우리 창은 글자 그대로 찍어
     /// 읽을 수가 없었다. 붙은 별표(`★`) 같은 것은 그대로 둔다 — 그건 글자다.
     /// </summary>
+    /// <summary>
+    /// 이름에 박힌 `&lt;color=#RRGGBB&gt;` 에서 색만 꺼낸다. 없으면 빈 값.
+    /// 등급을 색으로 나타내는 모드가 붙여 둔 것이라 **버리면 구분이 사라진다.**
+    /// </summary>
+    private static string ExtractColor(string text)
+    {
+        const string marker = "color=#";
+        var at = text.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+        if (at < 0)
+        {
+            return string.Empty;
+        }
+
+        var start = at + marker.Length;
+        var end = start;
+        while (end < text.Length && Uri.IsHexDigit(text[end]) && end - start < 8)
+        {
+            end++;
+        }
+
+        var hex = text[start..end];
+        return hex.Length is 6 or 8 ? "#" + hex : string.Empty;
+    }
+
     private static string StripTags(string text)
     {
         if (text.IndexOf('<') < 0)
@@ -305,7 +338,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
         return sb.ToString().Trim();
     }
 
-    private FoundItem? Describe(string tpl, string name, IReadOnlyDictionary<string, string> locale)
+    private FoundItem? Describe(string tpl, string name, string color, IReadOnlyDictionary<string, string> locale)
     {
         MongoId id;
         try
@@ -330,6 +363,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
         {
             Tpl = tpl,
             Name = name,
+            Color = color,
             ShortName = locale.TryGetValue(tpl + " ShortName", out var shortName) ? StripTags(shortName) : string.Empty,
             Category = categoryId.Length > 0 ? NameOfCategory(categoryId) : "(분류 없음)",
             Width = props.Width ?? 1,

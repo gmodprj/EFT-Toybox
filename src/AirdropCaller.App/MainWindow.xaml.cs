@@ -54,6 +54,9 @@ public partial class MainWindow : Window
     /// </summary>
     private bool _listsLoaded;
 
+    /// <summary>글자를 칠 때마다 서버를 때리지 않도록 멈춘 뒤 한 번만 보낸다.</summary>
+    private readonly DispatcherTimer _searchDebounce = new() { Interval = TimeSpan.FromMilliseconds(250) };
+
     public MainWindow()
     {
         InitializeComponent();
@@ -81,6 +84,12 @@ public partial class MainWindow : Window
         _timer.Tick += async (_, _) => await RefreshStateAsync();
         _timer.Start();
 
+        _searchDebounce.Tick += async (_, _) =>
+        {
+            _searchDebounce.Stop();
+            await RunSearchAsync();
+        };
+
         Loaded += async (_, _) => await LoadListsAsync();
     }
 
@@ -101,7 +110,11 @@ public partial class MainWindow : Window
                 return;
             }
 
-            var all = new List<CategoryInfo> { new() { Id = string.Empty, Name = "(전체 — 이름으로 찾기)" } };
+            var all = new List<CategoryInfo>
+            {
+                new() { Id = FavoriteCategoryId, Name = "★ 즐겨찾기", Count = _config.Favorites.Count },
+                new() { Id = string.Empty, Name = "(전체 — 이름으로 찾기)" },
+            };
             all.AddRange(categories.Categories);
             CategoryBox.ItemsSource = all;
 
@@ -118,7 +131,8 @@ public partial class MainWindow : Window
             // 첫 분류를 골라 두어 바로 뭔가 보이게 한다.
             if (CategoryBox.SelectedIndex < 0)
             {
-                CategoryBox.SelectedIndex = all.Count > 1 ? 1 : 0;
+                // 즐겨찾기가 있으면 거기부터. 없으면 첫 진짜 분류.
+                CategoryBox.SelectedIndex = _config.Favorites.Count > 0 ? 0 : Math.Min(2, all.Count - 1);
             }
         }
         catch (Exception e)
@@ -228,6 +242,32 @@ public partial class MainWindow : Window
         UpdateFitHint();
     }
 
+    /// <summary>
+    /// 고른 프리셋을 그대로 베껴 새것으로 만든다. 저장을 눌러야 서버에 올라간다 —
+    /// 베끼자마자 이름을 고치는 것이 보통이라 한 번 더 묻지 않는다.
+    /// </summary>
+    private void OnCopyPreset(object sender, RoutedEventArgs e)
+    {
+        if (PresetList.SelectedItem is not Preset preset)
+        {
+            MessageLine.Text = "베낄 프리셋을 먼저 고른다.";
+            return;
+        }
+
+        PresetList.SelectedItem = null;
+        PresetNameBox.Text = preset.Name + " 사본";
+        IconBox.SelectedIndex = preset.Icon switch { "Supply" => 1, "Medical" => 2, "Weapon" => 3, _ => 0 };
+
+        _items.Clear();
+        foreach (var item in preset.Items)
+        {
+            _items.Add(new ItemRow { Tpl = item.Tpl, Name = item.Tpl, Count = item.Count, StackSize = item.StackSize });
+        }
+
+        UpdateFitHint();
+        MessageLine.Text = "베꼈다. 이름을 고치고 저장을 누른다.";
+    }
+
     private void OnNewPreset(object sender, RoutedEventArgs e)
     {
         PresetList.SelectedItem = null;
@@ -304,15 +344,38 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void OnSearch(object sender, RoutedEventArgs e) => await RunSearchAsync();
-
-    private async void OnSearchKeyDown(object sender, KeyEventArgs e)
+    /// <summary>
+    /// 글자를 칠 때마다 서버를 때리면 과하다. 멈춘 뒤 잠깐 기다렸다 한 번만 보낸다.
+    /// </summary>
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
-        if (e.Key == Key.Enter)
-        {
-            await RunSearchAsync();
-        }
+        _searchDebounce.Stop();
+        _searchDebounce.Start();
     }
+
+    /// <summary>
+    /// 즐겨찾기 토글. 고른 것이 목록에 있으면 빼고 없으면 넣는다.
+    /// ★ 분류를 보고 있었다면 바로 다시 그린다.
+    /// </summary>
+    private async void OnToggleFavorite(object sender, RoutedEventArgs e)
+    {
+        if (SearchList.SelectedItem is not FoundItem found)
+        {
+            MessageLine.Text = "즐겨찾기할 아이템을 먼저 고른다.";
+            return;
+        }
+
+        if (!_config.Favorites.Remove(found.Tpl))
+        {
+            _config.Favorites.Add(found.Tpl);
+        }
+
+        _config.Save();
+        await RunSearchAsync();
+    }
+
+    /// <summary>즐겨찾기 묶음을 가리키는 가짜 분류 id. 서버는 이 값을 모른다.</summary>
+    private const string FavoriteCategoryId = "::favorites";
 
     private async Task RunSearchAsync()
     {
@@ -323,6 +386,13 @@ public partial class MainWindow : Window
 
         var category = (CategoryBox.SelectedItem as CategoryInfo)?.Id ?? string.Empty;
         var query = SearchBox.Text.Trim();
+
+        // 즐겨찾기는 서버에 없다. 찜한 tpl 로 직접 찾아 모은다.
+        if (category == FavoriteCategoryId)
+        {
+            await ShowFavoritesAsync(query);
+            return;
+        }
 
         if (query.Length == 0 && category.Length == 0)
         {
@@ -335,15 +405,53 @@ public partial class MainWindow : Window
             var found = await _client.SearchAsync(query, category, 400, CancellationToken.None);
             var items = found?.Items ?? [];
 
-            // 분류별로 묶어 보여 준다. 2만 개를 한 줄씩 훑게 둘 수는 없다.
-            var view = new CollectionViewSource { Source = items };
-            view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(FoundItem.Category)));
-            SearchList.ItemsSource = view.View;
-
-            SearchHint.Text = items.Count == 0
-                ? "  없다"
-                : found!.Truncated ? $"  {items.Count}개 — 더 있다. 좁혀 본다" : $"  {items.Count}개";
+            Show(items, found!.Truncated);
         });
+    }
+
+    private async Task ShowFavoritesAsync(string query)
+    {
+        if (_config.Favorites.Count == 0)
+        {
+            SearchList.ItemsSource = null;
+            SearchHint.Text = "  아직 없다 — 아이템을 고르고 '즐겨찾기 ☆'";
+            return;
+        }
+
+        await Guard(async () =>
+        {
+            // tpl 로 하나씩 찾는다. 즐겨찾기는 많아야 수십 개라 이 정도면 된다.
+            var items = new List<FoundItem>();
+            foreach (var tpl in _config.Favorites)
+            {
+                var hit = await _client!.SearchAsync(tpl, null, 1, CancellationToken.None);
+                var item = hit?.Items.FirstOrDefault();
+                if (item is not null
+                    && (query.Length == 0 || item.Name.Contains(query, StringComparison.OrdinalIgnoreCase)))
+                {
+                    items.Add(item);
+                }
+            }
+
+            Show(items, false);
+        });
+    }
+
+    /// <summary>분류별로 묶어 보여 준다. 2만 개를 한 줄씩 훑게 둘 수는 없다.</summary>
+    private void Show(List<FoundItem> items, bool truncated)
+    {
+        foreach (var item in items)
+        {
+            item.Star = _config.Favorites.Contains(item.Tpl) ? "★" : string.Empty;
+        }
+
+        var view = new CollectionViewSource { Source = items };
+        view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(FoundItem.Category)));
+        SearchList.ItemsSource = view.View;
+
+        SearchHint.Text = items.Count == 0
+            ? "  없다"
+            : truncated ? $"  {items.Count}개 — 더 있다. 좁혀 본다" : $"  {items.Count}개";
     }
 
     private void OnAddItem(object sender, RoutedEventArgs e)
