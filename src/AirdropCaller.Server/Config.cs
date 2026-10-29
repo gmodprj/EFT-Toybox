@@ -21,6 +21,23 @@ public class Config
     public int CooldownSeconds { get; set; } = 30;
 
     /// <summary>
+    /// 창이 열려 있을 때 플러그인이 상태를 보고하는 주기(초).
+    /// 이 주기가 곧 "떨어뜨리기를 눌렀을 때 상자가 뜨기까지" 의 최대 지연이다.
+    /// </summary>
+    [JsonPropertyName("FastHeartbeatSeconds")]
+    public double FastHeartbeatSeconds { get; set; } = 2;
+
+    /// <summary>
+    /// 창이 꺼져 있을 때의 주기(초). 아무도 안 읽는 보고라 천천히 받는다.
+    /// 창을 켜면 늦어도 이만큼 뒤에 다시 빨라진다.
+    ///
+    /// **<see cref="RaidState.StaleAfter"/>(30초)보다 넉넉히 짧아야 한다.** 비슷하면
+    /// 게임이 돌아가는데도 창이 "게임 안 켜짐" 으로 깜빡인다.
+    /// </summary>
+    [JsonPropertyName("IdleHeartbeatSeconds")]
+    public double IdleHeartbeatSeconds { get; set; } = 10;
+
+    /// <summary>
     /// 상자 id → 그 상자에 담을 것.
     ///
     /// 이 id 는 게임이 `InitAirdrop(lootTemplateId, ...)` 에 넘긴 값이 그대로 돌아온 것이다

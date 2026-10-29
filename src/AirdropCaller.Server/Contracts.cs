@@ -41,8 +41,16 @@ public record QueueResponse
     public int Placed { get; set; }
 
     /// <summary>격자에 안 들어가 못 담은 것. **조용히 버리지 않는다.**</summary>
+    /// <summary>못 담은 것. 상자에 들어가지 않았다.</summary>
     [JsonPropertyName("skipped")]
     public List<string> Skipped { get; set; } = [];
+
+    /// <summary>
+    /// 담기는 했는데 적어 낸 대로는 아닌 것(묶음을 깎았다 등).
+    /// <see cref="Skipped"/> 와 섞으면 "못 담았다" 고 말해 놓고 상자에는 들어 있게 된다.
+    /// </summary>
+    [JsonPropertyName("adjusted")]
+    public List<string> Adjusted { get; set; } = [];
 
     /// <summary>거절했을 때 그 이유를 사람이 읽는 문장으로.</summary>
     [JsonPropertyName("reason")]
@@ -91,6 +99,29 @@ public record PendingResponse
     /// <summary>꺼내 간 예약. 없으면 null.</summary>
     [JsonPropertyName("dropId")]
     public string? DropId { get; set; }
+}
+
+/// <summary>
+/// 상태 보고에 대한 답.
+///
+/// 예약을 **여기에 실어 보낸다.** 전에는 플러그인이 1초마다 `/pending` 을 따로
+/// 물어봤는데, 보고를 이미 주고받는 자리가 있는데 길을 하나 더 쓸 이유가 없었다.
+/// </summary>
+public record HeartbeatResponse
+{
+    [JsonPropertyName("ok")]
+    public bool Ok { get; set; } = true;
+
+    /// <summary>꺼내 간 예약. 없으면 null.</summary>
+    [JsonPropertyName("dropId")]
+    public string? DropId { get; set; }
+
+    /// <summary>
+    /// 다음 보고까지 쉴 시간. **서버가 정한다** — 창이 꺼져 있으면 아무도 안 읽는
+    /// 보고라 천천히 받는다. 창이 다시 열리면 바로 빨라진다.
+    /// </summary>
+    [JsonPropertyName("nextSeconds")]
+    public double NextSeconds { get; set; }
 }
 
 public record SimpleResponse
