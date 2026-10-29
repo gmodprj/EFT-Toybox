@@ -65,4 +65,14 @@ public class ItemSpec
     /// </summary>
     [JsonPropertyName("StackSize")]
     public int? StackSize { get; set; }
+
+    /// <summary>
+    /// **이 품목 안에** 넣을 것. 이 품목이 격자를 가진 컨테이너여야 한다
+    /// (가방·케이스·파우치 등). 아니면 무시하고 기록에 남긴다.
+    ///
+    /// 두 가지를 한 구조로 푼다 — 보급 상자가 10×12=120칸으로 고정이라 더 담으려면
+    /// 안에 컨테이너를 넣어야 하고, 무기를 케이스에 담을지 말지도 이걸로 고른다.
+    /// </summary>
+    [JsonPropertyName("Items")]
+    public List<ItemSpec>? Items { get; set; }
 }

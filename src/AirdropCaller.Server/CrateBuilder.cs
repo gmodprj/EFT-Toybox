@@ -15,12 +15,19 @@ namespace AirdropCaller.Server;
 ///
 /// 바닐라(`AirdropService.GenerateAirdropLoot`)가 하는 것을 그대로 따른다 —
 /// 상자 아이템 하나를 만들고, 담을 것마다 격자에 자리가 있는지 보고, 들어가는 것만
-/// `ParentId` = 상자 id, `SlotId` = "main" 으로 붙인다. **좌표는 넣지 않는다**:
-/// 바닐라도 자리 유무만 보고 보내며 실제 배치는 클라이언트가 한다.
+/// `ParentId`·`SlotId` 로 붙인다. **좌표는 넣지 않는다**: 바닐라도 자리 유무만 보고
+/// 보내며 실제 배치는 클라이언트가 한다.
+///
+/// 바닐라와 다른 점은 **중첩**이다. 품목 안에 품목을 넣을 수 있다 —
+/// 보급 상자가 10×12=120칸으로 고정이라 더 담으려면 안에 컨테이너를 넣는 수밖에 없고,
+/// 무기를 케이스에 담을지 말지도 같은 구조로 고른다.
 /// </summary>
 [Injectable(InjectionType.Singleton)]
 public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper)
 {
+    /// <summary>중첩이 끝없이 깊어지는 것을 막는다. 가방 안의 가방 정도면 충분하다.</summary>
+    private const int MaxDepth = 4;
+
     /// <summary>
     /// 상자 종류 → 상자 템플릿. 바닐라 `GetAirdropCrateItem` 의 짝을 그대로 쓴다.
     /// </summary>
@@ -55,13 +62,48 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
             Upd = new Upd { SpawnedInSession = true, StackObjectsCount = 1.0 },
         };
 
-        // 이 격자가 "무엇이 들어가는가" 를 정한다. 상자 종류마다 다르다.
-        var map = itemHelper.GetContainerMapping(crateTpl);
+        if (!TryOpenContainer(crateTpl, out var crateMap, out var crateSlot))
+        {
+            logger.Error($"[AirdropCaller] {dropId}: 상자 {crateTpl} 에 격자가 없다.");
+            return null;
+        }
 
         var items = new List<Item> { crate };
         var skipped = new List<string>();
 
-        foreach (var entry in spec.Items)
+        Place(spec.Items, crate, crateMap!, crateSlot, items, skipped, depth: 0);
+
+        return new Result(
+            new GetAirdropLootResponse { Icon = icon, Container = items },
+            items.Count - 1,
+            skipped);
+    }
+
+    /// <summary>
+    /// <paramref name="parent"/> 안에 <paramref name="entries"/> 를 넣는다.
+    /// 자리가 없으면 넣지 않고 <paramref name="skipped"/> 에 적는다.
+    /// </summary>
+    private void Place(
+        List<ItemSpec>? entries,
+        Item parent,
+        int[,] parentMap,
+        string parentSlot,
+        List<Item> items,
+        List<string> skipped,
+        int depth)
+    {
+        if (entries is null || entries.Count == 0)
+        {
+            return;
+        }
+
+        if (depth >= MaxDepth)
+        {
+            skipped.Add($"{entries.Count}종 (너무 깊이 겹쳤다 — {MaxDepth}겹까지만 담는다)");
+            return;
+        }
+
+        foreach (var entry in entries)
         {
             if (string.IsNullOrWhiteSpace(entry.Tpl))
             {
@@ -74,8 +116,8 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                 {
                     Id = new MongoId(),
                     Template = new MongoId(entry.Tpl),
-                    ParentId = crate.Id,
-                    SlotId = "main",
+                    ParentId = parent.Id,
+                    SlotId = parentSlot,
                     Upd = new Upd
                     {
                         SpawnedInSession = true,
@@ -90,22 +132,77 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                     continue;
                 }
 
-                var slot = map.FindSlotForItem(size.Width, size.Height);
+                var slot = parentMap.FindSlotForItem(size.Width, size.Height);
                 if (slot.Success != true)
                 {
                     skipped.Add($"{entry.Tpl} (자리 없음)");
                     continue;
                 }
 
-                map.TryFillContainerMapWithItem(
+                parentMap.TryFillContainerMapWithItem(
                     slot.X!.Value, slot.Y!.Value, size.Width, size.Height, slot.Rotation ?? false, out _);
                 items.Add(item);
+
+                if (entry.Items is null || entry.Items.Count == 0)
+                {
+                    continue;
+                }
+
+                // 안에 넣을 것이 있다. 이 품목이 격자를 가진 컨테이너여야 한다.
+                if (!TryOpenContainer(item.Template, out var childMap, out var childSlot))
+                {
+                    skipped.Add($"{entry.Tpl} 안의 {entry.Items.Count}종 (이 품목은 담을 수 없다 — 격자가 없다)");
+                    continue;
+                }
+
+                Place(entry.Items, item, childMap!, childSlot, items, skipped, depth + 1);
             }
         }
+    }
 
-        return new Result(
-            new GetAirdropLootResponse { Icon = icon, Container = items },
-            items.Count - 1,
-            skipped);
+    /// <summary>
+    /// 격자를 가진 컨테이너면 빈 격자 지도와 칸 이름을 돌려준다.
+    ///
+    /// `ItemHelper.GetContainerMapping` 은 **첫 격자만** 보고 격자가 없으면 던진다.
+    /// 밖에서 오는 tpl 로 부르는 자리라 던지게 둘 수 없어 감싼다. 격자가 여럿인
+    /// 물건(조끼 등)은 **첫 칸만** 쓴다 — 적게 담을지언정 틀리게 담지는 않는다.
+    /// </summary>
+    private bool TryOpenContainer(MongoId tpl, out int[,]? map, out string slotId)
+    {
+        map = null;
+        slotId = "main";
+
+        var (ok, template) = itemHelper.GetItem(tpl);
+        var grids = template?.Properties?.Grids;
+        if (!ok || grids is null)
+        {
+            return false;
+        }
+
+        var first = grids.FirstOrDefault();
+        if (first is null)
+        {
+            return false;
+        }
+        if (first.Properties?.CellsH is not > 0 || first.Properties?.CellsV is not > 0)
+        {
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(first.Name))
+        {
+            slotId = first.Name!;
+        }
+
+        try
+        {
+            map = itemHelper.GetContainerMapping(tpl);
+            return true;
+        }
+        catch (Exception e)
+        {
+            logger.Error($"[AirdropCaller] {tpl} 의 격자를 읽지 못했다: {e.Message}");
+            return false;
+        }
     }
 }
