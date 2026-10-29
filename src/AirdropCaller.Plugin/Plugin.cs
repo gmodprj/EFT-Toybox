@@ -119,7 +119,21 @@ namespace AirdropCaller.Plugin
 
             try
             {
-                _heartbeatCall = RequestHandler.PostJsonAsync(HeartbeatUrl, JsonConvert.SerializeObject(body));
+                // **반드시 Task.Run 으로 감싼다.** `PostJsonAsync` 는 async 지만, 첫 await
+                // 앞까지는 **부른 스레드**에서 돈다 — 그리고 그 앞에 이것이 있다
+                // (SPT.Common.Http.Client.SendAsync):
+                //
+                //     if (zipped) data = Zlib.Compress(data, ZlibCompression.Maximum);
+                //
+                // zlib.NET 의 `ZOutputStream` 을 최대 압축으로 새로 만드는 일이다. 호출마다
+                // deflate 상태 버퍼를 통째로 할당한다. 그걸 Update() 에서 부르면 메인
+                // 스레드가 그 할당과 GC 를 떠안고, 화면이 한 번 튄다 — 사용자가 보고한
+                // "heartbeat 로그가 찍힐 때마다 깜빡인다" 가 이것이었다(2026-10-29).
+                //
+                // GET 은 data 가 null 이라 이 줄을 건너뛴다. 그래서 `/pending` 은 멀쩡했고
+                // POST 인 보고만 튀었다.
+                _heartbeatCall = Task.Run(() =>
+                    RequestHandler.PostJsonAsync(HeartbeatUrl, JsonConvert.SerializeObject(body)));
                 if (_verbose.Value)
                 {
                     _log.LogInfo($"[AirdropCaller] 보고: 레이드={body.inRaid} 맵={body.map} "
