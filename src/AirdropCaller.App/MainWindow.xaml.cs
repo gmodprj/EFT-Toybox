@@ -47,12 +47,20 @@ public partial class MainWindow : Window
     private string? _startupError;
     private bool _busy;
 
+    /// <summary>
+    /// 분류·프리셋을 한 번이라도 받아 왔나. **창을 먼저 띄우고 서버를 켜는 순서**도
+    /// 흔하고, 서버는 뜨는 데 2분 넘게 걸린다. 처음 한 번만 받고 말면 그 경우 목록이
+    /// 영영 비어 있다 — 받을 때까지 상태 확인 때마다 다시 시도한다.
+    /// </summary>
+    private bool _listsLoaded;
+
     public MainWindow()
     {
         InitializeComponent();
 
         _config = AppConfig.LoadOrCreate(out _startupError);
         Topmost = _config.AlwaysOnTop;
+        TopmostBox.IsChecked = _config.AlwaysOnTop;
         ItemGrid.ItemsSource = _items;
         IconBox.SelectedIndex = 0;
 
@@ -73,11 +81,69 @@ public partial class MainWindow : Window
         _timer.Tick += async (_, _) => await RefreshStateAsync();
         _timer.Start();
 
-        Loaded += async (_, _) =>
+        Loaded += async (_, _) => await LoadListsAsync();
+    }
+
+    /// <summary>분류와 프리셋을 받아 온다. 성공해야 <see cref="_listsLoaded"/> 가 선다.</summary>
+    private async Task LoadListsAsync()
+    {
+        if (_client is null)
         {
-            await LoadPresetsAsync();
-            await LoadCategoriesAsync();
-        };
+            return;
+        }
+
+        try
+        {
+            var categories = await _client.ListCategoriesAsync(CancellationToken.None);
+            var presets = await _client.ListPresetsAsync(CancellationToken.None);
+            if (categories is null)
+            {
+                return;
+            }
+
+            var all = new List<CategoryInfo> { new() { Id = string.Empty, Name = "(전체 — 이름으로 찾기)" } };
+            all.AddRange(categories.Categories);
+            CategoryBox.ItemsSource = all;
+
+            var selectedId = (PresetList.SelectedItem as Preset)?.Id;
+            PresetList.ItemsSource = presets?.Presets ?? [];
+            if (selectedId is not null)
+            {
+                PresetList.SelectedItem = (presets?.Presets ?? []).FirstOrDefault(p => p.Id == selectedId);
+            }
+
+            _listsLoaded = true;
+
+            // 열자마자 목록이 비어 있으면 무엇을 해야 하는지 알 수 없다.
+            // 첫 분류를 골라 두어 바로 뭔가 보이게 한다.
+            if (CategoryBox.SelectedIndex < 0)
+            {
+                CategoryBox.SelectedIndex = all.Count > 1 ? 1 : 0;
+            }
+        }
+        catch (Exception e)
+        {
+            // 서버가 아직 안 떴을 수 있다. 다음 상태 확인 때 다시 온다.
+            MessageLine.Text = "목록을 받지 못했다 — 서버가 뜨면 다시 받는다. " + e.Message;
+        }
+    }
+
+    private async void OnReload(object sender, RoutedEventArgs e)
+    {
+        _listsLoaded = false;
+        MessageLine.Text = "목록을 다시 받는다…";
+        await LoadListsAsync();
+        if (_listsLoaded)
+        {
+            MessageLine.Text = "목록을 다시 받았다.";
+        }
+    }
+
+    private void OnTopmostChanged(object sender, RoutedEventArgs e)
+    {
+        Topmost = TopmostBox.IsChecked == true;
+        _config.AlwaysOnTop = Topmost;
+        _config.Save();
     }
 
     // ── 상태 ───────────────────────────────────────────────────────────────
@@ -96,6 +162,12 @@ public partial class MainWindow : Window
             {
                 SetState("서버가 답하지 않는다", null, false);
                 return;
+            }
+
+            // 여기까지 왔으면 서버는 붙었다. 목록을 아직 못 받았으면 지금 받는다.
+            if (!_listsLoaded)
+            {
+                await LoadListsAsync();
             }
 
             var head = state switch
@@ -133,28 +205,6 @@ public partial class MainWindow : Window
 
     // ── 프리셋 ─────────────────────────────────────────────────────────────
 
-    private async Task LoadPresetsAsync()
-    {
-        if (_client is null)
-        {
-            return;
-        }
-
-        try
-        {
-            var list = await _client.ListPresetsAsync(CancellationToken.None);
-            var selectedId = (PresetList.SelectedItem as Preset)?.Id;
-            PresetList.ItemsSource = list?.Presets ?? [];
-            if (selectedId is not null)
-            {
-                PresetList.SelectedItem = (list?.Presets ?? []).FirstOrDefault(p => p.Id == selectedId);
-            }
-        }
-        catch (Exception e)
-        {
-            MessageLine.Text = "프리셋을 못 읽었다: " + e.Message;
-        }
-    }
 
     private void OnPresetSelected(object sender, SelectionChangedEventArgs e)
     {
@@ -213,7 +263,7 @@ public partial class MainWindow : Window
         {
             var result = await _client.SavePresetAsync(preset, CancellationToken.None);
             MessageLine.Text = result?.Ok == true ? $"'{name}' 저장했다." : result?.Reason ?? "저장하지 못했다.";
-            await LoadPresetsAsync();
+            await LoadListsAsync();
         });
     }
 
@@ -235,7 +285,7 @@ public partial class MainWindow : Window
             var result = await _client.DeletePresetAsync(preset.Id, CancellationToken.None);
             MessageLine.Text = result?.Ok == true ? $"'{preset.Name}' 지웠다." : result?.Reason ?? "지우지 못했다.";
             OnNewPreset(sender, e);
-            await LoadPresetsAsync();
+            await LoadListsAsync();
         });
     }
 
@@ -245,31 +295,6 @@ public partial class MainWindow : Window
     private string SelectedIcon() => (IconBox.SelectedItem as ComboBoxItem)?.Content as string ?? "Common";
 
     // ── 검색 ───────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// 분류 목록을 받아 콤보에 채운다. **레이드와 무관하다** — 레이드 밖에서 미리
-    /// 프리셋을 짜 두는 것이 이 창의 본래 쓰임이다.
-    /// </summary>
-    private async Task LoadCategoriesAsync()
-    {
-        if (_client is null)
-        {
-            return;
-        }
-
-        try
-        {
-            var list = await _client.ListCategoriesAsync(CancellationToken.None);
-            var all = new List<CategoryInfo> { new() { Id = string.Empty, Name = "(분류 고르기 — 또는 아래에서 이름으로 찾기)" } };
-            all.AddRange(list?.Categories ?? []);
-            CategoryBox.ItemsSource = all;
-            CategoryBox.SelectedIndex = 0;
-        }
-        catch (Exception e)
-        {
-            MessageLine.Text = "분류를 못 읽었다: " + e.Message;
-        }
-    }
 
     private async void OnCategoryChanged(object sender, SelectionChangedEventArgs e)
     {

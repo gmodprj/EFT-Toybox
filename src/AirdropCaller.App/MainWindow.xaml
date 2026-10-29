@@ -1,21 +1,24 @@
 <Window x:Class="AirdropCaller.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="보급 호출기" Height="640" Width="1040"
+        Title="보급 호출기" Height="660" Width="1100" MinHeight="420" MinWidth="780"
         Background="{StaticResource Bg}" UseLayoutRounding="True">
   <Grid Margin="10">
     <Grid.RowDefinitions>
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
+    <!-- 세 칸 사이에 손잡이를 둔다. 넓이는 쓰는 사람이 정한다. -->
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="220" />
-      <ColumnDefinition Width="*" />
-      <ColumnDefinition Width="320" />
+      <ColumnDefinition Width="210" MinWidth="120" />
+      <ColumnDefinition Width="6" />
+      <ColumnDefinition Width="*" MinWidth="240" />
+      <ColumnDefinition Width="6" />
+      <ColumnDefinition Width="360" MinWidth="220" />
     </Grid.ColumnDefinitions>
 
-    <!-- ① 프리셋 목록 -->
-    <DockPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,0">
+    <!-- ① 프리셋 -->
+    <DockPanel Grid.Row="0" Grid.Column="0">
       <Label DockPanel.Dock="Top" Content="프리셋" />
       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
         <Button x:Name="NewPresetButton" Content="새로" Click="OnNewPreset" />
@@ -24,8 +27,11 @@
       <ListBox x:Name="PresetList" DisplayMemberPath="Name" SelectionChanged="OnPresetSelected" />
     </DockPanel>
 
+    <GridSplitter Grid.Row="0" Grid.Column="1" Width="6" HorizontalAlignment="Stretch"
+                  Background="Transparent" ResizeBehavior="PreviousAndNext" />
+
     <!-- ② 고른 프리셋의 품목 -->
-    <DockPanel Grid.Row="0" Grid.Column="1" Margin="0,0,10,0">
+    <DockPanel Grid.Row="0" Grid.Column="2">
       <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
@@ -55,18 +61,29 @@
                 HeadersVisibility="Column" SelectionMode="Single">
         <DataGrid.Columns>
           <DataGridTextColumn Header="품목" Binding="{Binding Name}" IsReadOnly="True" Width="*" />
-          <DataGridTextColumn Header="개수" Binding="{Binding Count}" Width="70" />
-          <DataGridTextColumn Header="묶음" Binding="{Binding StackSize}" Width="80" />
-          <DataGridTextColumn Header="tpl" Binding="{Binding Tpl}" IsReadOnly="True" Width="190" />
+          <DataGridTextColumn Header="개수" Binding="{Binding Count}" Width="60" />
+          <DataGridTextColumn Header="묶음" Binding="{Binding StackSize}" Width="70" />
+          <DataGridTextColumn Header="tpl" Binding="{Binding Tpl}" IsReadOnly="True" Width="180" />
         </DataGrid.Columns>
       </DataGrid>
     </DockPanel>
 
+    <GridSplitter Grid.Row="0" Grid.Column="3" Width="6" HorizontalAlignment="Stretch"
+                  Background="Transparent" ResizeBehavior="PreviousAndNext" />
+
     <!-- ③ 아이템 찾기 — 분류로 훑거나 이름으로 찾는다 -->
-    <DockPanel Grid.Row="0" Grid.Column="2">
-      <Label DockPanel.Dock="Top" Content="아이템 찾기" />
+    <DockPanel Grid.Row="0" Grid.Column="4">
+      <Grid DockPanel.Dock="Top">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Label Grid.Column="0" Content="아이템 찾기" />
+        <Button Grid.Column="1" x:Name="ReloadButton" Content="새로고침" Click="OnReload"
+                Margin="0" Padding="8,2" />
+      </Grid>
       <ComboBox DockPanel.Dock="Top" x:Name="CategoryBox" DisplayMemberPath="Display"
-                SelectionChanged="OnCategoryChanged" Margin="0,0,0,4" />
+                SelectionChanged="OnCategoryChanged" Margin="0,4,0,4" MaxDropDownHeight="420" />
       <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
@@ -79,7 +96,14 @@
         <Button x:Name="AddItemButton" Content="품목에 넣기" Click="OnAddItem" />
         <TextBlock x:Name="SearchHint" Foreground="{StaticResource Dim}" VerticalAlignment="Center" />
       </StackPanel>
-      <ListBox x:Name="SearchList" DisplayMemberPath="Display" MouseDoubleClick="OnAddItem">
+      <ListBox x:Name="SearchList" MouseDoubleClick="OnAddItem"
+               ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <!-- 가로 스크롤 대신 줄을 접는다. 이름이 길어 잘려 나가던 것을 막는다. -->
+            <TextBlock Text="{Binding Display}" TextWrapping="Wrap" />
+          </DataTemplate>
+        </ListBox.ItemTemplate>
         <ListBox.GroupStyle>
           <GroupStyle>
             <GroupStyle.HeaderTemplate>
@@ -94,11 +118,12 @@
     </DockPanel>
 
     <!-- 상태줄 + 드롭 -->
-    <Border Grid.Row="1" Grid.ColumnSpan="3" Margin="0,10,0,0" Padding="10"
+    <Border Grid.Row="1" Grid.ColumnSpan="5" Margin="0,10,0,0" Padding="10"
             Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}" BorderThickness="1">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
@@ -110,8 +135,11 @@
           <TextBlock x:Name="MessageLine" Foreground="{StaticResource Accent}" FontSize="12"
                      Margin="0,3,0,0" TextWrapping="Wrap" />
         </StackPanel>
-        <Button Grid.Column="1" x:Name="CancelButton" Content="예약 취소" Click="OnCancel" IsEnabled="False" />
-        <Button Grid.Column="2" x:Name="DropButton" Content="떨어뜨리기" Click="OnDrop" IsEnabled="False"
+        <CheckBox Grid.Column="1" x:Name="TopmostBox" Content="항상 위" VerticalAlignment="Center"
+                  Margin="0,0,14,0" Foreground="{StaticResource Dim}" Checked="OnTopmostChanged"
+                  Unchecked="OnTopmostChanged" />
+        <Button Grid.Column="2" x:Name="CancelButton" Content="예약 취소" Click="OnCancel" IsEnabled="False" />
+        <Button Grid.Column="3" x:Name="DropButton" Content="떨어뜨리기" Click="OnDrop" IsEnabled="False"
                 FontSize="15" FontWeight="SemiBold" Padding="20,8" Margin="0"
                 Background="{StaticResource Accent}" Foreground="#1E1E1E" />
       </Grid>

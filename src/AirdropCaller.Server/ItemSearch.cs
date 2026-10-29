@@ -182,7 +182,20 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             });
         }
 
-        list.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.CurrentCulture));
+        // 이름이 있는 것부터, 그 안에서는 가나다·abc 순. 이름 없는 것은 맨 뒤로 보낸다 —
+        // 목록 맨 위가 "(이름 없는 분류 …)" 인 것은 처음 여는 사람에게 쓸모가 없다.
+        list.Sort((a, b) =>
+        {
+            var aUnnamed = a.Name.StartsWith('(');
+            var bUnnamed = b.Name.StartsWith('(');
+            if (aUnnamed != bUnnamed)
+            {
+                return aUnnamed ? 1 : -1;
+            }
+
+            return string.Compare(a.Name, b.Name, StringComparison.CurrentCulture);
+        });
+
         return new CategoryListResponse { Categories = list };
     }
 
@@ -218,7 +231,9 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
                 continue;
             }
 
-            var name = value ?? string.Empty;
+            // 태그를 먼저 뗀다. 안 그러면 "color" 나 "2694da" 로도 걸리고,
+            // 이름 안의 글자를 찾을 때 태그가 끼어든다.
+            var name = StripTags(value ?? string.Empty);
             if (needle.Length > 0
                 && name.IndexOf(needle, StringComparison.OrdinalIgnoreCase) < 0
                 && tpl.IndexOf(needle, StringComparison.OrdinalIgnoreCase) < 0)
@@ -251,6 +266,45 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
         return response;
     }
 
+    /// <summary>
+    /// 이름에 섞인 꾸밈 태그를 뗀다.
+    ///
+    /// `kr.json` 파일 자체에는 태그가 없다(실측: 이름 5297개 중 0개). **다른 모드가
+    /// 런타임에 이름을 덧칠한다** — `&lt;b&gt;&lt;color=#2694da&gt;Kalashnikov AK-74N…`
+    /// 처럼. 게임 안에서는 그 태그가 색으로 보이지만 우리 창은 글자 그대로 찍어
+    /// 읽을 수가 없었다. 붙은 별표(`★`) 같은 것은 그대로 둔다 — 그건 글자다.
+    /// </summary>
+    private static string StripTags(string text)
+    {
+        if (text.IndexOf('<') < 0)
+        {
+            return text;
+        }
+
+        var sb = new System.Text.StringBuilder(text.Length);
+        var depth = 0;
+        foreach (var c in text)
+        {
+            if (c == '<')
+            {
+                depth++;
+            }
+            else if (c == '>')
+            {
+                if (depth > 0)
+                {
+                    depth--;
+                }
+            }
+            else if (depth == 0)
+            {
+                sb.Append(c);
+            }
+        }
+
+        return sb.ToString().Trim();
+    }
+
     private FoundItem? Describe(string tpl, string name, IReadOnlyDictionary<string, string> locale)
     {
         MongoId id;
@@ -276,7 +330,7 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
         {
             Tpl = tpl,
             Name = name,
-            ShortName = locale.TryGetValue(tpl + " ShortName", out var s) ? s : string.Empty,
+            ShortName = locale.TryGetValue(tpl + " ShortName", out var shortName) ? StripTags(shortName) : string.Empty,
             Category = categoryId.Length > 0 ? NameOfCategory(categoryId) : "(분류 없음)",
             Width = props.Width ?? 1,
             Height = props.Height ?? 1,
