@@ -5,7 +5,9 @@
 # airdrop-caller.config.json 은 이미 있으면 그대로 둔다(사용자가 고친 값을 덮지 않는다).
 param(
     [string]$SptDir = 'E:\Spt',
-    [switch]$Remove
+    [switch]$Remove,
+    # 설정(즐겨찾기가 들어 있다)까지 싹 지운다. -Remove 는 남긴다.
+    [switch]$Purge
 )
 
 $ErrorActionPreference = 'Stop'
@@ -15,8 +17,11 @@ $cfg = Join-Path $SptDir 'airdrop-caller.config.json'
 # 창이 tarkov.dev 에서 받아 쌓아 두는 아이템 아이콘. 지울 때 같이 치운다.
 $iconCache = Join-Path $SptDir 'icon-cache'
 
-if ($Remove) {
-    foreach ($path in @($exe, $cfg, $iconCache)) {
+if ($Remove -or $Purge) {
+    # 설정에는 **즐겨찾기**가 들어 있다 — 사용자가 만든 것이라 -Remove 로는 안 지운다.
+    $paths = if ($Purge) { @($exe, $iconCache, $cfg) } else { @($exe, $iconCache) }
+
+    foreach ($path in $paths) {
         if (Test-Path $path) {
             Remove-Item $path -Recurse -Force -Confirm:$false
             "지웠다: $path"
@@ -24,6 +29,11 @@ if ($Remove) {
             "없다(건너뜀): $path"
         }
     }
+
+    if (-not $Purge -and (Test-Path $cfg)) {
+        "남겼다: $cfg  (즐겨찾기가 들어 있다 — 싹 지우려면 -Purge)"
+    }
+
     return
 }
 
