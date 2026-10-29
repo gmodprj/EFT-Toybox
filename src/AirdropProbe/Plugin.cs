@@ -22,7 +22,7 @@ namespace AirdropProbe
     ///
     /// 둘 다 끝나면 지운다. 근거: doc/specs/2026-10-29-airdrop-stage1-findings.md
     /// </summary>
-    [BepInPlugin(PluginGuid, "보급 지점 측정기 + 드롭 시험", "0.2.0")]
+    [BepInPlugin(PluginGuid, "보급 지점 측정기 + 드롭 시험", "0.3.0")]
     public class AirdropProbePlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.airdropprobe";
@@ -35,7 +35,13 @@ namespace AirdropProbe
         private ConfigEntry<bool> _writeFile;
 
         private ConfigEntry<KeyboardShortcut> _dropKey;
+        private ConfigEntry<KeyCode> _dropKeySimple;
+        private ConfigEntry<KeyCode> _measureKeySimple;
         private ConfigEntry<string> _lootTemplateId;
+        private ConfigEntry<bool> _logKeys;
+
+        /// <summary>키 로그를 1초에 한 번으로 줄인다.</summary>
+        private float _nextKeyLogAt;
 
         /// <summary>레이드마다 자동 측정을 한 번만 하기 위한 표시.</summary>
         private bool _autoMeasuredThisRaid;
@@ -85,14 +91,31 @@ namespace AirdropProbe
                 + "기본값은 아무 데도 없는 가짜 id 다 — 서버 로그에 이 값이 그대로 찍히면 "
                 + "id 왕복이 증명된 것이고, 상자는 무작위 전리품으로 채워진다.");
 
+            // 조합 키가 안 먹는 경우를 위한 대안. 조합이 왜 안 먹는지는 _logKeys 로 가린다.
+            _dropKeySimple = Config.Bind("드롭 시험", "드롭 키(단일)", KeyCode.F8,
+                "조합 키가 안 먹을 때 쓰는 단일 키. None 으로 두면 끈다.");
+
+            _measureKeySimple = Config.Bind("측정", "측정 키(단일)", KeyCode.F7,
+                "조합 키가 안 먹을 때 쓰는 단일 키. None 으로 두면 끈다.");
+
+            _logKeys = Config.Bind("진단", "눌린 키를 로그에 찍기", true,
+                "레이드 안에서 키를 누를 때마다 무엇이 눌렸는지 BepInEx 로그에 적는다(1초에 한 번). "
+                + "게임이 키를 삼키는지 플러그인이 못 읽는지를 가리기 위한 것이다. 다 가리면 끈다.");
+
             _logFilePath = Path.Combine(Path.GetDirectoryName(Info.Location) ?? ".", "probe.log");
 
-            _log.LogInfo("[Probe] 준비됨. 측정 " + _measureKey.Value + " / 드롭 " + _dropKey.Value + " (레이드 안에서)");
+            _log.LogInfo("[Probe] 준비됨. 측정 " + _measureKey.Value + " 또는 " + _measureKeySimple.Value
+                         + " / 드롭 " + _dropKey.Value + " 또는 " + _dropKeySimple.Value + " (레이드 안에서)");
         }
 
         private void Update()
         {
-            if (!TryGetAirdropManager(out var world, out var manager))
+            var inRaid = TryGetAirdropManager(out var world, out var manager);
+
+            // 레이드 밖에서도 찍는다. "키가 안 보인다" 와 "레이드로 안 쳐준다" 를 갈라야 한다.
+            LogPressedKeys(inRaid);
+
+            if (!inRaid)
             {
                 // 레이드를 나갔으면 다음 레이드에서 다시 자동 측정한다.
                 _autoMeasuredThisRaid = false;
@@ -106,17 +129,79 @@ namespace AirdropProbe
                 Measure(world, manager, "레이드 시작");
             }
 
-            if (_measureKey.Value.IsDown() && Time.unscaledTime >= _nextMeasureAllowedAt)
+            if (Pressed(_measureKey, _measureKeySimple) && Time.unscaledTime >= _nextMeasureAllowedAt)
             {
                 _nextMeasureAllowedAt = Time.unscaledTime + 1f;
                 Measure(world, manager, "키 누름");
             }
 
-            if (_dropKey.Value.IsDown() && Time.unscaledTime >= _nextDropAllowedAt)
+            if (Pressed(_dropKey, _dropKeySimple) && Time.unscaledTime >= _nextDropAllowedAt)
             {
                 _nextDropAllowedAt = Time.unscaledTime + 3f;
                 Drop(world, manager);
             }
+        }
+
+        /// <summary>조합 키와 단일 키 중 어느 쪽이 눌려도 참.</summary>
+        private static bool Pressed(ConfigEntry<KeyboardShortcut> chord, ConfigEntry<KeyCode> simple)
+        {
+            if (simple.Value != KeyCode.None && Input.GetKeyDown(simple.Value))
+            {
+                return true;
+            }
+
+            return chord.Value.IsDown();
+        }
+
+        /// <summary>
+        /// 눌린 키를 그대로 적는다. 아무것도 안 찍히면 게임이 입력을 삼키는 것이고,
+        /// 찍히는데 드롭이 안 되면 조합 판정 쪽 문제다. 둘을 가르려고 둔다.
+        /// </summary>
+        private void LogPressedKeys(bool inRaid)
+        {
+            if (!_logKeys.Value || !Input.anyKeyDown || Time.unscaledTime < _nextKeyLogAt)
+            {
+                return;
+            }
+
+            var down = new List<string>();
+            foreach (KeyCode code in Enum.GetValues(typeof(KeyCode)))
+            {
+                // 마우스 버튼·조이스틱은 뺀다. 시끄럽기만 하다.
+                if (code >= KeyCode.Mouse0)
+                {
+                    continue;
+                }
+
+                if (Input.GetKeyDown(code))
+                {
+                    down.Add(code.ToString());
+                }
+            }
+
+            if (down.Count == 0)
+            {
+                return;
+            }
+
+            _nextKeyLogAt = Time.unscaledTime + 1f;
+
+            var held = new List<string>();
+            foreach (var mod in new[]
+                     {
+                         KeyCode.LeftControl, KeyCode.RightControl, KeyCode.LeftAlt, KeyCode.RightAlt,
+                         KeyCode.LeftShift, KeyCode.RightShift,
+                     })
+            {
+                if (Input.GetKey(mod))
+                {
+                    held.Add(mod.ToString());
+                }
+            }
+
+            _log.LogInfo("[Probe][키] 눌림: " + string.Join(", ", down.ToArray())
+                         + " / 누르고 있음: " + (held.Count == 0 ? "(없음)" : string.Join(", ", held.ToArray()))
+                         + " / 레이드: " + (inRaid ? "예" : "아니오"));
         }
 
         /// <summary>
