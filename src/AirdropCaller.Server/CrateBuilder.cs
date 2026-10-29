@@ -110,6 +110,8 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                 continue;
             }
 
+            var stack = StackFor(entry, skipped);
+
             for (var i = 0; i < Math.Max(1, entry.Count); i++)
             {
                 var item = new Item
@@ -121,7 +123,7 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                     Upd = new Upd
                     {
                         SpawnedInSession = true,
-                        StackObjectsCount = entry.StackSize is > 0 ? entry.StackSize.Value : 1.0,
+                        StackObjectsCount = stack,
                     },
                 };
 
@@ -158,6 +160,37 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                 Place(entry.Items, item, childMap!, childSlot, items, skipped, depth + 1);
             }
         }
+    }
+
+    /// <summary>
+    /// 적어 낸 묶음을 **그 아이템이 실제로 묶이는 만큼까지만** 받는다.
+    ///
+    /// 적은 값을 그대로 내보내면 게임이 최대치를 넘는 묶음을 들고 있게 되고, 레이드가
+    /// 끝날 때 서버가 그 아이템을 어떻게 받아 줄지 알 수 없다 — 설계 §5 안티목표 1
+    /// (프로필을 망가뜨리지 않는다)에 바로 걸린다. 넘치면 깎고 **말해 준다.**
+    ///
+    /// 최대치는 아이템 DB 에서 읽는다. 스택을 바꾸는 서버 모드가 여럿 깔려 있어
+    /// (BarterItemsStacks 등) 어느 설정 파일도 진실이 아니다 — 다 지나간 뒤의 DB 만 맞다.
+    /// </summary>
+    private double StackFor(ItemSpec entry, List<string> skipped)
+    {
+        var wanted = entry.StackSize is > 0 ? entry.StackSize.Value : 1;
+
+        var (ok, template) = itemHelper.GetItem(new MongoId(entry.Tpl));
+        if (!ok || template?.Properties?.StackMaxSize is not { } raw)
+        {
+            // 크기를 모르는 아이템은 아래에서 어차피 걸러진다. 여기서는 그대로 둔다.
+            return wanted;
+        }
+
+        var max = Math.Max(1, Convert.ToDouble(raw));
+        if (wanted <= max)
+        {
+            return wanted;
+        }
+
+        skipped.Add($"{entry.Tpl} (묶음 {wanted} → {max} 로 깎았다 — 이 아이템은 그만큼만 묶인다)");
+        return max;
     }
 
     /// <summary>
