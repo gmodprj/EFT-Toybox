@@ -25,8 +25,12 @@ public class AppConfig
     [JsonPropertyName("statePollSeconds")]
     public double StatePollSeconds { get; set; } = 2;
 
+    /// <summary>
+    /// 기본은 **꺼짐**이다. 켜 두면 다른 창을 이 창 위에 올릴 수 없어 가린 채로
+    /// 일하게 된다. 레이드 중에만 켜고 싶은 것이므로 창의 체크상자로 켠다.
+    /// </summary>
     [JsonPropertyName("alwaysOnTop")]
-    public bool AlwaysOnTop { get; set; } = true;
+    public bool AlwaysOnTop { get; set; }
 
     private static readonly JsonSerializerOptions Options = new()
     {
@@ -38,6 +42,19 @@ public class AppConfig
     {
         var dir = Path.GetDirectoryName(Environment.ProcessPath) ?? AppContext.BaseDirectory;
         return Path.Combine(dir, "airdrop-caller.config.json");
+    }
+
+    /// <summary>창에서 바꾼 것(항상 위 등)을 그 자리에서 적어 둔다. 실패해도 조용히 넘어간다.</summary>
+    public void Save()
+    {
+        try
+        {
+            File.WriteAllText(PathNextToExe(), JsonSerializer.Serialize(this, Options));
+        }
+        catch
+        {
+            // 설정을 못 적는다고 창을 멈출 이유가 없다. 다음에 다시 고르면 된다.
+        }
     }
 
     public static AppConfig LoadOrCreate(out string? error)
