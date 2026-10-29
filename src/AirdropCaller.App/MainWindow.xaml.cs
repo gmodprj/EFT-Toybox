@@ -611,9 +611,14 @@ public partial class MainWindow : Window
             return;
         }
 
+        // **이름을 적었으면 분류에 가두지 않는다.** 분류는 훑어보기용이다. 둘을 겹쳐
+        // 걸었더니, 분류가 탄약에 맞춰진 채로 "iotv" 를 적으면 아이템이 멀쩡히 있는데도
+        // "없다" 가 떴다. 적은 사람은 분류를 좁히려던 것이 아니라 그 이름을 찾던 것이다.
+        var scope = query.Length > 0 ? string.Empty : category;
+
         await Guard(async () =>
         {
-            var found = await _client.SearchAsync(query, category, 400, CancellationToken.None);
+            var found = await _client.SearchAsync(query, scope, 400, CancellationToken.None);
             var items = found?.Items ?? [];
 
             Show(items, found!.Truncated);
@@ -655,6 +660,10 @@ public partial class MainWindow : Window
         {
             item.Star = _config.Favorites.Contains(item.Tpl) ? "★" : string.Empty;
         }
+
+        // 갈아 끼우기 **전에** 선택을 비운다. 목록이 바뀌면 전에 고른 것은 더 이상
+        // 고른 것이 아니다 — 남겨 두면 그것이 `SelectedItem` 으로 돌아온다.
+        SearchList.SelectedIndex = -1;
 
         var view = new CollectionViewSource { Source = items };
         view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(FoundItem.Category)));
