@@ -1034,3 +1034,73 @@ ItemsSource="{Binding DataContext.ContainerChoices,
 계속 잘렸다. 이름 열을 `Auto` + `SharedSizeGroup` 으로 돌리고 남는 폭을 드롭다운이
 가져가게 했다. 겹친 칸의 들여쓰기도 열에서 여백으로 옮겼다 — 열로 두면 그 폭만큼
 줄마다 드롭다운이 다른 자리에서 시작한다.
+
+## 13. 본문 없는 전리품 요청 — 플레어를 쏘자 터졌다 (2026-10-30)
+
+§7.14 는 "플레어는 손대지 않는 것이 공짜로 기본값이 된다" 고 적어 뒀다. 의도는 맞았는데
+**실제로는 손대는 대신 터뜨리고 있었다.** 레이드에서 플레어를 쏘자 세 번 연달아:
+
+```
+Error handling request: /client/airdrop/loot
+Unable to cast object of type 'EmptyRequestData' to type 'GetAirdropLootRequest'
+   at SPTarkov.Server.Core.DI.RouteAction`1…
+```
+
+요청 전체가 500 이 되어 **전리품이 통째로 날아간다.** §5 안티목표 2 에 정면으로 걸린다.
+
+### 13.1 원인
+
+`StaticRouter.HandleStaticAsync` 는 이렇게 생겼다.
+
+```csharp
+Type bodyType = routeAction.bodyType;
+IRequestData info = null;
+if (bodyType != null && !string.IsNullOrEmpty(body))
+    info = (IRequestData)jsonUtil.Deserialize(body, bodyType);
+if (info == null)
+    info = new EmptyRequestData();
+```
+
+**본문이 비어 있으면 `bodyType` 이 있어도 `EmptyRequestData` 가 들어간다.** 그리고
+`RouteAction<T>` 는 그것을 딱딱하게 받는다.
+
+```csharp
+base..ctor(url, async (…) => await typedAction(arg, (TRequest)info, …), typeof(TRequest));
+//                                              ^^^^^^^^^^^ 여기서 터진다
+```
+
+바닐라 `LocationStaticRouter` 는 같은 자리를 **무르게** 받는다.
+
+```csharp
+new RouteAction("/client/airdrop/loot",
+    async (url, info, sessionID, output, ct) =>
+        await locationCallbacks.GetAirdropLoot(url, info as GetAirdropLootRequest, sessionID))
+```
+
+우리만 딱딱했다. 비제네릭 `RouteAction` 으로 바꾸고 `info as GetAirdropLootRequest` 로
+받는다. **`bodyType` 은 그대로 넘긴다** — 빼면 본문이 있을 때도 `containerId` 를 영영
+못 읽어 모드가 통째로 죽는다.
+
+### 13.2 레이드 없이 재현하고 확인한다
+
+플레어를 쏘지 않아도 된다. **본문 없이** 그 라우트를 때리면 같은 길을 탄다.
+
+```
+POST /client/airdrop/loot   Content-Length: 0
+```
+
+| | 고치기 전 | 고친 뒤 |
+| --- | --- | --- |
+| HTTP | 500 | **200** |
+| 답 | 없음 | `air_drop_common` 상자 하나, 6,457바이트짜리 바닐라 전리품 |
+| 로그 | `Unable to cast…` | `전리품 요청에 상자 id 가 없다 — 바닐라 답을 그대로 보낸다.` |
+
+`tools` 밖의 한 번 쓰는 probe 라 저장소에 두지 않았지만, 같은 요청 한 줄이면 언제든
+다시 잰다.
+
+### 13.3 남는 것
+
+**플레어 상자가 왜 본문을 안 보내는지는 아직 모른다.** 우리가 부른 상자는 `containerId`
+를 보내 왔다(실측). 플레어 쪽만 비는 것이 클라이언트의 다른 경로 때문인지, 아니면
+"상자 id 없이 묻는" 다른 상황이 또 있는지 안 봤다. **그래서 §7.14 의 `HijackFlareDrops`
+는 여전히 만들 수 없다** — 서버에 도착하는 정보에 플레어라는 표시가 없다.
