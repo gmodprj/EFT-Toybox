@@ -128,8 +128,13 @@ public class ItemRow : INotifyPropertyChanged
     /// </summary>
     public Dictionary<string, string> Slots { get; set; } = [];
 
-    /// <summary>칸 버튼에 적히는 말. 직접 고른 것이 있으면 몇 개인지 같이 보여 준다.</summary>
-    public string SlotHint => Slots.Count == 0 ? "칸…" : $"칸 {Slots.Count}";
+    /// <summary>
+    /// 칸 버튼에 적히는 말. 직접 고른 것이 있으면 몇 개인지 같이 보여 준다.
+    ///
+    /// **말줄임표를 쓰지 않는다.** "칸…" 으로 뒀더니 글자가 잘린 줄 알고 칸을 넓혀
+    /// 보게 됐다 — 넓혀도 그대로니 고장으로 보인다(2026-10-30 지적받았다).
+    /// </summary>
+    public string SlotHint => Slots.Count == 0 ? "고르기" : $"칸 {Slots.Count}개";
 
     public void SlotsChanged()
     {
