@@ -115,9 +115,15 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
             }
 
             // 같은 것을 두 번 달지 않는다 — 헬멧에 야시경, 그 헬멧의 마운트에 또 야시경이
-            // 붙는 꼴을 막는다. 다만 **반드시 있어야 하는 칸은 예외다**: 아라미드 삽입물
-            // 하나가 깃·어깨·사타구니에 똑같이 들어가야 해서, 막으면 첫 칸만 채워진다.
-            var pick = Best(pool, blocked, required ? null : used);
+            // 붙는 꼴을 막는다. 다만 **두 가지는 예외다.**
+            //
+            // 반드시 있어야 하는 칸: 아라미드 삽입물 하나가 깃·어깨·사타구니에 똑같이
+            // 들어가야 해서, 막으면 첫 칸만 채워진다.
+            //
+            // 방어판 칸: 막았더니 앞판은 7등급인데 뒷판은 6등급이 됐다(실측 2026-10-30).
+            // 앞뒤가 다른 방탄복을 바라고 적은 사람은 없다.
+            var sharable = required || itemHelper.IsRemovablePlateSlot(name);
+            var pick = Best(pool, blocked, sharable ? null : used);
             if (pick is not { } tpl)
             {
                 continue;
@@ -133,7 +139,7 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
             };
 
             added.Add(child);
-            if (!required)
+            if (!sharable)
             {
                 used.Add(tpl);
             }
