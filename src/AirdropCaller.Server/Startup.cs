@@ -34,10 +34,11 @@ public class AirdropCallerStartup(
             return Task.CompletedTask;
         }
 
-        // 큰 상자는 **게임이 아이템 목록을 받아 가기 전에** DB 에 들어 있어야 한다.
-        // `GET /client/items` 는 templateTable.Items 를 그때그때 흘려보내므로
-        // 서버가 켜질 때 넣어 두면 된다.
-        bigCrate.Register(config);
+        // 큰 상자는 **훨씬 앞(Preload)에서** 이미 들어갔다. 여기서는 결과만 말한다 —
+        // 프로필을 읽은 뒤에 아이템을 늘리면 4.1.6 은 서버를 멈춰 세운다.
+        logger.Info(bigCrate.Ready
+            ? $"[AirdropCaller] 큰 상자 쓸 수 있다 — {bigCrate.Cells}칸."
+            : "[AirdropCaller] 큰 상자가 없다. 큰 상자로 부른 드롭은 거절한다.");
 
         if (config.Drops.Count == 0)
         {

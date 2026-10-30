@@ -1,5 +1,6 @@
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Models.Utils;
@@ -21,11 +22,38 @@ namespace AirdropCaller.Server;
 /// 클라이언트가 이 아이템을 알아야 한다. `GET /client/items` 가
 /// <c>templateTable.Items</c> 를 **그때그때 그대로 흘려보내므로**(DataCallbacks,
 /// 캐시 없음) 서버가 켜질 때 넣어 두면 게임이 받아 간다.
+///
+/// <para>
+/// **반드시 <see cref="OnLoadOrder.Preload"/> 여야 한다.** 4.1.6 의
+/// <c>DatabaseIntegrityService</c> 가 프로필을 읽은 뒤에 늘어난 아이템을 찾아내
+/// 서버를 통째로 멈춰 세운다. 처음에 <c>PostLoad</c> 에 뒀다가 이것으로 서버를
+/// 못 켰다(2026-10-30).
+/// </para>
+/// <code>
+/// DatabaseModifiedAfterCutoffException: 1 item(s) were added to the database
+/// after profiles loaded: a1d0caffe0000000000c0de1. Add items during
+/// OnLoadOrder.Preload, the database is fully loaded by then …
+/// </code>
 /// </summary>
-[Injectable(InjectionType.Singleton)]
+[Injectable(InjectionType.Singleton, OnLoadOrder.Preload)]
 public class BigCrate(
-    ISptLogger<BigCrate> logger, TemplateTable templateTable, ICloner cloner, LocaleService localeService)
+    ISptLogger<BigCrate> logger,
+    TemplateTable templateTable,
+    ICloner cloner,
+    LocaleService localeService,
+    ConfigStore store) : IOnLoad
 {
+    public Task OnLoadAsync(CancellationToken cancellationToken)
+    {
+        // 설정을 못 읽었거나 꺼져 있으면 DB 를 건드리지 않는다.
+        if (store.LoadError is null && store.Config.ModEnabled)
+        {
+            Register(store.Config);
+        }
+
+        return Task.CompletedTask;
+    }
+
     /// <summary>베낄 바닐라 상자. `air_drop_common`.</summary>
     private static readonly MongoId Source = new("6223349b3136504a544d1608");
 
@@ -41,7 +69,7 @@ public class BigCrate(
     /// <summary>실제로 들어간 칸 수. 로그와 창에 그대로 보인다.</summary>
     public int Cells { get; private set; }
 
-    public void Register(Config config)
+    private void Register(Config config)
     {
         var cellsH = Math.Clamp(config.BigCrateWidth, 1, 64);
         var cellsV = Math.Clamp(config.BigCrateHeight, 1, 64);
