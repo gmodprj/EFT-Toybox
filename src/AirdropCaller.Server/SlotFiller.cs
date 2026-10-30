@@ -70,7 +70,7 @@ public record SlotDecision(
 /// </para>
 /// </summary>
 [Injectable(InjectionType.Singleton)]
-public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
+public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, PresetHelper presetHelper)
 {
     /// <summary>마운트에 마운트에 마운트를 끝없이 달지 않는다.</summary>
     private const int MaxDepth = 3;
@@ -93,8 +93,23 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
         // 경로 → 그 자리에 붙은 아이템. 빈 경로가 뿌리다.
         var at = new Dictionary<string, Item> { [string.Empty] = root };
 
+        // ① 완성품이 있는 물건(무기)은 그것으로 세운다. 빈 몸으로 보내면 총열도
+        //    노리쇠도 손잡이도 없는 껍데기가 간다 — 삽입물 없는 방어구와 같은 일이다.
+        var taken = new HashSet<string>(StringComparer.Ordinal);
+        if (mode != SlotFill.None)
+        {
+            AddDefaultPreset(root, added, at, taken);
+        }
+
+        // ② 남은 칸을 모드대로 채운다. 완성품이 이미 쓴 칸은 건드리지 않는다.
         Walk(root.Template, mode, picks, notes, decision =>
         {
+            // 사용자가 그 칸을 직접 골랐으면 완성품보다 그쪽이 세다.
+            if (taken.Contains(decision.Path) && !decision.Picked)
+            {
+                return;
+            }
+
             if (decision.Chosen is not { } tpl)
             {
                 return;
@@ -134,6 +149,90 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
         var found = new List<SlotDecision>();
         Walk(rootTpl, mode, picks, notes: null, found.Add);
         return found;
+    }
+
+    /// <summary>
+    /// 게임이 정해 둔 **완성품**(기본 프리셋)으로 세운다. 바닐라 보급이 무기를 넣을 때
+    /// 쓰는 그것이다.
+    ///
+    /// 이것이 없으면 무기는 `mod_reciever`·`mod_pistol_grip`·`mod_charge` 가 전부 빈
+    /// 껍데기로 간다. 셋 다 `_required` 다 — 총이 아니다. 실측한 것(2026-10-30):
+    /// MCX-SPEAR 가 **0.286 kg** 으로 떨어졌다(제대로면 4 kg 대).
+    ///
+    /// 창에 무기가 `1x1` 로 보이던 것도 같은 뿌리다. 무기의 템플릿 크기는 원래 1×1 이고
+    /// 실제 크기는 **붙은 부품의 `ExtraSize*`** 에서 나온다. 빈 몸이면 영영 1×1 이다.
+    /// </summary>
+    private void AddDefaultPreset(
+        Item root, List<Item> added, Dictionary<string, Item> at, HashSet<string> taken)
+    {
+        var preset = presetHelper.GetDefaultPreset(root.Template);
+        if (preset?.Items is not { Count: > 1 } items)
+        {
+            return;
+        }
+
+        // 프리셋의 id 를 그대로 쓰면 한 상자에 같은 총 두 자루를 넣었을 때 id 가 겹친다.
+        // SPT 가 주는 도구로 뿌리에 맞춰 새 id 를 발급받는다.
+        var built = itemHelper.ReparentItemAndChildren(root, [.. items]);
+
+        // 경로를 만들려면 부모를 거슬러 올라가야 한다. id → 아이템 으로 먼저 깔아 둔다.
+        var byId = built.ToDictionary(i => i.Id.ToString(), i => i);
+        var rootId = built[0].Id.ToString();
+
+        foreach (var part in built.Skip(1))
+        {
+            part.Upd ??= new Upd();
+            part.Upd.SpawnedInSession = true;
+
+            var path = PathOf(part, byId, rootId);
+            if (path is null)
+            {
+                continue;
+            }
+
+            added.Add(part);
+            at[path] = part;
+            taken.Add(path);
+        }
+    }
+
+    /// <summary>부모를 거슬러 올라가 `mod_mount.mod_nvg` 꼴의 경로를 만든다.</summary>
+    private static string? PathOf(Item part, IReadOnlyDictionary<string, Item> byId, string rootId)
+    {
+        var bits = new List<string>();
+        var at = part;
+
+        // 뿌리까지 올라간다. 고리가 있으면(있을 리 없지만) 깊이로 끊는다.
+        for (var depth = 0; depth < 16; depth++)
+        {
+            if (string.IsNullOrEmpty(at.SlotId))
+            {
+                return null;
+            }
+
+            bits.Add(at.SlotId!);
+
+            var parentId = at.ParentId?.ToString();
+            if (parentId is null)
+            {
+                return null;
+            }
+
+            if (parentId == rootId)
+            {
+                bits.Reverse();
+                return string.Join('.', bits);
+            }
+
+            if (!byId.TryGetValue(parentId, out var next))
+            {
+                return null;
+            }
+
+            at = next;
+        }
+
+        return null;
     }
 
     private static string Parent(string path)
