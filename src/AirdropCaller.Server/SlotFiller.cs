@@ -75,6 +75,9 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, Pres
     /// <summary>마운트에 마운트에 마운트를 끝없이 달지 않는다.</summary>
     private const int MaxDepth = 3;
 
+    /// <summary>탄창 칸 이름. 게임이 쓰는 그대로다.</summary>
+    private const string MagazineSlot = "mod_magazine";
+
     private readonly object _lock = new();
     private Dictionary<MongoId, double>? _price;
 
@@ -300,6 +303,12 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, Pres
 
             var required = slot.Required == true;
             var isPlate = itemHelper.IsRemovablePlateSlot(name);
+
+            // 탄창은 `_required` 가 아니다. 그런데 **완성품으로 세운 총은 프리셋에
+            // 탄창이 들어 있어** 받는다. 필수 칸만 채우는 쪽만 빈손이 되면 같은
+            // `자동` 인데 결과가 갈린다 — 쏘려면 탄창을 따로 챙겨야 한다.
+            // "필수만" 이라는 규칙에 내는 구멍은 이 하나뿐이다.
+            var isMagazine = name.Equals(MagazineSlot, StringComparison.OrdinalIgnoreCase);
             var kind = isPlate ? "plate" : IsSoftInsert(name) ? "soft" : "other";
             var pool = (IReadOnlyList<MongoId>)(slot.Properties?.Filters?.FirstOrDefault()?.Filter?.ToList()
                                                 ?? []);
@@ -335,7 +344,7 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, Pres
                     // 안 봤다(2026-10-30).
                     //
                     // 방어구의 삽입물도 `_required` 라 이 줄 하나에 같이 걸린다.
-                    SlotFill.Auto => deeper || required || (isArmor && isPlate),
+                    SlotFill.Auto => deeper || required || isMagazine || (isArmor && isPlate),
                     _ => true,
                 };
 
