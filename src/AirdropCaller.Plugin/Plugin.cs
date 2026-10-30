@@ -37,6 +37,10 @@ namespace AirdropCaller.Plugin
         private ConfigEntry<bool> _enabled;
         private ConfigEntry<float> _heartbeatSeconds;
         private ConfigEntry<bool> _verbose;
+        private ConfigEntry<float> _hushSeconds;
+
+        /// <summary>땅에 앉은 상자를 처음 본 시각. 열쇠는 동기 물체의 인스턴스 번호다.</summary>
+        private readonly Dictionary<int, float> _landedAt = new Dictionary<int, float>();
 
         private float _nextHeartbeatAt;
 
@@ -66,6 +70,14 @@ namespace AirdropCaller.Plugin
             _verbose = Config.Bind("일반", "자세히 적기", false,
                 "보고와 폴링 결과를 매번 로그에 적는다. 평소엔 끈다.");
 
+            _hushSeconds = Config.Bind("소리", "착지 뒤 반복 소리 끄기(초)", 2f,
+                new ConfigDescription(
+                    "상자가 땅에 앉고 이만큼 지나면 반복 재생되는 소리를 끊는다. "
+                    + "바닐라는 이 소리를 **영영 끄지 않는다** — 착지음이 끝나면 연막 소리가 "
+                    + "반복으로 켜지고, 연막이 다 타도(PlaneAirdropSmoke=600초) 소리만 계속 돈다. "
+                    + "음수로 두면 바닐라대로 둔다.",
+                    new AcceptableValueRange<float>(-1f, 60f)));
+
             _log.LogInfo($"[AirdropCaller] 준비됨. 서버 {RequestHandler.Host}");
         }
 
@@ -78,6 +90,8 @@ namespace AirdropCaller.Plugin
 
             var world = GetClientGameWorld(out var manager);
             var now = Time.unscaledTime;
+
+            HushLandedCrates(world, now);
 
             // 길이 하나다. 보고를 보내고, 그 답에 예약이 실려 온다.
             //
@@ -229,6 +243,93 @@ namespace AirdropCaller.Plugin
             }
 
             return (planes, crates, string.Join(",", stages.ToArray()));
+        }
+
+        /// <summary>
+        /// 땅에 앉은 상자의 **반복 소리를 끊는다.**
+        ///
+        /// 바닐라 `ClientAirDrop.ManualUpdate` 의 꼬리는 이렇다:
+        ///
+        ///     if (_loopSoundSource != null &amp;&amp; LoopSoundSource.PlayBackState != Playing)
+        ///         if (_signalFire) PlayFlareSound(); else ReleaseSoundSource();
+        ///
+        /// 착지하면 `PlayLandingSound` 가 낙하산 소리를 끊고 쿵 소리를 한 번 낸다. 그게
+        /// 끝나는 순간 위 꼬리가 **연막 소리를 `looped: true` 로** 켠다. 그 뒤로는 소리가
+        /// 멈출 길이 없다 — 반복 재생 중에는 `PlayBackState` 가 늘 `Playing` 이라
+        /// `ReleaseSoundSource` 쪽으로 못 가고, 연막이 다 탄 뒤엔
+        /// `ServerAirDrop` 이 `IsStatic = true` 를 걸어 `ManualUpdate` 자체가 멈춘다.
+        /// 사용자가 들은 "낙하산 소리가 계속된다" 가 이것이다(실측 2026-10-30 09:01,
+        /// 상자는 `Landed(먼지켜짐)` 까지 정상으로 갔다).
+        ///
+        /// 한 번 풀어 주면 `_loopSoundSource` 가 null 이 되고, 꼬리의 첫 조건이
+        /// 거짓이라 다시 켜지지 않는다. 낙하산 소리는 `ParachuteStartOpen`/`EndOpen`
+        /// 분기에서만 켜지니 되살아날 길도 없다. 연기와 불꽃은 그대로 둔다 — 소리만 끊는다.
+        /// </summary>
+        private void HushLandedCrates(ClientGameWorld world, float now)
+        {
+            if (_hushSeconds.Value < 0f)
+            {
+                return;
+            }
+
+            var active = world?.ClientSynchronizableObjectLogicProcessor?._activeSynchronizableObjects;
+            if (active == null)
+            {
+                // 레이드 밖이다. 다음 판에 번호가 겹치는 일이 없게 비워 둔다.
+                if (_landedAt.Count > 0)
+                {
+                    _landedAt.Clear();
+                }
+
+                return;
+            }
+
+            foreach (var so in active)
+            {
+                if (so == null || so.Type != SynchronizableObjectType.AirDrop)
+                {
+                    continue;
+                }
+
+                if (!(so.Logic is ClientAirDrop drop))
+                {
+                    continue;
+                }
+
+                var id = so.GetInstanceID();
+
+                // 소리 낼 것이 없으면 센 시각도 버린다. 이미 끊었거나 아직 안 띄웠다.
+                if (drop._loopSoundSource == null)
+                {
+                    _landedAt.Remove(id);
+                    continue;
+                }
+
+                // `Landed` 만으로는 이르다. 먼지가 켜졌다는 것이 착지 분기가
+                // 한 번 돌았다는 뜻이고, 그때 쿵 소리도 같이 났다.
+                var landed = drop._fallingStage == EAirdropFallingStage.Landed
+                             && drop._airdropDust != null
+                             && drop._airdropDust.activeSelf;
+                if (!landed)
+                {
+                    continue;
+                }
+
+                if (!_landedAt.TryGetValue(id, out var at))
+                {
+                    _landedAt[id] = now;
+                    continue;
+                }
+
+                if (now - at < _hushSeconds.Value)
+                {
+                    continue;
+                }
+
+                drop.ReleaseSoundSource();
+                _landedAt.Remove(id);
+                _log.LogInfo("[AirdropCaller] 착지한 상자의 반복 소리를 끊었다.");
+            }
         }
 
         // ── 실행 ───────────────────────────────────────────────────────────
