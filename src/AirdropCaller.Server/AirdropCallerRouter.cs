@@ -64,10 +64,24 @@ public class AirdropCallerRouter : StaticRouter
 
         return
         [
-            new RouteAction<GetAirdropLootRequest>(
+            // **`RouteAction<T>` 를 쓰지 않는다.** 그쪽은 `(T)info` 로 **딱딱하게** 캐스팅한다.
+            // 본문이 빈 요청이 오면 `StaticRouter` 가 `EmptyRequestData` 를 넣어 주는데,
+            // 그 캐스팅이 거기서 터져 요청 전체가 500 이 된다 — 전리품이 통째로 날아간다.
+            //
+            //   Unable to cast object of type 'EmptyRequestData'
+            //   to type 'GetAirdropLootRequest'.
+            //
+            // 바닐라 `LocationStaticRouter` 는 같은 자리에서 `info as GetAirdropLootRequest`
+            // 로 **무르게** 받는다. 우리도 그래야 한다. `bodyType` 은 그대로 넘겨 주어야
+            // 본문이 있을 때 `containerId` 를 읽을 수 있다(없으면 영영 못 읽는다).
+            //
+            // 플레어를 쏘자 이것으로 세 번 연달아 터졌다(2026-10-30 03:42~03:44).
+            new RouteAction(
                 "/client/airdrop/loot",
-                (url, info, sessionId, output, ct) => ValueTask.FromResult(
-                    HandleLoot(logger, httpResponseUtil, crateBuilder, store.Config, queue, info, output))),
+                (url, info, sessionId, output, ct) => ValueTask.FromResult<object>(
+                    HandleLoot(logger, httpResponseUtil, crateBuilder, store.Config, queue,
+                               info as GetAirdropLootRequest, output)),
+                typeof(GetAirdropLootRequest)),
 
             new RouteAction(
                 "/airdrop-caller/state",
@@ -200,11 +214,24 @@ public class AirdropCallerRouter : StaticRouter
         CrateBuilder crateBuilder,
         Config config,
         DropQueue queue,
-        GetAirdropLootRequest info,
+        GetAirdropLootRequest? info,
         string? vanillaOutput)
     {
         // 우리 것이 아니면 바닐라가 만든 답을 그대로 흘려보낸다.
         var passthrough = vanillaOutput ?? string.Empty;
+
+        // 본문이 비어 있으면 `StaticRouter` 가 `EmptyRequestData` 를 준다 — 여기서는
+        // null 로 온다. 어느 상자인지 알 길이 없으니 바닐라 답을 그대로 보낸다.
+        // **터뜨리지 않는다**: 여기서 터지면 요청이 500 이 되어 전리품이 통째로 날아간다.
+        if (info is null)
+        {
+            if (config.Debug)
+            {
+                logger.Info("[AirdropCaller] 전리품 요청에 상자 id 가 없다 — 바닐라 답을 그대로 보낸다.");
+            }
+
+            return passthrough;
+        }
 
         if (!config.ModEnabled)
         {
