@@ -47,6 +47,9 @@ public class AirdropCallerRouter : StaticRouter
     {
     }
 
+    /// <summary>마지막으로 적은 하늘 상태. 같은 줄을 2초마다 되풀이하지 않는다.</summary>
+    private static string? _lastSky;
+
     private static List<RouteAction> BuildRoutes(
         JsonUtil jsonUtil,
         ISptLogger<AirdropCallerRouter> logger,
@@ -151,10 +154,21 @@ public class AirdropCallerRouter : StaticRouter
 
                     // 계측: 보급이 겹쳤거나 맵이 자기 것을 띄웠으면 적는다. 낙하산이
                     // 안 사라지는 증상의 첫 용의자가 겹침이다(2026-10-30).
+                    // **바뀔 때만 적는다.** 멈춘 상자는 영영 안 사라져서, 매번 적으면
+                    // 2초마다 같은 줄이 끝없이 쌓인다(실제로 그랬다).
                     if (info.InRaid && (info.Planes > 0 || info.Crates > 0))
                     {
-                        logger.Info($"[AirdropCaller] 하늘: 비행기 {info.Planes}, 상자 {info.Crates}, "
-                                    + $"맵이 센 보급 {info.MapCount}, 단계 [{info.Stages}]");
+                        var sky = $"비행기 {info.Planes}, 상자 {info.Crates}, "
+                                  + $"맵이 센 보급 {info.MapCount}, 단계 [{info.Stages}]";
+                        if (sky != _lastSky)
+                        {
+                            _lastSky = sky;
+                            logger.Info($"[AirdropCaller] 하늘: {sky}");
+                        }
+                    }
+                    else
+                    {
+                        _lastSky = null;
                     }
 
                     // 레이드를 나갔으면 예약을 비운다. 다음 레이드에 떨어지면 놀랄 일이다.

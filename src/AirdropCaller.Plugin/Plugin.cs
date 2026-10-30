@@ -196,10 +196,14 @@ namespace AirdropCaller.Plugin
                 else if (so.Type == SynchronizableObjectType.AirDrop)
                 {
                     crates++;
-                    if (so.Logic is ClientAirDrop drop)
-                    {
-                        stages.Add(drop._fallingStage.ToString());
-                    }
+
+                    // **자리까지 같이 적는다.** 어떤 상자는 내려앉고 어떤 상자는
+                    // `ParachuteEndOpen` 에 멈춰 땅을 뚫는데, 상자 종류도 겹침도
+                    // 원인이 아니었다(2026-10-30). 남은 변수는 **어디에 떨어지느냐** 다.
+                    // 멈춘 상자의 마지막 자리를 알면 지도에서 짚어 볼 수 있다.
+                    var p = so.transform.position;
+                    var stage = so.Logic is ClientAirDrop drop ? drop._fallingStage.ToString() : "?";
+                    stages.Add($"{stage}@{p.x:F0},{p.y:F0},{p.z:F0}");
                 }
             }
 
@@ -275,7 +279,12 @@ namespace AirdropCaller.Plugin
             {
                 // 조사에서 찾은 호출. 가장 가까운 사전 정의 보급 지점으로 떨어진다.
                 world.InitAirdrop(dropId, takeNearbyPoint: true, position: at);
-                _log.LogInfo($"[AirdropCaller] 예약 {dropId} 실행 — 내 자리에서 가장 가까운 지점으로 부른다.");
+
+                // 부른 자리를 적어 둔다. 멈춘 상자가 어디서 멈췄는지와 맞춰 보려면
+                // **어디서 불렀는지**도 있어야 한다 — 지점은 이 자리에서 가장 가까운
+                // 것으로 뽑히기 때문이다.
+                _log.LogInfo($"[AirdropCaller] 예약 {dropId} 실행 — 내 자리"
+                             + $"({at.x:F0},{at.y:F0},{at.z:F0})에서 가장 가까운 지점으로 부른다.");
             }
             catch (Exception e)
             {
