@@ -324,7 +324,18 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, Pres
                 {
                     // 더 깊은 자리를 직접 골랐으면 거기까지 가는 길은 내준다.
                     SlotFill.None => deeper,
-                    SlotFill.Auto => deeper || (isArmor && (required || isPlate)),
+
+                    // **반드시 있어야 하는 칸은 종류를 가리지 않고 채운다.**
+                    //
+                    // 완성품(기본 프리셋)이 있는 물건은 이미 그 칸이 차 있어 여기까지
+                    // 안 온다(`taken`). 여기 오는 것은 **완성품이 없는 물건**이다 —
+                    // 디스크 DB 기준으로 칸 있는 무기 152종 중 5종이 그렇다
+                    // (FN SCAR-H X-17, PKTM, AK-50, NSV, AGS-30). 그대로 두면 손잡이도
+                    // 총몸도 없는 껍데기가 간다. 프리셋이 있다는 전제만 보고 없는 경우를
+                    // 안 봤다(2026-10-30).
+                    //
+                    // 방어구의 삽입물도 `_required` 라 이 줄 하나에 같이 걸린다.
+                    SlotFill.Auto => deeper || required || (isArmor && isPlate),
                     _ => true,
                 };
 
