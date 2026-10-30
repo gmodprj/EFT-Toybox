@@ -36,9 +36,16 @@ public record QueueResponse
     [JsonPropertyName("dropId")]
     public string? DropId { get; set; }
 
-    /// <summary>상자에 실제로 담긴 개수.</summary>
+    /// <summary>상자에 실제로 담긴 개수. 품목에 붙은 부속은 세지 않는다.</summary>
     [JsonPropertyName("placed")]
     public int Placed { get; set; }
+
+    /// <summary>
+    /// 품목에 **붙은** 것의 수 — 방어판·삽입물·헬멧 부속 따위.
+    /// 격자 칸을 쓰지 않으므로 <see cref="Placed"/> 와 따로 센다.
+    /// </summary>
+    [JsonPropertyName("attached")]
+    public int Attached { get; set; }
 
     /// <summary>격자에 안 들어가 못 담은 것. **조용히 버리지 않는다.**</summary>
     /// <summary>못 담은 것. 상자에 들어가지 않았다.</summary>

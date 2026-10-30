@@ -56,6 +56,27 @@
         // 깎이는 쪽. 모르핀은 애초에 안 묶인다(최대 1) → "고친 것" 으로 돌아온다.
         { "Tpl": "544fb3f34bdc2d03748b456a", "Count": 1, "StackSize": 50 }
       ]
+    },
+
+    // 방어구 채우기 확인용.
+    //
+    // Fill 을 안 적으면 Auto — 방어구면 삽입물과 방어판이 붙고, 그 밖의 물건은
+    // 그대로 간다. "All" 은 헬멧의 야시경·마운트·바이저까지 붙인다.
+    //
+    // 바라는 답(이 설치본의 DB 로 실측한 것):
+    //   IOTV(13칸)  → 아라미드 삽입물 9 + 방어판 4 = 13개
+    //   AVS 리그     → 삽입물 3 + 방어판 2 = 5개
+    //   FAST MT      → 삽입물 2 + 야시경 GPNVG-18 + 마운트 + 바이저 …
+    //   SIG MCX      → Auto 라 아무것도 안 붙는다(무기는 건드리지 않는다)
+    "aabbccdd0000000000000004": {
+      "Icon": "Weapon",
+      "Items": [
+        { "Tpl": "5b44cd8b86f774503d30cba2", "Count": 1 },              // IOTV Gen4 완전형
+        { "Tpl": "544a5caa4bdc2d1a388b4568", "Count": 1 },              // Crye AVS 플레이트 캐리어
+        { "Tpl": "5a154d5cfcdbcb001a3b00da", "Count": 1, "Fill": "All" }, // Ops-Core FAST MT
+        { "Tpl": "5a154d5cfcdbcb001a3b00da", "Count": 1, "Fill": "None" },// 같은 헬멧, 빈 몸
+        { "Tpl": "5fbcc1d9016cce60e8341ab3", "Count": 1 }               // SIG MCX — 안 건드려야 한다
+      ]
     }
   }
 }

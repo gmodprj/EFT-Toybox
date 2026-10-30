@@ -23,7 +23,7 @@ namespace AirdropCaller.Server;
 /// 무기를 케이스에 담을지 말지도 같은 구조로 고른다.
 /// </summary>
 [Injectable(InjectionType.Singleton)]
-public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper)
+public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper, SlotFiller slotFiller)
 {
     /// <summary>중첩이 끝없이 깊어지는 것을 막는다. 가방 안의 가방 정도면 충분하다.</summary>
     private const int MaxDepth = 4;
@@ -47,8 +47,11 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
     /// 한 자루에 넣었더니 창이 "못 담은 것 1개" 라고 말하는데 정작 상자에는
     /// 들어 있는 꼴이 됐다.
     /// </summary>
+    /// <param name="Placed">격자에 자리를 잡은 품목 수. 딸려 붙은 부속은 세지 않는다.</param>
+    /// <param name="Attached">방어판·삽입물·헬멧 부속처럼 품목에 **붙은** 것의 수.</param>
     public record Result(
-        GetAirdropLootResponse Response, int Placed, List<string> Skipped, List<string> Adjusted);
+        GetAirdropLootResponse Response, int Placed, int Attached,
+        List<string> Skipped, List<string> Adjusted);
 
     public Result? Build(string dropId, DropSpec spec)
     {
@@ -76,14 +79,26 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
         var items = new List<Item> { crate };
         var skipped = new List<string>();
         var adjusted = new List<string>();
+        var tally = new Tally();
 
-        Place(spec.Items, crate, crateMap!, crateSlot, items, skipped, adjusted, depth: 0);
+        Place(spec.Items, crate, crateMap!, crateSlot, items, skipped, adjusted, tally, depth: 0);
 
         return new Result(
             new GetAirdropLootResponse { Icon = icon, Container = items },
-            items.Count - 1,
+            tally.Placed,
+            tally.Attached,
             Collapse(skipped),
             Collapse(adjusted));
+    }
+
+    /// <summary>
+    /// 담은 것과 붙은 것을 따로 센다. 예전처럼 `items.Count - 1` 로 세면 방어판까지
+    /// 품목 수에 섞여, 30개를 담았는데 창이 "78개" 라고 말하게 된다.
+    /// </summary>
+    private sealed class Tally
+    {
+        public int Placed;
+        public int Attached;
     }
 
     /// <summary>
@@ -107,6 +122,7 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
         List<Item> items,
         List<string> skipped,
         List<string> adjusted,
+        Tally tally,
         int depth)
     {
         if (entries is null || entries.Count == 0)
@@ -144,7 +160,12 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                     },
                 };
 
-                var size = itemHelper.GetItemSize([item], item.Id);
+                // 딸린 칸을 **자리를 보기 전에** 채운다. 붙은 것이 크기를 바꾼다 —
+                // 개머리판을 단 총은 빈 총보다 넓다. 빈 몸으로 재 놓고 채워 넣으면
+                // 격자 지도가 실제와 어긋난다.
+                var attached = slotFiller.Fill(item, entry.Fill ?? SlotFill.Auto);
+
+                var size = itemHelper.GetItemSize([item, .. attached], item.Id);
                 if (size is null)
                 {
                     skipped.Add($"{entry.Tpl} (크기를 모른다 — 없는 아이템일 수 있다)");
@@ -161,6 +182,9 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                 parentMap.TryFillContainerMapWithItem(
                     slot.X!.Value, slot.Y!.Value, size.Width, size.Height, slot.Rotation ?? false, out _);
                 items.Add(item);
+                items.AddRange(attached);
+                tally.Placed++;
+                tally.Attached += attached.Count;
 
                 if (entry.Items is null || entry.Items.Count == 0)
                 {
@@ -174,7 +198,7 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                     continue;
                 }
 
-                Place(entry.Items, item, childMap!, childSlot, items, skipped, adjusted, depth + 1);
+                Place(entry.Items, item, childMap!, childSlot, items, skipped, adjusted, tally, depth + 1);
             }
         }
     }

@@ -17,6 +17,12 @@ public record ItemSpec
 
     /// <summary>이 품목 안에 넣을 것. 격자를 가진 컨테이너일 때만 뜻이 있다.</summary>
     [JsonPropertyName("Items")] public List<ItemSpec>? Items { get; set; }
+
+    /// <summary>
+    /// 딸린 칸을 어디까지 채울지 — `Auto` · `All` · `None`. 비우면 `Auto`.
+    /// 서버의 <c>SlotFill</c> 과 짝이다. 글자 그대로 오간다(숫자가 아니다).
+    /// </summary>
+    [JsonPropertyName("Fill")] public string? Fill { get; set; }
 }
 
 /// <summary>
@@ -146,6 +152,9 @@ public record QueueResponse
     [JsonPropertyName("ok")] public bool Ok { get; set; }
     [JsonPropertyName("dropId")] public string? DropId { get; set; }
     [JsonPropertyName("placed")] public int Placed { get; set; }
+
+    /// <summary>품목에 붙은 것(방어판·삽입물·헬멧 부속)의 수. 격자 칸은 안 쓴다.</summary>
+    [JsonPropertyName("attached")] public int Attached { get; set; }
     [JsonPropertyName("skipped")] public List<string> Skipped { get; set; } = [];
 
     /// <summary>담기는 했는데 적어 낸 대로는 아닌 것(묶음을 깎았다 등).</summary>
