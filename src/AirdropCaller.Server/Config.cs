@@ -121,4 +121,21 @@ public class ItemSpec
     [JsonPropertyName("Fill")]
     [JsonConverter(typeof(JsonStringEnumConverter<SlotFill>))]
     public SlotFill? Fill { get; set; }
+
+    /// <summary>
+    /// 칸마다 직접 고른 것. 칸 경로 → tpl.
+    ///
+    /// <list type="bullet">
+    /// <item>적은 칸은 그대로 쓴다. <see cref="Fill"/> 보다 세다.</item>
+    /// <item>안 적은 칸은 <see cref="Fill"/> 이 하던 대로.</item>
+    /// <item>빈 문자열은 **"비워 둬라"** — `Auto` 가 채우는 것을 막는 유일한 방법이다.</item>
+    /// </list>
+    ///
+    /// 겹친 칸은 점으로 잇는다: `"mod_mount.mod_nvg"`. 사전 하나로 몇 겹이든 적을 수
+    /// 있어 모양이 늘지 않는다.
+    ///
+    /// 칸에 못 다는 것을 적으면 거절하고 "고친 것" 에 적는다. 조용히 버리지 않는다.
+    /// </summary>
+    [JsonPropertyName("Slots")]
+    public Dictionary<string, string>? Slots { get; set; }
 }
