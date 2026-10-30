@@ -92,4 +92,15 @@ public class ItemSpec
     /// </summary>
     [JsonPropertyName("Items")]
     public List<ItemSpec>? Items { get; set; }
+
+    /// <summary>
+    /// 이 품목에 딸린 칸을 어디까지 채울지. 비우면 <see cref="SlotFill.Auto"/>.
+    ///
+    /// `Auto` 는 방어구(헤드기어·바디아머·택티컬 리그)에만 손대어 삽입물과 방어판을
+    /// 채운다 — 삽입물이 빠진 방어구는 보호력이 0 이라 적어 낸 사람이 바란 물건이
+    /// 아니다. `All` 은 헬멧의 야시경·마운트까지 모두 붙이고, `None` 은 빈 몸으로 둔다.
+    /// </summary>
+    [JsonPropertyName("Fill")]
+    [JsonConverter(typeof(JsonStringEnumConverter<SlotFill>))]
+    public SlotFill? Fill { get; set; }
 }

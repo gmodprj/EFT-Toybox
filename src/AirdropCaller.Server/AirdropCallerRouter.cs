@@ -365,7 +365,8 @@ public class AirdropCallerRouter : StaticRouter
     private static QueueResponse Accepted(
         ISptLogger<AirdropCallerRouter> logger, string dropId, DropSpec spec, CrateBuilder.Result built)
     {
-        logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon} 상자에 {built.Placed}개"
+        var attached = built.Attached > 0 ? $" (부속 {built.Attached}개 붙임)" : string.Empty;
+        logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon} 상자에 {built.Placed}개{attached}"
                     + Note(built));
 
         return new QueueResponse
@@ -373,6 +374,7 @@ public class AirdropCallerRouter : StaticRouter
             Ok = true,
             DropId = dropId,
             Placed = built.Placed,
+            Attached = built.Attached,
             Skipped = built.Skipped,
             Adjusted = built.Adjusted,
         };

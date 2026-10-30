@@ -88,7 +88,42 @@ public class ItemRow : INotifyPropertyChanged
     private void Changed(string name) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public ItemSpec ToSpec() => new() { Tpl = Tpl, Count = Count, StackSize = StackSize };
+    private string _fillLabel = FillLabels[0];
+
+    /// <summary>표에 보이는 "채우기" 값. 서버가 아는 말로는 <see cref="FillCode"/> 가 옮긴다.</summary>
+    public string FillLabel
+    {
+        get => _fillLabel;
+        set { _fillLabel = value; Changed(nameof(FillLabel)); }
+    }
+
+    /// <summary>
+    /// 고른 말을 서버의 `SlotFill` 로 옮긴다. "자동" 은 **안 보낸다** —
+    /// 적지 않은 것과 같은 뜻이라, 프리셋 파일에 군더더기를 남기지 않는다.
+    /// </summary>
+    private string? FillCode => _fillLabel switch
+    {
+        FillAll => "All",
+        FillNone => "None",
+        _ => null,
+    };
+
+    public const string FillAuto = "자동";
+    public const string FillAll = "가득";
+    public const string FillNone = "없음";
+
+    public static readonly string[] FillLabels = [FillAuto, FillAll, FillNone];
+
+    /// <summary>서버가 적어 보낸 값을 표에 보일 말로 되돌린다.</summary>
+    public static string LabelForFill(string? code) => code switch
+    {
+        "All" => FillAll,
+        "None" => FillNone,
+        _ => FillAuto,
+    };
+
+    public ItemSpec ToSpec() =>
+        new() { Tpl = Tpl, Count = Count, StackSize = StackSize, Fill = FillCode };
 }
 
 /// <summary>
@@ -123,6 +158,9 @@ public partial class MainWindow : Window
 
     /// <summary>"담을 곳" 칸이 보여 주는 선택지. 맨 앞이 "상자(직접)" 다.</summary>
     public ObservableCollection<ContainerChoice> ContainerChoices { get; } = [];
+
+    /// <summary>"채우기" 칸이 보여 주는 선택지. 줄마다 같아 한 벌만 둔다.</summary>
+    public IReadOnlyList<string> FillChoices => ItemRow.FillLabels;
 
     private IconService? _icons;
     private readonly FileToIconConverter _categoryIcons = new();
@@ -482,6 +520,7 @@ public partial class MainWindow : Window
                 CategoryIcon = info?.CategoryIcon ?? string.Empty,
                 Count = spec.Count,
                 StackSize = spec.StackSize,
+                FillLabel = ItemRow.LabelForFill(spec.Fill),
                 Parent = parent,
             };
 
@@ -771,6 +810,11 @@ public partial class MainWindow : Window
             // 조용히 버리지도, 조용히 고치지도 않는다. 둘을 **따로** 말한다 —
             // 한데 묶었더니 "못 담은 것 1개" 라면서 정작 상자에는 들어 있었다.
             var text = $"예약했다 — {result.Placed}개를 담았다.";
+            if (result.Attached > 0)
+            {
+                text += $" 방어판·부속 {result.Attached}개를 붙였다.";
+            }
+
             if (result.Skipped.Count > 0)
             {
                 text += $" 못 담은 것 {result.Skipped.Count}가지: {string.Join(", ", result.Skipped)}";

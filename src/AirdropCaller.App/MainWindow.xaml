@@ -72,6 +72,17 @@
           <DataGridTextColumn Header="품목" Binding="{Binding Name}" IsReadOnly="True" Width="*" MinWidth="150" />
           <DataGridTextColumn Header="개수" Binding="{Binding Count}" Width="60" />
           <DataGridTextColumn Header="묶음" Binding="{Binding StackSize}" Width="70" />
+          <!-- 채우기. 자동이면 방어구에 삽입물·방어판이 붙는다. 가득은 야시경까지. -->
+          <DataGridTemplateColumn Header="채우기" Width="76">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <ComboBox ItemsSource="{Binding DataContext.FillChoices,
+                                        RelativeSource={RelativeSource AncestorType=Window}}"
+                          SelectedItem="{Binding FillLabel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          BorderThickness="0" Background="Transparent" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
           <!-- 담을 곳. 비우면 보급 상자에 직접 들어간다. -->
           <DataGridTemplateColumn Header="담을 곳" Width="120">
             <DataGridTemplateColumn.CellTemplate>
