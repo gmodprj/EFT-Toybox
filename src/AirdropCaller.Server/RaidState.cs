@@ -44,6 +44,16 @@ public record HeartbeatRequest : IRequestData
     /// <summary>맵이 센 보급 횟수. 우리는 안 올리므로, 늘면 맵이 자기 것을 띄운 것이다.</summary>
     [JsonPropertyName("mapCount")]
     public int MapCount { get; set; }
+
+    /// <summary>
+    /// 하늘에 있는 상자들의 낙하 단계.
+    /// `Fall → ParachuteStartOpen → ParachuteEndOpen → Contact → Landed`
+    ///
+    /// 낙하산은 뒤의 둘에서만 닫힌다(`ClientAirDrop.CloseParachute`). 안 사라지는
+    /// 낙하산이 `ParachuteEndOpen` 에 멈춰 있는지 이 값으로 본다.
+    /// </summary>
+    [JsonPropertyName("stages")]
+    public string? Stages { get; set; }
 }
 
 /// <summary>

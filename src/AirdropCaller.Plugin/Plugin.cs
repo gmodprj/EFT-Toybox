@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using BepInEx;
@@ -120,6 +121,7 @@ namespace AirdropCaller.Plugin
                 crates = counted.Crates,
                 // `_currentAirdropsCount` 는 float 다. 세는 값이라 그대로 int 로 받는다.
                 mapCount = inRaid ? (int)manager._currentAirdropsCount : 0,
+                stages = counted.Stages,
             };
 
             try
@@ -168,16 +170,18 @@ namespace AirdropCaller.Plugin
         /// 하늘에 뜬 비행기와 상자를 센다. 계측용이다 — 둘 이상이면 보급이 겹친 것이고,
         /// 낙하산이 안 사라지는 증상의 첫 용의자다.
         /// </summary>
-        private static (int Planes, int Crates) CountInAir(ClientGameWorld world)
+        private static (int Planes, int Crates, string Stages) CountInAir(ClientGameWorld world)
         {
             var active = world?.ClientSynchronizableObjectLogicProcessor?._activeSynchronizableObjects;
             if (active == null)
             {
-                return (0, 0);
+                return (0, 0, string.Empty);
             }
 
             var planes = 0;
             var crates = 0;
+            var stages = new List<string>();
+
             foreach (var so in active)
             {
                 if (so == null)
@@ -192,10 +196,14 @@ namespace AirdropCaller.Plugin
                 else if (so.Type == SynchronizableObjectType.AirDrop)
                 {
                     crates++;
+                    if (so.Logic is ClientAirDrop drop)
+                    {
+                        stages.Add(drop._fallingStage.ToString());
+                    }
                 }
             }
 
-            return (planes, crates);
+            return (planes, crates, string.Join(",", stages.ToArray()));
         }
 
         // ── 실행 ───────────────────────────────────────────────────────────
@@ -321,6 +329,17 @@ namespace AirdropCaller.Plugin
 
             /// <summary>맵이 센 보급 횟수. 우리는 안 올리므로, 늘면 맵이 자기 것을 띄운 것이다.</summary>
             public int mapCount;
+
+            /// <summary>
+            /// 하늘에 있는 상자들의 **낙하 단계**.
+            /// `Fall → ParachuteStartOpen → ParachuteEndOpen → Contact → Landed`
+            ///
+            /// 낙하산은 `Contact`·`Landed` 에서만 닫힌다(`ClientAirDrop.CloseParachute`).
+            /// 그런데 그 두 단계로 넘어가는 길은 `ServerAirDrop.CollisionEnter` 하나뿐이고,
+            /// 거기서 **여러 레이어를 그냥 무시한다**(Loot·Player·Triggers·Default).
+            /// 안 사라지는 낙하산이 `ParachuteEndOpen` 에 멈춰 있는지 여기서 본다.
+            /// </summary>
+            public string stages;
         }
 
         /// <summary>보고에 대한 답. 예약과 다음 주기가 실려 온다.</summary>

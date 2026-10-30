@@ -151,10 +151,10 @@ public class AirdropCallerRouter : StaticRouter
 
                     // 계측: 보급이 겹쳤거나 맵이 자기 것을 띄웠으면 적는다. 낙하산이
                     // 안 사라지는 증상의 첫 용의자가 겹침이다(2026-10-30).
-                    if (info.InRaid && (info.Planes > 1 || info.Crates > 1 || info.MapCount > 0))
+                    if (info.InRaid && (info.Planes > 0 || info.Crates > 0))
                     {
                         logger.Info($"[AirdropCaller] 하늘: 비행기 {info.Planes}, 상자 {info.Crates}, "
-                                    + $"맵이 센 보급 {info.MapCount}");
+                                    + $"맵이 센 보급 {info.MapCount}, 단계 [{info.Stages}]");
                     }
 
                     // 레이드를 나갔으면 예약을 비운다. 다음 레이드에 떨어지면 놀랄 일이다.
