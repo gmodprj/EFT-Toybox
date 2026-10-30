@@ -27,8 +27,13 @@ public class SlotRow : INotifyPropertyChanged
     public required string Path { get; init; }
     public required string Name { get; init; }
 
-    /// <summary>겹친 칸은 들여쓴다. 헬멧은 마운트 안에 또 칸이 있다.</summary>
-    public required double Indent { get; init; }
+    /// <summary>
+    /// 겹친 칸을 들여쓰는 여백. 헬멧은 마운트 안에 또 칸이 있다.
+    ///
+    /// 칸(column)을 따로 두지 않고 여백으로 민다 — 따로 두면 그 폭만큼 드롭다운이
+    /// 줄마다 다른 자리에서 시작한다.
+    /// </summary>
+    public required Thickness Indent { get; init; }
 
     public required string KindLabel { get; init; }
     public required Brush KindBrush { get; init; }
@@ -167,7 +172,7 @@ public partial class SlotWindow : Window
         {
             Path = node.Path,
             Name = node.Name,
-            Indent = node.Depth * 18.0,
+            Indent = new Thickness(node.Depth * 18.0, 0, 0, 0),
             KindLabel = node.Kind switch
             {
                 "plate" => "방탄판",
