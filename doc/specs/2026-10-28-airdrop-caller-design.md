@@ -1498,3 +1498,70 @@ if (_loopSoundSource != null && LoopSoundSource.PlayBackState != Playing)
 `ParachuteEndOpenHeight` = 180 이라 **지면에서 180m 안에 들어오면** 그 단계로 바뀌니,
 단계만 보고 "땅을 뚫었다" 고 읽으면 안 된다. ①을 가르는 기준은 y 값이 아니라
 `Landed` 에 **도달하는가** 다.
+
+### 16.7 ①의 기계 — 재는 자와 멈추는 자가 다르다 (2026-10-30)
+
+디컴파일을 더 읽어 ①의 **구조**를 짚었다. 단계를 넘기는 판단과 상자를 멈추는 판단이
+**서로 다른 것을 본다.**
+
+| 하는 일 | 보는 것 |
+| --- | --- |
+| `Fall` → `ParachuteStartOpen` → `ParachuteEndOpen` | `GetRaycastPoint` — `Physics.RaycastAll(..., LayersMaskController.TerrainLowPoly)` |
+| `ParachuteEndOpen` → `Contact` | `CollisionEnter` — 유니티 **물리 충돌**, 그중 Loot·Player·Triggers·**Default** 층은 무시 |
+| `Contact` → `Landed` | `CalcExtents` — 네 귀퉁이에서 **아래로 2m** 레이캐스트 |
+
+낙하산은 **저폴리 지형**을 기준으로 펴지는데, 멈추는 것은 **물리 충돌**에 달려 있고
+그 충돌은 Default 층을 통째로 무시한다. 건물·구조물·소품은 대부분 Default 다. 그래서
+"저폴리 지형은 180m 안에 있지만 그 사이에 멈춰 세울 것이 없는 자리" 가 생길 수 있고,
+그 자리에서는 `ParashuteLanding` 이 상자를 영원히 내린다.
+
+```csharp
+public void ParashuteLanding(float deltaTime)
+{
+    SyncObjectTransform.position += (Vector3.down * ParachuteSpeed + WindVector()) * deltaTime;
+}
+```
+
+브레이크가 이 함수 안에 없다. `CollisionEnter` 하나뿐이다.
+
+우리가 바닐라와 다르게 하는 것이 **지점 고르기**(`takeNearbyPoint: true`)이므로, 평소
+안 쓰이던 authored 지점이 뽑히면 이 자리를 밟을 확률이 올라간다. 우리가 만든 버그는
+아니지만 **우리가 더 자주 밟게 만든다.**
+
+### 16.8 세 가지를 플러그인이 메운다 (2026-10-30)
+
+바닐라 파일은 고치지 않는다. 플러그인이 매 프레임 상자를 보고 빈 곳만 메운다
+(`TendCrates`).
+
+| 갈래 | 메우는 방법 | 설정 (F12) |
+| --- | --- | --- |
+| ③ 소리 | 앉은 뒤 n초에 `ReleaseSoundSource()` 한 번 | `소리 / 착지 뒤 반복 소리 끄기(초)` 기본 2 |
+| ② 낙하산 | `Landed` 인데 낙하산이 1초 넘게 남으면 `CloseParachute()` | `구조 / 남은 낙하산 접기` 기본 켬 |
+| ① 지나침 | `ParachuteEndOpen` 에서 n미터보다 더 내려가면 지면을 찾아 앉힌다 | `구조 / 막힌 것으로 보는 낙하 거리(m)` 기본 200 |
+
+**②는 원인을 모르고도 메운다.** `CloseParachute` 에는 `_startClosingParachute` 자체
+잠금이 있어 두 번 불러도 안전하고, 정상 판에서는 이미 닫혀 있어 `activeSelf` 가
+거짓이라 우리 쪽이 돌지 않는다. 대신 첫 `Landed` 프레임의 두 조건을 로그에 한 번
+남겨 다음 번에는 **원인**을 알 수 있게 했다.
+
+```
+[AirdropCaller] 앉았다 — 시작Fall, 먼지켜짐, 낙하산닫힘.
+```
+
+**①은 지면을 다시 찾아 앉힌다.** 요령은 `CollisionEnter` 에 **무시당하지 않는 층의
+collider** 를 넘겨 주는 것이다 — 바닐라가 단계 전환에 쓰는 것과 같은
+`TerrainLowPoly` 를 레이캐스트해 그 collider 를 쓴다. `CalcExtents` 가 2m 만 재므로
+**자리를 먼저 옮기고** 부르고, 클라이언트가 한 프레임 동안 옛 자리로 끌어내리지 않게
+`_destinationPosition` 도 같이 고친다. 아래에서 지면을 못 찾으면 위도 본다(이미
+지나친 경우). 위아래 600m 안에 지면이 없으면 손대지 않고 로그만 남긴다.
+
+200m 를 쓰는 근거: `ParachuteEndOpen` 은 지면이 `ParachuteEndOpenHeight`(=180) 안에
+들어와야 시작하므로 정상이면 그 단계에서 180m 안에 멈춘다. 실측도 그렇다 — 09:01 판
+174m, 10:27 판 180m.
+
+**계측도 늘렸다.** 보고의 단계 문자열에 상자 **아래에 지면이 있는지**를 붙인다
+(`,지면-56` 또는 `,지면없음`). ① 이 다시 나면 "밑에 땅이 있었는데도 못 멈췄나,
+아니면 땅 자체가 없었나" 가 바로 갈린다.
+
+아직 **재현을 못 해 실측으로 확인하지 못했다.** 둘 다 드물게 나오므로, 다음에 날 때
+위 로그 줄로 확인한다.

@@ -38,9 +38,25 @@ namespace AirdropCaller.Plugin
         private ConfigEntry<float> _heartbeatSeconds;
         private ConfigEntry<bool> _verbose;
         private ConfigEntry<float> _hushSeconds;
+        private ConfigEntry<bool> _fixParachute;
+        private ConfigEntry<float> _stuckMeters;
 
-        /// <summary>땅에 앉은 상자를 처음 본 시각. 열쇠는 동기 물체의 인스턴스 번호다.</summary>
-        private readonly Dictionary<int, float> _landedAt = new Dictionary<int, float>();
+        /// <summary>상자 하나를 지켜본 기록. 열쇠는 동기 물체의 인스턴스 번호다.</summary>
+        private sealed class Watched
+        {
+            /// <summary>`Landed` 를 처음 본 시각. 0 이면 아직 못 봤다.</summary>
+            public float LandedAt;
+
+            /// <summary>`ParachuteEndOpen` 을 처음 본 시각과 그때의 높이.</summary>
+            public float EndOpenAt;
+            public float EndOpenY;
+
+            /// <summary>한 상자에 한 번씩만 한다.</summary>
+            public bool Rescued;
+            public bool Reported;
+        }
+
+        private readonly Dictionary<int, Watched> _watched = new Dictionary<int, Watched>();
 
         private float _nextHeartbeatAt;
 
@@ -78,6 +94,19 @@ namespace AirdropCaller.Plugin
                     + "음수로 두면 바닐라대로 둔다.",
                     new AcceptableValueRange<float>(-1f, 60f)));
 
+            _fixParachute = Config.Bind("구조", "남은 낙하산 접기", true,
+                "상자가 `Landed` 인데 낙하산이 1초 넘게 남아 있으면 우리가 접는다. "
+                + "바닐라의 착지 분기는 한 번 겨눔이라, 그 `if` 가 첫 프레임에 거짓이면 "
+                + "`CloseParachute` 가 영영 안 불린다.");
+
+            _stuckMeters = Config.Bind("구조", "막힌 것으로 보는 낙하 거리(m)", 200f,
+                new ConfigDescription(
+                    "`ParachuteEndOpen` 에 들어선 뒤 이보다 더 내려갔으면 땅을 지나친 것으로 "
+                    + "본다. 그 단계는 지면이 `ParachuteEndOpenHeight`(=180) 안에 들어와야 "
+                    + "시작하므로 정상이면 180m 안에 멈춘다. 지면을 다시 찾아 그 자리에 앉힌다. "
+                    + "0 이면 구조하지 않는다.",
+                    new AcceptableValueRange<float>(0f, 1000f)));
+
             _log.LogInfo($"[AirdropCaller] 준비됨. 서버 {RequestHandler.Host}");
         }
 
@@ -91,7 +120,7 @@ namespace AirdropCaller.Plugin
             var world = GetClientGameWorld(out var manager);
             var now = Time.unscaledTime;
 
-            HushLandedCrates(world, now);
+            TendCrates(world, now);
 
             // 길이 하나다. 보고를 보내고, 그 답에 예약이 실려 온다.
             //
@@ -233,7 +262,7 @@ namespace AirdropCaller.Plugin
                         var same = drop._startFallingStage == drop._fallingStage ? "같음" : "다름";
                         var dust = drop._airdropDust != null && drop._airdropDust.activeSelf ? "먼지켜짐" : "먼지꺼짐";
                         stages.Add($"{drop._fallingStage}(시작{drop._startFallingStage},{same},{dust})"
-                                   + $"@{p.x:F0},{p.y:F0},{p.z:F0}");
+                                   + $"@{p.x:F0},{p.y:F0},{p.z:F0}{GroundUnder(p)}");
                     }
                     else
                     {
@@ -246,39 +275,31 @@ namespace AirdropCaller.Plugin
         }
 
         /// <summary>
-        /// 땅에 앉은 상자의 **반복 소리를 끊는다.**
+        /// 떨어지는·앉은 상자를 매 프레임 지켜보고 **바닐라가 놓친 것을 메운다.**
         ///
-        /// 바닐라 `ClientAirDrop.ManualUpdate` 의 꼬리는 이렇다:
+        /// 세 가지다. 근거는 doc/specs/2026-10-28-airdrop-caller-design.md §16.
         ///
-        ///     if (_loopSoundSource != null &amp;&amp; LoopSoundSource.PlayBackState != Playing)
-        ///         if (_signalFire) PlayFlareSound(); else ReleaseSoundSource();
-        ///
-        /// 착지하면 `PlayLandingSound` 가 낙하산 소리를 끊고 쿵 소리를 한 번 낸다. 그게
-        /// 끝나는 순간 위 꼬리가 **연막 소리를 `looped: true` 로** 켠다. 그 뒤로는 소리가
-        /// 멈출 길이 없다 — 반복 재생 중에는 `PlayBackState` 가 늘 `Playing` 이라
-        /// `ReleaseSoundSource` 쪽으로 못 가고, 연막이 다 탄 뒤엔
-        /// `ServerAirDrop` 이 `IsStatic = true` 를 걸어 `ManualUpdate` 자체가 멈춘다.
-        /// 사용자가 들은 "낙하산 소리가 계속된다" 가 이것이다(실측 2026-10-30 09:01,
-        /// 상자는 `Landed(먼지켜짐)` 까지 정상으로 갔다).
-        ///
-        /// 한 번 풀어 주면 `_loopSoundSource` 가 null 이 되고, 꼬리의 첫 조건이
-        /// 거짓이라 다시 켜지지 않는다. 낙하산 소리는 `ParachuteStartOpen`/`EndOpen`
-        /// 분기에서만 켜지니 되살아날 길도 없다. 연기와 불꽃은 그대로 둔다 — 소리만 끊는다.
+        /// 1. **소리** — 착지음이 끝나는 순간 `ManualUpdate` 의 꼬리가 연막 소리를
+        ///    `looped: true` 로 켜고, 그 뒤로는 끌 길이 없다(반복 재생 중에는
+        ///    `PlayBackState` 가 늘 `Playing` 이라 `ReleaseSoundSource` 쪽으로 못 간다).
+        ///    한 번 풀어 주면 `_loopSoundSource` 가 null 이 되어 다시 켜지지 않는다.
+        /// 2. **낙하산** — 착지 분기가 `if` 하나에 걸려 있고 한 번 참이면 먼지가 켜져
+        ///    다시는 참이 안 된다. 그 `if` 가 첫 `Landed` 프레임에 거짓이면
+        ///    `CloseParachute` 가 영영 안 불린다. 그럴 때 우리가 접는다.
+        /// 3. **지나친 상자** — `CollisionEnter` 는 Loot·Player·Triggers·**Default**
+        ///    층을 무시한다. 그 층짜리만 밑에 있으면 멈출 것이 없어 계속 내려간다.
+        ///    단계 전환은 `TerrainLowPoly` 레이캐스트로 하고 멈추는 것은 물리 충돌로
+        ///    하니, 둘이 어긋나는 자리가 있다. 너무 내려간 상자는 지면을 다시 찾아 앉힌다.
         /// </summary>
-        private void HushLandedCrates(ClientGameWorld world, float now)
+        private void TendCrates(ClientGameWorld world, float now)
         {
-            if (_hushSeconds.Value < 0f)
-            {
-                return;
-            }
-
             var active = world?.ClientSynchronizableObjectLogicProcessor?._activeSynchronizableObjects;
             if (active == null)
             {
                 // 레이드 밖이다. 다음 판에 번호가 겹치는 일이 없게 비워 둔다.
-                if (_landedAt.Count > 0)
+                if (_watched.Count > 0)
                 {
-                    _landedAt.Clear();
+                    _watched.Clear();
                 }
 
                 return;
@@ -297,39 +318,143 @@ namespace AirdropCaller.Plugin
                 }
 
                 var id = so.GetInstanceID();
-
-                // 소리 낼 것이 없으면 센 시각도 버린다. 이미 끊었거나 아직 안 띄웠다.
-                if (drop._loopSoundSource == null)
+                if (!_watched.TryGetValue(id, out var seen))
                 {
-                    _landedAt.Remove(id);
-                    continue;
+                    seen = new Watched();
+                    _watched[id] = seen;
                 }
 
-                // `Landed` 만으로는 이르다. 먼지가 켜졌다는 것이 착지 분기가
-                // 한 번 돌았다는 뜻이고, 그때 쿵 소리도 같이 났다.
-                var landed = drop._fallingStage == EAirdropFallingStage.Landed
-                             && drop._airdropDust != null
-                             && drop._airdropDust.activeSelf;
-                if (!landed)
+                if (drop._fallingStage == EAirdropFallingStage.ParachuteEndOpen)
                 {
-                    continue;
+                    WatchDescent(so, drop, seen, now);
                 }
-
-                if (!_landedAt.TryGetValue(id, out var at))
+                else if (drop._fallingStage == EAirdropFallingStage.Landed)
                 {
-                    _landedAt[id] = now;
-                    continue;
+                    TendLanded(drop, seen, now);
                 }
+            }
+        }
 
-                if (now - at < _hushSeconds.Value)
-                {
-                    continue;
-                }
+        /// <summary>내려오는 중이다. 지면을 지나쳤는지만 본다.</summary>
+        private void WatchDescent(SynchronizableObject so, ClientAirDrop drop, Watched seen, float now)
+        {
+            var y = so.transform.position.y;
 
+            if (seen.EndOpenAt <= 0f)
+            {
+                seen.EndOpenAt = now;
+                seen.EndOpenY = y;
+                return;
+            }
+
+            if (seen.Rescued || _stuckMeters.Value <= 0f || seen.EndOpenY - y <= _stuckMeters.Value)
+            {
+                return;
+            }
+
+            seen.Rescued = true;
+            _log.LogWarning($"[AirdropCaller] 상자가 {seen.EndOpenY - y:F0}m 내려갔는데 아직 안 멈췄다. "
+                            + $"자리 {so.transform.position}. 지면을 찾아 앉힌다.");
+            Settle(so, drop);
+        }
+
+        /// <summary>
+        /// 멈추지 못한 상자를 지면에 앉힌다.
+        ///
+        /// `CollisionEnter` 에 **무시하지 않는 층의 collider** 를 넘겨 주는 것이 요령이다.
+        /// 바닐라가 단계 전환에 쓰는 것과 같은 `TerrainLowPoly` 를 쓴다. 그 뒤의
+        /// `CalcExtents` 가 네 귀퉁이에서 2m 만 아래로 재므로 **자리를 먼저 옮기고**
+        /// 부른다. 아래에서 못 찾으면 위도 본다 — 이미 지나쳤을 수 있다.
+        /// </summary>
+        private void Settle(SynchronizableObject so, ClientAirDrop drop)
+        {
+            var from = so.transform.position;
+            var mask = LayersMaskController.TerrainLowPoly;
+
+            if (Physics.Raycast(from + Vector3.up * 0.5f, Vector3.down, out var below, 600f, mask))
+            {
+                Land(so, drop, below, "아래");
+                return;
+            }
+
+            if (Physics.Raycast(from, Vector3.up, out var above, 600f, mask))
+            {
+                Land(so, drop, above, "위");
+                return;
+            }
+
+            _log.LogWarning("[AirdropCaller] 위아래 600m 안에 지면이 없다. 손을 못 쓴다.");
+        }
+
+        private void Land(SynchronizableObject so, ClientAirDrop drop, RaycastHit hit, string where)
+        {
+            var seat = hit.point + Vector3.up * 0.5f;
+            so.transform.position = seat;
+
+            // 클라이언트는 매 프레임 `_destinationPosition` 쪽으로 보간한다. 그 값은
+            // 서버 쪽 자리에서 오지만, 우리가 옮긴 프레임에는 아직 옛 자리다 — 같이
+            // 고쳐 주지 않으면 한 프레임 동안 원래 자리로 끌려 내려간다.
+            drop._destinationPosition = seat;
+
+            drop.CollisionEnter(hit.collider);
+            _log.LogInfo($"[AirdropCaller] {where}쪽 지면 {hit.point} 에 앉혔다 "
+                         + $"(collider {hit.collider?.name}, 층 {hit.collider?.gameObject.layer}). "
+                         + $"단계 {drop._fallingStage}.");
+        }
+
+        /// <summary>앉았다. 낙하산과 소리를 뒤처리한다.</summary>
+        private void TendLanded(ClientAirDrop drop, Watched seen, float now)
+        {
+            if (seen.LandedAt <= 0f)
+            {
+                seen.LandedAt = now;
+            }
+
+            var dustOn = drop._airdropDust != null && drop._airdropDust.activeSelf;
+            var parachuteOn = drop._parachute != null && drop._parachute.activeSelf;
+
+            // 첫 `Landed` 프레임의 두 조건을 한 번 적어 둔다. ② 가 다시 나면
+            // 어느 쪽이 거짓이었는지가 여기 남는다.
+            if (!seen.Reported)
+            {
+                seen.Reported = true;
+                _log.LogInfo($"[AirdropCaller] 앉았다 — 시작{drop._startFallingStage}, "
+                             + $"먼지{(dustOn ? "켜짐" : "꺼짐")}, 낙하산{(parachuteOn ? "남음" : "닫힘")}.");
+            }
+
+            // `_startClosingParachute` 를 같이 본다. 정상 판에서도 닫는 데 1초가
+            // 걸리고(`ParachuteFadeCoroutine`) 그동안 `activeSelf` 는 참이다 — 그것만
+            // 보면 멀쩡한 상자마다 헛경고가 난다. 바닐라가 **접기 시작조차 안 했을 때**만
+            // 우리가 끼어든다.
+            if (_fixParachute.Value && parachuteOn && !drop._startClosingParachute
+                && now - seen.LandedAt > 1f)
+            {
+                drop.CloseParachute();
+                _log.LogWarning("[AirdropCaller] 앉았는데 낙하산이 남아 있었다. 우리가 접었다.");
+            }
+
+            if (_hushSeconds.Value >= 0f
+                && drop._loopSoundSource != null
+                && now - seen.LandedAt >= _hushSeconds.Value)
+            {
                 drop.ReleaseSoundSource();
-                _landedAt.Remove(id);
                 _log.LogInfo("[AirdropCaller] 착지한 상자의 반복 소리를 끊었다.");
             }
+        }
+
+        /// <summary>
+        /// 상자 아래에 지면이 있는지 적는다. 바닐라가 단계 전환에 쓰는 것과 같은
+        /// `TerrainLowPoly` 다. ① 이 다시 나면 "밑에 땅이 있었는가" 가 여기 남는다.
+        /// </summary>
+        private static string GroundUnder(Vector3 at)
+        {
+            if (Physics.Raycast(at + Vector3.up * 0.5f, Vector3.down, out var hit, 600f,
+                                LayersMaskController.TerrainLowPoly))
+            {
+                return $",지면{hit.point.y:F0}";
+            }
+
+            return ",지면없음";
         }
 
         // ── 실행 ───────────────────────────────────────────────────────────
