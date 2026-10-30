@@ -1345,3 +1345,76 @@ SlotFill.Auto => deeper || required || isMagazine || Protects(auto),
 
 야시경 칸에 마스크가 들어가는 것도 규칙대로다 — 그 칸 후보 중 가장 비싼 것이
 마스크고 마스크는 방어구다. 야시경을 달려면 칸에서 직접 고르거나 `가득` 으로 간다.
+
+## 16. 낙하산이 안 사라지고 상자가 땅을 뚫는다 (2026-10-30, 측정됨)
+
+사용자가 세 가지를 보고했다 — **낙하산이 안 사라짐**, **맵·미니맵에 보급 표시 안 됨**,
+**낙하산 효과음이 반복 재생**. 그리고 뒤에 하나 더: **상자가 땅을 뚫고 들어가 사라짐**.
+
+### 16.1 틀린 가설 — 겹침
+
+바닐라는 `InitAirdrop` 앞뒤로 두 줄을 더 한다(`ServerAirdropManager.ManualUpdate`).
+
+```csharp
+_currentAirdropsCount++;
+UpdateAirdropTimers(PlaneAirdropCooldown);
+Singleton<GameWorld>.Instance.InitAirdrop(...);
+```
+
+우리는 가운데만 부른다. 그래서 우리 상자가 하늘에 있는 동안 맵이 자기 보급기를
+띄울 수 있다고 보고, **겹침**을 의심했다.
+
+**틀렸다.** 계측을 넣고 재 보니 증상이 난 판에서 비행기도 상자도 **하나뿐**이었고
+맵이 센 보급은 **0** 이었다. 겹친 적이 없다.
+
+### 16.2 측정 — `ParachuteEndOpen` 에서 안 넘어간다
+
+보고에 상자마다의 낙하 단계를 실어 2초마다 찍었다.
+
+```
+Fall              24번   07:53:29 ~ 07:54:15   (46초)
+ParachuteEndOpen  44번   07:54:17 ~ 07:55:44   (87초, 그대로 계속)
+```
+
+`Contact` 에도 `Landed` 에도 **도달하지 못한다.**
+
+### 16.3 세 증상이 한 원인이었다
+
+`ParachuteEndOpen` 은 `ParashuteLanding` 이 상자를 계속 아래로 내리는 구간이고,
+거기서 빠져나가는 길은 `ServerAirDrop.CollisionEnter` **하나뿐**이다.
+
+```csharp
+if ((_descending && GetPlayerByCollider(collider) != null) || !_descending
+    || LootLayer || PlayerLayer || TriggersMask || DefaultLayerMask) return;
+_fallingStage = EAirdropFallingStage.Contact;
+```
+
+충돌이 안 잡히면:
+
+| 증상 | 까닭 |
+| --- | --- |
+| 땅을 뚫고 사라진다 | 멈춰 세우는 것이 없어 계속 내려간다 |
+| 낙하산이 안 닫힌다 | `CloseParachute` 는 `Contact`·`Landed` 에서만 불린다 |
+| 효과음이 반복된다 | `PlaySqueakSoundLoop` 가 `ParachuteEndOpen` 에서 돈다 |
+| 맵에 표시가 안 된다 | 상자가 `Landed` 로 자리를 잡은 적이 없다 |
+
+**넷이 한 뿌리다.** 따로 고칠 것이 아니다.
+
+### 16.4 아직 모르는 것 — 우리 것인가
+
+이게 **우리 드롭만의 문제인지, 이 설치본에서 보급이 원래 그런지** 아직 모른다.
+가르는 방법은 손에 있다 — **플레어를 쏘는 것**이다. 플레어 보급은 우리가 안 건드리는
+바닐라 경로인데(§8-D), 계측은 하늘의 **모든** 상자를 세므로 그쪽 단계도 같이 찍힌다.
+
+| 플레어 상자가 | 뜻 |
+| --- | --- |
+| `Landed` 까지 간다 | 우리 쪽 차이다. 낙하 지점 고르는 방식이 첫 용의자 |
+| 똑같이 멈춘다 | 보급 자체가 깨져 있다. 우리 탓이 아니고 고칠 데도 다르다 |
+
+우리가 다르게 하는 것은 **낙하 지점을 고르는 방식**이다 — 바닐라는 authored 지점 중
+무작위, 우리는 `takeNearbyPoint: true` 로 **플레이어에게 가장 가까운 점**을 집는다.
+둘 다 `_airdropPoints` 의 authored 지점이지만, 가까운 쪽을 계속 집다 보면 사용자가
+서 있는 자리에 따라 평소 안 쓰이던 지점이 뽑힐 수 있다.
+
+사용자가 "정상적으로 떨어진 적도 있다" 고 했으므로 **어디에 내려앉느냐에 달린 문제**로
+보인다. 같은 자리에서 둘을 비교하는 것이 가장 깨끗하다.
