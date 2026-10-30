@@ -425,7 +425,11 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, Pres
                     // 안 봤다(2026-10-30).
                     //
                     // 방어구의 삽입물도 `_required` 라 이 줄 하나에 같이 걸린다.
-                    SlotFill.Auto => deeper || required || isMagazine || (isArmor && isPlate),
+                    // `isArmor && isPlate` 를 `Protects` 가 대신한다. 방어판은 어차피
+                    // 방어 등급을 들고 있어 같이 걸리고, **칸 이름에 기대지 않는다** —
+                    // 헬멧의 SLAAP 방탄판은 칸 이름이 `mod_equipment_002` 라
+                    // `IsRemovablePlateSlot` 에 안 걸려 바닥에 버려지고 있었다.
+                    SlotFill.Auto => deeper || required || isMagazine || Protects(auto),
                     _ => true,
                 };
 
@@ -500,6 +504,37 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, Pres
     {
         var ids = ItemHelper.GetSoftInsertSlotIds();
         return ids.Contains(name) || ids.Contains(name.ToLowerInvariant());
+    }
+
+    /// <summary>
+    /// 이 물건이 **막아 주는가**. 방어 등급을 들고 있으면 그렇다.
+    ///
+    /// `자동` 이 채울 칸을 가르는 기준이다. 칸 이름으로 가르던 때는 헬멧이 손해를
+    /// 봤다 — SLAAP 방탄판(`mod_equipment_002`)과 측면 보호대(`mod_equipment_000`)는
+    /// 이름이 방어판 칸처럼 생기지 않아 통째로 빠졌다. **장식이 아니라 방어력이다.**
+    /// 야시경·마운트·헤드셋은 등급이 없어 그대로 `가득` 몫으로 남는다.
+    /// </summary>
+    private bool Protects(MongoId? tpl)
+    {
+        if (tpl is not { } id)
+        {
+            return false;
+        }
+
+        var (ok, template) = itemHelper.GetItem(id);
+        if (!ok || template?.Properties?.ArmorClass is not { } raw)
+        {
+            return false;
+        }
+
+        try
+        {
+            return Convert.ToInt32(raw) > 0;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
