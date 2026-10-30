@@ -1398,7 +1398,9 @@ _fallingStage = EAirdropFallingStage.Contact;
 | 효과음이 반복된다 | `PlaySqueakSoundLoop` 가 `ParachuteEndOpen` 에서 돈다 |
 | 맵에 표시가 안 된다 | 상자가 `Landed` 로 자리를 잡은 적이 없다 |
 
-**넷이 한 뿌리다.** 따로 고칠 것이 아니다.
+~~**넷이 한 뿌리다.** 따로 고칠 것이 아니다.~~
+
+**이 줄은 틀렸다 — §16.5.** 하나가 아니라 **셋**이었다.
 
 ### 16.4 아직 모르는 것 — 우리 것인가
 
@@ -1418,3 +1420,71 @@ _fallingStage = EAirdropFallingStage.Contact;
 
 사용자가 "정상적으로 떨어진 적도 있다" 고 했으므로 **어디에 내려앉느냐에 달린 문제**로
 보인다. 같은 자리에서 둘을 비교하는 것이 가장 깨끗하다.
+
+### 16.5 한 뿌리가 아니었다 — 셋이다 (2026-10-30, 측정됨)
+
+§16.3 의 "넷이 한 뿌리" 는 **틀렸다.** 계측을 더 넣고 보니 세 갈래였다.
+
+| 시각 | 상자 | 엔진 단계 | 눈으로 본 것 |
+| --- | --- | --- | --- |
+| 07:53 | 큰 | `ParachuteEndOpen` (영영) | 땅 뚫고 사라짐 + 낙하산 남음 |
+| 07:57 | 보통 | `Landed` | 착지 + 낙하산 사라짐 |
+| 08:01 | 큰 | `Landed` | 착지 + 낙하산 사라짐 |
+| 08:11 | 보통 | `Landed` | **착지 + 낙하산 남음** |
+| 09:01 | 보통 | `Landed(먼지켜짐)` | 착지 + 낙하산 사라짐, **소리만 계속** |
+
+08:11 이 §16.3 을 깬다. `Landed` 까지 갔는데도 낙하산이 남았다 — 충돌을 못 잡은
+것이 원인이라면 일어날 수 없는 조합이다. 그래서 갈래가 셋이다.
+
+| 갈래 | 증상 | 상태 |
+| --- | --- | --- |
+| ① 충돌을 못 잡는다 | `ParachuteEndOpen` 에 멈춰 땅을 뚫는다 | **미해결.** 자리에 달린 문제로 보인다(§16.4). 재현이 드물다 |
+| ② `Landed` 인데 낙하산이 남는다 | `CloseParachute` 가 한 번도 안 불린다 | **미해결.** 아래 한 번 겨눔 `if` 가 범인이다 |
+| ③ 소리가 안 멈춘다 | 착지는 정상, 반복 소리만 계속 | **고쳤다 — §16.6** |
+
+②의 자리:
+
+```csharp
+case EAirdropFallingStage.Landed:
+    if (_startFallingStage != _fallingStage && !_airdropDust.activeSelf)
+    { ...; PlayLandingSound(); CloseParachute(); }
+```
+
+`Landed` 분기 전체가 이 `if` 하나에 걸려 있고, **한 번 참이면 먼지가 켜져 다시는
+참이 안 된다.** 그래서 저 두 조건 중 하나가 첫 `Landed` 프레임에 거짓이면
+`CloseParachute` 가 영영 안 불린다. 어느 쪽이 거짓이었는지를 보려고 보고에
+`_startFallingStage` 와 먼지 상태를 실었다. 09:01 판은 `시작Fall,다름,먼지켜짐` —
+**정상 경로**였다. ②는 아직 다시 잡지 못했다.
+
+### 16.6 소리는 바닐라가 안 끈다 (2026-10-30, 고쳤다)
+
+09:01 판은 착지도 낙하산도 정상이었고 **소리만** 남았다. 그래서 ③은 ①·②와 다른
+원인이다. `ClientAirDrop.ManualUpdate` 의 꼬리가 그것이다.
+
+```csharp
+if (_loopSoundSource != null && LoopSoundSource.PlayBackState != Playing)
+{
+    if (_signalFire) PlayFlareSound();   // looped: true
+    else ReleaseSoundSource();
+}
+```
+
+착지하면 `PlayLandingSound` 가 낙하산 소리를 `Stop()` 하고 쿵 소리를 한 번 낸다.
+**그 쿵 소리가 끝나는 순간** 위 꼬리가 `PlayFlareSound` 로 연막 소리를 `looped: true`
+로 켠다. 그 뒤로는 멈출 길이 없다.
+
+- 반복 재생 중에는 `PlayBackState` 가 늘 `Playing` 이라 `ReleaseSoundSource` 쪽으로
+  갈 수 없다. `_signalFire` 가 거짓이 돼도 마찬가지다 — 꼬리의 `if` 자체를 못 넘는다.
+- 연막은 `PlaneAirdropSmoke` = **600초**나 탄다(이 설치본 `globals.json`).
+- 그 시간이 지나면 `ServerAirDrop` 이 `_syncObject.IsStatic = true` 를 걸어
+  `ManualUpdate` 자체가 멈춘다. 끌 기회가 사라진다.
+
+**바닐라에서도 그렇다.** 우리가 만든 버그가 아니라, 우리 보급이 플레이어 발밑에
+떨어지는 탓에 들리게 된 바닐라 버그다.
+
+**고친 방법.** 플러그인이 매 프레임 보고 있으니, 먼지가 켜진(= 착지 분기가 한 번 돈)
+상자를 설정값(기본 2초) 뒤에 한 번 `ReleaseSoundSource()` 해 준다. 그러면
+`_loopSoundSource` 가 null 이 되어 꼬리의 **첫** 조건이 거짓이 되고, 다시 켜지지
+않는다 — 낙하산 소리는 `ParachuteStartOpen`/`EndOpen` 분기에서만 켜지니 되살아날
+길도 없다. 연기와 불꽃은 건드리지 않는다. 2초를 두는 것은 착지의 쿵 소리를 삼키지
+않기 위해서다. F12 의 `소리` 묶음에서 음수로 두면 바닐라대로 돌아간다.
