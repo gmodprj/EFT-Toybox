@@ -1,3 +1,4 @@
+using SPTarkov.Server.Core.Utils.Cloners;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
@@ -70,7 +71,8 @@ public record SlotDecision(
 /// </para>
 /// </summary>
 [Injectable(InjectionType.Singleton)]
-public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, PresetHelper presetHelper)
+public class SlotFiller(
+    ItemHelper itemHelper, TemplateTable templateTable, PresetHelper presetHelper, ICloner cloner)
 {
     /// <summary>마운트에 마운트에 마운트를 끝없이 달지 않는다.</summary>
     private const int MaxDepth = 3;
@@ -257,7 +259,18 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, Pres
 
         // 프리셋의 id 를 그대로 쓰면 한 상자에 같은 총 두 자루를 넣었을 때 id 가 겹친다.
         // SPT 가 주는 도구로 뿌리에 맞춰 새 id 를 발급받는다.
-        var built = itemHelper.ReparentItemAndChildren(root, [.. items]);
+        // **깊게 베껴서 넘긴다.** `ReparentItemAndChildren` 은 넘긴 아이템의 `Id` 와
+        // `ParentId` 를 **제자리에서 고친다.** `[.. items]` 는 리스트만 새로 만들고
+        // 안의 객체는 DB 의 진짜 프리셋이라, 그대로 넘기면 부를 때마다 **아이템 DB 의
+        // 프리셋이 망가진다.** 봇은 프리셋으로 무장을 만들어서, 그 뒤로 봇 생성이
+        // 전부 NullReferenceException 으로 깨졌다(2026-10-30 07:29, 수백 줄).
+        var copy = cloner.Clone(items);
+        if (copy is null)
+        {
+            return;
+        }
+
+        var built = itemHelper.ReparentItemAndChildren(root, copy);
 
         // 경로를 만들려면 부모를 거슬러 올라가야 한다. id → 아이템 으로 먼저 깔아 둔다.
         var byId = built.ToDictionary(i => i.Id.ToString(), i => i);

@@ -1,3 +1,4 @@
+using SPTarkov.Server.Core.Utils.Cloners;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using System.Text.Json.Serialization;
 using SPTarkov.DI.Annotations;
@@ -110,7 +111,8 @@ public class ItemSearch(
     LocaleService localeService,
     ItemHelper itemHelper,
     TemplateTable templateTable,
-    PresetHelper presetHelper)
+    PresetHelper presetHelper,
+    ICloner cloner)
 {
     private const string NameSuffix = " Name";
 
@@ -141,8 +143,12 @@ public class ItemSearch(
             if (presetHelper.GetDefaultPreset(tpl)?.Items is { Count: > 1 } items)
             {
                 var root = new Item { Id = new MongoId(), Template = tpl };
-                var full = itemHelper.ReparentItemAndChildren(root, [.. items]);
-                if (itemHelper.GetItemSize(full, full[0].Id) is { } size)
+                // **깊게 베껴서 넘긴다.** `ReparentItemAndChildren` 은 넘긴 아이템을
+                // 제자리에서 고쳐서, 원본을 주면 DB 의 프리셋이 망가진다. 여기는
+                // 검색 한 번에 400번까지 도는 자리라 피해가 특히 컸다(2026-10-30).
+                var copy = cloner.Clone(items);
+                var full = copy is null ? null : itemHelper.ReparentItemAndChildren(root, copy);
+                if (full is not null && itemHelper.GetItemSize(full, full[0].Id) is { } size)
                 {
                     answer = (size.Width, size.Height);
                 }
