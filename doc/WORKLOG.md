@@ -1927,3 +1927,111 @@ reload normally.* **빈 자리가 있어도 반드시 자리를 맞바꾸는 식
   관련된 설정까지 본다.
 - 모드 cfg 도 **바뀌기 전에 떠 둔다.** 그러면 "무엇이 언제 바뀌었나" 를 비교로 답할 수 있다.
   이번에 `user/sptSettings` 는 떠 뒀지만 `BepInEx/config` 는 사고가 난 뒤에야 한 벌 떴다.
+
+## 2026-10-28 — 20:09 로그에서 새로 보인 오류 2건
+
+문서가 적어 둔 확인 시각은 11:38 인데 `LogOutput.log` 와 서버 로그는 **20:09** 까지 돌았다.
+그 사이 세션에 문서에 없던 오류가 둘 있다. 둘 다 게임·서버가 멈추지는 않는다.
+
+### 1. UTAE 편집 기준선 로드 실패 (게임, 1건)
+
+```
+[Error  :Ultimate Trader Assort Editor] [UTAE] Could not load the editor baseline:
+  System.ArgumentOutOfRangeException: Index was out of range.
+  at EFT.UI.HandbookFilterPanel.RegisterItem (Item item)
+  ← TradingGridView.Show ← TraderDealScreen.UpdateGridViews
+  ← TraderEditorController.ShowQuestLockedTraderOffers
+  ← TraderEditorController.EnsureBaselineLoadedAsync
+```
+
+바로 앞 줄이 `[REQUEST SUCCESSFUL] /utae/editor/assort/690766de550bc322a810ea1e` 다. 상인
+`690766de…` 의 편집 화면을 열어 서버에서 어소트를 받아 온 **뒤**, **퀘스트로 잠긴 매물**을
+핸드북 필터 패널에 등록하다 터졌다. 터지는 자리는 UTAE 코드가 아니라 바닐라
+`HandbookFilterPanel.RegisterItem` 안의 인덱스다 — UTAE 가 정상 거래 화면이 만들지 않는
+조합(잠긴 매물까지 한 번에)으로 그리드를 띄우면서 바닐라 쪽 가정을 깬 것으로 보인다.
+
+결과는 **그 상인의 편집 기준선만 안 뜨는 것**이고 게임은 계속 돌았다. UTAE 는 조정용 도구라
+평소 플레이에는 쓰지 않으므로 지금은 그대로 둔다. 다시 쓸 일이 생기면 그 상인이 무엇인지
+(퀘스트 잠금 매물이 있는 커스텀 상인인지) 부터 본다.
+
+### 2. 프로필에 남은 유령 상인 (서버, 로그인마다 1건)
+
+```
+[Error] SPT에 존재하지않는 상인 6952ced4bcc1dd1e3c80dfcb가 프로필에서 발견되었습니다.
+```
+
+프로필(`6adc26693f5b5290609ea366.json`)을 전수로 뒤져 보니 **이 id 는 딱 한 자리에만** 있다.
+
+```
+characters.pmc.TradersInfo.6952ced4bcc1dd1e3c80dfcb
+  { loyaltyLevel: 1, salesSum: 0, standing: 0.2, nextResupply: 1793062479,
+    unlocked: true, disabled: false }
+```
+
+메시지(`dialogues`)도, 그 상인에게서 온 아이템도 없다. **상인 평판 껍데기 하나뿐이다.**
+`nextResupply` 가 2026-10-26 쯤이라, 2026-10-25 에 지운 **The Quartermaster(2817, 결속)** 가
+남긴 것으로 본다(제거 경위는 위 "The Quartermaster 제거" 절). 그때 설치 기록 15개는 전부
+지웠지만 **프로필에 쓰인 평판 항목은 기록에 없으니 남았다** — "게임을 실제로 켠 뒤 생기는
+것은 설치 기록에 안 잡힌다" 는 그때의 교훈이 프로필에도 똑같이 적용된다는 뜻이다.
+
+**서버가 안내하는 `core.json` 의 `removeModItemsFromProfile: true` 는 켜지 않는다.** 그 설정은
+"DB 에 없는 모드 아이템" 을 프로필에서 **싸잡아 지운다.** 지금 설치본에는 결속 모드가 여럿이고
+(ODT's Item Info, WTT 계열, ISB 계열 등) 로드 순서나 일시적 실패로 DB 가 덜 찬 상태에서
+저 설정이 켜져 있으면 **멀쩡한 아이템까지 날아갈 수 있다.** 경고 1줄과 바꿀 위험이 아니다.
+
+실제 피해는 **매 로그인 경고 1줄**이 전부다. 지우고 싶으면 프로필 백업 후
+`characters.pmc.TradersInfo` 에서 저 키 하나만 빼는 쪽이 안전하다 — 지금은 하지 않았다.
+
+## 레이드 중 화면이 깜빡인 것 — 우리 플러그인이었다 (2026-10-29)
+
+사용자가 "`/airdrop-caller/heartbeat` 로그가 찍힐 때마다 화면이 깜빡인다" 고 했다.
+처음에 나는 빈도(초당 1.5회)와 "비동기라 프레임을 안 막는다" 를 근거로 **우리가 아니라고
+단정했다. 두 번 틀렸다.** 사용자가 본 상관관계가 데이터였고 내 추론이 틀린 쪽이었다.
+
+### 원인
+
+`SPT.Common.Http.Client.SendAsync` 는 첫 `await` **앞에서** 이것을 한다.
+
+```csharp
+if (zipped) data = Zlib.Compress(data, ZlibCompression.Maximum);
+```
+
+`Zlib.Compress` 는 zlib.NET 의 `ZOutputStream` 을 **최대 압축(level 9)으로 새로 만든다.**
+호출마다 deflate 상태 버퍼를 통째로 할당한다. `async` 메서드라도 첫 `await` 전까지는
+**부른 스레드**에서 도므로, `Update()` 에서 부르면 **Unity 메인 스레드**가 그 할당과 GC 를
+떠안는다. 프레임이 한 번 튀고, 그게 화면 깜빡임으로 보인다.
+
+**GET 은 `data` 가 null 이라 이 줄을 건너뛴다.** 그래서 `/pending`(GET)은 멀쩡했고
+보고(POST)만 튀었다 — 사용자가 `heartbeat` 만 짚은 것이 정확했다.
+
+### 고친 것
+
+`Task.Run` 으로 감싸 압축·요청 조립까지 전부 스레드풀에서 돌게 했다.
+
+```csharp
+_heartbeatCall = Task.Run(() =>
+    RequestHandler.PostJsonAsync(HeartbeatUrl, JsonConvert.SerializeObject(body)));
+```
+
+**SPT 플러그인을 쓰는 사람에게 일반화되는 교훈이다 — `RequestHandler` 의 POST 계열을
+`Update()`·`LateUpdate()` 에서 그냥 부르면 안 된다.** GET 은 괜찮다.
+
+### 어떻게 좁혔나
+
+추측을 멈추고 하나씩 뺐다 넣었다. 사용자는 매번 "깜빡인다/안 깜빡인다" 만 답했다.
+
+| 설치 상태 | 결과 |
+|---|---|
+| 오늘 넣은 것 전부 제거 | 안 깜빡임 |
+| `AirdropProbe` 만 (키 전부 없앰) | 안 깜빡임 |
+| + `AirdropCaller` 플러그인·서버 모드 (고친 판) | **안 깜빡임** |
+
+마지막 판이 실제로 올라가 돌았는지 확인했다 — 플러그인 기동 로그, 요청 194줄,
+보고 간격 10.0초.
+
+### 남는 의문
+
+"아직 깜빡인다" 고 한 판(18:24~)은 고친 dll 이 이미 들어가 있었고 `켜기 = false` 라
+요청이 0건이었다. 그 판의 깜빡임은 설명하지 못한다. 그때 내가 이 PC 에서 ilspycmd 로
+60MB 어셈블리를 돌리고 빌드를 반복하고 서버를 몇 번 내렸다 올렸으니 **그쪽일 가능성이
+높지만 증명하지 못했다.** 게임 중에 무거운 작업을 돌리지 않는다.
