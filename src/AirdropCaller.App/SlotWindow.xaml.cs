@@ -147,12 +147,26 @@ public partial class SlotWindow : Window
     {
         var choices = new ObservableCollection<SlotChoice>
         {
+            // **`auto` 가 아니라 `chosen` 을 적는다.**
+            //
+            // `auto` 는 "이 칸을 채운다면 무엇을 고를까" 고, `chosen` 은 "실제로 무엇이
+            // 들어가는가" 다. 둘은 자주 다르다 — `자동` 은 방어구의 삽입물·방어판과
+            // 필수 칸만 채우므로, 헬멧의 야시경·마운트 칸은 **비워 둔다.**
+            //
+            // 그런데 `auto` 를 적는 바람에 창이 "자동 — Peltor ComTac VI 헤드셋" 이라고
+            // 말해 놓고 상자에는 방탄판만 들어 있었다. 또 같은 거짓말을 했다(2026-10-30).
             new()
             {
                 Tpl = null,
-                Label = node.Auto.Length == 0
-                    ? "자동 — 달 것이 없다"
-                    : "자동 — " + NameOf(node, node.Auto),
+                Label = node.Chosen.Length > 0
+                    ? "자동 — " + NameOf(node, node.Chosen)
+                    : "자동 — 안 채운다",
+                Hint = node.Chosen.Length > 0
+                    ? null
+                    : node.Auto.Length > 0
+                        ? $"'자동' 은 이 칸을 비워 둔다. 채우려면 아래에서 고른다 "
+                          + $"(가장 비싼 것은 {NameOf(node, node.Auto)})."
+                        : "이 칸에 달 수 있는 것이 없다.",
             },
             new() { Tpl = string.Empty, Label = "비움" },
         };
