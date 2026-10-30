@@ -202,8 +202,29 @@ namespace AirdropCaller.Plugin
                     // 원인이 아니었다(2026-10-30). 남은 변수는 **어디에 떨어지느냐** 다.
                     // 멈춘 상자의 마지막 자리를 알면 지도에서 짚어 볼 수 있다.
                     var p = so.transform.position;
-                    var stage = so.Logic is ClientAirDrop drop ? drop._fallingStage.ToString() : "?";
-                    stages.Add($"{stage}@{p.x:F0},{p.y:F0},{p.z:F0}");
+                    if (so.Logic is ClientAirDrop drop)
+                    {
+                        // `_startFallingStage` 와 먼지 효과를 같이 적는다.
+                        //
+                        // `Landed` 까지 갔는데도 낙하산이 남은 판이 있었다(실측
+                        // 2026-10-30 08:11). `ClientAirDrop` 의 `Landed` 분기는
+                        // **한 번만** 도는 구조라, 아래 `if` 가 한 번도 참이 안 되면
+                        // `CloseParachute` 가 영영 안 불린다:
+                        //
+                        //   case Landed:
+                        //     if (_startFallingStage != _fallingStage && !_airdropDust.activeSelf)
+                        //       { ...; CloseParachute(); }
+                        //
+                        // 그래서 그 두 값을 본다. 어느 쪽이 거짓이었는지가 답이다.
+                        var same = drop._startFallingStage == drop._fallingStage ? "같음" : "다름";
+                        var dust = drop._airdropDust != null && drop._airdropDust.activeSelf ? "먼지켜짐" : "먼지꺼짐";
+                        stages.Add($"{drop._fallingStage}(시작{drop._startFallingStage},{same},{dust})"
+                                   + $"@{p.x:F0},{p.y:F0},{p.z:F0}");
+                    }
+                    else
+                    {
+                        stages.Add($"?@{p.x:F0},{p.y:F0},{p.z:F0}");
+                    }
                 }
             }
 
