@@ -91,7 +91,7 @@ public class CrateBuilder(
         var adjusted = new List<string>();
         var tally = new Tally();
 
-        Place(spec.Items, crate, crateMap!, crateSlot, items, skipped, adjusted, tally, depth: 0);
+        Place(spec.Items, [new Spot(crate, crateMap!, crateSlot)], items, skipped, adjusted, tally, depth: 0);
 
         return new Result(
             new GetAirdropLootResponse { Icon = icon, Container = items },
@@ -124,18 +124,28 @@ public class CrateBuilder(
     /// <paramref name="parent"/> 안에 <paramref name="entries"/> 를 넣는다.
     /// 자리가 없으면 넣지 않고 <paramref name="skipped"/> 에 적는다.
     /// </summary>
+    /// <summary>담을 수 있는 자리 하나 — 그릇과 그 격자 지도.</summary>
+    private sealed record Spot(Item Item, int[,] Map, string Slot);
+
+    /// <summary>
+    /// <paramref name="entries"/> 를 <paramref name="targets"/> 에 담는다.
+    ///
+    /// **그릇이 여럿이면 나눠 담는다.** 앞엣것이 차면 다음 그릇으로 넘어간다.
+    /// 전에는 그릇 하나하나마다 안에 든 목록을 통째로 넣었다 — 가방 3개에 음료
+    /// 10개를 적으면 30개를 시도해 12개만 들어가고 18개가 "자리 없음" 으로
+    /// 빠졌다(실측 2026-10-30). `Count` 는 "이 품목 몇 개" 이지 "그릇마다 몇 개"
+    /// 가 아니다.
+    /// </summary>
     private void Place(
         List<ItemSpec>? entries,
-        Item parent,
-        int[,] parentMap,
-        string parentSlot,
+        IReadOnlyList<Spot> targets,
         List<Item> items,
         List<string> skipped,
         List<string> adjusted,
         Tally tally,
         int depth)
     {
-        if (entries is null || entries.Count == 0)
+        if (entries is null || entries.Count == 0 || targets.Count == 0)
         {
             return;
         }
@@ -154,6 +164,11 @@ public class CrateBuilder(
             }
 
             var stack = StackFor(entry, adjusted);
+            var wantsChildren = entry.Items is { Count: > 0 };
+
+            // 이 품목이 그릇이면 만든 것들을 모아 둔다. 안에 넣을 것은 그 뒤에
+            // **이 그릇들에 나눠** 담는다.
+            var copies = new List<Spot>();
 
             for (var i = 0; i < Math.Max(1, entry.Count); i++)
             {
@@ -161,8 +176,6 @@ public class CrateBuilder(
                 {
                     Id = new MongoId(),
                     Template = new MongoId(entry.Tpl),
-                    ParentId = parent.Id,
-                    SlotId = parentSlot,
                     Upd = new Upd
                     {
                         SpawnedInSession = true,
@@ -182,35 +195,65 @@ public class CrateBuilder(
                     continue;
                 }
 
-                var slot = parentMap.FindSlotForItem(size.Width, size.Height);
-                if (slot.Success != true)
+                // 그릇을 차례로 두드린다. 첫 그릇이 차 있으면 다음 그릇이 받는다.
+                var home = Settle(targets, size.Width, size.Height);
+                if (home is null)
                 {
                     skipped.Add($"{entry.Tpl} (자리 없음)");
                     continue;
                 }
 
-                parentMap.TryFillContainerMapWithItem(
-                    slot.X!.Value, slot.Y!.Value, size.Width, size.Height, slot.Rotation ?? false, out _);
+                item.ParentId = home.Item.Id;
+                item.SlotId = home.Slot;
+
                 items.Add(item);
                 items.AddRange(attached);
                 tally.Placed++;
                 tally.Attached += attached.Count;
 
-                if (entry.Items is null || entry.Items.Count == 0)
+                if (!wantsChildren)
                 {
                     continue;
                 }
 
-                // 안에 넣을 것이 있다. 이 품목이 격자를 가진 컨테이너여야 한다.
-                if (!TryOpenContainer(item.Template, out var childMap, out var childSlot))
+                // 안에 넣을 것이 있다. 이 품목이 격자를 가진 그릇이어야 한다.
+                if (TryOpenContainer(item.Template, out var childMap, out var childSlot))
                 {
-                    skipped.Add($"{entry.Tpl} 안의 {entry.Items.Count}종 (이 품목은 담을 수 없다 — 격자가 없다)");
-                    continue;
+                    copies.Add(new Spot(item, childMap!, childSlot));
                 }
+                else
+                {
+                    skipped.Add($"{entry.Tpl} 안의 {entry.Items!.Count}종 (이 품목은 담을 수 없다 — 격자가 없다)");
+                }
+            }
 
-                Place(entry.Items, item, childMap!, childSlot, items, skipped, adjusted, tally, depth + 1);
+            if (wantsChildren && copies.Count > 0)
+            {
+                Place(entry.Items, copies, items, skipped, adjusted, tally, depth + 1);
             }
         }
+    }
+
+    /// <summary>
+    /// 그릇들을 차례로 두드려 자리를 잡는다. 잡으면 그 격자를 채우고 그 그릇을
+    /// 돌려준다. 어디에도 안 들어가면 null.
+    /// </summary>
+    private static Spot? Settle(IReadOnlyList<Spot> targets, int width, int height)
+    {
+        foreach (var target in targets)
+        {
+            var slot = target.Map.FindSlotForItem(width, height);
+            if (slot.Success != true)
+            {
+                continue;
+            }
+
+            target.Map.TryFillContainerMapWithItem(
+                slot.X!.Value, slot.Y!.Value, width, height, slot.Rotation ?? false, out _);
+            return target;
+        }
+
+        return null;
     }
 
     /// <summary>
