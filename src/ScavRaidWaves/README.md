@@ -115,7 +115,20 @@ pwsh -File tools/install-scavraidwaves.ps1
 제거는 `-Remove`. 서버 모드라 **SPT 서버를 다시 켜야** 적용된다.
 `config.jsonc`는 이미 있으면 덮어쓰지 않는다.
 
-## 아직 확인하지 않은 것
+## 확인한 것 (2026-10-30)
 
-설정과 서버 코드(타입·생성자·메서드 이름)를 보고 세운 설명이다.
-**실제 스캐브 레이드에서 PMC가 나오는 것까지는 확인하지 않았다.**
+기본 설정(`ReducedChancePercent: 0`)으로 커스텀에 스캐브로 들어가
+**레이드가 정규 시간으로 돌고 PMC가 스폰되는 것을 확인했다.**
+
+서버 로그(`user\logs\spt`, 시각은 UTC = 한국 시간 −9시간):
+
+```
+23:32:24  ModLoader: 총 116 개의 모드 불러오는 중...
+23:32:45  [ScavRaidWaves] 맵 13개 중 바꾼 것 — 시간 확률 13개, 웨이브 조정 0개
+23:34:41  Loaded self-signed certificate            ← 시작 완료
+23:52:52  [FollowerInsurance:RaidStart] serverId='bigmap.Savage …'
+```
+
+그날 로그에 `Failed to generate bot` 은 0건이었다.
+모드 로드 자체의 테스트 출력은 `doc/server-tests/server-test-scavraidwaves.out.txt`
+(오류 0건, 시작 136초).
