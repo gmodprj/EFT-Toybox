@@ -14,7 +14,8 @@ namespace AirdropCaller.Server;
 /// 적어 둔 상자 id 와 품목 수가 로그에 보이면 "내가 고친 설정이 먹었나" 도 바로 답된다.
 /// </summary>
 [Injectable(InjectionType.Singleton, OnLoadOrder.PostLoad)]
-public class AirdropCallerStartup(ISptLogger<AirdropCallerStartup> logger, ConfigStore store) : IOnLoad
+public class AirdropCallerStartup(
+    ISptLogger<AirdropCallerStartup> logger, ConfigStore store, BigCrate bigCrate) : IOnLoad
 {
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {
@@ -32,6 +33,11 @@ public class AirdropCallerStartup(ISptLogger<AirdropCallerStartup> logger, Confi
             logger.Info("[AirdropCaller] 설정에서 꺼져 있다. 보급은 전부 바닐라다.");
             return Task.CompletedTask;
         }
+
+        // 큰 상자는 **게임이 아이템 목록을 받아 가기 전에** DB 에 들어 있어야 한다.
+        // `GET /client/items` 는 templateTable.Items 를 그때그때 흘려보내므로
+        // 서버가 켜질 때 넣어 두면 된다.
+        bigCrate.Register(config);
 
         if (config.Drops.Count == 0)
         {

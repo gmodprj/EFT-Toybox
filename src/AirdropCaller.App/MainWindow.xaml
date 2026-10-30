@@ -40,6 +40,7 @@
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Label Grid.Column="0" Content="이름" VerticalAlignment="Center" Margin="0,0,6,0" />
         <TextBox Grid.Column="1" x:Name="PresetNameBox" />
@@ -50,7 +51,11 @@
           <ComboBoxItem Content="Medical" />
           <ComboBoxItem Content="Weapon" />
         </ComboBox>
-        <Button Grid.Column="4" x:Name="SaveButton" Content="저장" Click="OnSavePreset" Margin="10,0,0,0" />
+        <!-- 겉모습은 위 상자 종류가 그대로 정한다. 안 격자만 커진다. -->
+        <CheckBox Grid.Column="4" x:Name="BigCrateBox" Content="큰 상자"
+                  VerticalAlignment="Center" Margin="10,0,0,0"
+                  ToolTip="보급 상자를 30×30=900칸으로 키운다. 겉모습과 제목은 그대로다." />
+        <Button Grid.Column="5" x:Name="SaveButton" Content="저장" Click="OnSavePreset" Margin="10,0,0,0" />
       </Grid>
 
       <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">

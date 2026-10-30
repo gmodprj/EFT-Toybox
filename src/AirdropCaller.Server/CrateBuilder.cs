@@ -23,7 +23,8 @@ namespace AirdropCaller.Server;
 /// 무기를 케이스에 담을지 말지도 같은 구조로 고른다.
 /// </summary>
 [Injectable(InjectionType.Singleton)]
-public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper, SlotFiller slotFiller)
+public class CrateBuilder(
+    ISptLogger<CrateBuilder> logger, ItemHelper itemHelper, SlotFiller slotFiller, BigCrate bigCrate)
 {
     /// <summary>중첩이 끝없이 깊어지는 것을 막는다. 가방 안의 가방 정도면 충분하다.</summary>
     private const int MaxDepth = 4;
@@ -62,7 +63,16 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
             return null;
         }
 
-        var crateTpl = CrateTemplateFor(icon);
+        // 큰 상자를 못 만들었으면 조용히 작은 상자로 보내지 않는다 — 900칸을 믿고
+        // 적어 둔 품목이 "자리 없음" 으로 쏟아지는 쪽이 더 나쁘다.
+        if (spec.BigCrate && !bigCrate.Ready)
+        {
+            logger.Error($"[AirdropCaller] {dropId}: 큰 상자를 못 만들어 둔 채 큰 상자를 달라고 했다. "
+                       + "서버가 켜질 때의 기록을 본다.");
+            return null;
+        }
+
+        var crateTpl = spec.BigCrate ? BigCrate.Tpl : CrateTemplateFor(icon);
         var crate = new Item
         {
             Id = new MongoId(),

@@ -468,6 +468,7 @@ public partial class MainWindow : Window
     {
         PresetNameBox.Text = name;
         IconBox.SelectedIndex = preset.Icon switch { "Supply" => 1, "Medical" => 2, "Weapon" => 3, _ => 0 };
+        BigCrateBox.IsChecked = preset.BigCrate;
 
         _items.Clear();
 
@@ -553,6 +554,7 @@ public partial class MainWindow : Window
         PresetList.SelectedItem = null;
         PresetNameBox.Text = "새 프리셋";
         IconBox.SelectedIndex = 0;
+        BigCrateBox.IsChecked = false;
         _items.Clear();
         RebuildContainerChoices();
         UpdateFitHint();
@@ -578,6 +580,7 @@ public partial class MainWindow : Window
             Name = name,
             Icon = SelectedIcon(),
             Items = BuildSpecTree(),
+            BigCrate = BigCrateBox.IsChecked == true,
         };
 
         await Guard(async () =>
@@ -799,7 +802,7 @@ public partial class MainWindow : Window
         await Guard(async () =>
         {
             var result = await _client.QueueAsync(
-                null, SelectedIcon(), BuildSpecTree(), CancellationToken.None);
+                null, SelectedIcon(), BuildSpecTree(), BigCrateBox.IsChecked == true, CancellationToken.None);
 
             if (result?.Ok != true)
             {

@@ -35,6 +35,9 @@ public class Preset
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
     [JsonPropertyName("icon")] public string Icon { get; set; } = "Common";
     [JsonPropertyName("items")] public List<ItemSpec> Items { get; set; } = [];
+
+    /// <summary>큰 상자로 보낼지. 겉모습은 <see cref="Icon"/> 이 정하고 격자만 커진다.</summary>
+    [JsonPropertyName("bigCrate")] public bool BigCrate { get; set; }
 }
 
 public record PresetListResponse
@@ -293,8 +296,9 @@ public sealed class ServerClient : IDisposable
     public Task<CategoryListResponse?> ListCategoriesAsync(CancellationToken ct) =>
         GetAsync<CategoryListResponse>("/airdrop-caller/categories", ct);
 
-    public Task<QueueResponse?> QueueAsync(string? presetId, string icon, List<ItemSpec> items, CancellationToken ct) =>
-        PostAsync<QueueResponse>("/airdrop-caller/queue", new { presetId, icon, items }, ct);
+    public Task<QueueResponse?> QueueAsync(
+        string? presetId, string icon, List<ItemSpec> items, bool bigCrate, CancellationToken ct) =>
+        PostAsync<QueueResponse>("/airdrop-caller/queue", new { presetId, icon, items, bigCrate }, ct);
 
     public Task<SimpleResponse?> CancelAsync(CancellationToken ct) =>
         PostAsync<SimpleResponse>("/airdrop-caller/cancel", null, ct);
