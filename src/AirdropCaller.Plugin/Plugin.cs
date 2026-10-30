@@ -51,6 +51,9 @@ namespace AirdropCaller.Plugin
             public float EndOpenAt;
             public float EndOpenY;
 
+            /// <summary>앉기 **직전** 프레임의 먼지 상태. 착지 분기의 진짜 입력값이다.</summary>
+            public bool DustBefore;
+
             /// <summary>한 상자에 한 번씩만 한다.</summary>
             public bool Rescued;
             public bool Reported;
@@ -324,13 +327,23 @@ namespace AirdropCaller.Plugin
                     _watched[id] = seen;
                 }
 
+                if (drop._fallingStage == EAirdropFallingStage.Landed)
+                {
+                    TendLanded(drop, seen, now);
+                    continue;
+                }
+
+                // 앉기 전 먼지 상태를 들고 간다.
+                //
+                // 바닐라의 착지 분기는 `!_airdropDust.activeSelf` 를 보는데, 우리
+                // `Update` 는 그 분기보다 **뒤에** 돈다 — 앉은 뒤에 보면 멀쩡한 판에서도
+                // 이미 켜져 있다. 실제로 그래서 11:25 판의 보고를 ② 로 잘못 읽을 뻔했다.
+                // 조건의 진짜 입력값은 앉기 직전의 값이다.
+                seen.DustBefore = drop._airdropDust != null && drop._airdropDust.activeSelf;
+
                 if (drop._fallingStage == EAirdropFallingStage.ParachuteEndOpen)
                 {
                     WatchDescent(so, drop, seen, now);
-                }
-                else if (drop._fallingStage == EAirdropFallingStage.Landed)
-                {
-                    TendLanded(drop, seen, now);
                 }
             }
         }
@@ -418,8 +431,11 @@ namespace AirdropCaller.Plugin
             if (!seen.Reported)
             {
                 seen.Reported = true;
-                _log.LogInfo($"[AirdropCaller] 앉았다 — 시작{drop._startFallingStage}, "
-                             + $"먼지{(dustOn ? "켜짐" : "꺼짐")}, 낙하산{(parachuteOn ? "남음" : "닫힘")}.");
+                _log.LogInfo($"[AirdropCaller] 앉았다 — 시작{drop._startFallingStage}"
+                             + $", 앉기전먼지{(seen.DustBefore ? "켜짐" : "꺼짐")}"
+                             + $", 먼지{(dustOn ? "켜짐" : "꺼짐")}"
+                             + $", 낙하산{(parachuteOn ? "남음" : "닫힘")}"
+                             + $", {(drop._startClosingParachute ? "접는중" : "안접음")}.");
             }
 
             // `_startClosingParachute` 를 같이 본다. 정상 판에서도 닫는 데 1초가
