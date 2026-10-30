@@ -151,7 +151,88 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable, Pres
     {
         var found = new List<SlotDecision>();
         Walk(rootTpl, mode, picks, notes: null, found.Add);
+
+        if (mode == SlotFill.None)
+        {
+            return found;
+        }
+
+        // **완성품이 채우는 칸을 창에도 그대로 보여 준다.**
+        //
+        // 이것을 빼먹고 `Walk` 만 돌렸더니, 총의 칸 고르기 창이 "자동 — (가장 비싼
+        // 총몸)" 이라고 적는데 상자에는 프리셋에 든 총몸이 들어갔다. §12.3 에
+        // "창이 '자동: A' 라고 적어 놓고 상자에 B 가 들어 있는 것이 제일 나쁘다" 고
+        // 적어 놓고 그 짓을 했다(2026-10-30).
+        var preset = PresetPaths(rootTpl);
+        if (preset.Count == 0)
+        {
+            return found;
+        }
+
+        var byPath = found.ToDictionary(d => d.Path, d => d, StringComparer.Ordinal);
+        foreach (var (path, tpl) in preset)
+        {
+            // 사용자가 직접 고른 칸은 완성품보다 세다. 그대로 둔다.
+            if (byPath.TryGetValue(path, out var seen) && seen.Picked)
+            {
+                continue;
+            }
+
+            var depth = path.Count(c => c == '.');
+            var name = path[(path.LastIndexOf('.') + 1)..];
+            var pool = seen?.Pool ?? [tpl];
+
+            var line = new SlotDecision(
+                path, depth, name,
+                Required: seen?.Required ?? false,
+                Kind: seen?.Kind ?? "other",
+                Pool: pool,
+                Auto: tpl,
+                Chosen: tpl,
+                Picked: false);
+
+            if (seen is null)
+            {
+                found.Add(line);
+            }
+            else
+            {
+                found[found.IndexOf(seen)] = line;
+            }
+        }
+
+        // 경로 순으로 세운다 — 겹친 칸이 윗칸 바로 밑에 오도록.
+        found.Sort((a, b) => string.CompareOrdinal(a.Path, b.Path));
         return found;
+    }
+
+    /// <summary>
+    /// 기본 프리셋이 채우는 칸을 `경로 → tpl` 로 돌려준다. 아이템은 안 만든다 —
+    /// 보여 주기만 할 때 쓴다.
+    /// </summary>
+    private Dictionary<string, MongoId> PresetPaths(MongoId rootTpl)
+    {
+        var map = new Dictionary<string, MongoId>(StringComparer.Ordinal);
+
+        var preset = presetHelper.GetDefaultPreset(rootTpl);
+        if (preset?.Items is not { Count: > 1 } items)
+        {
+            return map;
+        }
+
+        var list = items.ToList();
+        var byId = list.ToDictionary(i => i.Id.ToString(), i => i);
+        var rootId = list[0].Id.ToString();
+
+        foreach (var part in list.Skip(1))
+        {
+            if (PathOf(part, byId, rootId) is { } path)
+            {
+                map[path] = part.Template;
+            }
+        }
+
+        return map;
     }
 
     /// <summary>
