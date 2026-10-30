@@ -8,6 +8,7 @@ using Comfort.Common;
 using EFT;
 using EFT.Airdrop;
 using EFT.SynchronizableObjects;
+using HarmonyLib;
 using Newtonsoft.Json;
 using SPT.Common.Http;
 using UnityEngine;
@@ -39,6 +40,7 @@ namespace AirdropCaller.Plugin
         private ConfigEntry<bool> _verbose;
         private ConfigEntry<float> _hushSeconds;
         private ConfigEntry<bool> _fixParachute;
+        private ConfigEntry<bool> _swallowSurface;
         private ConfigEntry<float> _stuckMeters;
 
         /// <summary>상자 하나를 지켜본 기록. 열쇠는 동기 물체의 인스턴스 번호다.</summary>
@@ -109,6 +111,15 @@ namespace AirdropCaller.Plugin
                     + "시작하므로 정상이면 180m 안에 멈춘다. 지면을 다시 찾아 그 자리에 앉힌다. "
                     + "0 이면 구조하지 않는다.",
                     new AcceptableValueRange<float>(0f, 1000f)));
+
+            _swallowSurface = Config.Bind("구조", "남의 패치 예외 삼키기", true,
+                "이 설치본의 Game Panel HUD 나침반이 `ClientAirDrop.CheckSurface` 에 붙인 "
+                + "Postfix 가 매 착지마다 터져, 그 뒤의 착지음과 낙하산 접기를 날려 버린다. "
+                + "그 예외를 없던 것으로 만들어 바닐라가 끝까지 돌게 한다 — 우리 보급만이 "
+                + "아니라 바닐라·플레어 보급도 같이 고쳐진다. 자세한 것은 SurfaceGuard 참고.");
+            SurfaceGuard.Enabled = _swallowSurface.Value;
+            _swallowSurface.SettingChanged += (_, __) => SurfaceGuard.Enabled = _swallowSurface.Value;
+            SurfaceGuard.Install(_log, new Harmony(PluginGuid));
 
             _log.LogInfo($"[AirdropCaller] 준비됨. 서버 {RequestHandler.Host}");
         }

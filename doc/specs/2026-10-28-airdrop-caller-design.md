@@ -1565,3 +1565,81 @@ collider** 를 넘겨 주는 것이다 — 바닐라가 단계 전환에 쓰는 
 
 아직 **재현을 못 해 실측으로 확인하지 못했다.** 둘 다 드물게 나오므로, 다음에 날 때
 위 로그 줄로 확인한다.
+
+### 16.9 ②의 원인 — 남의 패치가 착지 분기를 끊었다 (2026-10-30, 측정됨)
+
+②를 재현했고 **원인을 잡았다.** 우리 것이 아니었다.
+
+새 보고 줄이 답을 줬다.
+
+```
+앉았다 — 시작Fall, 앉기전먼지꺼짐, 먼지켜짐, 낙하산남음, 안접음.
+```
+
+바닐라 조건 **둘 다 참**이었다(`시작Fall` ≠ `Landed`, 앉기 전 먼지 꺼짐). 그런데
+먼지는 켜졌고 `CloseParachute` 는 안 불렸다. 분기 중간에서 **예외가 터졌다**는 뜻이다.
+`Player.log` 에 있었다.
+
+```
+MethodAccessException: Method `GamePanelHUDCompass.GamePanelHUDCompassPlugin.RaycastGround(…)'
+  is inaccessible from method `DTFType_GamePanelHUDCompassPlugin_RaycastGround.RaycastGround()'
+  at DTFType_GamePanelHUDCompassPlugin_RaycastGround.RaycastGround ()
+  at (wrapper dynamic-method) EFT.Airdrop.ClientAirDrop.DMD<ClientAirDrop::CheckSurface>(…)
+  at EFT.Airdrop.ClientAirDrop.ManualUpdate (System.Single deltaTime)
+  at EFT.SynchronizableObjects.SynchronizableObject.ManualUpdate (System.Single deltaTime)
+```
+
+**Game Panel HUD 나침반(4.1.6 포팅본)** 이다. 디컴파일로 확인했다.
+
+```csharp
+EFTHelpers._AirdropLogicClassHelper.RaycastGround.Add(this, "RaycastGround", (HarmonyPatchType)2);
+//                                                                                           ↑ 2 = Postfix
+private static void RaycastGround(AirdropSynchronizableObject ___airdropSynchronizableObject_0)
+```
+
+`ClientAirDrop.CheckSurface` 에 Postfix 를 걸었는데, 그쪽이 만든 트램폴린 타입이 자기
+`private static` 메서드를 못 불러 **매 착지마다** 터진다. Postfix 의 예외는 패치된
+메서드 밖으로 나가 `ManualUpdate` 를 중단시킨다.
+
+```csharp
+_airdropDust.SetActive(value: true);   // 여기까지 된다 → "먼지켜짐"
+_airdropDust.…Play();
+CheckSurface();                        // 여기서 터진다
+PlayLandingSound();                    // 못 돈다 → 낙하산 소리가 안 멈춘다
+CloseParachute();                      // 못 돈다 → 낙하산이 남는다
+```
+
+**이 하나가 사용자의 첫 보고 셋을 설명한다** — 낙하산 잔존, 효과음 반복,
+나침반에 보급품 표시 안 됨(`ShowAirdrop` 이 영영 안 불린다).
+
+#### 왜 어떤 판은 멀쩡했나
+
+`case Contact:` 에도 `CloseParachute()` 가 있고 **거기엔 조건이 없다.**
+
+| 닿는 방식 | `Contact` 단계 | 결과 |
+| --- | --- | --- |
+| 한 점 | `OnOnePointContact` → `RotateAfterDrop` 코루틴 → **여러 프레임** | `case Contact:` 가 돌아 낙하산이 접힌다 → 멀쩡해 보인다 |
+| 두·세 점 | `CollisionEnter` 안에서 곧바로 `Landed` → **프레임 없음** | 접을 기회가 `Landed` 분기뿐이고 거기서 터진다 → ② |
+
+상자가 어떻게 기울어 닿았느냐로 갈렸다. 실측 비율은 두 번 중 한 번꼴이었다
+(13:08·13:17 판 각 1건).
+
+#### 설정으로는 못 막는다 (실측)
+
+`com.kmyuhkyuk.GamePanelHUDCompass.cfg` 에 `Compass Static Airdrop display` 가 있지만
+**끄는 것으로 해결되지 않는다.** 패치는 `Awake` 에서 설정과 무관하게 걸리고, 예외는
+그쪽 코드에 닿기도 전에 트램폴린에서 터진다.
+
+#### 고친 방법 — Finalizer 로 삼킨다
+
+`SurfaceGuard` 가 `CheckSurface` 에 Harmony **Finalizer** 하나를 걸어 예외를 없던
+것으로 만든다(`null` 반환). 그러면 바닐라가 끝까지 돌아 **착지음도 나고 낙하산도
+스스로 접힌다.** 우리 보급만이 아니라 **바닐라·플레어 보급도** 같이 고쳐진다.
+
+이 모드의 첫 Harmony 패치다. 지금까지 공개 메서드만 불러 왔고 그것이 설계상 미덕이었지만,
+남의 Postfix 가 바닐라 메서드를 끊는 것은 밖에서 막을 길이 이것뿐이다. 범위는 한
+메서드의 예외 하나이고, 삼킨 것은 로그에 적는다(처음 세 번만, 그 뒤엔 조용히).
+
+나침반 표시는 **돌아오지 않는다.** 그쪽 코드는 애초에 불리지 못한다 — 포팅본이 고쳐져야
+한다. 우리 쪽 보수(`TendCrates`)는 그대로 둔다. Finalizer 가 못 걸리는 상황에서도
+증상은 가려야 하고, 둘이 겹쳐도 `CloseParachute` 는 자체 잠금이 있어 안전하다.
