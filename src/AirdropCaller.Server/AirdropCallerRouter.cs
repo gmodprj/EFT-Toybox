@@ -308,6 +308,7 @@ public class AirdropCallerRouter : StaticRouter
 
         var icon = request.Icon;
         var items = request.Items;
+        var bigCrate = request.BigCrate;
 
         // 프리셋으로 불렀으면 거기서 읽어 온다. 외부 창이 품목을 다시 보낼 필요가 없다.
         if (!string.IsNullOrWhiteSpace(request.PresetId))
@@ -320,6 +321,7 @@ public class AirdropCallerRouter : StaticRouter
 
             icon = preset.Icon;
             items = preset.Items;
+            bigCrate = preset.BigCrate;
         }
 
         if (items is null || items.Count == 0)
@@ -331,6 +333,7 @@ public class AirdropCallerRouter : StaticRouter
         {
             Icon = string.IsNullOrWhiteSpace(icon) ? "Common" : icon,
             Items = items,
+            BigCrate = bigCrate,
         };
 
         // 조립을 **지금** 끝낸다. 전리품 요청은 상자가 생기자마자 날아온다(착지 때가 아니다).
@@ -366,7 +369,8 @@ public class AirdropCallerRouter : StaticRouter
         ISptLogger<AirdropCallerRouter> logger, string dropId, DropSpec spec, CrateBuilder.Result built)
     {
         var attached = built.Attached > 0 ? $" (부속 {built.Attached}개 붙임)" : string.Empty;
-        logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon} 상자에 {built.Placed}개{attached}"
+        var size = spec.BigCrate ? " 큰" : string.Empty;
+        logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon}{size} 상자에 {built.Placed}개{attached}"
                     + Note(built));
 
         return new QueueResponse

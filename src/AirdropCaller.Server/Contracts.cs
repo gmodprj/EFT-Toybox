@@ -25,6 +25,10 @@ public record QueueRequest : IRequestData
     /// <summary>담을 품목. 비어 있으면 거절한다 — 빈 상자를 띄울 이유가 없다.</summary>
     [JsonPropertyName("items")]
     public List<ItemSpec>? Items { get; set; }
+
+    /// <summary>큰 상자로 보낼지. <see cref="PresetId"/> 를 주면 프리셋에 적힌 값을 쓴다.</summary>
+    [JsonPropertyName("bigCrate")]
+    public bool BigCrate { get; set; }
 }
 
 public record QueueResponse

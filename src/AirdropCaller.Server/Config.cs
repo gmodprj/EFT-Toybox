@@ -38,6 +38,17 @@ public class Config
     public double IdleHeartbeatSeconds { get; set; } = 10;
 
     /// <summary>
+    /// 큰 상자의 격자. 바닐라 상자 넷은 전부 10×12=120칸이고, 이것은 그것을 베껴
+    /// 키운 **따로 만든 상자**다(<see cref="BigCrate"/>). 바닐라 상자는 안 건드린다.
+    /// </summary>
+    [JsonPropertyName("BigCrateWidth")]
+    public int BigCrateWidth { get; set; } = 30;
+
+    /// <inheritdoc cref="BigCrateWidth"/>
+    [JsonPropertyName("BigCrateHeight")]
+    public int BigCrateHeight { get; set; } = 30;
+
+    /// <summary>
     /// 상자 id → 그 상자에 담을 것.
     ///
     /// 이 id 는 게임이 `InitAirdrop(lootTemplateId, ...)` 에 넘긴 값이 그대로 돌아온 것이다
@@ -63,6 +74,13 @@ public class DropSpec
     /// <summary>담을 품목. 격자에 안 들어가는 것은 넣지 않고 기록에 남긴다.</summary>
     [JsonPropertyName("Items")]
     public List<ItemSpec> Items { get; set; } = [];
+
+    /// <summary>
+    /// 큰 상자로 보낼지. 겉모습과 창 제목은 <see cref="Icon"/> 이 그대로 정하고,
+    /// 안 격자만 커진다(기본 30×30=900칸).
+    /// </summary>
+    [JsonPropertyName("BigCrate")]
+    public bool BigCrate { get; set; }
 }
 
 /// <summary>품목 하나.</summary>

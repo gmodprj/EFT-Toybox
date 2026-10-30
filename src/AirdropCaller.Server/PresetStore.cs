@@ -19,6 +19,10 @@ public record Preset
 
     [JsonPropertyName("items")]
     public List<ItemSpec> Items { get; set; } = [];
+
+    /// <summary>큰 상자로 보낼지. 겉모습은 <see cref="Icon"/> 이 정하고 격자만 커진다.</summary>
+    [JsonPropertyName("bigCrate")]
+    public bool BigCrate { get; set; }
 }
 
 public record PresetSaveRequest : IRequestData
