@@ -45,6 +45,29 @@ public class ItemRow : INotifyPropertyChanged
         set { _parent = value; Changed(nameof(Parent)); }
     }
 
+    private ContainerChoice? _choice;
+
+    /// <summary>
+    /// 표의 "담을 곳" 칸이 실제로 묶이는 값. <see cref="Parent"/> 가 진실이고
+    /// 이쪽은 그것을 가리키는 선택지일 뿐이다.
+    ///
+    /// **`Parent` 에 바로 묶을 수 없다.** ComboBox 는 `SelectedValue` 가 null 이면
+    /// "고른 것 없음" 으로 치고 칸을 비워 버린다 — `Row` 가 null 인 "상자" 줄과
+    /// 짝지어 주지 않는다. 기본값인데도 칸이 고장 난 것처럼 보였다(2026-10-30).
+    /// 그래서 선택지 객체 자체를 묶는다. 선택지를 다시 만들 때마다
+    /// <see cref="MainWindow.RebuildContainerChoices"/> 가 이 값을 새 객체로 옮겨 준다.
+    /// </summary>
+    public ContainerChoice? Choice
+    {
+        get => _choice;
+        set
+        {
+            _choice = value;
+            Parent = value?.Row;
+            Changed(nameof(Choice));
+        }
+    }
+
     /// <summary>표에서 고르는 이름. 담을 수 있는 물건만 다른 줄의 선택지가 된다.</summary>
     public string Label => Name.Length > 24 ? Name[..24] + "…" : Name;
 
@@ -158,6 +181,14 @@ public partial class MainWindow : Window
         foreach (var row in _items.Where(r => r.Parent is not null && !_items.Contains(r.Parent!)))
         {
             row.Parent = null;
+        }
+
+        // 선택지를 새로 만들었으니 줄마다 **새 객체** 를 다시 가리키게 한다.
+        // 안 하면 칸이 빈 채로 남는다 — 옛 객체는 이제 목록에 없다.
+        foreach (var row in _items)
+        {
+            row.Choice = ContainerChoices.FirstOrDefault(c => c.Row == row.Parent)
+                         ?? ContainerChoices[0];
         }
     }
 

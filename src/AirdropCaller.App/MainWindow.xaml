@@ -79,8 +79,7 @@
                 <ComboBox ItemsSource="{Binding DataContext.ContainerChoices,
                                         RelativeSource={RelativeSource AncestorType=Window}}"
                           DisplayMemberPath="Label"
-                          SelectedValuePath="Row"
-                          SelectedValue="{Binding Parent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedItem="{Binding Choice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           BorderThickness="0" Background="Transparent" />
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
