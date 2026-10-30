@@ -24,6 +24,24 @@ public enum SlotFill
     None,
 }
 
+/// <summary>칸 하나를 어떻게 처리하기로 했는지. 채우는 쪽과 보여 주는 쪽이 같이 쓴다.</summary>
+/// <param name="Path">`Front_plate` 또는 `mod_mount.mod_nvg`. 겹친 칸은 점으로 잇는다.</param>
+/// <param name="Depth">0 이 품목 바로 밑이다. 창이 들여쓰기에 쓴다.</param>
+/// <param name="Kind">`soft`(삽입물) · `plate`(방어판) · `other`(장비).</param>
+/// <param name="Auto">자동이 고를 것. 후보가 없거나 다 막혔으면 null.</param>
+/// <param name="Chosen">실제로 붙일 것. null 이면 이 칸은 빈다.</param>
+/// <param name="Picked">사용자가 직접 고른 칸인가. 자동이 고른 것과 구별한다.</param>
+public record SlotDecision(
+    string Path,
+    int Depth,
+    string Name,
+    bool Required,
+    string Kind,
+    IReadOnlyList<MongoId> Pool,
+    MongoId? Auto,
+    MongoId? Chosen,
+    bool Picked);
+
 /// <summary>
 /// 품목에 딸린 칸(`Slots`)을 채운다 — 방어판·삽입물·헬멧 부속 따위.
 ///
@@ -36,14 +54,20 @@ public enum SlotFill
 /// 이 한 줄이 바라는 답을 모두 냈다(2026-10-30, 이 설치본의 DB):
 ///
 /// <list type="bullet">
-/// <item>IOTV 의 <c>Front_plate</c> 후보 18개 → GAC 4sss2(85,002원, 방어 6등급)</item>
-/// <item>FAST MT 의 <c>mod_nvg</c> 후보 3개 → GPNVG-18(145,004원)</item>
+/// <item>IOTV 의 <c>Front_plate</c> 후보 18개 → 방어 7등급 판(모드가 넣은 것)</item>
+/// <item>FAST MT 의 <c>mod_nvg</c> 후보 3개 → GPNVG-18</item>
 /// <item>FAST MT 의 <c>mod_equipment_000</c> 후보 3개 → 멀티 히트 안면 보호 바이저</item>
 /// </list>
 ///
 /// 방어 등급을 먼저 보는 규칙도 해 봤는데 <c>mod_nvg</c> 에서 엉뚱한 답이 났다 —
 /// 후보 중 Tac-Kek 마스크만 등급(2)을 들고 있어서 야시경 대신 마스크가 뽑혔다.
 /// 값만 보는 쪽이 세 자리 모두 맞았다.
+///
+/// <para>
+/// 사용자가 칸마다 직접 고른 것(<c>ItemSpec.Slots</c>)이 있으면 그쪽이 이긴다.
+/// **보여 주는 쪽과 채우는 쪽이 같은 코드를 쓴다**(<see cref="Walk"/>) — 창이
+/// "자동: A" 라고 적어 놓고 상자에 B 가 들어 있는 것이 제일 나쁘다.
+/// </para>
 /// </summary>
 [Injectable(InjectionType.Singleton)]
 public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
@@ -59,74 +83,29 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
     /// 자리 계산은 필요 없지만, **크기는 바뀔 수 있다** — 부른 쪽이
     /// <c>GetItemSize</c> 에 이 목록을 함께 넘겨야 한다.
     /// </summary>
-    public List<Item> Fill(Item root, SlotFill mode)
+    /// <param name="picks">칸 경로 → tpl. 빈 문자열은 "비워 둬라" 다.</param>
+    /// <param name="notes">못 쓴 지정을 적는다. 조용히 버리지 않는다.</param>
+    public List<Item> Fill(
+        Item root, SlotFill mode, IReadOnlyDictionary<string, string>? picks, List<string> notes)
     {
         var added = new List<Item>();
-        if (mode == SlotFill.None)
+
+        // 경로 → 그 자리에 붙은 아이템. 빈 경로가 뿌리다.
+        var at = new Dictionary<string, Item> { [string.Empty] = root };
+
+        Walk(root.Template, mode, picks, notes, decision =>
         {
-            return added;
-        }
-
-        FillInto(root, mode, blocked: [], used: [], added, depth: 0);
-        return added;
-    }
-
-    private void FillInto(
-        Item parent,
-        SlotFill mode,
-        HashSet<MongoId> blocked,
-        HashSet<MongoId> used,
-        List<Item> added,
-        int depth)
-    {
-        if (depth >= MaxDepth)
-        {
-            return;
-        }
-
-        var (ok, template) = itemHelper.GetItem(parent.Template);
-        if (!ok || template?.Properties?.Slots is not { } slots)
-        {
-            return;
-        }
-
-        // 자동은 방어구에만 손댄다. 무기에 부품을 멋대로 달아 주는 것은 다른 이야기다.
-        var armorOnly = mode == SlotFill.Auto;
-        if (armorOnly && !itemHelper.ArmorItemHasRemovableOrSoftInsertSlots(parent.Template))
-        {
-            return;
-        }
-
-        foreach (var slot in slots)
-        {
-            var name = slot.Name ?? string.Empty;
-            var required = slot.Required == true;
-
-            // 자동이 채우는 칸: 반드시 있어야 하는 것(삽입물)과 탈착식 방어판.
-            if (armorOnly && !required && !itemHelper.IsRemovablePlateSlot(name))
+            if (decision.Chosen is not { } tpl)
             {
-                continue;
+                return;
             }
 
-            var pool = slot.Properties?.Filters?.FirstOrDefault()?.Filter;
-            if (pool is null || pool.Count == 0)
+            var parentPath = Parent(decision.Path);
+            if (!at.TryGetValue(parentPath, out var parent))
             {
-                continue;
-            }
-
-            // 같은 것을 두 번 달지 않는다 — 헬멧에 야시경, 그 헬멧의 마운트에 또 야시경이
-            // 붙는 꼴을 막는다. 다만 **두 가지는 예외다.**
-            //
-            // 반드시 있어야 하는 칸: 아라미드 삽입물 하나가 깃·어깨·사타구니에 똑같이
-            // 들어가야 해서, 막으면 첫 칸만 채워진다.
-            //
-            // 방어판 칸: 막았더니 앞판은 7등급인데 뒷판은 6등급이 됐다(실측 2026-10-30).
-            // 앞뒤가 다른 방탄복을 바라고 적은 사람은 없다.
-            var sharable = required || itemHelper.IsRemovablePlateSlot(name);
-            var pick = Best(pool, blocked, sharable ? null : used);
-            if (pick is not { } tpl)
-            {
-                continue;
+                // 윗칸이 안 붙었으면 아랫칸도 갈 곳이 없다. Walk 가 그런 길로는
+                // 내려가지 않지만, 믿고 넘어가지는 않는다.
+                return;
             }
 
             var child = new Item
@@ -134,25 +113,193 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
                 Id = new MongoId(),
                 Template = tpl,
                 ParentId = parent.Id,
-                SlotId = name,
+                SlotId = decision.Name,
                 Upd = new Upd { SpawnedInSession = true, StackObjectsCount = 1.0 },
             };
 
             added.Add(child);
+            at[decision.Path] = child;
+        });
+
+        return added;
+    }
+
+    /// <summary>
+    /// 칸을 **채우지 않고** 훑기만 한다. 창이 "어떤 칸이 있고, 거기에 뭘 달 수 있고,
+    /// 자동은 뭘 고르는지" 를 보여 줄 때 쓴다.
+    /// </summary>
+    public List<SlotDecision> Describe(
+        MongoId rootTpl, SlotFill mode, IReadOnlyDictionary<string, string>? picks)
+    {
+        var found = new List<SlotDecision>();
+        Walk(rootTpl, mode, picks, notes: null, found.Add);
+        return found;
+    }
+
+    private static string Parent(string path)
+    {
+        var cut = path.LastIndexOf('.');
+        return cut < 0 ? string.Empty : path[..cut];
+    }
+
+    private void Walk(
+        MongoId rootTpl,
+        SlotFill mode,
+        IReadOnlyDictionary<string, string>? picks,
+        List<string>? notes,
+        Action<SlotDecision> emit)
+    {
+        // `blocked` 와 `used` 는 나무 전체가 함께 쓴다 — 헬멧에 야시경을 달아 놓고
+        // 그 헬멧의 마운트에 또 야시경을 다는 꼴을 막는다.
+        WalkInto(rootTpl, string.Empty, 0, mode, picks, notes, blocked: [], used: [], emit);
+    }
+
+    private void WalkInto(
+        MongoId ownerTpl,
+        string prefix,
+        int depth,
+        SlotFill mode,
+        IReadOnlyDictionary<string, string>? picks,
+        List<string>? notes,
+        HashSet<MongoId> blocked,
+        HashSet<MongoId> used,
+        Action<SlotDecision> emit)
+    {
+        if (depth >= MaxDepth)
+        {
+            return;
+        }
+
+        var (ok, template) = itemHelper.GetItem(ownerTpl);
+        if (!ok || template?.Properties?.Slots is null)
+        {
+            return;
+        }
+
+        var slots = template.Properties.Slots.ToList();
+        if (slots.Count == 0)
+        {
+            return;
+        }
+
+        var isArmor = itemHelper.ArmorItemHasRemovableOrSoftInsertSlots(ownerTpl);
+
+        // **직접 고른 칸을 먼저 본다.** 자동이 먼저 집어 가면, 사용자가 고른 것이
+        // "같이 못 단다" 에 걸려 떨어지는 일이 생긴다. 고른 쪽이 이겨야 한다.
+        var ordered = slots
+            .Select(slot => (Slot: slot, Path: Join(prefix, slot.Name ?? string.Empty)))
+            .OrderByDescending(x => picks?.ContainsKey(x.Path) == true)
+            .ToList();
+
+        foreach (var (slot, path) in ordered)
+        {
+            var name = slot.Name ?? string.Empty;
+            if (name.Length == 0)
+            {
+                continue;
+            }
+
+            var required = slot.Required == true;
+            var isPlate = itemHelper.IsRemovablePlateSlot(name);
+            var kind = isPlate ? "plate" : IsSoftInsert(name) ? "soft" : "other";
+            var pool = (IReadOnlyList<MongoId>)(slot.Properties?.Filters?.FirstOrDefault()?.Filter?.ToList()
+                                                ?? []);
+
+            // 방어판·삽입물은 같은 것이 여러 칸에 들어가도 된다. 막았더니 앞판은
+            // 7등급인데 뒷판은 6등급이 됐다(실측 2026-10-30).
+            var sharable = required || isPlate;
+            var auto = pool.Count == 0 ? null : Best(pool, blocked, sharable ? null : used);
+
+            var deeper = picks is not null && picks.Keys.Any(k => k.StartsWith(path + ".", StringComparison.Ordinal));
+            var picked = picks is not null && picks.TryGetValue(path, out var raw);
+            MongoId? chosen;
+
+            if (picked)
+            {
+                picks!.TryGetValue(path, out var raw2);
+                chosen = Resolve(raw2, pool, path, notes);
+            }
+            else
+            {
+                var wanted = mode switch
+                {
+                    // 더 깊은 자리를 직접 골랐으면 거기까지 가는 길은 내준다.
+                    SlotFill.None => deeper,
+                    SlotFill.Auto => deeper || (isArmor && (required || isPlate)),
+                    _ => true,
+                };
+
+                chosen = wanted ? auto : null;
+            }
+
+            emit(new SlotDecision(path, depth, name, required, kind, pool, auto, chosen, picked));
+
+            if (chosen is not { } tpl)
+            {
+                continue;
+            }
+
             if (!sharable)
             {
                 used.Add(tpl);
             }
 
-            // 같이 달 수 없는 것을 뒤이어 고르지 않는다. SPT 가 하는 것과 같다.
-            var (hit, chosen) = itemHelper.GetItem(tpl);
-            if (hit && chosen?.Properties?.ConflictingItems is { } conflicts)
+            var (hit, chosenTemplate) = itemHelper.GetItem(tpl);
+            if (hit && chosenTemplate?.Properties?.ConflictingItems is { } conflicts)
             {
                 blocked.UnionWith(conflicts);
             }
 
-            FillInto(child, mode, blocked, used, added, depth + 1);
+            WalkInto(tpl, path, depth + 1, mode, picks, notes, blocked, used, emit);
         }
+    }
+
+    /// <summary>
+    /// 사용자가 적어 낸 값을 받아들일지 본다. 빈 값은 "비워 둬라" 다 — 자동이
+    /// 채우는 것을 막는 유일한 방법이라 반드시 있어야 한다.
+    ///
+    /// 칸에 못 다는 것을 적었으면 **거절하고 적는다.** 조용히 버리지 않는다.
+    /// </summary>
+    private static MongoId? Resolve(
+        string? raw, IReadOnlyList<MongoId> pool, string path, List<string>? notes)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return null;
+        }
+
+        MongoId tpl;
+        try
+        {
+            tpl = new MongoId(raw.Trim());
+        }
+        catch
+        {
+            notes?.Add($"{path} 에 적은 '{raw}' 는 아이템 id 가 아니다 — 그 칸은 비웠다");
+            return null;
+        }
+
+        if (!pool.Contains(tpl))
+        {
+            notes?.Add($"{path} 에 {tpl} 는 못 단다 — 그 칸은 비웠다");
+            return null;
+        }
+
+        return tpl;
+    }
+
+    private static string Join(string prefix, string name) =>
+        prefix.Length == 0 ? name : prefix + "." + name;
+
+    /// <summary>
+    /// 삽입물 칸인가. SPT 의 <c>IsSoftInsertId</c> 는 받은 글자를 소문자로 내리지
+    /// 않는데(<c>IsRemovablePlateSlot</c> 은 내린다) 실제 칸 이름은 `Soft_armor_front`
+    /// 처럼 대문자로 시작한다. 그래서 양쪽을 다 대 본다.
+    /// </summary>
+    private static bool IsSoftInsert(string name)
+    {
+        var ids = ItemHelper.GetSoftInsertSlotIds();
+        return ids.Contains(name) || ids.Contains(name.ToLowerInvariant());
     }
 
     /// <summary>
@@ -171,8 +318,6 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
                 continue;
             }
 
-            // 같이 달 수 없는 것을 **이쪽에서도** 본다. 충돌 목록은 보통 양쪽에
-            // 다 적혀 있지만, 한쪽에만 적힌 것이 있어도 걸러진다.
             var (ok, template) = itemHelper.GetItem(tpl);
             if (!ok || template is null)
             {
@@ -195,7 +340,7 @@ public class SlotFiller(ItemHelper itemHelper, TemplateTable templateTable)
         return best;
     }
 
-    private double PriceOf(MongoId tpl)
+    public double PriceOf(MongoId tpl)
     {
         EnsurePrices();
         return _price!.GetValueOrDefault(tpl, 0);

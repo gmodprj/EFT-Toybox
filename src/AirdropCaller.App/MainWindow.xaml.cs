@@ -122,8 +122,29 @@ public class ItemRow : INotifyPropertyChanged
         _ => FillAuto,
     };
 
-    public ItemSpec ToSpec() =>
-        new() { Tpl = Tpl, Count = Count, StackSize = StackSize, Fill = FillCode };
+    /// <summary>
+    /// 칸마다 직접 고른 것. 칸 경로 → tpl, 빈 문자열은 "비워 둬라".
+    /// 비어 있으면 <see cref="FillLabel"/> 이 하던 대로 간다.
+    /// </summary>
+    public Dictionary<string, string> Slots { get; set; } = [];
+
+    /// <summary>칸 버튼에 적히는 말. 직접 고른 것이 있으면 몇 개인지 같이 보여 준다.</summary>
+    public string SlotHint => Slots.Count == 0 ? "칸…" : $"칸 {Slots.Count}";
+
+    public void SlotsChanged()
+    {
+        Changed(nameof(Slots));
+        Changed(nameof(SlotHint));
+    }
+
+    public ItemSpec ToSpec() => new()
+    {
+        Tpl = Tpl,
+        Count = Count,
+        StackSize = StackSize,
+        Fill = FillCode,
+        Slots = Slots.Count == 0 ? null : new Dictionary<string, string>(Slots),
+    };
 }
 
 /// <summary>
@@ -522,6 +543,7 @@ public partial class MainWindow : Window
                 Count = spec.Count,
                 StackSize = spec.StackSize,
                 FillLabel = ItemRow.LabelForFill(spec.Fill),
+                Slots = spec.Slots is null ? [] : new Dictionary<string, string>(spec.Slots),
                 Parent = parent,
             };
 
@@ -770,6 +792,44 @@ public partial class MainWindow : Window
 
         RebuildContainerChoices();
         UpdateFitHint();
+    }
+
+    /// <summary>
+    /// 그 줄의 칸을 직접 고른다. 버튼이 표 안에 있어 <see cref="ItemGrid"/> 의
+    /// 선택과 무관하게 **눌린 줄**을 집어야 한다 — 고르지도 않은 줄의 칸을 여는
+    /// 것보다 나쁜 것은 없다.
+    /// </summary>
+    private void OnEditSlots(object sender, RoutedEventArgs e)
+    {
+        if (_client is null)
+        {
+            MessageLine.Text = "서버에 안 붙어 있어 칸을 볼 수 없다.";
+            return;
+        }
+
+        if ((sender as FrameworkElement)?.DataContext is not ItemRow row)
+        {
+            MessageLine.Text = "어느 줄의 칸인지 알 수 없다.";
+            return;
+        }
+
+        var before = row.Slots.Count;
+
+        // 창을 띄우다 넘어지면 **조용히 아무 일도 안 일어난 것처럼** 보인다.
+        // 한참을 그것 때문에 헤맸다(2026-10-30). 터진 자리를 말해 준다.
+        try
+        {
+            new SlotWindow(_client, row) { Owner = this }.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            MessageLine.Text = "칸 고르기 창을 못 띄웠다: " + ex.Message;
+            return;
+        }
+
+        MessageLine.Text = row.Slots.Count == 0
+            ? before == 0 ? MessageLine.Text : $"{row.Name}: 칸을 전부 자동으로 되돌렸다."
+            : $"{row.Name}: 칸 {row.Slots.Count}개를 직접 골랐다. 저장해야 남는다.";
     }
 
     private void OnRemoveItem(object sender, RoutedEventArgs e)

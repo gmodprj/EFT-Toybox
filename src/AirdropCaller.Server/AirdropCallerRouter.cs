@@ -39,10 +39,11 @@ public class AirdropCallerRouter : StaticRouter
         RaidState raidState,
         ItemSearch itemSearch,
         PresetStore presets,
-        WindowWatch windowWatch)
+        WindowWatch windowWatch,
+        SlotCatalog slotCatalog)
         : base(jsonUtil, BuildRoutes(
             jsonUtil, logger, store, httpResponseUtil, crateBuilder, queue, raidState, itemSearch, presets,
-            windowWatch))
+            windowWatch, slotCatalog))
     {
     }
 
@@ -56,7 +57,8 @@ public class AirdropCallerRouter : StaticRouter
         RaidState raidState,
         ItemSearch itemSearch,
         PresetStore presets,
-        WindowWatch windowWatch)
+        WindowWatch windowWatch,
+        SlotCatalog slotCatalog)
     {
         string Json<T>(T value) => jsonUtil.Serialize(value) ?? "{}";
 
@@ -85,6 +87,11 @@ public class AirdropCallerRouter : StaticRouter
                 "/airdrop-caller/items",
                 (url, info, sessionId, output, ct) => ValueTask.FromResult(
                     Json(itemSearch.Search(info.Query, info.Category, info.Limit, info.Tpls)))),
+
+            new RouteAction<SlotQueryRequest>(
+                "/airdrop-caller/slots",
+                (url, info, sessionId, output, ct) => ValueTask.FromResult(
+                    Json(slotCatalog.Describe(info)))),
 
             new RouteAction(
                 "/airdrop-caller/categories",

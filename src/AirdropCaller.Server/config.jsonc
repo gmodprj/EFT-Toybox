@@ -88,6 +88,38 @@
       "Items": [
         { "Tpl": "5b44cd8b86f774503d30cba2", "Count": 20, "Fill": "None" }
       ]
+    },
+
+    // 칸을 직접 고르는 것 확인용. 네 가지를 한꺼번에 본다.
+    "aabbccdd0000000000000006": {
+      "Icon": "Common",
+      "Items": [
+        {
+          "Tpl": "5b44cd8b86f774503d30cba2", // IOTV Gen4 완전형
+          "Slots": {
+            // (ㄱ) 자동보다 **낮은** 것을 일부러 고른다. 자동은 7등급을 집지만
+            //      적어 낸 쪽이 이겨야 하므로 6등급이 들어가야 한다.
+            "Front_plate": "656faf0ca0dce000a2020f77", // GAC 4sss2 (6등급)
+
+            // (ㄴ) 빈 문자열 = 비워 둬라. 자동이 채우는 것을 막는 유일한 방법이다.
+            "Back_plate": "",
+
+            // (ㄷ) 그 칸에 못 다는 것. 거절하고 "고친 것" 에 적혀야 한다.
+            //      조용히 버리거나 조용히 다른 것을 넣으면 안 된다.
+            "Left_side_plate": "5c0558060db834001b735271" // GPNVG-18 — 방탄판 칸에 야시경
+          }
+        },
+        {
+          // (ㄹ) 겹친 칸. Fill 이 None 인데도 직접 고른 자리까지는 길을 내줘야 한다.
+          //      헬멧 → Norotos 마운트 → GPNVG-18 두 겹이 붙고, 나머지 칸은 비어야 한다.
+          "Tpl": "5a154d5cfcdbcb001a3b00da", // Ops-Core FAST MT
+          "Fill": "None",
+          "Slots": {
+            "mod_nvg": "5a16b8a9fcdbcb00165aa6ca",        // Norotos 티타늄 마운트
+            "mod_nvg.mod_nvg": "5a16b93dfcdbcbcae6687261" // 그 위에 AN/PVS-14 도브테일 마운트
+          }
+        }
+      ]
     }
   }
 }

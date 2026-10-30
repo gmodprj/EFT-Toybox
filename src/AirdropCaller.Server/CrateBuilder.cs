@@ -173,7 +173,7 @@ public class CrateBuilder(
                 // 딸린 칸을 **자리를 보기 전에** 채운다. 붙은 것이 크기를 바꾼다 —
                 // 개머리판을 단 총은 빈 총보다 넓다. 빈 몸으로 재 놓고 채워 넣으면
                 // 격자 지도가 실제와 어긋난다.
-                var attached = slotFiller.Fill(item, entry.Fill ?? SlotFill.Auto);
+                var attached = slotFiller.Fill(item, entry.Fill ?? SlotFill.Auto, entry.Slots, adjusted);
 
                 var size = itemHelper.GetItemSize([item, .. attached], item.Id);
                 if (size is null)

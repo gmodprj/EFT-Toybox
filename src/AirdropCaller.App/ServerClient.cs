@@ -23,6 +23,46 @@ public record ItemSpec
     /// 서버의 <c>SlotFill</c> 과 짝이다. 글자 그대로 오간다(숫자가 아니다).
     /// </summary>
     [JsonPropertyName("Fill")] public string? Fill { get; set; }
+
+    /// <summary>
+    /// 칸마다 직접 고른 것. 칸 경로 → tpl. 빈 문자열은 "비워 둬라".
+    /// 겹친 칸은 점으로 잇는다(`mod_mount.mod_nvg`).
+    /// </summary>
+    [JsonPropertyName("Slots")] public Dictionary<string, string>? Slots { get; set; }
+}
+
+/// <summary>칸 하나에 달 수 있는 것 하나. 서버 `SlotCandidate` 와 짝이다.</summary>
+public class SlotCandidate
+{
+    [JsonPropertyName("tpl")] public string Tpl { get; set; } = string.Empty;
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("icon")] public string Icon { get; set; } = string.Empty;
+    [JsonPropertyName("armorClass")] public int ArmorClass { get; set; }
+    [JsonPropertyName("price")] public double Price { get; set; }
+
+    /// <summary>이미 단 것과 같이 못 단다. 고를 수 없게 막는다.</summary>
+    [JsonPropertyName("blocked")] public bool Blocked { get; set; }
+}
+
+/// <summary>칸 하나. 서버 `SlotNode` 와 짝이다.</summary>
+public class SlotNode
+{
+    [JsonPropertyName("path")] public string Path { get; set; } = string.Empty;
+    [JsonPropertyName("depth")] public int Depth { get; set; }
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("required")] public bool Required { get; set; }
+    [JsonPropertyName("kind")] public string Kind { get; set; } = "other";
+    [JsonPropertyName("auto")] public string Auto { get; set; } = string.Empty;
+    [JsonPropertyName("chosen")] public string Chosen { get; set; } = string.Empty;
+    [JsonPropertyName("picked")] public bool Picked { get; set; }
+    [JsonPropertyName("candidates")] public List<SlotCandidate> Candidates { get; set; } = [];
+}
+
+public record SlotListResponse
+{
+    [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("slots")] public List<SlotNode> Slots { get; set; } = [];
+    [JsonPropertyName("reason")] public string? Reason { get; set; }
 }
 
 /// <summary>
@@ -295,6 +335,14 @@ public sealed class ServerClient : IDisposable
 
     public Task<CategoryListResponse?> ListCategoriesAsync(CancellationToken ct) =>
         GetAsync<CategoryListResponse>("/airdrop-caller/categories", ct);
+
+    /// <summary>
+    /// 품목의 칸 목록. **지금 고른 것을 함께 보낸다** — 겹친 칸은 윗칸에 무엇을
+    /// 달았느냐에 따라 아랫칸이 달라져서, 한 칸을 바꿀 때마다 다시 물어봐야 한다.
+    /// </summary>
+    public Task<SlotListResponse?> SlotsAsync(
+        string tpl, string? fill, Dictionary<string, string>? slots, CancellationToken ct) =>
+        PostAsync<SlotListResponse>("/airdrop-caller/slots", new { tpl, fill, slots }, ct);
 
     public Task<QueueResponse?> QueueAsync(
         string? presetId, string icon, List<ItemSpec> items, bool bigCrate, CancellationToken ct) =>
