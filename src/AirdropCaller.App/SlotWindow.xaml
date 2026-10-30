@@ -38,8 +38,14 @@
                          TextTrimming="CharacterEllipsis" ToolTip="{Binding Path}" />
 
               <ComboBox Grid.Column="3" ItemsSource="{Binding Choices}"
-                        DisplayMemberPath="Label"
                         SelectedItem="{Binding Selected, Mode=TwoWay}">
+                <!-- DisplayMemberPath 를 쓰면 접힌 칸에 글자가 안 나온다(우리 ComboBox
+                     템플릿이 SelectionBoxItemTemplate 을 못 받는다). 직접 준다. -->
+                <ComboBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
                 <ComboBox.ItemContainerStyle>
                   <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
                     <!-- 같이 못 다는 것은 고를 수 없게 막는다. -->

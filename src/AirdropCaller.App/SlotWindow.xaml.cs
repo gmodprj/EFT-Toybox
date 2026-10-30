@@ -127,8 +127,8 @@ public partial class SlotWindow : Window
         SubLine.Text = _rows.Count == 0
             ? "이 품목에는 칸이 없다."
             : $"칸 {_rows.Count}개 — 직접 고른 것 {_picks.Count}개. "
-              + $"채우기가 '{_row.FillLabel}' 라, 안 고른 칸은 그 규칙대로 간다. "
-              + $"개수가 {_row.Count}개면 {_row.Count}개 모두 같아진다.";
+              + $"채우기가 '{_row.FillLabel}' 이라, 안 고른 칸은 그 규칙대로 간다."
+              + (_row.Count > 1 ? $" 개수가 {_row.Count}개라 {_row.Count}개 모두 같아진다." : string.Empty);
     }
 
     private string FillCode() => _row.FillLabel switch
