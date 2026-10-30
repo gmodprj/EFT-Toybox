@@ -108,6 +108,7 @@ namespace AirdropCaller.Plugin
         private void SendHeartbeat(ClientGameWorld world, ServerAirdropManager manager)
         {
             var inRaid = world != null && manager != null;
+            var counted = CountInAir(world);
             var body = new HeartbeatBody
             {
                 inRaid = inRaid,
@@ -115,6 +116,10 @@ namespace AirdropCaller.Plugin
                 canSummon = inRaid && manager.CanSummonAirdrop,
                 crateInFlight = inRaid && HasPlaneInAir(world),
                 availablePoints = inRaid ? manager._airdropPoints.Count : 0,
+                planes = counted.Planes,
+                crates = counted.Crates,
+                // `_currentAirdropsCount` 는 float 다. 세는 값이라 그대로 int 로 받는다.
+                mapCount = inRaid ? (int)manager._currentAirdropsCount : 0,
             };
 
             try
@@ -157,23 +162,40 @@ namespace AirdropCaller.Plugin
         ///
         /// 막아야 하는 것은 **비행기가 두 대 뜨는 것**이지 상자가 땅에 있는 것이 아니다.
         /// </summary>
-        private static bool HasPlaneInAir(ClientGameWorld world)
+        private static bool HasPlaneInAir(ClientGameWorld world) => CountInAir(world).Planes > 0;
+
+        /// <summary>
+        /// 하늘에 뜬 비행기와 상자를 센다. 계측용이다 — 둘 이상이면 보급이 겹친 것이고,
+        /// 낙하산이 안 사라지는 증상의 첫 용의자다.
+        /// </summary>
+        private static (int Planes, int Crates) CountInAir(ClientGameWorld world)
         {
-            var active = world.ClientSynchronizableObjectLogicProcessor?._activeSynchronizableObjects;
+            var active = world?.ClientSynchronizableObjectLogicProcessor?._activeSynchronizableObjects;
             if (active == null)
             {
-                return false;
+                return (0, 0);
             }
 
+            var planes = 0;
+            var crates = 0;
             foreach (var so in active)
             {
-                if (so != null && so.Type == SynchronizableObjectType.AirPlane)
+                if (so == null)
                 {
-                    return true;
+                    continue;
+                }
+
+                if (so.Type == SynchronizableObjectType.AirPlane)
+                {
+                    planes++;
+                }
+                else if (so.Type == SynchronizableObjectType.AirDrop)
+                {
+                    crates++;
                 }
             }
 
-            return false;
+            return (planes, crates);
         }
 
         // ── 실행 ───────────────────────────────────────────────────────────
@@ -283,6 +305,22 @@ namespace AirdropCaller.Plugin
             public bool canSummon;
             public bool crateInFlight;
             public int availablePoints;
+
+            /// <summary>
+            /// 계측용. 낙하산이 안 사라지고 맵에 표시가 안 되는 일이 **가끔** 생긴다
+            /// (2026-10-30 사용자 보고). 보급이 겹쳐서인지 보려고 센다.
+            ///
+            /// 바닐라는 `InitAirdrop` 앞뒤로 `_currentAirdropsCount++` 와
+            /// `UpdateAirdropTimers` 를 하는데 우리는 둘 다 건너뛴다. 그래서 우리 상자가
+            /// 하늘에 있는 동안에도 맵이 자기 보급기를 띄울 수 있다 — 그 가설을 잰다.
+            /// </summary>
+            public int planes;
+
+            /// <inheritdoc cref="planes"/>
+            public int crates;
+
+            /// <summary>맵이 센 보급 횟수. 우리는 안 올리므로, 늘면 맵이 자기 것을 띄운 것이다.</summary>
+            public int mapCount;
         }
 
         /// <summary>보고에 대한 답. 예약과 다음 주기가 실려 온다.</summary>
