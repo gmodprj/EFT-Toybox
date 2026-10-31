@@ -52,14 +52,20 @@ namespace pitTeam.Components
             }
 
             List<SquadRosterEntry> entries = BuildRosterEntries().ToList();
-            UpdateRosterGridLayout(entries.Count);
+            // STM: profile teammates, fetched fresh (already joined against the catalog by the server).
+            // Never throws; on failure the section is one error tile and the mercenary tiles still draw.
+            StmProfileRosterClient.Snapshot stmSnapshot = LoadStmSnapshot();
+            int stmTileCount = CountStmTiles(stmSnapshot);
+            UpdateRosterGridLayout(entries.Count + stmTileCount);
 
             foreach (SquadRosterEntry entry in entries)
             {
                 CreateRosterTile(rosterGridRoot, entry, rosterBuildVersion);
             }
 
-            UpdateEmptyRosterState(entries.Count == 0);
+            AppendStmTiles(rosterGridRoot, stmSnapshot);
+
+            UpdateEmptyRosterState(entries.Count + stmTileCount == 0);
 
             if (rosterGridRoot != null)
             {
@@ -254,6 +260,9 @@ namespace pitTeam.Components
                 buttonRect.sizeDelta = new Vector2(320f, playerButton.transform is RectTransform playerRect ? playerRect.sizeDelta.y : 54f);
                 buttonRect.anchoredPosition = Vector2.zero;
             }
+
+            // STM: "프로필 불러오기" beside the add button. Contained; cannot affect the button above.
+            TryCreateLoadProfileButton(rosterRect, buttonTemplate);
         }
 
         private void OnAddTeammateClicked()
@@ -1353,6 +1362,12 @@ namespace pitTeam.Components
                     ? EmptyRosterButtonCenterY
                     : -(currentRosterShellHeight + RosterShellToButtonGap) * 0.5f;
                 addButtonRect.anchoredPosition = new Vector2(0f, (buttonCenterY + RosterBlockVerticalOffset) * verticalScaleCompensation);
+
+                // STM: the load-profile button shares the add button's row, to its right.
+                if (loadProfileButton?.transform is RectTransform loadButtonRect)
+                {
+                    loadButtonRect.anchoredPosition = new Vector2(StmLoadButtonOffsetX, addButtonRect.anchoredPosition.y);
+                }
             }
 
             if (emptyRosterLabel?.transform is RectTransform emptyLabelRect)

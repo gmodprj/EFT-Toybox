@@ -142,6 +142,10 @@ public class FriendlyTeammateSocialCallbacks(
     // Membership category: mercenaries are MemberCategory.Unheard (ToFriendSummary), so profile
     // members take Default to be told apart in the invite window. Whether this reads the way we
     // want on screen is confirmed in game in Task 7 (design 8).
+    // THE one place to change the profile members' icon/category if Default does not look different from
+    // mercenaries (Unheard) in game. Both fields below read it.
+    internal const MemberCategory ProfileMemberCategory = MemberCategory.Default;
+
     private static UserDialogInfo ToProfileMemberDialog(ProfileCandidate candidate) => new()
     {
         Id = new MongoId(candidate.ProfileId),
@@ -151,8 +155,8 @@ public class FriendlyTeammateSocialCallbacks(
             Nickname = candidate.Nickname,
             Side = candidate.Side,
             Level = candidate.Level,
-            MemberCategory = MemberCategory.Default,
-            SelectedMemberCategory = MemberCategory.Default,
+            MemberCategory = ProfileMemberCategory,
+            SelectedMemberCategory = ProfileMemberCategory,
         },
     };
 

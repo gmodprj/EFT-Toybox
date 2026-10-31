@@ -130,6 +130,10 @@ public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCal
                 "/stm/members/list",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.List(url, info, sessionId))
             ),
+            new RouteAction<EmptyRequestData>(
+                "/stm/members/roster",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.Roster(url, info, sessionId))
+            ),
             new RouteAction<StmProfileMemberRequest>(
                 "/stm/members/add",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.Add(url, info, sessionId))

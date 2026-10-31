@@ -130,4 +130,81 @@ public class ProfileRosterPolicyTests
 
         Assert.Equal(ProfileAvailability.CurrentSession, Assert.Single(result).Availability);
     }
+
+    private static ProfileCandidate Cand(string id, ProfileAvailability a, int aid = 5, string nick = "Nick") =>
+        new(id, aid, nick, a == ProfileAvailability.Ready ? 20 : 0, a == ProfileAvailability.Ready ? "Bear" : "", a);
+
+    [Fact]
+    public void 조인은_등록_순서를_지키고_후보의_가용성을_그대로_옮긴다()
+    {
+        var cands = new[]
+        {
+            Cand("bbbbbbbbbbbbbbbbbbbbbbbb", ProfileAvailability.Ready),
+            Cand("cccccccccccccccccccccccc", ProfileAvailability.Empty),
+            Cand("dddddddddddddddddddddddd", ProfileAvailability.Unreadable),
+            Cand(Me, ProfileAvailability.CurrentSession),
+        };
+
+        var rows = ProfileRosterPolicy.JoinRegistered(cands, new[] { Me, "dddddddddddddddddddddddd", "cccccccccccccccccccccccc", "bbbbbbbbbbbbbbbbbbbbbbbb" });
+
+        Assert.Equal(new[] { RosterRowStatus.CurrentSession, RosterRowStatus.Unreadable, RosterRowStatus.Empty, RosterRowStatus.Ready },
+            rows.Select(r => r.Status).ToArray());
+    }
+
+    [Fact]
+    public void 등록됐지만_카탈로그에_없는_프로필은_숨기지_않고_Missing_으로_남긴다()
+    {
+        var rows = ProfileRosterPolicy.JoinRegistered(
+            new[] { Cand("bbbbbbbbbbbbbbbbbbbbbbbb", ProfileAvailability.Ready) },
+            new[] { "eeeeeeeeeeeeeeeeeeeeeeee" });
+
+        var row = Assert.Single(rows);
+        Assert.Equal(RosterRowStatus.Missing, row.Status);
+        Assert.Equal("eeeeeeee", row.Nickname);
+        Assert.Equal(0, row.Aid);
+    }
+
+    [Fact]
+    public void 조인은_후보가_없거나_null_이어도_등록된_모두를_Missing_으로_낸다()
+    {
+        var rows = ProfileRosterPolicy.JoinRegistered(null!, new[] { "a1", "a2" });
+        Assert.All(rows, r => Assert.Equal(RosterRowStatus.Missing, r.Status));
+        Assert.Equal(2, rows.Count);
+    }
+
+    [Fact]
+    public void 조인은_빈_id_를_건너뛰고_중복_id_를_하나로_합친다()
+    {
+        var rows = ProfileRosterPolicy.JoinRegistered(
+            new[] { Cand("bbbbbbbbbbbbbbbbbbbbbbbb", ProfileAvailability.Ready) },
+            new[] { " ", "", "bbbbbbbbbbbbbbbbbbbbbbbb", " bbbbbbbbbbbbbbbbbbbbbbbb " });
+
+        Assert.Single(rows);
+    }
+
+    [Fact]
+    public void 조인은_알_수_없는_가용성_값을_Unreadable_로_닫는다()
+    {
+        var rows = ProfileRosterPolicy.JoinRegistered(
+            new[] { Cand("bbbbbbbbbbbbbbbbbbbbbbbb", (ProfileAvailability)99) },
+            new[] { "bbbbbbbbbbbbbbbbbbbbbbbb" });
+
+        Assert.Equal(RosterRowStatus.Unreadable, Assert.Single(rows).Status);
+    }
+
+    [Fact]
+    public void 새로_등록할_후보는_Ready_이면서_아직_등록되지_않은_것만이다()
+    {
+        var cands = new[]
+        {
+            Cand("bbbbbbbbbbbbbbbbbbbbbbbb", ProfileAvailability.Ready),
+            Cand("cccccccccccccccccccccccc", ProfileAvailability.Ready),
+            Cand("dddddddddddddddddddddddd", ProfileAvailability.Empty),
+            Cand(Me, ProfileAvailability.CurrentSession),
+        };
+
+        var offered = ProfileRosterPolicy.SelectUnregisteredReady(cands, new[] { "bbbbbbbbbbbbbbbbbbbbbbbb" });
+
+        Assert.Equal("cccccccccccccccccccccccc", Assert.Single(offered).ProfileId);
+    }
 }
