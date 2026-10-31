@@ -46,15 +46,17 @@ namespace GogglesWheel
             return true;
         }
 
-        public static void Block()
+        /// <summary>막기 시작한다. 패치를 못 걸었으면 false — 그때는 휠을 띄워도 고를 수가 없다.</summary>
+        public static bool Block()
         {
             if (!_patched)
             {
-                return;
+                return false;
             }
 
             Accumulated = Vector2.zero;
             Blocking = true;
+            return true;
         }
 
         /// <summary>여러 번 불러도 안전하다. 어떤 경로로 끝나든 이것만 불리면 된다.</summary>

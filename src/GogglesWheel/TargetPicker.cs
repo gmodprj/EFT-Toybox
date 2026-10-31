@@ -9,6 +9,9 @@ namespace GogglesWheel
     /// </summary>
     public static class TargetPicker
     {
+        /// <summary>두 항목까지의 거리가 이 안이면 비긴 것으로 본다(도 단위).</summary>
+        private const double TieEpsilon = 1e-4;
+
         /// <summary>
         /// 항목이 놓이는 각도. 둘이면 왼쪽·오른쪽(설계 §6-4), 그 밖이면 위에서 시계 방향으로 고르게 나눈다.
         /// </summary>
@@ -50,7 +53,9 @@ namespace GogglesWheel
             for (var i = 0; i < count; i++)
             {
                 var distance = Math.Abs(NormalizeDegrees(angle - AngleForIndex(i, count)));
-                if (distance < bestDistance)
+
+                // 정확히 경계일 때 부동소수 잡음으로 갈리지 않게, 비기면 낮은 번호가 이긴다.
+                if (distance < bestDistance - TieEpsilon)
                 {
                     bestDistance = distance;
                     best = i;
@@ -58,6 +63,27 @@ namespace GogglesWheel
             }
 
             return best;
+        }
+
+        /// <summary>
+        /// 쌓인 시점 입력을 0~1 기울기로 눌러 준다. 데드존이 0~1 단위라 여기에 맞춰야 한다.
+        /// <paramref name="fullTilt"/> 만큼 움직이면 끝까지 기울인 것으로 친다.
+        /// </summary>
+        public static (float X, float Y) NormalizeTilt(float x, float y, float fullTilt)
+        {
+            var length = Math.Sqrt((double)x * x + (double)y * y);
+            if (length <= 0.0)
+            {
+                return (0f, 0f);
+            }
+
+            if (fullTilt <= 0f)
+            {
+                fullTilt = 1e-4f;
+            }
+
+            var scale = Math.Min(1.0, length / fullTilt) / length;
+            return ((float)(x * scale), (float)(y * scale));
         }
 
         /// <summary>짧게 눌렀을 때 여닫을 항목. 목록이 비었으면 -1.</summary>

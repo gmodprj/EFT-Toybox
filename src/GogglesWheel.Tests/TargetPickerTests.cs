@@ -55,14 +55,51 @@ public class TargetPickerTests
     }
 
     [Fact]
-    public void Exact_boundary_between_two_items_is_stable()
+    public void Exact_boundary_goes_to_the_lower_index()
     {
-        // 세 항목: 90, -30, -150. 90 과 -30 의 중간각은 30 도.
-        var first = TargetPicker.PickByDirection(0.866f, 0.5f, 3, 0.2f);
-        var again = TargetPicker.PickByDirection(0.866f, 0.5f, 3, 0.2f);
+        // 네 항목(90·0·-90·-180)에서 45도는 0번과 1번의 **정확한 경계**다.
+        // 부동소수 잡음으로 갈리지 않게, 비길 때는 낮은 번호가 이긴다고 못박는다.
+        var atFortyFive = (float)System.Math.Sqrt(0.5);
 
-        Assert.Equal(first, again);
-        Assert.InRange(first, 0, 2);
+        Assert.Equal(0, TargetPicker.PickByDirection(atFortyFive, atFortyFive, 4, 0.2f));
+    }
+
+    [Fact]
+    public void Three_items_pick_across_the_180_seam()
+    {
+        // 세 항목: 90·-30·-150. ±180 이음매가 **항목 사이**에 떨어지는 어려운 경우다.
+        // 179도(= 거의 왼쪽)는 -150 쪽(2번)이 가장 가깝다.
+        Assert.Equal(2, TargetPicker.PickByDirection(-0.9998f, 0.0175f, 3, 0.2f));
+
+        // -179도도 같은 항목이어야 한다. 숫자로는 358도 떨어져 보이는 자리다.
+        Assert.Equal(2, TargetPicker.PickByDirection(-0.9998f, -0.0175f, 3, 0.2f));
+    }
+
+    [Fact]
+    public void Normalized_tilt_is_capped_at_one()
+    {
+        // 쌓인 시점 입력은 끝없이 커진다. 데드존이 0~1 단위이므로 거기에 맞춰 눌러 준다.
+        var (x, y) = TargetPicker.NormalizeTilt(600f, 0f, 6f);
+
+        Assert.Equal(1f, x, 3);
+        Assert.Equal(0f, y, 3);
+    }
+
+    [Fact]
+    public void Normalized_tilt_keeps_direction_below_the_cap()
+    {
+        var (x, y) = TargetPicker.NormalizeTilt(3f, 0f, 6f);
+
+        Assert.Equal(0.5f, x, 3);
+        Assert.Equal(0f, y, 3);
+    }
+
+    [Fact]
+    public void Normalized_tilt_survives_a_zero_or_negative_full_tilt()
+    {
+        var (x, y) = TargetPicker.NormalizeTilt(3f, 4f, 0f);
+
+        Assert.InRange(System.Math.Sqrt(x * x + y * y), 0.999, 1.001);
     }
 
     [Fact]

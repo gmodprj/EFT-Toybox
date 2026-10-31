@@ -18,6 +18,9 @@ namespace GogglesWheel
         private const float Radius = 170f;
         private const float ItemSize = 96f;
 
+        /// <summary>이만큼 움직이면 끝까지 기울인 것으로 친다(게임 시점 입력 단위).</summary>
+        private const float FullTiltUnits = 6f;
+
         private static GameObject _root;
         private static readonly List<GameObject> _items = new List<GameObject>();
         private static IReadOnlyList<ToggleTarget> _targets;
@@ -56,9 +59,9 @@ namespace GogglesWheel
                 return;
             }
 
-            // 화면 크기와 무관하게 같은 손맛이 나도록 한 번 나눠 준다.
-            var scaled = direction / 6f;
-            SelectedIndex = TargetPicker.PickByDirection(scaled.x, scaled.y, _targets.Count, Plugin.Settings.WheelDeadZone);
+            // 쌓인 시점 입력은 끝없이 커진다. 0~1 기울기로 눌러야 데드존(0~1)과 단위가 맞는다.
+            var tilt = TargetPicker.NormalizeTilt(direction.x, direction.y, FullTiltUnits);
+            SelectedIndex = TargetPicker.PickByDirection(tilt.X, tilt.Y, _targets.Count, Plugin.Settings.WheelDeadZone);
 
             for (var i = 0; i < _items.Count; i++)
             {
@@ -142,11 +145,19 @@ namespace GogglesWheel
         {
             var clone = UnityEngine.Object.Instantiate(template);
 
-            // 템플릿의 제스처 전용 부품은 떼어 낸다 — Show() 를 부르지 않으므로
-            // 그 스크립트들이 돌면서 제 것을 덮어쓰지 못하게 한다.
+            // 제스처 전용 스크립트만 떼어 낸다 — Show() 를 부르지 않으므로 그것들이 돌며
+            // 제 것을 덮어쓰지 못하게 한다. 레이아웃·마스크·외곽선 같은 UGUI 부품은 **그대로 둔다**.
+            // 전에는 Graphic·TMP_Text 가 아닌 것을 모두 지웠는데, 그러면 Mask·LayoutGroup·Outline 까지
+            // 날아가 복제본의 생김새가 원본과 달라지고 RequireComponent 오류가 로그에 쌓인다.
             foreach (var behaviour in clone.GetComponentsInChildren<MonoBehaviour>(true))
             {
-                if (behaviour != null && !(behaviour is Graphic) && !(behaviour is TMP_Text))
+                if (behaviour == null)
+                {
+                    continue;
+                }
+
+                var name = behaviour.GetType().Name;
+                if (name.StartsWith("Gesture", StringComparison.Ordinal))
                 {
                     UnityEngine.Object.Destroy(behaviour);
                 }

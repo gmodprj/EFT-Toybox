@@ -24,10 +24,16 @@ namespace GogglesWheel
     /// </summary>
     public static class GogglesDecisionMaker
     {
-        public static GogglesDecision Decide(IReadOnlyList<ToggleTarget> targets, bool keyHeld, bool cotiModifierHeld)
+        /// <param name="runOriginal">
+        /// HarmonyX 가 넘겨주는 값. 앞의 prefix 중 하나가 이미 false 를 돌려줬으면 false 다.
+        /// HarmonyX 는 앞에서 false 가 나와도 **나머지 prefix 를 전부 실행하므로**, 이 값을 보지 않으면
+        /// 남이 가져간 입력에 우리가 또 손을 댄다(UI Fixes 의 나침반 치우기가 그 자리다 — 그 호출에서
+        /// 우리가 한 번, 애니메이션 뒤 되부름에서 또 한 번 여닫아 결국 아무 일도 없는 것처럼 보인다).
+        /// </param>
+        public static GogglesDecision Decide(IReadOnlyList<ToggleTarget> targets, bool keyHeld, bool cotiModifierHeld, bool runOriginal)
         {
             // 물러나는 것이 먼저다. 우리가 목록을 못 만들었다고 남의 입력을 삼키면 안 된다.
-            if (cotiModifierHeld)
+            if (!runOriginal || cotiModifierHeld)
             {
                 return GogglesDecision.StandDown;
             }

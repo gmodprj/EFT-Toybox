@@ -16,6 +16,9 @@ namespace GogglesWheel
     /// </summary>
     public static class GogglesPatch
     {
+        /// <summary>휠이 이보다 오래 떠 있으면 접는다. 키 상태가 얼어붙었을 때의 탈출구.</summary>
+        private const float MaxWheelSeconds = 15f;
+
         private static MethodInfo _cotiModifierGetter;
         private static bool _cotiChecked;
         private static bool _watching;
@@ -39,8 +42,14 @@ namespace GogglesWheel
             return true;
         }
 
-        /// <summary>false 를 돌려주면 바닐라를 건너뛴다.</summary>
-        private static bool ToggleGogglesPrefix(Player __instance)
+        /// <summary>
+        /// false 를 돌려주면 바닐라를 건너뛴다.
+        ///
+        /// <paramref name="__runOriginal"/> 은 HarmonyX 가 넘겨주는 값이다. HarmonyX 는 앞의 prefix 가
+        /// false 를 돌려줘도 **나머지 prefix 를 전부 실행하므로**, 이 값을 보지 않으면 남이 이미 가져간
+        /// 입력에 우리가 또 손을 댄다.
+        /// </summary>
+        private static bool ToggleGogglesPrefix(Player __instance, bool __runOriginal)
         {
             try
             {
@@ -50,7 +59,7 @@ namespace GogglesWheel
                 }
 
                 var targets = HeadwearScanner.Scan(__instance);
-                var decision = GogglesDecisionMaker.Decide(targets, PressWatcher.IsHeldNow(), IsCotiModifierHeld());
+                var decision = GogglesDecisionMaker.Decide(targets, PressWatcher.IsHeldNow(), IsCotiModifierHeld(), __runOriginal);
 
                 switch (decision)
                 {
@@ -71,7 +80,17 @@ namespace GogglesWheel
                         }
 
                         _watching = true;
-                        Plugin.Instance.StartCoroutine(WatchPress(__instance, targets));
+                        try
+                        {
+                            Plugin.Instance.StartCoroutine(WatchPress(__instance, targets));
+                        }
+                        catch (Exception)
+                        {
+                            // 코루틴을 못 띄우면 깃발을 내려 둔다. 안 그러면 이번 판 내내 N 이 죽는다.
+                            _watching = false;
+                            throw;
+                        }
+
                         return false;
                 }
 
@@ -133,7 +152,14 @@ namespace GogglesWheel
             {
                 try
                 {
-                    LookBlocker.Block();
+                    // 시점을 못 막으면 휠의 방향 입력이 들어오지 않는다 — 떠 있어도 아무것도 고를 수 없다.
+                    // 그런 허수아비를 띄우느니 기본 대상을 여닫고 끝낸다(설계 §6-6).
+                    if (!LookBlocker.Block())
+                    {
+                        ToggleDefault(player, targets);
+                        yield break;
+                    }
+
                     WheelView.Open(targets);
                     opened = true;
                 }
@@ -144,10 +170,23 @@ namespace GogglesWheel
                     yield break;
                 }
 
-                while (PressWatcher.IsHeldNow() && IsStillInRaid(player))
+                // 안전장치: 키 상태가 어떤 이유로든 "눌림" 에 얼어붙어도 휠이 영원히 떠 있지 않게 한다.
+                // 그대로 두면 시점이 잠긴 채 레이드가 끝날 때까지 간다 — 설계가 최악으로 꼽은 사고다.
+                var open = 0f;
+
+                while (PressWatcher.IsHeldNow() && IsStillInRaid(player) && open < MaxWheelSeconds)
                 {
+                    open += Time.unscaledDeltaTime;
                     WheelView.UpdateSelection(LookBlocker.Accumulated);
                     yield return null;
+                }
+
+                if (open >= MaxWheelSeconds)
+                {
+                    Plugin.Log.LogWarning($"휠이 {MaxWheelSeconds:0}초를 넘겨 떠 있어 접는다. 키 상태가 얼어붙었을 수 있다.");
+
+                    // 키를 바꿨다면 들고 있던 것이 더는 갱신되지 않는다. 다음 번에 다시 찾게 한다.
+                    PressWatcher.Forget();
                 }
 
                 var alive = IsStillInRaid(player);
