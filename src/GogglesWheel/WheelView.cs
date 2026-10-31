@@ -216,9 +216,17 @@ namespace GogglesWheel
 
             try
             {
-                // 이미 화면에 떠 있는 글자가 쓰는 폰트를 먼저 본다 — 게임이 고른 것이니 생김새가 맞다.
-                // 그 다음 불려 와 있는 폰트 전부를 본다. 한글은 폴백 폰트에만 있을 수 있어서,
-                // 아무 글자에도 붙어 있지 않은 자산까지 뒤져야 걸린다.
+                // 기본 폰트가 한글을 그린다면 아무 것도 바꾸지 않는다 — 실측으로 그려지는 것을
+                // 확인했다. 잘 나오는 것을 다른 폰트로 갈아 끼울 이유가 없다.
+                if (HasHangul(TMP_Settings.defaultFontAsset))
+                {
+                    Plugin.Log.LogInfo("휠 글자는 TMP 기본 폰트를 그대로 쓴다(한글이 그려진다).");
+                    return null;
+                }
+
+                // 안 그려질 때만 빌려 온다. 이미 화면에 떠 있는 글자가 쓰는 폰트를 먼저 보고,
+                // 그 다음 불려 와 있는 폰트 전부를 본다 — 한글만 든 폴백 자산은
+                // 아무 글자에도 붙어 있지 않아 TMP_Text 쪽으로는 안 걸린다.
                 var inUse = Resources.FindObjectsOfTypeAll<TMP_Text>()
                     .Where(text => text != null && text.font != null)
                     .Select(text => text.font);
@@ -231,11 +239,11 @@ namespace GogglesWheel
 
                 if (_font == null)
                 {
-                    Plugin.Log.LogWarning($"한글이 있는 게임 폰트를 찾지 못했다(후보 {candidates.Count}개). 기본 폰트로 그린다 — 항목 이름이 빈칸으로 보이면 이것이 까닭이다.");
+                    Plugin.Log.LogWarning($"한글을 그리는 폰트를 찾지 못했다(후보 {candidates.Count}개). 항목 이름이 빈칸으로 보이면 이것이 까닭이다.");
                 }
                 else
                 {
-                    Plugin.Log.LogInfo($"휠 글자는 게임 폰트 {_font.name} 를 쓴다(후보 {candidates.Count}개 중).");
+                    Plugin.Log.LogInfo($"휠 글자는 게임 폰트 {_font.name} 를 빌려 쓴다(후보 {candidates.Count}개 중).");
                 }
             }
             catch (Exception e)
@@ -259,7 +267,7 @@ namespace GogglesWheel
         {
             try
             {
-                return font.HasCharacter('야', searchFallbacks: true);
+                return font != null && font.HasCharacter('야', searchFallbacks: true);
             }
             catch (Exception)
             {
