@@ -35,6 +35,26 @@ public class FriendListMergePolicyTests
     }
 
     [Fact]
+    public void Id_가_같으면_용병이_먼저_와도_프로필_팀원이_남고_용병이_밀린다()
+    {
+        var outcome = FriendListMergePolicy.Plan(
+            Array.Empty<FriendEntry>(),
+            new[] { Merc("same", 1), Member("same", 2) });
+
+        var kept = Assert.Single(outcome.Final);
+        Assert.Equal(FriendKind.ProfileMember, kept.Kind);
+        var skipped = Assert.Single(outcome.Skipped);
+        Assert.Equal(FriendKind.Mercenary, skipped.Dropped.Kind);
+    }
+
+    [Fact]
+    public void 후보_ProfileId_의_공백도_등록_id_와_같게_본다()
+    {
+        var c = new ProfileCandidate(" bbbbbbbbbbbbbbbbbbbbbbbb ", 1, "R", 5, "Usec", ProfileAvailability.Ready);
+        Assert.Single(ProfileRosterPolicy.SelectRegisteredReady(new[] { c }, new[] { "bbbbbbbbbbbbbbbbbbbbbbbb" }));
+    }
+
+    [Fact]
     public void Aid_가_0_이면_중복_판정에_쓰지_않는다()
     {
         var outcome = FriendListMergePolicy.Plan(

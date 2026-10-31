@@ -48,7 +48,7 @@ namespace pitTeam.Shared
             foreach (var c in candidates)
             {
                 if (c == null || c.Availability != ProfileAvailability.Ready) continue;
-                if (registered.Contains(c.ProfileId)) result.Add(c);
+                if (registered.Contains((c.ProfileId ?? string.Empty).Trim())) result.Add(c);
             }
             return result;
         }

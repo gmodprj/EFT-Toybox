@@ -59,22 +59,51 @@ public class FriendlyTeammateSocialCallbacks(
         // Registered launcher profiles, joined against a fresh catalog read: only Ready candidates
         // become entries. The logged-in profile, empty/unreadable ones and ones deleted since
         // registration (absent from the catalog) never reach the list.
-        var registeredIds = profileMemberStore.List(sessionId).Select(m => m.ProfileId).ToList();
-        if (registeredIds.Count > 0)
+        // Contained so that a failure here costs only the profile members: the native and mercenary
+        // lists above are already complete and are returned exactly as before this feature.
+        IReadOnlyList<ProfileCandidate> readyMembers = Array.Empty<ProfileCandidate>();
+        try
         {
-            var candidates = profileCatalog.GetCandidates(sessionId.ToString());
-            foreach (var candidate in ProfileRosterPolicy.SelectRegisteredReady(candidates, registeredIds))
+            var registeredIds = profileMemberStore.List(sessionId).Select(m => m.ProfileId).ToList();
+            if (registeredIds.Count > 0)
+            {
+                var candidates = profileCatalog.GetCandidates(sessionId.ToString());
+                readyMembers = ProfileRosterPolicy.SelectRegisteredReady(candidates, registeredIds);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] Friend list: profile members could not be read for session '{sessionId}'; none are offered. {ex}");
+            readyMembers = Array.Empty<ProfileCandidate>();
+        }
+
+        foreach (var candidate in readyMembers)
+        {
+            // Per entry: one malformed ProfileId (e.g. not a valid MongoId) only drops that member.
+            try
             {
                 var entry = new FriendEntry(candidate.ProfileId, candidate.Aid, FriendKind.ProfileMember);
+                var dialog = ToProfileMemberDialog(candidate);
                 incomingEntries.Add(entry);
-                Remember(originals, entry, ToProfileMemberDialog(candidate));
+                Remember(originals, entry, dialog);
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"[STM] Friend list: profile member '{candidate.ProfileId}' could not be converted and is left out (session '{sessionId}'). {ex}");
             }
         }
 
         var outcome = FriendListMergePolicy.Plan(existingEntries, incomingEntries);
         foreach (var (dropped, reason) in outcome.Skipped)
         {
-            logger.Warning($"[STM] Friend list: {dropped.Kind} '{dropped.Id}' (Aid {dropped.Aid}) was left out - {reason}");
+            // The game polls this route, so each distinct (kind, Id, reason) is warned once per server run.
+            var key = $"{dropped.Kind}|{dropped.Id}|{reason}";
+            bool first;
+            lock (LoggedSkips) first = LoggedSkips.Add(key);
+            if (first)
+            {
+                logger.Warning($"[STM] Friend list: {dropped.Kind} '{dropped.Id}' (Aid {dropped.Aid}) was left out - {reason}");
+            }
         }
 
         var merged = new List<UserDialogInfo>(outcome.Final.Count);
@@ -94,6 +123,8 @@ public class FriendlyTeammateSocialCallbacks(
         response.Friends = merged;
         return new ValueTask<string>(httpResponseUtil.GetBody(response, body?.Err ?? 0, body?.ErrMsg));
     }
+
+    private static readonly HashSet<string> LoggedSkips = new(StringComparer.Ordinal);
 
     private static string OriginalKey(FriendEntry entry) => $"{(int)entry.Kind}|{entry.Id}";
 
