@@ -122,20 +122,63 @@ namespace GogglesWheel
         }
 
         /// <summary>
-        /// 길게 눌렀을 때. Task 3 에서 휠로 바뀐다 — 지금은 목록의 두 번째를 여닫아
-        /// 입력이 갈리는 것만 먼저 확인한다.
+        /// 길게 눌렀을 때 — 휠을 띄우고, 떼는 순간 가리키던 항목을 여닫는다.
+        /// 어떤 경로로 끝나든 시점 차단은 반드시 되돌린다.
         /// </summary>
         private static IEnumerable OnLongPress(Player player, IReadOnlyList<ToggleTarget> targets)
         {
-            // 떼기를 기다린다. 떼지 않고 레이드가 끝나도 이 코루틴은 그대로 죽는다.
-            while (PressWatcher.IsHeldNow())
-            {
-                yield return null;
-            }
+            var opened = false;
 
-            if (targets.Count > 1)
+            try
             {
-                HeadwearScanner.Toggle(player, targets[1].Id);
+                try
+                {
+                    LookBlocker.Block();
+                    WheelView.Open(targets);
+                    opened = true;
+                }
+                catch (Exception)
+                {
+                    // 휠을 못 띄우면 손을 묶어 두지 않는다 — 기본 대상을 여닫고 끝낸다.
+                    ToggleDefault(player, targets);
+                    yield break;
+                }
+
+                while (PressWatcher.IsHeldNow() && IsStillInRaid(player))
+                {
+                    WheelView.UpdateSelection(LookBlocker.Accumulated);
+                    yield return null;
+                }
+
+                var alive = IsStillInRaid(player);
+                var index = alive ? WheelView.SelectedIndex : -1;
+                WheelView.Close(alive);
+
+                if (index >= 0 && index < targets.Count)
+                {
+                    HeadwearScanner.Toggle(player, targets[index].Id);
+                }
+            }
+            finally
+            {
+                LookBlocker.Release();
+                if (opened && WheelView.IsOpen)
+                {
+                    WheelView.Close(false);
+                }
+            }
+        }
+
+        /// <summary>죽거나 레이드가 끝나면 휠을 접는다.</summary>
+        private static bool IsStillInRaid(Player player)
+        {
+            try
+            {
+                return player != null && player.HealthController != null && player.HealthController.IsAlive;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 

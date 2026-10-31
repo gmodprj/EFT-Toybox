@@ -43,6 +43,15 @@
       <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- 제스처 휠(GesturesMenu)의 조상이 Odin 의 SerializedMonoBehaviour 라 타입 해석에 필요하다 -->
+    <Reference Include="Sirenix.Serialization">
+      <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\Sirenix.Serialization.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Sirenix.OdinInspector.Attributes">
+      <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\Sirenix.OdinInspector.Attributes.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
       <Private>false</Private>

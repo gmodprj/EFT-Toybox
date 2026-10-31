@@ -45,10 +45,14 @@ namespace GogglesWheel
                 return;
             }
 
-            if (!GogglesPatch.TryApply(new Harmony(PluginGuid)))
+            var harmony = new Harmony(PluginGuid);
+            if (!GogglesPatch.TryApply(harmony))
             {
                 return;
             }
+
+            // 곁가지 — 못 걸어도 전체를 끄지 않는다. 휠이 떠 있는 동안 시점이 도는 것으로 끝난다.
+            LookBlocker.TryPatch(harmony);
 
             Active = true;
             Log.LogInfo($"준비됐다. 길게 누름 기준 {Settings.LongPressSeconds:0.00}초, 기본 대상 {Settings.DefaultTarget}.");
