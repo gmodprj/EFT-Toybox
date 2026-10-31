@@ -52,6 +52,15 @@
 3. 결속 모드는 하나씩 설치·테스트.
 4. 목록 갱신: `node tools/gen-installed-mods.mjs` → `doc/INSTALLED-MODS.md`
 
+
+### STM(SPT Team Manager)과 PIT Fireteam은 함께 설치하지 않는다
+
+- STM 은 PIT Fireteam 의 포크다. 설계 §6-1 도 "설치하면 PIT는 뺀다"로 못박았다.
+- 이유: 둘이 같은 서버 라우트 `/singleplayer/pitfireteam/*` 를 쓴다. 업스트림 머지를 살리려고 라우트 문자열을 바꾸지 않았으므로, 같이 두면 한쪽 요청을 다른 쪽이 받는다.
+- GUID·어셈블리·서버 모드 폴더(`SptTeamManager-ServerMod`)·팀원 DB 폴더(`stm-teammates*`)는 이미 갈라 놓았으므로 파일은 섞이지 않는다. 문제는 라우트뿐이다.
+- `tools/install-sptteammanager.ps1` 이 이를 강제한다. `BepInEx\plugins\pitFireTeam` 또는 `SPT_Runtime\user\mods\pitFireTeam-ServerMod` 가 있으면 아무것도 복사하지 않고 중단하며, 지울 폴더를 알려 준다. PIT 는 사람이 직접 뺀다.
+- `-Remove` 는 설치한 파일만 지우고 `Resources\settings.json` 과 `Resources\stm-teammates*` 는 남긴다.
+
 ## 4. 검증
 
 | 항목 | 위치 | 볼 것 |

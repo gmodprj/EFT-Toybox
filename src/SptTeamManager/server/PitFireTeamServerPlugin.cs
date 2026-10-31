@@ -16,7 +16,7 @@ namespace pitTeam.Server;
 public record PitFireTeamServerMetadata : IModMetadata
 {
     public string ModGuid { get; init; } = "xyz.stm.teammanager";
-    public string Name { get; init; } = "PitFireTeam";
+    public string Name { get; init; } = "SPT Team Manager";
     public string Author { get; init; } = "PitAlex";
     public List<string>? Contributors { get; init; }
     public Version Version { get; init; } = new("1.0.0");
