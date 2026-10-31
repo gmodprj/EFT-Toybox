@@ -15,6 +15,12 @@ public class StmProfileCatalog(SaveServer saveServer, ISptLogger<StmProfileCatal
 {
     public IReadOnlyList<ProfileCandidate> GetCandidates(string currentSessionId)
     {
+        // Fail closed independently of the policy: without a session id nothing may be offered.
+        if (string.IsNullOrWhiteSpace(currentSessionId))
+        {
+            logger.Error("[STM] GetCandidates called with a blank session id; the logged-in profile is unknown, so no candidates are offered.");
+            return Array.Empty<ProfileCandidate>();
+        }
         var snapshots = new List<ProfileSnapshot>();
         // Fresh read on every call. Never store this dictionary or the snapshots in a field.
         foreach (var (id, profile) in saveServer.GetProfiles())
@@ -27,10 +33,14 @@ public class StmProfileCatalog(SaveServer saveServer, ISptLogger<StmProfileCatal
         string profileId = id.ToString();
         try
         {
-            var pmc = profile?.CharacterData?.PmcData;
+            // A null profile is not "empty": we could not read it, so it fails closed as unreadable.
+            if (profile == null) return new ProfileSnapshot(profileId, 0, null, null, null, true);
+            var pmc = profile.CharacterData?.PmcData;
             var info = pmc?.Info;
-            if (info == null) return new ProfileSnapshot(profileId, 0, null, null, null, false);
-            return new ProfileSnapshot(profileId, pmc!.Aid ?? 0, info.Nickname, info.Level, info.Side, false);
+            if (pmc == null || info == null) return new ProfileSnapshot(profileId, 0, null, null, null, false);
+            // A played profile always has an Aid; its absence means it did not read cleanly. No substitute value.
+            if (pmc.Aid == null) return new ProfileSnapshot(profileId, 0, info.Nickname, info.Level, info.Side, true);
+            return new ProfileSnapshot(profileId, pmc.Aid.Value, info.Nickname, info.Level, info.Side, false);
         }
         catch (Exception ex)
         {

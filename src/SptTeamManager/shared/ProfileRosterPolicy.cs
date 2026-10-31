@@ -19,10 +19,14 @@ namespace pitTeam.Shared
         {
             var result = new List<ProfileCandidate>();
             if (all == null) return result;
+            // A blank session id means we cannot tell who is logged in, so availability cannot be
+            // determined and nothing may be selectable: every candidate is blocked as Unreadable.
+            bool sessionKnown = !string.IsNullOrWhiteSpace(currentSessionId);
+            string session = sessionKnown ? currentSessionId.Trim() : string.Empty;
             foreach (var snapshot in all)
             {
                 if (snapshot == null) continue;
-                result.Add(Classify(snapshot, currentSessionId));
+                result.Add(Classify(snapshot, session, sessionKnown));
             }
             return result
                 .OrderBy(c => c.Nickname, StringComparer.OrdinalIgnoreCase)
@@ -31,13 +35,15 @@ namespace pitTeam.Shared
                 .ToList();
         }
 
-        private static ProfileCandidate Classify(ProfileSnapshot s, string currentSessionId)
+        private static ProfileCandidate Classify(ProfileSnapshot s, string session, bool sessionKnown)
         {
             string id = s.ProfileId ?? string.Empty;
             string display = DisplayName(s.Nickname, id);
 
             // Order: current session -> read failure -> no Info -> Ready. Anything unclear fails closed.
-            if (!string.IsNullOrEmpty(currentSessionId) && string.Equals(id, currentSessionId, StringComparison.Ordinal))
+            if (!sessionKnown)
+                return Blocked(s, id, display, ProfileAvailability.Unreadable);
+            if (string.Equals(id.Trim(), session, StringComparison.OrdinalIgnoreCase))
                 return Blocked(s, id, display, ProfileAvailability.CurrentSession);
             if (s.ReadFailed)
                 return Blocked(s, id, display, ProfileAvailability.Unreadable);

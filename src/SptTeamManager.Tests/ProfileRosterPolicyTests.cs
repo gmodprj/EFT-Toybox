@@ -50,7 +50,9 @@ public class ProfileRosterPolicyTests
     {
         var result = ProfileRosterPolicy.Select(new[] { Ready("0123456789abcdef01234567", "  ") }, Me);
 
-        Assert.Equal("01234567", Assert.Single(result).Nickname);
+        var c = Assert.Single(result);
+        Assert.Equal("01234567", c.Nickname);
+        Assert.Equal(ProfileAvailability.Ready, c.Availability);
     }
 
     [Fact]
@@ -99,11 +101,33 @@ public class ProfileRosterPolicyTests
         Assert.Equal(9, c.Aid);
     }
 
-    [Fact]
-    public void 현재_세션_id_가_비어도_아무_프로필도_CurrentSession_이_되지_않는다_그리고_던지지_않는다()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void 현재_세션_id_가_비면_누가_로그인했는지_모르므로_전부_Unreadable_이고_던지지_않는다(string? blank)
     {
-        var result = ProfileRosterPolicy.Select(new[] { Ready("bbbbbbbbbbbbbbbbbbbbbbbb", "Good") }, "");
+        var snapshots = new[] { Ready("bbbbbbbbbbbbbbbbbbbbbbbb", "Zed", level: 20, side: "Bear"), Ready(Me, "Amy") };
 
-        Assert.Equal(ProfileAvailability.Ready, Assert.Single(result).Availability);
+        var result = ProfileRosterPolicy.Select(snapshots, blank!);
+
+        Assert.Equal(2, result.Count);
+        Assert.Equal(new[] { "Amy", "Zed" }, result.Select(c => c.Nickname).ToArray());
+        Assert.All(result, c =>
+        {
+            Assert.Equal(ProfileAvailability.Unreadable, c.Availability);
+            Assert.Equal(0, c.Level);
+            Assert.Equal(string.Empty, c.Side);
+        });
+    }
+
+    [Theory]
+    [InlineData("AAAAAAAAAAAAAAAAAAAAAAAA")]
+    [InlineData("  aaaaaaaaaaaaaaaaaaaaaaaa  ")]
+    public void 대소문자나_공백이_달라도_현재_세션_프로필은_Ready_가_되지_않는다(string session)
+    {
+        var result = ProfileRosterPolicy.Select(new[] { Ready(Me, "Me") }, session);
+
+        Assert.Equal(ProfileAvailability.CurrentSession, Assert.Single(result).Availability);
     }
 }
