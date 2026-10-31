@@ -1,0 +1,187 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+using EFT;
+using HarmonyLib;
+using UnityEngine;
+
+namespace GogglesWheel
+{
+    /// <summary>
+    /// `Player.ToggleGoggles` 를 대신한다. 바닐라는 헬멧의 여닫이 중 첫 번째 하나만 건드린다.
+    ///
+    /// 먼저 **물러나는 조건**을 본다(설계 §6-2) — 같은 메서드를 이미 가로채는 모드가 둘 있다.
+    /// UI Fixes 는 나침반을 치운 뒤 되부르고, COTI 는 자기 수정키로 억제한다.
+    /// </summary>
+    public static class GogglesPatch
+    {
+        private static MethodInfo _cotiModifierGetter;
+        private static bool _cotiChecked;
+        private static bool _watching;
+
+        public static bool TryApply(Harmony harmony)
+        {
+            var target = AccessTools.Method(typeof(Player), "ToggleGoggles");
+            if (target == null)
+            {
+                Plugin.Log.LogWarning("Player.ToggleGoggles 를 찾지 못했다. 아무 것도 걸지 않는다 — N 은 게임이 하던 대로 돈다.");
+                return false;
+            }
+
+            // 우선순위를 낮게 둬서 남의 가드(UI Fixes·COTI)가 먼저 돌게 한다.
+            var prefix = new HarmonyMethod(AccessTools.Method(typeof(GogglesPatch), nameof(ToggleGogglesPrefix)))
+            {
+                priority = Priority.Low,
+            };
+
+            harmony.Patch(target, prefix: prefix);
+            return true;
+        }
+
+        /// <summary>false 를 돌려주면 바닐라를 건너뛴다.</summary>
+        private static bool ToggleGogglesPrefix(Player __instance)
+        {
+            try
+            {
+                if (!Plugin.Active || !Plugin.EnableWheel.Value || __instance == null || !__instance.IsYourPlayer)
+                {
+                    return true;
+                }
+
+                var targets = HeadwearScanner.Scan(__instance);
+                var decision = GogglesDecisionMaker.Decide(targets, PressWatcher.IsHeldNow(), IsCotiModifierHeld());
+
+                switch (decision)
+                {
+                    case GogglesDecision.StandDown:
+                        return true;
+
+                    case GogglesDecision.DoNothing:
+                        return false;
+
+                    case GogglesDecision.ToggleDefaultNow:
+                        ToggleDefault(__instance, targets);
+                        return false;
+
+                    case GogglesDecision.WatchForLongPress:
+                        if (_watching)
+                        {
+                            return false;
+                        }
+
+                        _watching = true;
+                        Plugin.Instance.StartCoroutine(WatchPress(__instance, targets));
+                        return false;
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("N 을 가르다 멈췄다. 이번 입력은 게임에 넘긴다: " + e.Message);
+                return true;
+            }
+        }
+
+        /// <summary>기준 시간 전에 떼면 짧게, 넘기면 길게.</summary>
+        private static IEnumerator WatchPress(Player player, IReadOnlyList<ToggleTarget> targets)
+        {
+            var held = 0f;
+            var longPress = false;
+
+            try
+            {
+                while (PressWatcher.IsHeldNow())
+                {
+                    held += Time.unscaledDeltaTime;
+                    if (held >= Plugin.Settings.LongPressSeconds)
+                    {
+                        longPress = true;
+                        break;
+                    }
+
+                    yield return null;
+                }
+
+                if (!longPress)
+                {
+                    ToggleDefault(player, targets);
+                    yield break;
+                }
+
+                foreach (var step in OnLongPress(player, targets))
+                {
+                    yield return step;
+                }
+            }
+            finally
+            {
+                _watching = false;
+            }
+        }
+
+        /// <summary>
+        /// 길게 눌렀을 때. Task 3 에서 휠로 바뀐다 — 지금은 목록의 두 번째를 여닫아
+        /// 입력이 갈리는 것만 먼저 확인한다.
+        /// </summary>
+        private static IEnumerable OnLongPress(Player player, IReadOnlyList<ToggleTarget> targets)
+        {
+            // 떼기를 기다린다. 떼지 않고 레이드가 끝나도 이 코루틴은 그대로 죽는다.
+            while (PressWatcher.IsHeldNow())
+            {
+                yield return null;
+            }
+
+            if (targets.Count > 1)
+            {
+                HeadwearScanner.Toggle(player, targets[1].Id);
+            }
+        }
+
+        private static void ToggleDefault(Player player, IReadOnlyList<ToggleTarget> targets)
+        {
+            var index = TargetPicker.DefaultTargetIndex(targets, Plugin.Settings.DefaultTarget);
+            if (index >= 0)
+            {
+                HeadwearScanner.Toggle(player, targets[index].Id);
+            }
+        }
+
+        /// <summary>COTI 가 깔려 있고 그 수정키가 눌려 있는가. COTI 가 없으면 늘 false.</summary>
+        private static bool IsCotiModifierHeld()
+        {
+            if (!Plugin.Settings.StandDownForCoti)
+            {
+                return false;
+            }
+
+            if (!_cotiChecked)
+            {
+                _cotiChecked = true;
+
+                var type = AccessTools.TypeByName("Coti.Client.CotiPowerToggle");
+                _cotiModifierGetter = type == null ? null : AccessTools.PropertyGetter(type, "ModifierHeld");
+
+                if (_cotiModifierGetter == null && type != null)
+                {
+                    Plugin.Log.LogInfo("COTI 는 있는데 ModifierHeld 를 찾지 못했다. 수정키 검사는 건너뛴다.");
+                }
+            }
+
+            if (_cotiModifierGetter == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                return _cotiModifierGetter.Invoke(null, null) is bool held && held;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
+}
