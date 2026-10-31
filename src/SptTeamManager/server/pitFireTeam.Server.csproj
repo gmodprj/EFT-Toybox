@@ -4,7 +4,7 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>pitFireTeam.Server</AssemblyName>
+    <AssemblyName>SptTeamManager.Server</AssemblyName>
     <RootNamespace>pitTeam.Server</RootNamespace>
     <Version>1.0.0</Version>
     <OutputType>Library</OutputType>

@@ -17,7 +17,7 @@ public class FriendlyTeammateStorage(FileUtil fileUtil, JsonUtil jsonUtil, ISptL
 {
     private readonly object sync = new();
     private readonly Dictionary<string, TeammateDatabase> databases = new(StringComparer.Ordinal);
-    private string GetRoot(bool allegiance) => Path.Combine(fileUtil.GetModPath("pitFireTeam-ServerMod"), "Resources", allegiance ? "teammates-allegiance" : "teammates");
+    private string GetRoot(bool allegiance) => Path.Combine(fileUtil.GetModPath("pitFireTeam-ServerMod"), "Resources", allegiance ? "stm-teammates-allegiance" : "stm-teammates");
     private string RootDirectory => GetRoot(settingsService.LoadSettings().IsAllegiance);
 
     public void PrepareMode(MongoId sessionId, bool allegiance) => GetDatabase(sessionId, allegiance);

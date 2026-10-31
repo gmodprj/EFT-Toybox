@@ -205,7 +205,7 @@ namespace pitTeam
         public string Message { get; set; }
     }
 
-    [BepInPlugin("xyz.pit.fireteam", "PitAlex-PitFireTeam", "1.0.0")]
+    [BepInPlugin("xyz.stm.teammanager", "SPT Team Manager", "1.0.0")]
     [BepInDependency("xyz.drakia.bigbrain")]
     [BepInDependency(pitFireTeam.SainPluginId, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(pitFireTeam.MenuOverhaulPluginId, BepInDependency.DependencyFlags.SoftDependency)]

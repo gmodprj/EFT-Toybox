@@ -3,7 +3,7 @@
         <TargetFramework>net472</TargetFramework>
         <OutputType>Library</OutputType>
         <RootNamespace>pitTeam</RootNamespace>
-        <AssemblyName>pitFireTeam</AssemblyName>
+        <AssemblyName>SptTeamManager</AssemblyName>
         <Version>1.0.0</Version>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
