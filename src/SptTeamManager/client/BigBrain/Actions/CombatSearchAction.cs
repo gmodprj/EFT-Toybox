@@ -1,0 +1,373 @@
+using DrakiaXYZ.BigBrain.Brains;
+using EFT;
+using pitTeam.Modules;
+using pitTeam.BigBrain;
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace pitTeam.BigBrain.Actions
+{
+    /// <summary>
+    /// Search action for enemy-last-known areas. It wraps EFT search behavior but keeps follower
+    /// movement/look state stable so a search does not immediately collapse back into passive hold.
+    /// </summary>
+    internal sealed class CombatSearchAction : FollowerCombatActionBase
+    {
+        private readonly SearchInvisibleEnemy baseLogic;
+
+        private const float MaxCornerThreatAngleDegrees = 35f;
+        private const float MemorySearchArrivalDistanceSqr = 4f;
+        private const float MemorySearchRefreshDistanceSqr = 4f;
+
+        private bool memorySearchInitialized;
+        private string memorySearchEnemyProfileId = string.Empty;
+        private Vector3 memorySearchPoint;
+        private float memorySearchRealReportTime;
+        private float inspectUntil;
+        private Vector3 inspectForward;
+
+        public CombatSearchAction(BotOwner botOwner) : base(botOwner)
+        {
+            baseLogic = new SearchInvisibleEnemy(botOwner);
+        }
+
+        public override void Start()
+        {
+            base.Start();
+            memorySearchInitialized = false;
+            memorySearchEnemyProfileId = string.Empty;
+            memorySearchPoint = Vector3.zero;
+            memorySearchRealReportTime = 0f;
+            inspectUntil = 0f;
+        }
+
+        public override void Update(CustomLayer.ActionData data)
+        {
+            string? reason = GetReason(data);
+            if (TryStopForPointBlankContact(reason))
+            {
+                FollowerEnemyTracking.EndSearch(BotOwner, memorySearchEnemyProfileId);
+                return;
+            }
+
+            if (FollowerCombatPush.IsMemoryOnlySearchReason(reason) ||
+                (FollowerEnemyTracking.IsRealistic(BotOwner.Memory?.GoalEnemy) && !BotOwner.Memory.GoalEnemy.IsVisible))
+            {
+                UpdateMemoryOnlySearch(reason ?? "memoryOnlyAutoSearch.tracking");
+                return;
+            }
+
+            FollowerEnemyTracking.EndSearch(BotOwner, memorySearchEnemyProfileId);
+            baseLogic.UpdateNodeByBrain(GetRawData(data));
+            EnforceCloseThreatStandingPose("search", reason);
+            EnsureSearchMove();
+            EnforceDistantCombatMovementStandingPose(
+                "search",
+                reason,
+                HasPendingSearchMovement());
+            LookSimple();
+        }
+
+        public override void Stop()
+        {
+            FollowerEnemyTracking.EndSearch(BotOwner, memorySearchEnemyProfileId);
+            base.Stop();
+        }
+
+        private void UpdateMemoryOnlySearch(string reason)
+        {
+            EnemyInfo? goalEnemy = BotOwner.Memory?.GoalEnemy;
+            if (goalEnemy == null)
+            {
+                FollowerEnemyTracking.EndSearch(BotOwner, memorySearchEnemyProfileId);
+                ClearSearchPointAndStop();
+                return;
+            }
+
+            bool enemyChanged = memorySearchInitialized &&
+                                !string.Equals(
+                                    goalEnemy.ProfileId,
+                                    memorySearchEnemyProfileId,
+                                    System.StringComparison.Ordinal);
+            if (!memorySearchInitialized || enemyChanged)
+            {
+                if (enemyChanged) FollowerEnemyTracking.EndSearch(BotOwner, memorySearchEnemyProfileId);
+                BotSearchPoint? selectedPoint = BotOwner.SearchData?.SearchPoint;
+                if (selectedPoint == null || !IsFinite(selectedPoint.Position))
+                {
+                    ClearSearchPointAndStop();
+                    return;
+                }
+
+                memorySearchInitialized = true;
+                inspectUntil = 0f;
+                memorySearchEnemyProfileId = goalEnemy.ProfileId;
+                memorySearchPoint = selectedPoint.Position;
+                memorySearchRealReportTime = goalEnemy.GroupInfo?.EnemyLastSeenTimeReal ?? 0f;
+                if (FollowerEnemyTracking.IsRealistic(goalEnemy) &&
+                    FollowerEnemyTracking.TryGetKnownPosition(goalEnemy, out _, out float observedAt))
+                    memorySearchRealReportTime = observedAt;
+                BattleRecorder.RecordCommitmentEvent(
+                    BotOwner,
+                    "memorySearch",
+                    enemyChanged ? "retarget" : "commit",
+                    reason,
+                    target: memorySearchPoint);
+            }
+
+            TryRefreshMemorySearchPoint(goalEnemy, reason);
+
+            Vector3 toSearchPoint = memorySearchPoint - BotOwner.Position;
+            if (Mathf.Abs(toSearchPoint.y) < BotOwner.Settings.FileSettings.Move.Y_APPROXIMATION)
+            {
+                toSearchPoint.y = 0f;
+            }
+
+            if (toSearchPoint.sqrMagnitude < MemorySearchArrivalDistanceSqr &&
+                (!FollowerEnemyTracking.IsRealistic(goalEnemy) ||
+                 (Mathf.Abs(BotOwner.Position.y - memorySearchPoint.y) <= 1.75f &&
+                  (inspectUntil > 0f || FollowerEnemyTracking.HasArrived(BotOwner, memorySearchPoint)))))
+            {
+                if (FollowerEnemyTracking.IsRealistic(goalEnemy))
+                {
+                    if (inspectUntil <= 0f)
+                    {
+                        inspectUntil = Time.time + 3f;
+                        inspectForward = BotOwner.LookDirection;
+                        inspectForward.y = 0f;
+                        if (inspectForward.sqrMagnitude < 0.01f) inspectForward = Vector3.forward;
+                        BattleRecorder.RecordCommitmentEvent(BotOwner, "memorySearch", "inspect", reason, target: memorySearchPoint);
+                    }
+                    FollowerEnemyTracking.SearchTick(goalEnemy);
+                    BotOwner.Mover.Stop();
+                    SetCombatSprint(false);
+                    StopCombatShooting();
+                    if (Time.time < inspectUntil)
+                    {
+                        float elapsed = 3f - (inspectUntil - Time.time);
+                        float angle = elapsed < 1f ? -65f : elapsed < 2f ? 65f : 160f;
+                        BotOwner.Steering.LookToPoint(BotOwner.Position + Vector3.up +
+                            Quaternion.Euler(0f, angle, 0f) * inspectForward.normalized * 8f);
+                        return;
+                    }
+                }
+                FollowerEnemyTracking.CompleteSearch(goalEnemy, memorySearchRealReportTime);
+                FollowerEnemyTracking.EndSearch(BotOwner, memorySearchEnemyProfileId);
+                ClearSearchPointAndStop();
+                BattleRecorder.RecordCommitmentEvent(
+                    BotOwner,
+                    "memorySearch",
+                    "arrive",
+                    reason,
+                    target: memorySearchPoint);
+                return;
+            }
+
+            inspectUntil = 0f;
+            StopCombatShooting();
+            EnforceCloseThreatStandingPose("memorySearch", reason);
+            EnsureSearchMove();
+            if (BotOwner.SearchData?.isReachableLast == true) FollowerEnemyTracking.SearchTick(goalEnemy);
+            else FollowerEnemyTracking.EndSearch(BotOwner, memorySearchEnemyProfileId);
+            EnforceDistantCombatMovementStandingPose(
+                "memorySearch",
+                reason,
+                movementExpected: true,
+                goalEnemy: goalEnemy);
+            LookSimple(memorySearchPoint);
+        }
+
+        private void TryRefreshMemorySearchPoint(EnemyInfo goalEnemy, string reason)
+        {
+            float reportTime = goalEnemy.GroupInfo?.EnemyLastSeenTimeReal ?? 0f;
+            Vector3 reportedPoint = goalEnemy.EnemyLastPositionReal;
+            bool realistic = FollowerEnemyTracking.IsRealistic(goalEnemy);
+            if (realistic && !FollowerEnemyTracking.TryGetKnownPosition(goalEnemy, out reportedPoint, out reportTime)) return;
+            if (reportTime <= memorySearchRealReportTime ||
+                !IsFinite(reportedPoint) ||
+                reportedPoint.sqrMagnitude <= 0.01f ||
+                (!realistic && (reportedPoint - memorySearchPoint).sqrMagnitude < MemorySearchRefreshDistanceSqr) ||
+                !NavMesh.SamplePosition(reportedPoint, out NavMeshHit hit, realistic ? 1.5f : 8f, NavMesh.AllAreas) ||
+                (realistic && Mathf.Abs(hit.position.y - reportedPoint.y) > 1.75f))
+            {
+                return;
+            }
+
+            memorySearchRealReportTime = reportTime;
+            inspectUntil = 0f;
+            memorySearchPoint = hit.position;
+            BotOwner.SearchData.SearchPoint = new BotSearchPoint(memorySearchPoint, EBotSearchPoint.playerPosition);
+            BotOwner.SearchData._lastSearchPoint = null;
+            BotOwner.SearchData._nextPosibleCheckTime = Time.time + 10f;
+            BotOwner.SearchData._nextPosibleGoRefresh = 0f;
+            BotOwner.SearchData._going = false;
+            BotOwner.Mover.Stop();
+            BattleRecorder.RecordCommitmentEvent(
+                BotOwner,
+                "memorySearch",
+                "refresh",
+                reason,
+                target: memorySearchPoint);
+        }
+
+        private void ClearSearchPointAndStop()
+        {
+            if (BotOwner.SearchData != null)
+            {
+                BotOwner.SearchData.SearchPoint = null;
+                BotOwner.SearchData._going = false;
+            }
+
+            BotOwner.Mover.Stop();
+            SetCombatSprint(false);
+            BotOwner.SetTargetMoveSpeed(1f);
+            StopCombatShooting();
+        }
+
+        private bool TryStopForPointBlankContact(string? reason)
+        {
+            EnemyInfo? goalEnemy = BotOwner.Memory?.GoalEnemy;
+            if (!FollowerCombatCommon.IsPointBlankContactWithoutHardSeparation(BotOwner, goalEnemy))
+            {
+                return false;
+            }
+
+            BotOwner.Mover.Stop();
+            SetCombatSprint(false);
+            BotOwner.SetTargetMoveSpeed(1f);
+            EnforceCloseThreatStandingPose("search", reason, goalEnemy);
+            BotOwner.SetPose(1f);
+            if (!CombatAttackMoveLook.TryLookThreatFacing(BotOwner, goalEnemy, allowHardTurn: true))
+            {
+                CombatAttackMoveLook.LookAlongMovementOrLevel(BotOwner);
+            }
+            StopCombatShooting();
+            return true;
+        }
+
+        private void EnsureSearchMove()
+        {
+            BotSearchPoint? searchPoint = BotOwner.SearchData?.SearchPoint;
+            if (searchPoint == null)
+            {
+                return;
+            }
+
+            Vector3 toSearchPoint = searchPoint.Position - BotOwner.Position;
+            if (Mathf.Abs(toSearchPoint.y) < BotOwner.Settings.FileSettings.Move.Y_APPROXIMATION)
+            {
+                toSearchPoint.y = 0f;
+            }
+
+            if (toSearchPoint.sqrMagnitude < 4f &&
+                (!FollowerEnemyTracking.IsRealistic(BotOwner.Memory?.GoalEnemy) ||
+                 FollowerEnemyTracking.HasArrived(BotOwner, searchPoint.Position)))
+            {
+                return;
+            }
+
+            bool hasCorrectSearchRoute = BotOwner.HasPathAndNotComplete &&
+                                         BotOwner.Mover.TargetPoint.HasValue &&
+                                         (BotOwner.Mover.TargetPoint.Value - searchPoint.Position).sqrMagnitude <= 1f;
+            if (hasCorrectSearchRoute)
+            {
+                return;
+            }
+
+            if (BotOwner.HasPathAndNotComplete)
+            {
+                BotOwner.Mover.Stop();
+            }
+
+            BotOwner.Mover.Sprint(false, true);
+            BotOwner.SetTargetMoveSpeed(1f);
+            NavMeshPathStatus status = BotOwner.GoToPoint(searchPoint.Position, false, -1f, true, false, true, false, true);
+            BotOwner.SearchData.isReachableLast = status == NavMeshPathStatus.PathComplete;
+        }
+
+        private bool HasPendingSearchMovement()
+        {
+            BotSearchPoint? searchPoint = BotOwner.SearchData?.SearchPoint;
+            if (searchPoint == null)
+            {
+                return false;
+            }
+
+            Vector3 toSearchPoint = searchPoint.Position - BotOwner.Position;
+            if (Mathf.Abs(toSearchPoint.y) < BotOwner.Settings.FileSettings.Move.Y_APPROXIMATION)
+            {
+                toSearchPoint.y = 0f;
+            }
+
+            return toSearchPoint.sqrMagnitude >= 4f ||
+                (FollowerEnemyTracking.IsRealistic(BotOwner.Memory?.GoalEnemy) &&
+                 !FollowerEnemyTracking.HasArrived(BotOwner, searchPoint.Position));
+        }
+
+        public void LookSimple(Vector3? committedDestination = null)
+        {
+            if (TryLookTowardCloseUnseenThreat(CombatDistanceConfiguration.Instance.GetTooCloseDistance()))
+            {
+                return;
+            }
+
+            bool hasThreat = CombatAttackMoveLook.TryGetReliableThreatLookPoint(
+                BotOwner, BotOwner.Memory?.GoalEnemy, out Vector3 threatPoint);
+            Vector3 dest = hasThreat
+                ? threatPoint
+                : committedDestination ?? BotOwner.Mover.TargetPoint ?? BotOwner.Position;
+            Vector3 toDestination = dest - BotOwner.Position;
+            toDestination.y = 0f;
+            if (!hasThreat && toDestination.sqrMagnitude <= 4f)
+            {
+                CombatAttackMoveLook.LookAlongMovementOrLevel(BotOwner);
+                return;
+            }
+            Vector3 botPos = BotOwner.GetPlayer.Transform.position;
+            Vector3 corner = BotOwner.Mover.CurrentCornerPoint;
+
+            if (Utils.Covers.IsPointBetween(corner, botPos, dest))
+            {
+                Vector3 cornerDirection = corner - botPos;
+                cornerDirection.y = 0f;
+                if (IsCornerLookAlignedWithThreat(cornerDirection, dest - botPos))
+                {
+                    baseLogic._botObserveData.SetVectorToLook(cornerDirection);
+                }
+                else
+                {
+                    baseLogic._botObserveData.SetVectorToLook(new Vector3(dest.x - botPos.x, 0f, dest.z - botPos.z));
+                }
+            }
+            else
+            {
+                baseLogic._botObserveData.SetVectorToLook(new Vector3(dest.x - botPos.x, 0f, dest.z - botPos.z));
+            }
+            baseLogic._botObserveData.Update();
+        }
+
+        private static bool IsFinite(Vector3 value)
+        {
+            return !float.IsNaN(value.x) && !float.IsInfinity(value.x) &&
+                   !float.IsNaN(value.y) && !float.IsInfinity(value.y) &&
+                   !float.IsNaN(value.z) && !float.IsInfinity(value.z);
+        }
+
+        private static bool IsCornerLookAlignedWithThreat(Vector3 cornerDirection, Vector3 threatDirection)
+        {
+            Vector3 look = cornerDirection;
+            look.y = 0f;
+            Vector3 threat = threatDirection;
+            threat.y = 0f;
+
+            if (look.sqrMagnitude < 0.0001f || threat.sqrMagnitude < 0.0001f)
+            {
+                return true;
+            }
+
+            look.Normalize();
+            threat.Normalize();
+            return Vector3.Angle(look, threat) <= MaxCornerThreatAngleDegrees;
+        }
+    }
+}
