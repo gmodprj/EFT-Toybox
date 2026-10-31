@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <!--
+    SPT 서버 어셈블리(net10.0)를 참조하지 않는다. 순수 정책 소스만 파일마다 한 줄씩 링크한다.
+    와일드카드 금지 - 업스트림 머지 충돌 면적을 줄이려는 것이다.
+  -->
+  <ItemGroup>
+    <Compile Include="../SptTeamManager/shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
+    <Compile Include="ProfileRosterPolicyTests.cs" />
+  </ItemGroup>
+
+</Project>

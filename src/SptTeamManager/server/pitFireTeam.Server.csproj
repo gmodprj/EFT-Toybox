@@ -16,6 +16,7 @@
     <Compile Include="../shared/PmcKarmaPolicy.cs" Link="Shared/PmcKarmaPolicy.cs" />
     <Compile Include="../shared/SelfDeterminationPolicy.cs" Link="Shared/SelfDeterminationPolicy.cs" />
     <Compile Include="../shared/GiveGearInvitePolicy.cs" Link="Shared/GiveGearInvitePolicy.cs" />
+    <Compile Include="../shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="HarmonyX" Version="2.16.1" />
   </ItemGroup>
