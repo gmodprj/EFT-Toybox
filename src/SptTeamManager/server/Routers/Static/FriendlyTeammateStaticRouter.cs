@@ -11,7 +11,7 @@ using SPTarkov.Server.Core.Utils;
 namespace pitTeam.Server.Routers.Static;
 
 [Injectable(TypePriority = OnLoadOrder.Routers + 1)]
-public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCallbacks callbacks, FriendlyTeammateStorage storage)
+public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCallbacks callbacks, FriendlyTeammateStorage storage, StmProfileMemberCallbacks stmMembers)
     : StaticRouter(
         jsonUtil,
         [
@@ -124,6 +124,19 @@ public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCal
             new RouteAction<FriendlyTeammateDeleteRequest>(
                 "/singleplayer/pitfireteam/teammate/delete",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => callbacks.Delete(url, info, sessionId))
+            ),
+            // STM-only routes (own /stm/ prefix; no native EFT route is intercepted).
+            new RouteAction<EmptyRequestData>(
+                "/stm/members/list",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.List(url, info, sessionId))
+            ),
+            new RouteAction<StmProfileMemberRequest>(
+                "/stm/members/add",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.Add(url, info, sessionId))
+            ),
+            new RouteAction<StmProfileMemberRequest>(
+                "/stm/members/remove",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.Remove(url, info, sessionId))
             ),
         ]
     )
