@@ -48,4 +48,37 @@ public class PartySlotPolicyTests
         Assert.False(bad.Allowed);
         Assert.False(string.IsNullOrWhiteSpace(bad.RejectionReason));
     }
+
+    [Theory]
+    [InlineData(3, 0)]
+    [InlineData(0, 3)]
+    [InlineData(2, 1)]
+    public void 네이티브_합류는_팀원_자리를_쓰지_않아_가득_차도_허용되고_사유가_없다(int mercs, int profiles)
+    {
+        var d = PartySlotPolicy.Admit(mercs, profiles, FriendKind.Native);
+        Assert.True(d.Allowed);
+        Assert.Null(d.RejectionReason);
+    }
+
+    private const string UndeterminedMarker = "could not be determined";
+
+    [Theory]
+    [InlineData(-1, 0)]
+    [InlineData(0, -1)]
+    [InlineData(-1, 5)]
+    [InlineData(5, -1)]
+    public void 음수_수는_양쪽_어느_쪽이든_판단_불가_사유로_거부된다(int mercs, int profiles)
+    {
+        var d = PartySlotPolicy.Admit(mercs, profiles, FriendKind.Mercenary);
+        Assert.False(d.Allowed);
+        Assert.Contains(UndeterminedMarker, d.RejectionReason);
+    }
+
+    [Fact]
+    public void 아주_큰_수의_합이_넘쳐도_거부된다()
+    {
+        var d = PartySlotPolicy.Admit(int.MaxValue, int.MaxValue, FriendKind.ProfileMember);
+        Assert.False(d.Allowed);
+        Assert.False(string.IsNullOrWhiteSpace(d.RejectionReason));
+    }
 }
