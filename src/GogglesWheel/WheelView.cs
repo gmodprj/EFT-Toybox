@@ -216,19 +216,26 @@ namespace GogglesWheel
 
             try
             {
-                // 한글을 그리고 있는 글자를 고른다. 영문 전용 폰트를 집으면 뜻이 없다.
-                _font = Resources.FindObjectsOfTypeAll<TMP_Text>()
+                // 이미 화면에 떠 있는 글자가 쓰는 폰트를 먼저 본다 — 게임이 고른 것이니 생김새가 맞다.
+                // 그 다음 불려 와 있는 폰트 전부를 본다. 한글은 폴백 폰트에만 있을 수 있어서,
+                // 아무 글자에도 붙어 있지 않은 자산까지 뒤져야 걸린다.
+                var inUse = Resources.FindObjectsOfTypeAll<TMP_Text>()
                     .Where(text => text != null && text.font != null)
-                    .Select(text => text.font)
-                    .FirstOrDefault(HasHangul);
+                    .Select(text => text.font);
+
+                var loaded = Resources.FindObjectsOfTypeAll<TMP_FontAsset>()
+                    .Where(font => font != null);
+
+                var candidates = inUse.Concat(loaded).Distinct().ToList();
+                _font = candidates.FirstOrDefault(HasHangul);
 
                 if (_font == null)
                 {
-                    Plugin.Log.LogWarning("한글이 있는 게임 폰트를 찾지 못했다. 기본 폰트로 그린다 — 항목 이름이 빈칸으로 보이면 이것이 까닭이다.");
+                    Plugin.Log.LogWarning($"한글이 있는 게임 폰트를 찾지 못했다(후보 {candidates.Count}개). 기본 폰트로 그린다 — 항목 이름이 빈칸으로 보이면 이것이 까닭이다.");
                 }
                 else
                 {
-                    Plugin.Log.LogInfo("휠 글자는 게임 폰트 " + _font.name + " 를 쓴다.");
+                    Plugin.Log.LogInfo($"휠 글자는 게임 폰트 {_font.name} 를 쓴다(후보 {candidates.Count}개 중).");
                 }
             }
             catch (Exception e)
@@ -240,12 +247,19 @@ namespace GogglesWheel
             return _font;
         }
 
-        /// <summary>항목 이름에 쓰는 글자가 이 폰트에 있는가. '야' 하나로 본다.</summary>
+        /// <summary>
+        /// 항목 이름에 쓰는 글자가 이 폰트로 그려지는가. '야' 하나로 본다.
+        ///
+        /// <c>searchFallbacks: true</c> 가 핵심이다. 기본값은 false 인데, 한글은 폰트 자신이 아니라
+        /// **폴백 폰트**에 들어 있는 것이 보통이라 그대로 쓰면 멀쩡한 폰트를 다 떨어뜨린다
+        /// (실제로 그렇게 떨어뜨렸다). <c>tryAddCharacter</c> 는 끈 채로 둔다 —
+        /// 게임의 글자 아틀라스를 우리가 건드릴 일이 아니다.
+        /// </summary>
         private static bool HasHangul(TMP_FontAsset font)
         {
             try
             {
-                return font.HasCharacter('야');
+                return font.HasCharacter('야', searchFallbacks: true);
             }
             catch (Exception)
             {
