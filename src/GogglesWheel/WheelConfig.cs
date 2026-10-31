@@ -10,6 +10,8 @@ namespace GogglesWheel
         public const float MaxLongPress = 2.0f;
         public const float MinDeadZone = 0.0f;
         public const float MaxDeadZone = 0.9f;
+        public const float MinSensitivity = 0.01f;
+        public const float MaxSensitivity = 2.0f;
 
         /// <summary>false 면 패치를 걸지 않는다(바닐라 그대로).</summary>
         [JsonProperty("enabled")]
@@ -27,9 +29,19 @@ namespace GogglesWheel
         [JsonProperty("wheelDeadZone")]
         public float WheelDeadZone { get; set; } = 0.2f;
 
-        /// <summary>제스처 휠 항목 템플릿을 복제해 쓸지.</summary>
+        /// <summary>
+        /// 휠 위 가상 커서가 마우스에 얼마나 민감한지. 클수록 조금만 움직여도 끝까지 간다.
+        /// 게임의 시점 감도와는 따로 돈다 — 커서는 날 마우스 움직임에서 받는다.
+        /// </summary>
+        [JsonProperty("mouseSensitivity")]
+        public float MouseSensitivity { get; set; } = 0.15f;
+
+        /// <summary>
+        /// 제스처 휠 항목 템플릿을 복제해 쓸지. 기본은 false —
+        /// 복제본에 제스처용 아이콘과 좁은 글자칸이 딸려 와 보기 흉했다(실측).
+        /// </summary>
         [JsonProperty("useGameWheelSkin")]
-        public bool UseGameWheelSkin { get; set; } = true;
+        public bool UseGameWheelSkin { get; set; } = false;
 
         /// <summary>힌지로 여닫이가 생긴 헬멧 자신을 항목에 넣을지.</summary>
         [JsonProperty("includeHelmetVisor")]
@@ -77,6 +89,7 @@ namespace GogglesWheel
 
             parsed.LongPressSeconds = Clamp(parsed.LongPressSeconds, MinLongPress, MaxLongPress);
             parsed.WheelDeadZone = Clamp(parsed.WheelDeadZone, MinDeadZone, MaxDeadZone);
+            parsed.MouseSensitivity = Clamp(parsed.MouseSensitivity, MinSensitivity, MaxSensitivity);
 
             if (!IsKnownTarget(parsed.DefaultTarget))
             {

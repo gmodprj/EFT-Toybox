@@ -135,19 +135,26 @@ namespace GogglesWheel
             }
         }
 
+        /// <summary>
+        /// 휠에 적을 이름. 아이템 이름은 "Modified L3Harris GPNVG-18 night vision goggles (Black)" 처럼
+        /// 길어서 휠 항목에 들어가지 않는다(실측). 종류 이름을 쓴다 — 어차피 고르는 데 필요한 건 그것뿐이다.
+        /// </summary>
         private static string NameOf(Item item, ToggleKind kind)
         {
-            try
+            if (kind == ToggleKind.Other)
             {
-                var localized = item.LocalizedName();
-                if (!string.IsNullOrEmpty(localized))
+                try
                 {
-                    return localized;
+                    var localized = item.LocalizedShortName();
+                    if (!string.IsNullOrEmpty(localized))
+                    {
+                        return localized;
+                    }
                 }
-            }
-            catch (Exception)
-            {
-                // locale 이 아직 없으면 아래 이름을 쓴다.
+                catch (Exception)
+                {
+                    // locale 이 아직 없으면 아래 이름을 쓴다.
+                }
             }
 
             switch (kind)

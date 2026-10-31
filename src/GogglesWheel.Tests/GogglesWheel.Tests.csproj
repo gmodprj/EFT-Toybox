@@ -26,8 +26,10 @@
     <Compile Include="..\GogglesWheel\WheelConfig.cs" />
     <Compile Include="..\GogglesWheel\TargetPicker.cs" />
     <Compile Include="..\GogglesWheel\GogglesDecision.cs" />
+    <Compile Include="..\GogglesWheel\WheelPointer.cs" />
     <Compile Include="WheelConfigTests.cs" />
     <Compile Include="TargetPickerTests.cs" />
+    <Compile Include="WheelPointerTests.cs" />
     <Compile Include="GogglesDecisionTests.cs" />
   </ItemGroup>
 

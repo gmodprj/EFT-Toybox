@@ -13,8 +13,12 @@ namespace GogglesWheel
     ///
     /// `MoveInputTranslator.TranslateAxes(ref float[] axes)` 의 축 번호(실측):
     /// 0·1 = 이동, 2·3 = 회전(Turn), 4·5 = 시점(Look), 6 = 린.
-    /// 막는 동안 4·5 의 값을 그대로 받아 휠의 "기울인 방향" 으로 쓴다 —
-    /// 사용자의 감도·반전 설정이 그대로 반영된다.
+    /// 같은 일을 하는 설치된 모드 Tylevo.FieldAttachments 도 같은 번호로 2~6 을 0 으로 만든다(실측).
+    /// 우리는 이동과 린은 살려 두려고 2~5 만 막는다.
+    ///
+    /// 여기서 **방향을 읽지는 않는다**. 축 배열은 입력 사슬을 타고 내려오는 것이라
+    /// 우리보다 앞의 노드가 먼저 0 으로 만들면 영영 0 만 온다. 휠의 방향은
+    /// <see cref="WheelPointer"/> 가 날 마우스 움직임에서 따로 받는다.
     /// </summary>
     public static class LookBlocker
     {
@@ -27,9 +31,6 @@ namespace GogglesWheel
 
         /// <summary>지금 막고 있는가.</summary>
         public static bool Blocking { get; private set; }
-
-        /// <summary>막는 동안 쌓인 시점 입력. 휠의 방향으로 쓴다.</summary>
-        public static Vector2 Accumulated { get; private set; }
 
         public static bool TryPatch(Harmony harmony)
         {
@@ -54,7 +55,6 @@ namespace GogglesWheel
                 return false;
             }
 
-            Accumulated = Vector2.zero;
             Blocking = true;
             return true;
         }
@@ -63,7 +63,6 @@ namespace GogglesWheel
         public static void Release()
         {
             Blocking = false;
-            Accumulated = Vector2.zero;
         }
 
         private static void TranslateAxesPrefix(ref float[] axes)
@@ -74,8 +73,6 @@ namespace GogglesWheel
                 {
                     return;
                 }
-
-                Accumulated += new Vector2(axes[LookX], axes[LookY]);
 
                 axes[LookX] = 0f;
                 axes[LookY] = 0f;

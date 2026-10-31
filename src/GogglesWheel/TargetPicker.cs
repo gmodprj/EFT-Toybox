@@ -65,27 +65,6 @@ namespace GogglesWheel
             return best;
         }
 
-        /// <summary>
-        /// 쌓인 시점 입력을 0~1 기울기로 눌러 준다. 데드존이 0~1 단위라 여기에 맞춰야 한다.
-        /// <paramref name="fullTilt"/> 만큼 움직이면 끝까지 기울인 것으로 친다.
-        /// </summary>
-        public static (float X, float Y) NormalizeTilt(float x, float y, float fullTilt)
-        {
-            var length = Math.Sqrt((double)x * x + (double)y * y);
-            if (length <= 0.0)
-            {
-                return (0f, 0f);
-            }
-
-            if (fullTilt <= 0f)
-            {
-                fullTilt = 1e-4f;
-            }
-
-            var scale = Math.Min(1.0, length / fullTilt) / length;
-            return ((float)(x * scale), (float)(y * scale));
-        }
-
         /// <summary>짧게 눌렀을 때 여닫을 항목. 목록이 비었으면 -1.</summary>
         public static int DefaultTargetIndex(IReadOnlyList<ToggleTarget> targets, string defaultTarget)
         {

@@ -14,6 +14,7 @@ namespace GogglesWheel
     {
         private static IGameKey _key;
         private static bool _warned;
+        private static bool _diagnosed;
 
         /// <summary>
         /// ToggleGoggles 조합의 첫 키. 못 찾으면 false.
@@ -72,14 +73,53 @@ namespace GogglesWheel
                 var preset = presetField?.GetValue(null);
                 if (preset == null)
                 {
+                    Diagnose("입력 프리셋이 아직 없다");
                     return null;
                 }
 
+                var key = SearchCombinations(preset, "_inputKeyCombinations")
+                    ?? SearchCombinations(preset, "_workingKeyCombinations");
+
+                if (key == null)
+                {
+                    Diagnose(DescribePreset(preset));
+                }
+
+                return key;
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("입력 조합을 뒤지다 멈췄다: " + e.Message);
+            }
+
+            return null;
+        }
+
+        /// <summary>한 번만 적는다. 왜 못 찾았는지 알아야 고칠 수 있다.</summary>
+        private static void Diagnose(string detail)
+        {
+            if (_diagnosed)
+            {
+                return;
+            }
+
+            _diagnosed = true;
+            Plugin.Log.LogWarning("N 키를 못 찾은 까닭: " + detail);
+        }
+
+        private static string DescribePreset(object preset)
+        {
+            try
+            {
                 var combinationsField = AccessTools.Field(preset.GetType(), "_inputKeyCombinations");
                 if (!(combinationsField?.GetValue(preset) is IEnumerable combinations))
                 {
-                    return null;
+                    return "_inputKeyCombinations 를 읽지 못했다";
                 }
+
+                var total = 0;
+                var withKeys = 0;
+                var gogglesKeyCount = -1;
 
                 foreach (var combination in combinations)
                 {
@@ -88,30 +128,69 @@ namespace GogglesWheel
                         continue;
                     }
 
-                    var type = combination.GetType();
-                    var gameKey = AccessTools.Field(type, "GameKey")?.GetValue(combination)
-                        ?? AccessTools.Property(type, "GameKey")?.GetValue(combination, null);
-
-                    if (!(gameKey is EGameKey egk) || egk != EGameKey.ToggleGoggles)
+                    total++;
+                    var keys = ReadKeys(combination);
+                    if (keys != null && keys.Length > 0)
                     {
-                        continue;
+                        withKeys++;
                     }
 
-                    var keys = AccessTools.Field(type, "InputKeys")?.GetValue(combination)
-                        ?? AccessTools.Property(type, "InputKeys")?.GetValue(combination, null);
-
-                    if (keys is IGameKey[] array && array.Length > 0)
+                    if (ReadGameKey(combination) == EGameKey.ToggleGoggles)
                     {
-                        return array[0];
+                        gogglesKeyCount = keys?.Length ?? -1;
                     }
                 }
+
+                return $"조합 {total}개 중 키가 묶인 것 {withKeys}개, ToggleGoggles 조합의 키 수 {gogglesKeyCount}" +
+                       " (-1 이면 조합 자체를 못 찾은 것이다)";
             }
             catch (Exception e)
             {
-                Plugin.Log.LogWarning("입력 조합을 뒤지다 멈췄다: " + e.Message);
+                return "살펴보다 멈췄다: " + e.Message;
+            }
+        }
+
+        private static IGameKey SearchCombinations(object preset, string fieldName)
+        {
+            var combinationsField = AccessTools.Field(preset.GetType(), fieldName);
+            if (!(combinationsField?.GetValue(preset) is IEnumerable combinations))
+            {
+                return null;
+            }
+
+            foreach (var combination in combinations)
+            {
+                if (combination == null || ReadGameKey(combination) != EGameKey.ToggleGoggles)
+                {
+                    continue;
+                }
+
+                var keys = ReadKeys(combination);
+                if (keys != null && keys.Length > 0)
+                {
+                    return keys[0];
+                }
             }
 
             return null;
+        }
+
+        private static EGameKey ReadGameKey(object combination)
+        {
+            var type = combination.GetType();
+            var value = AccessTools.Field(type, "GameKey")?.GetValue(combination)
+                ?? AccessTools.Property(type, "GameKey")?.GetValue(combination, null);
+
+            return value is EGameKey gameKey ? gameKey : EGameKey.None;
+        }
+
+        private static IGameKey[] ReadKeys(object combination)
+        {
+            var type = combination.GetType();
+            var value = AccessTools.Field(type, "InputKeys")?.GetValue(combination)
+                ?? AccessTools.Property(type, "InputKeys")?.GetValue(combination, null);
+
+            return value as IGameKey[];
         }
     }
 }

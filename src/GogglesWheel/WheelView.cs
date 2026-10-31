@@ -15,20 +15,27 @@ namespace GogglesWheel
     /// </summary>
     public static class WheelView
     {
-        private const float Radius = 170f;
-        private const float ItemSize = 96f;
+        private const float Radius = 190f;
+        private const float ItemWidth = 220f;
+        private const float ItemHeight = 64f;
 
-        /// <summary>이만큼 움직이면 끝까지 기울인 것으로 친다(게임 시점 입력 단위).</summary>
-        private const float FullTiltUnits = 6f;
+        private const float CursorSize = 22f;
+        private const float CenterSize = 14f;
 
         private static GameObject _root;
+        private static GameObject _cursor;
         private static readonly List<GameObject> _items = new List<GameObject>();
         private static IReadOnlyList<ToggleTarget> _targets;
+        private static float _pointerX;
+        private static float _pointerY;
 
         public static bool IsOpen { get; private set; }
 
         /// <summary>지금 가리키고 있는 항목. 가운데면 -1.</summary>
         public static int SelectedIndex { get; private set; } = -1;
+
+        /// <summary>가상 커서가 원 안에서 어디에 있는지(-1 ~ 1). 로그에만 쓴다.</summary>
+        public static Vector2 Pointer => new Vector2(_pointerX, _pointerY);
 
         public static void Open(IReadOnlyList<ToggleTarget> targets)
         {
@@ -36,6 +43,8 @@ namespace GogglesWheel
 
             _targets = targets;
             SelectedIndex = -1;
+            _pointerX = 0f;
+            _pointerY = 0f;
 
             try
             {
@@ -51,17 +60,28 @@ namespace GogglesWheel
             }
         }
 
-        /// <summary>매 프레임 부른다. 쌓인 시점 입력으로 가리키는 항목을 정한다.</summary>
-        public static void UpdateSelection(Vector2 direction)
+        /// <summary>
+        /// 매 프레임 부른다. 마우스가 움직인 양을 가상 커서에 쌓고, 커서가 가리키는 항목을 정한다.
+        /// 값은 <c>Input.GetAxisRaw("Mouse X" / "Mouse Y")</c> 에서 온다 — 게임 시점 축이 아니다.
+        /// </summary>
+        public static void UpdateSelection(float mouseX, float mouseY)
         {
             if (!IsOpen || _targets == null)
             {
                 return;
             }
 
-            // 쌓인 시점 입력은 끝없이 커진다. 0~1 기울기로 눌러야 데드존(0~1)과 단위가 맞는다.
-            var tilt = TargetPicker.NormalizeTilt(direction.x, direction.y, FullTiltUnits);
-            SelectedIndex = TargetPicker.PickByDirection(tilt.X, tilt.Y, _targets.Count, Plugin.Settings.WheelDeadZone);
+            var next = WheelPointer.Advance(_pointerX, _pointerY, mouseX, mouseY, Plugin.Settings.MouseSensitivity);
+            _pointerX = next.X;
+            _pointerY = next.Y;
+
+            SelectedIndex = TargetPicker.PickByDirection(_pointerX, _pointerY, _targets.Count, Plugin.Settings.WheelDeadZone);
+
+            if (_cursor != null)
+            {
+                var cursorRect = _cursor.GetComponent<RectTransform>();
+                cursorRect.anchoredPosition = new Vector2(_pointerX, _pointerY) * Radius;
+            }
 
             for (var i = 0; i < _items.Count; i++)
             {
@@ -112,12 +132,37 @@ namespace GogglesWheel
                 rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
                 rect.pivot = new Vector2(0.5f, 0.5f);
                 rect.anchoredPosition = position;
-                rect.sizeDelta = new Vector2(ItemSize * 1.6f, ItemSize * 0.7f);
+                rect.sizeDelta = new Vector2(ItemWidth, ItemHeight);
 
                 SetLabel(item, targets[i].Name);
                 item.SetActive(true);
                 _items.Add(item);
             }
+
+            // 가운데 표시와 가상 커서. 항목 뒤에 만들면 항목에 가려지므로 마지막에 붙인다.
+            MakeDot("Center", CenterSize, new Color(1f, 1f, 1f, 0.25f));
+            _cursor = MakeDot("Cursor", CursorSize, new Color(1f, 0.85f, 0.3f, 0.95f));
+        }
+
+        /// <summary>
+        /// 가운데에 놓인 동그란 점 하나. 커서가 눈에 보여야 어디를 가리키는지 알 수 있다 —
+        /// 실제 마우스 포인터는 레이드 중에 잠겨 있어 뜨지 않는다.
+        /// </summary>
+        private static GameObject MakeDot(string name, float size, Color color)
+        {
+            var dot = new GameObject(name, typeof(RectTransform));
+            dot.transform.SetParent(_root.transform, false);
+
+            var image = dot.AddComponent<Image>();
+            image.color = color;
+
+            var rect = dot.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(size, size);
+
+            return dot;
         }
 
         /// <summary>제스처 휠의 항목 템플릿. 메뉴가 닫혀 있어도 찾을 수 있게 비활성까지 뒤진다.</summary>
@@ -170,14 +215,16 @@ namespace GogglesWheel
         {
             var item = new GameObject("Item", typeof(RectTransform));
             var background = item.AddComponent<Image>();
-            background.color = new Color(0.07f, 0.08f, 0.09f, 0.92f);
+            background.color = new Color(0.05f, 0.06f, 0.07f, 0.88f);
 
             var labelObject = new GameObject("Label", typeof(RectTransform));
             labelObject.transform.SetParent(item.transform, false);
 
             var label = labelObject.AddComponent<TextMeshProUGUI>();
             label.alignment = TextAlignmentOptions.Center;
-            label.fontSize = 22f;
+            label.fontSize = 26f;
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
             label.color = Color.white;
 
             var labelRect = labelObject.GetComponent<RectTransform>();
@@ -213,6 +260,7 @@ namespace GogglesWheel
         {
             _items.Clear();
             _targets = null;
+            _cursor = null;
 
             if (_root != null)
             {

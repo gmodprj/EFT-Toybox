@@ -76,33 +76,6 @@ public class TargetPickerTests
     }
 
     [Fact]
-    public void Normalized_tilt_is_capped_at_one()
-    {
-        // 쌓인 시점 입력은 끝없이 커진다. 데드존이 0~1 단위이므로 거기에 맞춰 눌러 준다.
-        var (x, y) = TargetPicker.NormalizeTilt(600f, 0f, 6f);
-
-        Assert.Equal(1f, x, 3);
-        Assert.Equal(0f, y, 3);
-    }
-
-    [Fact]
-    public void Normalized_tilt_keeps_direction_below_the_cap()
-    {
-        var (x, y) = TargetPicker.NormalizeTilt(3f, 0f, 6f);
-
-        Assert.Equal(0.5f, x, 3);
-        Assert.Equal(0f, y, 3);
-    }
-
-    [Fact]
-    public void Normalized_tilt_survives_a_zero_or_negative_full_tilt()
-    {
-        var (x, y) = TargetPicker.NormalizeTilt(3f, 4f, 0f);
-
-        Assert.InRange(System.Math.Sqrt(x * x + y * y), 0.999, 1.001);
-    }
-
-    [Fact]
     public void No_items_picks_nothing()
     {
         Assert.Equal(-1, TargetPicker.PickByDirection(1f, 0f, 0, 0.2f));

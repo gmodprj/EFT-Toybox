@@ -14,7 +14,11 @@ public class WheelConfigTests
         Assert.Equal(0.25f, config.LongPressSeconds, 3);
         Assert.Equal("nightvision", config.DefaultTarget);
         Assert.Equal(0.2f, config.WheelDeadZone, 3);
-        Assert.True(config.UseGameWheelSkin);
+        Assert.Equal(0.15f, config.MouseSensitivity, 3);
+
+        // 제스처 휠 항목을 복제해 봤더니 제스처용 아이콘과 좁은 글자칸이 딸려 와
+        // 이름이 세로로 쪼개졌다(실측). 기본은 우리가 그리는 쪽이다.
+        Assert.False(config.UseGameWheelSkin);
         Assert.True(config.IncludeHelmetVisor);
         Assert.True(config.StandDownForCoti);
     }
@@ -56,6 +60,17 @@ public class WheelConfigTests
         var config = WheelConfig.LoadFromText("{ \"wheelDeadZone\": " + value.ToString(System.Globalization.CultureInfo.InvariantCulture) + " }", out _);
 
         Assert.InRange(config.WheelDeadZone, 0.0f, 0.9f);
+    }
+
+    [Theory]
+    [InlineData(0f)]
+    [InlineData(-3f)]
+    [InlineData(50f)]
+    public void MouseSensitivity_is_clamped(float value)
+    {
+        var config = WheelConfig.LoadFromText("{ \"mouseSensitivity\": " + value.ToString(System.Globalization.CultureInfo.InvariantCulture) + " }", out _);
+
+        Assert.InRange(config.MouseSensitivity, 0.01f, 2.0f);
     }
 
     [Fact]
