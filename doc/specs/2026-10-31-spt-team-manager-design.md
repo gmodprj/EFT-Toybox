@@ -49,7 +49,9 @@ STM이 바꾸려는 것은 팀원이 **어디서 오는가** 하나다. SPT 런�
 
 **5-3. 명단은 네이티브 친구 목록으로 간다.** PIT는 `/client/friend/list`, `/client/friend/request/*`, `/client/profile/view`, `/client/friend/delete`를 `StaticRouter`로 소유하고 팀원을 가짜 친구로 지어내 응답에 넣는다. 게임의 "파티에 초대" 창이 그 응답을 그린다. 실제 프로필의 `friends` 배열은 비어 있다(`[]`로 확인).
 
-→ **같은 경로를 두 모드가 등록하면 한쪽만 응답한다.** 그래서 PIT와 STM을 별도 모드로 두고 공존시킬 수 없다. 포크 한 모드가 두 종류 팀원을 모두 내려보낸다.
+→ **정정(2026-10-31, 계획 작성 중 소스 확인).** 처음에 "같은 경로를 두 모드가 등록하면 한쪽만 응답한다"고 적었으나 **틀렸다.** SPT의 정적 라우터는 체인된다. PIT의 `FriendlyTeammateSocialCallbacks.MergeFriendList(url, _, sessionId, string? previousOutput)`는 앞 단계 응답을 역직렬화해 자기 팀원을 **덧붙이고**, `Id`·`Aid`로 중복을 거른다. 즉 두 모드가 각자 친구 목록에 끼어드는 것 자체는 원리상 가능하다.
+
+그래도 **포크 한 모드**로 간다. 이유는 라우터가 아니라 그 아래에 있다 — 봇 소유권(같은 레이드의 팔로워를 누가 소유하는가), 파티 3자리의 배분, 명령 체계(플레이어의 "따라와"가 누구에게 가는가), 그리고 중복 패치(§5-10)를 두 모드가 나눠 가지면 조율할 주체가 없다. 사용자가 용병 기능 유지를 택했으므로, 한 모드가 두 종류를 모두 들고 가는 편이 단순하고 안전하다.
 
 **5-4. 레이드 투입도 네이티브 경로다.** `/client/match/group/invite/send`, `/client/game/bot/followerdetails`, `/client/game/bot/followerprogress`, `/client/game/bot/followergenerate`를 PIT가 소유한다.
 
