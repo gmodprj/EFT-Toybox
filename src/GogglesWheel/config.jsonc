@@ -1,0 +1,24 @@
+{
+  // false 면 패치를 걸지 않는다. N 은 게임이 하던 대로(여닫이 중 첫 번째 하나만) 동작한다.
+  "enabled": true,
+
+  // 이 시간(초)을 넘겨 누르면 "길게" 로 쳐서 휠이 뜬다. 0.05 ~ 2.0 밖은 눌러 쓴다.
+  "longPressSeconds": 0.25,
+
+  // 짧게 눌렀을 때 여닫을 것 — nightvision · faceshield · first.
+  "defaultTarget": "nightvision",
+
+  // 휠에서 이 길이 미만으로 기울이면 아무 것도 고르지 않는다(가운데에 둔 채 떼면 취소).
+  "wheelDeadZone": 0.2,
+
+  // 게임 제스처 휠의 항목 템플릿을 복제해 생김새를 같게 간다.
+  // false 면 우리가 그린 단순한 원형으로 뜬다.
+  "useGameWheelSkin": true,
+
+  // 힌지로 여닫이가 생긴 헬멧 자신(바이저)도 휠 항목에 넣는다.
+  // 끄면 그 헬멧에서 바이저를 N 으로 여닫을 수 없게 된다.
+  "includeHelmetVisor": true,
+
+  // COTI 수정키가 눌린 N 은 COTI 에 넘긴다. 남이 먼저 쓰던 입력이다.
+  "standDownForCoti": true
+}
