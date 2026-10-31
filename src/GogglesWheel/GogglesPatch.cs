@@ -185,17 +185,19 @@ namespace GogglesWheel
                     yield return null;
                 }
 
-                if (open >= MaxWheelSeconds)
+                var timedOut = open >= MaxWheelSeconds;
+                if (timedOut)
                 {
-                    Plugin.Log.LogWarning($"휠이 {MaxWheelSeconds:0}초를 넘겨 떠 있어 접는다. 키 상태가 얼어붙었을 수 있다.");
+                    Plugin.Log.LogWarning($"휠이 {MaxWheelSeconds:0}초를 넘겨 떠 있어 접는다. 아무 것도 여닫지 않는다.");
 
                     // 키를 바꿨다면 들고 있던 것이 더는 갱신되지 않는다. 다음 번에 다시 찾게 한다.
                     PressWatcher.Forget();
                 }
 
-                var alive = IsStillInRaid(player);
-                var index = alive ? WheelView.SelectedIndex : -1;
-                WheelView.Close(alive);
+                // 뗐을 때만 여닫는다. 죽은 것도 시간이 다 된 것도 "뗐다" 가 아니다.
+                var apply = GogglesDecisionMaker.ShouldApplySelection(IsStillInRaid(player), timedOut);
+                var index = apply ? WheelView.SelectedIndex : -1;
+                WheelView.Close(apply);
 
                 if (index >= 0 && index < targets.Count)
                 {

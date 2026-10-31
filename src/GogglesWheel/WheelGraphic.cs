@@ -27,19 +27,17 @@ namespace GogglesWheel
         private int _selected = -1;
         private float _innerRadius = 96f;
         private float _outerRadius = 210f;
-        private float _deadZoneRadius = 42f;
         private Vector2 _pointer;
         private WheelPalette _palette = new WheelPalette();
 
         /// <summary>그릴 것이 바뀔 때마다 부른다. 값이 같으면 다시 그리지 않는다.</summary>
-        public void Style(int count, int selected, Vector2 pointer, float innerRadius, float outerRadius, float deadZoneRadius, WheelPalette palette)
+        public void Style(int count, int selected, Vector2 pointer, float innerRadius, float outerRadius, WheelPalette palette)
         {
             var same = _count == count
                 && _selected == selected
                 && _pointer == pointer
                 && Mathf.Approximately(_innerRadius, innerRadius)
                 && Mathf.Approximately(_outerRadius, outerRadius)
-                && Mathf.Approximately(_deadZoneRadius, deadZoneRadius)
                 && ReferenceEquals(_palette, palette);
 
             if (same)
@@ -52,7 +50,6 @@ namespace GogglesWheel
             _pointer = pointer;
             _innerRadius = innerRadius;
             _outerRadius = outerRadius;
-            _deadZoneRadius = deadZoneRadius;
             _palette = palette ?? new WheelPalette();
 
             SetVerticesDirty();
@@ -90,17 +87,33 @@ namespace GogglesWheel
 
                 Arc(mesh, from, to, steps, _outerRadius, width, tint);
                 Arc(mesh, from, to, steps, _innerRadius, width, tint);
+            }
 
-                if (_count > 1)
+            // 칸막이는 **경계마다 한 번씩** 따로 그린다. 조각마다 자기 시작 변만 그리면
+            // 고른 조각의 끝 변은 다음 조각이 흐린 색으로 덮어, 하이라이트 테가 한쪽만
+            // 열린 채 보인다(리뷰 지적). 양쪽 중 하나라도 골라졌으면 밝게 둔다.
+            if (_count > 1)
+            {
+                for (var i = 0; i < _count; i++)
                 {
-                    Spoke(mesh, from, width, tint);
+                    var previous = (i - 1 + _count) % _count;
+                    var touchesSelection = i == _selected || previous == _selected;
+
+                    Spoke(mesh,
+                        (TargetPicker.AngleForIndex(i, _count) - half) * Mathf.Deg2Rad,
+                        touchesSelection ? SelectedEdgeWidth : EdgeWidth,
+                        touchesSelection ? selectedEdge : edge);
                 }
             }
 
-            // 데드존 — 여기에 두고 떼면 취소다. 커서가 안에 있으면 채워 보여 준다.
+            // 구멍 = 데드존이다. 여기에 두고 떼면 취소. 커서가 안에 있으면 채워 보여 준다.
             var inside = _selected < 0;
-            Disc(mesh, _deadZoneRadius, steps * 2, WithAlpha(inside ? _palette.Selected : _palette.Normal, inside ? 0.55f : 0.70f));
-            Circle(mesh, _deadZoneRadius, steps * 2, inside ? selectedEdge : edge, inside ? SelectedEdgeWidth : EdgeWidth);
+            Disc(mesh, _innerRadius, steps * 2, WithAlpha(inside ? _palette.Selected : _palette.Normal, inside ? 0.45f : 0.70f));
+
+            if (inside)
+            {
+                Circle(mesh, _innerRadius, steps * 2, SelectedEdgeWidth, selectedEdge);
+            }
 
             Pointer(mesh);
         }
@@ -150,7 +163,7 @@ namespace GogglesWheel
             Stroke(mesh, Point(angle, _innerRadius), Point(angle, _outerRadius), width, tint);
         }
 
-        private void Circle(VertexHelper mesh, float radius, int steps, Color tint, float width)
+        private void Circle(VertexHelper mesh, float radius, int steps, float width, Color tint)
         {
             Arc(mesh, 0f, Mathf.PI * 2f, steps, radius, width, tint);
         }

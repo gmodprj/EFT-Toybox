@@ -13,7 +13,8 @@ public class WheelConfigTests
         Assert.True(config.Enabled);
         Assert.Equal(0.25f, config.LongPressSeconds, 3);
         Assert.Equal("nightvision", config.DefaultTarget);
-        Assert.Equal(0.2f, config.WheelDeadZone, 3);
+        // 데드존이 곧 구멍의 반지름이다 — 구멍에 글자가 들어가고 고리가 가리킬 두께로 남는 값.
+        Assert.Equal(0.45f, config.WheelDeadZone, 3);
         Assert.Equal(0.15f, config.MouseSensitivity, 3);
 
         Assert.True(config.IncludeHelmetVisor);

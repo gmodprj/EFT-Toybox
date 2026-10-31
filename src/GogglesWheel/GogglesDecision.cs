@@ -57,5 +57,18 @@ namespace GogglesWheel
 
             return GogglesDecision.WatchForLongPress;
         }
+
+        /// <summary>
+        /// 휠을 접을 때 가리키던 것을 여닫을지. **뗐을 때만** 여닫는다.
+        ///
+        /// 죽은 것도, 안전장치 시간이 다 된 것도 "뗐다" 가 아니다. 특히 시간이 다 된 쪽이
+        /// 위험하다 — 키 상태가 눌림에 얼어붙은 사이 사람은 손을 떼고 평소대로 시점을 돌리는데,
+        /// 그 움직임이 가상 커서를 끌고 가 엉뚱한 조각에 세워 둔다. 그대로 여닫으면
+        /// 15초 전에 손을 뗀 사람의 페이스실드가 영문 없이 내려간다(리뷰 지적).
+        /// </summary>
+        public static bool ShouldApplySelection(bool alive, bool timedOut)
+        {
+            return alive && !timedOut;
+        }
     }
 }

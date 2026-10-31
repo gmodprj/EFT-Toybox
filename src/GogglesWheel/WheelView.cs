@@ -17,8 +17,6 @@ namespace GogglesWheel
     /// </summary>
     public static class WheelView
     {
-        private const float OuterRadius = 210f;
-        private const float InnerRadius = 112f;
         private const float LabelWidth = 150f;
         private const float LabelHeight = 44f;
         private const float LabelFontSize = 23f;
@@ -33,8 +31,15 @@ namespace GogglesWheel
         private static readonly List<TextMeshProUGUI> _labels = new List<TextMeshProUGUI>();
         private static IReadOnlyList<ToggleTarget> _targets;
         private static WheelPalette _palette;
+        private static TMP_FontAsset _font;
+        private static bool _fontChecked;
+        private static bool _paletteLogged;
         private static float _pointerX;
         private static float _pointerY;
+
+        private static float OuterRadius => WheelLayout.OuterRadius;
+
+        private static float InnerRadius => WheelLayout.InnerRadius(Plugin.Settings.WheelDeadZone);
 
         public static bool IsOpen { get; private set; }
 
@@ -103,14 +108,7 @@ namespace GogglesWheel
         {
             if (_graphic != null)
             {
-                _graphic.Style(
-                    _targets.Count,
-                    SelectedIndex,
-                    Pointer,
-                    InnerRadius,
-                    OuterRadius,
-                    Plugin.Settings.WheelDeadZone * OuterRadius,
-                    _palette);
+                _graphic.Style(_targets.Count, SelectedIndex, Pointer, InnerRadius, OuterRadius, _palette);
             }
 
             for (var i = 0; i < _labels.Count; i++)
@@ -129,6 +127,12 @@ namespace GogglesWheel
         private static void Build(IReadOnlyList<ToggleTarget> targets)
         {
             _palette = WheelPalette.Read();
+
+            if (!_paletteLogged)
+            {
+                _paletteLogged = true;
+                Plugin.Log.LogInfo("휠 색은 " + _palette.Source + " 에서 가져왔다.");
+            }
 
             _root = new GameObject("GogglesWheel", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(CanvasGroup));
             UnityEngine.Object.DontDestroyOnLoad(_root);
@@ -164,9 +168,8 @@ namespace GogglesWheel
                 _labels.Add(MakeLabel("Item" + i, targets[i].Name, position, new Vector2(LabelWidth, LabelHeight), LabelFontSize));
             }
 
-            // 데드존 원과 글자가 겹치지 않게 원 아래에 둔다. 구멍(InnerRadius) 안에는 들어온다.
-            var centerLabelY = -(Plugin.Settings.WheelDeadZone * OuterRadius + LabelHeight * 0.75f);
-            _centerLabel = MakeLabel("Center", "취소", new Vector2(0f, centerLabelY), new Vector2(InnerRadius * 1.7f, LabelHeight), CenterFontSize);
+            // 구멍 가운데. 구멍이 곧 데드존이라 따로 그린 원과 겹칠 일이 없다.
+            _centerLabel = MakeLabel("Center", "취소", Vector2.zero, new Vector2(InnerRadius * 1.7f, LabelHeight), CenterFontSize);
         }
 
         private static TextMeshProUGUI MakeLabel(string name, string text, Vector2 position, Vector2 size, float fontSize)
@@ -176,6 +179,16 @@ namespace GogglesWheel
             Center(holder.GetComponent<RectTransform>(), position, size);
 
             var label = holder.AddComponent<TextMeshProUGUI>();
+
+            // 글자가 이 휠의 **유일한** 식별 수단이다(아이콘은 설계에서 일부러 뺐다).
+            // 항목 이름은 모두 한글이라, 기본 폰트에 한글 글리프가 없으면 조각이 빈칸으로 뜬다.
+            // 게임이 쓰는 폰트를 빌려 쓴다 — 전에는 제스처 항목을 복제하며 딸려 왔던 것이다.
+            var font = GameFont();
+            if (font != null)
+            {
+                label.font = font;
+            }
+
             label.text = text;
             label.alignment = TextAlignmentOptions.Center;
             label.fontSize = fontSize;
@@ -185,6 +198,59 @@ namespace GogglesWheel
             label.color = _palette.Text;
 
             return label;
+        }
+
+        /// <summary>
+        /// 게임 화면에 이미 떠 있는 글자가 쓰는 폰트. 한 번 찾아 들고 있는다.
+        /// 못 찾으면 null — 그때는 TMP 기본 폰트로 간다. 글자가 빈칸으로 보이면
+        /// 여기가 null 로 떨어진 것이고, 로그에 적힌다.
+        /// </summary>
+        private static TMP_FontAsset GameFont()
+        {
+            if (_fontChecked)
+            {
+                return _font;
+            }
+
+            _fontChecked = true;
+
+            try
+            {
+                // 한글을 그리고 있는 글자를 고른다. 영문 전용 폰트를 집으면 뜻이 없다.
+                _font = Resources.FindObjectsOfTypeAll<TMP_Text>()
+                    .Where(text => text != null && text.font != null)
+                    .Select(text => text.font)
+                    .FirstOrDefault(HasHangul);
+
+                if (_font == null)
+                {
+                    Plugin.Log.LogWarning("한글이 있는 게임 폰트를 찾지 못했다. 기본 폰트로 그린다 — 항목 이름이 빈칸으로 보이면 이것이 까닭이다.");
+                }
+                else
+                {
+                    Plugin.Log.LogInfo("휠 글자는 게임 폰트 " + _font.name + " 를 쓴다.");
+                }
+            }
+            catch (Exception e)
+            {
+                _font = null;
+                Plugin.Log.LogWarning("게임 폰트를 찾다 멈췄다. 기본 폰트로 그린다: " + e.Message);
+            }
+
+            return _font;
+        }
+
+        /// <summary>항목 이름에 쓰는 글자가 이 폰트에 있는가. '야' 하나로 본다.</summary>
+        private static bool HasHangul(TMP_FontAsset font)
+        {
+            try
+            {
+                return font.HasCharacter('야');
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private static void Center(RectTransform rect, Vector2 position, Vector2 size)

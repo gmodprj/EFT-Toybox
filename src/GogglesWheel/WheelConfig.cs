@@ -8,8 +8,13 @@ namespace GogglesWheel
     {
         public const float MinLongPress = 0.05f;
         public const float MaxLongPress = 2.0f;
-        public const float MinDeadZone = 0.0f;
-        public const float MaxDeadZone = 0.9f;
+        /// <summary>
+        /// 0 을 허용하면 가운데에 둬도 길이가 0 이라 데드존 검사가 걸리지 않고,
+        /// `Atan2(0,0)=0` 이라 0도에 가장 가까운 항목이 늘 골라진다 — 취소할 길이 사라진다(리뷰 지적).
+        /// 위쪽도 막는다. 데드존이 곧 구멍의 반지름이라, 너무 크면 가리킬 고리가 남지 않는다.
+        /// </summary>
+        public const float MinDeadZone = 0.2f;
+        public const float MaxDeadZone = 0.65f;
         public const float MinSensitivity = 0.01f;
         public const float MaxSensitivity = 2.0f;
 
@@ -27,7 +32,7 @@ namespace GogglesWheel
 
         /// <summary>이 길이 미만으로 기울이면 아무 것도 고르지 않는다.</summary>
         [JsonProperty("wheelDeadZone")]
-        public float WheelDeadZone { get; set; } = 0.2f;
+        public float WheelDeadZone { get; set; } = 0.45f;
 
         /// <summary>
         /// 휠 위 가상 커서가 마우스에 얼마나 민감한지. 클수록 조금만 움직여도 끝까지 간다.
