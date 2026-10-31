@@ -24,7 +24,7 @@ public sealed class FriendlyPmcArmbandHooks(
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var harmony = new Harmony("xyz.pit.fireteam.server.pmc-armbands");
+        var harmony = new Harmony("xyz.stm.teammanager.server.pmc-armbands");
         try
         {
             var target = typeof(BotInventoryGenerator).GetMethod(nameof(BotInventoryGenerator.GenerateInventory),

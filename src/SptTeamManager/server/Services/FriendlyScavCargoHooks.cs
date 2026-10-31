@@ -39,7 +39,7 @@ public sealed class FriendlyScavCargoHooks(ISptLogger<FriendlyScavCargoHooks> lo
     {
         cancellationToken.ThrowIfCancellationRequested();
         log = logger;
-        var harmony = new Harmony("xyz.pit.fireteam.server.scav-cargo");
+        var harmony = new Harmony("xyz.stm.teammanager.server.scav-cargo");
         try
         {
             var message = Require(typeof(MailSendService), "CreateDialogMessage", [typeof(MongoId), typeof(SendMessageDetails)], typeof(Message));

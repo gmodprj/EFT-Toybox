@@ -25,6 +25,7 @@ function Add-Plan([string]$from, [string]$to) {
 
 Add-Plan (Join-Path $clientBin 'SptTeamManager.dll') (Join-Path $clientDest 'SptTeamManager.dll')
 Add-Plan (Join-Path $serverBin 'SptTeamManager.Server.dll') (Join-Path $serverDest 'SptTeamManager.Server.dll')
+Add-Plan (Join-Path $serverBin 'SptTeamManager.Server.deps.json') (Join-Path $serverDest 'SptTeamManager.Server.deps.json')
 Add-Plan (Join-Path $serverBin 'LiteDB.dll') (Join-Path $serverDest 'LiteDB.dll')
 
 if (Test-Path $resources) {

@@ -11,7 +11,7 @@ namespace pitTeam.Server.Services;
 [Injectable]
 public class FriendlyLanguageService(ISptLogger<FriendlyLanguageService> logger)
 {
-    private const string ModFolderName = "pitFireTeam-ServerMod";
+    private const string ModFolderName = "SptTeamManager-ServerMod";
     private const string LanguageFolderName = "lang";
     private readonly ConcurrentDictionary<string, string> sessionLocales = new();
     private JsonObject? embeddedEnglishFallback;

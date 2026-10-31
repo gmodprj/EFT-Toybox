@@ -15,7 +15,7 @@ namespace pitTeam.Server;
 
 public record PitFireTeamServerMetadata : IModMetadata
 {
-    public string ModGuid { get; init; } = "xyz.pit.fireteam";
+    public string ModGuid { get; init; } = "xyz.stm.teammanager";
     public string Name { get; init; } = "PitFireTeam";
     public string Author { get; init; } = "PitAlex";
     public List<string>? Contributors { get; init; }
@@ -109,7 +109,7 @@ public class PitFireTeamServerPlugin(
                 serverRoot,
                 "user",
                 "mods",
-                "pitFireTeam-ServerMod",
+                "SptTeamManager-ServerMod",
                 "Resources",
                 "avatars",
                 "courier.png");

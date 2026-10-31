@@ -6,8 +6,8 @@ using pitTeam.Modules;
 
 namespace pitTeam.SAINAddon
 {
-    [BepInPlugin("xyz.pit.fireteam.sainaddon", "PitAlex-PitFireTeamSAINAddon", "1.0.0")]
-    [BepInDependency("xyz.pit.fireteam", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInPlugin("xyz.stm.teammanager.sainaddon", "PitAlex-PitFireTeamSAINAddon", "1.0.0")]
+    [BepInDependency("xyz.stm.teammanager", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("me.sol.sain", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("xyz.drakia.bigbrain", BepInDependency.DependencyFlags.HardDependency)]
     public class SAINAddonPlugin : BaseUnityPlugin

@@ -229,7 +229,7 @@ public class FriendlyServerSettingsService(
             AppContext.BaseDirectory,
             "user",
             "mods",
-            "pitFireTeam-ServerMod",
+            "SptTeamManager-ServerMod",
             "Resources",
             "settings.json");
     }

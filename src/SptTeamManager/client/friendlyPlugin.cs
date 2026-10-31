@@ -212,7 +212,7 @@ namespace pitTeam
     public class pitFireTeam : BaseUnityPlugin
     {
         public const string SainPluginId = "me.sol.sain";
-        public const string SainAddonPluginId = "xyz.pit.fireteam.sainaddon";
+        public const string SainAddonPluginId = "xyz.stm.teammanager.sainaddon";
         public const string SeparateHostilityPluginId = "dk.sptplugins.separatehostility";
         public const string MenuOverhaulPluginId = "com.moxopixel.menuoverhaul";
         internal const LoadoutManagementMode DefaultLoadoutManagementMode = LoadoutManagementMode.Immersive;
@@ -354,7 +354,7 @@ namespace pitTeam
             // initialize follower brain layers
             FollowerLayerRegistry.Init();
 
-            var harmony = new Harmony("xyz.pit.fireteam");
+            var harmony = new Harmony("xyz.stm.teammanager");
             OrbitCompatibility.PatchIfInstalled(harmony);
             AILimitCompatibility.PatchIfInstalled(harmony);
 

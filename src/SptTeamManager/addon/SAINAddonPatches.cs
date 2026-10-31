@@ -5,7 +5,7 @@ namespace pitTeam.SAINAddon
     // One owner for all required addon hooks. Partial installation cannot leave patches behind.
     internal static class SAINAddonPatches
     {
-        internal const string HarmonyId = "xyz.pit.fireteam.sainaddon";
+        internal const string HarmonyId = "xyz.stm.teammanager.sainaddon";
         private static readonly Harmony Harmony = new Harmony(HarmonyId);
         internal static void Apply()
         {
