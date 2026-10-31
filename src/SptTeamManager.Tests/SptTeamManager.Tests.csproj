@@ -24,6 +24,8 @@
     <Compile Include="ProfileRosterPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/FriendListMergePolicy.cs" Link="Shared/FriendListMergePolicy.cs" />
     <Compile Include="FriendListMergePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/PartySlotPolicy.cs" Link="Shared/PartySlotPolicy.cs" />
+    <Compile Include="PartySlotPolicyTests.cs" />
   </ItemGroup>
 
 </Project>

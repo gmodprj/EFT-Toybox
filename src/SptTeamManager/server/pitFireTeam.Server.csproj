@@ -18,6 +18,7 @@
     <Compile Include="../shared/GiveGearInvitePolicy.cs" Link="Shared/GiveGearInvitePolicy.cs" />
     <Compile Include="../shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
     <Compile Include="../shared/FriendListMergePolicy.cs" Link="Shared/FriendListMergePolicy.cs" />
+    <Compile Include="../shared/PartySlotPolicy.cs" Link="Shared/PartySlotPolicy.cs" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="HarmonyX" Version="2.16.1" />
   </ItemGroup>
