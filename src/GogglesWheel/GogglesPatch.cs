@@ -173,28 +173,14 @@ namespace GogglesWheel
                 // 안전장치: 키 상태가 어떤 이유로든 "눌림" 에 얼어붙어도 휠이 영원히 떠 있지 않게 한다.
                 // 그대로 두면 시점이 잠긴 채 레이드가 끝날 때까지 간다 — 설계가 최악으로 꼽은 사고다.
                 var open = 0f;
-                var sinceLog = 0f;
-                var logsLeft = 6;
 
                 while (PressWatcher.IsHeldNow() && IsStillInRaid(player) && open < MaxWheelSeconds)
                 {
                     open += Time.unscaledDeltaTime;
-                    sinceLog += Time.unscaledDeltaTime;
 
                     // 방향은 게임 시점 축이 아니라 날 마우스 움직임에서 받는다 —
                     // 축 배열은 우리보다 앞의 입력 노드가 먼저 0 으로 만들 수 있다(WheelPointer 주석 참고).
                     WheelView.UpdateSelection(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
-
-                    // 휠을 띄운 처음 몇 초만 적는다. 커서가 움직이는지 눈으로 확인하는 자리다.
-                    if (logsLeft > 0 && sinceLog >= 0.5f)
-                    {
-                        sinceLog = 0f;
-                        logsLeft--;
-                        var pointer = WheelView.Pointer;
-                        Plugin.Log.LogInfo(
-                            $"휠: 막는중={LookBlocker.Blocking} 커서=({pointer.x:0.000},{pointer.y:0.000}) " +
-                            $"길이={pointer.magnitude:0.000} 고른것={WheelView.SelectedIndex}");
-                    }
 
                     yield return null;
                 }
