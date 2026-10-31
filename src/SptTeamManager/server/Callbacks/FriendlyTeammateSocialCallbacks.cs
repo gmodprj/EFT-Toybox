@@ -1,6 +1,8 @@
 using SPTarkov.Server.Core.Models.Enums;
 using pitTeam.Server.Models;
 using pitTeam.Server.Services;
+using pitTeam.Shared;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
@@ -16,6 +18,9 @@ public class FriendlyTeammateSocialCallbacks(
     FriendlyTeammateService teammateService,
     FriendlyRecruitService recruitService,
     FriendlySquadOnboardingService onboarding,
+    StmProfileMemberStore profileMemberStore,
+    StmProfileCatalog profileCatalog,
+    ISptLogger<FriendlyTeammateSocialCallbacks> logger,
     HttpResponseUtil httpResponseUtil,
     JsonUtil jsonUtil
 )
@@ -31,20 +36,94 @@ public class FriendlyTeammateSocialCallbacks(
         };
 
         response.Friends ??= [];
-        foreach (var teammate in teammateService.ListTeammateDialogs(sessionId))
-        {
-            if (response.Friends.Any(existing =>
-                existing.Id == teammate.Id ||
-                (existing.Aid != 0 && teammate.Aid != 0 && existing.Aid == teammate.Aid)))
-            {
-                continue;
-            }
 
-            response.Friends.Add(teammate);
+        // Real response objects, kept by (kind, Id): FriendEntry only carries what the duplicate
+        // decision needs, so the final list is assembled from these originals, never rebuilt.
+        var originals = new Dictionary<string, Queue<UserDialogInfo>>(StringComparer.Ordinal);
+        var existingEntries = new List<FriendEntry>();
+        foreach (var friend in response.Friends)
+        {
+            var entry = new FriendEntry(friend.Id.ToString(), friend.Aid ?? 0, FriendKind.Native);
+            existingEntries.Add(entry);
+            Remember(originals, entry, friend);
         }
 
+        var incomingEntries = new List<FriendEntry>();
+        foreach (var teammate in teammateService.ListTeammateDialogs(sessionId))
+        {
+            var entry = new FriendEntry(teammate.Id.ToString(), teammate.Aid ?? 0, FriendKind.Mercenary);
+            incomingEntries.Add(entry);
+            Remember(originals, entry, teammate);
+        }
+
+        // Registered launcher profiles, joined against a fresh catalog read: only Ready candidates
+        // become entries. The logged-in profile, empty/unreadable ones and ones deleted since
+        // registration (absent from the catalog) never reach the list.
+        var registeredIds = profileMemberStore.List(sessionId).Select(m => m.ProfileId).ToList();
+        if (registeredIds.Count > 0)
+        {
+            var candidates = profileCatalog.GetCandidates(sessionId.ToString());
+            foreach (var candidate in ProfileRosterPolicy.SelectRegisteredReady(candidates, registeredIds))
+            {
+                var entry = new FriendEntry(candidate.ProfileId, candidate.Aid, FriendKind.ProfileMember);
+                incomingEntries.Add(entry);
+                Remember(originals, entry, ToProfileMemberDialog(candidate));
+            }
+        }
+
+        var outcome = FriendListMergePolicy.Plan(existingEntries, incomingEntries);
+        foreach (var (dropped, reason) in outcome.Skipped)
+        {
+            logger.Warning($"[STM] Friend list: {dropped.Kind} '{dropped.Id}' (Aid {dropped.Aid}) was left out - {reason}");
+        }
+
+        var merged = new List<UserDialogInfo>(outcome.Final.Count);
+        foreach (var entry in outcome.Final)
+        {
+            if (originals.TryGetValue(OriginalKey(entry), out var queue) && queue.Count > 0)
+            {
+                merged.Add(queue.Dequeue());
+            }
+            else
+            {
+                // Cannot happen: every entry came from an original. Fail closed rather than invent one.
+                logger.Error($"[STM] Friend list: no original response object for {entry.Kind} '{entry.Id}'; entry dropped.");
+            }
+        }
+
+        response.Friends = merged;
         return new ValueTask<string>(httpResponseUtil.GetBody(response, body?.Err ?? 0, body?.ErrMsg));
     }
+
+    private static string OriginalKey(FriendEntry entry) => $"{(int)entry.Kind}|{entry.Id}";
+
+    private static void Remember(Dictionary<string, Queue<UserDialogInfo>> originals, FriendEntry entry, UserDialogInfo original)
+    {
+        var key = OriginalKey(entry);
+        if (!originals.TryGetValue(key, out var queue))
+        {
+            originals[key] = queue = new Queue<UserDialogInfo>();
+        }
+
+        queue.Enqueue(original);
+    }
+
+    // Membership category: mercenaries are MemberCategory.Unheard (ToFriendSummary), so profile
+    // members take Default to be told apart in the invite window. Whether this reads the way we
+    // want on screen is confirmed in game in Task 7 (design 8).
+    private static UserDialogInfo ToProfileMemberDialog(ProfileCandidate candidate) => new()
+    {
+        Id = new MongoId(candidate.ProfileId),
+        Aid = candidate.Aid,
+        Info = new UserDialogDetails
+        {
+            Nickname = candidate.Nickname,
+            Side = candidate.Side,
+            Level = candidate.Level,
+            MemberCategory = MemberCategory.Default,
+            SelectedMemberCategory = MemberCategory.Default,
+        },
+    };
 
     public ValueTask<string> MergeFriendRequestInbox(string url, EmptyRequestData _, MongoId sessionId, string? previousOutput)
     {

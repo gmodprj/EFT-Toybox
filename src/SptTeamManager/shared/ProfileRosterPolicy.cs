@@ -35,6 +35,24 @@ namespace pitTeam.Shared
                 .ToList();
         }
 
+        // Registered profiles that may actually be offered: joined against the catalog's candidates
+        // by ProfileId, Ready only. A registered id missing from the catalog (deleted profile) or
+        // CurrentSession/Empty/Unreadable yields nothing - never a guess.
+        public static IReadOnlyList<ProfileCandidate> SelectRegisteredReady(IEnumerable<ProfileCandidate> candidates, IEnumerable<string> registeredProfileIds)
+        {
+            var result = new List<ProfileCandidate>();
+            if (candidates == null || registeredProfileIds == null) return result;
+            var registered = new HashSet<string>(
+                registeredProfileIds.Where(id => !string.IsNullOrWhiteSpace(id)).Select(id => id.Trim()),
+                StringComparer.Ordinal);
+            foreach (var c in candidates)
+            {
+                if (c == null || c.Availability != ProfileAvailability.Ready) continue;
+                if (registered.Contains(c.ProfileId)) result.Add(c);
+            }
+            return result;
+        }
+
         private static ProfileCandidate Classify(ProfileSnapshot s, string session, bool sessionKnown)
         {
             string id = s.ProfileId ?? string.Empty;

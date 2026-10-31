@@ -22,6 +22,8 @@
   <ItemGroup>
     <Compile Include="../SptTeamManager/shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
     <Compile Include="ProfileRosterPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/FriendListMergePolicy.cs" Link="Shared/FriendListMergePolicy.cs" />
+    <Compile Include="FriendListMergePolicyTests.cs" />
   </ItemGroup>
 
 </Project>
