@@ -16,9 +16,6 @@ public class WheelConfigTests
         Assert.Equal(0.2f, config.WheelDeadZone, 3);
         Assert.Equal(0.15f, config.MouseSensitivity, 3);
 
-        // 제스처 휠 항목을 복제해 봤더니 제스처용 아이콘과 좁은 글자칸이 딸려 와
-        // 이름이 세로로 쪼개졌다(실측). 기본은 우리가 그리는 쪽이다.
-        Assert.False(config.UseGameWheelSkin);
         Assert.True(config.IncludeHelmetVisor);
         Assert.True(config.StandDownForCoti);
     }

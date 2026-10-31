@@ -36,13 +36,6 @@ namespace GogglesWheel
         [JsonProperty("mouseSensitivity")]
         public float MouseSensitivity { get; set; } = 0.15f;
 
-        /// <summary>
-        /// 제스처 휠 항목 템플릿을 복제해 쓸지. 기본은 false —
-        /// 복제본에 제스처용 아이콘과 좁은 글자칸이 딸려 와 보기 흉했다(실측).
-        /// </summary>
-        [JsonProperty("useGameWheelSkin")]
-        public bool UseGameWheelSkin { get; set; } = false;
-
         /// <summary>힌지로 여닫이가 생긴 헬멧 자신을 항목에 넣을지.</summary>
         [JsonProperty("includeHelmetVisor")]
         public bool IncludeHelmetVisor { get; set; } = true;

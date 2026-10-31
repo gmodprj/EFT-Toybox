@@ -65,6 +65,16 @@ namespace GogglesWheel
             return best;
         }
 
+        /// <summary>
+        /// 한 항목이 차지하는 조각의 반폭(도 단위). 조각들이 틈·겹침 없이 한 바퀴를 덮는다.
+        /// 그려지는 조각과 <see cref="PickByDirection"/> 의 판정이 같은 수에서 나와야
+        /// "밝은 조각을 가리켰는데 다른 게 켜지는" 일이 생기지 않는다.
+        /// </summary>
+        public static float SectorHalfWidth(int count)
+        {
+            return count <= 0 ? 0f : 180f / count;
+        }
+
         /// <summary>짧게 눌렀을 때 여닫을 항목. 목록이 비었으면 -1.</summary>
         public static int DefaultTargetIndex(IReadOnlyList<ToggleTarget> targets, string defaultTarget)
         {

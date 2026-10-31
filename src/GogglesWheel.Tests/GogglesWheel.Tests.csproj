@@ -30,6 +30,7 @@
     <Compile Include="WheelConfigTests.cs" />
     <Compile Include="TargetPickerTests.cs" />
     <Compile Include="WheelPointerTests.cs" />
+    <Compile Include="WheelGeometryTests.cs" />
     <Compile Include="GogglesDecisionTests.cs" />
   </ItemGroup>
 
