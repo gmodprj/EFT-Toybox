@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!--
+    게임 어셈블리를 참조하지 않는다. 플러그인의 순수 파일만 링크 컴파일해
+    EFT 없이 판정 로직을 시험한다. EFT 의존부(Plugin.cs, HeadwearScanner.cs,
+    GogglesPatch.cs, PressWatcher.cs, WheelView.cs, LookBlocker.cs)는 넣지 않는다.
+  -->
+  <ItemGroup>
+    <Compile Include="..\GogglesWheel\ToggleTarget.cs" />
+    <Compile Include="..\GogglesWheel\WheelConfig.cs" />
+    <Compile Include="..\GogglesWheel\TargetPicker.cs" />
+    <Compile Include="..\GogglesWheel\GogglesDecision.cs" />
+    <Compile Include="..\GogglesWheel\WheelPointer.cs" />
+    <Compile Include="..\GogglesWheel\WheelLayout.cs" />
+    <Compile Include="WheelConfigTests.cs" />
+    <Compile Include="TargetPickerTests.cs" />
+    <Compile Include="WheelPointerTests.cs" />
+    <Compile Include="WheelGeometryTests.cs" />
+    <Compile Include="TimeoutDecisionTests.cs" />
+    <Compile Include="DeadZoneTests.cs" />
+    <Compile Include="GogglesDecisionTests.cs" />
+  </ItemGroup>
+
+</Project>
