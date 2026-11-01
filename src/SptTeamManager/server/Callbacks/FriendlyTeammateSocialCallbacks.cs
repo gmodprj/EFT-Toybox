@@ -73,7 +73,7 @@ public class FriendlyTeammateSocialCallbacks(
         }
         catch (Exception ex)
         {
-            LogFaultOnce($"read|{sessionId}|{ex.GetType().FullName}",
+            LogFaultOnce($"read|{sessionId}|{ex.GetType().FullName}|{ex.Message}",
                 $"[STM] Friend list: profile members could not be read for session '{sessionId}'; none are offered (logged once per run for this fault; it recurs on every poll until fixed). {ex}");
             readyMembers = Array.Empty<ProfileCandidate>();
         }

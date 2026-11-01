@@ -58,6 +58,10 @@ public class FriendlyTeammateMatchCallbacks(
                 return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
             }
 
+            // NOTE: the block below CANNOT currently fire. request.To arrives as an Aid string, but the
+            // registration document holds only the profile id (a MongoId), so the comparison is never true.
+            // Resolving this is a pending decision for the repository owner (see doc/WORKLOG.md,
+            // "열린 결정 — 프로필 팀원 초대 응답"). Do not rely on it, and do not delete it before that decision.
             // STM: PIT's lookup found nothing. If the id is a registered launcher-profile member, say so
             // instead of staying silent (profile members cannot be taken into a raid yet). Contained: any
             // failure here is logged and falls through to exactly the return below, as before STM.

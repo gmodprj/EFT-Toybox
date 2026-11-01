@@ -45,8 +45,8 @@ Plan 1 (foundation) is committed; **nothing has been installed or run in the gam
   4.1.0.0 client references do not exist on this machine.
 
 A profile member can be registered and will appear in the roster and the party-invite window, but
-**cannot yet be invited into a raid**: clicking invite on one sends a "not supported yet" system message
-and nothing else.
+**cannot yet be invited into a raid**: clicking invite on one currently does nothing (no message, no
+error). Wiring admission belongs to Plans 2/3.
 
 Known limitation (Plan 2 item): the native friend-list "delete" action does nothing for a profile member
 (it only removes PIT mercenaries, and the entry returns on the next poll); remove a profile member from
