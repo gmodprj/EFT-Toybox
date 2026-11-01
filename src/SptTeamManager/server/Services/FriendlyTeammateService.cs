@@ -87,7 +87,7 @@ public partial class FriendlyTeammateService(
         "LMG",
     ];
 
-    private const string DefaultLoadoutName = "Default";
+    internal const string DefaultLoadoutName = "Default";
     private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, object> InsurancePurchaseLocks = new();
 
     public FriendlyTeammateDefaultEquipmentResponse InsureTeammateEquipment(MongoId sessionId, FriendlyTeammateInsuranceRequest request)
@@ -4582,7 +4582,7 @@ public partial class FriendlyTeammateService(
         return loadedSettings;
     }
 
-    private static FriendlyTeammateSettings CreateDefaultTeammateSettings(CommonCustomization? customization = null)
+    internal static FriendlyTeammateSettings CreateDefaultTeammateSettings(CommonCustomization? customization = null)
     {
         var settings = new FriendlyTeammateSettings
         {
@@ -4721,7 +4721,7 @@ public partial class FriendlyTeammateService(
         teammate.Inventory.Equipment = teammate.Inventory.Items.First().Id;
     }
 
-    private static float NormalizeAggression(float value)
+    internal static float NormalizeAggression(float value)
     {
         if (float.IsNaN(value) || float.IsInfinity(value))
         {
@@ -4731,7 +4731,7 @@ public partial class FriendlyTeammateService(
         return Math.Clamp(value, 0f, 100f);
     }
 
-    private static FriendlyTeammateProficiencySettings NormalizeProficiency(
+    internal static FriendlyTeammateProficiencySettings NormalizeProficiency(
         FriendlyTeammateProficiencySettings? values)
     {
         values ??= new FriendlyTeammateProficiencySettings();
@@ -4760,7 +4760,7 @@ public partial class FriendlyTeammateService(
             : 50f;
     }
 
-    private static string NormalizeCombatTactic(string? value)
+    internal static string NormalizeCombatTactic(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
