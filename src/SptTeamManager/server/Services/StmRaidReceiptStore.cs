@@ -12,9 +12,10 @@ namespace pitTeam.Server.Services;
 // this store is what prevents a second deletion.
 // No caching: every call reads the document fresh. A stale cached "not applied" is exactly the
 // dangerous direction, because it would permit a second deletion.
-// A caller that is about to delete something must use TryReserve (reserve first, then delete).
-// WasApplied and Record are internal on purpose: check-then-act-then-record is the racy combination
-// TryReserve exists to close, so only TryReserve is offered outside the assembly.
+// TryReserve is the ONLY way in, deliberately: reserve first, then delete. The separate
+// WasApplied/Record pair this class used to offer was deleted rather than left unused - checking under
+// one lock and recording under another is the race TryReserve exists to close, and a method that still
+// exists is a method someone reaches for.
 // Known quiet way this guard disappears: TeammateDatabase.Wipe() deletes every document except the import
 // marker, including stm-raid-receipts.json, so a profile wipe re-opens every past raid. Harmless in practice,
 // because the same wipe removes the teammates whose gear a replay would delete - but nothing in Wipe says so.
@@ -62,57 +63,6 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
         }
     }
 
-    // True when this teammate's result for this raid was already applied - or when that cannot be
-    // determined. FAIL CLOSED: every "cannot tell" answers true.
-    // A caller that is about to delete must use TryReserve instead: WasApplied followed by Record
-    // is two separate locks, so two concurrent calls could both see "not applied".
-    internal bool WasApplied(MongoId sessionId, string raidId, string profileId)
-    {
-        // Blank keys cannot identify a receipt, so they can never be proven "not applied".
-        if (!RaidReceiptKeyPolicy.IsUsableKey(raidId, profileId))
-        {
-            logger.Error("[STM] WasApplied called with a blank raidId or profileId; treated as already applied so nothing is deleted.");
-            return true;
-        }
-        raidId = raidId.Trim();
-        profileId = profileId.Trim();
-        try
-        {
-            lock (sync) return Load(sessionId).Any(r => Matches(r, raidId, profileId));
-        }
-        catch (Exception ex)
-        {
-            // Answer "already applied" on purpose. Skipping a legitimate deletion costs the player one
-            // teammate's gear surviving a raid it should not have; answering false here could delete
-            // real equipment a second time, and there is no undo. Logged as an error so this is not
-            // mistaken for a real receipt.
-            logger.Error($"[STM] Raid receipts could not be read; treating raid '{raidId}' / profile '{profileId}' as ALREADY APPLIED (fail closed, nothing will be deleted): {ex}");
-            return true;
-        }
-    }
-
-    // Idempotent per key. If the existing document cannot be read this throws instead of writing:
-    // overwriting an unreadable document would erase the receipts it holds and re-open those raids.
-    // A caller that is about to delete must use TryReserve instead (it holds one lock across check and write).
-    internal void Record(MongoId sessionId, StmRaidReceipt receipt)
-    {
-        ArgumentNullException.ThrowIfNull(receipt);
-        if (string.IsNullOrWhiteSpace(receipt.RaidId))
-            throw new InvalidOperationException("StmRaidIdMissing");
-        if (string.IsNullOrWhiteSpace(receipt.ProfileId))
-            throw new InvalidOperationException("StmProfileIdMissing");
-        var raidId = receipt.RaidId.Trim();
-        var profileId = receipt.ProfileId.Trim();
-
-        lock (sync)
-        {
-            var receipts = Load(sessionId).ToList();
-            if (receipts.Any(r => Matches(r, raidId, profileId))) return;
-            receipts.Add(receipt with { RaidId = raidId, ProfileId = profileId });
-            Save(sessionId, receipts);
-        }
-    }
-
     // The match judgment lives in RaidReceiptKeyPolicy (pure, tested): trim, ignore case, both halves.
     // Deliberately OrdinalIgnoreCase, unlike StmProfileMemberStore's Ordinal/==: there a near miss on a
     // profile id is harmless, here a near miss reads as "not applied" and permits a second deletion.
@@ -124,8 +74,8 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
     // Two different states must not be confused: no document at all (nothing applied yet -> empty list)
     // and a document whose "receipts" is null or missing (key drift, hand edit, truncation). The second
     // is UNREADABLE, not empty: treating it as empty would permit a deletion and then overwrite the file,
-    // discarding every receipt it held. It throws, which the callers' fail-closed handling turns into
-    // "already applied" / refused (and logs at Error); Record lets it propagate.
+    // discarding every receipt it held. It throws, which TryReserve's fail-closed catch turns into a
+    // refusal (and logs at Error), so nothing is deleted and nothing is overwritten.
     // Chosen over [JsonRequired] because that depends on how SPT's serializer is configured; this check
     // does not. The property has no default value so a missing key also arrives here as null.
     private List<StmRaidReceipt> Load(MongoId sessionId)

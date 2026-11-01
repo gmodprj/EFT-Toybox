@@ -4,8 +4,11 @@ namespace pitTeam.Server.Models;
 
 // Proof that one teammate's result for one raid was already applied to their launcher profile.
 // The idempotence key is RaidId + ProfileId and nothing else: two teammates in one raid are two
-// receipts, and one teammate in two raids is two receipts. Action says what was done (for a human
-// reading the stored document); it is never part of the key.
+// receipts, and one teammate in two raids is two receipts. Action is the action the reservation was
+// TAKEN FOR, not a record of what happened: the receipt is written before the decision is made, so it
+// reads "strip-worn-gear" even on receipts where nothing was stripped (an escape, a generated loadout,
+// an inventory that could not be read). It is for a human reading the stored document and is never
+// part of the key.
 // AppliedAtUnixSeconds is UTC seconds (DateTimeOffset.UtcNow.ToUnixTimeSeconds()).
 // Property names are pinned: this is persisted data, and renaming a C# property later must not
 // orphan receipts already on disk - an orphaned receipt would let a raid be applied a second time.

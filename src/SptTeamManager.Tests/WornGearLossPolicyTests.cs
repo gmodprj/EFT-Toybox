@@ -46,7 +46,7 @@ public class WornGearLossPolicyTests
     }
 
     [Fact]
-    public void 보안_컨테이너와_그_내용물은_지키다()
+    public void 보안_컨테이너와_그_내용물은_지킨다()
     {
         var selected = WornGearLossPolicy.SelectLostRootIds(Profile(), Root);
         var gone = WornGearLossPolicy.CollectSubtreeIds(Profile(), selected);
@@ -67,7 +67,7 @@ public class WornGearLossPolicyTests
     }
 
     [Fact]
-    public void 칼_완장_인식표_특수슬롯은_지키다()
+    public void 칼_완장_인식표_특수슬롯은_지킨다()
     {
         var items = Profile();
         items.Add(Worn("radio", "SpecialSlot1"));
@@ -81,7 +81,7 @@ public class WornGearLossPolicyTests
     }
 
     [Fact]
-    public void 주머니에_달린_인식표나_특수슬롯은_짐이_아니라_지키다()
+    public void 주머니에_달린_인식표나_특수슬롯은_짐이_아니라_지킨다()
     {
         var items = Profile();
         // PIT 은 스폰 시 특수 슬롯을 주머니 아래로 재부모화한다. 그래도 지워지면 안 된다.

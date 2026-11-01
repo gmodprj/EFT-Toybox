@@ -58,6 +58,8 @@ public class ProfileMemberLookupTests
         {
             var r = ProfileMemberLookup.ByAid(1001, new[] { "p1", "p2" }, order);
             Assert.Equal(MemberLookupResult.NotAvailable, r.Result);
+            // 막은 쪽의 ProfileId 가 담겨야 한다 - 사유만 맞고 id 가 Ready 쪽이면 로그가 엉뚱한 프로필을 가리킨다.
+            Assert.Equal("p1", r.ProfileId);
             Assert.Equal(ProfileAvailability.Empty, r.Availability);
         }
     }
