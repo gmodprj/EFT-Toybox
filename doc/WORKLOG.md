@@ -2633,7 +2633,12 @@ return teammate ?? throw new FriendlyTeammateException($"Unable to find teammate
 [Info   :SPT Team Manager] [UI] Rebuilt group preview with 3 players
 ```
 
-**영향 범위**: 레이드 전 매치메이커 **파티 미리보기 행**만. 팀원은 실제로 스폰한다(1차 레이드에서 둘 다 `Real` 장비로 스폰·생환 확인).
+**영향 범위** (호출부를 읽어 정정, 2026-11-01): `BuildGroupPlayer` 가 널을 돌려주면 호출 루프가 `continue` 하므로
+(`RaidStartPatch.cs:290-294`, `:336-341`) 그 팀원이 **매치메이커의 `GroupPlayers` 목록에 들어가지 않는다.**
+실측 로그의 `groupPlayers=2`(플레이어+용병)가 이와 일치한다 — 같은 줄의 `Rebuilt group preview with 3 players` 는
+다른 곳에서 세는 수이고, 그걸 근거로 "미리보기는 정상" 이라고 본 것은 틀렸다. 따라서 영향은 두 가지다:
+레이드 전 **매치메이커 파티 목록**, 그리고 **auto-join(지난 분대 자동 복원)이 프로필 팀원을 되살리지 못한다**.
+**스폰은 영향 없다** — 스폰은 서버의 초대 알림과 follower-generate 가 몰고, 1·2차 레이드에서 둘 다 확인됐다.
 **회귀 아님**: 계획 2 는 클라이언트 코드를 건드리지 않았고 이 경로도 건드리지 않았다. 계획서의 수정 대상 목록에 이 파일이 없었고,
 파티 미리보기가 Task 9 체크리스트에도 없어 설계·검토 단계에서 드러나지 않았다. 프로필 팀원이 **이제 실제로 레이드에 들어가게 되어**
 비로소 눈에 띈 것이다.
