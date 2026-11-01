@@ -75,6 +75,7 @@ public class StmSpawnProfileFactory(
 
         // Both paths are profile clones, so these already hold the profile's values; setting them
         // keeps the guarantee local instead of depending on how `spawn` was built.
+        // Must equal the Id the invite announced (FriendlyTeammateMatchCallbacks.BuildProfileMemberAccept); member.ProfileId is the source of truth.
         spawn.Id = new MongoId(member.ProfileId);
         spawn.Aid = member.Aid;
         EnsurePmcRole(spawn, member.Side);

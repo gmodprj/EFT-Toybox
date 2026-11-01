@@ -98,10 +98,33 @@ public class FriendlyTeammateMatchCallbacks(
 
                 if (!string.IsNullOrWhiteSpace(unavailableReason))
                 {
-                    mailSendService.SendSystemMessageToPlayer(
-                        sessionId,
-                        $"Cannot add profile teammate {request.To} to the raid group: {unavailableReason}.",
-                        null);
+                    // Same shape as PIT's rejection above: decline notification then system message,
+                    // after the 1s delay and inside the mode gate. Aid/Nickname come from the request
+                    // because no member was resolved.
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(1000);
+                        await FriendlyModeRequestGate.RunIfCurrent(modeGeneration, async () =>
+                        {
+                            await notificationSendHelper.SendMessageAsync(
+                                sessionId,
+                                new FriendlyGroupMatchInviteDecline
+                                {
+                                    EventType = NotificationEventType.groupMatchInviteDecline,
+                                    EventIdentifier = new MongoId(),
+                                    Aid = request.To,
+                                    Nickname = request.To,
+                                }
+                            );
+
+                            mailSendService.SendSystemMessageToPlayer(
+                                sessionId,
+                                $"Cannot add profile teammate {request.To} to the raid group: {unavailableReason}.",
+                                null);
+                        });
+                    });
+
+                    return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
                 }
             }
 
@@ -147,8 +170,9 @@ public class FriendlyTeammateMatchCallbacks(
         {
             EventType = NotificationEventType.groupMatchInviteAccept,
             EventIdentifier = new MongoId(),
-            Id = pmc.Id?.ToString(),
-            Aid = pmc.Aid?.ToString(),
+            // Must equal StmSpawnProfileFactory.Build's spawn.Id: the client is told this id here and handed a bot with it at raid entry. member.ProfileId is the source of truth (the key the profile was read by).
+            Id = member.ProfileId,
+            Aid = member.Aid.ToString(),
             Info = new CharacterInfo
             {
                 Nickname = info.Nickname,
