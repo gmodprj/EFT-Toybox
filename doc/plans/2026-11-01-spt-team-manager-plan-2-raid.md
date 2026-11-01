@@ -63,7 +63,9 @@
 [Fact] void 등록되지_않은_Aid_는_NotAMember_다()
 [Fact] void 등록됐으나_Empty_인_후보는_NotAvailable_이고_사유가_담긴다()
 [Fact] void Aid_가_0_이하면_NotAMember_다()
-[Fact] void 같은_Aid_후보가_둘이면_Ready_인_쪽을_고른다()
+[Fact] void 같은_Aid_에_Ready_와_Empty_가_섞이면_Empty_가_막아_NotAvailable_이다()
+[Fact] void 같은_Aid_의_한쪽이_CurrentSession_이면_Ready_쪽이_있어도_막힌다_순서와_무관()
+[Fact] void 같은_Aid_의_Ready_가_둘이면_어느_쪽도_고르지_않는다()
 ```
 
 - [ ] **Step 2: 테스트가 실패하는지 확인한다** — Run: `dotnet test src/SptTeamManager.Tests/SptTeamManager.Tests.csproj` / Expected: FAIL (`ProfileMemberLookup` 없음)
