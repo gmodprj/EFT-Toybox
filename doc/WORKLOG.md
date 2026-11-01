@@ -2919,3 +2919,68 @@ Hawk 쪽은 결정대로다 — 프로필이 그대로이고(지울 재산이 �
 **따라서 서버측 자리 관문은 만들지 않는다.** 계획 1 이 만들어 두고 호출부 없이 남긴 `PartySlotPolicy` 는
 이 실측으로 용도가 사라졌다. 지우지는 않되(순수·테스트 있음) **호출부를 붙이지 않는다**는 것이 결론이고,
 그 판단 근거가 이 항목이다. 계획 1 에서 이월된 관문 항목도 이것으로 닫힌다.
+
+## 2026-11-02 — STM 열린 항목 1: 프로필 조회의 네 번째 경로
+
+인계 문서 §5 의 1번. 계획 2 가 같은 구멍을 세 곳(초대·팔로워 생성·레이드 결과)에서 메웠는데
+**네 번째 경로가 수정 대상 목록에 없었다.** 그 경로를 메웠다. 브랜치 `fix/stm-profile-view-fourth-path`.
+
+### 무엇이 망가져 있었나 (코드로 확인)
+
+`/singleplayer/pitfireteam/teammate/profile` 은 포크 고유 경로이고, 클라이언트가 **지난 분대를 복원할 때**
+(auto-join) 팀원마다 한 번 묻는다 — `RaidStartPatch.BuildGroupPlayer`(client/Patches/RaidStartPatch.cs:432).
+서버 쪽 핸들러는 PIT 의 용병 조회로 바로 갔다:
+
+```
+FriendlyTeammateCallbacks.GetProfile → teammateService.GetTeammateProfile → FindByAccountId
+```
+
+`StmProfileMemberResolver` 는 `FriendlyTeammateMatchCallbacks` 에만 주입돼 있었고 이 클래스에는 없었다.
+그래서 프로필 팀원의 Aid 로 물으면 PIT 가 용병을 못 찾아 `FriendlyTeammateException` 을 던지고,
+핸들러가 `err != 0` 을 돌려주고, 클라이언트는 **경고 한 줄만 로그에 남기고 그 팀원을 복원 분대에서
+조용히 떨어뜨렸다**(`[UI] Failed to build auto-join teammate ...`). 인계 문서가 "auto-join 미검증" 으로
+남겨 둔 자리의 정체가 이것이다.
+
+### 고친 모양
+
+앞의 셋과 같다 — **STM 해석기를 PIT 보다 먼저 묻고**, 3값 계약(참 / 거짓+사유 / 거짓+널 = PIT 경로로)
+을 그대로 쓴다.
+
+- 새 파일 `server/Services/StmProfileViewFactory.cs`(STM 소유). 해석기를 묻고, **복제본**에서 응답을 만든다.
+- PIT 파일 수정은 둘뿐이다: `FriendlyTeammateService.ToOtherProfileResponse` 를 `private` → `internal`
+  승격(불변식 4 가 허용하는 유일한 변경), `FriendlyTeammateCallbacks` 에 생성자 인자 한 줄과 `GetProfile`
+  앞의 분기. 업스트림 병합면을 넓히지 않으려고 판단은 전부 STM 파일에 뒀다.
+
+**`PmcData` 가 `BotBase` 를 상속한다**는 계획 2 의 사실이 여기서 또 쓸모가 있었다 — PIT 의 매퍼가
+`BotBase` 를 받으므로 프로필의 PMC 복제본을 그대로 넣을 수 있다. 응답 매퍼를 새로 쓰지 않았다.
+
+### 한 가지 갈라진 곳 — 인벤토리 범위
+
+PIT 의 매퍼는 `Inventory.Items` 를 **그대로** `Equipment.Items` 에 넣는다. 용병은 자기 장비 말고
+가진 것이 없으니 그래도 됐다. 프로필 팀원은 **스태시째**가 그 목록에 들어 있다. 그대로 보내면
+조회 화면 한 번에 수천 개 아이템이 실리고, 입고 있지도 않은 것이 착용 장비로 보인다.
+
+그래서 복제본에서 **장비 트리만 남기고 나머지를 지운다.** 어느 id 가 그 트리인가는 새로 쓰지 않고
+`WornGearLossPolicy.CollectSubtreeIds`(순수·테스트 있음, `StmRaidOutcomeService` 가 이미 같은 프로필의
+장비 트리를 그것으로 가려낸다)에 묻는다. 장비 루트가 비면 **아이템 없이 신원만** 보낸다(닫힌 쪽) —
+루트를 추측해 엉뚱한 장비를 보여 주는 것보다 빈 화면이 낫다.
+
+### 검증 상태
+
+- 서버 빌드 경고 0 오류 0, 단위 테스트 **138개 전부 통과**(총 개수 기대값과 일치).
+- **새 순수 정책이 없다**(기존 정책을 재사용했다). 그래서 이 수정에 새 단위 테스트가 없고,
+  `server/` 는 설계상 테스트가 닿지 않는다 — 계획 2 의 `BuildProfileMemberAccept` 와 같은 처지다.
+  **코드 리뷰와 인게임 확인이 유일한 증거다.** 인게임으로 볼 것:
+  1. 프로필 팀원을 데리고 레이드를 한 판 한 뒤 메인메뉴로 돌아와, **지난 분대가 복원되는지**
+     (그 프로필 팀원이 파티 창에 다시 뜨는지). 이전에는 조용히 빠졌다.
+  2. 복원된 타일의 **닉네임·레벨·진영**이 그 프로필의 것인지.
+  3. 서버 로그에 `[STM] 프로필 조회:` 경고가 없는지(있으면 사유가 찍힌다).
+  4. **용병만 데려간 분대의 auto-join 이 그대로인지**(PIT 경로 회귀 확인).
+
+### 발견 — 같은 성격의 다섯 번째 경로 (이번 범위 밖, 아직 미판정)
+
+`/client/profile/view` 를 받는 `FriendlyTeammateSocialCallbacks.MergeProfileView` 도 프로필 팀원을
+모른다. PIT 의 보류 팀원·용병·신병을 차례로 묻고 전부 아니면 SPT 의 원래 응답을 그대로 흘린다.
+**친구 목록에서 프로필 팀원을 눌러 조회 화면을 열었을 때** 무엇이 보이는지는 SPT 가 다른 런처 프로필을
+aid 로 돌려주는지에 달려 있고, 그것은 **역컴파일이나 실측 없이는 모른다 — 추측하지 않는다.**
+고칠 자리가 생기면 모양은 이번 것과 같다(`StmProfileViewFactory.TryBuildView` 를 그대로 부르면 된다).
