@@ -18,8 +18,10 @@ public record StmRaidReceipt(
     [property: JsonPropertyName("appliedAtUnixSeconds")] long AppliedAtUnixSeconds);
 
 // Shape of the stm-raid-receipts.json document.
+// Receipts has no default on purpose: a missing or null "receipts" must read back as null so the store
+// can tell "unreadable document" from "no document" (see StmRaidReceiptStore.Load).
 public record StmRaidReceiptsDocument
 {
     [JsonPropertyName("receipts")]
-    public List<StmRaidReceipt> Receipts { get; set; } = [];
+    public List<StmRaidReceipt>? Receipts { get; set; }
 }

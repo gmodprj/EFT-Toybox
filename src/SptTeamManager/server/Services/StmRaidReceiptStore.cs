@@ -13,6 +13,11 @@ namespace pitTeam.Server.Services;
 // No caching: every call reads the document fresh. A stale cached "not applied" is exactly the
 // dangerous direction, because it would permit a second deletion.
 // A caller that is about to delete something must use TryReserve (reserve first, then delete).
+// WasApplied and Record are internal on purpose: check-then-act-then-record is the racy combination
+// TryReserve exists to close, so only TryReserve is offered outside the assembly.
+// Known quiet way this guard disappears: TeammateDatabase.Wipe() deletes every document except the import
+// marker, including stm-raid-receipts.json, so a profile wipe re-opens every past raid. Harmless in practice,
+// because the same wipe removes the teammates whose gear a replay would delete - but nothing in Wipe says so.
 [Injectable(InjectionType.Singleton)]
 public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<StmRaidReceiptStore> logger)
 {
@@ -28,7 +33,7 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
     // failure - is false, so the caller does nothing. Uniformly fail closed.
     // If the deletion then fails, the receipt still says "applied" and a retry skips it: one
     // teammate's gear surviving is the price; deleting a second set has no undo.
-    public bool TryReserve(MongoId sessionId, string? raidId, string? profileId, string action)
+    public bool TryReserve(MongoId sessionId, string? raidId, string? profileId, string? action)
     {
         if (!RaidReceiptKeyPolicy.IsUsableKey(raidId, profileId))
         {
@@ -61,7 +66,7 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
     // determined. FAIL CLOSED: every "cannot tell" answers true.
     // A caller that is about to delete must use TryReserve instead: WasApplied followed by Record
     // is two separate locks, so two concurrent calls could both see "not applied".
-    public bool WasApplied(MongoId sessionId, string raidId, string profileId)
+    internal bool WasApplied(MongoId sessionId, string raidId, string profileId)
     {
         // Blank keys cannot identify a receipt, so they can never be proven "not applied".
         if (!RaidReceiptKeyPolicy.IsUsableKey(raidId, profileId))
@@ -89,7 +94,7 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
     // Idempotent per key. If the existing document cannot be read this throws instead of writing:
     // overwriting an unreadable document would erase the receipts it holds and re-open those raids.
     // A caller that is about to delete must use TryReserve instead (it holds one lock across check and write).
-    public void Record(MongoId sessionId, StmRaidReceipt receipt)
+    internal void Record(MongoId sessionId, StmRaidReceipt receipt)
     {
         ArgumentNullException.ThrowIfNull(receipt);
         if (string.IsNullOrWhiteSpace(receipt.RaidId))
@@ -109,12 +114,26 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
     }
 
     // The match judgment lives in RaidReceiptKeyPolicy (pure, tested): trim, ignore case, both halves.
+    // Deliberately OrdinalIgnoreCase, unlike StmProfileMemberStore's Ordinal/==: there a near miss on a
+    // profile id is harmless, here a near miss reads as "not applied" and permits a second deletion.
+    // Do not "unify" the two stores.
     private static bool Matches(StmRaidReceipt r, string raidId, string profileId) =>
         RaidReceiptKeyPolicy.KeysMatch(r.RaidId, r.ProfileId, raidId, profileId);
 
     // Per logged-in profile (keyed by sessionId), independent of the Guns for Hire / Allegiance mode.
-    private List<StmRaidReceipt> Load(MongoId sessionId) =>
-        storage.ReadSharedDocument<StmRaidReceiptsDocument>(sessionId, Document)?.Receipts ?? [];
+    // Two different states must not be confused: no document at all (nothing applied yet -> empty list)
+    // and a document whose "receipts" is null or missing (key drift, hand edit, truncation). The second
+    // is UNREADABLE, not empty: treating it as empty would permit a deletion and then overwrite the file,
+    // discarding every receipt it held. It throws, which the callers' fail-closed handling turns into
+    // "already applied" / refused (and logs at Error); Record lets it propagate.
+    // Chosen over [JsonRequired] because that depends on how SPT's serializer is configured; this check
+    // does not. The property has no default value so a missing key also arrives here as null.
+    private List<StmRaidReceipt> Load(MongoId sessionId)
+    {
+        var doc = storage.ReadSharedDocument<StmRaidReceiptsDocument>(sessionId, Document);
+        if (doc is null) return [];
+        return doc.Receipts ?? throw new InvalidDataException($"Raid receipts document has no readable 'receipts' list: {Document}");
+    }
 
     private void Save(MongoId sessionId, List<StmRaidReceipt> receipts) =>
         storage.WriteSharedDocument(sessionId, Document, new StmRaidReceiptsDocument { Receipts = receipts });
