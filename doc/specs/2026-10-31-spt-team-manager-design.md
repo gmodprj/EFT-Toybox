@@ -45,6 +45,8 @@ STM이 바꾸려는 것은 팀원이 **어디서 오는가** 하나다. SPT 런�
 
 **5-1. PIT 구조.** 클라이언트 330개 `.cs`(BepInEx, .NET Framework 4.7.2) + 서버 98개 `.cs`(net10.0, `SPTarkov.Server.Core` 4.1.0 참조) + 선택 SAIN 애드온 47개. 라이선스 MIT. 필수 의존: BigBrain ≥1.5.0, Waypoints - Expanded Navmesh ≥1.9.0.
 
+→ **정정(2026-11-01, 실측).** "라이선스 MIT"는 모드 페이지의 표기이고, 업스트림 저장소에는 LICENSE 파일이 없다. 자세한 것은 §6-1 의 정정.
+
 **5-2. 팀원은 모드 소유 프로필이다.** PIT 문서 원문: "Teammates are mod-owned profiles, not full independent stock `SptProfile` accounts." 프로필별 LiteDB(`Resources/teammates/<profileId>.db`, Allegiance는 `teammates-allegiance/`)에 AES-GCM으로 암호화해 저장한다. LiteDB 5.0.21, `LiteDB.dll` 하나만 함께 배포한다.
 
 **5-3. 명단은 네이티브 친구 목록으로 간다.** PIT는 `/client/friend/list`, `/client/friend/request/*`, `/client/profile/view`, `/client/friend/delete`를 `StaticRouter`로 소유하고 팀원을 가짜 친구로 지어내 응답에 넣는다. 게임의 "파티에 초대" 창이 그 응답을 그린다. 실제 프로필의 `friends` 배열은 비어 있다(`[]`로 확인).
@@ -90,6 +92,8 @@ Exp/ExpHeal, Exp/ExpExitStatus
 
 **5-14. 스태시 재검증 경로에 이미 사고 기록이 있다.** `doc/fixes/2026-10-27-pit-stash-ammo.md`. PIT는 팀원 생성 때 플레이어 스태시 전체를 서버에 저장했다 다시 읽으며 EFT 필터로 재검증하는데(`OtherPlayerProfileScreenPatch.ApplyServerSavedPlayerStashSnapshot`), 규칙에 맞지 않는 아이템 하나(9x19 탄창에 든 5.56 소총탄)에 걸려 전체가 실패했다. 같은 문서에 "동료 3까지는 명단에 보이는데 4, 5는 만들어도 안 보임"도 기록돼 있다. 또 `doc/fixes/2026-10-27-pit-lootpatrol-nre.md`에 `LootPatrolLayer.GetDecision` NRE가 있으나 PIT가 스스로 잡아 삼킨다.
 
+→ **정정(2026-11-01, 실측).** 이 단락의 "같은 문서에 "동료 3까지는 명단에 보이는데 4, 5는 만들어도 안 보임"도 기록돼 있다"는 사실이지만, §6-2 가 이를 네이티브 4명 한계로 읽은 것은 **틀렸다.** 그 문서(`doc/fixes/2026-10-27-pit-stash-ammo.md:43`)는 이 증상을 이 재검증 실패로 팀원 생성이 중간에 끊긴 결과로 진단한다. 즉 4, 5 가 안 보인 것은 이 사고의 증상이다.
+
 ## 6. 어떻게 — 정한 것
 
 ### 6-1. 형태
@@ -97,6 +101,8 @@ Exp/ExpHeal, Exp/ExpExitStatus
 PIT Fireteam을 포크한 **단일 모드**다. 설치하면 PIT는 뺀다. 기능은 잃지 않는다 — 용병은 STM 안에서 계속 산다.
 
 MIT이므로 원 저작권 고지를 유지하고, 포크임을 README와 모드 페이지에 밝힌다. GUID·어셈블리 이름·설정 파일 이름·DB 경로는 전부 새 이름으로 바꿔 PIT와 파일이 섞이지 않게 한다.
+
+→ **정정(2026-11-01, 실측).** "MIT이므로 원 저작권 고지를 유지한다"의 전제가 확인되지 않았다. **업스트림 저장소에는 LICENSE 파일이 없다**(`git ls-files src/SptTeamManager | grep -i licen` 이 빈 출력). MIT 는 모드 페이지(https://sp-mod.com/mod/2676/pit-fireteam)의 표기일 뿐이다. 따라서 유지할 고지 파일이 없고, 문서는 MIT 를 사실로 단정하지 않는다(`src/SptTeamManager/README.md`). 더해서 복사된 SAIN 코드의 고지 파일 `addon/SAIN-LICENSE.txt` 가 업스트림에서 이미 삭제돼 있고 업스트림 자신이 미해결로 적어 두었다(`addon/docs/References.md:24`, `addon/docs/Validation.md:566`). 포크가 이를 물려받았으므로 **배포 전에 해소해야 한다.** 저작자 표시(Author·Url)는 PitAlex 와 원 저장소로 유지한다.
 
 ### 6-2. 팀원 두 종류
 
@@ -113,6 +119,8 @@ MIT이므로 원 저작권 고지를 유지하고, 포크임을 README와 모드
 프로필 팀원 후보는 `SaveServer.GetProfiles()`에서 읽되 **지금 로그인한 세션의 프로필은 뺀다.** `characters.pmc.Info`가 없는 프로필(§5-6)은 "게임에 한 번 들어가야 합니다"로 표시하고 팀에 넣지 못하게 한다 — 닫힌 쪽으로 넘어뜨린다.
 
 **인원.** 네이티브 파티 창의 한계가 **총 4명**이다. 플레이어를 뺀 팀원 자리는 **3**이고, 프로필 팀원과 용병이 그 3자리를 함께 쓴다. §5-14의 "4, 5는 안 보임"은 PIT의 결함이 아니라 이 한계이므로 수리 대상이 아니다. 명단에는 4명 이상을 등록할 수 있고, 한 레이드에 데려가는 수만 3으로 묶인다.
+
+→ **정정(2026-11-01, 실측).** 위 문장의 "§5-14의 "4, 5는 안 보임"은 PIT의 결함이 아니라 이 한계이므로 수리 대상이 아니다"는 **틀렸다.** 인용한 출처 `doc/fixes/2026-10-27-pit-stash-ammo.md:43` 이 반대로 말한다: "PIT 만 걸린다. 생성이 중간에 끊기니 명단에 안 들어가고(4, 5 가 안 보이는 이유)". 그 증상은 스태시 재검증 버그로 팀원 생성이 중간에 끊긴 PIT 결함이고 이미 진단돼 있었다(§5-14 와 계획 2 의 수리 대상). 팀원 자리 상한 3 자체는 파티 창 한계에 대한 사용자 진술에 근거해 유지한다. 또 `PartySlotPolicy`(순수 정책)는 만들어 두었으나 서버가 파티 인원을 알 길이 없어(`invite/send` 는 `{To, InLobby}` 만 싣고 수락·탈퇴·추방 라우트가 없다) **초대 경로에 연결하지 않았다** — 클라이언트→서버 구성 보고 채널이 생길 때의 관문이다(계획 2·3).
 
 ### 6-3. 화면 (A안)
 
