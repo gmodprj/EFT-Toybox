@@ -27,25 +27,41 @@ namespace pitTeam.Shared
                     StringComparer.Ordinal);
                 if (registered.Count == 0) return None;
 
-                // Only registered candidates carrying this exact Aid are in play.
-                var matches = candidates
-                    .Where(c => c != null && c.Aid == aid && registered.Contains((c.ProfileId ?? string.Empty).Trim()))
+                // An availability value this code does not know is never passed through as usable.
+                static ProfileAvailability Known(ProfileAvailability a) =>
+                    Enum.IsDefined(typeof(ProfileAvailability), a) ? a : ProfileAvailability.Unreadable;
+
+                // Candidates carrying this exact Aid; only registered ones can become a teammate.
+                var sameAid = candidates.Where(c => c != null && c.Aid == aid).ToList();
+                var matches = sameAid
+                    .Where(c => registered.Contains((c.ProfileId ?? string.Empty).Trim()))
                     .ToList();
                 if (matches.Count == 0) return None;
+
+                // The game's Aid refers to the logged-in player when ANY profile with that Aid is the current
+                // session (a copied profile file shares its Aid), registered or not. Never a teammate (spec 6-9).
+                if (sameAid.Any(c => c.Availability == ProfileAvailability.CurrentSession))
+                {
+                    var cur = matches.FirstOrDefault(c => c.Availability == ProfileAvailability.CurrentSession);
+                    return new MemberLookup(MemberLookupResult.NotAvailable, cur?.ProfileId.Trim(), ProfileAvailability.CurrentSession);
+                }
+
+                // Blocking precedence, most blocking first, so the reason never depends on input order.
+                foreach (var blocker in new[] { ProfileAvailability.Unreadable, ProfileAvailability.Empty })
+                {
+                    var hit = matches.FirstOrDefault(c => Known(c.Availability) == blocker);
+                    if (hit != null)
+                        return new MemberLookup(MemberLookupResult.NotAvailable, hit.ProfileId.Trim(), blocker);
+                }
 
                 var ready = matches.Where(c => c.Availability == ProfileAvailability.Ready).ToList();
                 if (ready.Count == 1)
                     return new MemberLookup(MemberLookupResult.Ready, ready[0].ProfileId.Trim(), ProfileAvailability.Ready);
 
-                // Two Ready profiles claiming one Aid: we cannot tell which one is meant, so take neither.
-                if (ready.Count > 1)
-                    return new MemberLookup(MemberLookupResult.NotAvailable, null, ProfileAvailability.Unreadable);
-
-                // Not Ready anywhere: report the first match's own availability so the caller can say why.
-                // An availability value this code does not know is not passed through as usable.
-                var first = matches[0];
-                var why = Enum.IsDefined(typeof(ProfileAvailability), first.Availability) ? first.Availability : ProfileAvailability.Unreadable;
-                return new MemberLookup(MemberLookupResult.NotAvailable, first.ProfileId.Trim(), why);
+                // Two or more Ready profiles claim one Aid: the cause is an AMBIGUOUS Aid. There is no enum value
+                // for that and adding one would change an interface Task 2 builds on, so it is deliberately
+                // reported as Unreadable with no ProfileId - neither profile is taken.
+                return new MemberLookup(MemberLookupResult.NotAvailable, null, ProfileAvailability.Unreadable);
             }
             catch (Exception)
             {

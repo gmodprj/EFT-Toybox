@@ -50,6 +50,12 @@
 
 `aid <= 0`은 `NotAMember`다. 등록돼 있으나 후보가 `Ready`가 아니면 `NotAvailable`이고, 그때 `Availability`를 함께 돌려주어 호출자가 사유를 말할 수 있게 한다.
 
+> **정정(2026-11-01, Task 1 리뷰).** 처음에는 "같은 Aid 후보가 둘이면 `Ready`인 쪽을 고른다"만 적었는데 **구멍이 있었다.** 그 규칙대로면 `CurrentSession` 프로필과 `Ready` 프로필이 Aid를 공유할 때(프로필 파일을 복사하면 생긴다) `Ready` 쪽이 이겨, **지금 로그인한 프로필의 Aid가 팀원으로 해석된다** — 설계 §6-9의 "어떤 경로로도 팀원이 될 수 없다"가 뚫린다.
+>
+> 그래서 **가용성에 막는 순서를 둔다.** 같은 Aid에 걸린 후보 중 하나라도 `CurrentSession`이면 **`Ready` 선택보다 먼저** `NotAvailable` + `CurrentSession`으로 떨어뜨린다. 그 다음은 `Unreadable`, 그 다음이 `Empty`다 — 가장 막는 쪽이 먼저다. 사유가 입력 순서에 따라 달라지지 않게 하는 효과도 있다.
+>
+> `Ready`가 둘이면 어느 프로필인지 가릴 수 없으므로 `NotAvailable` + `Unreadable`로 막는다(§6-9: 판단이 서지 않으면 사용 불가).
+
 - [ ] **Step 1: 실패하는 테스트를 쓴다**
 
 ```csharp
