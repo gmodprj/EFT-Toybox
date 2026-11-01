@@ -105,6 +105,22 @@ public class StmRaidOutcomeService(
             if (plan.Action != OutcomeAction.StripWornGear)
             {
                 logger.Info($"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}') - {plan.Reason}");
+
+                // A teammate that went in with a GENERATED loadout and did not come back leaves a lootable
+                // corpse whose gear belongs to no profile at all. Nothing was deleted here, so nothing is
+                // released either, and the raid-entry protection still stands - which means anything the
+                // player strips off that corpse is removed again at /client/match/local/end. That is
+                // deliberate: releasing it would turn an unequipped profile into an endless gear supply
+                // (invite it bare, let it die, loot the corpse, repeat). But the disappearance is silent
+                // and reads exactly like a bug, so it is said out loud here. Decided 2026-11-01; the
+                // reasoning is in doc/WORKLOG.md.
+                if (!escaped && gearKind == SpawnGearKind.Temporary)
+                {
+                    logger.Info(
+                        $"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}')는 임시 장비로 나가 죽었다. " +
+                        $"그 장비는 어느 프로필의 재산도 아니므로 보호를 풀지 않는다 - 시체에서 털어 나온 물건은 레이드 종료 때 사라진다(의도된 동작).");
+                }
+
                 return;
             }
 
