@@ -5,10 +5,15 @@ using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Eft.Ws;
+using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Services.Commerce;
 using SPTarkov.Server.Core.Utils;
+using SPTarkov.Server.Core.Utils.Cloners;
+
+using CommonCustomization = SPTarkov.Server.Core.Models.Eft.Common.Tables.Customization;
 
 namespace pitTeam.Server.Callbacks;
 
@@ -20,7 +25,8 @@ public class FriendlyTeammateMatchCallbacks(
     HttpResponseUtil httpResponseUtil,
     NotificationSendHelper notificationSendHelper,
     MailSendService mailSendService,
-    StmProfileMemberStore profileMemberStore,
+    StmProfileMemberResolver profileMemberResolver,
+    ICloner cloner,
     ISptLogger<FriendlyTeammateMatchCallbacks> logger
 )
 {
@@ -58,29 +64,44 @@ public class FriendlyTeammateMatchCallbacks(
                 return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
             }
 
-            // NOTE: the block below CANNOT currently fire. request.To arrives as an Aid string, but the
-            // registration document holds only the profile id (a MongoId), so the comparison is never true.
-            // Resolving this is a pending decision for the repository owner (see doc/WORKLOG.md,
-            // "열린 결정 — 프로필 팀원 초대 응답"). Do not rely on it, and do not delete it before that decision.
-            // STM: PIT's lookup found nothing. If the id is a registered launcher-profile member, say so
-            // instead of staying silent (profile members cannot be taken into a raid yet). Contained: any
-            // failure here is logged and falls through to exactly the return below, as before STM.
+            // STM: PIT's lookup found nothing. Ask whether the id is a launcher-profile teammate; if it is
+            // not (no reason either), fall through to the return below exactly as before STM.
             if (teammate == null)
             {
-                try
+                if (profileMemberResolver.TryResolve(sessionId, request.To, out var profileMember, out var unavailableReason))
                 {
-                    string target = request.To?.Trim() ?? string.Empty;
-                    if (target.Length > 0 && profileMemberStore.List(sessionId).Any(m => string.Equals(m.ProfileId, target, StringComparison.Ordinal)))
+                    // Identity only, like PIT's invite (ToGroupCharacter): no spawn profile is built here, so
+                    // StmSpawnProfileFactory.LastGearKind is not written for an invite that is not a spawn.
+                    // Read from a clone: profileMember.Pmc is the live object SaveServer holds.
+                    FriendlyGroupMatchInviteAccept accept;
+                    try
                     {
-                        mailSendService.SendSystemMessageToPlayer(
-                            sessionId,
-                            "Profile teammates cannot join a raid yet. This is planned.",
-                            null);
+                        accept = BuildProfileMemberAccept(profileMember!);
                     }
+                    catch (Exception ex)
+                    {
+                        logger.Error($"[STM] Group invite: could not build the invite for profile teammate '{request.To}' (session '{sessionId}'); no invite sent. {ex}");
+                        return new ValueTask<string>(previousOutput ?? httpResponseUtil.NullResponse());
+                    }
+
+                    _ = Task.Run(async () =>
+                    {
+                        await Task.Delay(1000);
+                        await FriendlyModeRequestGate.RunIfCurrent(modeGeneration, async () =>
+                        {
+                            await notificationSendHelper.SendMessageAsync(sessionId, accept);
+                        });
+                    });
+
+                    return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
                 }
-                catch (Exception ex)
+
+                if (!string.IsNullOrWhiteSpace(unavailableReason))
                 {
-                    logger.Error($"[STM] Group invite: could not check whether '{request.To}' is a profile member (session '{sessionId}'); no message sent. {ex}");
+                    mailSendService.SendSystemMessageToPlayer(
+                        sessionId,
+                        $"Cannot add profile teammate {request.To} to the raid group: {unavailableReason}.",
+                        null);
                 }
             }
 
@@ -111,6 +132,58 @@ public class FriendlyTeammateMatchCallbacks(
         });
 
         return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
+    }
+
+    // Same fields PIT's ToGroupCharacter fills for the invite-accept notification. Built from a clone
+    // because member.Pmc is the live profile object: nothing here may alias or write into it.
+    private FriendlyGroupMatchInviteAccept BuildProfileMemberAccept(StmResolvedMember member)
+    {
+        var pmc = cloner.Clone(member.Pmc) ?? throw new InvalidOperationException("Profile clone returned null");
+        var info = pmc.Info ?? throw new InvalidOperationException("Profile teammate is missing Info");
+        var customization = pmc.Customization ?? new CommonCustomization();
+        var inventory = pmc.Inventory ?? new BotBaseInventory { Items = [] };
+
+        return new FriendlyGroupMatchInviteAccept
+        {
+            EventType = NotificationEventType.groupMatchInviteAccept,
+            EventIdentifier = new MongoId(),
+            Id = pmc.Id?.ToString(),
+            Aid = pmc.Aid?.ToString(),
+            Info = new CharacterInfo
+            {
+                Nickname = info.Nickname,
+                SavageNickname = info.Nickname,
+                Side = info.Side,
+                Level = info.Level,
+                MemberCategory = MemberCategory.Unheard,
+                GameVersion = info.GameVersion,
+                HasCoopExtension = info.HasCoopExtension,
+            },
+            VisualRepresentation = new PlayerVisualRepresentation
+            {
+                Info = new VisualInfo
+                {
+                    Nickname = info.Nickname,
+                    Side = info.Side,
+                    Level = info.Level,
+                    MemberCategory = MemberCategory.Unheard,
+                    GameVersion = info.GameVersion,
+                },
+                Customization = new SPTarkov.Server.Core.Models.Eft.Match.Customization
+                {
+                    Head = customization.Head?.ToString(),
+                    Body = customization.Body?.ToString(),
+                    Feet = customization.Feet?.ToString(),
+                    Hands = customization.Hands?.ToString(),
+                },
+                Equipment = new SPTarkov.Server.Core.Models.Eft.Match.Equipment
+                {
+                    Id = inventory.Equipment?.ToString(),
+                    Items = inventory.Items ?? [],
+                },
+            },
+            IsReady = true,
+        };
     }
 
     public ValueTask<string> GenerateFollowerProfile(
