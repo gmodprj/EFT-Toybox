@@ -2640,3 +2640,24 @@ return teammate ?? throw new FriendlyTeammateException($"Unable to find teammate
 
 **고치는 모양**: Task 4·5 가 이미 세운 것과 동일 — PIT 조회가 비면 `StmProfileMemberResolver` 에 묻고, 3값 계약(널 사유 = PIT 경로 그대로)을
 지키며, PIT 줄은 불변. 인게임 확인을 마친 뒤에 한다(지금 고치면 서버 재기동이 필요해 진행 중인 확인이 무효가 된다).
+
+### 2차 레이드 (Lighthouse) — 5번 통과, 계획 2 의 본체 확인
+
+프로필 팀원 둘이 **둘 다 실물 장비로 스폰 → 둘 다 사망**(플레이어도 사망). 서버가 양쪽에 `레이드 결과 확인:` 을 찍었다(되읽기 검증은 삭제가 실제로 돈 뒤에만 나온다). 백업 대조 결과:
+
+| | 아이템 총수 | 스태시 직속 | 보안컨테이너 내용물 | 비워진 착용 슬롯 |
+|---|---|---|---|---|
+| SPT02 | 96 → **40** (−56) | 29 → **29** | 0 → 0 | Headwear·Earpiece·FaceCover·ArmorVest·Eyewear·TacticalVest·Backpack·FirstPrimaryWeapon·Holster (9) |
+| Knox | 602 → **526** (−76) | 249 → **249** | **1 → 1** | Headwear·Earpiece·FaceCover·ArmorVest·TacticalVest·FirstPrimaryWeapon·SecondPrimaryWeapon·Holster (8) |
+
+**실측으로 증명된 것** (지키기로 한 슬롯이 애초에 비어 있었다면 증명이 아니므로 before 값을 따로 확인했다):
+- **보안 컨테이너는 내용물까지 보존** — Knox 의 컨테이너 안 1개가 살아남았다(설계 §6-4, 타르코프 규칙).
+- **주머니 컨테이너 자체 보존**, 그 안의 `SpecialSlot1/2/3` 3개도 보존 — 정책이 일부러 지키는 슬롯이고, 삭제 대상에서 제외된 것이 실제로 작동했다.
+- **스태시는 양쪽 다 한 개도 안 줄었다.**
+- 경험치 적립이 프로필에 닿지 않았다(`Follower progress: skipped` 사망 시점 각 1건).
+
+**이 판이 덮지 **못한** 것 — 인게임 미검증으로 남는다**:
+- **일반 주머니 적재물(pocket1~4) 삭제.** 두 프로필 모두 pocket1~4 가 비어 있어 그 분기가 돌지 않았다. 단위 테스트로는 고정돼 있으나(`WornGearLossPolicyTests`) 게임에서는 확인되지 않았다.
+- **Scabbard·ArmBand 보존.** 두 프로필 모두 그 슬롯이 비어 있었다(백업 기준 `없음`). 보존 주장은 단위 테스트에만 기대고 있다.
+- 10번(시체 루팅 후 탈출): **플레이어도 죽어서** 탈출이 없었다. 미검증.
+- 3·6·8·9·13번: 미검증.
