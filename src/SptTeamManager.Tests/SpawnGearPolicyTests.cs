@@ -28,12 +28,13 @@ public class SpawnGearPolicyTests
     [Fact]
     public void 기본_슬롯만_찬_프로필은_장비_없음_사유로_Temporary_다()
     {
+        // 슬롯 이름에서 결정까지 한 번에 — 이 테스트만이 두 단계를 이어서 고정한다.
         // 주머니·보안 컨테이너·완장·칼집은 플레이어가 아무것도 착용하지 않아도 들어 있다.
-        // 공장이 그것들을 장비로 세지 않으므로 hasAnyEquipment 는 false 로 들어온다.
-        // 칼집의 칼은 필수 무기 슬롯이 아니므로 무기 bool 도 false 다.
-        var decision = SpawnGearPolicy.Decide(false, false);
+        var facts = SpawnGearPolicy.FromOccupiedSlots(new[] { "Pockets", "SecuredContainer", "ArmBand", "Scabbard" });
+        var decision = SpawnGearPolicy.Decide(facts.HasAnyEquipment, facts.HasWeaponInRequiredSlot);
+
         Assert.Equal(SpawnGearKind.Temporary, decision.Kind);
-        // 무기가 아니라 "장비 없음" 쪽 사유로 떨어져야 한다.
+        // 무기 없음이 아니라 "장비 없음" 쪽 사유로 떨어져야 한다.
         Assert.Equal(SpawnGearPolicy.Decide(false, true).Reason, decision.Reason);
         Assert.NotEqual(SpawnGearPolicy.Decide(true, false).Reason, decision.Reason);
     }

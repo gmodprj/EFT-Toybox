@@ -44,33 +44,29 @@ namespace pitTeam.Shared
             "FirstPrimaryWeapon", "SecondPrimaryWeapon", "Holster",
         };
 
-        // Trims its input and tolerates null, like ProfileMemberLookup.ByAid, and never throws.
+        // Trims its input and tolerates null, like ProfileMemberLookup.ByAid. Deliberately has NO
+        // catch-all: the two guards below cover every throw an IEnumerable<string>? can reach here,
+        // and a catch would make them unobservable - delete either guard and a test that is supposed
+        // to pin it would still pass, because the catch would swallow the throw and return NoGear.
         public static GearFacts FromOccupiedSlots(IEnumerable<string>? slotNames)
         {
-            try
+            if (slotNames == null) return NoGear;
+
+            var hasAnyEquipment = false;
+            var hasWeaponInRequiredSlot = false;
+
+            foreach (var rawSlot in slotNames)
             {
-                if (slotNames == null) return NoGear;
+                if (string.IsNullOrWhiteSpace(rawSlot)) continue;
 
-                var hasAnyEquipment = false;
-                var hasWeaponInRequiredSlot = false;
+                var slot = rawSlot.Trim();
+                if (!KnownSlots.Contains(slot)) continue;
 
-                foreach (var rawSlot in slotNames)
-                {
-                    if (string.IsNullOrWhiteSpace(rawSlot)) continue;
-
-                    var slot = rawSlot.Trim();
-                    if (!KnownSlots.Contains(slot)) continue;
-
-                    if (RequiredWeaponSlots.Contains(slot)) hasWeaponInRequiredSlot = true;
-                    if (!DefaultSlots.Contains(slot)) hasAnyEquipment = true;
-                }
-
-                return new GearFacts(hasAnyEquipment, hasWeaponInRequiredSlot);
+                if (RequiredWeaponSlots.Contains(slot)) hasWeaponInRequiredSlot = true;
+                if (!DefaultSlots.Contains(slot)) hasAnyEquipment = true;
             }
-            catch (Exception)
-            {
-                return NoGear;
-            }
+
+            return new GearFacts(hasAnyEquipment, hasWeaponInRequiredSlot);
         }
 
         public static GearDecision Decide(bool hasAnyEquipment, bool hasWeaponInRequiredSlot)

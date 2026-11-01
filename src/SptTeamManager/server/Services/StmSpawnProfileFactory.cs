@@ -12,7 +12,6 @@ using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Bots;
 using SPTarkov.Server.Core.Utils.Cloners;
-using CommonCustomization = SPTarkov.Server.Core.Models.Eft.Common.Tables.Customization;
 using CommonInfo = SPTarkov.Server.Core.Models.Eft.Common.Tables.Info;
 
 namespace pitTeam.Server.Services;
@@ -20,9 +19,9 @@ namespace pitTeam.Server.Services;
 // Turns a resolved launcher-profile teammate into the BotBase the spawn path hands to the game.
 //
 // member.Pmc is the LIVE object SaveServer holds (see StmProfileMemberResolver). Nothing here writes
-// through it: the gear facts are read-only, Real builds from cloner.Clone, and Temporary copies
-// cloned identity FROM the profile ONTO the generated bot - never the other way round, and never a
-// reference into the profile's object graph.
+// through it: reading the gear facts mutates nothing, and BOTH paths build on cloner.Clone, so no
+// reference into the profile's object graph is ever handed out. Real and Temporary differ in exactly
+// one respect - Temporary swaps the clone's whole Inventory for a generated bot's.
 [Injectable(InjectionType.Singleton)]
 public class StmSpawnProfileFactory(
     // FriendlyTeammateService is [Injectable] with SPT's default InjectionType.Transient, so this
@@ -72,7 +71,8 @@ public class StmSpawnProfileFactory(
             ? BuildFromProfile(member)
             : BuildFromGenerator(sessionId, member);
 
-        // Either way the raid must see the profile's own identity.
+        // Both paths are profile clones, so these already hold the profile's values; setting them
+        // keeps the guarantee local instead of depending on how `spawn` was built.
         spawn.Id = new MongoId(member.ProfileId);
         spawn.Aid = member.Aid;
         EnsurePmcRole(spawn, member.Side);
@@ -109,7 +109,8 @@ public class StmSpawnProfileFactory(
             ?? throw new FriendlyTeammateException($"Cloning the PMC profile of '{member.ProfileId}' returned nothing");
     }
 
-    // Temporary: PIT's generator supplies the loadout; the profile supplies who is wearing it.
+    // Temporary: the teammate is still the profile's own character. The generated bot contributes
+    // nothing but its Inventory.
     private BotBase BuildFromGenerator(MongoId sessionId, StmResolvedMember member)
     {
         var level = Math.Max(1, member.Level);
@@ -136,22 +137,30 @@ public class StmSpawnProfileFactory(
         var bot = teammateService.GenerateTeammateBot(sessionId, details)
             ?? throw new FriendlyTeammateException($"Bot generation for profile '{member.ProfileId}' returned nothing");
 
-        // Identity is copied FROM the profile ONTO the bot, and cloned, so no part of the live
-        // profile's object graph leaves this method.
-        bot.Info = cloner.Clone(member.Pmc?.Info) ?? new CommonInfo();
-        bot.Customization = cloner.Clone(member.Pmc?.Customization) ?? new CommonCustomization();
+        // Temporary differs from Real in exactly one respect: the Inventory. The spawn is the same
+        // profile clone the Real path builds, so Health, Skills, Stats, Quests and the rest stay the
+        // person's - a loaner kit must not turn the teammate into somebody else, and the caller's
+        // health multiplier has to mean the same thing on both paths.
+        var spawn = BuildFromProfile(member);
 
-        // Nothing this teammate carries is insured: the gear is a generated loaner, and the
-        // profile's own insured items are not in this raid at all. Keeping InsuredItems would assert
-        // the opposite about item ids that no longer exist in the inventory, so it is emptied.
-        // This cannot reach the player's stored profile: `bot` is the generator's object and its
-        // Info/Customization are clones, so member.Pmc is untouched - and on the Real path below
-        // InsuredItems is deliberately left alone, where the real items genuinely are in the raid.
-        // Teammate insurance does not live here anyway; it is kept in
+        // That one respect is the WHOLE Inventory object, stash included. Everything pointing at
+        // item ids lives inside it - Stash, SortingTable, FastPanel, FavoriteItems, QuestRaidItems,
+        // QuestStashItems, HideoutAreaStashes - so all of those are replaced wholesale by the
+        // generated inventory's own rather than left pointing at items that are gone. The profile's
+        // stash therefore does not travel into the raid, which is the intent, not a side effect.
+        spawn.Inventory = bot.Inventory;
+
+        // InsuredItems is the one thing OUTSIDE Inventory that stores Inventory.Items ids, so the
+        // transplant above just took its items away. Keeping the list would assert "these items in
+        // this raid are insured" about items that are not in the raid at all; emptying it asserts
+        // what is true - the teammate is wearing a loaner and nothing here is insured.
+        // This cannot reach the player's stored profile: `spawn` is a clone, so member.Pmc is
+        // untouched. The Real path deliberately leaves the list alone, where the real items
+        // genuinely are in the raid. Teammate insurance does not live here anyway; it is kept in
         // FriendlyTeammateSettings.InsuredItems (server/Models/FriendlyTeammateSettings.cs:8),
         // so emptying this costs the insurance feature nothing.
-        bot.InsuredItems = [];
-        return bot;
+        spawn.InsuredItems = [];
+        return spawn;
     }
 
     // Reads which equipment slots the profile has something in, and nothing more - the judgment is
