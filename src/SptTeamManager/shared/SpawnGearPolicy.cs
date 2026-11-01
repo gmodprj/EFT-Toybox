@@ -56,6 +56,12 @@ namespace pitTeam.Shared
             "FirstPrimaryWeapon", "SecondPrimaryWeapon", "Holster",
         };
 
+        // Reachable so the agreement above is enforced by a machine rather than by its last sentence.
+        // The test project cannot do it - it never compiles PIT's file, which needs the SPT assemblies -
+        // so the comparison is a startup check in the server project (PitFireTeamServerPostLoad).
+        // Read-only on purpose: this set is this policy's own and nothing outside writes it.
+        internal static IReadOnlySet<string> RequiredWeaponSlotNames => RequiredWeaponSlots;
+
         // Trims its input and tolerates null, like ProfileMemberLookup.ByAid. Deliberately has NO
         // catch-all: the two guards below cover every throw an IEnumerable<string>? can reach here,
         // and a catch would make them unobservable - delete either guard and a test that is supposed

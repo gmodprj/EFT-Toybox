@@ -147,7 +147,44 @@ public class PitFireTeamServerPostLoad(
         cancellationToken.ThrowIfCancellationRequested();
         teammateService.InitializeStorageForAllProfiles();
         teammateService.RecoverDuplicateTeammateItemsForAllProfiles();
+        AssertRequiredWeaponSlotVocabulariesAgree();
         logger.Info("PitFireTeam loaded");
         return Task.CompletedTask;
+    }
+
+    // PIT's FriendlyTeammateService.RequiredRaidWeaponSlots and STM's SpawnGearPolicy's own set hold the
+    // same three slot names and must keep holding them: PIT decides from its list whether a mercenary is
+    // raid-ready, STM decides from its own whether a launcher profile goes in with Real or Temporary
+    // gear, and a drift would send one of the two in wearing the wrong thing. The duplication itself is
+    // deliberate (the policy must stay unit-testable without the SPT assemblies, which is also why the
+    // test project cannot make this comparison), so the agreement is checked here instead of asserted in
+    // a comment.
+    //
+    // Logs rather than throws: a drift is a wrong gear judgment, not a reason to take the whole mod
+    // down, and refusing to load would cost the player far more than the mismatch does.
+    private void AssertRequiredWeaponSlotVocabulariesAgree()
+    {
+        try
+        {
+            var pit = new HashSet<string>(
+                pitTeam.Server.Services.FriendlyTeammateService.RequiredRaidWeaponSlots,
+                StringComparer.OrdinalIgnoreCase);
+            var stm = new HashSet<string>(
+                pitTeam.Shared.SpawnGearPolicy.RequiredWeaponSlotNames,
+                StringComparer.OrdinalIgnoreCase);
+            if (pit.SetEquals(stm))
+            {
+                return;
+            }
+
+            logger.Error(
+                "[STM] 필수 무기 슬롯 어휘가 어긋났다. PIT(FriendlyTeammateService.RequiredRaidWeaponSlots): " +
+                $"[{string.Join(", ", pit.Order())}] / STM(SpawnGearPolicy): [{string.Join(", ", stm.Order())}]. " +
+                "두 목록은 같아야 한다 - 한쪽만 고치면 용병과 프로필 팀원의 '레이드 준비 완료' 판정이 달라진다.");
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 필수 무기 슬롯 어휘를 대조하지 못했다: {ex}");
+        }
     }
 }
