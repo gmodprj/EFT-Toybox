@@ -16,6 +16,8 @@ namespace pitTeam.Server.Services;
 // deletion:
 //   - the decision is RaidOutcomePolicy.Decide's, which only ever strips on an explicit Real match;
 //   - the raid receipt is RESERVED before anything is deleted, so a second report can never strip twice;
+//   - a profile SPT refuses to write (flagged invalid or unloadable) is turned away BEFORE the receipt is
+//     spent, so an in-memory-only strip can never be reported as done;
 //   - a deletion that cannot be confirmed in memory is reported at Error level and NOT retried (see
 //     VerifyDeletionApplied below, whose reach is stated there); a save that fails throws, and the
 //     catch-all logs it;
@@ -71,14 +73,31 @@ public class StmRaidOutcomeService(
             // trace a wrong deletion is read back from instead.
             logger.Info($"[STM] 레이드 결과 접수: '{member.Nickname}'(aid {accountId}, 프로필 '{member.ProfileId}', 레이드 '{raidId}') escaped={escaped}.");
 
-            // 2. Reserve first, then act. True means "a new receipt was durably written"; every other
+            // 2. Refuse a profile SPT will not write, BEFORE the receipt is spent.
+            //    SaveProfileAsync opens with `if (IsProfileInvalidOrUnloadable(sessionID)) return 0L;`
+            //    (IL_0024-IL_002d of SaveServer/<SaveProfileAsync>d__22.MoveNext, refs/4.1.0): it writes
+            //    nothing, throws nothing, and returns a duration of zero. Stripping such a profile would
+            //    delete the gear in memory, log a success, satisfy the in-memory re-check, leave the file
+            //    untouched - and spend the receipt, so the strip would never happen at all. Checked here
+            //    rather than after the deletion so no receipt is spent: once the profile is loadable
+            //    again, a later report for the same raid can still apply it.
+            //    The resolver does not look at this flag (it reads CharacterData.PmcData), so a flagged
+            //    profile does resolve and this guard is the only thing standing in front of it.
+            var profileId = new MongoId(member.ProfileId);
+            if (saveServer.IsProfileInvalidOrUnloadable(profileId))
+            {
+                logger.Error($"[STM] 레이드 결과: 프로필 '{member.ProfileId}'(레이드 '{raidId}')이 SPT에서 손상/적재 불가로 표시돼 있어 저장이 되지 않는다. 아무것도 지우지 않고 영수증도 남기지 않는다 - 프로필이 정상으로 돌아오면 다시 적용될 수 있다.");
+                return;
+            }
+
+            // 3. Reserve first, then act. True means "a new receipt was durably written"; every other
             //    outcome - already applied, blank key, unreadable document, failed write - is false and
             //    nothing may be deleted. Reserving before the deletion is deliberate: a failed verify
             //    must NOT be retried later, because the player may have equipped new gear in the
             //    meantime and a retry would delete that instead (task-8 ruling 2).
             var reserved = receipts.TryReserve(sessionId, raidId, member.ProfileId, StripAction);
 
-            // 3. Decide. The policy is the only thing that may say "strip".
+            // 4. Decide. The policy is the only thing that may say "strip".
             var gearKind = spawnProfileFactory.LastGearKind(sessionId, member.ProfileId);
             var plan = RaidOutcomePolicy.Decide(escaped, gearKind, alreadyApplied: !reserved);
             if (plan.Action != OutcomeAction.StripWornGear)
@@ -87,7 +106,7 @@ public class StmRaidOutcomeService(
                 return;
             }
 
-            StripWornGear(member, raidId, plan.Reason);
+            StripWornGear(member, profileId, raidId, plan.Reason);
         }
         catch (Exception ex)
         {
@@ -97,7 +116,7 @@ public class StmRaidOutcomeService(
         }
     }
 
-    private void StripWornGear(StmResolvedMember member, string? raidId, string reason)
+    private void StripWornGear(StmResolvedMember member, MongoId profileId, string? raidId, string reason)
     {
         var pmc = member.Pmc;
         var items = pmc.Inventory?.Items;
@@ -144,7 +163,6 @@ public class StmRaidOutcomeService(
         // output.ProfileChanges[sessionId], which is for the live client's item event, not for a write
         // to another launcher profile. With output null the sessionId argument is unused, so the
         // profile's own id is passed rather than the player's session.
-        var profileId = new MongoId(member.ProfileId);
         foreach (var rootId in rootIds)
         {
             inventoryHelper.RemoveItem(pmc, new MongoId(rootId), profileId);
@@ -155,17 +173,21 @@ public class StmRaidOutcomeService(
         // What the return value is, measured rather than assumed (IL of
         // SaveServer/<SaveProfileAsync>d__22.MoveNext in refs/4.1.0/SPTarkov.Server.Core.dll): the method
         // serializes the profile, hashes it, compares the hash with its own saveMd5 entry, SKIPS
-        // FileUtil.WriteFileAsync when it is unchanged, stops a Stopwatch and returns
-        // Stopwatch.ElapsedMilliseconds. So it is a DURATION, not a byte count, and a return of 0 means
-        // "fast", not "nothing written" - testing it for zero would log an error on healthy saves.
-        // How a failed save does reach us: WriteFileAsync is awaited, so its exception propagates out of
-        // GetAwaiter().GetResult() and lands in Apply's catch-all, which logs it at Error. That is the
-        // save's only honest check, and the re-check below cannot add to it.
+        // FileUtil.WriteFileAsync (IL_0226) when it is unchanged, stops a Stopwatch and returns
+        // Stopwatch.ElapsedMilliseconds (IL_02b2). So it is a DURATION, not a byte count.
+        // A zero therefore does NOT mean the file was written quickly. It is also what comes back when
+        // the write was skipped - the hash was unchanged, or the method returned at its first line
+        // because the profile is flagged invalid or unloadable (IL_0024-IL_002d). The second of those is
+        // the one that would matter, and it cannot happen here: step 2 above refuses that profile before
+        // the receipt is spent. The first cannot happen either, since the deletion just changed the
+        // profile. So the duration is logged as a duration and nothing is inferred from it.
+        // How a failed WRITE reaches us: WriteFileAsync is awaited, so its exception propagates out of
+        // GetAwaiter().GetResult() and lands in Apply's catch-all, which logs it at Error.
         var elapsedMs = saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
         logger.Info(
             $"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}')의 착용 장비 {rootIds.Count}개(하위 포함 {expectedGoneIds.Count}개)를 지우고 저장했다({elapsedMs}ms) - {reason}");
 
-        VerifyDeletionApplied(member, raidId, expectedGoneIds);
+        VerifyDeletionApplied(member, profileId, raidId, expectedGoneIds);
     }
 
     // Re-checks the DELETION, not the save: it asks SaveServer for the profile again and looks for the
@@ -176,13 +198,19 @@ public class StmRaidOutcomeService(
     // It does NOT gate a retry either: the receipt already stands, and re-running the deletion later
     // could delete gear the player equipped in the meantime. A failure is loud and left for a human
     // (task-8 ruling 2).
-    private void VerifyDeletionApplied(StmResolvedMember member, string? raidId, HashSet<string> expectedGoneIds)
+    private void VerifyDeletionApplied(StmResolvedMember member, MongoId profileId, string? raidId, HashSet<string> expectedGoneIds)
     {
-        var reread = saveServer.GetProfile(new MongoId(member.ProfileId))?.CharacterData?.PmcData;
+        // KEPT AS DEFENSIVE, and in practice unreachable - do not read the message below as something
+        // anyone will see. SaveServer.GetProfile never returns null: it THROWS on an empty id, on no
+        // profiles being loaded, and on an id it does not hold (three `throw` sites in its IL), and all
+        // three land in Apply's catch-all with its generic message instead. What is left is only
+        // CharacterData or PmcData having become null since the resolver read them non-null moments ago,
+        // which nothing in STM does.
+        var reread = saveServer.GetProfile(profileId)?.CharacterData?.PmcData;
         if (reread == null)
         {
             logger.Error(
-                $"[STM] 레이드 결과 확인 실패: 프로필 '{member.ProfileId}'(레이드 '{raidId}')을 다시 가져올 수 없어, 착용 장비 {expectedGoneIds.Count}개가 메모리에서 지워졌는지 확인하지 못했다. 영수증이 남아 있으므로 다시 시도하지 않는다 - 프로필을 직접 확인하라.");
+                $"[STM] 레이드 결과 확인 실패: 프로필 '{member.ProfileId}'(레이드 '{raidId}')의 캐릭터 데이터가 사라져, 착용 장비 {expectedGoneIds.Count}개가 메모리에서 지워졌는지 확인하지 못했다. 영수증이 남아 있으므로 다시 시도하지 않는다 - 프로필을 직접 확인하라.");
             return;
         }
 

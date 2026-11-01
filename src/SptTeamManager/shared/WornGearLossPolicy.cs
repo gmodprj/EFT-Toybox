@@ -73,10 +73,13 @@ namespace pitTeam.Shared
                 return selected;
             }
 
-            // The caller's root argument is trimmed once, here; the ITEM side is never trimmed, and is
-            // compared Ordinal. That asymmetry is deliberate and it is the item side that matters: a
-            // looser comparison there would pull MORE items into a deletion. (Unlike
-            // RaidReceiptKeyPolicy, where treating a near miss as the same key was the safe direction.)
+            // About PARENT IDS only, and nothing else: the caller's root argument is trimmed once here,
+            // while an item's own ParentId is never trimmed and is compared Ordinal (so is the pocket
+            // parent match below). Slot NAMES are a separate matter - those are trimmed and compared
+            // case-insensitively, as SpawnGearPolicy does. The asymmetry is deliberate and it is the
+            // item's side that matters: a looser parent-id comparison would pull MORE items into a
+            // deletion. (Unlike RaidReceiptKeyPolicy, where treating a near miss as the same key was
+            // the safe direction.)
             var rootId = equipmentRootId!.Trim();
             var keptPocketIds = new HashSet<string>(StringComparer.Ordinal);
             var cargoCandidates = new List<WornGearItem>();
