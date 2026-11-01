@@ -42,7 +42,7 @@ public class StmSpawnProfileFactory(
     private const string GenerationLocation = "factory4_day";
 
     // What PIT gives every mercenary it generates; a profile teammate fights beside them and gets the same.
-    private const string FollowerDifficulty = "hard";
+    private const string FollowerDifficulty = FollowerAiProfilePolicy.Difficulty;
 
     // Field, deliberately. Task 2 forbade fields because cached PROFILE data goes stale; this records
     // what WE did at spawn time, which exists nowhere else - the raid-end report does not carry it,
@@ -87,15 +87,19 @@ public class StmSpawnProfileFactory(
         // differs per tweak rather than per gear kind:
         //
         //   taken   - EnsureFollowerHasPockets, EnsureFollowerHasScabbardKnife and
-        //             RefillFollowerMagazinesFromInventoryAmmo. All three only ADD to the object handed in,
-        //             and `spawn` is a deep clone, so the stored profile cannot be reached. PIT's own
-        //             comment on the refill says it is kept "strictly on the raid-spawn clone" so that
-        //             profile viewing and loadout editing do not silently change teammate gear
-        //             (FriendlyTeammateService.PrepareTeammateForFetch) - the same guarantee we need.
+        //             RefillFollowerMagazinesFromInventoryAmmo.
+        //             THE SAFETY HERE RESTS ENTIRELY ON `spawn` BEING A DEEP CLONE - do not read these as
+        //             harmless, add-only helpers. The refill DELETES fully consumed ammo stacks and
+        //             REWRITES Upd.StackObjectsCount on partial ones; the pockets helper REPARENTS every
+        //             SpecialSlot* item; and both injectors WRITE Inventory.Equipment when it is blank.
+        //             None of that may ever be pointed at member.Pmc. PIT keeps the refill "strictly on
+        //             the raid-spawn clone" for the same reason
+        //             (FriendlyTeammateService.PrepareTeammateForFetch).
         //   skipped - EnsureManagedSecureContainer and EnsureFollowerHasSecureContainerSupplies, which
         //             EMPTY the secure container and restock it with mercenary supplies. On a real
-        //             profile's kit that discards what the player put there, so a profile teammate goes
-        //             in with their own container exactly as it stands.
+        //             profile's kit that discards what the player put there, so the container travels as
+        //             the player left it - except that the refill above may draw ammo from inside it,
+        //             because that helper filters on item type, not on where the item sits.
         //
         // The refill is not cosmetic: without it a teammate spawns with whatever its magazines held, and
         // a profile parked between raids usually holds nothing. Measured in game on 2026-11-01 - two
@@ -146,7 +150,7 @@ public class StmSpawnProfileFactory(
             BotRelativeLevelDeltaMax = 0,
             BotRelativeLevelDeltaMin = 0,
             BotCountToGenerate = 1,
-            BotDifficulty = "hard",
+            BotDifficulty = FollowerDifficulty,
             Location = GenerationLocation,
             // Pinned to the profile's level: the teammate must not outgrow or undercut the person.
             LocationSpecificPmcLevelOverride = new MinMax<int> { Min = level, Max = level },
@@ -232,8 +236,9 @@ public class StmSpawnProfileFactory(
         return rootItem?.Id.ToString();
     }
 
-    // A human's PMC may have no Info.Settings, or a blank Role, and the client dereferences it.
-    // A launcher profile stores Settings.Role = "assault" and BotDifficulty = "easy" - defaults that mean
+    // A human's PMC may have no Info.Settings at all, and the client dereferences it - hence the two
+    // null-coalescing lines below. The Role itself is never blank, which was exactly the bug:
+    // a launcher profile stores Settings.Role = "assault" and BotDifficulty = "easy" - defaults that mean
     // nothing while the person is playing that profile themselves, and that SAIN reads literally once the
     // same character is spawned as somebody's follower. Measured in game on 2026-11-01: profile teammates
     // came out role=assault difficulty=easy profile=0.15 visibleDistance=90, while PIT's mercenaries ran
@@ -241,27 +246,26 @@ public class StmSpawnProfileFactory(
     // enemy looks exactly like a follower that refuses to fight.
     //
     // So these are OVERWRITTEN, not filled when blank: the stored values are never the right ones for a
-    // follower. "hard" is what PIT bakes into every mercenary at generation time
-    // (FriendlyTeammateService.cs:257, :311, Onboarding.cs:52), and the Temporary path cannot inherit it
-    // because it takes only the generated bot's Inventory. `spawn` is a deep clone, so the launcher
-    // profile keeps its own values.
+    // follower. `spawn` is a deep clone, so the launcher profile keeps its own values.
+    //
+    // On "hard": PIT passes it as a GENERATION INPUT for its mercenaries (BotGenerationDetails.BotDifficulty
+    // at FriendlyTeammateService.cs:257, :311 and Onboarding.cs:52) - that is a different field from the
+    // Info.Settings.BotDifficulty written here. The link between them is the generator copying it through,
+    // evidenced not by the source but by the 2026-11-01 SAIN log, where mercenaries read difficulty=hard.
+    // The Temporary path cannot inherit it either way, because it takes only the generated bot's Inventory.
+    // The WHICH of it - side to role, and the difficulty - is FollowerAiProfilePolicy's, so the suite can
+    // hold a decision that two in-game raids were spent discovering. Only the writing stays here.
     private static void ForceFollowerRoleAndDifficulty(BotBase spawn, string side)
     {
+        var ai = FollowerAiProfilePolicy.ForSide(side);
         spawn.Info ??= new CommonInfo();
         spawn.Info.Settings ??= new BotInfoSettings();
-        spawn.Info.Settings.Role = PmcRoleFor(side);
-        spawn.Info.Settings.BotDifficulty = FollowerDifficulty;
+        spawn.Info.Settings.Role = ai.Role;
+        spawn.Info.Settings.BotDifficulty = ai.Difficulty;
     }
 
-    private static string PmcRoleFor(string? side)
-    {
-        return side switch
-        {
-            Sides.Usec => Sides.PmcUsec,
-            Sides.Bear => Sides.PmcBear,
-            _ => throw new FriendlyTeammateException($"Unsupported profile teammate side '{side}'"),
-        };
-    }
+    // The generator wants the same role the spawn carries, so both come from the one policy.
+    private static string PmcRoleFor(string? side) => FollowerAiProfilePolicy.ForSide(side).Role;
 
     private static void ApplyHealthMultiplier(BotBase spawn, double? healthMultiplier)
     {
