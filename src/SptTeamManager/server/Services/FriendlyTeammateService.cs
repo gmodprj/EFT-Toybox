@@ -753,7 +753,7 @@ public partial class FriendlyTeammateService(
         return inventoryItems.RemoveAll(item => item?.Id != null && removeIds.Contains(item.Id.ToString())) > 0;
     }
 
-    private BotBase GenerateTeammateBot(MongoId sessionId, BotGenerationDetails details)
+    internal BotBase GenerateTeammateBot(MongoId sessionId, BotGenerationDetails details)
     {
         var raidData = profileActivityService.GetProfileActivityRaidData(sessionId);
         var previousRaidConfiguration = raidData.RaidConfiguration;
@@ -1918,7 +1918,7 @@ public partial class FriendlyTeammateService(
         logger.Info($"Injected default scabbard knife for teammate '{profile.Aid}'.");
     }
 
-    private void EnsureFollowerHasPockets(BotBase profile)
+    internal void EnsureFollowerHasPockets(BotBase profile)
     {
         profile.Inventory ??= new BotBaseInventory { Items = [] };
         profile.Inventory.Items ??= [];

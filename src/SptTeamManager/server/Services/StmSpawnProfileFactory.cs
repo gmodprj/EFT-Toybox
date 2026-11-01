@@ -2,20 +2,15 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using pitTeam.Server.Constants;
 using pitTeam.Server.Models;
 using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Constants;
-using SPTarkov.Server.Core.Generators.Bot;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Enums;
-using SPTarkov.Server.Core.Models.Enums.RaidSettings;
 using SPTarkov.Server.Core.Models.Spt.Bots;
-using SPTarkov.Server.Core.Services.Profile;
 using SPTarkov.Server.Core.Utils.Cloners;
 using CommonCustomization = SPTarkov.Server.Core.Models.Eft.Common.Tables.Customization;
 using CommonInfo = SPTarkov.Server.Core.Models.Eft.Common.Tables.Info;
@@ -30,8 +25,15 @@ namespace pitTeam.Server.Services;
 // reference into the profile's object graph.
 [Injectable(InjectionType.Singleton)]
 public class StmSpawnProfileFactory(
-    BotGenerator botGenerator,
-    ProfileActivityService profileActivityService,
+    // FriendlyTeammateService is [Injectable] with SPT's default InjectionType.Transient, so this
+    // singleton captures one instance for the server's lifetime. That is deliberate: it is legal in
+    // this container (only Scoped -> Singleton is not), and the alternative was ~107 lines of copied
+    // scaffolding that had already diverged from PIT's. Only GenerateTeammateBot and
+    // EnsureFollowerHasPockets are used, and both must stay free of PIT's mutable instance state
+    // (profileRecoveryNotices, startupRecoveryNotices, duplicateRecoveryCheckedSessions -
+    // FriendlyTeammateService.cs:74-76): they use only injected services, statics and their
+    // arguments today, and a future edit that made either touch those fields would break this.
+    FriendlyTeammateService teammateService,
     ICloner cloner,
     ISptLogger<StmSpawnProfileFactory> logger)
 {
@@ -46,28 +48,24 @@ public class StmSpawnProfileFactory(
     // caller's policy falls through to "do nothing" rather than stripping gear on a guess.
     private readonly ConcurrentDictionary<string, SpawnGearKind> lastGearKinds = new(StringComparer.Ordinal);
 
+    // The source of the slot-name strings: SPT's own enum, which is why it lives here and not in
+    // the policy. Which of these names counts as worn equipment, or as a weapon slot, is the
+    // policy's judgment (SpawnGearPolicy.FromOccupiedSlots).
     private static readonly HashSet<string> EquipmentSlotNames =
         new(Enum.GetNames(typeof(EquipmentSlots)), StringComparer.OrdinalIgnoreCase);
 
-    // "필수 무기 슬롯": any one of these holding an item satisfies it. A knife (Scabbard) does not.
-    private static readonly string[] RequiredWeaponSlotNames =
-    [
-        nameof(EquipmentSlots.FirstPrimaryWeapon),
-        nameof(EquipmentSlots.SecondPrimaryWeapon),
-        nameof(EquipmentSlots.Holster),
-    ];
-
-    // healthMultiplier mirrors PIT's spawn path (FriendlyTeammateService.TryGetSpawnProfile); the
-    // brief's three-argument signature stays callable because it is optional.
-    public BotBase Build(MongoId sessionId, StmResolvedMember member, out SpawnGearKind kind, double? healthMultiplier = null)
+    // healthMultiplier is required, not optional: it arrives from the client's own BepInEx setting on
+    // the request (PIT's FriendlyTeammateService.TryGetSpawnProfile), so a caller that forgets it
+    // would ship a teammate whose health setting silently does nothing. The compiler forces the call.
+    public BotBase Build(MongoId sessionId, StmResolvedMember member, out SpawnGearKind kind, double? healthMultiplier)
     {
         if (member is null)
         {
             throw new ArgumentNullException(nameof(member));
         }
 
-        var (hasAnyEquipment, hasWeaponInRequiredSlot) = ReadGearFacts(member.Pmc);
-        var decision = SpawnGearPolicy.Decide(hasAnyEquipment, hasWeaponInRequiredSlot);
+        var facts = SpawnGearPolicy.FromOccupiedSlots(ReadOccupiedEquipmentSlots(member.Pmc));
+        var decision = SpawnGearPolicy.Decide(facts.HasAnyEquipment, facts.HasWeaponInRequiredSlot);
         kind = decision.Kind;
 
         var spawn = decision.Kind == SpawnGearKind.Real
@@ -78,7 +76,11 @@ public class StmSpawnProfileFactory(
         spawn.Id = new MongoId(member.ProfileId);
         spawn.Aid = member.Aid;
         EnsurePmcRole(spawn, member.Side);
-        EnsurePockets(spawn);
+
+        // The minimum a spawned follower needs in order not to die on the client. PIT's
+        // mercenary-only tweaks (secure-container supplies, the scabbard knife, magazine refills)
+        // are NOT applied - they rewrite real player gear.
+        teammateService.EnsureFollowerHasPockets(spawn);
         ApplyHealthMultiplier(spawn, healthMultiplier);
 
         lastGearKinds[GearKindKey(sessionId, member.ProfileId)] = decision.Kind;
@@ -129,92 +131,44 @@ public class StmSpawnProfileFactory(
             AllPmcsHaveSameNameAsPlayer = false,
         };
 
-        var bot = GenerateBot(sessionId, details)
+        // PIT's own call, which wraps the generator in the raid-configuration scaffolding the
+        // generator needs outside a raid. Reused rather than copied.
+        var bot = teammateService.GenerateTeammateBot(sessionId, details)
             ?? throw new FriendlyTeammateException($"Bot generation for profile '{member.ProfileId}' returned nothing");
 
         // Identity is copied FROM the profile ONTO the bot, and cloned, so no part of the live
         // profile's object graph leaves this method.
         bot.Info = cloner.Clone(member.Pmc?.Info) ?? new CommonInfo();
         bot.Customization = cloner.Clone(member.Pmc?.Customization) ?? new CommonCustomization();
+
+        // Nothing this teammate carries is insured: the gear is a generated loaner, and the
+        // profile's own insured items are not in this raid at all. Keeping InsuredItems would assert
+        // the opposite about item ids that no longer exist in the inventory, so it is emptied.
+        // This cannot reach the player's stored profile: `bot` is the generator's object and its
+        // Info/Customization are clones, so member.Pmc is untouched - and on the Real path below
+        // InsuredItems is deliberately left alone, where the real items genuinely are in the raid.
+        // Teammate insurance does not live here anyway; it is kept in
+        // FriendlyTeammateSettings.InsuredItems (server/Models/FriendlyTeammateSettings.cs:8),
+        // so emptying this costs the insurance feature nothing.
+        bot.InsuredItems = [];
         return bot;
     }
 
-    // Same call as PIT's FriendlyTeammateService.GenerateTeammateBot: the generator reads the
-    // session's raid configuration, which is absent outside a raid, so a throwaway one stands in
-    // and the previous value is always put back.
-    private BotBase? GenerateBot(MongoId sessionId, BotGenerationDetails details)
+    // Reads which equipment slots the profile has something in, and nothing more - the judgment is
+    // the policy's. Read-only: never assigns Inventory.Equipment, unlike PIT's GetEquipmentRootId,
+    // because the profile passed in may be the live object.
+    private static List<string> ReadOccupiedEquipmentSlots(BotBase? profile)
     {
-        var raidData = profileActivityService.GetProfileActivityRaidData(sessionId);
-        var previousRaidConfiguration = raidData.RaidConfiguration;
-        var createdTemporaryRaidConfiguration = previousRaidConfiguration == null;
-
-        if (createdTemporaryRaidConfiguration)
-        {
-            raidData.RaidConfiguration = CreateGenerationRaidConfiguration();
-        }
-
-        try
-        {
-            return botGenerator.PrepareAndGenerateBot(sessionId, details);
-        }
-        finally
-        {
-            if (createdTemporaryRaidConfiguration)
-            {
-                raidData.RaidConfiguration = previousRaidConfiguration;
-            }
-        }
-    }
-
-    private static GetRaidConfigurationRequestData CreateGenerationRaidConfiguration()
-    {
-        return new GetRaidConfigurationRequestData
-        {
-            Location = GenerationLocation,
-            TimeVariant = DateTimeEnum.CURR,
-            IsNightRaid = false,
-            RaidMode = RaidMode.Local,
-            Side = SideType.Pmc,
-            PlayersSpawnPlace = PlayersSpawnPlace.SamePlace,
-            TransitionType = TransitionType.NONE,
-            WavesSettings = new WavesSettings
-            {
-                BotAmount = BotAmount.AsOnline,
-                BotDifficulty = BotDifficulty.Hard,
-                IsBosses = true,
-                IsTaggedAndCursed = false,
-            },
-            BotSettings = new BotSettings
-            {
-                BotAmount = BotAmount.AsOnline,
-                IsScavWars = false,
-            },
-            TimeAndWeatherSettings = new TimeAndWeatherSettings
-            {
-                IsRandomTime = false,
-                IsRandomWeather = false,
-            },
-            IsLocationTransition = false,
-            CanShowGroupPreview = false,
-            OnlinePveRaidStates = [],
-        };
-    }
-
-    // Read-only. Never assigns Inventory.Equipment, unlike PIT's GetEquipmentRootId, because the
-    // profile passed in may be the live object.
-    private static (bool HasAnyEquipment, bool HasWeaponInRequiredSlot) ReadGearFacts(BotBase? profile)
-    {
+        var occupied = new List<string>();
         var items = profile?.Inventory?.Items;
         if (items == null || items.Count == 0)
         {
-            return (false, false);
+            return occupied;
         }
 
         // An equipment-slot item is a direct child of the equipment root whose SlotId is one of
         // SPT's EquipmentSlots names. Stash items and items inside pockets are not.
         var rootId = ReadEquipmentRootId(profile!);
-        var hasAnyEquipment = false;
-        var hasWeaponInRequiredSlot = false;
 
         foreach (var item in items)
         {
@@ -228,20 +182,10 @@ public class StmSpawnProfileFactory(
                 continue;
             }
 
-            if (RequiredWeaponSlotNames.Any(slot => string.Equals(item.SlotId, slot, StringComparison.OrdinalIgnoreCase)))
-            {
-                hasWeaponInRequiredSlot = true;
-            }
-
-            // Every profile carries a pockets container even when nothing is worn, so the container
-            // itself is not evidence of equipment.
-            if (!string.Equals(item.SlotId, nameof(EquipmentSlots.Pockets), StringComparison.OrdinalIgnoreCase))
-            {
-                hasAnyEquipment = true;
-            }
+            occupied.Add(item.SlotId);
         }
 
-        return (hasAnyEquipment, hasWeaponInRequiredSlot);
+        return occupied;
     }
 
     private static string? ReadEquipmentRootId(BotBase profile)
@@ -275,54 +219,6 @@ public class StmSpawnProfileFactory(
             Sides.Bear => Sides.PmcBear,
             _ => throw new FriendlyTeammateException($"Unsupported profile teammate side '{side}'"),
         };
-    }
-
-    // The minimum a spawned follower needs in order not to die on the client: a pockets container,
-    // with the special slots hanging off it. PIT's mercenary-only tweaks (secure-container supplies,
-    // the scabbard knife, magazine refills) are NOT applied - they rewrite real player gear.
-    private void EnsurePockets(BotBase spawn)
-    {
-        spawn.Inventory ??= new BotBaseInventory { Items = [] };
-        spawn.Inventory.Items ??= [];
-        if (spawn.Inventory.Items.Count == 0)
-        {
-            return;
-        }
-
-        var rootId = ReadEquipmentRootId(spawn);
-        if (string.IsNullOrWhiteSpace(rootId))
-        {
-            return;
-        }
-
-        var pockets = spawn.Inventory.Items.FirstOrDefault(item =>
-            string.Equals(item?.SlotId, nameof(EquipmentSlots.Pockets), StringComparison.OrdinalIgnoreCase));
-        if (pockets == null)
-        {
-            pockets = new Item
-            {
-                Id = new MongoId(),
-                Template = new MongoId(FriendlyItemTemplateIds.EquipmentContainer.Pockets),
-                ParentId = rootId,
-                SlotId = nameof(EquipmentSlots.Pockets),
-                Location = null,
-                Upd = new Upd
-                {
-                    StackObjectsCount = 1,
-                    SpawnedInSession = false,
-                },
-            };
-            spawn.Inventory.Items.Add(pockets);
-            logger.Info($"[STM] 주머니 컨테이너가 없어 '{spawn.Aid}' 에게 넣어 준다.");
-        }
-
-        var pocketsId = pockets.Id.ToString();
-        foreach (var specialSlot in spawn.Inventory.Items.Where(item =>
-                     item?.SlotId != null &&
-                     item.SlotId.Contains("SpecialSlot", StringComparison.OrdinalIgnoreCase)))
-        {
-            specialSlot.ParentId = pocketsId;
-        }
     }
 
     private static void ApplyHealthMultiplier(BotBase spawn, double? healthMultiplier)

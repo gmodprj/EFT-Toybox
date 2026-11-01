@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace pitTeam.Shared
 {
     // Real = the launcher profile's own gear goes into the raid (and can be lost there).
@@ -7,10 +10,69 @@ namespace pitTeam.Shared
     // Reason is one human-readable line; it goes into logs and player-facing messages.
     public sealed record GearDecision(SpawnGearKind Kind, string Reason);
 
-    // Pure: takes two booleans the caller reads off the PMC inventory, so this file stays free of
-    // SPT types and compiles for every target. Who computes the booleans is the factory's business.
+    public sealed record GearFacts(bool HasAnyEquipment, bool HasWeaponInRequiredSlot);
+
+    // Pure string work, which is why this lives outside the server project: both the judgment about
+    // which slots count and the decision itself stay unit-testable without SPT types. The caller
+    // supplies the names of the PMC's occupied equipment slots; nothing here touches a profile.
     public static class SpawnGearPolicy
     {
+        private static readonly GearFacts NoGear = new GearFacts(false, false);
+
+        // Mirrors the names of SPT's EquipmentSlots enum. The factory derives its own reading filter
+        // from that enum (SPT types belong there); this set is the policy's own vocabulary, so a slot
+        // name the policy does not recognize is never counted - the closed side.
+        // Dogtag is deliberately absent: it is not an EquipmentSlots value at all.
+        private static readonly HashSet<string> KnownSlots = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Headwear", "Earpiece", "FaceCover", "ArmorVest", "Eyewear", "ArmBand", "TacticalVest",
+            "Pockets", "Backpack", "SecuredContainer", "FirstPrimaryWeapon", "SecondPrimaryWeapon",
+            "Holster", "Scabbard",
+        };
+
+        // Slots every PMC profile carries without the player having equipped anything. Counting these
+        // as worn equipment would keep HasAnyEquipment true for every profile in existence, which
+        // would collapse Decide onto the weapon check and leave its no-equipment branch unreachable.
+        private static readonly HashSet<string> DefaultSlots = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Pockets", "SecuredContainer", "ArmBand", "Scabbard",
+        };
+
+        // 필수 무기 슬롯: any one of these holding something satisfies it. A knife in Scabbard does not.
+        private static readonly HashSet<string> RequiredWeaponSlots = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "FirstPrimaryWeapon", "SecondPrimaryWeapon", "Holster",
+        };
+
+        // Trims its input and tolerates null, like ProfileMemberLookup.ByAid, and never throws.
+        public static GearFacts FromOccupiedSlots(IEnumerable<string>? slotNames)
+        {
+            try
+            {
+                if (slotNames == null) return NoGear;
+
+                var hasAnyEquipment = false;
+                var hasWeaponInRequiredSlot = false;
+
+                foreach (var rawSlot in slotNames)
+                {
+                    if (string.IsNullOrWhiteSpace(rawSlot)) continue;
+
+                    var slot = rawSlot.Trim();
+                    if (!KnownSlots.Contains(slot)) continue;
+
+                    if (RequiredWeaponSlots.Contains(slot)) hasWeaponInRequiredSlot = true;
+                    if (!DefaultSlots.Contains(slot)) hasAnyEquipment = true;
+                }
+
+                return new GearFacts(hasAnyEquipment, hasWeaponInRequiredSlot);
+            }
+            catch (Exception)
+            {
+                return NoGear;
+            }
+        }
+
         public static GearDecision Decide(bool hasAnyEquipment, bool hasWeaponInRequiredSlot)
         {
             // Nothing worn: sending the profile in as-is would be a naked teammate.
