@@ -41,6 +41,19 @@ public class FriendlyTeammateMatchCallbacks(
         string? previousOutput)
     {
         long modeGeneration = FriendlyModeRequestGate.Generation;
+
+        // STM: the resolver is asked BEFORE PIT (plan Review Focus). A registered profile teammate is
+        // answered here; "not a profile teammate" (false with a null reason) falls through to PIT's own
+        // lookup below, which then runs exactly as it did before STM.
+        // Why this order: the friend list the player clicks shows the PROFILE for an Aid a mercenary and
+        // a registered profile happen to share, so resolving to the mercenary would invite and spawn a
+        // teammate nobody can see. PIT-first made that a real hole; resolver-first closes it, and the
+        // outcome and progress paths already decide this way.
+        if (TryHandleProfileMemberInvite(sessionId, request.To, modeGeneration))
+        {
+            return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
+        }
+
         if (!teammateService.TryGetRaidGroupCharacter(sessionId, request.To, out var teammate, out var rejectionReason))
         {
             if (teammate != null && !string.IsNullOrWhiteSpace(rejectionReason))
@@ -66,86 +79,6 @@ public class FriendlyTeammateMatchCallbacks(
                 });
 
                 return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
-            }
-
-            // STM: PIT's lookup found nothing. Ask whether the id is a launcher-profile teammate; if it is
-            // not (no reason either), fall through to the return below exactly as before STM.
-            if (teammate == null)
-            {
-                var resolved = profileMemberResolver.TryResolve(sessionId, request.To, out var profileMember, out var unavailableReason);
-                FriendlyGroupMatchInviteAccept? accept = null;
-                if (resolved)
-                {
-                    // Identity only, like PIT's invite (ToGroupCharacter): no spawn profile is built here, so
-                    // StmSpawnProfileFactory.LastGearKind is not written for an invite that is not a spawn.
-                    // Read from a clone: profileMember.Pmc is the live object SaveServer holds.
-                    try
-                    {
-                        accept = BuildProfileMemberAccept(profileMember!);
-                    }
-                    catch (Exception ex)
-                    {
-                        // The resolver already identified a registered teammate, so a failure now is
-                        // "a teammate we could not read", never "not a teammate": decline below.
-                        unavailableReason = "Unreadable";
-                        logger.Error($"[STM] Group invite: could not build the invite for profile teammate '{request.To}' (session '{sessionId}'); declining. {ex}");
-                    }
-                }
-
-                if (accept != null)
-                {
-                    _ = Task.Run(async () =>
-                    {
-                        await Task.Delay(1000);
-                        await FriendlyModeRequestGate.RunIfCurrent(modeGeneration, async () =>
-                        {
-                            await notificationSendHelper.SendMessageAsync(sessionId, accept);
-                        });
-                    });
-
-                    return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
-                }
-
-                if (!string.IsNullOrWhiteSpace(unavailableReason))
-                {
-                    // The raw enum name stays in the log; the player gets a sentence.
-                    logger.Warning($"[STM] Group invite: profile teammate '{request.To}' (session '{sessionId}') unavailable: {unavailableReason}");
-                    var reasonText = unavailableReason switch
-                    {
-                        "CurrentSession" => "that profile is the one you are currently playing",
-                        "Empty" => "that profile has no character yet",
-                        "Unreadable" => "that profile could not be read",
-                        _ => "that profile is not available right now",
-                    };
-
-                    // Same shape as PIT's rejection above: decline notification then system message,
-                    // after the 1s delay and inside the mode gate. Aid/Nickname come from the request
-                    // because no member was resolved.
-                    _ = Task.Run(async () =>
-                    {
-                        await Task.Delay(1000);
-                        await FriendlyModeRequestGate.RunIfCurrent(modeGeneration, async () =>
-                        {
-                            await notificationSendHelper.SendMessageAsync(
-                                sessionId,
-                                new FriendlyGroupMatchInviteDecline
-                                {
-                                    EventType = NotificationEventType.groupMatchInviteDecline,
-                                    EventIdentifier = new MongoId(),
-                                    Aid = request.To,
-                                    Nickname = request.To,
-                                }
-                            );
-
-                            mailSendService.SendSystemMessageToPlayer(
-                                sessionId,
-                                $"Cannot add profile teammate {request.To} to the raid group: {reasonText}.",
-                                null);
-                        });
-                    });
-
-                    return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
-                }
             }
 
             return new ValueTask<string>(previousOutput ?? httpResponseUtil.NullResponse());
@@ -175,6 +108,104 @@ public class FriendlyTeammateMatchCallbacks(
         });
 
         return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
+    }
+
+    // Answers the invite for a launcher-profile teammate: true means STM handled it (an accept or a
+    // decline notification was queued) and PIT's own lookup must NOT run. False means this id is not a
+    // registered profile teammate, so PIT's path stands untouched.
+    //
+    // Never throws, on its own: the resolver call is inside the try too, so the guarantee does not rest
+    // on another class keeping its catch-all (same shape as TryBuildProfileMemberSpawn below). A throw
+    // is reported as "not a profile teammate" so PIT still gets its turn - nothing here writes to a
+    // profile, so handing the id on costs nothing a failure has not already cost.
+    private bool TryHandleProfileMemberInvite(MongoId sessionId, string? accountId, long modeGeneration)
+    {
+        try
+        {
+            var resolved = profileMemberResolver.TryResolve(sessionId, accountId, out var profileMember, out var unavailableReason);
+            if (!resolved && string.IsNullOrWhiteSpace(unavailableReason))
+            {
+                // Not a profile teammate at all. PIT's path, exactly as before STM.
+                return false;
+            }
+
+            FriendlyGroupMatchInviteAccept? accept = null;
+            if (resolved)
+            {
+                // Identity only, like PIT's invite (ToGroupCharacter): no spawn profile is built here, so
+                // StmSpawnProfileFactory.LastGearKind is not written for an invite that is not a spawn.
+                // Read from a clone: profileMember.Pmc is the live object SaveServer holds.
+                try
+                {
+                    accept = BuildProfileMemberAccept(profileMember!);
+                }
+                catch (Exception ex)
+                {
+                    // The resolver already identified a registered teammate, so a failure now is
+                    // "a teammate we could not read", never "not a teammate": decline below.
+                    unavailableReason = "Unreadable";
+                    logger.Error($"[STM] Group invite: could not build the invite for profile teammate '{accountId}' (session '{sessionId}'); declining. {ex}");
+                }
+            }
+
+            if (accept != null)
+            {
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(1000);
+                    await FriendlyModeRequestGate.RunIfCurrent(modeGeneration, async () =>
+                    {
+                        await notificationSendHelper.SendMessageAsync(sessionId, accept);
+                    });
+                });
+
+                return true;
+            }
+
+            // A registered teammate that must not be taken. The raw enum name stays in the log; the
+            // player gets a sentence.
+            logger.Warning($"[STM] Group invite: profile teammate '{accountId}' (session '{sessionId}') unavailable: {unavailableReason}");
+            var reasonText = unavailableReason switch
+            {
+                "CurrentSession" => "that profile is the one you are currently playing",
+                "Empty" => "that profile has no character yet",
+                "Unreadable" => "that profile could not be read",
+                _ => "that profile is not available right now",
+            };
+
+            // Same shape as PIT's own rejection: decline notification then system message, after the 1s
+            // delay and inside the mode gate. Aid/Nickname come from the request because no member was
+            // resolved.
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                await FriendlyModeRequestGate.RunIfCurrent(modeGeneration, async () =>
+                {
+                    await notificationSendHelper.SendMessageAsync(
+                        sessionId,
+                        new FriendlyGroupMatchInviteDecline
+                        {
+                            EventType = NotificationEventType.groupMatchInviteDecline,
+                            EventIdentifier = new MongoId(),
+                            Aid = accountId,
+                            Nickname = accountId,
+                        }
+                    );
+
+                    mailSendService.SendSystemMessageToPlayer(
+                        sessionId,
+                        $"Cannot add profile teammate {accountId} to the raid group: {reasonText}.",
+                        null);
+                });
+            });
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] Group invite: could not tell whether '{accountId}' (session '{sessionId}') is a profile teammate; leaving the invite to PIT's own path. {ex}");
+            return false;
+        }
     }
 
     // Same fields PIT's ToGroupCharacter (FriendlyTeammateService) fills for the invite-accept notification. Built from a clone
@@ -235,19 +266,29 @@ public class FriendlyTeammateMatchCallbacks(
         FriendlyTeammateFollowerGenerateRequest request,
         MongoId sessionId)
     {
+        // STM: the resolver is asked BEFORE PIT (plan Review Focus), for the same reason as the invite
+        // path above - the Aid the client spawns is the one the friend list offered, so a registered
+        // profile must win over a mercenary that happens to carry the same Aid. The helper is the ONLY
+        // call site of StmSpawnProfileFactory.Build, and the one post-spawn call made for a profile
+        // teammate is the protected-id registration inside it - CaptureGeneratedFollower below is
+        // insurance settlement, not diagnostics, and must not be restored for symmetry
+        // (task-5-report.md, 판단 B).
+        var generated = TryBuildProfileMemberSpawn(sessionId, request.MemberId, request.Custom?.Health, out var notAProfileTeammate);
+        if (generated != null)
+        {
+            return new ValueTask<string>(httpResponseUtil.GetBody(new[] { generated }));
+        }
+
+        if (!notAProfileTeammate)
+        {
+            // A registered profile teammate that could not be taken. PIT is not asked: its lookup knows
+            // nothing about profile teammates, and letting it answer would spawn whatever else carries
+            // this Aid. Nothing is spawned, which is what the invite path already told the player.
+            return new ValueTask<string>(httpResponseUtil.GetBody(Array.Empty<object>()));
+        }
+
         if (!teammateService.TryGetSpawnProfile(sessionId, request.MemberId, request.Custom?.Health, out var teammate))
         {
-            // STM: PIT found no mercenary for this MemberId, so ask whether it is a launcher-profile
-            // teammate. The ONLY call site of StmSpawnProfileFactory.Build, and the one post-spawn
-            // call made for a profile teammate is the protected-id registration in the helper -
-            // CaptureGeneratedFollower below is insurance settlement, not diagnostics, and must not be
-            // restored for symmetry (task-5-report.md, 판단 B).
-            var generated = TryBuildProfileMemberSpawn(sessionId, request.MemberId, request.Custom?.Health);
-            if (generated != null)
-            {
-                return new ValueTask<string>(httpResponseUtil.GetBody(new[] { generated }));
-            }
-
             return new ValueTask<string>(httpResponseUtil.GetBody(Array.Empty<object>()));
         }
 
@@ -262,15 +303,21 @@ public class FriendlyTeammateMatchCallbacks(
         return new ValueTask<string>(httpResponseUtil.GetBody(new[] { teammate }));
     }
 
-    // Builds the raid spawn for a launcher-profile teammate, or null when this id is not one (then
-    // PIT's own behaviour must stand). Never throws, on its own: the resolver call is inside the try
-    // too, so the guarantee does not rest on another class keeping its catch-all.
-    private BotBase? TryBuildProfileMemberSpawn(MongoId sessionId, string? memberId, double? healthMultiplier)
+    // Builds the raid spawn for a launcher-profile teammate, or null when there is none to build.
+    // notAProfileTeammate separates the two reasons for a null: true = this id is not a registered
+    // profile teammate (false with a null reason), so PIT's own path must stand; false = it IS one and
+    // must not be spawned, so PIT is not asked either.
+    // It starts false, which is the closed side: an id we could not classify is not handed to PIT.
+    // Never throws, on its own: the resolver call is inside the try too, so the guarantee does not rest
+    // on another class keeping its catch-all.
+    private BotBase? TryBuildProfileMemberSpawn(MongoId sessionId, string? memberId, double? healthMultiplier, out bool notAProfileTeammate)
     {
+        notAProfileTeammate = false;
         try
         {
             if (!profileMemberResolver.TryResolve(sessionId, memberId, out var member, out var unavailableReason))
             {
+                notAProfileTeammate = string.IsNullOrWhiteSpace(unavailableReason);
                 if (!string.IsNullOrWhiteSpace(unavailableReason))
                 {
                     // A registered teammate that must not be taken. Nothing is spawned for it; the invite
@@ -282,7 +329,7 @@ public class FriendlyTeammateMatchCallbacks(
             }
 
             // healthMultiplier is the client's own setting off this request (Custom.Health), the same
-            // value PIT hands TryGetSpawnProfile above.
+            // value PIT hands its own TryGetSpawnProfile in the caller.
             var spawn = spawnProfileFactory.Build(sessionId, member!, out var gearKind, healthMultiplier);
 
             // Nothing in a profile teammate's spawn inventory may ever reach the player's raid-end

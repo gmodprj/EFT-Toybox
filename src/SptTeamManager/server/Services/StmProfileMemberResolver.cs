@@ -8,8 +8,10 @@ using SPTarkov.Server.Core.Servers;
 
 namespace pitTeam.Server.Services;
 
-// WARNING: Pmc is the LIVE object SaveServer holds in memory, not a copy. Clone it before use
-// (Task 3) and never mutate it: changing it alters the player's stored profile with no SaveProfile call in sight.
+/// WARNING: Pmc is the LIVE object SaveServer holds in memory, not a copy. Clone it before use
+/// (Task 3) and never mutate it: changing it alters the player's stored profile with no SaveProfile call in sight.
+/// (Doc comment on purpose, not a plain one: this is the field whose misuse corrupts a profile the
+/// player plays, so the warning has to reach an IDE tooltip at the point of use.)
 public sealed record StmResolvedMember(string ProfileId, int Aid, string Nickname, int Level, string Side, PmcData Pmc);
 
 // Bridges the game's numeric Aid to a registered launcher-profile teammate and its PMC character.
@@ -65,12 +67,19 @@ public class StmProfileMemberResolver(
             var profile = saveServer.GetProfile(new MongoId(lookup.ProfileId));
             var pmc = profile?.CharacterData?.PmcData;
             var info = pmc?.Info;
-            // Read failed, or the profile no longer matches what the catalog said (Aid, Level, Side):
-            // unusable. No substitute values - Task 3 builds gear from Level and Side.
+            // Read failed, or the profile no longer carries the Aid the catalog said: unusable. Only the
+            // Aid is re-compared; Level and Side are checked for PRESENCE, not for agreement with the
+            // catalog - they are read from this profile right here, so the fresher value is this one and
+            // there is nothing to disagree with. What they may not be is missing: no substitute values,
+            // because Task 3 builds gear from Level and Side.
             // Aid collision note: PIT's mercenary-aid allocator excludes used aids by reading
             // profile.ProfileInfo?.Aid (GetUniqueAccountId, FriendlyTeammateService.cs:4329 and :4366) while this matches on
-            // pmc.Aid - the same value in practice, so a mercenary never takes a launcher profile's
-            // aid, but the two reads are different fields and that closure is incidental, not guaranteed.
+            // pmc.Aid - the same value in practice, but the two reads are different fields, so that
+            // closure is not guaranteed. It no longer has to be: every call site asks this resolver
+            // BEFORE PIT's own lookup (invite and follower-generate in FriendlyTeammateMatchCallbacks,
+            // outcome in FriendlyPostRaidCallbacks, progress in this file's callers), so an Aid claimed
+            // by both resolves to the registered PROFILE - which is what the player's friend list showed
+            // them. A collision costs PIT one unreachable mercenary, not an invisible spawn.
             if (pmc == null || info == null || pmc.Aid != aid || info.Level == null || string.IsNullOrWhiteSpace(info.Side))
             {
                 unavailableReason = "Unreadable";

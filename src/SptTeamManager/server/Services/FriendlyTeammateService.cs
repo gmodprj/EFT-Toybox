@@ -158,8 +158,10 @@ public partial class FriendlyTeammateService(
     private static readonly object DeathEscapeRandomLock = new();
     private static readonly object RaidResultPersistenceLock = new();
     // STM lists the same three slots in SpawnGearPolicy.RequiredWeaponSlots, kept separate so the
-    // judgment stays unit-testable outside this project. Change both or neither.
-    private static readonly string[] RequiredRaidWeaponSlots =
+    // judgment stays unit-testable outside this project. Change both or neither - and this is now
+    // machine-enforced rather than left to this sentence: PitFireTeamServerPostLoad compares the two at
+    // startup and logs at Error if they have drifted. That is why this is internal.
+    internal static readonly string[] RequiredRaidWeaponSlots =
     [
         nameof(EquipmentSlots.FirstPrimaryWeapon),
         nameof(EquipmentSlots.SecondPrimaryWeapon),
@@ -498,16 +500,6 @@ public partial class FriendlyTeammateService(
             return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
 
-        return CollectSpawnEquipmentTreeIds(profile);
-    }
-
-    // The collection above with its loadout-mode gate removed, extracted unchanged so a caller whose
-    // gear must be protected in EVERY mode can ask for it (STM profile teammates: their gear also
-    // exists in a real launcher profile, so delivering it would copy an item, not move one). PIT's
-    // own method keeps its gate and simply calls this afterwards, so no mode changes behaviour for
-    // mercenaries.
-    internal HashSet<string> CollectSpawnEquipmentTreeIds(BotBase? profile)
-    {
         List<Item>? items = profile?.Inventory?.Items;
         if (items == null || items.Count == 0)
         {
