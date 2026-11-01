@@ -2613,3 +2613,30 @@ Task 1~8 이 끝났다. 단위 테스트 53 → **127**. 서버 빌드 경고 0 
 **아직 못 본 것**: 3(임시 장비), 5(**사망 시 착용 장비 상실 — 계획의 본체**), 6, 8(중복 처리), 9(넷째 자리), 10(시체 루팅 후 탈출), 13(영수증 라운드트립).
 
 **로그 한계**: SPT 서버 콘솔이 긴 줄을 폭에서 잘라, `[STM] 레이드 결과: …` 의 판정 사유를 로그에서 읽을 수 없다. 사유 확인이 필요하면 프로필 대조로 대신한다(위 7번처럼).
+
+### 인게임 확인 중 발견 — 같은 구멍의 네 번째 경로 (계획 2 범위 밖, 회귀 아님)
+
+`/singleplayer/pitfireteam/teammate/profile` 이 **PIT 자신의 팀원 문서만** 뒤진다:
+
+```csharp
+// FriendlyTeammateService.cs:4269-4270
+var teammate = LoadTeammates(sessionId).FirstOrDefault(profile => profile.Aid == aid);
+return teammate ?? throw new FriendlyTeammateException($"Unable to find teammate with accountId '{accountId}'");
+```
+
+프로필 팀원은 그 문서가 없어 던지고, 클라이언트의 `RaidStartPatch.BuildGroupPlayer`(`client/Patches/RaidStartPatch.cs:423-438`)가
+그 행을 못 만들어 경고를 찍는다. 실측 로그:
+
+```
+[Warning:SPT Team Manager] [UI] Failed to build auto-join teammate '1741641': Unable to find teammate with accountId '1741641'
+[Warning:SPT Team Manager] [UI] Failed to build auto-join teammate '1100437': Unable to find teammate with accountId '1100437'
+[Info   :SPT Team Manager] [UI] Rebuilt group preview with 3 players
+```
+
+**영향 범위**: 레이드 전 매치메이커 **파티 미리보기 행**만. 팀원은 실제로 스폰한다(1차 레이드에서 둘 다 `Real` 장비로 스폰·생환 확인).
+**회귀 아님**: 계획 2 는 클라이언트 코드를 건드리지 않았고 이 경로도 건드리지 않았다. 계획서의 수정 대상 목록에 이 파일이 없었고,
+파티 미리보기가 Task 9 체크리스트에도 없어 설계·검토 단계에서 드러나지 않았다. 프로필 팀원이 **이제 실제로 레이드에 들어가게 되어**
+비로소 눈에 띈 것이다.
+
+**고치는 모양**: Task 4·5 가 이미 세운 것과 동일 — PIT 조회가 비면 `StmProfileMemberResolver` 에 묻고, 3값 계약(널 사유 = PIT 경로 그대로)을
+지키며, PIT 줄은 불변. 인게임 확인을 마친 뒤에 한다(지금 고치면 서버 재기동이 필요해 진행 중인 확인이 무효가 된다).
