@@ -13,8 +13,8 @@ namespace pitTeam.Shared
         // Deliberately has NO catch-all: nothing here can throw, and a catch would make the guards
         // unobservable. Rules are checked in this order, and the order is what decides the Reason when
         // several rules would each say Nothing:
-        //   1. already applied  2. no gear record  3. temporary gear  4. escaped  5. strip.
-        // Only the last rule deletes anything; every earlier one fails closed to Nothing.
+        //   1. already applied  2. no gear record  3. temporary gear  4. escaped  5. strip (Real only)  6. unknown kind.
+        // Only rule 5 deletes anything, and only on an explicit Real match; every other path fails closed to Nothing.
         public static OutcomePlan Decide(bool escaped, SpawnGearKind? gearKind, bool alreadyApplied)
         {
             // Idempotence (design 6-8): a key that was already applied must never strip twice.
@@ -41,7 +41,15 @@ namespace pitTeam.Shared
                 return new OutcomePlan(OutcomeAction.Nothing, "탈출에 성공해 장비를 지우지 않는다.");
             }
 
-            return new OutcomePlan(OutcomeAction.StripWornGear, "실물 장비로 나갔다가 돌아오지 못해 착용 장비를 지운다.");
+            // The only line that deletes anything is reached by an explicit match, not by elimination:
+            // a SpawnGearKind member added later, or an undefined value cast into the enum, must not strip.
+            if (gearKind == SpawnGearKind.Real && !escaped)
+            {
+                return new OutcomePlan(OutcomeAction.StripWornGear, "실물 장비로 나갔다가 돌아오지 못해 착용 장비를 지운다.");
+            }
+
+            // Fail closed: a gear kind this code does not know never deletes equipment.
+            return new OutcomePlan(OutcomeAction.Nothing, "알 수 없는 장비 종류라 장비를 지우지 않는다.");
         }
     }
 }

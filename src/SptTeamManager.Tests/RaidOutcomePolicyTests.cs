@@ -51,7 +51,7 @@ public class RaidOutcomePolicyTests
             Assert.False(string.IsNullOrWhiteSpace(plan.Reason));
         }
 
-        // 다섯 결과(적용됨·기록 없음·임시·탈출·삭제)는 서로 다른 사유를 가진다. 같은 문구를 나눠 쓰면 로그에서 규칙을 구별할 수 없다.
+        // 여섯 결과(적용됨·기록 없음·임시·탈출·삭제·알 수 없는 종류)는 서로 다른 사유를 가진다. 같은 문구를 나눠 쓰면 로그에서 규칙을 구별할 수 없다.
         var reasons = new[]
         {
             RaidOutcomePolicy.Decide(false, SpawnGearKind.Real, true).Reason,
@@ -59,8 +59,18 @@ public class RaidOutcomePolicyTests
             RaidOutcomePolicy.Decide(false, SpawnGearKind.Temporary, false).Reason,
             RaidOutcomePolicy.Decide(true, SpawnGearKind.Real, false).Reason,
             RaidOutcomePolicy.Decide(false, SpawnGearKind.Real, false).Reason,
+            RaidOutcomePolicy.Decide(false, (SpawnGearKind)99, false).Reason,
         };
-        Assert.Equal(5, reasons.Distinct().Count());
+        Assert.Equal(6, reasons.Distinct().Count());
+    }
+
+    [Fact]
+    public void 모르는_장비_종류는_죽었어도_지우지_않는다()
+    {
+        var plan = RaidOutcomePolicy.Decide(false, (SpawnGearKind)99, false);
+
+        Assert.Equal(OutcomeAction.Nothing, plan.Action);
+        Assert.Contains("알 수 없는", plan.Reason);
     }
 
     [Fact]
