@@ -2356,6 +2356,42 @@ JSON 을 보내면 `The archive entry was compressed using an unsupported compre
   `.db` 를 복사하면 될 것으로 본다 — 암호화 키 시드(`KeyMaterial`)를 일부러 바꾸지 않았고 파일 이름 규칙도
   `<프로필id>.db` 로 같다. **다만 시도하지 않았다**(사용자 데이터이고 어떤 계획에도 없던 일이다).
 
+### PIT 용병 DB 를 STM 으로 가져왔다 (2026-11-01) — 성공, 공존 확인
+
+사용자 결정으로 PIT 가 들고 있던 팀원 DB 를 STM 쪽으로 옮겼다. **된다.**
+
+**왜 되는가.** PIT 의 팀원 DB 는 AES-GCM 으로 암호화돼 있고 키가
+`SHA256(KeyMaterial + "/" + 프로필id)` 다. 리뷰 중에 `KeyMaterial` 을 **일부러 바꾸지 않았고**(경로가 아니라
+키 재료이고, 바꾸면 기존 PIT DB 를 영구히 못 읽게 되므로) 파일 이름 규칙도 `<프로필id>.db` 로 같다. 그래서
+파일을 디렉터리만 바꿔 놓으면 그대로 읽힌다.
+
+**한 것.** 서버를 내린 상태에서, 먼저 STM 이 새로 만든 DB 3개를
+`backup/2026-11-01-before-stm/stm-db-before-import/` 로 따로 떠 두고, 백업의
+`removed-from-install/pitFireTeam-ServerMod/Resources/` 에서
+`teammates/*.db`(3개) → `Resources/stm-teammates/`, `teammates-allegiance/*.db`(1개) →
+`Resources/stm-teammates-allegiance/` 로 복사했다. 네 파일 모두 SHA256 이 원본과 일치.
+
+**확인한 것 (실측).**
+1. 서버 기동 시 `Teammate database ready` 3건 — **파일 단위 복호화 성공.**
+2. `/client/friend/list` → 친구 11명. PIT 용병 8명(`SPT02`~`SPT08`, `Zofia`)이 이름·레벨과 함께 나온다 →
+   **문서 단위 복호화까지 성공.** 설계 §5-13 이 실측했던 그 이름들이다. 회원 분류는 **1024**(`Unheard`).
+3. 프로필 팀원 등록을 다시 넣고(`members/add`) 다시 호출 → **친구 12명.** 용병 8명 전원이 그대로 남고
+   프로필 팀원이 열두 번째로 붙는다: `SPT02 lvl 15 cat 0 id 6ae5870eeb15d61bf003fd1f`.
+   - **용병이 하나도 밀려나지 않았다** → 설계 §4 "PIT 기능이 죽는다" 를 피한 것이 런타임으로 확인됐다.
+   - **두 종류의 회원 분류가 실제로 다르다** — 용병 1024(`Unheard`), 프로필 팀원 0(`Default`).
+     설계 §8 이 빌더에게 남긴 아이콘 구분이 **데이터 수준에서는 갈린다.** 눈으로 다르게 그려지는지는
+     여전히 게임이 필요하다(관문 5).
+   - 용병 문서와 STM 의 등록 문서가 **같은 `.db` 파일에 서로 다른 문서 키로** 공존한다. §6-1 의 "PIT 기능을
+     잃지 않고 STM 을 얹는다" 가 실물로 확인됐다.
+
+**주의 — 이름이 겹친다.** PIT 용병 중에 `SPT02`(레벨 18, cat 1024)가 있고, 런처 프로필에도 `SPT02`(레벨 15,
+cat 0)가 있다. 친구 목록에 같은 닉네임이 둘 뜬다. 동일성 판정은 `Id`·`Aid` 로 하므로 **결함은 아니지만**
+고를 때 헷갈린다. 레벨과 아이콘으로 가려야 한다. 프로필 쪽 닉네임을 바꾸면 깔끔해진다.
+
+**되돌리려면.** `stm-db-before-import/` 의 3개를 `Resources/stm-teammates/` 로 되돌리고
+`stm-teammates-allegiance/` 를 지운다. PIT 자체로 돌아가려면 `removed-from-install/` 의 두 폴더를 제자리로
+옮기고 STM 을 `tools/install-sptteammanager.ps1 -Remove` 로 뺀다.
+
 ### 계획 2·3 이 지켜야 할 제약
 
 - **STM 문서는 `{정수}.json` 으로 이름 짓지 않는다.** `TeammateDatabase.IsProfileDocument` 는 `.json` 으로
