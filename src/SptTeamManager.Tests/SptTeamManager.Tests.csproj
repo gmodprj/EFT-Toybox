@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <!--
+    SPT 서버 어셈블리(net10.0)를 참조하지 않는다. 순수 정책 소스만 파일마다 한 줄씩 링크한다.
+    와일드카드 금지 - 업스트림 머지 충돌 면적을 줄이려는 것이다.
+  -->
+  <ItemGroup>
+    <Compile Include="../SptTeamManager/shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
+    <Compile Include="ProfileRosterPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/FriendListMergePolicy.cs" Link="Shared/FriendListMergePolicy.cs" />
+    <Compile Include="FriendListMergePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/StmRosterWire.cs" Link="Shared/StmRosterWire.cs" />
+    <Compile Include="StmRosterWireTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileMemberLookup.cs" Link="Shared/ProfileMemberLookup.cs" />
+    <Compile Include="ProfileMemberLookupTests.cs" />
+    <Compile Include="../SptTeamManager/shared/SpawnGearPolicy.cs" Link="Shared/SpawnGearPolicy.cs" />
+    <Compile Include="SpawnGearPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/RaidOutcomePolicy.cs" Link="Shared/RaidOutcomePolicy.cs" />
+    <Compile Include="../SptTeamManager/shared/FollowerAiProfilePolicy.cs" Link="Shared/FollowerAiProfilePolicy.cs" />
+    <Compile Include="FollowerAiProfilePolicyTests.cs" />
+    <Compile Include="RaidOutcomePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/RaidReceiptKeyPolicy.cs" Link="Shared/RaidReceiptKeyPolicy.cs" />
+    <Compile Include="RaidReceiptKeyPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/WornGearLossPolicy.cs" Link="Shared/WornGearLossPolicy.cs" />
+    <Compile Include="WornGearLossPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/RaidProtectionReleasePolicy.cs" Link="Shared/RaidProtectionReleasePolicy.cs" />
+    <Compile Include="RaidProtectionReleasePolicyTests.cs" />
+  </ItemGroup>
+
+</Project>

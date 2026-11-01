@@ -1,0 +1,37 @@
+{
+  // false 로 두면 역할 수집도 패치도 하지 않는다. 지도는 바닐라 그대로 돈다.
+  "enabled": true,
+
+  // intel level 게이트를 무엇에 묶을지. boss · scav · none.
+  // 기본은 boss — ISB 16역할 중 14개가 게임 테이블상 보스다.
+  "intelLevelSource": "boss",
+
+  // 아래 groups 에 없는 커스텀 역할도 색을 자동 배정해 바로 그린다.
+  // false 로 두면 groups·extraRoles 에 적힌 것만 그리고 나머지는 스캐브로 남는다.
+  "autoAssignUnknown": true,
+
+  // 묶음. scavRole 은 서버가 주는 역할 이름이고, label 이 null 이면 서버 locale 의
+  // 표시 이름(예: "WHITE TUSK")을 그대로 쓴다. shape 는 star · arrow · diamond · dot.
+  // 같은 scavRole 이 두 줄이면 먼저 적힌 줄이 이긴다.
+  "groups": [
+    // 대장급 — ★
+    { "scavRole": "ISBBoss", "label": null, "colorHex": "#FF2D55", "shape": "star" },
+    { "scavRole": "ISBWhiteTusk", "label": null, "colorHex": "#FFFFFF", "shape": "star" },
+    { "scavRole": "ISBCommander", "label": null, "colorHex": "#FFFFFF", "shape": "star" },
+    { "scavRole": "ISBBossFollower", "label": null, "colorHex": "#FFFFFF", "shape": "star" },
+
+    // 특수 — ◆
+    { "scavRole": "ISBSniper", "label": null, "colorHex": "#2EC8FF", "shape": "diamond" },
+    { "scavRole": "ISBAssassin", "label": null, "colorHex": "#B6FF00", "shape": "diamond" },
+    { "scavRole": "ISBScout", "label": null, "colorHex": "#00E5B0", "shape": "diamond" },
+
+    // 일반 — ▲ (일반 병사 ISB·호위 ISBGuard 는 자동 배정에 맡기지 않고 여기 적는다)
+    { "scavRole": "ISBHeavy", "label": null, "colorHex": "#8A6BFF", "shape": "arrow" },
+    { "scavRole": "ISB", "label": null, "colorHex": "#C400FF", "shape": "arrow" },
+    { "scavRole": "ISBGuard", "label": null, "colorHex": "#FF9ED8", "shape": "arrow" }
+  ],
+
+  // MoreBotsAPI 를 거치지 않고 들어온 역할 id 를 손으로 적는 칸.
+  // 예: Black Division 848400~848406 (이 설치본에는 봇 타입이 없어 뜨지 않는다)
+  "extraRoles": []
+}

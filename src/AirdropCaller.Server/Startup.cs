@@ -14,7 +14,8 @@ namespace AirdropCaller.Server;
 /// 적어 둔 상자 id 와 품목 수가 로그에 보이면 "내가 고친 설정이 먹었나" 도 바로 답된다.
 /// </summary>
 [Injectable(InjectionType.Singleton, OnLoadOrder.PostLoad)]
-public class AirdropCallerStartup(ISptLogger<AirdropCallerStartup> logger, ConfigStore store) : IOnLoad
+public class AirdropCallerStartup(
+    ISptLogger<AirdropCallerStartup> logger, ConfigStore store, BigCrate bigCrate) : IOnLoad
 {
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {
@@ -32,6 +33,12 @@ public class AirdropCallerStartup(ISptLogger<AirdropCallerStartup> logger, Confi
             logger.Info("[AirdropCaller] 설정에서 꺼져 있다. 보급은 전부 바닐라다.");
             return Task.CompletedTask;
         }
+
+        // 큰 상자는 **훨씬 앞(Preload)에서** 이미 들어갔다. 여기서는 결과만 말한다 —
+        // 프로필을 읽은 뒤에 아이템을 늘리면 4.1.6 은 서버를 멈춰 세운다.
+        logger.Info(bigCrate.Ready
+            ? $"[AirdropCaller] 큰 상자 쓸 수 있다 — {bigCrate.Cells}칸."
+            : "[AirdropCaller] 큰 상자가 없다. 큰 상자로 부른 드롭은 거절한다.");
 
         if (config.Drops.Count == 0)
         {

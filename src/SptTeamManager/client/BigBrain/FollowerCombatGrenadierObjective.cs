@@ -1,0 +1,694 @@
+using EFT;
+using pitTeam.Components;
+using pitTeam.Modules;
+using System;
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace pitTeam.BigBrain
+{
+    internal sealed class FollowerCombatGrenadierObjective : FollowerCombatObjectiveBase
+    {
+        internal const float OpportunityWindowSeconds = 5f;
+        internal const string ReasonPrefix = "objectiveGrenadier";
+        private const string OrderedReasonPrefix = ReasonPrefix + ".ordered";
+        private const string AutonomousReasonPrefix = ReasonPrefix + ".auto";
+        private const string RetryHoldReason = "objectiveGrenadier.retry";
+        private const string AutonomousActivationReason = "objectiveGrenadier.activateAuto";
+        private const float RetryScanSeconds = 0.25f;
+        private const float PreparationProbeSeconds = 0.15f;
+        private const float PhysicsAbortMinActiveSeconds = 0.5f;
+        private const float PhysicsAbortNavSampleRadius = 3f;
+        private const float PhysicsAbortNavDrop = 3f;
+        private const float PhysicsAbortVerticalDrop = 6f;
+        private const float PhysicsAbortStationaryHorizontal = 4f;
+        private const float PhysicsAbortBossDistance = 60f;
+        private const float PhysicsAbortBossDistanceJump = 30f;
+        private const float PhysicsAbortBossVerticalDrop = 10f;
+
+        private bool complete;
+        private bool active;
+        private bool ordered;
+        private bool negativeSaid;
+        private bool cooldownRecorded;
+        private bool launcherReady;
+        private float activeUntil;
+        private float physicsTrackStartedAt;
+        private float highestObservedY;
+        private float lastBossDistance;
+        private float retryScanUntil;
+        private float launcherPreparationUntil;
+        private float nextPreparationProbeAt;
+        private Vector3 highestObservedPosition;
+        private FollowerCombatCommon.GrenadeLauncherFirePlan? launcherPlan;
+
+        public FollowerCombatGrenadierObjective(BotOwner botOwner, FollowerCombatCommon combatCommon)
+            : base(botOwner, combatCommon)
+        {
+        }
+
+        public override bool IsComplete => complete;
+
+        public override void Reset()
+        {
+            complete = false;
+            active = false;
+            ordered = false;
+            negativeSaid = false;
+            cooldownRecorded = false;
+            launcherReady = false;
+            activeUntil = 0f;
+            physicsTrackStartedAt = 0f;
+            highestObservedY = float.NegativeInfinity;
+            lastBossDistance = 0f;
+            retryScanUntil = 0f;
+            launcherPreparationUntil = 0f;
+            nextPreparationProbeAt = 0f;
+            highestObservedPosition = Vector3.zero;
+            launcherPlan = null;
+        }
+
+        public override void Activate()
+        {
+            Activate(ordered: false);
+        }
+
+        public void Activate(bool ordered)
+        {
+            Reset();
+            active = true;
+            this.ordered = ordered;
+            ResetPhysicsTracking();
+            ClearObjectiveCommitments();
+        }
+
+        public override void Deactivate()
+        {
+            DeactivateForObjectiveSwitch("deactivate");
+        }
+
+        public void DeactivateForObjectiveSwitch(string reason)
+        {
+            if (!active)
+            {
+                return;
+            }
+
+            RecordAttemptCooldown(reason);
+            active = false;
+            CombatCommon.PrepareLauncherSuppressWeaponFallback();
+            ClearObjectiveCommitments();
+            complete = false;
+            launcherPlan = null;
+        }
+
+        public override void DecisionChanged(
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams>? prevDecision,
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams> nextDecision)
+        {
+            CombatCommon.HandleSharedDecisionChanged(nextDecision);
+            if (IsLauncherMoveReason(nextDecision.Reason))
+            {
+                return;
+            }
+
+            if (IsLauncherPreparationReason(nextDecision.Reason))
+            {
+                return;
+            }
+
+            CombatCommon.HandleFollowerSuppressDecisionChanged(nextDecision);
+        }
+
+        public override void StartDecision()
+        {
+        }
+
+        public override AICoreActionResult<BotLogicDecision, CoreActionResultParams> GetDecision(EnemyInfo goalEnemy)
+        {
+            if (!CombatCommon.HasActiveCombatEnemy(goalEnemy))
+            {
+                return FailObjective("noEnemy");
+            }
+
+            if (TryGetEmergencyDecision(goalEnemy, out AICoreActionResult<BotLogicDecision, CoreActionResultParams> emergencyDecision))
+            {
+                return FinishForEmergency(emergencyDecision);
+            }
+
+            // Commit impact points before drawing. Losing visual contact during the draw does
+            // not invalidate suppression; execution rechecks the stored points and their safety.
+            if (launcherPlan == null &&
+                !CombatCommon.TryPrepareGrenadeLauncherFirePlan(
+                    goalEnemy, GetModeReasonPrefix(), ordered, out launcherPlan))
+            {
+                return FailObjective("noSuppressionPlan");
+            }
+
+            if (!launcherReady)
+            {
+                if (!CombatCommon.TryPrepareGrenadeLauncherWeaponForSuppress(
+                        GetModeReasonPrefix(),
+                        out AICoreActionResult<BotLogicDecision, CoreActionResultParams> prepareDecision,
+                        out bool ready,
+                        out string failReason))
+                {
+                    return FailObjective(failReason);
+                }
+
+                if (!ready)
+                {
+                    if (launcherPreparationUntil <= 0f)
+                    {
+                        bool needsReload = FollowerCombatCommon.CountLoadedRounds(
+                            FollowerCombatCommon.GetActiveOrEquippedGrenadeLauncher(BotOwner)) <= 0 ||
+                            BotOwner.WeaponManager?.Reload?.Reloading == true;
+                        launcherPreparationUntil = Time.time + (needsReload
+                            ? FollowerCombatCommon.GrenadeLauncherPrepareTimeoutSeconds
+                            : FollowerCombatCommon.SupportWeaponPrepareTimeoutSeconds);
+                    }
+
+                    if (Time.time >= launcherPreparationUntil)
+                    {
+                        return FailObjective("launcherPreparationTimedOut");
+                    }
+
+                    nextPreparationProbeAt = Time.time + PreparationProbeSeconds;
+                    return prepareDecision;
+                }
+
+                MarkLauncherReady();
+            }
+
+            if (Time.time >= activeUntil)
+            {
+                return FailObjective("windowExpired");
+            }
+
+            if (TryGetLauncherDecision(goalEnemy, out AICoreActionResult<BotLogicDecision, CoreActionResultParams> launcherDecision))
+            {
+                return launcherDecision;
+            }
+
+            return RetryOrFail("noOpportunity");
+        }
+
+        public override AICoreActionEnd ShallEndCurrentDecision(
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams> currentDecision)
+        {
+            if (!IsGrenadierReason(currentDecision.Reason))
+            {
+                return CombatCommon.ShallEndCurrentDecision(currentDecision);
+            }
+
+            EnemyInfo? goalEnemy = BotOwner.Memory.GoalEnemy;
+            if (!CombatCommon.HasActiveCombatEnemy(goalEnemy))
+            {
+                complete = true;
+                ClearObjectiveCommitments();
+                return new AICoreActionEnd("grenadierEnemyMissing", true);
+            }
+
+            if (currentDecision.Action == BotLogicDecision.suppressFire)
+            {
+                return EndLauncherFire(currentDecision.Reason);
+            }
+
+            if (currentDecision.Action == BotLogicDecision.goToPoint &&
+                IsLauncherMoveReason(currentDecision.Reason))
+            {
+                return EndLauncherMove();
+            }
+
+            if (currentDecision.Action == BotLogicDecision.holdPosition &&
+                IsLauncherPreparationReason(currentDecision.Reason))
+            {
+                return EndLauncherPreparation(currentDecision, goalEnemy!);
+            }
+
+            if (currentDecision.Action == BotLogicDecision.holdPosition &&
+                IsRetryHoldReason(currentDecision.Reason))
+            {
+                return EndRetryHold();
+            }
+
+            if (currentDecision.Action == BotLogicDecision.holdPosition)
+            {
+                return new AICoreActionEnd("grenadierHoldComplete", true);
+            }
+
+            return CombatCommon.ShallEndCurrentDecision(currentDecision);
+        }
+
+        private AICoreActionEnd EndLauncherPreparation(
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams> currentDecision,
+            EnemyInfo goalEnemy)
+        {
+            if (Time.time < nextPreparationProbeAt)
+            {
+                return FollowerCombatCommon.Continue();
+            }
+
+            nextPreparationProbeAt = Time.time + PreparationProbeSeconds;
+            if (TryGetEmergencyDecision(goalEnemy, out var emergency))
+            {
+                var successor = FinishForEmergency(emergency);
+                CombatCommon.TryPrepareDecisionTransition(currentDecision, "grenadierPreparationEmergency", successor);
+                return new AICoreActionEnd("grenadierPreparationEmergency", true);
+            }
+
+            // Poll the same transaction in place, including bounded reload retries. Changing from
+            // draw to reload is progress inside preparation, not a reason to recreate the hold.
+            if (!CombatCommon.TryPrepareGrenadeLauncherWeaponForSuppress(
+                    GetModeReasonPrefix(), out _, out bool ready, out string failReason))
+            {
+                FailObjective(failReason);
+                return new AICoreActionEnd($"grenadierPreparationFailed:{failReason}", true);
+            }
+
+            if (ready)
+            {
+                MarkLauncherReady();
+                return new AICoreActionEnd("grenadierLauncherReady", true);
+            }
+
+            // The shared reload wait is already bounded. This backstop also covers a loaded
+            // launcher whose asynchronous hands/selector readiness never finishes.
+            if (launcherPreparationUntil <= 0f || Time.time >= launcherPreparationUntil)
+            {
+                FailObjective("launcherPreparationTimedOut");
+                return new AICoreActionEnd("grenadierPreparationTimedOut", true);
+            }
+
+            CombatCommon.HoldFor(PreparationProbeSeconds);
+            return FollowerCombatCommon.Continue();
+        }
+
+        private void MarkLauncherReady()
+        {
+            launcherReady = true;
+            launcherPreparationUntil = 0f;
+            nextPreparationProbeAt = 0f;
+            activeUntil = Time.time + OpportunityWindowSeconds;
+        }
+
+        private AICoreActionResult<BotLogicDecision, CoreActionResultParams> FinishForEmergency(
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams> emergencyDecision)
+        {
+            // A first-primary launcher must not remain in hand during a shared survival action.
+            // Support launchers retain their existing return-to-primary lifecycle.
+            string emergencyReason = emergencyDecision.Reason ?? emergencyDecision.Action.ToString();
+            CombatCommon.RequestFirstPrimaryLauncherHolsterFallback($"grenadierEmergency.{emergencyReason}");
+            if (CombatCommon.TryCreatePendingFirstPrimaryLauncherHolsterFallbackDecision(out var holsterFallback))
+            {
+                emergencyDecision = holsterFallback;
+            }
+
+            complete = true;
+            RecordAttemptCooldown($"emergency.{emergencyReason}");
+            CombatCommon.PrepareLauncherSuppressWeaponFallback();
+            ClearObjectiveCommitments();
+            return emergencyDecision;
+        }
+
+        internal static bool IsAutonomousActivationReason(string? reason)
+        {
+            return string.Equals(reason, AutonomousActivationReason, StringComparison.Ordinal);
+        }
+
+        internal static AICoreActionResult<BotLogicDecision, CoreActionResultParams> CreateAutonomousActivationDecision()
+        {
+            return new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(
+                BotLogicDecision.holdPosition,
+                AutonomousActivationReason);
+        }
+
+        private bool TryGetEmergencyDecision(
+            EnemyInfo goalEnemy,
+            out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            decision = default;
+            if (TryGetPhysicsAbortDecision(out decision))
+            {
+                return true;
+            }
+
+            if (CombatCommon.TryGetDogFightDecision() is { } dogFightDecision)
+            {
+                decision = dogFightDecision;
+                return true;
+            }
+
+            if (CombatCommon.TryGetNeedHealDecision() is { } healDecision)
+            {
+                decision = healDecision;
+                return true;
+            }
+
+            if (CombatCommon.TryGetReloadRetreatDecision(goalEnemy, out AICoreActionResult<BotLogicDecision, CoreActionResultParams> reloadRetreatDecision))
+            {
+                decision = reloadRetreatDecision;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ResetPhysicsTracking()
+        {
+            Vector3 position = BotOwner.Position;
+            physicsTrackStartedAt = Time.time;
+            highestObservedY = position.y;
+            highestObservedPosition = position;
+            Vector3 bossPosition = CombatCommon.GetBossPosition();
+            lastBossDistance = FollowerCombatCommon.IsFinite(bossPosition)
+                ? Vector3.Distance(position, bossPosition)
+                : 0f;
+        }
+
+        private bool TryGetPhysicsAbortDecision(out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            decision = default;
+            Vector3 position = BotOwner.Position;
+            if (!FollowerCombatCommon.IsFinite(position))
+            {
+                return CreatePhysicsAbortDecision("invalidPosition", out decision);
+            }
+
+            if (physicsTrackStartedAt <= 0f)
+            {
+                ResetPhysicsTracking();
+                return false;
+            }
+
+            if (position.y > highestObservedY)
+            {
+                highestObservedY = position.y;
+                highestObservedPosition = position;
+            }
+
+            float activeSeconds = Time.time - physicsTrackStartedAt;
+            if (activeSeconds < PhysicsAbortMinActiveSeconds)
+            {
+                UpdateLastBossDistance(position);
+                return false;
+            }
+
+            float verticalDrop = highestObservedY - position.y;
+            float horizontalFromHigh = DistanceXZ(position, highestObservedPosition);
+            bool noNearbyNavMesh =
+                verticalDrop >= PhysicsAbortNavDrop &&
+                !NavMesh.SamplePosition(position, out _, PhysicsAbortNavSampleRadius, NavMesh.AllAreas);
+            if (noNearbyNavMesh)
+            {
+                return CreatePhysicsAbortDecision($"noNearbyNavMesh:drop={verticalDrop:0.0}", out decision);
+            }
+
+            if (verticalDrop >= PhysicsAbortVerticalDrop &&
+                horizontalFromHigh <= PhysicsAbortStationaryHorizontal)
+            {
+                return CreatePhysicsAbortDecision($"stationaryVerticalDrop:drop={verticalDrop:0.0}", out decision);
+            }
+
+            Vector3 bossPosition = CombatCommon.GetBossPosition();
+            if (FollowerCombatCommon.IsFinite(bossPosition))
+            {
+                float bossDistance = Vector3.Distance(position, bossPosition);
+                float bossVerticalDrop = bossPosition.y - position.y;
+                if (bossVerticalDrop >= PhysicsAbortBossVerticalDrop &&
+                    bossDistance >= PhysicsAbortBossDistance &&
+                    (lastBossDistance <= 0f || bossDistance - lastBossDistance >= PhysicsAbortBossDistanceJump))
+                {
+                    return CreatePhysicsAbortDecision(
+                        $"bossDistanceJump:distance={bossDistance:0.0}:vertical={bossVerticalDrop:0.0}",
+                        out decision);
+                }
+
+                lastBossDistance = bossDistance;
+            }
+
+            return false;
+        }
+
+        private void UpdateLastBossDistance(Vector3 position)
+        {
+            Vector3 bossPosition = CombatCommon.GetBossPosition();
+            if (FollowerCombatCommon.IsFinite(bossPosition))
+            {
+                lastBossDistance = Vector3.Distance(position, bossPosition);
+            }
+        }
+
+        private bool CreatePhysicsAbortDecision(
+            string reason,
+            out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            BattleRecorder.RecordObjectiveDiagnostic(
+                BotOwner,
+                nameof(FollowerCombatGrenadierObjective),
+                "physicsAbort",
+                reason);
+            decision = new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(
+                BotLogicDecision.holdPosition,
+                FollowerCombatRegroupObjective.ActivateRegroupReason);
+            return true;
+        }
+
+        private static float DistanceXZ(Vector3 a, Vector3 b)
+        {
+            float dx = a.x - b.x;
+            float dz = a.z - b.z;
+            return Mathf.Sqrt(dx * dx + dz * dz);
+        }
+
+        private bool TryGetLauncherDecision(
+            EnemyInfo goalEnemy,
+            out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            decision = default;
+            return launcherPlan != null && TryUseLauncherPlan(goalEnemy, launcherPlan, out decision);
+        }
+
+        private bool TryUseLauncherPlan(
+            EnemyInfo goalEnemy,
+            FollowerCombatCommon.GrenadeLauncherFirePlan plan,
+            out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            decision = default;
+            if (plan.HasSuppressFrom &&
+                !CombatCommon.IsAtGrenadeLauncherFirePosition(plan))
+            {
+                decision = CombatCommon.CreateGrenadeLauncherMoveDecision(plan);
+                return true;
+            }
+
+            if (CombatCommon.TryStartGrenadeLauncherFireDecision(goalEnemy, plan, out decision))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private AICoreActionEnd EndLauncherFire(string? reason)
+        {
+            AICoreActionEnd end = CombatCommon.EndSuppressFire(reason);
+            if (!end.Value)
+            {
+                return end;
+            }
+
+            bool fired = CombatCommon.HasFiredGrenadeLauncherSuppressShot;
+            complete = true;
+            launcherPlan = null;
+            RecordAttemptCooldown(fired ? end.Reason : $"fail.{end.Reason}");
+            CombatCommon.PrepareLauncherSuppressWeaponFallback();
+            if (!fired || FollowerCombatCommon.IsSingleUseLauncherWeapon(
+                    FollowerCombatCommon.GetActiveOrEquippedGrenadeLauncher(BotOwner)))
+            {
+                CombatCommon.RequestFirstPrimaryLauncherHolsterFallback(
+                    fired ? "launcherSingleUseSpent" : $"grenadierFail.{end.Reason}");
+            }
+            ClearObjectiveCommitments();
+            return end;
+        }
+
+        private AICoreActionEnd EndLauncherMove()
+        {
+            if (launcherPlan == null)
+            {
+                launcherPlan = null;
+                return new AICoreActionEnd("grenadierMovePlanMissing", true);
+            }
+
+            if (CombatCommon.IsAtGrenadeLauncherFirePosition(launcherPlan))
+            {
+                return new AICoreActionEnd("grenadierMoveArrived", true);
+            }
+
+            AICoreActionEnd moveEnd = CombatCommon.EndGoToPoint(endWhenEnemyVisibleShootable: false);
+            if (moveEnd.Value)
+            {
+                CombatCommon.ClearCommittedMovement();
+            }
+
+            return moveEnd.Value ? moveEnd : default;
+        }
+
+        private AICoreActionEnd EndRetryHold()
+        {
+            if (Time.time >= retryScanUntil)
+            {
+                return new AICoreActionEnd("grenadierRetryScan", true);
+            }
+
+            CombatCommon.HoldFor(Mathf.Max(0.05f, retryScanUntil - Time.time));
+            return default;
+        }
+
+        private AICoreActionResult<BotLogicDecision, CoreActionResultParams> RetryOrFail(string suffix)
+        {
+            if (Time.time >= activeUntil)
+            {
+                return FailObjective(suffix);
+            }
+
+            retryScanUntil = Mathf.Min(activeUntil, Time.time + RetryScanSeconds);
+            LookTowardEnemy();
+            CombatCommon.HoldFor(Mathf.Max(0.05f, retryScanUntil - Time.time));
+            BattleRecorder.RecordObjectiveDiagnostic(
+                BotOwner,
+                nameof(FollowerCombatGrenadierObjective),
+                "retry",
+                suffix);
+            return Hold($"retry.{suffix}");
+        }
+
+        private AICoreActionResult<BotLogicDecision, CoreActionResultParams> FailObjective(string suffix)
+        {
+            complete = true;
+            RecordAttemptCooldown($"fail.{suffix}");
+            CombatCommon.PrepareLauncherSuppressWeaponFallback();
+            CombatCommon.RequestFirstPrimaryLauncherHolsterFallback($"grenadierFail.{suffix}");
+            ClearObjectiveCommitments();
+            BattleRecorder.RecordObjectiveDiagnostic(
+                BotOwner,
+                nameof(FollowerCombatGrenadierObjective),
+                "reject",
+                suffix);
+            if (ordered)
+            {
+                SayNegativeOnce();
+            }
+
+            return Hold(suffix);
+        }
+
+        private void SayNegativeOnce()
+        {
+            if (negativeSaid)
+            {
+                return;
+            }
+
+            negativeSaid = true;
+            BotOwner.BotTalk?.TrySay(EPhraseTrigger.Negative, false);
+            BotOwner.Gesture?.TryGestus(EInteraction.NoGesture, false);
+        }
+
+        private void LookTowardEnemy()
+        {
+            EnemyInfo? goalEnemy = BotOwner.Memory.GoalEnemy;
+            if (goalEnemy == null)
+            {
+                return;
+            }
+
+            Vector3 enemyPosition = FollowerCombatCommon.GetEnemyCurrentPosition(goalEnemy);
+            if (FollowerCombatCommon.IsFinite(enemyPosition))
+            {
+                BotOwner.Steering.LookToPoint(enemyPosition);
+            }
+        }
+
+        private void ClearObjectiveCommitments()
+        {
+            launcherPreparationUntil = 0f;
+            nextPreparationProbeAt = 0f;
+            CombatCommon.ClearFollowerSuppressState();
+            CombatCommon.ClearCommittedMovement();
+            CombatCommon.ClearCommittedPosition();
+            CombatCommon.ClearInitialDecision();
+        }
+
+        private void RecordAttemptCooldown(string reason)
+        {
+            if (cooldownRecorded)
+            {
+                return;
+            }
+
+            // A launcher occupying FirstPrimaryWeapon is the follower's ordinary combat weapon.
+            // Normal action completion, enemy loss, healing, or an objective switch must not apply
+            // the old support-suppression cooldown. Only a genuine failed opportunity uses the
+            // cooldown so the loaded-pistol fallback is not immediately undone.
+            if (FollowerCombatCommon.HasUsableFirstPrimaryGrenadeLauncher(BotOwner) &&
+                !reason.StartsWith("fail.", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            cooldownRecorded = true;
+            CombatCommon.StartGrenadeLauncherSuppressCooldown(ordered, reason);
+            if (ordered)
+            {
+                CombatCommon.StartGrenadeLauncherSuppressCooldown(ordered: false, $"ordered.{reason}");
+            }
+        }
+
+        internal static bool IsGrenadierReason(string? reason)
+        {
+            return reason != null && reason.StartsWith(ReasonPrefix, StringComparison.Ordinal);
+        }
+
+        internal static bool IsOrderedGrenadierReason(string? reason)
+        {
+            return reason != null && reason.StartsWith(OrderedReasonPrefix, StringComparison.Ordinal);
+        }
+
+        internal static bool IsAutonomousGrenadierReason(string? reason)
+        {
+            return reason != null && reason.StartsWith(AutonomousReasonPrefix, StringComparison.Ordinal);
+        }
+
+        private string GetModeReasonPrefix()
+        {
+            return ordered ? OrderedReasonPrefix : AutonomousReasonPrefix;
+        }
+
+        private static bool IsLauncherMoveReason(string? reason)
+        {
+            return IsGrenadierReason(reason) &&
+                   reason.EndsWith(".launcherMove", StringComparison.Ordinal);
+        }
+
+        private static bool IsLauncherPreparationReason(string? reason)
+        {
+            return IsGrenadierReason(reason) &&
+                   (reason.EndsWith(".launcherSwitch", StringComparison.Ordinal) ||
+                    reason.EndsWith(".launcherReload", StringComparison.Ordinal));
+        }
+
+        private static bool IsRetryHoldReason(string? reason)
+        {
+            return reason != null && reason.StartsWith(RetryHoldReason, StringComparison.Ordinal);
+        }
+
+        private static AICoreActionResult<BotLogicDecision, CoreActionResultParams> Hold(string suffix)
+        {
+            return new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(
+                BotLogicDecision.holdPosition,
+                $"{ReasonPrefix}.{suffix}");
+        }
+    }
+}

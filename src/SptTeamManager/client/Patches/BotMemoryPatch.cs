@@ -1,0 +1,231 @@
+using EFT;
+
+using HarmonyLib;
+using SPT.Reflection.Patching;
+using System.Reflection;
+
+using pitTeam.Modules;
+using pitTeam.Utils;
+using pitTeam.BigBrain;
+
+namespace pitTeam.Patches
+{
+    internal static class BotMemoryOwnerAccessor
+    {
+        private static readonly FieldInfo OwnerField = AccessTools.Field(typeof(EFT.BotMemory), "_owner");
+
+        internal static BotOwner Get(EFT.BotMemory memory)
+        {
+            return OwnerField.GetValue(memory) as BotOwner;
+        }
+    }
+
+    /**
+     * Patch to yell friendly fire from teamates
+     */
+    internal class BotMemoryDamagePatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.Method(typeof(EFT.BotMemory), nameof(EFT.BotMemory.GetHit));
+        }
+        [PatchPrefix]
+        private static void PatchPrefix(EFT.BotMemory __instance, EFT.Ballistics.DamageInfo damageInfo)
+        {
+            try
+            {
+                BotOwner botOwner_0 = BotMemoryOwnerAccessor.Get(__instance);
+
+                if (damageInfo.Player == null) return;
+
+                // Native AI retaliation may use checkAddTODO, the same cause as a sight
+                // scan. Establish real damage intent before applying ambient neutrality.
+                if (damageInfo.Damage > 0f)
+                    FollowerGroupHostility.OnDamage(botOwner_0, damageInfo.Player.iPlayer);
+
+                bool isfollower = BossPlayers.IsFollower(botOwner_0);
+                if (!isfollower) return;
+
+                FollowerAwareness.FollowerHit(botOwner_0, damageInfo);
+
+                bool isBossEnemy = BossPlayers.IsPlayerBoss(damageInfo.Player.iPlayer.ProfileId);
+
+                bool isTeamate = false;
+
+                if (botOwner_0.BotFollower.BossToFollow == null) return;
+
+                botOwner_0.BotFollower.BossToFollow.Followers.ForEach(bt =>
+                {
+                    if (bt.ProfileId == damageInfo.Player.iPlayer.ProfileId) isTeamate = true;
+                });
+
+                if (!(isBossEnemy || isTeamate)) return;
+
+                botOwner_0.BotTalk.TrySay(EPhraseTrigger.FriendlyFire, false);
+            }
+            catch (System.Exception e)
+            {
+                Modules.Logger.LogError(e);
+            }
+        }
+    }
+
+    internal sealed class FollowerGoalEnemyClearRetentionPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod()
+        {
+            return AccessTools.PropertySetter(typeof(EFT.BotMemory), nameof(EFT.BotMemory.GoalEnemy));
+        }
+
+        [PatchPrefix]
+        private static bool PatchPrefix(EFT.BotMemory __instance, EnemyInfo value)
+        {
+            try
+            {
+                BotOwner botOwner = BotMemoryOwnerAccessor.Get(__instance);
+                EnemyInfo previous = __instance.GoalEnemy;
+                string reason = FollowerGoalEnemyTracker.CurrentReason;
+
+                if (value != null)
+                {
+                    if (botOwner != null && BossPlayers.IsFollower(botOwner) &&
+                        !FollowerEnemyTracking.IsEligible(value))
+                    {
+                        FollowerGoalEnemyTracker.RecordSetter(botOwner, previous, value, false, "trackingExpired");
+                        return false;
+                    }
+                    if (ShouldBlockUnscopedMemoryOnlyGoal(botOwner, value, reason, out string? acquisitionBlockedReason))
+                    {
+                        FollowerGoalEnemyTracker.RecordSetter(
+                            botOwner,
+                            previous,
+                            value,
+                            allowed: false,
+                            blockedReason: acquisitionBlockedReason);
+                        return false;
+                    }
+
+                    bool allowed = FollowerCombatTargetCommitments.ShouldAllowGoalEnemySet(
+                        botOwner,
+                        previous,
+                        value,
+                        reason,
+                        out string? blockedReason);
+                    if (allowed && botOwner != null && BossPlayers.IsFollower(botOwner))
+                    {
+                        allowed = FollowerContactEnemyRetention.ShouldAllowGoalEnemySet(
+                            botOwner,
+                            previous,
+                            value,
+                            reason,
+                            out blockedReason);
+                    }
+
+                    FollowerGoalEnemyTracker.RecordSetter(
+                        botOwner,
+                        previous,
+                        value,
+                        allowed,
+                        blockedReason);
+                    return allowed;
+                }
+
+                if (botOwner == null || !BossPlayers.IsFollower(botOwner))
+                {
+                    return true;
+                }
+
+                // A dead/removed goal never owns a retention veto. A different living retained
+                // contact can still be restored by its normal owner on the next decision pass.
+                bool previousIsAlive = Components.BotFollowerPlayer.IsEnemyInfoAlive(previous) &&
+                    FollowerEnemyTracking.IsEligible(previous);
+                bool shouldBlockClear = FollowerContactEnemyRetention.ShouldBlockGoalEnemyClear(botOwner, previous) &&
+                    previousIsAlive;
+                string? clearBlockedReason = shouldBlockClear ? "retentionBlockedClear" : null;
+                if (!shouldBlockClear && previousIsAlive &&
+                    string.Equals(reason, "unscopedSetter", System.StringComparison.Ordinal) &&
+                    FollowerEnemyTracking.ShouldRetainSearch(previous))
+                {
+                    shouldBlockClear = true;
+                    clearBlockedReason = "trackingUnfinishedSearch";
+                }
+                if (!shouldBlockClear &&
+                    previousIsAlive &&
+                    string.Equals(reason, "unscopedSetter", System.StringComparison.Ordinal) &&
+                    SainGoalEnemyBridge.TryGetRetainedSameGoalEnemy(
+                        botOwner,
+                        previous,
+                        out _))
+                {
+                    shouldBlockClear = true;
+                    clearBlockedReason = "sainRetainedSameTarget";
+                }
+
+                FollowerGoalEnemyTracker.RecordSetter(
+                    botOwner,
+                    previous,
+                    null,
+                    allowed: !shouldBlockClear,
+                    blockedReason: clearBlockedReason);
+                return !shouldBlockClear;
+            }
+            catch (System.Exception e)
+            {
+                Modules.Logger.LogError(e);
+                return true;
+            }
+        }
+
+        [PatchPostfix]
+        private static void PatchPostfix(EFT.BotMemory __instance, EnemyInfo value, bool __runOriginal)
+        {
+            // Prefix admission and the native setter must both succeed. In particular,
+            // a rejected reassignment of the current goal must not wake its target.
+            if (!__runOriginal || value == null || !pitFireTeam.IsSAINInstalled) return;
+            try
+            {
+                BotOwner owner = value.Owner;
+                if (ReferenceEquals(owner?.Memory, __instance))
+                    FollowerAcceptedContactActivation.TryActivate(owner, value);
+            }
+            catch (System.Exception e)
+            {
+                Modules.Logger.LogError(e);
+            }
+        }
+
+        private static bool ShouldBlockUnscopedMemoryOnlyGoal(
+            BotOwner botOwner,
+            EnemyInfo value,
+            string reason,
+            out string? blockedReason)
+        {
+            blockedReason = null;
+            if (botOwner == null ||
+                !BossPlayers.IsFollower(botOwner) ||
+                !string.Equals(reason, "unscopedSetter", System.StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            // Vanilla SetVisible(true) recalculates GoalEnemy before CheckLookEnemy finishes
+            // writing VisibleType and PersonalLastSeenTime. Defer soft/setup acquisition until
+            // the normal post-look recalculation can use the completed, corrected sensor state.
+            if (!pitFireTeam.IsSAINInstalled &&
+                FollowerEnemyInfoCorrection.IsInsideLookCheck &&
+                Enemy.RequiresAcquisitionAwarenessGate(value.GroupInfo?.Cause))
+            {
+                blockedReason = "lookCheckGoalEnemyDeferred";
+                return true;
+            }
+
+            if (!Enemy.IsMemoryOnlyAcquisitionWithoutPersonalContact(value))
+            {
+                return false;
+            }
+
+            blockedReason = "memoryOnlyGoalEnemyBlocked";
+            return true;
+        }
+    }
+}

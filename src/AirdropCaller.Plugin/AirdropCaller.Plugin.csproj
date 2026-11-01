@@ -22,6 +22,11 @@
       <HintPath>$(SptDir)\BepInEx\core\BepInEx.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- 남의 패치가 터뜨리는 예외를 삼키는 Finalizer 하나에 쓴다 (SurfaceGuard) -->
+    <Reference Include="0Harmony">
+      <HintPath>$(SptDir)\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
       <Private>false</Private>
@@ -50,6 +55,11 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <!-- Physics.Raycast / RaycastHit -->
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <!-- SynchronizableObject 의 조상이 Odin 의 SerializedMonoBehaviour 라 타입 해석에 필요하다 -->

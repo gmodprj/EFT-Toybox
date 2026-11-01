@@ -38,6 +38,17 @@ public class Config
     public double IdleHeartbeatSeconds { get; set; } = 10;
 
     /// <summary>
+    /// 큰 상자의 격자. 바닐라 상자 넷은 전부 10×12=120칸이고, 이것은 그것을 베껴
+    /// 키운 **따로 만든 상자**다(<see cref="BigCrate"/>). 바닐라 상자는 안 건드린다.
+    /// </summary>
+    [JsonPropertyName("BigCrateWidth")]
+    public int BigCrateWidth { get; set; } = 30;
+
+    /// <inheritdoc cref="BigCrateWidth"/>
+    [JsonPropertyName("BigCrateHeight")]
+    public int BigCrateHeight { get; set; } = 30;
+
+    /// <summary>
     /// 상자 id → 그 상자에 담을 것.
     ///
     /// 이 id 는 게임이 `InitAirdrop(lootTemplateId, ...)` 에 넘긴 값이 그대로 돌아온 것이다
@@ -63,6 +74,13 @@ public class DropSpec
     /// <summary>담을 품목. 격자에 안 들어가는 것은 넣지 않고 기록에 남긴다.</summary>
     [JsonPropertyName("Items")]
     public List<ItemSpec> Items { get; set; } = [];
+
+    /// <summary>
+    /// 큰 상자로 보낼지. 겉모습과 창 제목은 <see cref="Icon"/> 이 그대로 정하고,
+    /// 안 격자만 커진다(기본 30×30=900칸).
+    /// </summary>
+    [JsonPropertyName("BigCrate")]
+    public bool BigCrate { get; set; }
 }
 
 /// <summary>품목 하나.</summary>
@@ -92,4 +110,32 @@ public class ItemSpec
     /// </summary>
     [JsonPropertyName("Items")]
     public List<ItemSpec>? Items { get; set; }
+
+    /// <summary>
+    /// 이 품목에 딸린 칸을 어디까지 채울지. 비우면 <see cref="SlotFill.Auto"/>.
+    ///
+    /// `Auto` 는 방어구(헤드기어·바디아머·택티컬 리그)에만 손대어 삽입물과 방어판을
+    /// 채운다 — 삽입물이 빠진 방어구는 보호력이 0 이라 적어 낸 사람이 바란 물건이
+    /// 아니다. `All` 은 헬멧의 야시경·마운트까지 모두 붙이고, `None` 은 빈 몸으로 둔다.
+    /// </summary>
+    [JsonPropertyName("Fill")]
+    [JsonConverter(typeof(JsonStringEnumConverter<SlotFill>))]
+    public SlotFill? Fill { get; set; }
+
+    /// <summary>
+    /// 칸마다 직접 고른 것. 칸 경로 → tpl.
+    ///
+    /// <list type="bullet">
+    /// <item>적은 칸은 그대로 쓴다. <see cref="Fill"/> 보다 세다.</item>
+    /// <item>안 적은 칸은 <see cref="Fill"/> 이 하던 대로.</item>
+    /// <item>빈 문자열은 **"비워 둬라"** — `Auto` 가 채우는 것을 막는 유일한 방법이다.</item>
+    /// </list>
+    ///
+    /// 겹친 칸은 점으로 잇는다: `"mod_mount.mod_nvg"`. 사전 하나로 몇 겹이든 적을 수
+    /// 있어 모양이 늘지 않는다.
+    ///
+    /// 칸에 못 다는 것을 적으면 거절하고 "고친 것" 에 적는다. 조용히 버리지 않는다.
+    /// </summary>
+    [JsonPropertyName("Slots")]
+    public Dictionary<string, string>? Slots { get; set; }
 }

@@ -23,7 +23,8 @@ namespace AirdropCaller.Server;
 /// 무기를 케이스에 담을지 말지도 같은 구조로 고른다.
 /// </summary>
 [Injectable(InjectionType.Singleton)]
-public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper)
+public class CrateBuilder(
+    ISptLogger<CrateBuilder> logger, ItemHelper itemHelper, SlotFiller slotFiller, BigCrate bigCrate)
 {
     /// <summary>중첩이 끝없이 깊어지는 것을 막는다. 가방 안의 가방 정도면 충분하다.</summary>
     private const int MaxDepth = 4;
@@ -47,8 +48,11 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
     /// 한 자루에 넣었더니 창이 "못 담은 것 1개" 라고 말하는데 정작 상자에는
     /// 들어 있는 꼴이 됐다.
     /// </summary>
+    /// <param name="Placed">격자에 자리를 잡은 품목 수. 딸려 붙은 부속은 세지 않는다.</param>
+    /// <param name="Attached">방어판·삽입물·헬멧 부속처럼 품목에 **붙은** 것의 수.</param>
     public record Result(
-        GetAirdropLootResponse Response, int Placed, List<string> Skipped, List<string> Adjusted);
+        GetAirdropLootResponse Response, int Placed, int Attached,
+        List<string> Skipped, List<string> Adjusted);
 
     public Result? Build(string dropId, DropSpec spec)
     {
@@ -59,7 +63,16 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
             return null;
         }
 
-        var crateTpl = CrateTemplateFor(icon);
+        // 큰 상자를 못 만들었으면 조용히 작은 상자로 보내지 않는다 — 900칸을 믿고
+        // 적어 둔 품목이 "자리 없음" 으로 쏟아지는 쪽이 더 나쁘다.
+        if (spec.BigCrate && !bigCrate.Ready)
+        {
+            logger.Error($"[AirdropCaller] {dropId}: 큰 상자를 못 만들어 둔 채 큰 상자를 달라고 했다. "
+                       + "서버가 켜질 때의 기록을 본다.");
+            return null;
+        }
+
+        var crateTpl = spec.BigCrate ? BigCrate.Tpl : CrateTemplateFor(icon);
         var crate = new Item
         {
             Id = new MongoId(),
@@ -76,14 +89,26 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
         var items = new List<Item> { crate };
         var skipped = new List<string>();
         var adjusted = new List<string>();
+        var tally = new Tally();
 
-        Place(spec.Items, crate, crateMap!, crateSlot, items, skipped, adjusted, depth: 0);
+        Place(spec.Items, [new Spot(crate, crateMap!, crateSlot)], items, skipped, adjusted, tally, depth: 0);
 
         return new Result(
             new GetAirdropLootResponse { Icon = icon, Container = items },
-            items.Count - 1,
+            tally.Placed,
+            tally.Attached,
             Collapse(skipped),
             Collapse(adjusted));
+    }
+
+    /// <summary>
+    /// 담은 것과 붙은 것을 따로 센다. 예전처럼 `items.Count - 1` 로 세면 방어판까지
+    /// 품목 수에 섞여, 30개를 담았는데 창이 "78개" 라고 말하게 된다.
+    /// </summary>
+    private sealed class Tally
+    {
+        public int Placed;
+        public int Attached;
     }
 
     /// <summary>
@@ -99,17 +124,28 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
     /// <paramref name="parent"/> 안에 <paramref name="entries"/> 를 넣는다.
     /// 자리가 없으면 넣지 않고 <paramref name="skipped"/> 에 적는다.
     /// </summary>
+    /// <summary>담을 수 있는 자리 하나 — 그릇과 그 격자 지도.</summary>
+    private sealed record Spot(Item Item, int[,] Map, string Slot);
+
+    /// <summary>
+    /// <paramref name="entries"/> 를 <paramref name="targets"/> 에 담는다.
+    ///
+    /// **그릇이 여럿이면 나눠 담는다.** 앞엣것이 차면 다음 그릇으로 넘어간다.
+    /// 전에는 그릇 하나하나마다 안에 든 목록을 통째로 넣었다 — 가방 3개에 음료
+    /// 10개를 적으면 30개를 시도해 12개만 들어가고 18개가 "자리 없음" 으로
+    /// 빠졌다(실측 2026-10-30). `Count` 는 "이 품목 몇 개" 이지 "그릇마다 몇 개"
+    /// 가 아니다.
+    /// </summary>
     private void Place(
         List<ItemSpec>? entries,
-        Item parent,
-        int[,] parentMap,
-        string parentSlot,
+        IReadOnlyList<Spot> targets,
         List<Item> items,
         List<string> skipped,
         List<string> adjusted,
+        Tally tally,
         int depth)
     {
-        if (entries is null || entries.Count == 0)
+        if (entries is null || entries.Count == 0 || targets.Count == 0)
         {
             return;
         }
@@ -128,6 +164,11 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
             }
 
             var stack = StackFor(entry, adjusted);
+            var wantsChildren = entry.Items is { Count: > 0 };
+
+            // 이 품목이 그릇이면 만든 것들을 모아 둔다. 안에 넣을 것은 그 뒤에
+            // **이 그릇들에 나눠** 담는다.
+            var copies = new List<Spot>();
 
             for (var i = 0; i < Math.Max(1, entry.Count); i++)
             {
@@ -135,8 +176,6 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                 {
                     Id = new MongoId(),
                     Template = new MongoId(entry.Tpl),
-                    ParentId = parent.Id,
-                    SlotId = parentSlot,
                     Upd = new Upd
                     {
                         SpawnedInSession = true,
@@ -144,39 +183,77 @@ public class CrateBuilder(ISptLogger<CrateBuilder> logger, ItemHelper itemHelper
                     },
                 };
 
-                var size = itemHelper.GetItemSize([item], item.Id);
+                // 딸린 칸을 **자리를 보기 전에** 채운다. 붙은 것이 크기를 바꾼다 —
+                // 개머리판을 단 총은 빈 총보다 넓다. 빈 몸으로 재 놓고 채워 넣으면
+                // 격자 지도가 실제와 어긋난다.
+                var attached = slotFiller.Fill(item, entry.Fill ?? SlotFill.Auto, entry.Slots, adjusted);
+
+                var size = itemHelper.GetItemSize([item, .. attached], item.Id);
                 if (size is null)
                 {
                     skipped.Add($"{entry.Tpl} (크기를 모른다 — 없는 아이템일 수 있다)");
                     continue;
                 }
 
-                var slot = parentMap.FindSlotForItem(size.Width, size.Height);
-                if (slot.Success != true)
+                // 그릇을 차례로 두드린다. 첫 그릇이 차 있으면 다음 그릇이 받는다.
+                var home = Settle(targets, size.Width, size.Height);
+                if (home is null)
                 {
                     skipped.Add($"{entry.Tpl} (자리 없음)");
                     continue;
                 }
 
-                parentMap.TryFillContainerMapWithItem(
-                    slot.X!.Value, slot.Y!.Value, size.Width, size.Height, slot.Rotation ?? false, out _);
+                item.ParentId = home.Item.Id;
+                item.SlotId = home.Slot;
+
                 items.Add(item);
+                items.AddRange(attached);
+                tally.Placed++;
+                tally.Attached += attached.Count;
 
-                if (entry.Items is null || entry.Items.Count == 0)
+                if (!wantsChildren)
                 {
                     continue;
                 }
 
-                // 안에 넣을 것이 있다. 이 품목이 격자를 가진 컨테이너여야 한다.
-                if (!TryOpenContainer(item.Template, out var childMap, out var childSlot))
+                // 안에 넣을 것이 있다. 이 품목이 격자를 가진 그릇이어야 한다.
+                if (TryOpenContainer(item.Template, out var childMap, out var childSlot))
                 {
-                    skipped.Add($"{entry.Tpl} 안의 {entry.Items.Count}종 (이 품목은 담을 수 없다 — 격자가 없다)");
-                    continue;
+                    copies.Add(new Spot(item, childMap!, childSlot));
                 }
+                else
+                {
+                    skipped.Add($"{entry.Tpl} 안의 {entry.Items!.Count}종 (이 품목은 담을 수 없다 — 격자가 없다)");
+                }
+            }
 
-                Place(entry.Items, item, childMap!, childSlot, items, skipped, adjusted, depth + 1);
+            if (wantsChildren && copies.Count > 0)
+            {
+                Place(entry.Items, copies, items, skipped, adjusted, tally, depth + 1);
             }
         }
+    }
+
+    /// <summary>
+    /// 그릇들을 차례로 두드려 자리를 잡는다. 잡으면 그 격자를 채우고 그 그릇을
+    /// 돌려준다. 어디에도 안 들어가면 null.
+    /// </summary>
+    private static Spot? Settle(IReadOnlyList<Spot> targets, int width, int height)
+    {
+        foreach (var target in targets)
+        {
+            var slot = target.Map.FindSlotForItem(width, height);
+            if (slot.Success != true)
+            {
+                continue;
+            }
+
+            target.Map.TryFillContainerMapWithItem(
+                slot.X!.Value, slot.Y!.Value, width, height, slot.Rotation ?? false, out _);
+            return target;
+        }
+
+        return null;
     }
 
     /// <summary>

@@ -1,0 +1,174 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <OutputType>Library</OutputType>
+        <RootNamespace>pitTeam</RootNamespace>
+        <AssemblyName>SptTeamManager</AssemblyName>
+        <Version>1.0.0</Version>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <NoWarn>$(NoWarn);CS0618;CS0649;CS8600;CS8601;CS8602;CS8604;CS8618;CS8620;CS8625</NoWarn>
+        <Deterministic>true</Deterministic>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="../shared/FriendlyEncounterPenaltyPolicy.cs" Link="Shared/FriendlyEncounterPenaltyPolicy.cs" />
+        <Compile Include="../shared/PmcKarmaPolicy.cs" Link="Shared/PmcKarmaPolicy.cs" />
+        <Compile Include="../shared/SelfDeterminationPolicy.cs" Link="Shared/SelfDeterminationPolicy.cs" />
+        <Compile Include="../shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
+        <Compile Include="../shared/StmRosterWire.cs" Link="Shared/StmRosterWire.cs" />
+        <Reference Include="0Harmony">
+            <HintPath>libs\0Harmony.dll</HintPath>
+        </Reference>
+        <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs4.1\Assembly-CSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="ConfigurationManager">
+            <HintPath>libs\ConfigurationManager.dll</HintPath>
+        </Reference>
+        <Reference Include="ItemTemplate.Types, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs4.1\ItemTemplate.Types.dll</HintPath>
+        </Reference>
+        <Reference Include="spt-common">
+            <HintPath>libs4.1\spt4.1.0\spt-common.dll</HintPath>
+        </Reference>
+        <Reference Include="BepInEx">
+            <HintPath>libs4.1\BepInEx.dll</HintPath>
+        </Reference>
+        <Reference Include="bsg.console.core">
+            <HintPath>libs4.1\bsg.console.core.dll</HintPath>
+        </Reference>
+        <Reference Include="Comfort">
+            <HintPath>libs4.1\Comfort.dll</HintPath>
+        </Reference>
+        <Reference Include="Comfort.Unity">
+            <HintPath>libs4.1\Comfort.Unity.dll</HintPath>
+        </Reference>
+        <Reference Include="CommonExtensions">
+            <HintPath>libs4.1\CommonExtensions.dll</HintPath>
+        </Reference>
+        <Reference Include="DissonanceVoip, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs4.1\DissonanceVoip.dll</HintPath>
+        </Reference>
+        <Reference Include="DrakiaXYZ-BigBrain">
+            <HintPath>libs4.1\DrakiaXYZ-BigBrain.dll</HintPath>
+        </Reference>
+        <Reference Include="ItemComponent.Types">
+            <HintPath>libs4.1\ItemComponent.Types.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>libs4.1\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="Sirenix.Serialization">
+            <HintPath>libs4.1\Sirenix.Serialization.dll</HintPath>
+        </Reference>
+        <Reference Include="spt-reflection">
+            <HintPath>libs4.1\spt4.1.0\spt-reflection.dll</HintPath>
+        </Reference>
+
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Drawing" />
+        <Reference Include="System.IO.Compression" />
+        <Reference Include="System.IO.Compression.FileSystem" />
+        <Reference Include="System.Numerics" />
+        <Reference Include="System.Runtime.Serialization" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Xml.Linq" />
+
+        <Reference Include="UnityEngine">
+            <HintPath>libs\UnityEngine.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.Postprocessing.Runtime">
+            <HintPath>libs\Unity.Postprocessing.Runtime.dll</HintPath>
+        </Reference>
+        <Reference Include="Unity.TextMeshPro">
+            <HintPath>libs\Unity.TextMeshPro.dll</HintPath>
+        </Reference>
+
+        <Reference Include="UnityEngine.AIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.AIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.AssetBundleModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.AudioModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.ImageConversionModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>libs\UnityEngine.IMGUIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.InputLegacyModule">
+            <HintPath>libs\UnityEngine.InputLegacyModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.InputModule">
+            <HintPath>libs\UnityEngine.InputModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.PhysicsModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.TextRenderingModule">
+            <HintPath>libs\UnityEngine.TextRenderingModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>libs\UnityEngine.UI.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UIModule">
+            <HintPath>libs\UnityEngine.UIModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestAudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.UnityWebRequestModule.dll</HintPath>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestWWWModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>libs\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="libs\**\*" />
+        <None Remove="libs4.1\**\*" />
+        <None Include=".editorconfig" />
+    </ItemGroup>
+
+    <Target Name="ValidateSptClientReferences" BeforeTargets="ResolveReferences">
+        <!--
+            STM deviation from upstream (2026-11-01): the baseline is this install's 4.1.6, not 4.1.0.
+            Upstream compiles against the oldest supported patch so one build runs on all of 4.1.x, which
+            matters for a published mod. STM is a personal fork on a single 4.1.6 install, and the 4.1.0.0
+            client assemblies (spt-common, spt-reflection) are not obtainable here without downloading a
+            whole SPT 4.1.0 release. The check stays on; only the expected version moved.
+            Consequence recorded in doc/WORKLOG.md: the server metadata still declares SptVersion "~4.1.0",
+            which is no longer true for the client. Revisit before distributing.
+            The folder is still named spt4.1.0 to avoid churning four HintPaths; it holds 4.1.6 assemblies.
+        -->
+        <ItemGroup>
+            <SptClientReference Include="$(MSBuildProjectDirectory)/libs4.1/spt4.1.0/spt-common.dll" />
+            <SptClientReference Include="$(MSBuildProjectDirectory)/libs4.1/spt4.1.0/spt-reflection.dll" />
+        </ItemGroup>
+        <Error Condition="!Exists('%(SptClientReference.Identity)')"
+               Text="Required SPT client reference was not found: %(SptClientReference.Identity)" />
+        <GetAssemblyIdentity AssemblyFiles="@(SptClientReference)">
+            <Output TaskParameter="Assemblies" ItemName="SptClientReferenceIdentity" />
+        </GetAssemblyIdentity>
+        <Error Condition="'%(SptClientReferenceIdentity.Version)' != '4.1.6.0'"
+               Text="STM compiles against 4.1.6.0 client references. %(SptClientReferenceIdentity.Identity) is %(SptClientReferenceIdentity.Version)." />
+    </Target>
+
+    <Target Name="BuildSAINAddon" AfterTargets="Build" Condition="'$(BuildSAINAddon)' != 'false' and '$(IsBuildingSAINAddon)' != 'true'">
+        <MSBuild Projects="..\addon\pitFireTeam.SAINAddon.csproj"
+                 Targets="Build"
+                 Properties="Configuration=$(Configuration);Platform=$(Platform);BuildProjectReferences=false;IsBuildingSAINAddon=true;OutDir=$(OutDir)" />
+    </Target>
+
+</Project>

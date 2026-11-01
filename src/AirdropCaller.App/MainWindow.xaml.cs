@@ -45,6 +45,29 @@ public class ItemRow : INotifyPropertyChanged
         set { _parent = value; Changed(nameof(Parent)); }
     }
 
+    private ContainerChoice? _choice;
+
+    /// <summary>
+    /// 표의 "담을 곳" 칸이 실제로 묶이는 값. <see cref="Parent"/> 가 진실이고
+    /// 이쪽은 그것을 가리키는 선택지일 뿐이다.
+    ///
+    /// **`Parent` 에 바로 묶을 수 없다.** ComboBox 는 `SelectedValue` 가 null 이면
+    /// "고른 것 없음" 으로 치고 칸을 비워 버린다 — `Row` 가 null 인 "상자" 줄과
+    /// 짝지어 주지 않는다. 기본값인데도 칸이 고장 난 것처럼 보였다(2026-10-30).
+    /// 그래서 선택지 객체 자체를 묶는다. 선택지를 다시 만들 때마다
+    /// <see cref="MainWindow.RebuildContainerChoices"/> 가 이 값을 새 객체로 옮겨 준다.
+    /// </summary>
+    public ContainerChoice? Choice
+    {
+        get => _choice;
+        set
+        {
+            _choice = value;
+            Parent = value?.Row;
+            Changed(nameof(Choice));
+        }
+    }
+
     /// <summary>표에서 고르는 이름. 담을 수 있는 물건만 다른 줄의 선택지가 된다.</summary>
     public string Label => Name.Length > 24 ? Name[..24] + "…" : Name;
 
@@ -65,7 +88,68 @@ public class ItemRow : INotifyPropertyChanged
     private void Changed(string name) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public ItemSpec ToSpec() => new() { Tpl = Tpl, Count = Count, StackSize = StackSize };
+    private string _fillLabel = FillLabels[0];
+
+    /// <summary>표에 보이는 "채우기" 값. 서버가 아는 말로는 <see cref="FillCode"/> 가 옮긴다.</summary>
+    public string FillLabel
+    {
+        get => _fillLabel;
+        set { _fillLabel = value; Changed(nameof(FillLabel)); }
+    }
+
+    /// <summary>
+    /// 고른 말을 서버의 `SlotFill` 로 옮긴다. "자동" 은 **안 보낸다** —
+    /// 적지 않은 것과 같은 뜻이라, 프리셋 파일에 군더더기를 남기지 않는다.
+    /// </summary>
+    private string? FillCode => _fillLabel switch
+    {
+        FillAll => "All",
+        FillNone => "None",
+        _ => null,
+    };
+
+    public const string FillAuto = "자동";
+    public const string FillAll = "가득";
+    public const string FillNone = "없음";
+
+    public static readonly string[] FillLabels = [FillAuto, FillAll, FillNone];
+
+    /// <summary>서버가 적어 보낸 값을 표에 보일 말로 되돌린다.</summary>
+    public static string LabelForFill(string? code) => code switch
+    {
+        "All" => FillAll,
+        "None" => FillNone,
+        _ => FillAuto,
+    };
+
+    /// <summary>
+    /// 칸마다 직접 고른 것. 칸 경로 → tpl, 빈 문자열은 "비워 둬라".
+    /// 비어 있으면 <see cref="FillLabel"/> 이 하던 대로 간다.
+    /// </summary>
+    public Dictionary<string, string> Slots { get; set; } = [];
+
+    /// <summary>
+    /// 칸 버튼에 적히는 말. 직접 고른 것이 있으면 몇 개인지 같이 보여 준다.
+    ///
+    /// **말줄임표를 쓰지 않는다.** "칸…" 으로 뒀더니 글자가 잘린 줄 알고 칸을 넓혀
+    /// 보게 됐다 — 넓혀도 그대로니 고장으로 보인다(2026-10-30 지적받았다).
+    /// </summary>
+    public string SlotHint => Slots.Count == 0 ? "고르기" : $"칸 {Slots.Count}개";
+
+    public void SlotsChanged()
+    {
+        Changed(nameof(Slots));
+        Changed(nameof(SlotHint));
+    }
+
+    public ItemSpec ToSpec() => new()
+    {
+        Tpl = Tpl,
+        Count = Count,
+        StackSize = StackSize,
+        Fill = FillCode,
+        Slots = Slots.Count == 0 ? null : new Dictionary<string, string>(Slots),
+    };
 }
 
 /// <summary>
@@ -100,6 +184,9 @@ public partial class MainWindow : Window
 
     /// <summary>"담을 곳" 칸이 보여 주는 선택지. 맨 앞이 "상자(직접)" 다.</summary>
     public ObservableCollection<ContainerChoice> ContainerChoices { get; } = [];
+
+    /// <summary>"채우기" 칸이 보여 주는 선택지. 줄마다 같아 한 벌만 둔다.</summary>
+    public IReadOnlyList<string> FillChoices => ItemRow.FillLabels;
 
     private IconService? _icons;
     private readonly FileToIconConverter _categoryIcons = new();
@@ -158,6 +245,14 @@ public partial class MainWindow : Window
         foreach (var row in _items.Where(r => r.Parent is not null && !_items.Contains(r.Parent!)))
         {
             row.Parent = null;
+        }
+
+        // 선택지를 새로 만들었으니 줄마다 **새 객체** 를 다시 가리키게 한다.
+        // 안 하면 칸이 빈 채로 남는다 — 옛 객체는 이제 목록에 없다.
+        foreach (var row in _items)
+        {
+            row.Choice = ContainerChoices.FirstOrDefault(c => c.Row == row.Parent)
+                         ?? ContainerChoices[0];
         }
     }
 
@@ -399,6 +494,7 @@ public partial class MainWindow : Window
     {
         PresetNameBox.Text = name;
         IconBox.SelectedIndex = preset.Icon switch { "Supply" => 1, "Medical" => 2, "Weapon" => 3, _ => 0 };
+        BigCrateBox.IsChecked = preset.BigCrate;
 
         _items.Clear();
 
@@ -451,6 +547,8 @@ public partial class MainWindow : Window
                 CategoryIcon = info?.CategoryIcon ?? string.Empty,
                 Count = spec.Count,
                 StackSize = spec.StackSize,
+                FillLabel = ItemRow.LabelForFill(spec.Fill),
+                Slots = spec.Slots is null ? [] : new Dictionary<string, string>(spec.Slots),
                 Parent = parent,
             };
 
@@ -483,6 +581,7 @@ public partial class MainWindow : Window
         PresetList.SelectedItem = null;
         PresetNameBox.Text = "새 프리셋";
         IconBox.SelectedIndex = 0;
+        BigCrateBox.IsChecked = false;
         _items.Clear();
         RebuildContainerChoices();
         UpdateFitHint();
@@ -508,6 +607,7 @@ public partial class MainWindow : Window
             Name = name,
             Icon = SelectedIcon(),
             Items = BuildSpecTree(),
+            BigCrate = BigCrateBox.IsChecked == true,
         };
 
         await Guard(async () =>
@@ -699,6 +799,44 @@ public partial class MainWindow : Window
         UpdateFitHint();
     }
 
+    /// <summary>
+    /// 그 줄의 칸을 직접 고른다. 버튼이 표 안에 있어 <see cref="ItemGrid"/> 의
+    /// 선택과 무관하게 **눌린 줄**을 집어야 한다 — 고르지도 않은 줄의 칸을 여는
+    /// 것보다 나쁜 것은 없다.
+    /// </summary>
+    private void OnEditSlots(object sender, RoutedEventArgs e)
+    {
+        if (_client is null)
+        {
+            MessageLine.Text = "서버에 안 붙어 있어 칸을 볼 수 없다.";
+            return;
+        }
+
+        if ((sender as FrameworkElement)?.DataContext is not ItemRow row)
+        {
+            MessageLine.Text = "어느 줄의 칸인지 알 수 없다.";
+            return;
+        }
+
+        var before = row.Slots.Count;
+
+        // 창을 띄우다 넘어지면 **조용히 아무 일도 안 일어난 것처럼** 보인다.
+        // 한참을 그것 때문에 헤맸다(2026-10-30). 터진 자리를 말해 준다.
+        try
+        {
+            new SlotWindow(_client, row) { Owner = this }.ShowDialog();
+        }
+        catch (Exception ex)
+        {
+            MessageLine.Text = "칸 고르기 창을 못 띄웠다: " + ex.Message;
+            return;
+        }
+
+        MessageLine.Text = row.Slots.Count == 0
+            ? before == 0 ? MessageLine.Text : $"{row.Name}: 칸을 전부 자동으로 되돌렸다."
+            : $"{row.Name}: 칸 {row.Slots.Count}개를 직접 골랐다. 저장해야 남는다.";
+    }
+
     private void OnRemoveItem(object sender, RoutedEventArgs e)
     {
         if (ItemGrid.SelectedItem is ItemRow row)
@@ -729,7 +867,7 @@ public partial class MainWindow : Window
         await Guard(async () =>
         {
             var result = await _client.QueueAsync(
-                null, SelectedIcon(), BuildSpecTree(), CancellationToken.None);
+                null, SelectedIcon(), BuildSpecTree(), BigCrateBox.IsChecked == true, CancellationToken.None);
 
             if (result?.Ok != true)
             {
@@ -740,6 +878,11 @@ public partial class MainWindow : Window
             // 조용히 버리지도, 조용히 고치지도 않는다. 둘을 **따로** 말한다 —
             // 한데 묶었더니 "못 담은 것 1개" 라면서 정작 상자에는 들어 있었다.
             var text = $"예약했다 — {result.Placed}개를 담았다.";
+            if (result.Attached > 0)
+            {
+                text += $" 방어판·부속 {result.Attached}개를 붙였다.";
+            }
+
             if (result.Skipped.Count > 0)
             {
                 text += $" 못 담은 것 {result.Skipped.Count}가지: {string.Join(", ", result.Skipped)}";

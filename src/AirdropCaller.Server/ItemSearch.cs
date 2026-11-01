@@ -1,3 +1,5 @@
+using SPTarkov.Server.Core.Utils.Cloners;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using System.Text.Json.Serialization;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Items;
@@ -105,9 +107,65 @@ public record CategoryListResponse
 /// 크기와 최대 스택은 아이템 템플릿에서 읽는다. DB 가 유일한 진실이다.
 /// </summary>
 [Injectable(InjectionType.Singleton)]
-public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, TemplateTable templateTable)
+public class ItemSearch(
+    LocaleService localeService,
+    ItemHelper itemHelper,
+    TemplateTable templateTable,
+    PresetHelper presetHelper,
+    ICloner cloner)
 {
     private const string NameSuffix = " Name";
+
+    /// <summary>
+    /// tpl → 완성품 크기. 한 번 찾아보면 기억한다 — 한 번 검색에 400개까지 돌려주는데
+    /// 그때마다 프리셋을 세워 재면 창이 느려진다.
+    /// </summary>
+    private readonly Dictionary<MongoId, (int W, int H)> _builtSize = [];
+
+    /// <summary>
+    /// 완성품으로 세웠을 때의 크기. 프리셋이 없으면 템플릿 값 그대로다.
+    /// </summary>
+    private (int W, int H) BuiltSize(MongoId tpl, int plainW, int plainH)
+    {
+        var plain = (plainW, plainH);
+
+        lock (_lock)
+        {
+            if (_builtSize.TryGetValue(tpl, out var known))
+            {
+                return known;
+            }
+        }
+
+        var answer = plain;
+        try
+        {
+            if (presetHelper.GetDefaultPreset(tpl)?.Items is { Count: > 1 } items)
+            {
+                var root = new Item { Id = new MongoId(), Template = tpl };
+                // **깊게 베껴서 넘긴다.** `ReparentItemAndChildren` 은 넘긴 아이템을
+                // 제자리에서 고쳐서, 원본을 주면 DB 의 프리셋이 망가진다. 여기는
+                // 검색 한 번에 400번까지 도는 자리라 피해가 특히 컸다(2026-10-30).
+                var copy = cloner.Clone(items);
+                var full = copy is null ? null : itemHelper.ReparentItemAndChildren(root, copy);
+                if (full is not null && itemHelper.GetItemSize(full, full[0].Id) is { } size)
+                {
+                    answer = (size.Width, size.Height);
+                }
+            }
+        }
+        catch
+        {
+            // 크기를 못 재면 템플릿 값으로 둔다. 목록이 안 뜨는 것보다 낫다.
+        }
+
+        lock (_lock)
+        {
+            _builtSize[tpl] = answer;
+        }
+
+        return answer;
+    }
 
     private Dictionary<string, string>? _categoryOfItem;
     private Dictionary<string, string>? _categoryNames;
@@ -423,6 +481,12 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
         // 창이 "담을 수 있다" 고 보여 준 것을 서버가 거절하지 않는다.
         var grid = props.Grids?.FirstOrDefault(g => g.Properties?.CellsH > 0 && g.Properties?.CellsV > 0);
 
+        // 크기는 **완성품 기준**이다. 무기의 템플릿 크기는 1×1 이고 실제 크기는 붙은
+        // 부품의 `ExtraSize*` 에서 나온다 — 템플릿 값만 보면 돌격소총이 1×1 로 보인다
+        // (사용자가 창에서 보고 짚어 줬다, 2026-10-30). 조립기도 완성품으로 세우므로
+        // 두 쪽이 같은 수를 말해야 한다.
+        var built = BuiltSize(id, props.Width ?? 1, props.Height ?? 1);
+
         return new FoundItem
         {
             Tpl = tpl,
@@ -430,8 +494,8 @@ public class ItemSearch(LocaleService localeService, ItemHelper itemHelper, Temp
             Color = color,
             ShortName = locale.TryGetValue(tpl + " ShortName", out var shortName) ? StripTags(shortName) : string.Empty,
             Category = categoryId.Length > 0 ? NameOfCategory(categoryId) : "(분류 없음)",
-            Width = props.Width ?? 1,
-            Height = props.Height ?? 1,
+            Width = built.W,
+            Height = built.H,
             MaxStack = props.StackMaxSize ?? 1,
             CategoryIcon = _categoryIcons!.GetValueOrDefault(categoryId, string.Empty),
             CanContain = grid is not null,

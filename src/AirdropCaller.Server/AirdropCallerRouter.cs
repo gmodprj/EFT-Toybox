@@ -39,12 +39,16 @@ public class AirdropCallerRouter : StaticRouter
         RaidState raidState,
         ItemSearch itemSearch,
         PresetStore presets,
-        WindowWatch windowWatch)
+        WindowWatch windowWatch,
+        SlotCatalog slotCatalog)
         : base(jsonUtil, BuildRoutes(
             jsonUtil, logger, store, httpResponseUtil, crateBuilder, queue, raidState, itemSearch, presets,
-            windowWatch))
+            windowWatch, slotCatalog))
     {
     }
+
+    /// <summary>마지막으로 적은 하늘 상태. 같은 줄을 2초마다 되풀이하지 않는다.</summary>
+    private static string? _lastSky;
 
     private static List<RouteAction> BuildRoutes(
         JsonUtil jsonUtil,
@@ -56,16 +60,31 @@ public class AirdropCallerRouter : StaticRouter
         RaidState raidState,
         ItemSearch itemSearch,
         PresetStore presets,
-        WindowWatch windowWatch)
+        WindowWatch windowWatch,
+        SlotCatalog slotCatalog)
     {
         string Json<T>(T value) => jsonUtil.Serialize(value) ?? "{}";
 
         return
         [
-            new RouteAction<GetAirdropLootRequest>(
+            // **`RouteAction<T>` 를 쓰지 않는다.** 그쪽은 `(T)info` 로 **딱딱하게** 캐스팅한다.
+            // 본문이 빈 요청이 오면 `StaticRouter` 가 `EmptyRequestData` 를 넣어 주는데,
+            // 그 캐스팅이 거기서 터져 요청 전체가 500 이 된다 — 전리품이 통째로 날아간다.
+            //
+            //   Unable to cast object of type 'EmptyRequestData'
+            //   to type 'GetAirdropLootRequest'.
+            //
+            // 바닐라 `LocationStaticRouter` 는 같은 자리에서 `info as GetAirdropLootRequest`
+            // 로 **무르게** 받는다. 우리도 그래야 한다. `bodyType` 은 그대로 넘겨 주어야
+            // 본문이 있을 때 `containerId` 를 읽을 수 있다(없으면 영영 못 읽는다).
+            //
+            // 플레어를 쏘자 이것으로 세 번 연달아 터졌다(2026-10-30 03:42~03:44).
+            new RouteAction(
                 "/client/airdrop/loot",
-                (url, info, sessionId, output, ct) => ValueTask.FromResult(
-                    HandleLoot(logger, httpResponseUtil, crateBuilder, store.Config, queue, info, output))),
+                (url, info, sessionId, output, ct) => ValueTask.FromResult<object>(
+                    HandleLoot(logger, httpResponseUtil, crateBuilder, store.Config, queue,
+                               info as GetAirdropLootRequest, output)),
+                typeof(GetAirdropLootRequest)),
 
             new RouteAction(
                 "/airdrop-caller/state",
@@ -85,6 +104,11 @@ public class AirdropCallerRouter : StaticRouter
                 "/airdrop-caller/items",
                 (url, info, sessionId, output, ct) => ValueTask.FromResult(
                     Json(itemSearch.Search(info.Query, info.Category, info.Limit, info.Tpls)))),
+
+            new RouteAction<SlotQueryRequest>(
+                "/airdrop-caller/slots",
+                (url, info, sessionId, output, ct) => ValueTask.FromResult(
+                    Json(slotCatalog.Describe(info)))),
 
             new RouteAction(
                 "/airdrop-caller/categories",
@@ -127,6 +151,25 @@ public class AirdropCallerRouter : StaticRouter
                 (url, info, sessionId, output, ct) =>
                 {
                     raidState.Report(info);
+
+                    // 계측: 보급이 겹쳤거나 맵이 자기 것을 띄웠으면 적는다. 낙하산이
+                    // 안 사라지는 증상의 첫 용의자가 겹침이다(2026-10-30).
+                    // **바뀔 때만 적는다.** 멈춘 상자는 영영 안 사라져서, 매번 적으면
+                    // 2초마다 같은 줄이 끝없이 쌓인다(실제로 그랬다).
+                    if (info.InRaid && (info.Planes > 0 || info.Crates > 0))
+                    {
+                        var sky = $"비행기 {info.Planes}, 상자 {info.Crates}, "
+                                  + $"맵이 센 보급 {info.MapCount}, 단계 [{info.Stages}]";
+                        if (sky != _lastSky)
+                        {
+                            _lastSky = sky;
+                            logger.Info($"[AirdropCaller] 하늘: {sky}");
+                        }
+                    }
+                    else
+                    {
+                        _lastSky = null;
+                    }
 
                     // 레이드를 나갔으면 예약을 비운다. 다음 레이드에 떨어지면 놀랄 일이다.
                     if (!info.InRaid)
@@ -193,11 +236,24 @@ public class AirdropCallerRouter : StaticRouter
         CrateBuilder crateBuilder,
         Config config,
         DropQueue queue,
-        GetAirdropLootRequest info,
+        GetAirdropLootRequest? info,
         string? vanillaOutput)
     {
         // 우리 것이 아니면 바닐라가 만든 답을 그대로 흘려보낸다.
         var passthrough = vanillaOutput ?? string.Empty;
+
+        // 본문이 비어 있으면 `StaticRouter` 가 `EmptyRequestData` 를 준다 — 여기서는
+        // null 로 온다. 어느 상자인지 알 길이 없으니 바닐라 답을 그대로 보낸다.
+        // **터뜨리지 않는다**: 여기서 터지면 요청이 500 이 되어 전리품이 통째로 날아간다.
+        if (info is null)
+        {
+            if (config.Debug)
+            {
+                logger.Info("[AirdropCaller] 전리품 요청에 상자 id 가 없다 — 바닐라 답을 그대로 보낸다.");
+            }
+
+            return passthrough;
+        }
 
         if (!config.ModEnabled)
         {
@@ -308,6 +364,7 @@ public class AirdropCallerRouter : StaticRouter
 
         var icon = request.Icon;
         var items = request.Items;
+        var bigCrate = request.BigCrate;
 
         // 프리셋으로 불렀으면 거기서 읽어 온다. 외부 창이 품목을 다시 보낼 필요가 없다.
         if (!string.IsNullOrWhiteSpace(request.PresetId))
@@ -320,6 +377,7 @@ public class AirdropCallerRouter : StaticRouter
 
             icon = preset.Icon;
             items = preset.Items;
+            bigCrate = preset.BigCrate;
         }
 
         if (items is null || items.Count == 0)
@@ -331,6 +389,7 @@ public class AirdropCallerRouter : StaticRouter
         {
             Icon = string.IsNullOrWhiteSpace(icon) ? "Common" : icon,
             Items = items,
+            BigCrate = bigCrate,
         };
 
         // 조립을 **지금** 끝낸다. 전리품 요청은 상자가 생기자마자 날아온다(착지 때가 아니다).
@@ -365,7 +424,9 @@ public class AirdropCallerRouter : StaticRouter
     private static QueueResponse Accepted(
         ISptLogger<AirdropCallerRouter> logger, string dropId, DropSpec spec, CrateBuilder.Result built)
     {
-        logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon} 상자에 {built.Placed}개"
+        var attached = built.Attached > 0 ? $" (부속 {built.Attached}개 붙임)" : string.Empty;
+        var size = spec.BigCrate ? " 큰" : string.Empty;
+        logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon}{size} 상자에 {built.Placed}개{attached}"
                     + Note(built));
 
         return new QueueResponse
@@ -373,6 +434,7 @@ public class AirdropCallerRouter : StaticRouter
             Ok = true,
             DropId = dropId,
             Placed = built.Placed,
+            Attached = built.Attached,
             Skipped = built.Skipped,
             Adjusted = built.Adjusted,
         };

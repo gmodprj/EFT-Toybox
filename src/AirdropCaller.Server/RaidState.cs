@@ -25,6 +25,35 @@ public record HeartbeatRequest : IRequestData
     /// <summary>쓸 수 있는 보급 지점 수. 0 이면 불러도 "지점이 없다" 가 된다.</summary>
     [JsonPropertyName("availablePoints")]
     public int AvailablePoints { get; set; }
+
+    /// <summary>
+    /// 계측용. 낙하산이 안 사라지고 맵에 표시가 안 되는 일이 **가끔** 생긴다
+    /// (2026-10-30 사용자 보고). 보급이 겹쳐서인지 보려고 센다.
+    ///
+    /// 바닐라는 `InitAirdrop` 앞뒤로 `_currentAirdropsCount++` 와 `UpdateAirdropTimers`
+    /// 를 하는데 우리는 둘 다 건너뛴다. 그래서 우리 상자가 하늘에 있는 동안에도 맵이
+    /// 자기 보급기를 띄울 수 있다 — 그 가설을 잰다.
+    /// </summary>
+    [JsonPropertyName("planes")]
+    public int Planes { get; set; }
+
+    /// <inheritdoc cref="Planes"/>
+    [JsonPropertyName("crates")]
+    public int Crates { get; set; }
+
+    /// <summary>맵이 센 보급 횟수. 우리는 안 올리므로, 늘면 맵이 자기 것을 띄운 것이다.</summary>
+    [JsonPropertyName("mapCount")]
+    public int MapCount { get; set; }
+
+    /// <summary>
+    /// 하늘에 있는 상자들의 낙하 단계.
+    /// `Fall → ParachuteStartOpen → ParachuteEndOpen → Contact → Landed`
+    ///
+    /// 낙하산은 뒤의 둘에서만 닫힌다(`ClientAirDrop.CloseParachute`). 안 사라지는
+    /// 낙하산이 `ParachuteEndOpen` 에 멈춰 있는지 이 값으로 본다.
+    /// </summary>
+    [JsonPropertyName("stages")]
+    public string? Stages { get; set; }
 }
 
 /// <summary>
