@@ -122,6 +122,18 @@ public class ProfileMemberLookupTests
     }
 
     [Fact]
+    public void 후보의_ProfileId_가_null_이어도_던지지_않고_건너뛴다()
+    {
+        // 타입은 널 불가 string 이지만 런타임에 null 이 들어오는 것을 막아 주지는 않는다.
+        // 그런 후보는 등록 집합에 걸리지 않으므로 건너뛰고, 멀쩡한 쪽은 정상 처리한다.
+        var broken = new ProfileCandidate(null!, 1001, "닉", 0, "", ProfileAvailability.Ready);
+        var r = ProfileMemberLookup.ByAid(1001, new[] { "p1" },
+            new[] { broken, Cand("p1", 1001, ProfileAvailability.Ready) });
+        Assert.Equal(MemberLookupResult.Ready, r.Result);
+        Assert.Equal("p1", r.ProfileId);
+    }
+
+    [Fact]
     public void 앞뒤_공백이_붙은_id_도_같은_프로필로_본다()
     {
         var r = ProfileMemberLookup.ByAid(1001, new[] { "  p1 " }, new[] { Cand(" p1", 1001, ProfileAvailability.Ready) });
