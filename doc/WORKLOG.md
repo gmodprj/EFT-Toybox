@@ -2766,3 +2766,27 @@ PEReader 로 뽑고, 라우터 `client/Components/AIBossPlayer.cs` 의 `PhraseSa
 계획 2 가 팀원을 레이드에 넣었으니 다음으로 "쏴라 / 쏘지 마라 / 엄폐하라" 를 직접 주고 싶어지는 것이 자연스럽다.
 나머지 넷(`SILENCE`·`KNIVES ONLY`·`SPREADOUT`·`GET BACK`)은 우선순위가 낮다.
 **계획 2 범위 밖이고, 지금 겪는 "팀원이 전투하지 않는다" 문제와는 별개다** — 그쪽은 역할·난이도 결함이다.
+
+### 결함 해소 확인 — 역할·난이도 수정 후 (사용자: "교전함")
+
+설치 후 레이드 한 판 기준.
+
+| | 수정 전 | 수정 후 |
+|---|---|---|
+| 팀원 SAIN 역할 | `role=assault difficulty=easy profile=0.15 visibleDistance=90` | **`role=pmcUSEC`/`pmcBEAR` `difficulty=hard` `profile=1.5` `visibleDistance=225`** |
+| `role=assault` 로 뜬 줄 | 매 판 | **0** |
+| `AICoreAgent.Update exception` | 3차 4건(NRE), 4차 14건(InvalidCast) | **0** |
+| 교전 | 하지 않음(탄창 25/25 가득한데 한 발도 안 씀, 같은 판 용병은 4/30 까지 소모) | **함**(사용자 확인) |
+
+진영 매칭도 맞다 — SPT02(Usec) → `pmcUSEC`, Knox(Bear) → `pmcBEAR`.
+
+**열어 두었던 질문의 답**: BigBrain 의 `CustomLogicWrapper.UpdateNodeByBrain` 예외를 "귀속하지 못했다" 고 남겼는데,
+**역할 불일치의 결과였다** — 역할을 PMC 로 바로잡자 함께 사라졌다. 표본이 한 판이므로 "일치한다" 까지가 정확한 표현이고,
+단정하려면 몇 판 더 필요하다.
+
+**중간에 틀렸던 가설도 남긴다**: "프로필 팀원에게 PIT 전투 레이어가 안 붙는다" 고 의심했으나,
+`FollowerPatrolLayer.Init` 의 `pmcCombatBrains` 목록에 **`"Assault"` 가 포함**돼 있어 틀렸다(확인 후 폐기).
+결정적 요인은 레이어 유무가 아니라 SAIN 수치였다.
+
+**두 수정의 기여도**: 탄창(`e857e52`)은 필요했지만 충분하지 않았다 — 탄창이 가득 찬 뒤에도 교전하지 않았다.
+역할·난이도(`113420f`)가 결정적이었다. 둘 다 유지한다.
