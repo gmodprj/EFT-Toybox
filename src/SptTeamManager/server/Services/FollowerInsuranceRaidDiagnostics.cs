@@ -164,10 +164,10 @@ public sealed class FollowerInsuranceRaidDiagnostics(
                 var saved = storage.Read<BotBase>(sessionId, $"{entry.Aid}.json");
                 if (saved == null) continue;
                 participant.OutcomeReceived = true;
-                participant.Escaped = entry.Escaped;
+                participant.Escaped = entry.Escaped == true;
                 participant.EquipmentSnapshotKnown = entry.EquipmentItems is { Count: > 0 };
                 participant.SavedItemIds = FriendlyTeammateInsuranceService.GetEquipmentTreeIds(saved).ToList();
-                participant.EscapedItemIds = entry.Escaped ? ItemIds(entry.EquipmentItems) : [];
+                participant.EscapedItemIds = entry.Escaped == true ? ItemIds(entry.EquipmentItems) : [];
             }
         });
 

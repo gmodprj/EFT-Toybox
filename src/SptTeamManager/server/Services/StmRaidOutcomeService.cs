@@ -16,7 +16,9 @@ namespace pitTeam.Server.Services;
 // deletion:
 //   - the decision is RaidOutcomePolicy.Decide's, which only ever strips on an explicit Real match;
 //   - the raid receipt is RESERVED before anything is deleted, so a second report can never strip twice;
-//   - a write-back that cannot be verified is reported at Error level and NOT retried (see Verify below);
+//   - a deletion that cannot be confirmed in memory is reported at Error level and NOT retried (see
+//     VerifyDeletionApplied below, whose reach is stated there); a save that fails throws, and the
+//     catch-all logs it;
 //   - any exception is logged and swallowed, so PIT's own mercenary outcome path keeps running.
 // What is deleted is the worn equipment only, and WHICH items that is belongs to
 // WornGearLossPolicy (shared/WornGearLossPolicy.cs - pure and tested); this class owns only the
@@ -100,9 +102,12 @@ public class StmRaidOutcomeService(
         var pmc = member.Pmc;
         var items = pmc.Inventory?.Items;
         var equipmentRootId = pmc.Inventory?.Equipment?.ToString();
+        // These three refusals run AFTER the receipt was reserved, so each one forfeits this raid's
+        // strip for good - the receipt is spent and the raid will not be looked at again. Said in the
+        // log, because "아무것도 지우지 않는다" on its own reads as harmless and this is final.
         if (items == null || items.Count == 0)
         {
-            logger.Error($"[STM] 레이드 결과: 프로필 '{member.ProfileId}'의 인벤토리를 읽을 수 없어 아무것도 지우지 않는다.");
+            logger.Error($"[STM] 레이드 결과: 프로필 '{member.ProfileId}'의 인벤토리를 읽을 수 없어 아무것도 지우지 않는다. 영수증은 이미 예약됐으므로 이 레이드는 다시 처리되지 않는다 - 지우려면 사람이 직접 해야 한다.");
             return;
         }
 
@@ -110,26 +115,23 @@ public class StmRaidOutcomeService(
         // it only READS slots; a deletion may not - a wrong root would delete the wrong subtree.
         if (string.IsNullOrWhiteSpace(equipmentRootId))
         {
-            logger.Error($"[STM] 레이드 결과: 프로필 '{member.ProfileId}'의 장비 루트(Inventory.Equipment)가 비어 있어 착용 장비를 가려낼 수 없다. 아무것도 지우지 않는다.");
+            logger.Error($"[STM] 레이드 결과: 프로필 '{member.ProfileId}'의 장비 루트(Inventory.Equipment)가 비어 있어 착용 장비를 가려낼 수 없다. 아무것도 지우지 않는다. 영수증은 이미 예약됐으므로 이 레이드는 다시 처리되지 않는다 - 지우려면 사람이 직접 해야 한다.");
             return;
         }
 
         // WHICH items a death costs is WornGearLossPolicy's judgment (pure, tested). This method only
-        // translates: SPT Items in, triples out, ids back to the Items the deletion needs.
-        var byId = new Dictionary<string, Item>(StringComparer.Ordinal);
+        // translates: SPT Items in, (id, parent, slot) triples out.
         var triples = new List<WornGearItem>(items.Count);
         foreach (var item in items)
         {
             if (item?.Id == null) continue;
-            var id = item.Id.ToString();
-            byId[id] = item;
-            triples.Add(new WornGearItem(id, item.ParentId, item.SlotId));
+            triples.Add(new WornGearItem(item.Id.ToString(), item.ParentId, item.SlotId));
         }
 
         var rootIds = WornGearLossPolicy.SelectLostRootIds(triples, equipmentRootId);
         if (rootIds.Count == 0)
         {
-            logger.Info($"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}')에게 지울 착용 장비가 없다.");
+            logger.Info($"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}')에게 지울 착용 장비가 없다. 영수증은 이미 예약됐으므로 이 레이드는 다시 처리되지 않는다.");
             return;
         }
 
@@ -145,27 +147,42 @@ public class StmRaidOutcomeService(
         var profileId = new MongoId(member.ProfileId);
         foreach (var rootId in rootIds)
         {
-            inventoryHelper.RemoveItem(pmc, byId[rootId].Id, profileId);
+            inventoryHelper.RemoveItem(pmc, new MongoId(rootId), profileId);
         }
 
         // The only write: the object SaveServer holds, then its own save. No JSON is written here.
-        saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
+        //
+        // What the return value is, measured rather than assumed (IL of
+        // SaveServer/<SaveProfileAsync>d__22.MoveNext in refs/4.1.0/SPTarkov.Server.Core.dll): the method
+        // serializes the profile, hashes it, compares the hash with its own saveMd5 entry, SKIPS
+        // FileUtil.WriteFileAsync when it is unchanged, stops a Stopwatch and returns
+        // Stopwatch.ElapsedMilliseconds. So it is a DURATION, not a byte count, and a return of 0 means
+        // "fast", not "nothing written" - testing it for zero would log an error on healthy saves.
+        // How a failed save does reach us: WriteFileAsync is awaited, so its exception propagates out of
+        // GetAwaiter().GetResult() and lands in Apply's catch-all, which logs it at Error. That is the
+        // save's only honest check, and the re-check below cannot add to it.
+        var elapsedMs = saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
         logger.Info(
-            $"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}')의 착용 장비 {rootIds.Count}개(하위 포함 {expectedGoneIds.Count}개)를 지우고 저장했다 - {reason}");
+            $"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}')의 착용 장비 {rootIds.Count}개(하위 포함 {expectedGoneIds.Count}개)를 지우고 저장했다({elapsedMs}ms) - {reason}");
 
-        Verify(member, raidId, expectedGoneIds);
+        VerifyDeletionApplied(member, raidId, expectedGoneIds);
     }
 
-    // Reads the profile back and reports what it found. It does NOT gate a retry: the receipt already
-    // stands, and re-running the deletion later could delete gear the player equipped in the meantime.
-    // A failure here is loud and left for a human (task-8 ruling 2).
-    private void Verify(StmResolvedMember member, string? raidId, HashSet<string> expectedGoneIds)
+    // Re-checks the DELETION, not the save: it asks SaveServer for the profile again and looks for the
+    // ids that should be gone. Be clear about the reach - SaveServer hands back the same in-memory
+    // object the resolver read, so this catches a RemoveItem that did nothing (an id it could not find,
+    // a subtree it did not follow) and CANNOT catch a save that failed - a failed save throws instead
+    // (see the save call above). The file itself is never re-parsed here.
+    // It does NOT gate a retry either: the receipt already stands, and re-running the deletion later
+    // could delete gear the player equipped in the meantime. A failure is loud and left for a human
+    // (task-8 ruling 2).
+    private void VerifyDeletionApplied(StmResolvedMember member, string? raidId, HashSet<string> expectedGoneIds)
     {
         var reread = saveServer.GetProfile(new MongoId(member.ProfileId))?.CharacterData?.PmcData;
         if (reread == null)
         {
             logger.Error(
-                $"[STM] 레이드 결과 확인 실패: 프로필 '{member.ProfileId}'(레이드 '{raidId}')을 다시 읽을 수 없어, 착용 장비 {expectedGoneIds.Count}개가 실제로 지워졌는지 확인하지 못했다. 영수증이 남아 있으므로 다시 시도하지 않는다 - 프로필을 직접 확인하라.");
+                $"[STM] 레이드 결과 확인 실패: 프로필 '{member.ProfileId}'(레이드 '{raidId}')을 다시 가져올 수 없어, 착용 장비 {expectedGoneIds.Count}개가 메모리에서 지워졌는지 확인하지 못했다. 영수증이 남아 있으므로 다시 시도하지 않는다 - 프로필을 직접 확인하라.");
             return;
         }
 
@@ -181,6 +198,6 @@ public class StmRaidOutcomeService(
         }
 
         logger.Info(
-            $"[STM] 레이드 결과 확인: 프로필 '{member.ProfileId}'(레이드 '{raidId}')에서 아이템 {expectedGoneIds.Count}개가 모두 사라진 것을 다시 읽어 확인했다.");
+            $"[STM] 레이드 결과 확인: 프로필 '{member.ProfileId}'(레이드 '{raidId}')에서 아이템 {expectedGoneIds.Count}개가 모두 사라진 것을 메모리에서 다시 확인했다.");
     }
 }

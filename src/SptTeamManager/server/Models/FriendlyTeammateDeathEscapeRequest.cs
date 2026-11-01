@@ -24,7 +24,14 @@ public record FriendlyTeammateDeathEscapeEntry
 
     public string Nickname { get; set; } = string.Empty;
 
-    public bool Escaped { get; set; }
+    // Nullable on purpose: null = the report did not say. A non-nullable bool made a missing key
+    // deserialize to false, and false is "did not escape", which DELETES a launcher profile's worn
+    // equipment (StmRaidOutcomeService). An unknown state must never reach that as a loss, and no other
+    // field on this entry corroborates a loss (HealthRatio 0 and an empty TrackedItemIds are what a
+    // genuine loss sends too; EquipmentItems is null on the live-roll loss path), so the only place left
+    // to close it was the type. PIT's own readers all ask `Escaped == true` / `!= true`, which is exactly
+    // what they got before for a missing key.
+    public bool? Escaped { get; set; }
 
     public bool RollEscape { get; set; }
 

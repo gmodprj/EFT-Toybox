@@ -38,6 +38,14 @@ namespace pitTeam.Shared
             "Pockets", "SecuredContainer", "ArmBand", "Scabbard",
         };
 
+        // Reachable so the suite can enforce the vocabulary contract WornGearLossPolicy's comments
+        // describe (WornGearLossPolicyTests): nothing may be deleted that is not a slot known here, and
+        // nothing may be deleted that every profile carries without the player equipping it. Read-only
+        // on purpose - these two sets are this policy's own and nothing outside writes them.
+        internal static IReadOnlySet<string> KnownSlotNames => KnownSlots;
+
+        internal static IReadOnlySet<string> DefaultSlotNames => DefaultSlots;
+
         // 필수 무기 슬롯: any one of these holding something satisfies it. A knife in Scabbard does not.
         // The same three slots are listed in FriendlyTeammateService.RequiredRaidWeaponSlots, which
         // PIT uses for its own mercenaries. The duplication is deliberate - referencing PIT's list

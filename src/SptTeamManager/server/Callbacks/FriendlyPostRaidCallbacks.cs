@@ -127,12 +127,12 @@ public class FriendlyPostRaidCallbacks(
     // registered launcher-profile teammate. Wrapped per entry AND as a whole: a failure here must not
     // stop PIT's own mercenary outcome handling, nor the remaining entries.
     //
-    // 'escaped' is read from FriendlyTeammateDeathEscapeEntry.Escaped
-    // (server/Models/FriendlyTeammateDeathEscapeRequest.cs:27). Not-escaped is what causes a DELETION,
-    // so an entry whose escape state is not settled must never be reported as not-escaped: an entry that
-    // still asks for a roll (RollEscape) which was not resolved in this request carries Escaped=false
-    // only as a placeholder (client/Modules/FollowerDeathEscapeResolver.cs:209), so it is skipped and
-    // said out loud instead of guessed in either direction.
+    // 'escaped' is read from FriendlyTeammateDeathEscapeEntry.Escaped, which is bool? precisely because
+    // not-escaped is what causes a DELETION: an entry whose escape state is not settled must never be
+    // reported as not-escaped. Two unsettled states are refused here rather than guessed in either
+    // direction - the report did not carry the field at all (null), and the entry still asks for a roll
+    // (RollEscape) that was not resolved in this request, where Escaped=false is only a placeholder
+    // (client/Modules/FollowerDeathEscapeResolver.cs:209).
     private void ApplyProfileTeammateOutcomes(
         MongoId sessionId,
         string? raidId,
@@ -148,6 +148,13 @@ public class FriendlyPostRaidCallbacks(
                     continue;
                 }
 
+                if (entry.Escaped is null)
+                {
+                    logger.Warning(
+                        $"[STM] 레이드 결과: '{entry.Nickname}'(aid {entry.Aid}) 보고에 탈출 여부(Escaped)가 없다. 생존했는지 알 수 없으므로 아무것도 하지 않는다.");
+                    continue;
+                }
+
                 if (entry.RollEscape && !rollsResolvedHere)
                 {
                     logger.Warning(
@@ -157,7 +164,7 @@ public class FriendlyPostRaidCallbacks(
 
                 try
                 {
-                    stmRaidOutcomes.Apply(sessionId, raidId, entry.Aid, entry.Escaped);
+                    stmRaidOutcomes.Apply(sessionId, raidId, entry.Aid, entry.Escaped.Value);
                 }
                 catch (Exception ex)
                 {

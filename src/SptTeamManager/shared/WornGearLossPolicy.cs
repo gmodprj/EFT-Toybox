@@ -34,6 +34,11 @@ namespace pitTeam.Shared
             "FirstPrimaryWeapon", "SecondPrimaryWeapon", "Holster",
         };
 
+        // Reachable so the suite can enforce the cross-policy contract instead of leaving it to a
+        // comment: every slot here must be one SpawnGearPolicy recognizes, and none may be a slot every
+        // profile carries anyway (WornGearLossPolicyTests). Read-only on purpose - nothing writes it.
+        internal static IReadOnlySet<string> LostOnDeathSlotNames => LostOnDeathSlots;
+
         // Absent from the list above, each for its own reason:
         //   SecuredContainer - the brief's explicit exception, contents included (설계 §6-4, 타르코프 규칙);
         //   Pockets          - the cargo inside is lost (below), but the container item itself stays:
@@ -58,18 +63,21 @@ namespace pitTeam.Shared
         //
         // equipmentRootId must be the profile's real equipment root. Blank selects nothing: a guessed
         // root would delete a different subtree, and for a deletion "no idea" must mean "nothing".
-        public static List<string> SelectLostRootIds(IEnumerable<WornGearItem>? items, string? equipmentRootId)
+        // A SET, so a corrupt profile carrying the same id twice cannot yield the same root twice - which
+        // would over-count the log line and hand the same id to the deletion a second time.
+        public static HashSet<string> SelectLostRootIds(IEnumerable<WornGearItem>? items, string? equipmentRootId)
         {
-            var selected = new List<string>();
+            var selected = new HashSet<string>(StringComparer.Ordinal);
             if (items == null || string.IsNullOrWhiteSpace(equipmentRootId))
             {
                 return selected;
             }
 
+            // The caller's root argument is trimmed once, here; the ITEM side is never trimmed, and is
+            // compared Ordinal. That asymmetry is deliberate and it is the item side that matters: a
+            // looser comparison there would pull MORE items into a deletion. (Unlike
+            // RaidReceiptKeyPolicy, where treating a near miss as the same key was the safe direction.)
             var rootId = equipmentRootId!.Trim();
-            // Item ids are compared Ordinal and untrimmed, unlike RaidReceiptKeyPolicy's keys. There the
-            // safe direction was to treat a near miss as the same key; here it is the opposite - a looser
-            // comparison would pull MORE items into a deletion, so only an exact parent id counts.
             var keptPocketIds = new HashSet<string>(StringComparer.Ordinal);
             var cargoCandidates = new List<WornGearItem>();
 
@@ -110,7 +118,8 @@ namespace pitTeam.Shared
                 // Direct children of the kept pockets container only. Something deeper inside a pocket is
                 // a descendant of one of these and goes with it.
                 if (item.ParentId == null || !keptPocketIds.Contains(item.ParentId)) continue;
-                if (IsPermanentSlot(item.SlotId)) continue;
+                // The trimmed slot name, as in the root-child path above.
+                if (IsPermanentSlot(item.SlotId!.Trim())) continue;
                 selected.Add(item.Id!);
             }
 

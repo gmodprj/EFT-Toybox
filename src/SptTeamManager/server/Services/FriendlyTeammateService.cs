@@ -1500,7 +1500,9 @@ public partial class FriendlyTeammateService(
                 }
 
                 string displayName = string.IsNullOrWhiteSpace(entry.Nickname) ? "Squadmate" : entry.Nickname;
-                if (entry.Escaped)
+                // Escaped is bool? since STM: null = the report did not say. `== true` keeps this
+                // classification exactly as it was, because a missing key used to arrive as false.
+                if (entry.Escaped == true)
                 {
                     summary.EscapedNames.Add(displayName);
                 }
@@ -1509,7 +1511,7 @@ public partial class FriendlyTeammateService(
                     summary.LostNames.Add(displayName);
                 }
 
-                if (entry.Escaped
+                if (entry.Escaped == true
                     && string.IsNullOrWhiteSpace(summary.ExtractName)
                     && !string.IsNullOrWhiteSpace(entry.ExtractName))
                 {
@@ -1523,7 +1525,7 @@ public partial class FriendlyTeammateService(
 
                 // Escape rolls are server-owned by the time outcomes are persisted. Client-provided
                 // live raid state is only input data for ResolveRaidOutcomes().
-                ApplyFollowerRaidOutcomeStats(teammate, entry.Escaped);
+                ApplyFollowerRaidOutcomeStats(teammate, entry.Escaped == true);
                 // Raid outcomes do not persist health. Ordinary follower activation restores full
                 // health; saving a failed escape as zero only left a misleading dead profile.
 
@@ -1712,7 +1714,7 @@ public partial class FriendlyTeammateService(
         FriendlyTeammateDeathEscapeEntry entry,
         Dictionary<string, HashSet<string>> protectedTeammateItemIdsByAid)
     {
-        if (!entry.Escaped)
+        if (entry.Escaped != true)
         {
             return;
         }
@@ -1775,7 +1777,7 @@ public partial class FriendlyTeammateService(
         FriendlyTeammateDeathEscapeEntry entry,
         Dictionary<string, HashSet<string>> protectedTeammateItemIdsByAid)
     {
-        if (entry.Escaped)
+        if (entry.Escaped == true)
         {
             return;
         }
@@ -1868,7 +1870,7 @@ public partial class FriendlyTeammateService(
     {
         // Escaped teammates are handled by ApplyImmersiveEscapedDefaultEquipmentState. Only a death
         // result can strip the saved Default down to the non-loss exceptions.
-        if (entry.Escaped)
+        if (entry.Escaped == true)
         {
             return;
         }

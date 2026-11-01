@@ -214,6 +214,28 @@ public class WornGearLossPolicyTests
         Assert.Equal(new[] { "helmet" }, WornGearLossPolicy.CollectSubtreeIds(null, new[] { "helmet" }));
     }
 
+    // 두 정책이 같은 슬롯 어휘를 나눠 들고 있다. 주석만으로는 어긋나도 아무도 모른다.
+    // 뺄셈 동일성(LostOnDeathSlots == KnownSlots − DefaultSlots)은 **일부러 단정하지 않는다** —
+    // DefaultSlots 는 "모든 프로필이 이미 가진 슬롯"이고 그건 "사망이 가져가지 않는 슬롯"과 다른 질문이라,
+    // 지금 두 집합이 맞아떨어지는 것은 우연이다. 우연을 못박으면 나중의 정당한 분기가 버그처럼 보인다.
+    [Fact]
+    public void 지울_슬롯은_모두_알려진_슬롯이고_기본_슬롯과_겹치지_않는다()
+    {
+        foreach (var slot in WornGearLossPolicy.LostOnDeathSlotNames)
+        {
+            Assert.True(
+                SpawnGearPolicy.KnownSlotNames.Contains(slot, StringComparer.OrdinalIgnoreCase),
+                $"'{slot}' 은 SpawnGearPolicy 가 아는 슬롯이 아니다. 모르는 슬롯을 지우면 안 된다.");
+        }
+
+        foreach (var slot in WornGearLossPolicy.LostOnDeathSlotNames)
+        {
+            Assert.False(
+                SpawnGearPolicy.DefaultSlotNames.Contains(slot, StringComparer.OrdinalIgnoreCase),
+                $"'{slot}' 은 플레이어가 아무것도 착용하지 않아도 모든 프로필이 가진 슬롯이다. 지우면 장비 손실이 아니라 프로필 손상이다.");
+        }
+    }
+
     [Fact]
     public void 부모_고리가_있어도_지울_목록_계산이_끝난다()
     {
