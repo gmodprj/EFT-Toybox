@@ -2692,3 +2692,43 @@ return teammate ?? throw new FriendlyTeammateException($"Unable to find teammate
 - **레벨 보존**: 임시 장비인데도 `SPT02 level 15`·`Knox level 69` — "인벤토리 하나만 다르다" 계약의 결과다.
 - **화면 실측**: 파티 화면에서는 둘 다 맨몸, 레이드 안에서는 헬멧·방어구·리그·소총 착용. 로비가 프로필 상태를,
   레이드가 생성된 로드아웃을 보여 준다. 의도대로지만 **플레이어에겐 혼동될 수 있다**(로비에서 맨몸인데 레이드에서 무장).
+
+### 게이트에서 드러난 결함 — 팀원이 전투를 하지 않는다 (원인 둘, 둘 다 Task 3 브리프가 만든 것)
+
+사용자가 3차 레이드에서 "동료들이 적을 상대로 전혀 전투를 진행하지 않는 것으로 보임" 을 보고했다. 추적 결과 원인이 **둘**이고,
+둘 다 내가 Task 3 브리프에 쓴 문장이 사실과 어긋나서 생겼다.
+
+**원인 1 — 빈 탄창** (수정 `e857e52`)
+
+백업 프로필 실측: 1·2차 레이드에 들어간 실물 장비 팀원들의 탄창이 **주무기 0발 / 권총 0발**(Knox 의 산탄총만 20발)이었다.
+즉 그때도 쏠 수 없었고 3차에서야 눈에 띈 것이다.
+
+내 브리프는 PIT 의 스폰 손질을 "실제 프로필 장비를 고쳐 쓴다" 는 이유로 **셋을 뭉뚱그려** 건너뛰게 했다. 그러나 셋의 성격이 다르다:
+`RefillFollowerMagazinesFromInventoryAmmo` 와 `EnsureFollowerHasScabbardKnife` 는 넘긴 객체에 **더하기만** 하고,
+PIT 자신의 주석이 리필을 **"스폰 복제본에만"** 두는 이유를 이미 적어 두었다(`PrepareTeammateForFetch`). 우리 `spawn` 도 깊은 복제본이다.
+→ 그 둘은 양쪽 경로에 적용하고, 내용물을 **비우는** 보안 컨테이너 보급만 계속 건너뛴다.
+
+**원인 2 — 역할·난이도 (이쪽이 더 크다)** (수정 `113420f`)
+
+SAIN 로그 실측:
+
+```
+follower=SPT02  role=assault  difficulty=easy  profile=0.15  visibleDistance=90    ← 프로필 팀원
+follower=Knox   role=assault  difficulty=easy  profile=0.15  visibleDistance=90    ← 프로필 팀원
+follower=SPT08  role=pmcBEAR  difficulty=hard  profile=1.5   visibleDistance=225   ← PIT 용병
+follower=Zofia  role=pmcBEAR  difficulty=hard  profile=1.5   visibleDistance=225   ← PIT 용병
+```
+
+런처 프로필 전부가 `Info.Settings.Role='assault'`, `BotDifficulty='easy'` 를 저장하고 있다(SPT01·SPT02·Knox 모두 확인).
+본인이 플레이할 때는 무의미한 기본값이지만, 같은 캐릭터를 **팀원으로 스폰하면 SAIN 이 그대로 읽는다.**
+시야 90m 짜리 easy 봇은 적을 거의 보지 못하므로 "전투를 거부하는 것" 처럼 보인다.
+
+내 브리프는 "`Info.Settings.Role` 이 **비어 있으면** 진영에 맞는 PMC 역할로 채운다" 였는데, 그 칸은 비어 있지 않다.
+그래서 `EnsurePmcRole` 의 채우기 분기가 **한 번도 발동하지 않았다.**
+→ 채우지 말고 **덮어쓴다**(`ForceFollowerRoleAndDifficulty`). 난이도도 PIT 가 모든 용병에 굽는 `"hard"` 로 맞춘다
+(Temporary 경로는 생성물의 **인벤토리만** 가져오므로 생성 시점의 난이도를 물려받지 못한다). `spawn` 이 복제본이라 프로필 값은 그대로다.
+
+**확인 신호**: 다음 레이드의 SAIN 줄이 `role=pmcUSEC/pmcBEAR`·`difficulty=hard`·`visibleDistance=225` 로 바뀌어 용병과 같아지는지.
+
+**교훈**: 두 결함 모두 "프로필의 이 칸은 비어 있다/이 손질은 실제 장비를 고친다" 는 **내가 확인하지 않은 전제**에서 나왔다.
+실제 프로필 JSON 을 한 번 열어 봤으면 둘 다 설계 단계에서 잡혔다.
