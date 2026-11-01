@@ -68,22 +68,28 @@ public class FriendlyTeammateMatchCallbacks(
             // not (no reason either), fall through to the return below exactly as before STM.
             if (teammate == null)
             {
-                if (profileMemberResolver.TryResolve(sessionId, request.To, out var profileMember, out var unavailableReason))
+                var resolved = profileMemberResolver.TryResolve(sessionId, request.To, out var profileMember, out var unavailableReason);
+                FriendlyGroupMatchInviteAccept? accept = null;
+                if (resolved)
                 {
                     // Identity only, like PIT's invite (ToGroupCharacter): no spawn profile is built here, so
                     // StmSpawnProfileFactory.LastGearKind is not written for an invite that is not a spawn.
                     // Read from a clone: profileMember.Pmc is the live object SaveServer holds.
-                    FriendlyGroupMatchInviteAccept accept;
                     try
                     {
                         accept = BuildProfileMemberAccept(profileMember!);
                     }
                     catch (Exception ex)
                     {
-                        logger.Error($"[STM] Group invite: could not build the invite for profile teammate '{request.To}' (session '{sessionId}'); no invite sent. {ex}");
-                        return new ValueTask<string>(previousOutput ?? httpResponseUtil.NullResponse());
+                        // The resolver already identified a registered teammate, so a failure now is
+                        // "a teammate we could not read", never "not a teammate": decline below.
+                        unavailableReason = "Unreadable";
+                        logger.Error($"[STM] Group invite: could not build the invite for profile teammate '{request.To}' (session '{sessionId}'); declining. {ex}");
                     }
+                }
 
+                if (accept != null)
+                {
                     _ = Task.Run(async () =>
                     {
                         await Task.Delay(1000);
@@ -98,6 +104,16 @@ public class FriendlyTeammateMatchCallbacks(
 
                 if (!string.IsNullOrWhiteSpace(unavailableReason))
                 {
+                    // The raw enum name stays in the log; the player gets a sentence.
+                    logger.Warning($"[STM] Group invite: profile teammate '{request.To}' (session '{sessionId}') unavailable: {unavailableReason}");
+                    var reasonText = unavailableReason switch
+                    {
+                        "CurrentSession" => "that profile is the one you are currently playing",
+                        "Empty" => "that profile has no character yet",
+                        "Unreadable" => "that profile could not be read",
+                        _ => "that profile is not available right now",
+                    };
+
                     // Same shape as PIT's rejection above: decline notification then system message,
                     // after the 1s delay and inside the mode gate. Aid/Nickname come from the request
                     // because no member was resolved.
@@ -119,7 +135,7 @@ public class FriendlyTeammateMatchCallbacks(
 
                             mailSendService.SendSystemMessageToPlayer(
                                 sessionId,
-                                $"Cannot add profile teammate {request.To} to the raid group: {unavailableReason}.",
+                                $"Cannot add profile teammate {request.To} to the raid group: {reasonText}.",
                                 null);
                         });
                     });
@@ -157,7 +173,7 @@ public class FriendlyTeammateMatchCallbacks(
         return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
     }
 
-    // Same fields PIT's ToGroupCharacter fills for the invite-accept notification. Built from a clone
+    // Same fields PIT's ToGroupCharacter (FriendlyTeammateService) fills for the invite-accept notification. Built from a clone
     // because member.Pmc is the live profile object: nothing here may alias or write into it.
     private FriendlyGroupMatchInviteAccept BuildProfileMemberAccept(StmResolvedMember member)
     {
@@ -171,7 +187,7 @@ public class FriendlyTeammateMatchCallbacks(
             EventType = NotificationEventType.groupMatchInviteAccept,
             EventIdentifier = new MongoId(),
             // Must equal StmSpawnProfileFactory.Build's spawn.Id: the client is told this id here and handed a bot with it at raid entry. member.ProfileId is the source of truth (the key the profile was read by).
-            Id = member.ProfileId,
+            Id = new MongoId(member.ProfileId).ToString(),
             Aid = member.Aid.ToString(),
             Info = new CharacterInfo
             {

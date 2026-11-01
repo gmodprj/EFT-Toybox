@@ -4479,6 +4479,9 @@ public partial class FriendlyTeammateService(
         };
     }
 
+    // STM builds the same notification fields for profile teammates in
+    // FriendlyTeammateMatchCallbacks.BuildProfileMemberAccept, a deliberate near-copy (that one reads a PmcData
+    // clone and takes Id/Aid from the resolved member). Change both or neither.
     private GroupCharacter ToGroupCharacter(BotBase teammate)
     {
         var info = teammate.Info ?? throw new FriendlyTeammateException("Teammate profile is missing Info");
