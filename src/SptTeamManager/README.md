@@ -35,14 +35,31 @@ nor installs the addon, so nothing is being distributed now. This repository als
 
 ## What is in this fork today (only the pure policy code is covered by tests)
 
-Plan 1 (foundation) is committed; **nothing has been installed or run in the game yet.**
+Plans 1 (foundation) and 2 (into the raid) are committed, installed, and **verified by playing the
+game** on 2026-11-01. Unit tests: 141 passing; server builds with 0 warnings and 0 errors.
 
-- Server: lists launcher profiles and judges which can be teammates, stores the registration of a
-  profile as a teammate, merges registered profiles into the friend list (native entries and
-  mercenaries are kept), and has a pure party-seat policy (3 AI teammate seats) that is deliberately
-  not wired into the invite path yet. Unit tests: 53 passing; server builds with 0 warnings and 0 errors.
-- Client: roster screen code for profile teammates. It **compiles** with 0 warnings and 0 errors as of
-  2026-11-01, but has never been **run** - nothing has been installed or played yet.
+**What works**
+
+- Register another launcher profile as a teammate; it appears in the roster and the friend list, and
+  the profile currently logged in is never offered.
+- Invite it: it joins the party. Up to four teammates - the client refuses the fifth with "the party is
+  full", so there is no server-side seat gate and none is needed.
+- Take it into a raid **wearing that profile's own gear**. A profile with no usable kit goes in with a
+  **generated temporary loadout** instead, keeping its own level, health and skills - the two paths
+  differ in the inventory and nothing else.
+- If it went in with **real** gear and did not come back, the gear it wore is **deleted from the stored
+  profile**. The stash and the secured container's contents are kept, as are the pockets container, the
+  armband and the knife. A receipt makes this happen at most once per raid.
+- Gear the player loots off a dead teammate's corpse and carries out **stays with the player** - the
+  raid-entry protection on that teammate's items is released once they are gone from the profile.
+- PIT's own mercenaries are untouched and can be mixed into the same squad.
+
+**What it deliberately does not do**
+
+- Nothing is ever *added* to a teammate's profile: no experience, no skills, no raid statistics, no
+  loot. Plan 2 only subtracts, because adding is where duplication bugs live. That is Plan 4.
+- Gear looted from a teammate who died in a **temporary** loadout disappears at raid end. Releasing it
+  would turn an unequipped profile into an endless gear supply; a log line says so when it happens.
 
 **SPT requirement of this fork: 4.1.6, not 4.1.x.** Upstream compiles against the oldest supported
 patch (4.1.0) so one build runs across the whole 4.1.x range; those 4.1.0.0 client assemblies are not
@@ -52,24 +69,31 @@ that the server metadata still declares `SptVersion = "~4.1.0"`, which is theref
 the client; that is recorded, deliberately unchanged, and must be settled before any distribution. See
 `doc/WORKLOG.md`, "클라이언트 기준 변경과 첫 빌드".
 
-A profile member can be registered and will appear in the roster and the party-invite window, but
-**cannot yet be invited into a raid**: clicking invite on one currently does nothing (no message, no
-error). Wiring admission belongs to Plans 2/3.
+Known limitation: the pre-raid matchmaker's auto-join path cannot rebuild a profile teammate, because
+`/singleplayer/pitfireteam/teammate/profile` still resolves only PIT's own mercenary documents - the one
+route of four that Plan 2 did not reach. The party screen itself draws them correctly and the spawn is
+unaffected; what is unverified is whether "restore last squad" works. See `doc/WORKLOG.md`.
 
-Known limitation (Plan 2 item): the native friend-list "delete" action does nothing for a profile member
+Known limitation: the native friend-list "delete" action does nothing for a profile member
 (it only removes PIT mercenaries, and the entry returns on the next poll); remove a profile member from
 STM's own roster screen instead.
 
 Shared sources in `shared/` are linked by hand, one line per file and no wildcards, to keep the upstream
-merge surface small. Forgetting a link fails silently in the project that lacks it, so check all three
-when adding a shared file: `ProfileRosterPolicy.cs` is linked into the server, the client and the tests;
-`FriendListMergePolicy.cs` and `PartySlotPolicy.cs` into the server and the tests only (they are server-side
-policy); `StmRosterWire.cs` into the client and the tests only, **not the server**, because it depends on
-`Newtonsoft.Json.Linq`, which the server does not need.
+merge surface small. Forgetting a link fails silently in the project that lacks it, so check every
+project when adding a shared file: `ProfileRosterPolicy.cs` is linked into the server, the client and
+the tests; `FriendListMergePolicy.cs`, `PartySlotPolicy.cs`, `SpawnGearPolicy.cs`, `RaidOutcomePolicy.cs`,
+`RaidReceiptKeyPolicy.cs`, `WornGearLossPolicy.cs` and `FollowerAiProfilePolicy.cs` into the server and
+the tests only (server-side policy); `StmRosterWire.cs` into the client and the tests only, **not the
+server**, because it depends on `Newtonsoft.Json.Linq`, which the server does not need.
 
-Not done (later plans): editing a profile teammate's equipment, stash transfer, and applying raid
-results (experience, skills, stats, loot, losses). See `doc/WORKLOG.md` (repo root) for the full list,
-the human verification checklist, and the constraints for later plans.
+`PartySlotPolicy.cs` has no caller and will not get one: the client enforces the party cap itself, which
+the in-game check established, so a server-side seat gate would duplicate it. It is kept because it is
+pure and tested, not because it is wired.
+
+Not done (later plans): editing a profile teammate's equipment and the teammate detail screen (Plan 3),
+and applying raid results - experience, skills, stats, loot (Plan 4). See `doc/WORKLOG.md` (repo root)
+for the in-game results, the three defects the game found that unit tests and review did not, and the
+constraints for later plans.
 
 Install with `tools/install-sptteammanager.ps1` from the repository root; it refuses if PIT Fireteam is
 installed, because STM keeps PIT's route prefix and the two cannot coexist.
