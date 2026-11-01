@@ -1,0 +1,469 @@
+using System.Collections.Generic;
+
+namespace pitTeam.Localization
+{
+    internal static class EmbeddedEnglishLanguageProvider
+    {
+        private static LanguageOptions cached;
+
+        public static LanguageOptions Fallback => cached ??= Create();
+
+        private static Dictionary<string, string> Entry(string name, string description)
+        {
+            return new Dictionary<string, string>
+            {
+                ["Name"] = name,
+                ["Description"] = description
+            };
+        }
+
+        public static LanguageOptions Create()
+        {
+            return new LanguageOptions
+            {
+                baseSettings = "Base Settings",
+                followSettings = "Follow Settings",
+                combatSettings = "Combat Settings",
+                inputSettings = "Input Settings",
+                miscSettings = "Miscellaneous",
+                testSettings = "Testing",
+                raidSettings = "Raid Settings",
+                lootingSettings = "Looting Settings",
+                loadoutManagementSettings = "Loadout Management",
+                equipOptions = new[] { "Default" },
+                tacticOptions = new[] { "Rifleman", "Support", "Marksman", "Pusher", "Holder", "Assist" },
+
+                statusSound = Entry(
+                    "Enemy Location Volume",
+                    "Volume of the ping sound for the enemy location marker during combat"),
+                enemyMarker = Entry(
+                    "Enemy Marker",
+                    "Enable enemy position markers for Status Report and automatic combat display. If disabled, the enemy marker sound will also be disabled."),
+                autoDisplayCombatStatus = Entry(
+                    "Auto Display Enemy Marker",
+                    "Continuously show the current enemy marker while any follower remains in combat. Hidden contacts refresh every 5 seconds; visible contacts track in real time."),
+                autoDisplayKillMarker = Entry(
+                    "Auto Display Kill Marker",
+                    "Automatically show a killed-enemy skull when the player or a follower kills a tracked enemy. Disable to show retained kills only through Status Report."),
+                enemyKilledDisplayTime = Entry(
+                    "Kill Display Time",
+                    "Time in seconds to display killed-enemy skull markers after Status Report or an automatic kill-marker trigger. The marker never displays longer than Kill Remember Time."),
+                enemyKilledRetainTime = Entry(
+                    "Kill Remember Time",
+                    "Time in seconds to remember the position of an enemy killed by the player or a follower. This is also the maximum time a kill marker can remain visible.\nSet to 0 to disable killed-enemy markers."),
+                scanDistance = Entry(
+                    "Maximum scan distance",
+                    "Maximum distance to pick up any visible enemy that the player is signaling when issuing 'Contact' phrase"),
+                patrolRadius = Entry(
+                    "Patrol Radius",
+                    "Maximum distance from the player the followers will patrol around"),
+                followDistance = Entry(
+                    "Follow Distance",
+                    "Distance followers keep from the player while following."),
+                regroupRadius = Entry(
+                    "Regroup Radius",
+                    "Distance from the player at which followers automatically regroup during combat.\nMarksman followers use about 1.5x this radius."),
+                goToDistance = Entry(
+                    "Maximum 'Go To' Distance",
+                    "Maximum distance followers will move when 'There' or 'GoForward' is issued."),
+                enemyRemember = Entry(
+                    "Time to forget about the enemy (in sec.)",
+                    "Contact memory duration. Realistic tracking can extend memory during active unfinished search, up to 400 seconds. Applied at raid start."),
+                enemyTracking = Entry(
+                    "Enemy Tracking",
+                    "Switch between Simple and Realistic enemy tracking. Simple tracks the enemy’s current position regardless of when they were last seen or reported. Realistic uses positions reported through sight or sound, or the enemy’s last known position."),
+                friendlyEncounterChance = Entry(
+                    "Friendly Encounter Chance",
+                    "The base chance of encountering friendlies during a raid.\nIn Guns for Hire, this affects only same-side PMCs and has no effect if Friendly PMC Side or Bad Guy is on.\nIn Allegiance, the base chance is that of your own side while opposite sides get half the chance. Scavs are affected by your Fence karma, which further increases or decreases their chances."),
+                friendlyScavEncounters = Entry(
+                    "Friendly Scav encounters",
+                    "In Allegiance mode only, allow friendly Scav encounters that follow the same rules as opposite-faction encounters."),
+                healthMultiplier = Entry(
+                    "Squad Health Multiplier",
+                    "Health multiplier for the followers you spawn with. This is applied per each body part."),
+                pickup = Entry(
+                    "Pickup",
+                    "Enable or disable the ability to recruit same-side bots during a raid."),
+                tieredPickup = Entry(
+                    "Tiered Pickup",
+                    "Use the player-vs-bot level difference rules when deciding whether a bot accepts a pickup request."),
+                maximumPickup = Entry(
+                    "Maximum Pickup",
+                    "Maximum number of non-squad same-side bots you can pick up during a raid."),
+                recruitPickup = Entry(
+                    "Recruit Pickup",
+                    "Allow picked-up followers that were successfully extracted with to send friend requests.\nThis uses player-vs-bot level difference rules when deciding."),
+                teamEscape = Entry(
+                    "Team Escape",
+                    "Allow surviving squadmates to attempt an escape after you die.\nEscaped teammates can return eligible follower loot and recoverable gear that would otherwise be lost."),
+                teamEscapeUseAnyExtract = Entry(
+                    "Team Escape: Use Any Extraction Point",
+                    "Allow the squad escape simulation to choose any usable extraction point on the map.\nDisable this to restrict escape routes to extraction points assigned to the player."),
+                lootMinimumPrice = Entry(
+                    "Minimum Price",
+                    "Minimum rouble value for an item to be taken from a body or container.\nSet to 0 to disable the minimum."),
+                lootMaximumPrice = Entry(
+                    "Maximum Price",
+                    "Maximum rouble value for an item to be taken from a body or container.\nSet to 0 to disable the maximum."),
+                lootFilterFood = Entry(
+                    "Pickup Food",
+                    "Allow food and drink items to be taken from bodies and containers."),
+                lootFilterMeds = Entry(
+                    "Pickup Meds",
+                    "Allow usable medical items, drugs, stimulators, and med kits to be taken from bodies and containers."),
+                lootFilterValuables = Entry(
+                    "Pickup Valuables",
+                    "Allow barter items, keys, special items, info items, money, and other non-gear loot to be taken from bodies and containers."),
+                lootFilterWeapons = Entry(
+                    "Pickup Weapons",
+                    "Allow weapons, ammunition, magazines, weapon mods, and grenades to be taken from bodies and containers."),
+                lootFilterGear = Entry(
+                    "Pickup Gear",
+                    "Allow helmets, body armor, armored rigs, and tactical rigs to be taken from bodies and containers."),
+                memberTactic = Entry(
+                    "Squad Member {0} Tactic",
+                    "Set Squad member fight tactic."),
+                memberEquipment = Entry(
+                    "Squad Member {0} Equipment",
+                    "Set Squad member equipment."),
+                memberName = Entry(
+                    "Squad Member {0} Nickname",
+                    "Set a custom nickname for this Squad member. Leave blank for default"),
+                memberVoice = Entry(
+                    "Squad Member {0} Voice",
+                    "Set what voice this member should use."),
+                memberUniformTop = Entry(
+                    "Squad Member {0} Top",
+                    "Set what the top clothes for this member should be. Leave blank for default"),
+                memberUniformBottom = Entry(
+                    "Squad Member {0} Bottom",
+                    "Set what the pants for this member should be. Leave blank for default"),
+                equipmentLock = Entry(
+                    "Lock Squad Equipment",
+                    "Locks the equipment of the squad members."),
+                loadoutManagement = Entry(
+                    "Loadout Management",
+                    "Controls how teammate loadouts are selected, consumed, and preserved."),
+                loadoutManagementRestricted = Entry(
+                    "Restricted",
+                    "Gear comes from your stash and cannot be extracted with. Raid wear and spent supplies persist, but gear is kept if a teammate dies."),
+                loadoutManagementImmersive = Entry(
+                    "Immersive",
+                    "Same as Restricted, but teammate gear behaves like real raid equipment. Equipment can become damaged, dead teammates lose their gear, and you can extract with their items."),
+                loadoutManagementExtreme = Entry(
+                    "Realistic",
+                    "Same as Immersive, but secure containers are no longer automatically managed for teammates. You are fully responsible for configuring them yourself."),
+                npcSendMessage = Entry(
+                    "Raid End Messages",
+                    "Followers will send message at the end of the raid based on conditions such as if all made it out or if you picked up a follower and kept him alive. Return items messages are excluded"),
+                pitFireTeam = Entry(
+                    "Friendly PMC Side",
+                    "Should PMC Bots of the same side always be friendly to each other. Turn this off would let the normal game aggro system decide if same side bots will be friendly to you or not."),
+                badGuy = Entry(
+                    "Bad Guy",
+                    "Should the player be hostile to all PMC bots, regardless of faction"),
+                factionHostilities = Entry(
+                    "Faction Hostilities",
+                    "Enable patch that attempts to fix the hostilities between factions not always working"),
+                pmcArmbands = Entry(
+                    "PMC Faction Arm Bands",
+                    "Should PMC bots have armbands (red for BEARs, blue for USECs)."),
+                englishBear = Entry(
+                    "BEARs speak English",
+                    "Should BEAR bots speak English only"),
+                pingSquad = Entry(
+                    "Status Report Shortcut",
+                    "Alternative shortcut key for the Status Report quick phrase"),
+                pingRadioVolume = Entry(
+                    "Report Status Volume",
+                    "Volume of the radio sound when triggering report status"),
+                pingTime = Entry(
+                    "Report Status Display Time",
+                    "Time in seconds to display the followers status"),
+                statusReportHighlight = Entry(
+                    "Status Report: Highlight",
+                    "Highlight living teammates with an outline during the Status Report. Disable if you notice performance issues."),
+                statusReportHighlightColor = Entry(
+                    "Status Report: Color",
+                    "Color of the Status Report text and teammate outline in hexadecimal RGB format (#00FF00)."),
+                statusReportHealthColoring = Entry(
+                    "Health Status",
+                    "Enable highlight coloring based on teammate health status."),
+                statusReportFullHealthColor = Entry(
+                    "Full Health Highlight Color",
+                    "Highlight color for a teammate at full health, in hexadecimal RGB format (#00FF00)."),
+                statusReportMediumHealthColor = Entry(
+                    "Medium Health Highlight Color",
+                    "Highlight color for a teammate at medium health, in hexadecimal RGB format (#FFFF00)."),
+                statusReportLowHealthColor = Entry(
+                    "Low Health Highlight Color",
+                    "Highlight color for a teammate at low health, in hexadecimal RGB format (#FF0000)."),
+                statusReportAlwaysHighlight = Entry(
+                    "Always Highlight",
+                    "Keep teammate highlighting always on."),
+                statusReportShowName = Entry(
+                    "Status Report: Name",
+                    "Show each teammate's name in the Status Report."),
+                statusReportShowDistance = Entry(
+                    "Status Report: Distance",
+                    "Show the distance to each teammate in the Status Report."),
+                statusReportShowHealth = Entry(
+                    "Status Report: Health (HP)",
+                    "Show each teammate's current and maximum health in the Status Report."),
+                statusReportShowTactic = Entry(
+                    "Status Report: Tactic (MD)",
+                    "Show each teammate's current combat tactic in the Status Report."),
+                statusReportShowCombatStatus = Entry(
+                    "Status Report: Combat Status",
+                    "Show whether each teammate is healing, wants to heal, is in combat, or has detected an enemy in the Status Report."),
+                enemyContact = Entry(
+                    "Enemy Contact Shortcut",
+                    "Alternative shortcut key for the Contact quick phrase"),
+                overThere = Entry(
+                    "Over There Shortcut",
+                    "Alternative shortcut key for the Over There quick gesture"),
+                hideUnsupportedCommands = Entry(
+                    "Hide Unsupported Commands",
+                    "Hide phrases for which no command is actually registered in the game's gestures menu"),
+                botTeleport = Entry(
+                    "Teleport Followers",
+                    "Teleport all followers to the player's position"),
+                botHeal = Entry(
+                    "Heal Followers",
+                    "Heal all followers and restore blacked limbs."),
+                botPrefetch = Entry(
+                    "Prefetch follower data",
+                    "Prefetch follower data to reduce the time it takes to spawn them. If you experience problems with followers spawning, disable this option and try again. Take note that this can increase the spawn time."),
+                botGrenades = Entry(
+                    "Followers use grenades",
+                    "Allow followers to use grenades"),
+                botTalk = Entry(
+                    "Followers trash talk",
+                    "Frequency at which a follower will trash talk during combat. Set to 0 to disable."),
+                spawnPoint = Entry(
+                    "Use Coop Spawn Point",
+                    "Use Coop Spawn Points when spawning with followers."),
+                battleRecorder = Entry(
+                    "Battle Recorder",
+                    "Write deep follower combat timelines to a dedicated JSONL file for raid analysis."),
+                battleRecorderSnapshotIntervalMs = Entry(
+                    "Battle Recorder Snapshot Interval (ms)",
+                    "Snapshot cadence for follower battle recorder positional samples."),
+
+                gestures = new Dictionary<string, string>
+                {
+                    ["OverThere"] = "Over There",
+                    ["TeamStatus"] = "Status Report",
+                    ["ViewBackpack"] = "View Backpack",
+                    ["SwapGear"] = "Swap Gear",
+                    ["GiveGear"] = "Give Gear",
+                    ["OnRepeatedContact"] = "Contact"
+                },
+                botStatus = new Dictionary<string, string>
+                {
+                    ["Dead"] = "Dead",
+                    ["Engaged"] = "In Combat",
+                    ["Alerted"] = "Enemy Detected",
+                    ["Heal"] = "Healing",
+                    ["WantToHeal"] = "Wants to heal"
+                },
+                socialUi = new Dictionary<string, string>
+                {
+                    ["EnemyTrackingSimple"] = "Simple",
+                    ["EnemyTrackingRealistic"] = "Realistic",
+                    ["LootActionCheckHim"] = "CMD : Check Him",
+                    ["LootActionAndWeapon"] = "CMD: Loot & Get Weapon",
+                    ["LootActionAndGear"] = "CMD: Loot & Get Gear",
+                    ["LootActionWeapon"] = "CMD: Get Weapon",
+                    ["LootActionGear"] = "CMD: Get Gear",
+                    ["AddTeammate"] = "+ Add teammate",
+                    ["AddTeammateInProgress"] = "{0} was added to your friends list",
+                    ["AddTeammateConfirm"] = "Add Teammate",
+                    ["AddTeammateNext"] = "Next",
+                    ["TeammateHireWithoutKit"] = "Add With No Gear",
+                    ["TeammateHireRegenerate"] = "REGENERATE",
+                    ["TeammateHireRegenerateFailed"] = "Could not load a new teammate preview. Try Regenerate again or go back.",
+                    ["TeammateHirePrice"] = "GEAR PRICE: {0} ₽",
+                    ["TeammateHirePriceFailed"] = "Could not price this teammate's equipment. Please try again.",
+                    ["TeammateHireQuoteExpired"] = "This equipment quote has expired or the loadout mode has changed. Go back to prepare a new preview.",
+                    ["TeammateHireInsufficientFunds"] = "Insufficient funds to perform the operation.",
+                    ["TeammateHirePurchaseFailed"] = "Could not finish adding this teammate. You can retry Add Teammate safely.",
+                    ["TeammateHireRecoveryFailed"] = "An interrupted teammate purchase could not be reconciled. Check the server log before trying again.",
+                    ["AddTeammateFlowActive"] = "Add teammate flow is already open.",
+                    ["AddTeammateOpenFailed"] = "Could not open teammate creation screen.",
+                    ["AddTeammateCreateFailed"] = "Could not create teammate.",
+                    ["AddTeammateUnsupportedSide"] = "Add teammate only supports PMC profiles right now.",
+                    ["Cancel"] = "Cancel",
+                    ["SwapGearApply"] = "Apply Changes",
+                    ["GiveGearApply"] = "Give Items",
+                    ["GiveGearWorking"] = "Giving Items…",
+                    ["GiveGearUnavailable"] = "Give Gear requires a nearby recruited follower who is not busy or in danger.",
+                    ["GiveGearApplyFailed"] = "Items were not given. Check the offered equipment, ammunition and inventory changes, then try again.",
+                    ["SwapGearTransferInProgress"] = "Please do not close until the transfer process is finished.",
+                    ["SwapGearStale"] = "Inventory changed while editing. Nothing was applied; reopen Swap Gear.",
+                    ["SwapGearNeedsWeapon"] = "Leave the follower at least one complete firearm before applying.",
+                    ["SwapGearMagazineSpace"] = "Leave room in the vest for the follower's magazines during reloads.",
+                    ["SwapGearRecoveryFailed"] = "Gear exchange recovery failed. Check both inventories and the log before continuing.",
+                    ["SwapGearUnavailable"] = "Swap Gear is unavailable while either character is busy or the follower is in danger.",
+                    ["SwapGearActionBlocked"] = "This action is unavailable in Swap Gear. Move equipment in the draft, then press Apply.",
+                    ["SwapGearApplyFailed"] = "Gear changes were not applied. Check equipment, magazine space and inventory changes, then reopen Swap Gear.",
+                    ["SwapGearRefreshFailed"] = "Gear was transferred, but the follower could not finish refreshing equipment. Check the log before continuing.",
+                    ["Save"] = "Save",
+                    ["Done"] = "Done",
+                    ["Ok"] = "OK",
+                    ["EnterNickname"] = "Enter player nickname",
+                    ["NicknameTooShort"] = "Nickname too short",
+                    ["NameCannotBeEmpty"] = "Name cannot be empty.",
+                    ["RenameTeammateTitle"] = "Rename teammate",
+                    ["RenameSave"] = "Save",
+                    ["RenameCancel"] = "Cancel",
+                    ["RenameChange"] = "EDIT NAME",
+                    ["EditLoadout"] = "EDIT LOADOUT",
+                    ["BuyGearLoadout"] = "KIT LOADOUTS",
+                    ["KitLoadoutsOpenFailed"] = "Unable to open teammate kit loadouts.",
+                    ["KitLoadoutPriceFailed"] = "Unable to price selected teammate kit.",
+                    ["KitLoadoutPurchaseFailed"] = "Unable to purchase teammate kit.",
+                    ["KitStashSelectionChanged"] = "The selected stash items changed. Review the kit and try again.",
+                    ["KitStashContainerHasUnselectedContents"] = "Purchase rejected: a selected stash container still contains unselected items. Empty the container or deselect it, then try again.",
+                    ["LiveStashRefreshFailed"] = "Player stash refresh failed. Restart the game before making more inventory changes.",
+                    ["NotEnoughResourcesKitPrompt"] = "Not enough resources to purchase {0} kit",
+                    ["BuyKitTitle"] = "BUY KIT",
+                    ["PurchaseKitPrompt"] = "Purchase {0} Kit for {1}?",
+                    ["KitCurrentGearDeliveryNotice"] = "Teammate's current kit will be returned to you via delivery service.",
+                    ["KitItemsTakenFromStash"] = "The following items will be taken from stash:",
+                    ["KitItemsPurchased"] = "The following items will be purchased:",
+                    ["PurchaseKitAction"] = "Purchase",
+                    ["EquipKitAction"] = "EQUIP",
+                    ["UseItemsInStash"] = "Use items in stash",
+                    ["CurrencyRoubles"] = "{0:N0} RUB",
+                    ["UnknownItem"] = "Unknown item",
+                    ["EditLoadoutTitle"] = "Edit Loadout",
+                    ["EditLoadoutTitleWithName"] = "Edit Loadout : {0}",
+                    ["EditLoadoutSubtitleReal"] = "Edit staged gear for {0}. Saving moves items between your stash and this teammate.",
+                    ["ProfileRecoveredTitle"] = "Profile recovered",
+                    ["ProfileRecoveredBody"] = "The profile of this teammate has been recovered from a bad state. Some items from his inventory may have been deleted in the process.",
+                    ["DuplicateProfileRecoveryTitle"] = "Profile recovered",
+                    ["DuplicateProfileRecoveryBody"] = "Duplicate items were found in both player and teammate profiles. The following teammate profiles have been stripped of the duplicate in order to safely recover them: {0}",
+                    ["LoadoutRequiresRealTransfer"] = "Teammate gear must be transferred from your stash or purchased through Kit Loadouts. Reopen the teammate profile with the current client version.",
+                    ["LoadoutEditorSaveFailed"] = "Failed to save teammate inventory.",
+                    ["FollowerInsuranceUnavailable"] = "Insurance is not available for this teammate or trader.",
+                    ["FollowerInsuranceInvalidSelection"] = "This equipment cannot be insured. Reopen the loadout and select the items again.",
+                    ["FollowerInsurancePriceChanged"] = "The insurance price has changed. Reopen the insurance window for a new quote.",
+                    ["FollowerInsurancePaymentFailed"] = "Unable to pay for insurance. Check your available roubles.",
+                    ["FollowerInsurancePurchaseFailed"] = "Unable to confirm insurance. Reopen the loadout and check coverage before trying again.",
+                    ["FollowerInsuranceRefreshRequired"] = "Insurance is being synchronized. Reopen the loadout before making further changes.",
+                    ["LockedStashItemBlocked"] = "Teammate loadout save blocked: an item inside a locked stash container was moved or changed. Unlock the container and try again. Locked container: id={0}, tpl={1}. Blocked item: id={2}, tpl={3}.",
+                    ["PlayerStash"] = "Player Stash",
+                    ["PlayerStashPlaceholder"] = "Failed to load cloned stash view.\n{0}",
+                    ["BotInventory"] = "Follower Inventory",
+                    ["BotInventoryPlaceholder"] = "Failed to load cloned follower inventory.\n{0}",
+                    ["ProfileTactic"] = "Rifleman",
+                    ["ProfileTacticMarksman"] = "Marksman",
+                    ["ProfileTacticSainMan"] = "SAINGrunt",
+                    ["ProfileTacticSAINShooter"] = "SAINShooter",
+                    ["ProfileTacticProtector"] = "Protector",
+                    ["ProfileAdjustProficiency"] = "Proficiency",
+                    ["AdjustProficiencyTitleWithName"] = "Proficiency : {0}",
+                    ["ProfileAggression"] = "Aggression",
+                    ["ProfileSelfDetermination"] = "Self-Determination",
+                    ["ProfileVision"] = "Vision",
+                    ["ProfilePrecision"] = "Precision",
+                    ["ProfileReaction"] = "Reaction",
+                    ["ProfileResetProficiency"] = "Reset",
+                    ["RenameFailed"] = "Could not rename teammate",
+                    ["RenameClose"] = "x",
+                    ["RemoveTeammateTitle"] = "Remove teammate",
+                    ["RemoveRecruitedTeammatePrompt"] = "Are you sure you want to remove recruited member {0}?\nDeletion fee: {1} ₽\nThe equipped items will be mailed via service.\nThis cannot be undone",
+                    ["TeammateDeleteInsufficientFunds"] = "Insufficient funds to perform the operation.",
+                    ["TeammateDeleteFailed"] = "Could not complete teammate deletion. Please retry; a completed deletion will not charge you again.",
+                    ["TeammateDeleteRecoveryFailed"] = "The previous teammate deletion payment could not be reconciled. Deletion is blocked to prevent an incorrect charge.",
+                    ["TeammateDeleteDeliveryFailed"] = "The member has been removed, but the equipment delivery is pending. Reopen My Squad to retry delivery. If this persists, restart the server.",
+                    ["RemovedTeammateEquipmentDelivery"] = "Equipment from the removed teammate is ready for pickup.",
+                    ["RemoveTeammatePrompt"] = "Are you sure you want to remove member {0}?\nThe equipped items will be mailed via service.\nThis cannot be undone",
+                    ["RemoveTeammateConfirm"] = "Remove",
+                    ["SquadControlDeleteTooltip"] = "Delete",
+                    ["SquadControlInviteToGroup"] = "Invite to group",
+                    ["SquadControlRemoveFromGroup"] = "Remove from group",
+                    ["SquadControlRemoveFromGroupConfirm"] = "Remove {0} from the current raid group?",
+                    ["SquadControlViewProfile"] = "View profile",
+                    ["SquadControlProfileCorrupt"] = "This teammate profile is corrupt and cannot be fetched.",
+                    ["SquadControlAutoJoinOn"] = "Auto join: On",
+                    ["SquadControlAutoJoinOff"] = "Auto join: Off",
+                    ["SquadControlAutoJoinTooltip"] = "Auto-join",
+                    ["SquadControlInGroupTooltip"] = "In group",
+                    ["SquadControlInviteAcceptedToast"] = "{0} joined the group.",
+                    ["SquadControlInvitePendingFailedToast"] = "Group invite for {0} was not accepted.",
+                    ["SquadControlRemovedFromGroupToast"] = "Removed {0} from the group.",
+                    ["SquadControlRemoveFromGroupFailedToast"] = "Failed to remove {0} from the group.",
+                    ["SquadControlAutoJoinEnabledToast"] = "Enabled PMC raid auto-join for {0}.",
+                    ["SquadControlAutoJoinDisabledToast"] = "Disabled PMC raid auto-join for {0}.",
+                    ["SquadControlAutoJoinEnableFailedToast"] = "Failed to enable auto-join for {0}",
+                    ["SquadControlAutoJoinDisableFailedToast"] = "Failed to disable auto-join for {0}",
+                    ["SquadControlButton"] = "My Squad",
+                    ["SquadControlTitle"] = "My Squad",
+                    ["SquadControlRaidSettingsButton"] = "Squad Settings",
+                    ["SquadControlRaidSettingsTitle"] = "My Squad Settings",
+                    ["SquadControlBack"] = "Back",
+                    ["SquadControlClose"] = "Close",
+                    ["SquadControlRosterTab"] = "Roster",
+                    ["SquadControlModeTab"] = "Mode",
+                    ["SquadOnboardingLoading"] = "Loading gameplay modes...",
+                    ["SquadOnboardingFailed"] = "Unable to finish gameplay mode setup. Please try again.",
+                    ["SquadOnboardingRetry"] = "Retry",
+                    ["SettingsUnavailableInAllegiance"] = "this option is not available in Allegiance Mode",
+                    ["SettingsUnavailableInGunsForHire"] = "this option is not available in Guns for Hire Mode",
+                    ["FriendlyEncounterPenaltyLabel"] = "-{0}% Friendly Encounters ({1})",
+                    ["FriendlyEncounterPenaltyHours"] = "{0}h",
+                    ["FriendlyEncounterPenaltyMinutes"] = "{0}min",
+                    ["SquadControlEmptyAllegianceRoster"] = "No one’s watching your six. Jump into a raid, forge alliances, and Escape together.",
+                    ["GameplayModeSwitchFailed"] = "Unable to complete the mode switch. Please reconnect before deploying.",
+                    ["SquadControlModeGunsForHire"] = "Guns for Hire",
+                    ["SquadControlModeGunsForHireDescription"] = "Hire and equip your squad before deploying. Make Tarkov yours, and play by your own rules.",
+                    ["SquadControlModeAllegiance"] = "Allegiance",
+                    ["SquadControlModeAllegianceDescription"] = "Play by Tarkov's rules. Alliances are formed, not bought. Find your allies in the field, and escape together.",
+                    ["SquadControlSettingsTab"] = "Settings",
+                    ["SquadControlRosterPlayer"] = "PLAYER",
+                    ["SquadControlRosterLeader"] = "Leader",
+                    ["SquadControlRosterMemberA"] = "TEAMMATE 01",
+                    ["SquadControlRosterMemberB"] = "TEAMMATE 02",
+                    ["SquadControlRosterRole"] = "Squad Member",
+                    ["SquadControlEmptyRoster"] = "No one’s watching your six. Hire a teammate or recruit one in the field, and make Tarkov yours.",
+                    ["SettingsPressKey"] = "Press key...",
+                    ["SettingsNotBound"] = "Not Bound",
+                    ["SettingsUnavailableDuringRaid"] = "Not available during raid",
+                },
+                returnItems = new[] { "Items received from your teammate. Ready for you to claim." },
+                scavCargoReturn = new[] { "One of my men brought your things back. Here’s your stuff, as promised." },
+                scavTransitFarewell = new[] { "One of my men is back. Thanks for looking out for him." },
+                returnItemsDeath = new[] { "Your teammate recovered these items." },
+                teamEscaped = new[] { "Nice!\nWe managed to get out." },
+                teamSomeEscaped = new[] { "Well it's a shame about {0}, but at least the rest of us made it." },
+                friendlyEscaped = new[] { "Glad we made it.\nThanks for letting me tag along." },
+                deathEscapeMessages = new[] { "Post-raid squad report:\n{0}" },
+                deathEscape = new Dictionary<string, string>
+                {
+                    ["Report"] = "Post-raid squad report:\n{0}",
+                    ["AllLost"] = "All members did not make it.",
+                    ["AllEscaped"] = "All members managed to extract.",
+                    ["MadeItOut"] = "Made it out: {0}",
+                    ["Lost"] = "Lost: {0}",
+                    ["ExtractRoute"] = "Extract route: {0}",
+                },
+                traitorKillMessages = new[]
+                {
+                    "I trusted you. Guess that was my mistake.",
+                    "So that's how you treat someone who joined your side?",
+                    "You picked me up just to put me down? Real classy.",
+                    "I had your back. You shot me in it.",
+                },
+                jerkKillMessages = new[]
+                {
+                    "Same side, genius. Try checking your targets next time.",
+                    "Friendly PMC. Friendly. The word means something.",
+                    "You shoot everyone wearing your colors, or was I special?",
+                    "Nice work. You killed one of your own.",
+                }
+            };
+        }
+    }
+}

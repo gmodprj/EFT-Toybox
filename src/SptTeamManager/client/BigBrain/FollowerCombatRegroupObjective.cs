@@ -1,0 +1,1197 @@
+using EFT;
+using pitTeam.Components;
+using pitTeam.Modules;
+using pitTeam.Utils;
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace pitTeam.BigBrain
+{
+    internal sealed class FollowerCombatRegroupObjective : FollowerCombatObjectiveBase
+    {
+        // Internal trigger reason used by the default objective to request an immediate switch into
+        // regroup. This should never survive long enough to become a real layer action.
+        internal const string ActivateRegroupReason = "objective.regroup";
+        private const float CombatRegroupOrderedDistance = 18f;
+        private const float CombatRegroupOrderedDistanceMarksman = 24f;
+        private const float CombatRegroupOrderedDistanceFactory = 10f;
+        private const float CombatRegroupSameLevelTolerance = 1.75f;
+        internal const float TightRegroupCompleteDistance = 4f;
+        private const float RegroupHotContactSeconds = 2.5f;
+        private const float RegroupFallbackSpreadMinRadius = 1f;
+        private const float RegroupFallbackSpreadMaxRadius = 6f;
+        private const float RegroupFallbackSpacing = 2f;
+        private const float RegroupClaimTtlSeconds = 2f;
+        private const float RegroupArrivalSettleSeconds = 1.5f;
+        private const float RegroupWithdrawProgressCheckInterval = 0.5f;
+        private const float RegroupWithdrawMinProgressDistance = 0.35f;
+        private const float RegroupWithdrawStalledSeconds = 2f;
+        internal const string RegroupReasonPrefix = "regroup.";
+        private const string RegroupArrivedReason = "regroup.arrived";
+        private const string RegroupArrivalCoverReason = "regroup.arrivalCover";
+        private const string RegroupUrbanDetourReason = "regroup.urbanDetour";
+        private const string RegroupWithdrawBackwardReason = "regroup.withdraw.backward";
+        private const string RegroupWithdrawForwardReason = "regroup.withdraw.forward";
+        private const string RegroupWithdrawSideReason = "regroup.withdraw.side";
+        private const float RegroupSideDotThreshold = 0.35f;
+
+        private Vector3 currentTarget;
+        private Vector3 bossSectorAnchor;
+        private bool hasTarget;
+        private bool hasBossSectorAnchor;
+        private bool complete;
+        private BotLogicDecision committedRegroupAction;
+        private string? committedRegroupReason;
+        private float arrivedSettleUntil;
+        private float regroupActivatedAt;
+        private Vector3 lastWithdrawProgressPosition;
+        private float lastWithdrawProgressTargetDistance;
+        private float withdrawStallStartedAt;
+        private float nextWithdrawProgressCheckAt;
+        private bool arrivalCoverResolved;
+        private bool arrivalCoverScanAttempted;
+        private Vector3 arrivalCoverSectorAnchor;
+        private bool hasArrivalCoverSectorAnchor;
+        private bool tightRegroup;
+        private float automaticCompletion;
+
+        private enum RegroupBossDirection
+        {
+            Front,
+            Back,
+            Side
+        }
+
+        public FollowerCombatRegroupObjective(BotOwner botOwner, FollowerCombatCommon combatCommon)
+            : base(botOwner, combatCommon)
+        {
+        }
+
+        public override bool IsComplete => complete;
+
+        public override void Reset()
+        {
+            ClearCurrentTarget();
+            bossSectorAnchor = Vector3.zero;
+            hasBossSectorAnchor = false;
+            complete = false;
+            committedRegroupAction = default;
+            committedRegroupReason = null;
+            arrivedSettleUntil = 0f;
+            regroupActivatedAt = 0f;
+            arrivalCoverResolved = false;
+            arrivalCoverScanAttempted = false;
+            arrivalCoverSectorAnchor = Vector3.zero;
+            hasArrivalCoverSectorAnchor = false;
+            tightRegroup = false;
+            automaticCompletion = 0f;
+            ResetWithdrawProgressTracking();
+        }
+
+        public override void Activate()
+        {
+            Activate(tightRegroup: false, automatic: true);
+        }
+
+        internal void Activate(bool tightRegroup, bool automatic = false)
+        {
+            // Regroup is command-triggered but objective-owned, so each activation should discard
+            // previous bossward targets and recompute from current combat geometry.
+            Reset();
+            this.tightRegroup = tightRegroup;
+            if (automatic)
+            {
+                var follower = BossPlayers.Instance?.GetFollower(BotOwner);
+                bool marksman = CombatCommon.GetFollowerTactic() == FollowerCombatTactic.Marksman;
+                float trigger = marksman ? CombatDistanceConfiguration.Instance.GetRegroupNeededDistanceMarksman(BotOwner)
+                    : CombatDistanceConfiguration.Instance.GetBossRegroupTriggerDistance(BotOwner);
+                automaticCompletion = pitTeam.Shared.SelfDeterminationPolicy.Completion(
+                    follower?.EffectiveSelfDetermination ?? 50f, trigger, GetOrderedRegroupDistance(), marksman);
+            }
+            regroupActivatedAt = Time.time;
+        }
+
+        public override void Deactivate()
+        {
+            ClearCurrentTarget();
+            ClearCommittedRegroupMove();
+            complete = false;
+        }
+
+        public override void DecisionChanged(
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams>? prevDecision,
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams> nextDecision)
+        {
+            if (IsRegroupReason(nextDecision.Reason))
+            {
+                // Regroup should not inherit a low combat pose from prior cover/shoot logic.
+                // Bring the bot upright so backward withdraw and bossward movement read clearly.
+                if (BotOwner.Mover.TargetPose < 0.85f)
+                {
+                    BotOwner.SetPose(1f);
+                }
+            }
+        }
+
+        public override void StartDecision()
+        {
+        }
+
+        public override AICoreActionResult<BotLogicDecision, CoreActionResultParams> GetDecision(EnemyInfo goalEnemy)
+        {
+            // Regroup owns the movement objective, but survival work still preempts the current regroup
+            // phase. The objective itself remains regroup until it completes or is explicitly replaced.
+            if (TryGetMedicalInterrupt(goalEnemy, out AICoreActionResult<BotLogicDecision, CoreActionResultParams> medicalDecision))
+            {
+                return medicalDecision;
+            }
+
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams>? dogFight = CombatCommon.TryGetDogFightDecision();
+            if (dogFight != null)
+            {
+                return dogFight.Value;
+            }
+
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams>? healDecision = CombatCommon.TryGetNeedHealDecision();
+            if (healDecision != null)
+            {
+                return healDecision.Value;
+            }
+
+
+            Vector3 bossPosition = CombatCommon.GetBossPosition();
+            if (HasReachedBoss(bossPosition))
+            {
+                if (!tightRegroup &&
+                    TryGetArrivalCoverDecision(
+                        goalEnemy,
+                        bossPosition,
+                        out AICoreActionResult<BotLogicDecision, CoreActionResultParams> arrivalCoverDecision))
+                {
+                    CommitRegroupMove(arrivalCoverDecision);
+                    return arrivalCoverDecision;
+                }
+
+                return GetArrivedSettleDecision();
+            }
+
+            if (!tightRegroup && ShouldAvoidUrbanDetourRegroup(bossPosition))
+            {
+                return GetArrivedSettleDecision(RegroupUrbanDetourReason);
+            }
+
+            if (TryGetCommittedRegroupMove(goalEnemy, bossPosition, out AICoreActionResult<BotLogicDecision, CoreActionResultParams> committedMove))
+            {
+                return committedMove;
+            }
+
+            // The regroup movement style depends on where the boss is from this bot's perspective.
+            // Back means withdraw while staying oriented to the threat; front/side can use the normal
+            // attack-moving action because our attack-moving look helper keeps aim on the threat lane.
+            RegroupBossDirection bossDirection = GetBossDirectionFromBot(goalEnemy, bossPosition);
+            bool hotContact = IsHotEnemyContact(goalEnemy);
+
+            // While contact is still hot, regroup stays combat-active and moves bossward without
+            // dropping threat orientation.
+            if (hotContact)
+            {
+                if (TryGetRegroupCombatMove(goalEnemy, bossPosition, bossDirection, out AICoreActionResult<BotLogicDecision, CoreActionResultParams> combatMove))
+                {
+                    CommitRegroupMove(combatMove);
+                    return combatMove;
+                }
+            }
+
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams> runDecision = GetRegroupRunDecision(bossPosition);
+            CommitRegroupMove(runDecision);
+            return runDecision;
+        }
+
+        public override AICoreActionEnd ShallEndCurrentDecision(
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams> currentDecision)
+        {
+            EnemyInfo? goalEnemy = BotOwner.Memory.GoalEnemy;
+            // A generic action such as attackMoving can still be a medical retreat. Route by
+            // action + reason before applying regroup completion to the shared movement action.
+            if (FollowerCombatCommon.IsMedicalDecision(currentDecision))
+            {
+                return CombatCommon.ShallEndCurrentDecision(currentDecision);
+            }
+
+            if (!CombatCommon.HasActiveCombatEnemy(goalEnemy))
+            {
+                complete = true;
+                ClearCommittedRegroupMove();
+                return new AICoreActionEnd("regroupEnemyMissing", true);
+            }
+
+            if (IsRegroupSettleReason(currentDecision.Reason))
+            {
+                if (TryInterruptArrivedSettleForCombatPressure(
+                        goalEnemy!,
+                        out AICoreActionEnd pressureInterrupt))
+                {
+                    return pressureInterrupt;
+                }
+
+                if (Time.time < arrivedSettleUntil)
+                {
+                    return default;
+                }
+
+                complete = true;
+                ClearCommittedRegroupMove();
+                return new AICoreActionEnd("regroupArrivedSettled", true);
+            }
+
+            // This is completion of the already-active regroup objective, not activation pressure
+            // interrupting an unrelated combat action. Any regroup-owned move may finish once the
+            // follower reaches the boss; ordinary tactic movement still keeps its own end contract.
+            if (IsRegroupReason(currentDecision.Reason) &&
+                !IsArrivalCoverReason(currentDecision.Reason) &&
+                HasReachedBoss(CombatCommon.GetBossPosition()))
+            {
+                ClearCurrentTarget();
+                ClearCommittedRegroupMove();
+                if (arrivedSettleUntil <= 0f)
+                {
+                    arrivedSettleUntil = Time.time + RegroupArrivalSettleSeconds;
+                }
+
+                return new AICoreActionEnd("regroupReachedBossSettle", true);
+            }
+
+            if (HasActivePushOrder())
+            {
+                complete = true;
+                ClearCommittedRegroupMove();
+                return new AICoreActionEnd("regroupPushOverride", true);
+            }
+
+            if (HasActiveSuppressOrder())
+            {
+                complete = true;
+                ClearCommittedRegroupMove();
+                return new AICoreActionEnd("regroupSuppressOverride", true);
+            }
+
+            if (IsWithdrawReason(currentDecision.Reason) || IsArrivalCoverReason(currentDecision.Reason))
+            {
+                if (CombatCommon.TryGetNeedHealDecision() != null)
+                {
+                    return new AICoreActionEnd("regroupNeedHeal", true);
+                }
+
+                if (CombatCommon.TryGetDogFightDecision() != null)
+                {
+                    return new AICoreActionEnd("regroupDogFight", true);
+                }
+
+                if (HasReachedCurrentTarget())
+                {
+                    bool arrivalCoverReached = IsArrivalCoverReason(currentDecision.Reason);
+                    if (arrivalCoverReached)
+                    {
+                        arrivalCoverResolved = true;
+                    }
+
+                    ClearCurrentTarget();
+                    ClearCommittedRegroupMove();
+                    return new AICoreActionEnd(
+                        arrivalCoverReached ? "regroupArrivalCoverReached" : "regroupReachedWithdrawTarget",
+                        true);
+                }
+
+                if (TryGetStalledWithdrawEnd(CombatCommon.GetBossPosition(), out AICoreActionEnd stalledWithdrawEnd))
+                {
+                    bool arrivalCoverStalled = IsArrivalCoverReason(currentDecision.Reason);
+                    if (arrivalCoverStalled)
+                    {
+                        arrivalCoverResolved = true;
+                    }
+
+                    ClearCurrentTarget();
+                    ClearCommittedRegroupMove();
+                    if ((arrivalCoverStalled || stalledWithdrawEnd.Reason == "regroupWithdrawStalledNearBoss") &&
+                        arrivedSettleUntil <= 0f)
+                    {
+                        arrivedSettleUntil = Time.time + RegroupArrivalSettleSeconds;
+                    }
+
+                    return arrivalCoverStalled
+                        ? new AICoreActionEnd("regroupArrivalCoverStalled", true)
+                        : stalledWithdrawEnd;
+                }
+
+                if (ShouldReturnMarksmanToSupport(goalEnemy))
+                {
+                    complete = true;
+                    ClearCurrentTarget();
+                    ClearCommittedRegroupMove();
+                    return new AICoreActionEnd("regroupMarksmanSupportOpportunity", true);
+                }
+
+                return default;
+            }
+
+            if (currentDecision.Reason != null && currentDecision.Reason.StartsWith("regroup.run", System.StringComparison.Ordinal))
+            {
+                if (CombatCommon.TryGetNeedHealDecision() != null)
+                {
+                    return new AICoreActionEnd("regroupNeedHeal", true);
+                }
+
+                if (CombatCommon.TryGetDogFightDecision() != null)
+                {
+                    return new AICoreActionEnd("regroupDogFight", true);
+                }
+
+                if (ShouldReturnMarksmanToSupport(goalEnemy))
+                {
+                    complete = true;
+                    ClearCurrentTarget();
+                    ClearCommittedRegroupMove();
+                    return new AICoreActionEnd("regroupMarksmanSupportOpportunity", true);
+                }
+
+                return default;
+            }
+
+            return CombatCommon.ShallEndCurrentDecision(currentDecision);
+        }
+
+        private bool TryGetArrivalCoverDecision(
+            EnemyInfo goalEnemy,
+            Vector3 bossPosition,
+            out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            decision = default;
+            RefreshArrivalCoverScanForBossSector(bossPosition);
+            if (arrivalCoverResolved || BotOwner.Memory?.IsInCover == true)
+            {
+                return false;
+            }
+
+            if (IsArrivalCoverReason(committedRegroupReason) && hasTarget)
+            {
+                if (HasReachedCurrentTarget())
+                {
+                    arrivalCoverResolved = true;
+                    ClearCurrentTarget();
+                    ClearCommittedRegroupMove();
+                    return false;
+                }
+
+                BotOwner.GoToSomePointData.SetPoint(currentTarget);
+                decision = new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(
+                    committedRegroupAction,
+                    committedRegroupReason);
+                return true;
+            }
+
+            if (arrivalCoverScanAttempted)
+            {
+                return false;
+            }
+
+            arrivalCoverScanAttempted = true;
+            arrivalCoverSectorAnchor = bossPosition;
+            hasArrivalCoverSectorAnchor = true;
+
+            float coverRadius = GetRegroupCoverRadius();
+            if (!CombatCommon.TryFindBossCoverForRegroupArrival(
+                    goalEnemy,
+                    bossPosition,
+                    coverRadius,
+                    out CustomNavigationPoint? cover) ||
+                !TryAcceptRegroupCover(cover, bossPosition, out Vector3 targetPosition))
+            {
+                return false;
+            }
+
+            CombatCommon.AssignCover(cover);
+            if (HasReachedPosition(targetPosition))
+            {
+                arrivalCoverResolved = true;
+                return false;
+            }
+
+            currentTarget = targetPosition;
+            bossSectorAnchor = bossPosition;
+            hasTarget = true;
+            hasBossSectorAnchor = true;
+            UpsertDestinationClaim(currentTarget);
+            BotOwner.GoToSomePointData.SetPoint(currentTarget);
+            decision = new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(
+                BotLogicDecision.attackMoving,
+                RegroupArrivalCoverReason);
+            return true;
+        }
+
+        private void RefreshArrivalCoverScanForBossSector(Vector3 bossPosition)
+        {
+            // Do not invalidate a cover route while it is being executed. Once that route finishes,
+            // a materially moved boss may re-arm exactly one capped scan for the new arrival sector.
+            if (!hasArrivalCoverSectorAnchor ||
+                (IsArrivalCoverReason(committedRegroupReason) && hasTarget))
+            {
+                return;
+            }
+
+            float sectorRadius = CombatDistanceConfiguration.Instance.GetRegroupBossMoveRefreshDistance();
+            if ((bossPosition - arrivalCoverSectorAnchor).sqrMagnitude <= sectorRadius * sectorRadius)
+            {
+                return;
+            }
+
+            arrivalCoverSectorAnchor = bossPosition;
+            arrivalCoverResolved = false;
+            arrivalCoverScanAttempted = false;
+            arrivedSettleUntil = 0f;
+        }
+
+        private bool TryInterruptArrivedSettleForCombatPressure(
+            EnemyInfo goalEnemy,
+            out AICoreActionEnd end)
+        {
+            end = default;
+            bool immediateFireOpportunity = goalEnemy.IsVisible && goalEnemy.CanShoot;
+            bool exposedPressure =
+                BotOwner.Memory?.IsInCover != true &&
+                CombatCommon.HasRecoveryPressure(0.75f);
+            if (!immediateFireOpportunity && !exposedPressure)
+            {
+                return false;
+            }
+
+            // Completing the objective guarantees that the next decision comes from the active
+            // tactic's fire/recovery router. The follower is already inside the regroup envelope,
+            // so ordinary boss-distance selection cannot immediately recreate this settle.
+            complete = true;
+            arrivedSettleUntil = 0f;
+            ClearCurrentTarget();
+            ClearCommittedRegroupMove();
+            end = new AICoreActionEnd(
+                immediateFireOpportunity
+                    ? "regroupArrivedFireOpportunity"
+                    : "regroupArrivedPressureInterrupt",
+                true);
+            return true;
+        }
+
+        private AICoreActionResult<BotLogicDecision, CoreActionResultParams> GetArrivedSettleDecision(string reason = RegroupArrivedReason)
+        {
+            ClearCurrentTarget();
+            ClearCommittedRegroupMove();
+            if (arrivedSettleUntil <= 0f)
+            {
+                arrivedSettleUntil = Time.time + RegroupArrivalSettleSeconds;
+            }
+
+            CombatCommon.HoldFor(Mathf.Max(0.1f, arrivedSettleUntil - Time.time));
+            return new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(BotLogicDecision.holdPosition, reason);
+        }
+
+        private bool TryGetCommittedRegroupMove(
+            EnemyInfo goalEnemy,
+            Vector3 bossPosition,
+            out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            decision = default;
+            if (committedRegroupAction == default || string.IsNullOrEmpty(committedRegroupReason))
+            {
+                return false;
+            }
+
+            RefreshCommittedRegroupTargetIfBossMoved(goalEnemy, bossPosition);
+
+            if (IsWithdrawReason(committedRegroupReason) && !IsHotEnemyContact(goalEnemy))
+            {
+                ClearCurrentTarget();
+                ClearCommittedRegroupMove();
+                return false;
+            }
+
+            if (hasTarget)
+            {
+                if (HasReachedCurrentTarget())
+                {
+                    ClearCurrentTarget();
+                    ClearCommittedRegroupMove();
+                    return false;
+                }
+
+                BotOwner.GoToSomePointData.SetPoint(currentTarget);
+            }
+
+            decision = new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(committedRegroupAction, committedRegroupReason);
+            return true;
+        }
+
+        private void RefreshCommittedRegroupTargetIfBossMoved(EnemyInfo goalEnemy, Vector3 bossPosition)
+        {
+            if (!HasBossSectorChanged(bossPosition))
+            {
+                return;
+            }
+
+            bossSectorAnchor = bossPosition;
+            hasBossSectorAnchor = true;
+
+            if (!IsWithdrawReason(committedRegroupReason))
+            {
+                return;
+            }
+
+            Vector3 previousTarget = currentTarget;
+            RegroupBossDirection bossDirection = GetBossDirectionFromRegroupReason(committedRegroupReason);
+            if (!TryAssignRegroupCover(goalEnemy, bossPosition, bossDirection, out Vector3 targetPosition))
+            {
+                targetPosition = GetFallbackBossDestination(bossPosition);
+            }
+
+            currentTarget = targetPosition;
+            hasTarget = true;
+            UpsertDestinationClaim(currentTarget);
+            BotOwner.GoToSomePointData.SetPoint(currentTarget);
+
+            if ((previousTarget - currentTarget).sqrMagnitude > 1f)
+            {
+                StartWithdrawProgressTracking();
+            }
+        }
+
+        private void CommitRegroupMove(AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            if (!IsRegroupReason(decision.Reason) || decision.Action == BotLogicDecision.holdPosition)
+            {
+                return;
+            }
+
+            committedRegroupAction = decision.Action;
+            committedRegroupReason = decision.Reason;
+            arrivedSettleUntil = 0f;
+            if (IsWithdrawReason(decision.Reason) || IsArrivalCoverReason(decision.Reason))
+            {
+                StartWithdrawProgressTracking();
+            }
+            else
+            {
+                ResetWithdrawProgressTracking();
+            }
+        }
+
+        private void ClearCommittedRegroupMove()
+        {
+            committedRegroupAction = default;
+            committedRegroupReason = null;
+            ResetWithdrawProgressTracking();
+        }
+
+        private void StartWithdrawProgressTracking()
+        {
+            lastWithdrawProgressPosition = BotOwner.Position;
+            lastWithdrawProgressTargetDistance = hasTarget
+                ? (BotOwner.Position - currentTarget).magnitude
+                : 0f;
+            withdrawStallStartedAt = 0f;
+            nextWithdrawProgressCheckAt = Time.time + RegroupWithdrawProgressCheckInterval;
+        }
+
+        private void ResetWithdrawProgressTracking()
+        {
+            lastWithdrawProgressPosition = Vector3.zero;
+            lastWithdrawProgressTargetDistance = 0f;
+            withdrawStallStartedAt = 0f;
+            nextWithdrawProgressCheckAt = 0f;
+        }
+
+        private bool TryGetStalledWithdrawEnd(Vector3 bossPosition, out AICoreActionEnd end)
+        {
+            end = default;
+            if (Time.time < nextWithdrawProgressCheckAt)
+            {
+                return false;
+            }
+
+            nextWithdrawProgressCheckAt = Time.time + RegroupWithdrawProgressCheckInterval;
+            float movedDistance = (BotOwner.Position - lastWithdrawProgressPosition).magnitude;
+            float targetDistance = hasTarget
+                ? (BotOwner.Position - currentTarget).magnitude
+                : 0f;
+            bool progressed =
+                movedDistance >= RegroupWithdrawMinProgressDistance ||
+                (hasTarget && targetDistance <= lastWithdrawProgressTargetDistance - RegroupWithdrawMinProgressDistance);
+
+            if (progressed)
+            {
+                lastWithdrawProgressPosition = BotOwner.Position;
+                lastWithdrawProgressTargetDistance = targetDistance;
+                withdrawStallStartedAt = 0f;
+                return false;
+            }
+
+            if (withdrawStallStartedAt <= 0f)
+            {
+                withdrawStallStartedAt = Time.time;
+                return false;
+            }
+
+            if (Time.time - withdrawStallStartedAt < RegroupWithdrawStalledSeconds)
+            {
+                return false;
+            }
+
+            string reason = IsWithinHotRegroupSettleEnvelope(bossPosition)
+                ? "regroupWithdrawStalledNearBoss"
+                : "regroupWithdrawStalledRepath";
+            end = new AICoreActionEnd(reason, true);
+            return true;
+        }
+
+        private bool TryGetMedicalInterrupt(
+            EnemyInfo goalEnemy,
+            out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            decision = default;
+            // Reuse the shared heal decision tree, but let regroup remain the owning objective.
+            AICoreActionResult<BotLogicDecision, CoreActionResultParams>? healDecision = CombatCommon.TryGetNeedHealDecision();
+            if (healDecision == null)
+            {
+                return false;
+            }
+
+            decision = healDecision.Value;
+            return true;
+        }
+
+        private bool TryGetRegroupCombatMove(
+            EnemyInfo goalEnemy,
+            Vector3 bossPosition,
+            RegroupBossDirection bossDirection,
+            out AICoreActionResult<BotLogicDecision, CoreActionResultParams> decision)
+        {
+            decision = default;
+
+            if (TryAssignRegroupCover(goalEnemy, bossPosition, bossDirection, out Vector3 targetPosition))
+            {
+                // Keep a single bossward target for the current regroup phase so the action can keep
+                // moving continuously instead of re-picking a slightly different point every update.
+                currentTarget = targetPosition;
+                bossSectorAnchor = bossPosition;
+                hasTarget = true;
+                hasBossSectorAnchor = true;
+                UpsertDestinationClaim(targetPosition);
+                BotOwner.GoToSomePointData.SetPoint(targetPosition);
+                decision = new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(
+                    BotLogicDecision.attackMoving,
+                    GetWithdrawReason(bossDirection));
+                return true;
+            }
+
+            currentTarget = GetFallbackBossDestination(bossPosition);
+            bossSectorAnchor = bossPosition;
+            hasTarget = true;
+            hasBossSectorAnchor = true;
+            UpsertDestinationClaim(currentTarget);
+            BotOwner.GoToSomePointData.SetPoint(currentTarget);
+            decision = new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(
+                BotLogicDecision.attackMoving,
+                GetWithdrawReason(bossDirection));
+            return true;
+        }
+
+        private AICoreActionResult<BotLogicDecision, CoreActionResultParams> GetRegroupRunDecision(Vector3 bossPosition)
+        {
+            // Once contact cools off, regroup becomes a pure "close back to boss" objective.
+            // Do not select the destination here. CombatRegroupRunAction owns one cached run
+            // target from Start() until the action reaches it, so repeated decisions cannot
+            // keep nudging the point while the bot is already running.
+            if (!hasBossSectorAnchor || HasBossSectorChanged(bossPosition))
+            {
+                bossSectorAnchor = bossPosition;
+                hasBossSectorAnchor = true;
+            }
+
+            ReleaseDestinationClaim();
+            currentTarget = Vector3.zero;
+            hasTarget = false;
+            return new AICoreActionResult<BotLogicDecision, CoreActionResultParams>(BotLogicDecision.goToPoint, "regroup.run");
+        }
+
+        private bool TryAssignRegroupCover(EnemyInfo goalEnemy, Vector3 bossPosition, RegroupBossDirection bossDirection, out Vector3 targetPosition)
+        {
+            targetPosition = Vector3.zero;
+            float regroupCoverRadius = GetRegroupCoverRadius();
+
+            if (bossDirection == RegroupBossDirection.Back)
+            {
+                // True withdrawal: prefer bossward cover that hides from the enemy over cover that only
+                // provides a shooting lane.
+                if (CombatCommon.TryFindCoverTowardBoss(
+                    goalEnemy,
+                    bossPosition,
+                    regroupCoverRadius,
+                    requireShootLane: false,
+                    requireHideFromEnemy: true,
+                    out CustomNavigationPoint? withdrawCover) &&
+                    TryAcceptRegroupCover(withdrawCover, bossPosition, out targetPosition))
+                {
+                    CombatCommon.AssignCover(withdrawCover);
+                    return true;
+                }
+            }
+            else
+            {
+                // Boss is ahead or lateral, so regroup is a rejoin under contact. Prefer bossward cover
+                // that still preserves a shot while moving up or across.
+                if (CombatCommon.TryFindCoverTowardBoss(
+                    goalEnemy,
+                    bossPosition,
+                    regroupCoverRadius,
+                    requireShootLane: true,
+                    requireHideFromEnemy: false,
+                    out CustomNavigationPoint? supportCover) &&
+                    TryAcceptRegroupCover(supportCover, bossPosition, bossDirection, out targetPosition))
+                {
+                    CombatCommon.AssignCover(supportCover);
+                    return true;
+                }
+            }
+
+            if (CombatCommon.TryFindBossCover(goalEnemy, bossPosition, regroupCoverRadius, out CustomNavigationPoint? bossCover) &&
+                TryAcceptRegroupCover(bossCover, bossPosition, bossDirection, out targetPosition))
+            {
+                CombatCommon.AssignCover(bossCover);
+                return true;
+            }
+
+            if (NavMesh.SamplePosition(bossPosition, out NavMeshHit bossHit, 2f, -1))
+            {
+                targetPosition = bossHit.position;
+                return true;
+            }
+
+            targetPosition = bossPosition;
+            return true;
+        }
+
+        private bool IsHotEnemyContact(EnemyInfo goalEnemy)
+        {
+            if (goalEnemy == null)
+            {
+                return false;
+            }
+
+            if (goalEnemy.IsVisible)
+            {
+                return true;
+            }
+
+            // Recently seen contact keeps regroup in its combat-withdraw phase for a short window before
+            // collapsing into a pure run-back-to-boss phase.
+            return Time.time - goalEnemy.PersonalLastSeenTime < RegroupHotContactSeconds;
+        }
+
+        private RegroupBossDirection GetBossDirectionFromBot(EnemyInfo goalEnemy, Vector3 bossPosition)
+        {
+            Vector3 enemyAnchor = FollowerCombatCommon.GetEnemyAnchor(goalEnemy);
+            Vector3 toEnemy = enemyAnchor - BotOwner.Position;
+            Vector3 toBoss = bossPosition - BotOwner.Position;
+            toEnemy.y = 0f;
+            toBoss.y = 0f;
+            if (toEnemy.sqrMagnitude <= 0.01f || toBoss.sqrMagnitude <= 0.01f)
+            {
+                return RegroupBossDirection.Front;
+            }
+
+            float dot = Vector3.Dot(toEnemy.normalized, toBoss.normalized);
+            if (dot <= -RegroupSideDotThreshold)
+            {
+                return RegroupBossDirection.Back;
+            }
+
+            if (dot >= RegroupSideDotThreshold)
+            {
+                return RegroupBossDirection.Front;
+            }
+
+            return RegroupBossDirection.Side;
+        }
+
+        private static string GetWithdrawReason(RegroupBossDirection bossDirection)
+        {
+            return bossDirection switch
+            {
+                RegroupBossDirection.Back => RegroupWithdrawBackwardReason,
+                RegroupBossDirection.Side => RegroupWithdrawSideReason,
+                _ => RegroupWithdrawForwardReason,
+            };
+        }
+
+        private static RegroupBossDirection GetBossDirectionFromRegroupReason(string? reason)
+        {
+            return reason switch
+            {
+                RegroupWithdrawBackwardReason => RegroupBossDirection.Back,
+                RegroupWithdrawSideReason => RegroupBossDirection.Side,
+                _ => RegroupBossDirection.Front,
+            };
+        }
+
+        private bool HasReachedBoss(Vector3 bossPosition)
+        {
+            if (!IsSameBossLevel(BotOwner.Position, bossPosition))
+            {
+                return false;
+            }
+
+            float navDistanceToBoss = Utils.Utils.GetNavDistance(BotOwner.Position, bossPosition);
+            float directDistanceToBoss = Vector3.Distance(BotOwner.Position, bossPosition);
+            float regroupDistance = FollowerCombatCommon.GetSafeRegroupDistance(
+                navDistanceToBoss,
+                directDistanceToBoss);
+            return regroupDistance <= GetRegroupCompleteDistance();
+        }
+
+        private bool ShouldAvoidUrbanDetourRegroup(Vector3 bossPosition)
+        {
+            if (!IsSameBossLevel(BotOwner.Position, bossPosition))
+            {
+                // A long path is expected when the follower is on a different floor. Treating that
+                // as "close enough" strands the bot above/below the squad instead of routing home.
+                return false;
+            }
+
+            float directDistance = Vector3.Distance(BotOwner.Position, bossPosition);
+            if (!Utils.Utils.TryGetCompletePathDistance(BotOwner.Position, bossPosition, out float pathDistance))
+            {
+                return false;
+            }
+
+            return CombatDistanceConfiguration.Instance.IsUrbanDetourRegroup(directDistance, pathDistance);
+        }
+
+        private bool IsWithinHotRegroupSettleEnvelope(Vector3 bossPosition)
+        {
+            if (!IsSameBossLevel(BotOwner.Position, bossPosition))
+            {
+                return false;
+            }
+
+            float acceptableDistance = Mathf.Max(GetRegroupCompleteDistance(), GetRegroupCoverRadius());
+            float directDistance = Vector3.Distance(BotOwner.Position, bossPosition);
+            if (directDistance <= acceptableDistance)
+            {
+                return true;
+            }
+
+            float navDistanceToBoss = Utils.Utils.GetNavDistance(BotOwner.Position, bossPosition);
+            return navDistanceToBoss > 0f && navDistanceToBoss <= acceptableDistance;
+        }
+
+        private float GetRegroupCompleteDistance()
+        {
+            return tightRegroup ? TightRegroupCompleteDistance : automaticCompletion > 0f ? automaticCompletion : GetOrderedRegroupDistance();
+        }
+
+        private float GetRegroupCoverRadius()
+        {
+            return GetRegroupCompleteDistance();
+        }
+
+        private float GetOrderedRegroupDistance() => GetOrderedRegroupDistance(CombatCommon.GetFollowerTactic());
+
+        internal static float GetOrderedRegroupDistance(FollowerCombatTactic tactic)
+        {
+            if (CombatDistanceConfiguration.Instance.IsFactoryMode)
+            {
+                return CombatRegroupOrderedDistanceFactory;
+            }
+
+            return tactic == FollowerCombatTactic.Marksman
+                ? CombatRegroupOrderedDistanceMarksman
+                : CombatRegroupOrderedDistance;
+        }
+
+        private bool HasReachedCurrentTarget()
+        {
+            if (!hasTarget)
+            {
+                return false;
+            }
+
+            if ((BotOwner.Position - currentTarget).sqrMagnitude <= 2f * 2f)
+            {
+                return true;
+            }
+
+            return BotOwner.GoToSomePointData?.HaveTarget() == true &&
+                   BotOwner.GoToSomePointData.IsCome() &&
+                   (BotOwner.GoToSomePointData.Point - currentTarget).sqrMagnitude <= 1f;
+        }
+
+        private bool TryAcceptRegroupCover(CustomNavigationPoint? cover, Vector3 bossPosition, out Vector3 targetPosition)
+        {
+            return TryAcceptRegroupCover(cover, bossPosition, RegroupBossDirection.Side, out targetPosition);
+        }
+
+        private bool TryAcceptRegroupCover(
+            CustomNavigationPoint? cover,
+            Vector3 bossPosition,
+            RegroupBossDirection bossDirection,
+            out Vector3 targetPosition)
+        {
+            targetPosition = Vector3.zero;
+            if (cover == null)
+            {
+                return false;
+            }
+
+            float regroupCoverRadius = GetRegroupCoverRadius();
+            if ((cover.Position - bossPosition).sqrMagnitude > regroupCoverRadius * regroupCoverRadius)
+            {
+                return false;
+            }
+
+            if (!IsSameBossLevel(cover.Position, bossPosition))
+            {
+                return false;
+            }
+
+            if (ShouldRejectDetourTarget(cover.Position, bossPosition))
+            {
+                return false;
+            }
+
+            // A bossward cover is only an intermediate step. Once that step is reached, do not pick
+            // the same nearby owned cover again unless it also completes regroup.
+            if (!HasReachedBoss(bossPosition) && HasReachedPosition(cover.Position))
+            {
+                return false;
+            }
+
+            if (bossDirection == RegroupBossDirection.Front && IsBehindBotRelativeToBoss(cover.Position, bossPosition))
+            {
+                return false;
+            }
+
+            targetPosition = cover.Position;
+            return true;
+        }
+
+        private bool ShouldRejectDetourTarget(Vector3 targetPosition, Vector3 bossPosition)
+        {
+            if (!IsSameBossLevel(BotOwner.Position, bossPosition))
+            {
+                // When separated by floors, the stair/ramp path back to the boss is the objective,
+                // not a detour to reject.
+                return false;
+            }
+
+            float directBossDistance = Vector3.Distance(BotOwner.Position, bossPosition);
+            if (!Utils.Utils.TryGetCompletePathDistance(BotOwner.Position, targetPosition, out float targetPathDistance))
+            {
+                return true;
+            }
+
+            return CombatDistanceConfiguration.Instance.IsUrbanDetourRegroup(directBossDistance, targetPathDistance);
+        }
+
+        private bool IsBehindBotRelativeToBoss(Vector3 position, Vector3 bossPosition)
+        {
+            Vector3 toBoss = bossPosition - BotOwner.Position;
+            Vector3 toPosition = position - BotOwner.Position;
+            toBoss.y = 0f;
+            toPosition.y = 0f;
+            if (toBoss.sqrMagnitude <= 0.01f || toPosition.sqrMagnitude <= 0.01f)
+            {
+                return false;
+            }
+
+            return Vector3.Dot(toPosition.normalized, toBoss.normalized) < -0.1f;
+        }
+
+        private bool HasReachedPosition(Vector3 position)
+        {
+            return (BotOwner.Position - position).sqrMagnitude <= 2f * 2f;
+        }
+
+        private void ClearCurrentTarget()
+        {
+            ClearOwnedGoToPointTarget();
+            ReleaseDestinationClaim();
+            currentTarget = Vector3.zero;
+            hasTarget = false;
+        }
+
+        private void ClearOwnedGoToPointTarget()
+        {
+            BotGoToPointData? pointData = BotOwner.GoToSomePointData;
+            if (!hasTarget ||
+                pointData == null ||
+                !pointData.HaveTarget() ||
+                !FollowerCombatCommon.IsFinite(pointData.Point) ||
+                (pointData.Point - currentTarget).sqrMagnitude > 1f)
+            {
+                return;
+            }
+
+            // Clear only the point still matching this objective's local target. If a successor
+            // has already installed another destination, leave that newer owner untouched.
+            pointData.Point = Vector3.zero;
+            pointData._pointhRefreshed = false;
+            pointData._distToPoint = 0f;
+            pointData._lastPosibleRecalc = 0f;
+            pointData._lastRecalc = Vector3.zero;
+        }
+
+        private Vector3 GetFallbackBossDestination(Vector3 bossPosition)
+        {
+            if (TryGetBossCombatEvents(out CombatEvents? combatEvents) &&
+                combatEvents.TryFindBossSpreadDestination(
+                    BotOwner,
+                    bossPosition,
+                    RegroupFallbackSpreadMinRadius,
+                    RegroupFallbackSpreadMaxRadius,
+                    CombatRegroupSameLevelTolerance,
+                    RegroupFallbackSpacing,
+                    out Vector3 spreadTarget))
+            {
+                return spreadTarget;
+            }
+
+            if (NavMesh.SamplePosition(bossPosition, out NavMeshHit bossHit, 2f, -1))
+            {
+                return bossHit.position;
+            }
+
+            return bossPosition;
+        }
+
+        private void UpsertDestinationClaim(Vector3 target)
+        {
+            if (TryGetBossCombatEvents(out CombatEvents? combatEvents))
+            {
+                combatEvents.UpsertDestinationClaim(BotOwner, target, RegroupClaimTtlSeconds);
+            }
+        }
+
+        private void ReleaseDestinationClaim()
+        {
+            if (TryGetBossCombatEvents(out CombatEvents? combatEvents))
+            {
+                combatEvents.ReleaseDestinationClaim(BotOwner);
+            }
+        }
+
+        private bool TryGetBossCombatEvents(out CombatEvents? combatEvents)
+        {
+            combatEvents = null;
+            if (BotOwner.BotFollower?.BossToFollow is not pitAIBossPlayer boss)
+            {
+                return false;
+            }
+
+            combatEvents = boss.CombatEvents;
+            return combatEvents != null;
+        }
+
+        private bool HasBossSectorChanged(Vector3 bossPosition)
+        {
+            if (!hasBossSectorAnchor)
+            {
+                return false;
+            }
+
+            float sectorRadius = CombatDistanceConfiguration.Instance.GetRegroupBossMoveRefreshDistance();
+            return (bossPosition - bossSectorAnchor).sqrMagnitude > sectorRadius * sectorRadius;
+        }
+
+        internal static bool IsSameBossLevel(Vector3 followerPosition, Vector3 bossPosition)
+        {
+            return Mathf.Abs(followerPosition.y - bossPosition.y) <= CombatRegroupSameLevelTolerance;
+        }
+
+        private static bool IsRegroupSettleReason(string? reason)
+        {
+            return string.Equals(reason, RegroupArrivedReason, System.StringComparison.Ordinal) ||
+                   string.Equals(reason, RegroupUrbanDetourReason, System.StringComparison.Ordinal);
+        }
+
+        private bool HasActivePushOrder()
+        {
+            BotFollowerPlayer? followerData = BossPlayers.Instance?.GetFollower(BotOwner);
+            return followerData != null &&
+                   followerData.TryGetActiveCommand(out FollowerCommandType command, out _) &&
+                   command == FollowerCommandType.PushEnemy;
+        }
+
+        private bool HasActiveSuppressOrder()
+        {
+            BotFollowerPlayer? followerData = BossPlayers.Instance?.GetFollower(BotOwner);
+            return followerData != null &&
+                   followerData.TryGetActiveCommand(out FollowerCommandType command, out _) &&
+                   command == FollowerCommandType.SuppressEnemy;
+        }
+
+        private bool ShouldReturnMarksmanToSupport(EnemyInfo goalEnemy)
+        {
+            if (CombatCommon.GetFollowerTactic() != FollowerCombatTactic.Marksman)
+            {
+                return false;
+            }
+
+            if (Time.time - regroupActivatedAt < 1f)
+            {
+                return false;
+            }
+
+            if (goalEnemy != null && goalEnemy.IsVisible && goalEnemy.CanShoot)
+            {
+                return true;
+            }
+
+            if (CombatCommon.TryGetActivePushEventForCurrentEnemy(out _))
+            {
+                return true;
+            }
+
+            return CombatCommon.TryGetAllyEngagementEnemy(out _, out _);
+        }
+
+        public static bool IsRegroupReason(string? reason)
+        {
+            return !string.IsNullOrEmpty(reason) &&
+                reason != null &&
+                reason.StartsWith(RegroupReasonPrefix, System.StringComparison.Ordinal);
+        }
+
+        public static bool IsRunReason(string? reason)
+        {
+            return string.Equals(reason, "regroup.run", System.StringComparison.Ordinal);
+        }
+
+        public static bool IsWithdrawReason(string? reason)
+        {
+            return string.Equals(reason, RegroupWithdrawBackwardReason, System.StringComparison.Ordinal) ||
+                   string.Equals(reason, RegroupWithdrawForwardReason, System.StringComparison.Ordinal) ||
+                   string.Equals(reason, RegroupWithdrawSideReason, System.StringComparison.Ordinal);
+        }
+
+        private static bool IsArrivalCoverReason(string? reason)
+        {
+            return string.Equals(reason, RegroupArrivalCoverReason, System.StringComparison.Ordinal);
+        }
+
+        public static bool IsRegroupActivationReason(string? reason)
+        {
+            return string.Equals(reason, ActivateRegroupReason, System.StringComparison.Ordinal);
+        }
+
+        public static bool IsBackwardWithdrawReason(string? reason)
+        {
+            return string.Equals(reason, RegroupWithdrawBackwardReason, System.StringComparison.Ordinal);
+        }
+    }
+}
