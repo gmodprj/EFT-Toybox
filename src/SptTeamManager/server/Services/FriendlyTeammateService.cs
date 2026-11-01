@@ -1899,7 +1899,7 @@ public partial class FriendlyTeammateService(
         logger.Info($"Stripped teammate '{teammate.Aid}' default equipment after death in loadout management mode '{mode}'.");
     }
 
-    private void EnsureFollowerHasScabbardKnife(BotBase profile)
+    internal void EnsureFollowerHasScabbardKnife(BotBase profile)
     {
         profile.Inventory ??= new BotBaseInventory { Items = [] };
         profile.Inventory.Items ??= [];
@@ -2922,7 +2922,7 @@ public partial class FriendlyTeammateService(
         });
     }
 
-    private void RefillFollowerMagazinesFromInventoryAmmo(BotBase profile)
+    internal void RefillFollowerMagazinesFromInventoryAmmo(BotBase profile)
     {
         var inventoryItems = profile.Inventory?.Items;
         if (inventoryItems == null || inventoryItems.Count == 0)

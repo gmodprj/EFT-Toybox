@@ -80,10 +80,26 @@ public class StmSpawnProfileFactory(
         spawn.Aid = member.Aid;
         EnsurePmcRole(spawn, member.Side);
 
-        // The minimum a spawned follower needs in order not to die on the client. PIT's
-        // mercenary-only tweaks (secure-container supplies, the scabbard knife, magazine refills)
-        // are NOT applied - they rewrite real player gear.
+        // PIT applies five tweaks before a mercenary spawns. We take three and skip two, and the reason
+        // differs per tweak rather than per gear kind:
+        //
+        //   taken   - EnsureFollowerHasPockets, EnsureFollowerHasScabbardKnife and
+        //             RefillFollowerMagazinesFromInventoryAmmo. All three only ADD to the object handed in,
+        //             and `spawn` is a deep clone, so the stored profile cannot be reached. PIT's own
+        //             comment on the refill says it is kept "strictly on the raid-spawn clone" so that
+        //             profile viewing and loadout editing do not silently change teammate gear
+        //             (FriendlyTeammateService.PrepareTeammateForFetch) - the same guarantee we need.
+        //   skipped - EnsureManagedSecureContainer and EnsureFollowerHasSecureContainerSupplies, which
+        //             EMPTY the secure container and restock it with mercenary supplies. On a real
+        //             profile's kit that discards what the player put there, so a profile teammate goes
+        //             in with their own container exactly as it stands.
+        //
+        // The refill is not cosmetic: without it a teammate spawns with whatever its magazines held, and
+        // a profile parked between raids usually holds nothing. Measured in game on 2026-11-01 - two
+        // Real-gear teammates entered with 0-round primary magazines and could not return fire.
         teammateService.EnsureFollowerHasPockets(spawn);
+        teammateService.EnsureFollowerHasScabbardKnife(spawn);
+        teammateService.RefillFollowerMagazinesFromInventoryAmmo(spawn);
         ApplyHealthMultiplier(spawn, healthMultiplier);
 
         lastGearKinds[GearKindKey(sessionId, member.ProfileId)] = decision.Kind;
