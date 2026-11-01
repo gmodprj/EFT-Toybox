@@ -23,6 +23,7 @@
     <Compile Include="../shared/SpawnGearPolicy.cs" Link="Shared/SpawnGearPolicy.cs" />
     <Compile Include="../shared/RaidOutcomePolicy.cs" Link="Shared/RaidOutcomePolicy.cs" />
     <Compile Include="../shared/RaidReceiptKeyPolicy.cs" Link="Shared/RaidReceiptKeyPolicy.cs" />
+    <Compile Include="../shared/WornGearLossPolicy.cs" Link="Shared/WornGearLossPolicy.cs" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="HarmonyX" Version="2.16.1" />
   </ItemGroup>

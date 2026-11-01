@@ -7,7 +7,6 @@ using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
-using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Servers;
 
 namespace pitTeam.Server.Services;
@@ -19,8 +18,10 @@ namespace pitTeam.Server.Services;
 //   - the raid receipt is RESERVED before anything is deleted, so a second report can never strip twice;
 //   - a write-back that cannot be verified is reported at Error level and NOT retried (see Verify below);
 //   - any exception is logged and swallowed, so PIT's own mercenary outcome path keeps running.
-// What is deleted is the worn equipment only (SelectWornGearRoots). The secure container, the stash,
-// and everything the profile is - level, experience, skills, quests - are never touched.
+// What is deleted is the worn equipment only, and WHICH items that is belongs to
+// WornGearLossPolicy (shared/WornGearLossPolicy.cs - pure and tested); this class owns only the
+// mechanism. The secure container, the stash, and everything the profile is - level, experience,
+// skills, quests - are never touched.
 // We never read what the player brought home. STM only subtracts; reconciling a haul is how one rifle
 // becomes two (brief, 설계 §6-6 6번).
 [Injectable(InjectionType.Singleton)]
@@ -37,12 +38,6 @@ public class StmRaidOutcomeService(
     ISptLogger<StmRaidOutcomeService> logger)
 {
     private const string StripAction = "strip-worn-gear";
-
-    // SPT's own slot-name vocabulary (SPTarkov.Server.Core.Models.Enums.EquipmentSlots). Only a direct
-    // child of the equipment root carrying one of these names is worn equipment; stash contents and
-    // items inside a container are not.
-    private static readonly HashSet<string> EquipmentSlotNames =
-        new(Enum.GetNames<EquipmentSlots>(), StringComparer.OrdinalIgnoreCase);
 
     // escaped is the caller's judgment and must mean "survived or extracted". The caller does not call
     // this at all when it cannot tell (FriendlyPostRaidCallbacks.ApplyProfileTeammateOutcomes): a wrong
@@ -62,6 +57,17 @@ public class StmRaidOutcomeService(
 
                 return;
             }
+
+            // The value the whole deletion turns on, logged where someone can find it afterwards.
+            // There is nothing to cross-check it against: no field on the report corroborates a loss.
+            // Every candidate is either defaulted by a truncated payload to the same value a genuine loss
+            // carries (HealthRatio 0 - client/Modules/NpcMessage.cs:236,
+            // client/Modules/FollowerDeathEscapeResolver.GearSnapshot.cs:187; VitalsDestroyed false) or
+            // missing from a legitimate loss path (EquipmentItems is null on the live-roll path,
+            // client/Modules/FollowerDeathEscapeResolver.cs:224 and :315). So requiring corroboration
+            // would refuse real losses without catching a single truncated payload, and this line is the
+            // trace a wrong deletion is read back from instead.
+            logger.Info($"[STM] 레이드 결과 접수: '{member.Nickname}'(aid {accountId}, 프로필 '{member.ProfileId}', 레이드 '{raidId}') escaped={escaped}.");
 
             // 2. Reserve first, then act. True means "a new receipt was durably written"; every other
             //    outcome - already applied, blank key, unreadable document, failed write - is false and
@@ -108,7 +114,19 @@ public class StmRaidOutcomeService(
             return;
         }
 
-        var rootIds = SelectWornGearRoots(items, equipmentRootId);
+        // WHICH items a death costs is WornGearLossPolicy's judgment (pure, tested). This method only
+        // translates: SPT Items in, triples out, ids back to the Items the deletion needs.
+        var byId = new Dictionary<string, Item>(StringComparer.Ordinal);
+        var triples = new List<WornGearItem>(items.Count);
+        foreach (var item in items)
+        {
+            if (item?.Id == null) continue;
+            var id = item.Id.ToString();
+            byId[id] = item;
+            triples.Add(new WornGearItem(id, item.ParentId, item.SlotId));
+        }
+
+        var rootIds = WornGearLossPolicy.SelectLostRootIds(triples, equipmentRootId);
         if (rootIds.Count == 0)
         {
             logger.Info($"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}')에게 지울 착용 장비가 없다.");
@@ -116,7 +134,7 @@ public class StmRaidOutcomeService(
         }
 
         // The whole set, computed BEFORE the deletion, so the verify below knows what it is looking for.
-        var expectedGoneIds = CollectSubtreeIds(items, rootIds);
+        var expectedGoneIds = WornGearLossPolicy.CollectSubtreeIds(triples, rootIds);
 
         // SPT's own deletion primitive, not a hand-written tree walk: InventoryHelper.RemoveItem takes
         // the item and its children out of profile.Inventory.Items and drops the matching InsuredItems
@@ -127,7 +145,7 @@ public class StmRaidOutcomeService(
         var profileId = new MongoId(member.ProfileId);
         foreach (var rootId in rootIds)
         {
-            inventoryHelper.RemoveItem(pmc, rootId, profileId);
+            inventoryHelper.RemoveItem(pmc, byId[rootId].Id, profileId);
         }
 
         // The only write: the object SaveServer holds, then its own save. No JSON is written here.
@@ -164,90 +182,5 @@ public class StmRaidOutcomeService(
 
         logger.Info(
             $"[STM] 레이드 결과 확인: 프로필 '{member.ProfileId}'(레이드 '{raidId}')에서 아이템 {expectedGoneIds.Count}개가 모두 사라진 것을 다시 읽어 확인했다.");
-    }
-
-    // Which worn items a lost raid costs. A judgment about slot names and parent ids, kept pure so it
-    // can be read on its own:
-    //   * only DIRECT children of the equipment root whose SlotId is one of SPT's EquipmentSlots names -
-    //     stash items and container contents have other parents, so the stash is never reached;
-    //   * minus the slots a dead PMC keeps. SecuredContainer is the brief's explicit exception
-    //     (contents preserved, 설계 §6-4); Pockets, Scabbard and ArmBand follow PIT's own model of the
-    //     Tarkov rule (FriendlyTeammateService.EquipmentRetention.cs:70-80,
-    //     IsPermanentTeammateEquipmentSlot) - and deleting the Pockets container itself would leave a
-    //     played profile without one, which is a structural change, not a loss of gear;
-    //   * plus the cargo inside those kept Pockets, which Tarkov does lose and which the brief counts as
-    //     a descendant of a worn slot - except Dogtag/SpecialSlot trees, which PIT treats as permanent.
-    // Dogtag and SpecialSlot* are not EquipmentSlots names, so they are already outside the first rule.
-    private static List<MongoId> SelectWornGearRoots(List<Item> items, string equipmentRootId)
-    {
-        // Item ids are compared Ordinal, exactly as SPT's own ItemExtensions.GetItemWithChildren does
-        // (it compares item.ParentId to baseItemId.ToString() with string equality), so the set this
-        // picks cannot be wider than the set InventoryHelper.RemoveItem actually deletes.
-        var roots = new List<MongoId>();
-        var keptPocketIds = new HashSet<string>(StringComparer.Ordinal);
-
-        foreach (var item in items)
-        {
-            if (item?.SlotId == null || item.ParentId == null) continue;
-            if (!string.Equals(item.ParentId, equipmentRootId, StringComparison.Ordinal)) continue;
-            if (!EquipmentSlotNames.Contains(item.SlotId)) continue;
-
-            if (IsSlotKeptOnDeath(item.SlotId))
-            {
-                if (string.Equals(item.SlotId, nameof(EquipmentSlots.Pockets), StringComparison.OrdinalIgnoreCase))
-                {
-                    keptPocketIds.Add(item.Id.ToString());
-                }
-
-                continue;
-            }
-
-            roots.Add(item.Id);
-        }
-
-        if (keptPocketIds.Count == 0)
-        {
-            return roots;
-        }
-
-        foreach (var item in items)
-        {
-            if (item?.ParentId == null || !keptPocketIds.Contains(item.ParentId)) continue;
-            if (item.SlotId != null && IsPermanentSlotName(item.SlotId)) continue;
-            roots.Add(item.Id);
-        }
-
-        return roots;
-    }
-
-    private static bool IsSlotKeptOnDeath(string slotId) =>
-        IsPermanentSlotName(slotId)
-        || string.Equals(slotId, nameof(EquipmentSlots.SecuredContainer), StringComparison.OrdinalIgnoreCase)
-        || string.Equals(slotId, nameof(EquipmentSlots.Pockets), StringComparison.OrdinalIgnoreCase)
-        || string.Equals(slotId, nameof(EquipmentSlots.Scabbard), StringComparison.OrdinalIgnoreCase)
-        || string.Equals(slotId, nameof(EquipmentSlots.ArmBand), StringComparison.OrdinalIgnoreCase);
-
-    private static bool IsPermanentSlotName(string slotId) =>
-        slotId.Contains("Dogtag", StringComparison.OrdinalIgnoreCase)
-        || slotId.Contains("SpecialSlot", StringComparison.OrdinalIgnoreCase);
-
-    // Every id that the deletion should take with it, so the verify can look for all of them. Reads the
-    // parent links only; it changes nothing.
-    private static HashSet<string> CollectSubtreeIds(List<Item> items, List<MongoId> rootIds)
-    {
-        var all = new HashSet<string>(rootIds.Select(id => id.ToString()), StringComparer.Ordinal);
-        var grew = true;
-        while (grew)
-        {
-            grew = false;
-            foreach (var item in items)
-            {
-                if (item?.Id == null || string.IsNullOrWhiteSpace(item.ParentId)) continue;
-                if (!all.Contains(item.ParentId)) continue;
-                if (all.Add(item.Id.ToString())) grew = true;
-            }
-        }
-
-        return all;
     }
 }

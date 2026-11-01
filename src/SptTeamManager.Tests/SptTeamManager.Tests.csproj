@@ -37,6 +37,8 @@
     <Compile Include="RaidOutcomePolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/RaidReceiptKeyPolicy.cs" Link="Shared/RaidReceiptKeyPolicy.cs" />
     <Compile Include="RaidReceiptKeyPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/WornGearLossPolicy.cs" Link="Shared/WornGearLossPolicy.cs" />
+    <Compile Include="WornGearLossPolicyTests.cs" />
   </ItemGroup>
 
 </Project>
