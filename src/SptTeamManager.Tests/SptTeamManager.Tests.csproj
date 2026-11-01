@@ -33,6 +33,8 @@
     <Compile Include="ProfileMemberLookupTests.cs" />
     <Compile Include="../SptTeamManager/shared/SpawnGearPolicy.cs" Link="Shared/SpawnGearPolicy.cs" />
     <Compile Include="SpawnGearPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/RaidOutcomePolicy.cs" Link="Shared/RaidOutcomePolicy.cs" />
+    <Compile Include="RaidOutcomePolicyTests.cs" />
   </ItemGroup>
 
 </Project>
