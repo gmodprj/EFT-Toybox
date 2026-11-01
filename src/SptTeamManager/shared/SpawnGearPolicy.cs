@@ -39,6 +39,10 @@ namespace pitTeam.Shared
         };
 
         // 필수 무기 슬롯: any one of these holding something satisfies it. A knife in Scabbard does not.
+        // The same three slots are listed in FriendlyTeammateService.RequiredRaidWeaponSlots, which
+        // PIT uses for its own mercenaries. The duplication is deliberate - referencing PIT's list
+        // would drag this judgment back into the server project, where it could not be unit-tested -
+        // but the two must agree, so change both or neither.
         private static readonly HashSet<string> RequiredWeaponSlots = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "FirstPrimaryWeapon", "SecondPrimaryWeapon", "Holster",

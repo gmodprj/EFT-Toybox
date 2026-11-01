@@ -157,6 +157,8 @@ public partial class FriendlyTeammateService(
     private static readonly Random DeathEscapeRandom = new();
     private static readonly object DeathEscapeRandomLock = new();
     private static readonly object RaidResultPersistenceLock = new();
+    // STM lists the same three slots in SpawnGearPolicy.RequiredWeaponSlots, kept separate so the
+    // judgment stays unit-testable outside this project. Change both or neither.
     private static readonly string[] RequiredRaidWeaponSlots =
     [
         nameof(EquipmentSlots.FirstPrimaryWeapon),
