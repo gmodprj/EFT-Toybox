@@ -1,4 +1,5 @@
 using pitTeam.Server.Models;
+using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
@@ -11,6 +12,7 @@ namespace pitTeam.Server.Services;
 // this store is what prevents a second deletion.
 // No caching: every call reads the document fresh. A stale cached "not applied" is exactly the
 // dangerous direction, because it would permit a second deletion.
+// A caller that is about to delete something must use TryReserve (reserve first, then delete).
 [Injectable(InjectionType.Singleton)]
 public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<StmRaidReceiptStore> logger)
 {
@@ -19,12 +21,50 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
 
     private readonly object sync = new();
 
+    // Reserve-before-acting: the caller reserves, and only when this returns true does it delete.
+    // Under ONE lock: if a receipt for the pair exists, nothing is written and the answer is false;
+    // otherwise the receipt is written and the answer is true. True means "I wrote a new receipt" and
+    // nothing else. Every other outcome - already present, blank key, unreadable document, write
+    // failure - is false, so the caller does nothing. Uniformly fail closed.
+    // If the deletion then fails, the receipt still says "applied" and a retry skips it: one
+    // teammate's gear surviving is the price; deleting a second set has no undo.
+    public bool TryReserve(MongoId sessionId, string? raidId, string? profileId, string action)
+    {
+        if (!RaidReceiptKeyPolicy.IsUsableKey(raidId, profileId))
+        {
+            logger.Error("[STM] TryReserve called with a blank raidId or profileId; refused so nothing is deleted.");
+            return false;
+        }
+        raidId = raidId!.Trim();
+        profileId = profileId!.Trim();
+        try
+        {
+            lock (sync)
+            {
+                var receipts = Load(sessionId).ToList();
+                if (receipts.Any(r => Matches(r, raidId, profileId))) return false;
+                receipts.Add(new StmRaidReceipt(raidId, profileId, action ?? string.Empty, DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
+                Save(sessionId, receipts);
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            // False on purpose: unreadable document or failed write means we cannot prove this raid is
+            // unprocessed, and a mistaken "go ahead" deletes real equipment with no undo.
+            logger.Error($"[STM] Raid receipt could not be reserved for raid '{raidId}' / profile '{profileId}'; refused (fail closed, nothing will be deleted): {ex}");
+            return false;
+        }
+    }
+
     // True when this teammate's result for this raid was already applied - or when that cannot be
     // determined. FAIL CLOSED: every "cannot tell" answers true.
+    // A caller that is about to delete must use TryReserve instead: WasApplied followed by Record
+    // is two separate locks, so two concurrent calls could both see "not applied".
     public bool WasApplied(MongoId sessionId, string raidId, string profileId)
     {
         // Blank keys cannot identify a receipt, so they can never be proven "not applied".
-        if (string.IsNullOrWhiteSpace(raidId) || string.IsNullOrWhiteSpace(profileId))
+        if (!RaidReceiptKeyPolicy.IsUsableKey(raidId, profileId))
         {
             logger.Error("[STM] WasApplied called with a blank raidId or profileId; treated as already applied so nothing is deleted.");
             return true;
@@ -48,6 +88,7 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
 
     // Idempotent per key. If the existing document cannot be read this throws instead of writing:
     // overwriting an unreadable document would erase the receipts it holds and re-open those raids.
+    // A caller that is about to delete must use TryReserve instead (it holds one lock across check and write).
     public void Record(MongoId sessionId, StmRaidReceipt receipt)
     {
         ArgumentNullException.ThrowIfNull(receipt);
@@ -67,10 +108,9 @@ public class StmRaidReceiptStore(FriendlyTeammateStorage storage, ISptLogger<Stm
         }
     }
 
-    // The whole key, exact match on both halves: a receipt of another teammate or another raid never matches.
+    // The match judgment lives in RaidReceiptKeyPolicy (pure, tested): trim, ignore case, both halves.
     private static bool Matches(StmRaidReceipt r, string raidId, string profileId) =>
-        string.Equals(r.RaidId, raidId, StringComparison.Ordinal)
-        && string.Equals(r.ProfileId, profileId, StringComparison.Ordinal);
+        RaidReceiptKeyPolicy.KeysMatch(r.RaidId, r.ProfileId, raidId, profileId);
 
     // Per logged-in profile (keyed by sessionId), independent of the Guns for Hire / Allegiance mode.
     private List<StmRaidReceipt> Load(MongoId sessionId) =>
