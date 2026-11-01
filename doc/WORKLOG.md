@@ -2308,6 +2308,54 @@ SPT 를 되돌릴 때만 나타나고, 그때는 예컨대 4.1.3 에서 모드�
 8. **넷째 자리 실측.** 파티 창에 팀원 넷째를 넣으려 할 때 실제로 무엇이 일어나는지 본다. 이 실측이
    서버측 자리 관문(`PartySlotPolicy` 연결)이 언젠가 필요한지를 결정한다.
 
+### 사람 관문 1차 결과 (2026-11-01) — 항목 2·4·7 통과, 3·5·6·8 은 게임이 필요하다
+
+서버 쪽은 **실제로 돌려서** 확인했다. 아래는 추측이 아니라 호출 결과다.
+
+**항목 2 (설치) — 통과.** 먼저 백업했다: 프로필 3개(파일 43개)와 설치된 PIT 두 디렉터리(게임 18개 / 서버
+12개)를 `backup/2026-11-01-before-stm/` 에 복사해 **파일 수를 대조**했다. 그 다음 PIT 를 지우지 않고
+`backup/2026-11-01-before-stm/removed-from-install/` 로 **옮겼다** — 되돌리려면 두 폴더를 제자리로 옮기면
+된다. 설치 스크립트는 거부 없이 통과해 클라이언트 18개(DLL + 에셋 17), 서버 DLL·`deps.json`·`LiteDB.dll`·
+`Resources`(avatars, lang)를 깔았다. `settings.json` 은 깔지 않는다(모드가 실행 중 만든다).
+설치본에 남은 PIT 흔적은 SPT 가 캐시한 `sptappdata\files\trader\avatar\pitfireteam-courier.png` 하나뿐이다(무해).
+
+**항목 7 (`[Injectable]` 해석) — 통과.** 서버 로그에
+`모드 SPT Team Manager 버전 1.0.0 (GUID: xyz.stm.teammanager | targets SPT: ~4.1.0) by PitAlex 불러옴`,
+그리고 SPT 자신이 교체를 알아봤다 —
+`(Added 1 mods: SPT Team Manager (1.0.0); Removed 1 mods: PitFireTeam (1.0.0))`.
+`Resources\stm-teammates\<프로필id>.db` 가 프로필마다 생겼다(디렉터리 리네임 작동). **오류 0건.** 로드가
+오류 없이 끝났다는 것은 DI 가 콜백 클래스를 전부 구성했다는 뜻이고, 거기에 최종 리뷰가 위험으로 꼽은
+`FriendlyTeammateMatchCallbacks`(STM 의존성 둘이 새로 들어간 클래스)가 포함된다.
+
+**항목 4 (라우트와 직렬화 왕복) — 통과.** 네 라우트를 전부 호출했다.
+- `members/roster` → 로그인한 프로필(`6adc2669…`)이 **빠지고** 다른 둘이 실제 데이터로 `Ready` 로 온다:
+  `Knox` aid 1100437 Lv.69 Bear, `SPT02` aid 1741641 Lv.15 Usec. 설계 §6-9 의 핵심 규칙이 런타임에서 확인됐다.
+- `members/add` → `{profileId, tactic:"Rifleman", autoJoin:false}` (Task 5 가 고른 기본값, 고정한 camelCase).
+  쓰인 곳은 **로그인한 프로필의 db** — 주석의 "로그인한 프로필별" 이 맞았다.
+- **서버 재시작 → `members/list` 가 그 등록을 그대로 돌려준다.** 직렬화 왕복이 확인됐다. 재시작 후
+  `members/roster` 는 그것을 `members` 로 옮기고 닉네임·레벨·진영을 **새로 읽은 카탈로그에서** 채운다 —
+  저장소에는 그 값이 없으므로, 프로필 데이터를 캐시하지 않는다는 것이 런타임으로 증명됐다(§4 "유령 재산").
+- `members/remove` → 목록에서 빠진다. 다시 추가도 된다.
+- **로그인한 프로필 자신을 추가하려는 시도는 거부된다** — `{"err":500,"errmsg":"StmProfileNotAvailable"}`.
+
+**라우트를 손으로 부르는 방법(다음에 필요할 때).** SPT 는 요청 본문을 **deflate(zlib) 로 읽는다.** 평문
+JSON 을 보내면 `The archive entry was compressed using an unsupported compression method` 로 터지고 200 에
+빈 본문이 돌아온다 — 진짜 SPT 라우트도 똑같으니 모드 결함이 아니다. 압축해 보내야 한다. 없는 경로는 404,
+등록된 경로는 200 이므로 그 둘을 대조하면 등록 여부를 가릴 수 있다. TLS 는 자체 서명이라 검증을 꺼야 한다.
+세션은 `Cookie: PHPSESSID=<프로필 id>`.
+
+**아직 게임이 필요한 것: 항목 3**(메인메뉴 버튼과 스쿼드 UI 충돌), **5**(명단·초대 창에 그려지는지, 아이콘
+구분, `Session.Profile.AccountId` == `pmc.Aid` 확인), **6**(Aid 충돌 표면), **8**(넷째 자리).
+
+**이번에 드러난 사실 둘.**
+- 설계 §5-13 이 "쓸 수 있는 테스트 프로필이 아직 없다"(둘뿐이고 하나는 386바이트 빈 프로필)고 적은 것은
+  **더는 사실이 아니다.** 지금 프로필이 셋이고 로그인한 것을 뺀 둘이 전부 플레이돼 `Ready` 다. 관문 항목
+  5 를 실제로 시험할 수 있다.
+- **PIT 의 용병은 STM 명단에 보이지 않는다.** PIT 의 `Resources\teammates\` 에 `.db` 3개(하나는 909KB)가
+  있었고 전부 백업에 온전하다. STM 은 `stm-teammates\` 를 보므로 다른 서랍을 여는 셈이다. 가져오려면
+  `.db` 를 복사하면 될 것으로 본다 — 암호화 키 시드(`KeyMaterial`)를 일부러 바꾸지 않았고 파일 이름 규칙도
+  `<프로필id>.db` 로 같다. **다만 시도하지 않았다**(사용자 데이터이고 어떤 계획에도 없던 일이다).
+
 ### 계획 2·3 이 지켜야 할 제약
 
 - **STM 문서는 `{정수}.json` 으로 이름 짓지 않는다.** `TeammateDatabase.IsProfileDocument` 는 `.json` 으로
