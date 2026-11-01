@@ -1,5 +1,6 @@
 using EFT.UI;
 using pitTeam.Modules;
+using pitTeam.Shared;
 using TMPro;
 using System;
 using System.Collections.Generic;
@@ -26,13 +27,10 @@ namespace pitTeam.Components
         private bool stmRequestBusy;
 
         // Fetched on every roster rebuild. null = the profile section is not shown at all.
-        private static StmProfileRosterClient.Snapshot LoadStmSnapshot()
+        private static StmRosterSnapshot LoadStmSnapshot()
         {
-            if (GameplayModeRuntime.IsAllegiance)
-            {
-                return null;
-            }
-
+            // Profile members are managed the same in every gameplay mode (the registration store and
+            // the friend-list merge are mode-independent); there is deliberately no mode gate here.
             try
             {
                 return StmProfileRosterClient.Load();
@@ -40,23 +38,34 @@ namespace pitTeam.Components
             catch (Exception ex)
             {
                 pitFireTeam.Log.LogWarning($"[STM] Profile roster load threw unexpectedly: {ex.Message}");
-                return new StmProfileRosterClient.Snapshot { Ok = false, Error = ex.Message };
+                return StmRosterWire.Failed(ex.Message);
             }
         }
 
         // A failed load is drawn as one tile, so it counts as one.
-        private static int CountStmTiles(StmProfileRosterClient.Snapshot snapshot)
+        private static int CountStmTiles(StmRosterSnapshot snapshot)
         {
             if (snapshot == null)
             {
                 return 0;
             }
 
-            return snapshot.Ok ? snapshot.Members.Count : 1;
+            if (!snapshot.Ok)
+            {
+                return 1;
+            }
+
+            // One extra notice tile when members are shown but the session check could not be completed.
+            return snapshot.Members.Count + (NeedsSessionNotice(snapshot) ? 1 : 0);
+        }
+
+        private static bool NeedsSessionNotice(StmRosterSnapshot snapshot)
+        {
+            return snapshot != null && snapshot.Ok && !snapshot.OwnAccountKnown && snapshot.Members.Count > 0;
         }
 
         // Contained: if drawing these tiles fails, PIT's tiles and layout (built by the caller) stand.
-        private void AppendStmTiles(RectTransform parent, StmProfileRosterClient.Snapshot snapshot)
+        private void AppendStmTiles(RectTransform parent, StmRosterSnapshot snapshot)
         {
             if (parent == null || snapshot == null)
             {
@@ -78,11 +87,11 @@ namespace pitTeam.Components
                     return;
                 }
 
-                foreach (StmProfileRosterClient.Row row in snapshot.Members)
+                foreach (RegisteredProfileRow row in snapshot.Members)
                 {
                     // A non-Ready profile is drawn greyed with its reason and has no click handler of
                     // its own, so it cannot be selected for anything. Its only control is "remove".
-                    bool ready = row.Status == StmProfileRosterClient.RowStatus.Ready;
+                    bool ready = row.Status == RosterRowStatus.Ready;
                     CreateStmTile(
                         parent,
                         row.ProfileId,
@@ -91,6 +100,19 @@ namespace pitTeam.Components
                         StmStatusLine(row.Status),
                         unavailable: !ready,
                         removeProfileId: row.ProfileId);
+                }
+
+                // Rows stay visible; the user is told the client-side session filter did not run.
+                if (NeedsSessionNotice(snapshot))
+                {
+                    CreateStmTile(
+                        parent,
+                        "sessionunverified",
+                        StmProfileRosterClient.SessionUnverifiedTitle,
+                        string.Empty,
+                        StmProfileRosterClient.SessionUnverifiedLine,
+                        unavailable: true,
+                        removeProfileId: null);
                 }
             }
             catch (Exception ex)
@@ -102,15 +124,15 @@ namespace pitTeam.Components
 
         // One line per status. CurrentSession never reaches here (filtered in StmProfileRosterClient.Load);
         // if it ever did it would read as unreadable, never as usable.
-        private static string StmStatusLine(StmProfileRosterClient.RowStatus status)
+        private static string StmStatusLine(RosterRowStatus status)
         {
             switch (status)
             {
-                case StmProfileRosterClient.RowStatus.Ready:
+                case RosterRowStatus.Ready:
                     return StmProfileRosterClient.EquipmentUndecided;
-                case StmProfileRosterClient.RowStatus.Empty:
+                case RosterRowStatus.Empty:
                     return StmProfileRosterClient.ReasonEmpty;
-                case StmProfileRosterClient.RowStatus.Missing:
+                case RosterRowStatus.Missing:
                     return StmProfileRosterClient.ReasonMissing;
                 default:
                     return StmProfileRosterClient.ReasonUnreadable;
@@ -151,7 +173,7 @@ namespace pitTeam.Components
             Color infoColor = unavailable ? new Color(0.45f, 0.45f, 0.45f, 1f) : new Color(0.7f, 0.7f, 0.68f, 1f);
             Color statusColor = unavailable ? new Color(0.85f, 0.7f, 0.45f, 1f) : new Color(0.6f, 0.6f, 0.58f, 1f);
 
-            AddStmTileText(tileRect, "Caption", StmProfileRosterClient.SectionTitle, 16f,
+            AddStmTileText(tileRect, "Caption", StmProfileRosterClient.TileCaption, 16f,
                 new Color(0.55f, 0.55f, 0.53f, 1f), new Vector2(16f, 176f), new Vector2(-44f, -10f));
             AddStmTileText(tileRect, "Name", title, 24f, nameColor, new Vector2(16f, 114f), new Vector2(-16f, -44f));
             AddStmTileText(tileRect, "Info", infoLine, 20f, infoColor, new Vector2(16f, 84f), new Vector2(-16f, -100f));
@@ -224,7 +246,7 @@ namespace pitTeam.Components
                 loadProfileButton.Interactable = true;
                 loadProfileButton.OnClick.RemoveAllListeners();
                 loadProfileButton.OnClick.AddListener(OnLoadProfileClicked);
-                loadProfileButton.gameObject.SetActive(!GameplayModeRuntime.IsAllegiance);
+                loadProfileButton.gameObject.SetActive(true);
 
                 RectTransform buttonRect = loadProfileButton.transform as RectTransform;
                 if (buttonRect != null)
@@ -245,7 +267,7 @@ namespace pitTeam.Components
 
         private void OnLoadProfileClicked()
         {
-            if (GameplayModeRuntime.IsAllegiance || GameplayModeRuntime.IsSwitching || stmRequestBusy)
+            if (GameplayModeRuntime.IsSwitching || stmRequestBusy)
             {
                 return;
             }
@@ -254,7 +276,7 @@ namespace pitTeam.Components
             ShowStmPicker(LoadStmSnapshot());
         }
 
-        private void ShowStmPicker(StmProfileRosterClient.Snapshot snapshot)
+        private void ShowStmPicker(StmRosterSnapshot snapshot)
         {
             CloseStmPicker();
 
@@ -279,6 +301,8 @@ namespace pitTeam.Components
             }
 
             int rowCount = message == null ? Mathf.Min(snapshot.Candidates.Count, StmPickerMaxRows) : 0;
+            int hiddenCount = message == null ? snapshot.Candidates.Count - rowCount : 0;
+            float moreLineHeight = hiddenCount > 0 ? 34f : 0f;
 
             GameObject overlayRoot = new GameObject("pitFireTeam_StmPickerOverlay", typeof(RectTransform), typeof(Image));
             overlayRoot.transform.SetParent(overlayParent, false);
@@ -296,7 +320,7 @@ namespace pitTeam.Components
             panelRect.anchorMin = new Vector2(0.5f, 0.5f);
             panelRect.anchorMax = new Vector2(0.5f, 0.5f);
             panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.sizeDelta = new Vector2(620f, message == null ? 60f + rowCount * StmPickerRowStep : 200f);
+            panelRect.sizeDelta = new Vector2(620f, message == null ? 60f + rowCount * StmPickerRowStep + moreLineHeight : 200f);
 
             Image panelImage = panel.GetComponent<Image>();
             panelImage.color = new Color(0.02f, 0.02f, 0.02f, 0.98f);
@@ -358,8 +382,8 @@ namespace pitTeam.Components
                 // (StmProfileRosterClient.Load); a non-Ready profile has no row to click.
                 for (int i = 0; i < rowCount; i++)
                 {
-                    StmProfileRosterClient.Row candidate = snapshot.Candidates[i];
-                    float y = 12f + (rowCount - 1 - i) * StmPickerRowStep;
+                    RegisteredProfileRow candidate = snapshot.Candidates[i];
+                    float y = 12f + moreLineHeight + (rowCount - 1 - i) * StmPickerRowStep;
                     DefaultUIButton rowButton = CreateOverlayActionButton(
                         panel.transform,
                         new Vector2(0f, y),
@@ -367,6 +391,22 @@ namespace pitTeam.Components
                     rowButton.SetRawText($"{candidate.Nickname}   Lv {candidate.Level}   {candidate.Side}", 22);
                     rowButton.OnClick.RemoveAllListeners();
                     rowButton.OnClick.AddListener(() => AddStmProfile(candidate));
+                }
+
+                if (hiddenCount > 0)
+                {
+                    GameObject moreObject = CreateText(
+                        "pitFireTeam_StmPickerMore",
+                        string.Format(StmProfileRosterClient.PickerMoreLineFormat, hiddenCount),
+                        18f,
+                        TextAlignmentOptions.Center);
+                    RectTransform moreRect = moreObject.GetComponent<RectTransform>();
+                    moreRect.SetParent(panel.transform, false);
+                    moreRect.anchorMin = new Vector2(0f, 0f);
+                    moreRect.anchorMax = new Vector2(1f, 0f);
+                    moreRect.pivot = new Vector2(0.5f, 0f);
+                    moreRect.offsetMin = new Vector2(20f, 4f);
+                    moreRect.offsetMax = new Vector2(-20f, 4f + moreLineHeight);
                 }
             }
 
@@ -384,7 +424,7 @@ namespace pitTeam.Components
             stmPickerOverlay = null;
         }
 
-        private async void AddStmProfile(StmProfileRosterClient.Row row)
+        private async void AddStmProfile(RegisteredProfileRow row)
         {
             if (row == null || stmRequestBusy)
             {
@@ -392,7 +432,7 @@ namespace pitTeam.Components
             }
 
             // Checked again here, right before the call, whatever the picker was built from.
-            if (row.Status != StmProfileRosterClient.RowStatus.Ready || string.IsNullOrWhiteSpace(row.ProfileId))
+            if (row.Status != RosterRowStatus.Ready || string.IsNullOrWhiteSpace(row.ProfileId))
             {
                 return;
             }

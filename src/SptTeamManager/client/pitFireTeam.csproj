@@ -16,6 +16,8 @@
         <Compile Include="../shared/FriendlyEncounterPenaltyPolicy.cs" Link="Shared/FriendlyEncounterPenaltyPolicy.cs" />
         <Compile Include="../shared/PmcKarmaPolicy.cs" Link="Shared/PmcKarmaPolicy.cs" />
         <Compile Include="../shared/SelfDeterminationPolicy.cs" Link="Shared/SelfDeterminationPolicy.cs" />
+        <Compile Include="../shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
+        <Compile Include="../shared/StmRosterWire.cs" Link="Shared/StmRosterWire.cs" />
         <Reference Include="0Harmony">
             <HintPath>libs\0Harmony.dll</HintPath>
         </Reference>

@@ -149,6 +149,14 @@ public class ProfileRosterPolicyTests
 
         Assert.Equal(new[] { RosterRowStatus.CurrentSession, RosterRowStatus.Unreadable, RosterRowStatus.Empty, RosterRowStatus.Ready },
             rows.Select(r => r.Status).ToArray());
+
+        // Field propagation for a matched row (Cand() gives Ready rows Level 20 / Side "Bear" / Aid 5 / Nick "Nick").
+        // Kills: a join that builds matched rows with default Aid/Nickname/Level/Side.
+        var ready = rows.Single(r => r.ProfileId == "bbbbbbbbbbbbbbbbbbbbbbbb");
+        Assert.Equal(5, ready.Aid);            // kills dropping Aid (picker gate + session check depend on it)
+        Assert.Equal("Nick", ready.Nickname);  // kills dropping Nickname
+        Assert.Equal(20, ready.Level);         // kills dropping Level
+        Assert.Equal("Bear", ready.Side);      // kills dropping Side
     }
 
     [Fact]

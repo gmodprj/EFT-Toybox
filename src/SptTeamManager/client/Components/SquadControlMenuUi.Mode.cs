@@ -117,7 +117,6 @@ namespace pitTeam.Components
                 if (this != null)
                 {
                     if (addTeammateButton != null) addTeammateButton.gameObject.SetActive(!GameplayModeRuntime.IsAllegiance);
-                    if (loadProfileButton != null) loadProfileButton.gameObject.SetActive(!GameplayModeRuntime.IsAllegiance);
                     RebuildSettingsEntries();
                     RefreshModeChoices();
                     NotifySquadScreenRefreshed();

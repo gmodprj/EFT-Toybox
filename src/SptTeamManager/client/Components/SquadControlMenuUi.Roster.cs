@@ -8,6 +8,7 @@ using EFT.UI;
 using EFT.UI.Matchmaker;
 using EFT.UI.Settings;
 using pitTeam.Modules;
+using pitTeam.Shared;
 using pitTeam.Patches;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -40,6 +41,7 @@ namespace pitTeam.Components
 
             CloseRemoveConfirmOverlay();
             ClosePortraitContextMenu();
+            CloseStmPicker();
             CancelPortraitQueue();
             portraitLoadingIndicators.Clear();
             autoJoinRequestsInFlight.Clear();
@@ -54,7 +56,7 @@ namespace pitTeam.Components
             List<SquadRosterEntry> entries = BuildRosterEntries().ToList();
             // STM: profile teammates, fetched fresh (already joined against the catalog by the server).
             // Never throws; on failure the section is one error tile and the mercenary tiles still draw.
-            StmProfileRosterClient.Snapshot stmSnapshot = LoadStmSnapshot();
+            StmRosterSnapshot stmSnapshot = LoadStmSnapshot();
             int stmTileCount = CountStmTiles(stmSnapshot);
             UpdateRosterGridLayout(entries.Count + stmTileCount);
 
@@ -65,7 +67,8 @@ namespace pitTeam.Components
 
             AppendStmTiles(rosterGridRoot, stmSnapshot);
 
-            UpdateEmptyRosterState(entries.Count + stmTileCount == 0);
+            // Only real members count: an STM error/notice tile must not remove PIT's empty-roster guidance.
+            UpdateEmptyRosterState(entries.Count + (stmSnapshot != null && stmSnapshot.Ok ? stmSnapshot.Members.Count : 0) == 0);
 
             if (rosterGridRoot != null)
             {
