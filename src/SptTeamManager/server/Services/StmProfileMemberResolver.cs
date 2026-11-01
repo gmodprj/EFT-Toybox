@@ -1,3 +1,4 @@
+using System.Globalization;
 using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
@@ -7,12 +8,14 @@ using SPTarkov.Server.Core.Servers;
 
 namespace pitTeam.Server.Services;
 
+// WARNING: Pmc is the LIVE object SaveServer holds in memory, not a copy. Clone it before use
+// (Task 3) and never mutate it: changing it alters the player's stored profile with no SaveProfile call in sight.
 public sealed record StmResolvedMember(string ProfileId, int Aid, string Nickname, int Level, string Side, PmcData Pmc);
 
 // Bridges the game's numeric Aid to a registered launcher-profile teammate and its PMC character.
 // Called from inside PIT's invite/spawn handlers, so it must never throw: any failure is logged and
-// returned as false so the caller falls through to PIT's existing path.
-// Read-only, and holds no profile data between calls (no fields besides injected services).
+// returned as false so the caller can react. Read-only, and holds no profile data between calls
+// (no fields besides injected services).
 [Injectable(InjectionType.Singleton)]
 public class StmProfileMemberResolver(
     StmProfileCatalog catalog,
@@ -27,9 +30,13 @@ public class StmProfileMemberResolver(
     {
         member = null;
         unavailableReason = null;
+        // Boundary: false until the lookup has identified a registered Ready member. A failure before
+        // that keeps a null reason (PIT's path); a failure after it is "Unreadable" (never handed to PIT).
+        var identifiedAsMember = false;
         try
         {
-            if (!int.TryParse(accountId, out var aid) || aid <= 0) return false;
+            // Decimal digits only: no sign, no whitespace.
+            if (!int.TryParse(accountId, NumberStyles.None, CultureInfo.InvariantCulture, out var aid) || aid <= 0) return false;
 
             // Fresh reads on every call. Never store these in a field.
             var registered = store.List(sessionId).Select(m => m.ProfileId).ToList();
@@ -41,6 +48,7 @@ public class StmProfileMemberResolver(
                 case MemberLookupResult.NotAMember:
                     return false;
                 case MemberLookupResult.Ready:
+                    identifiedAsMember = true;
                     break;
                 default:
                     // NotAvailable, or any value this code does not know: fail closed.
@@ -57,22 +65,23 @@ public class StmProfileMemberResolver(
             var profile = saveServer.GetProfile(new MongoId(lookup.ProfileId));
             var pmc = profile?.CharacterData?.PmcData;
             var info = pmc?.Info;
-            if (pmc == null || info == null || pmc.Aid != aid)
+            // Read failed, or the profile no longer matches what the catalog said (Aid, Level, Side):
+            // unusable. No substitute values - Task 3 builds gear from Level and Side.
+            if (pmc == null || info == null || pmc.Aid != aid || info.Level == null || string.IsNullOrWhiteSpace(info.Side))
             {
-                // Read failed or the profile no longer matches what the catalog said: unusable, no guessing.
                 unavailableReason = "Unreadable";
                 return false;
             }
 
-            member = new StmResolvedMember(lookup.ProfileId, aid, info.Nickname ?? string.Empty, info.Level ?? 0, info.Side ?? string.Empty, pmc);
+            var nickname = string.IsNullOrWhiteSpace(info.Nickname) ? aid.ToString(CultureInfo.InvariantCulture) : info.Nickname;
+            member = new StmResolvedMember(lookup.ProfileId, aid, nickname, info.Level.Value, info.Side, pmc);
             return true;
         }
         catch (Exception ex)
         {
             member = null;
-            // Unknown state: not claimed as a profile teammate, so PIT's own path runs unchanged.
-            unavailableReason = null;
-            logger.Error($"[STM] Resolving account '{accountId}' failed; falling back to the default path: {ex.Message}");
+            unavailableReason = identifiedAsMember ? "Unreadable" : null;
+            logger.Error($"[STM] Resolving account '{accountId}' failed ({(identifiedAsMember ? "profile member, reported unreadable" : "falling back to the default path")}): {ex}");
             return false;
         }
     }
