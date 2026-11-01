@@ -29,6 +29,8 @@
     <Compile Include="PartySlotPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/StmRosterWire.cs" Link="Shared/StmRosterWire.cs" />
     <Compile Include="StmRosterWireTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileMemberLookup.cs" Link="Shared/ProfileMemberLookup.cs" />
+    <Compile Include="ProfileMemberLookupTests.cs" />
   </ItemGroup>
 
 </Project>
