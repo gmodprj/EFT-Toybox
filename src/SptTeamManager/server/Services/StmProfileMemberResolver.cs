@@ -67,6 +67,10 @@ public class StmProfileMemberResolver(
             var info = pmc?.Info;
             // Read failed, or the profile no longer matches what the catalog said (Aid, Level, Side):
             // unusable. No substitute values - Task 3 builds gear from Level and Side.
+            // Aid collision note: PIT's mercenary-aid allocator excludes used aids by reading
+            // profile.ProfileInfo?.Aid (GetUniqueAccountId, FriendlyTeammateService.cs:4325-4328) while this matches on
+            // pmc.Aid - the same value in practice, so a mercenary never takes a launcher profile's
+            // aid, but the two reads are different fields and that closure is incidental, not guaranteed.
             if (pmc == null || info == null || pmc.Aid != aid || info.Level == null || string.IsNullOrWhiteSpace(info.Side))
             {
                 unavailableReason = "Unreadable";

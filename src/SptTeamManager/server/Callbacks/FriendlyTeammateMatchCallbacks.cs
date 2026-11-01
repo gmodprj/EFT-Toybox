@@ -237,19 +237,11 @@ public class FriendlyTeammateMatchCallbacks(
     {
         if (!teammateService.TryGetSpawnProfile(sessionId, request.MemberId, request.Custom?.Health, out var teammate))
         {
-            // STM: PIT has no mercenary with this MemberId. Ask whether it is a launcher-profile
-            // teammate; if it is not (false with no reason), fall through to PIT's empty array exactly
-            // as before STM. This is the ONLY call site of StmSpawnProfileFactory.Build: Build records
-            // the spawn's gear kind, and a second call would both overwrite that record and roll a
-            // different temporary loadout.
-            // Of PIT's two post-spawn calls below, only RegisterProtectedRaidItemIds is made for a
-            // profile teammate (inside the helper). insuranceDiagnostics.CaptureGeneratedFollower is
-            // NOT, and must not be restored for symmetry with PIT: it is not diagnostics. It reads the
-            // mercenary's {aid}-settings.json policies and writes the raid diagnostic document, then
-            // runs gift cancellation, policy transfer, courier authorisation and settlement
-            // (FollowerInsuranceRaidDiagnostics.cs:132-153 via Update/SaveAndReport :214-241). A
-            // launcher profile has no policy file, so that pass is a no-op at best and a way into the
-            // player's own insurance at worst. Teammate insurance for profile members is out of scope.
+            // STM: PIT found no mercenary for this MemberId, so ask whether it is a launcher-profile
+            // teammate. The ONLY call site of StmSpawnProfileFactory.Build, and the one post-spawn
+            // call made for a profile teammate is the protected-id registration in the helper -
+            // CaptureGeneratedFollower below is insurance settlement, not diagnostics, and must not be
+            // restored for symmetry (task-5-report.md, 판단 B).
             var generated = TryBuildProfileMemberSpawn(sessionId, request.MemberId, request.Custom?.Health);
             if (generated != null)
             {
@@ -271,53 +263,50 @@ public class FriendlyTeammateMatchCallbacks(
     }
 
     // Builds the raid spawn for a launcher-profile teammate, or null when this id is not one (then
-    // PIT's own behaviour must stand). Never throws: a failure here must not break raid entry.
+    // PIT's own behaviour must stand). Never throws, on its own: the resolver call is inside the try
+    // too, so the guarantee does not rest on another class keeping its catch-all.
     private BotBase? TryBuildProfileMemberSpawn(MongoId sessionId, string? memberId, double? healthMultiplier)
     {
-        if (!profileMemberResolver.TryResolve(sessionId, memberId, out var member, out var unavailableReason))
-        {
-            if (!string.IsNullOrWhiteSpace(unavailableReason))
-            {
-                // A registered teammate that must not be taken. Nothing is spawned for it; the invite
-                // path already told the player why, so this is a log line only.
-                logger.Warning($"[STM] Follower generate: profile teammate '{memberId}' (session '{sessionId}') unavailable: {unavailableReason}");
-            }
-
-            return null;
-        }
-
         try
         {
+            if (!profileMemberResolver.TryResolve(sessionId, memberId, out var member, out var unavailableReason))
+            {
+                if (!string.IsNullOrWhiteSpace(unavailableReason))
+                {
+                    // A registered teammate that must not be taken. Nothing is spawned for it; the invite
+                    // path already told the player why, so this is a log line only.
+                    logger.Warning($"[STM] Follower generate: profile teammate '{memberId}' (session '{sessionId}') unavailable: {unavailableReason}");
+                }
+
+                return null;
+            }
+
             // healthMultiplier is the client's own setting off this request (Custom.Health), the same
             // value PIT hands TryGetSpawnProfile above.
             var spawn = spawnProfileFactory.Build(sessionId, member!, out var gearKind, healthMultiplier);
 
-            // The same registration PIT does after its own successful spawn (see the mercenary path
-            // below), with its own context string. This is not bookkeeping: ProtectedRaidItemIds is
-            // what StripProtectedTeammateItemsFromReturnItems (FriendlyPostRaidService.cs:125-154)
-            // uses to keep the teammate's gear OUT of the follower-loot delivery the player gets at
-            // raid end. Without it, Real gear would be copied into the player's stash while it still
-            // exists in its own launcher profile (duplication), and Temporary gear - generated out of
-            // nothing - would be free loot.
-            // Deliberately the UNGATED collection, not PIT's GetProtectedSpawnItemIdsForExtraction: that
-            // one protects nothing in Immersive/Extreme mode (the default), which is a loot choice for a
-            // mercenary whose gear exists nowhere else. A profile teammate's gear is also sitting in a
-            // real launcher profile, so the same delivery would COPY an item instead of moving it -
-            // protected in every mode. Not delivering it destroys nothing: it stays in that profile.
-            HashSet<string> protectedSpawnIds = teammateService.CollectSpawnEquipmentTreeIds(spawn);
+            // Nothing in a profile teammate's spawn inventory may ever reach the player's raid-end
+            // delivery - Real gear because it still exists in that launcher profile (a copy, not a
+            // move), Temporary gear because it was generated out of nothing. Hence the WHOLE inventory,
+            // in every loadout mode, rather than PIT's equipment-tree collector, whose ignore-slot
+            // policy and stash-free scope were written for mercenaries (task-5-report.md, 판단 A /
+            // 수정 3차). ProtectedRaidItemIds is consumed by
+            // StripProtectedTeammateItemsFromReturnItems (FriendlyPostRaidService.cs:125-154).
+            HashSet<string> protectedSpawnIds = new(
+                spawn.Inventory?.Items?.Where(item => item?.Id != null).Select(item => item.Id.ToString()) ?? [],
+                StringComparer.OrdinalIgnoreCase);
             postRaidService.RegisterProtectedRaidItemIds(
                 sessionId,
                 protectedSpawnIds,
-                $"profile teammate spawn equipment {member!.ProfileId} ({gearKind} gear)");
+                $"profile teammate spawn inventory {member!.ProfileId} ({gearKind} gear)");
 
             logger.Info($"[STM] Follower generate: spawning profile teammate '{member.Nickname}' (aid {member.Aid}, profile '{member.ProfileId}') with {gearKind} gear.");
             return spawn;
         }
         catch (Exception ex)
         {
-            // Covers the protected-id registration too, deliberately: a spawn whose gear was not
-            // registered would hand that gear to the player at raid end, so no spawn is the safe
-            // outcome. PIT's path is unaffected either way.
+            // Covers the protected-id registration too, deliberately: a spawn whose items were not
+            // registered would hand them to the player at raid end, so no spawn is the safe outcome.
             logger.Error($"[STM] Follower generate: could not build the spawn for profile teammate '{memberId}' (session '{sessionId}'); nothing is spawned for it. {ex}");
             return null;
         }
@@ -354,6 +343,13 @@ public class FriendlyTeammateMatchCallbacks(
             return rows;
         }
 
+        // PIT's defaults for a teammate nobody configured, through PIT's own normalizers so a change
+        // there cannot silently diverge from these rows. Same for every row, so built once.
+        var defaults = FriendlyTeammateService.CreateDefaultTeammateSettings();
+        var defaultAggression = FriendlyTeammateService.NormalizeAggression(defaults.Aggression);
+        var defaultSelfDetermination = pitTeam.Shared.SelfDeterminationPolicy.Normalize(defaults.SelfDetermination);
+        var defaultProficiency = FriendlyTeammateService.NormalizeProficiency(defaults.Proficiency);
+
         // The client keys these rows by Aid, and the registration document holds only ProfileIds, so
         // the Aid comes from a fresh catalog read and the row itself from the resolver (which is what
         // decides whether a registered profile may be used at all).
@@ -375,10 +371,6 @@ public class FriendlyTeammateMatchCallbacks(
                 ?.Tactic;
             // Read-only: member.Pmc is the live profile object, and ToString() hands out no reference into it.
             var customization = member.Pmc?.Customization;
-            // PIT's own defaults for a teammate nobody configured, through PIT's own normalizers, so a
-            // change there cannot silently diverge from this row. (FriendlyTeammateService.cs:4585,
-            // :4724, :4734, :4763 - promoted from private to internal for this call.)
-            var defaults = FriendlyTeammateService.CreateDefaultTeammateSettings();
 
             rows.Add(new FriendlyTeammateFollowerDetailsResponse
             {
@@ -386,9 +378,10 @@ public class FriendlyTeammateMatchCallbacks(
                 // NormalizeCombatTactic maps a blank value to PIT's own default, so the registration
                 // document's tactic needs no separate fallback here.
                 Tactic = FriendlyTeammateService.NormalizeCombatTactic(tactic),
-                Aggression = FriendlyTeammateService.NormalizeAggression(defaults.Aggression),
-                SelfDetermination = pitTeam.Shared.SelfDeterminationPolicy.Normalize(defaults.SelfDetermination),
-                Proficiency = FriendlyTeammateService.NormalizeProficiency(defaults.Proficiency),
+                Aggression = defaultAggression,
+                SelfDetermination = defaultSelfDetermination,
+                // `with { }` so no two rows share one mutable settings object.
+                Proficiency = defaultProficiency with { },
                 Equipment = FriendlyTeammateService.DefaultLoadoutName,
                 Voice = customization?.Voice?.ToString() ?? string.Empty,
                 Head = customization?.Head?.ToString() ?? string.Empty,
