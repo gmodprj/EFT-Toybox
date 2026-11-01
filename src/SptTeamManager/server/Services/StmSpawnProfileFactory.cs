@@ -41,6 +41,9 @@ public class StmSpawnProfileFactory(
     // Same generation map PIT uses for menu-created teammates.
     private const string GenerationLocation = "factory4_day";
 
+    // What PIT gives every mercenary it generates; a profile teammate fights beside them and gets the same.
+    private const string FollowerDifficulty = "hard";
+
     // Field, deliberately. Task 2 forbade fields because cached PROFILE data goes stale; this records
     // what WE did at spawn time, which exists nowhere else - the raid-end report does not carry it,
     // so Task 8 cannot tell "died in its own gear" from "died in a generated loadout" without it.
@@ -78,7 +81,7 @@ public class StmSpawnProfileFactory(
         // Must equal the Id the invite announced (FriendlyTeammateMatchCallbacks.BuildProfileMemberAccept); member.ProfileId is the source of truth.
         spawn.Id = new MongoId(member.ProfileId);
         spawn.Aid = member.Aid;
-        EnsurePmcRole(spawn, member.Side);
+        ForceFollowerRoleAndDifficulty(spawn, member.Side);
 
         // PIT applies five tweaks before a mercenary spawns. We take three and skip two, and the reason
         // differs per tweak rather than per gear kind:
@@ -230,14 +233,24 @@ public class StmSpawnProfileFactory(
     }
 
     // A human's PMC may have no Info.Settings, or a blank Role, and the client dereferences it.
-    private static void EnsurePmcRole(BotBase spawn, string side)
+    // A launcher profile stores Settings.Role = "assault" and BotDifficulty = "easy" - defaults that mean
+    // nothing while the person is playing that profile themselves, and that SAIN reads literally once the
+    // same character is spawned as somebody's follower. Measured in game on 2026-11-01: profile teammates
+    // came out role=assault difficulty=easy profile=0.15 visibleDistance=90, while PIT's mercenaries ran
+    // role=pmcBEAR difficulty=hard profile=1.5 visibleDistance=225 - a follower that can barely see an
+    // enemy looks exactly like a follower that refuses to fight.
+    //
+    // So these are OVERWRITTEN, not filled when blank: the stored values are never the right ones for a
+    // follower. "hard" is what PIT bakes into every mercenary at generation time
+    // (FriendlyTeammateService.cs:257, :311, Onboarding.cs:52), and the Temporary path cannot inherit it
+    // because it takes only the generated bot's Inventory. `spawn` is a deep clone, so the launcher
+    // profile keeps its own values.
+    private static void ForceFollowerRoleAndDifficulty(BotBase spawn, string side)
     {
         spawn.Info ??= new CommonInfo();
         spawn.Info.Settings ??= new BotInfoSettings();
-        if (string.IsNullOrWhiteSpace(spawn.Info.Settings.Role))
-        {
-            spawn.Info.Settings.Role = PmcRoleFor(side);
-        }
+        spawn.Info.Settings.Role = PmcRoleFor(side);
+        spawn.Info.Settings.BotDifficulty = FollowerDifficulty;
     }
 
     private static string PmcRoleFor(string? side)
