@@ -18,13 +18,13 @@
     <Compile Include="../shared/GiveGearInvitePolicy.cs" Link="Shared/GiveGearInvitePolicy.cs" />
     <Compile Include="../shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
     <Compile Include="../shared/FriendListMergePolicy.cs" Link="Shared/FriendListMergePolicy.cs" />
-    <Compile Include="../shared/PartySlotPolicy.cs" Link="Shared/PartySlotPolicy.cs" />
     <Compile Include="../shared/ProfileMemberLookup.cs" Link="Shared/ProfileMemberLookup.cs" />
     <Compile Include="../shared/SpawnGearPolicy.cs" Link="Shared/SpawnGearPolicy.cs" />
     <Compile Include="../shared/RaidOutcomePolicy.cs" Link="Shared/RaidOutcomePolicy.cs" />
     <Compile Include="../shared/FollowerAiProfilePolicy.cs" Link="Shared/FollowerAiProfilePolicy.cs" />
     <Compile Include="../shared/RaidReceiptKeyPolicy.cs" Link="Shared/RaidReceiptKeyPolicy.cs" />
     <Compile Include="../shared/WornGearLossPolicy.cs" Link="Shared/WornGearLossPolicy.cs" />
+    <Compile Include="../shared/RaidProtectionReleasePolicy.cs" Link="Shared/RaidProtectionReleasePolicy.cs" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="HarmonyX" Version="2.16.1" />
   </ItemGroup>

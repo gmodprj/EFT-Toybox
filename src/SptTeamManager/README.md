@@ -81,14 +81,16 @@ STM's own roster screen instead.
 Shared sources in `shared/` are linked by hand, one line per file and no wildcards, to keep the upstream
 merge surface small. Forgetting a link fails silently in the project that lacks it, so check every
 project when adding a shared file: `ProfileRosterPolicy.cs` is linked into the server, the client and
-the tests; `FriendListMergePolicy.cs`, `PartySlotPolicy.cs`, `SpawnGearPolicy.cs`, `RaidOutcomePolicy.cs`,
-`RaidReceiptKeyPolicy.cs`, `WornGearLossPolicy.cs` and `FollowerAiProfilePolicy.cs` into the server and
+the tests; `FriendListMergePolicy.cs`, `SpawnGearPolicy.cs`, `RaidOutcomePolicy.cs`,
+`RaidReceiptKeyPolicy.cs`, `WornGearLossPolicy.cs`, `RaidProtectionReleasePolicy.cs` and
+`FollowerAiProfilePolicy.cs` into the server and
 the tests only (server-side policy); `StmRosterWire.cs` into the client and the tests only, **not the
 server**, because it depends on `Newtonsoft.Json.Linq`, which the server does not need.
 
-`PartySlotPolicy.cs` has no caller and will not get one: the client enforces the party cap itself, which
-the in-game check established, so a server-side seat gate would duplicate it. It is kept because it is
-pure and tested, not because it is wired.
+`PartySlotPolicy.cs` was deleted, together with its tests. The in-game check measured the cap as the
+player plus FOUR teammates - five party slots - and found the client enforcing it itself, so the policy
+had no caller, no future caller, and a constant (three teammate seats) the measurement had falsified.
+Tests pinning a number that has been measured false are worse than no policy at all.
 
 Not done (later plans): editing a profile teammate's equipment and the teammate detail screen (Plan 3),
 and applying raid results - experience, skills, stats, loot (Plan 4). See `doc/WORKLOG.md` (repo root)

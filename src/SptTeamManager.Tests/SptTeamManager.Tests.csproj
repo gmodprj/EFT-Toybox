@@ -25,8 +25,6 @@
     <Compile Include="ProfileRosterPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/FriendListMergePolicy.cs" Link="Shared/FriendListMergePolicy.cs" />
     <Compile Include="FriendListMergePolicyTests.cs" />
-    <Compile Include="../SptTeamManager/shared/PartySlotPolicy.cs" Link="Shared/PartySlotPolicy.cs" />
-    <Compile Include="PartySlotPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/StmRosterWire.cs" Link="Shared/StmRosterWire.cs" />
     <Compile Include="StmRosterWireTests.cs" />
     <Compile Include="../SptTeamManager/shared/ProfileMemberLookup.cs" Link="Shared/ProfileMemberLookup.cs" />
@@ -41,6 +39,8 @@
     <Compile Include="RaidReceiptKeyPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/WornGearLossPolicy.cs" Link="Shared/WornGearLossPolicy.cs" />
     <Compile Include="WornGearLossPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/RaidProtectionReleasePolicy.cs" Link="Shared/RaidProtectionReleasePolicy.cs" />
+    <Compile Include="RaidProtectionReleasePolicyTests.cs" />
   </ItemGroup>
 
 </Project>

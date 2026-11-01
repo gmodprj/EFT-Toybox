@@ -48,7 +48,8 @@ public class StmRaidOutcomeService(
     // escaped is the caller's judgment and must mean "survived or extracted". The caller does not call
     // this at all when it cannot tell (FriendlyPostRaidCallbacks.ApplyProfileTeammateOutcomes): a wrong
     // "did not escape" deletes equipment, so uncertainty must never arrive here as false.
-    // raidId / accountId may be null or blank; a blank key is refused by TryReserve and nothing is deleted.
+    // raidId / accountId may be null or blank; a blank raid id is refused at step 3 (and would be refused
+    // by TryReserve too) and nothing is deleted.
     public void Apply(MongoId sessionId, string? raidId, string? accountId, bool escaped)
     {
         try
@@ -92,14 +93,29 @@ public class StmRaidOutcomeService(
                 return;
             }
 
-            // 3. Reserve first, then act. True means "a new receipt was durably written"; every other
+            // 3. Refuse an unusable receipt key BEFORE reserving, so the decision below never says
+            //    "이미 적용된 결과" about a raid nothing has ever been applied to. TryReserve refuses a
+            //    blank key (fail closed, correctly), but reserved=false then reaches
+            //    RaidOutcomePolicy.Decide as alreadyApplied:true and the one line a human reads back
+            //    claims this result was already handled - false, and false on the single path where no
+            //    strip will ever happen for this raid at all.
+            //    NOTE: raidId is borrowed from PIT's insurance reporting (FriendlyPostRaidCallbacks hands
+            //    on what the raid-end report carried), so it is not ours to guarantee - which makes it the
+            //    single point of failure for the whole idempotence scheme: no raid id, no receipt, no strip.
+            if (!RaidReceiptKeyPolicy.IsUsableKey(raidId, member.ProfileId))
+            {
+                logger.Error($"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}')의 레이드 식별자가 비어 있다(raidId '{raidId}'). 영수증을 쓸 수 없어 아무것도 지우지 않는다 - 이미 적용된 것이 아니라, 이 레이드는 식별되지 않아 처리할 수 없다.");
+                return;
+            }
+
+            // 4. Reserve first, then act. True means "a new receipt was durably written"; every other
             //    outcome - already applied, blank key, unreadable document, failed write - is false and
             //    nothing may be deleted. Reserving before the deletion is deliberate: a failed verify
             //    must NOT be retried later, because the player may have equipped new gear in the
             //    meantime and a retry would delete that instead (task-8 ruling 2).
             var reserved = receipts.TryReserve(sessionId, raidId, member.ProfileId, StripAction);
 
-            // 4. Decide. The policy is the only thing that may say "strip".
+            // 5. Decide. The policy is the only thing that may say "strip".
             var gearKind = spawnProfileFactory.LastGearKind(sessionId, member.ProfileId);
             var plan = RaidOutcomePolicy.Decide(escaped, gearKind, alreadyApplied: !reserved);
             if (plan.Action != OutcomeAction.StripWornGear)
@@ -124,7 +140,7 @@ public class StmRaidOutcomeService(
                 return;
             }
 
-            StripWornGear(sessionId, member, profileId, raidId, plan.Reason);
+            StripWornGear(sessionId, member, profileId, raidId, plan.Reason, gearKind, escaped);
         }
         catch (Exception ex)
         {
@@ -134,7 +150,17 @@ public class StmRaidOutcomeService(
         }
     }
 
-    private void StripWornGear(MongoId sessionId, StmResolvedMember member, MongoId profileId, string? raidId, string reason)
+    // gearKind and escaped are carried in rather than re-derived: the release scope at the end of this
+    // method is a decision about the same two facts the strip was decided from, and re-reading
+    // LastGearKind here could hand it a different answer than the one that authorised the deletion.
+    private void StripWornGear(
+        MongoId sessionId,
+        StmResolvedMember member,
+        MongoId profileId,
+        string? raidId,
+        string reason,
+        SpawnGearKind? gearKind,
+        bool escaped)
     {
         var pmc = member.Pmc;
         var items = pmc.Inventory?.Items;
@@ -220,14 +246,18 @@ public class StmRaidOutcomeService(
         //     the player-side stripping happens, so the release lands in time;
         //   - entitlement: the items must already be gone from the profile, or releasing them would let
         //     one rifle exist in two places.
-        // Scope is deliberately exactly what was deleted. A surviving teammate strips nothing and so
-        // releases nothing - their gear is still theirs. A Temporary-gear teammate also releases nothing
-        // here, because nothing was deleted; whether the player should keep a generated loadout looted
-        // off a corpse is a separate decision, recorded in doc/WORKLOG.md.
-        postRaidService.RemoveProtectedRaidItemIds(
-            sessionId,
-            expectedGoneIds,
-            $"profile teammate death release {member.ProfileId} (raid {raidId})");
+        // WHICH ids may be released is RaidProtectionReleasePolicy's judgment (pure, tested) - the scope
+        // is exactly what was deleted, and the reasons both wider and narrower scopes are wrong are
+        // recorded there. Asked here even though this method is only reached on the Real-and-died path:
+        // the policy is what makes the scope a guarantee instead of a property of the call site.
+        var releasableIds = RaidProtectionReleasePolicy.SelectReleasableIds(gearKind, escaped, expectedGoneIds);
+        if (releasableIds.Count > 0)
+        {
+            postRaidService.RemoveProtectedRaidItemIds(
+                sessionId,
+                releasableIds,
+                $"profile teammate death release {member.ProfileId} (raid {raidId})");
+        }
 
         VerifyDeletionApplied(member, profileId, raidId, expectedGoneIds);
     }
