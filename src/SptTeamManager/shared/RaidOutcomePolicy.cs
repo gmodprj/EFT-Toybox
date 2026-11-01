@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace pitTeam.Shared
 {
     // StripWornGear = delete the gear the teammate wore into the raid from the stored profile.

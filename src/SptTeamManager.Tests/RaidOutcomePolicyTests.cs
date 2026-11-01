@@ -50,6 +50,17 @@ public class RaidOutcomePolicyTests
             var plan = RaidOutcomePolicy.Decide(escaped, kind, applied);
             Assert.False(string.IsNullOrWhiteSpace(plan.Reason));
         }
+
+        // 다섯 결과(적용됨·기록 없음·임시·탈출·삭제)는 서로 다른 사유를 가진다. 같은 문구를 나눠 쓰면 로그에서 규칙을 구별할 수 없다.
+        var reasons = new[]
+        {
+            RaidOutcomePolicy.Decide(false, SpawnGearKind.Real, true).Reason,
+            RaidOutcomePolicy.Decide(false, null, false).Reason,
+            RaidOutcomePolicy.Decide(false, SpawnGearKind.Temporary, false).Reason,
+            RaidOutcomePolicy.Decide(true, SpawnGearKind.Real, false).Reason,
+            RaidOutcomePolicy.Decide(false, SpawnGearKind.Real, false).Reason,
+        };
+        Assert.Equal(5, reasons.Distinct().Count());
     }
 
     [Fact]
