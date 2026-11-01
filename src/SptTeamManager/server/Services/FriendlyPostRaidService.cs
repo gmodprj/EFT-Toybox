@@ -348,7 +348,7 @@ public class FriendlyPostRaidService(
         logger.Info($"Registered {ids.Length} protected teammate raid item id(s). context='{context}'.");
     }
 
-    private void RemoveProtectedRaidItemIds(MongoId sessionId, IEnumerable<string>? itemIds, string context)
+    internal void RemoveProtectedRaidItemIds(MongoId sessionId, IEnumerable<string>? itemIds, string context)
     {
         string[] ids = itemIds?
             .Where(itemId => !string.IsNullOrWhiteSpace(itemId))

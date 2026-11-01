@@ -39,6 +39,8 @@ public class StmRaidOutcomeService(
     // helper's own injected logger/localisation.
     InventoryHelper inventoryHelper,
     SaveServer saveServer,
+    // Only for releasing the protection on gear this service has just deleted - see StripWornGear.
+    FriendlyPostRaidService postRaidService,
     ISptLogger<StmRaidOutcomeService> logger)
 {
     private const string StripAction = "strip-worn-gear";
@@ -106,7 +108,7 @@ public class StmRaidOutcomeService(
                 return;
             }
 
-            StripWornGear(member, profileId, raidId, plan.Reason);
+            StripWornGear(sessionId, member, profileId, raidId, plan.Reason);
         }
         catch (Exception ex)
         {
@@ -116,7 +118,7 @@ public class StmRaidOutcomeService(
         }
     }
 
-    private void StripWornGear(StmResolvedMember member, MongoId profileId, string? raidId, string reason)
+    private void StripWornGear(MongoId sessionId, StmResolvedMember member, MongoId profileId, string? raidId, string reason)
     {
         var pmc = member.Pmc;
         var items = pmc.Inventory?.Items;
@@ -186,6 +188,30 @@ public class StmRaidOutcomeService(
         var elapsedMs = saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
         logger.Info(
             $"[STM] 레이드 결과: '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}')의 착용 장비 {rootIds.Count}개(하위 포함 {expectedGoneIds.Count}개)를 지우고 저장했다({elapsedMs}ms) - {reason}");
+
+        // Hand what we just deleted back to the player, if they carried it out.
+        //
+        // At raid entry every item of this teammate's spawn inventory was registered as protected, so
+        // that surviving gear could not ALSO be delivered to the player - that would copy an item that
+        // still exists in the teammate's profile. Once the item is gone from the profile the protection
+        // inverts: PIT's RemoveProtectedTeammateItemsFromExtractedProfile strips protected ids from the
+        // player's EXTRACTED inventory and saved profile too, so leaving these registered destroys gear
+        // the player looted off the corpse and carried home. Measured in game 2026-11-01: 35 items left
+        // the teammate's profile and 0 of them reached the player's - all destroyed.
+        //
+        // This runs here, and only after the save, for two reasons measured from the same raid's log:
+        //   - ordering: /raid-outcomes (this call) arrives BEFORE /client/match/local/end, which is where
+        //     the player-side stripping happens, so the release lands in time;
+        //   - entitlement: the items must already be gone from the profile, or releasing them would let
+        //     one rifle exist in two places.
+        // Scope is deliberately exactly what was deleted. A surviving teammate strips nothing and so
+        // releases nothing - their gear is still theirs. A Temporary-gear teammate also releases nothing
+        // here, because nothing was deleted; whether the player should keep a generated loadout looted
+        // off a corpse is a separate decision, recorded in doc/WORKLOG.md.
+        postRaidService.RemoveProtectedRaidItemIds(
+            sessionId,
+            expectedGoneIds,
+            $"profile teammate death release {member.ProfileId} (raid {raidId})");
 
         VerifyDeletionApplied(member, profileId, raidId, expectedGoneIds);
     }
