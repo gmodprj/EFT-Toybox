@@ -300,6 +300,13 @@ public class FriendlyTeammateMatchCallbacks(
                 protectedSpawnIds,
                 $"profile teammate spawn inventory {member!.ProfileId} ({gearKind} gear)");
 
+            if (protectedSpawnIds.Count == 0)
+            {
+                // Nothing to leak, so this is the safe direction - but an empty spawn inventory is
+                // itself odd enough to say out loud rather than hide inside the Info line below.
+                logger.Warning($"[STM] Follower generate: profile teammate '{member.ProfileId}' spawned with no inventory item ids to protect.");
+            }
+
             logger.Info($"[STM] Follower generate: spawning profile teammate '{member.Nickname}' (aid {member.Aid}, profile '{member.ProfileId}') with {gearKind} gear.");
             return spawn;
         }
