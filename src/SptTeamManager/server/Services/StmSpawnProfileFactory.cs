@@ -20,8 +20,10 @@ namespace pitTeam.Server.Services;
 //
 // member.Pmc is the LIVE object SaveServer holds (see StmProfileMemberResolver). Nothing here writes
 // through it: reading the gear facts mutates nothing, and BOTH paths build on cloner.Clone, so no
-// reference into the profile's object graph is ever handed out. Real and Temporary differ in exactly
-// one respect - Temporary swaps the clone's whole Inventory for a generated bot's.
+// reference into the profile's object graph is ever handed out. Clone is a deep clone: SPT's ICloner
+// is FastCloner, which calls FastCloner 3.5.5's DeepClone, so later writes to the clone cannot reach
+// the stored profile. Temporary swaps the clone's whole Inventory for a generated bot's, and empties
+// InsuredItems because that swap takes the insured items away; nothing else differs from Real.
 [Injectable(InjectionType.Singleton)]
 public class StmSpawnProfileFactory(
     // FriendlyTeammateService is [Injectable] with SPT's default InjectionType.Transient, so this
@@ -137,8 +139,9 @@ public class StmSpawnProfileFactory(
         var bot = teammateService.GenerateTeammateBot(sessionId, details)
             ?? throw new FriendlyTeammateException($"Bot generation for profile '{member.ProfileId}' returned nothing");
 
-        // Temporary differs from Real in exactly one respect: the Inventory. The spawn is the same
-        // profile clone the Real path builds, so Health, Skills, Stats, Quests and the rest stay the
+        // What Temporary changes is the Inventory, plus the insurance list below that the swap
+        // invalidates - nothing else. The spawn is the same profile clone the Real path builds, so
+        // Health, Skills, Stats, Quests and the rest stay the
         // person's - a loaner kit must not turn the teammate into somebody else, and the caller's
         // health multiplier has to mean the same thing on both paths.
         var spawn = BuildFromProfile(member);
