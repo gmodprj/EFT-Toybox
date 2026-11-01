@@ -18,7 +18,7 @@
 - **지금 로그인한 세션의 프로필은 어떤 경로로도 팀원이 될 수 없다**(설계 §6-9).
 - **읽을 수 없거나 판단이 서지 않으면 "사용 불가"로 처리한다. 추측해서 진행하지 않는다.**
 - **리네임은 최소 침습.** `src/SptTeamManager/`는 업스트림 PIT의 서브트리 임포트다. 네임스페이스(`pitTeam`, `pitTeam.Server`)·클래스명·파일명·라우트 문자열을 바꾸지 않는다.
-- **EFT 네이티브 경로를 새로 가로채지 않는다.** PIT가 이미 소유한 네 경로(`invite/send`, `followergenerate`, `followerdetails`, `followerprogress`)의 기존 콜백 안에서만 작업한다.
+- **EFT 네이티브 경로를 새로 가로채지 않는다.** 이미 이 포크가 소유한 경로의 기존 콜백 안에서만 작업한다 — 네이티브 쪽은 `/client/match/group/invite/send`·`/client/game/bot/followergenerate`·`/client/game/bot/followerdetails`·`/client/game/bot/followerprogress`(`FriendlyTeammateMatchRouter`), 포크 고유 경로는 `/singleplayer/pitfireteam/teammate/death-escape`(`FriendlyPostRaidRouter`).
 - 설계 §4: **PIT 기능이 조용히 망가지는 것은 실패 조건이다.** 용병만 데려가는 기존 흐름이 이 계획 뒤에도 똑같이 동작해야 한다. 이 계획이 기존 PIT 핸들러에 들여오는 모든 읽기는 보호되어 실패 시 **PIT 경로가 그대로 흐르도록** 해야 한다(계획 1에서 같은 결함이 두 번 나왔다).
 - 설계 §4: **아이템이 복제되거나 사라지면 안 된다.** 임시 장비로 나간 팀원에게는 레이드 결과를 **쓰지 않는다** — 쓸 재산이 없다.
 - `downloads/`, `extracted/`, `backup/`, `.superpowers/`와 빌드 산출물·`server/refs/`는 커밋하지 않는다.
@@ -239,7 +239,9 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 
 **Files:**
 - Create: `src/SptTeamManager/server/Services/StmRaidOutcomeService.cs`
-- Modify: `src/SptTeamManager/server/Callbacks/FriendlyTeammateMatchCallbacks.cs` (사망·탈출 보고 경로)
+- Modify: `src/SptTeamManager/server/Callbacks/FriendlyPostRaidCallbacks.cs` (`DeathEscape`)
+
+> **정정(2026-11-01, 실측).** 처음에 이 Task 의 수정 대상을 `FriendlyTeammateMatchCallbacks.cs` 라고 적었으나 **틀렸다.** 사망·탈출 경로는 거기 없다. 실제 자리는 `server/Callbacks/FriendlyPostRaidCallbacks.cs` 의 `DeathEscape(string url, FriendlyTeammateDeathEscapeRequest request, MongoId sessionId)` 이고, `PersistDeathEscapeOutcomes` 호출은 그 파일 100행이며, 라우트는 `server/Routers/Static/FriendlyPostRaidRouter.cs` 의 `/singleplayer/pitfireteam/teammate/death-escape` 다(`/teammate/raid-outcomes` 도 같은 라우터). 포크가 소유한 `/singleplayer/pitfireteam/*` 경로이므로 네이티브 침범이 아니다.
 
 **Interfaces:**
 - Consumes: Task 2·6·7, 그리고 Task 3의 `StmSpawnProfileFactory.LastGearKind(sessionId, profileId)`. **`null`이면 `SpawnGearKind.Temporary`로 친다** — 무엇을 입혀 보냈는지 모르면 지우지 않는다.
