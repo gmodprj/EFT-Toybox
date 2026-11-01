@@ -2,7 +2,7 @@
 
 - 날짜: 2026-10-31
 - 대상: SPT 4.1.6 / EFT 클라이언트 플러그인(BepInEx) + 서버 모드(C#, net10.0)
-- 바탕: [PIT Fireteam](https://sp-mod.com/mod/2676/pit-fireteam) 1.0.0 포크 (MIT, https://github.com/pitAlex/SPT-PitFireTeam)
+- 바탕: [PIT Fireteam](https://sp-mod.com/mod/2676/pit-fireteam) 1.0.0 포크 (MIT, https://github.com/pitAlex/SPT-PitFireTeam) — **라이선스 표기는 §6-1 의 정정(2026-11-01) 참조: 저장소에 LICENSE 파일이 없다.**
 - 상태: 설계 확정, 구현 전
 
 ---
@@ -102,7 +102,7 @@ PIT Fireteam을 포크한 **단일 모드**다. 설치하면 PIT는 뺀다. 기�
 
 MIT이므로 원 저작권 고지를 유지하고, 포크임을 README와 모드 페이지에 밝힌다. GUID·어셈블리 이름·설정 파일 이름·DB 경로는 전부 새 이름으로 바꿔 PIT와 파일이 섞이지 않게 한다.
 
-→ **정정(2026-11-01, 실측).** "MIT이므로 원 저작권 고지를 유지한다"의 전제 중 일부가 확인되지 않았다. 모드 페이지(https://sp-mod.com/mod/2676/pit-fireteam)의 Details 절에 **"License" 필드가 있고 값은 "MIT License"**(https://choosealicense.com/licenses/mit/ 로 연결)이다 — 저작자가 배포 페이지에 MIT 를 **선언**했다(2026-11-01 직접 확인; 페이지는 라이선스 본문을 싣지 않는다). 그러나 **업스트림 저장소에는 LICENSE 파일이 없다**(`git ls-files src/SptTeamManager | grep -i licen` 이 빈 출력). 따라서 유지할 고지 파일이 없고, 문서는 MIT 를 스스로 단정하지 않는다(`src/SptTeamManager/README.md`). 더해서 복사된 SAIN 코드의 고지 파일 `addon/SAIN-LICENSE.txt` 가 업스트림 작업 트리에서 이미 삭제돼 있고 업스트림 자신이 미해결로 적어 두었다(`addon/docs/References.md:24`, `addon/docs/Validation.md:566`). **실측(2026-11-01, 컨트롤러):** `find E:/Spt -iname "SAIN-LICENSE*"` 가 아무것도 찾지 못하고, 설치된 PIT 두 디렉터리(`BepInEx/plugins/pitFireTeam`, `SPT_Runtime/user/mods/pitFireTeam-ServerMod`) 어디에도 라이선스 파일이 없다. 즉 고지는 업스트림 작업 트리·이 레포·살아 있는 설치본 어디에도 없으며, `Validation.md:566` 의 "이미 설치돼 있고 유지했다"는 적어도 이 설치본에서는 사실이 아니다. 포크가 이를 물려받았으므로 **배포 전에 해소해야 한다.** 저작자 표시(Author·Url)는 PitAlex 와 원 저장소로 유지한다.
+→ **정정(2026-11-01, 실측).** "MIT이므로 원 저작권 고지를 유지한다"의 전제 중 일부가 확인되지 않았다. 모드 페이지(https://sp-mod.com/mod/2676/pit-fireteam)의 Details 절에 **"License" 필드가 있고 값은 "MIT License"**(https://choosealicense.com/licenses/mit/ 로 연결)이다 — 저작자가 배포 페이지에 MIT 를 **선언**했다(2026-11-01 직접 확인; 페이지는 라이선스 본문을 싣지 않는다). 업스트림 서버 메타데이터도 같다: `server/PitFireTeamServerPlugin.cs:28` 의 `License = "MIT"`(`f32a41b` 에서도 동일; 선언 문자열일 뿐 본문·저작권 고지가 아니다). **열린 결정(소유자 몫):** STM 이 그 메타데이터를 그대로 싣고 있어 설치된 포크가 `License = "MIT"` 를 주장하는데 README 는 주장하지 않는다 — 유지할지 바꿀지는 소유자가 정한다. 그러나 **업스트림 저장소에는 LICENSE 파일이 없다**(`git ls-files src/SptTeamManager | grep -i licen` 이 빈 출력). 따라서 유지할 고지 파일이 없고, 문서는 MIT 를 스스로 단정하지 않는다(`src/SptTeamManager/README.md`). 더해서 복사된 SAIN 코드의 고지 파일 `addon/SAIN-LICENSE.txt` 가 업스트림 작업 트리에서 이미 삭제돼 있고 업스트림 자신이 미해결로 적어 두었다(`addon/docs/References.md:24`, `addon/docs/Validation.md:566`). **실측(2026-11-01, 컨트롤러):** `find E:/Spt -iname "SAIN-LICENSE*"` 가 아무것도 찾지 못하고, 설치된 PIT 두 디렉터리(`BepInEx/plugins/pitFireTeam`, `SPT_Runtime/user/mods/pitFireTeam-ServerMod`) 어디에도 라이선스 파일이 없다. 즉 고지는 업스트림 작업 트리·이 레포·살아 있는 설치본 어디에도 없으며, `Validation.md:566` 의 "이미 설치돼 있고 유지했다"는 적어도 이 설치본에서는 사실이 아니다. 포크가 이를 물려받았으므로 **배포 전에 해소해야 한다.** 저작자 표시(Author·Url)는 PitAlex 와 원 저장소로 유지한다.
 
 ### 6-2. 팀원 두 종류
 

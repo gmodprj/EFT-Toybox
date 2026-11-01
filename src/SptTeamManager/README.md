@@ -2,8 +2,8 @@
 
 STM is a fork of **PIT Fireteam 1.0.0** by PitAlex. It adds a second kind of teammate (another
 profile on the same SPT server) next to PIT's mercenaries. The original author and upstream
-repository stay credited; this fork changes names and adds files, and it keeps the upstream tree
-intact so upstream changes can still be merged.
+repository stay credited; this fork changes names and adds files. Upstream history is preserved via git
+subtree and modifications to upstream files are kept minimal (identifiers such as the GUID, assembly names and display name were renamed inside upstream files).
 
 ## Provenance and licence
 
@@ -17,9 +17,9 @@ intact so upstream changes can still be merged.
 **Licence status is not settled, and this README does not claim a licence.** What is known:
 
 - The mod page above has a labelled "License" field in its Details section whose value is "MIT License" (linking to https://choosealicense.com/licenses/mit/). The author therefore **declared** MIT on the distribution page (verified 2026-11-01). The page does not reproduce the licence text.
-- The upstream repository has **no LICENSE file** (`git ls-files src/SptTeamManager` finds none), so the
-  source tree itself carries no licence notice.
-- The declaration therefore exists only on the mod page; no licence text accompanies the source. Whether and how this fork may be redistributed (including the missing licence file and the SAIN notice below) is for the repository owner to settle, ideally by asking the author, before any public release.
+- Upstream's own server metadata also declares MIT: `server/PitFireTeamServerPlugin.cs:28` reads `License = "MIT"` (same record as `Author = "PitAlex"` and the upstream `Url`; identical at `f32a41b`). That is a declaration string, not licence text and not a copyright notice.
+- There is **no LICENSE file** anywhere in the upstream source tree (`git ls-files src/SptTeamManager` finds none), so no licence text accompanies the source.
+- **Open decision for the repository owner (not decided here):** STM ships that metadata record, so the installed fork mod currently asserts `License = "MIT"` while this README makes no licence claim of its own. Whether the fork keeps that field as-is or changes it is the owner's call. Whether and how this fork may be redistributed (including the missing licence file and the SAIN notice below) should also be settled, ideally by asking the author, before any public release.
 
 **Unresolved attribution defect inherited from upstream (must be resolved before distributing).**
 The optional SAIN addon in `addon/` contains code copied from SAIN, which needs its own upstream notice
@@ -31,9 +31,9 @@ already installed and was retained" untrue at least for this installation. Upstr
 documents record the problem: `addon/docs/References.md` (line 24) says the notice must be resolved
 before packaging, and `addon/docs/Validation.md` (line 566) says the build output lacks it and the issue
 "remains unresolved". This fork imported the addon as-is, so it has the same gap. Plan 1 neither builds
-nor installs the addon, so nothing is being distributed now.
+nor installs the addon, so nothing is being distributed now. This repository also lacks the notice: no SAIN-LICENSE file exists in the repo.
 
-## What works in this fork today
+## What is in this fork today (only the pure policy code is covered by tests)
 
 Plan 1 (foundation) is committed; **nothing has been installed or run in the game yet.**
 

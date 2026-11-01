@@ -11,7 +11,7 @@
   git subtree add --prefix=src/SptTeamManager f32a41b2def356a25b3ed40d1115af9116c7e51b
   ```
 - 이 단계에서는 아무것도 리네임하지 않았다. 업스트림 소스는 그대로다.
-- **라이선스 사실(정정 2026-11-01, 실측).** 업스트림 저장소에는 LICENSE 파일이 **없다**(`git ls-files src/SptTeamManager | grep -i licen` 이 빈 출력). 모드 페이지(https://sp-mod.com/mod/2676/pit-fireteam)가 MIT 로 표기할 뿐이다. 앞 줄에 있던 "라이선스(MIT)는 그대로다"는 고지 파일이 있는 듯 읽혀 **틀렸다.** 또 복사된 SAIN 코드의 고지 파일 `addon/SAIN-LICENSE.txt` 는 업스트림 작업 트리에서 이미 삭제돼 있다(`addon/docs/References.md:24`, `addon/docs/Validation.md:566`). 포크가 그 결함을 물려받았다. 자세한 것은 `src/SptTeamManager/README.md`.
+- **라이선스 사실(정정 2026-11-01, 실측).** 업스트림 저장소에는 LICENSE 파일이 **없다**(`git ls-files src/SptTeamManager | grep -i licen` 이 빈 출력). MIT 는 모드 페이지(https://sp-mod.com/mod/2676/pit-fireteam)의 "License" 필드("MIT License")와 업스트림 서버 메타데이터(`server/PitFireTeamServerPlugin.cs:28` 의 `License = "MIT"`)가 선언할 뿐이고, 라이선스 본문을 담은 파일은 없다. STM 이 그 메타데이터를 그대로 싣고 있어 유지할지 바꿀지는 소유자가 정할 열린 결정이다. 앞 줄에 있던 "라이선스(MIT)는 그대로다"는 고지 파일이 있는 듯 읽혀 **틀렸다.** 또 복사된 SAIN 코드의 고지 파일 `addon/SAIN-LICENSE.txt` 는 업스트림 작업 트리에서 이미 삭제돼 있다(`addon/docs/References.md:24`, `addon/docs/Validation.md:566`). 포크가 그 결함을 물려받았다. 자세한 것은 `src/SptTeamManager/README.md`.
 
 ## 서버 참조 DLL (`src/SptTeamManager/server/refs/4.1.0/`, 커밋 안 함)
 출처는 **설치본이 아니라 NuGet 4.1.0** 이다. 이 기계의 설치본은 전부 4.1.6 이고, 서버 csproj 의 `ValidateSptReferences` 는 컴파일 참조가 4.1.0.0 이어야 한다고 강제한다(끄지 않음).

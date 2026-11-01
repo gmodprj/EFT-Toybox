@@ -10,12 +10,11 @@ namespace pitTeam.Shared
     // today. This is the gate for when a client->server composition report exists. Never invent a
     // count from invite traffic - a stale count would silently refuse legitimate mercenary invites.
     // The cap is a native limit, not a tunable - do not make it a setting.
-    // In SPT a native friend never joins a raid party: a real profile's friends array is empty (design
-    // section 5-3 measured it as []) and Fika compatibility is a non-goal (design section 3). So
-    // FriendKind.Native exists to keep native friend-list entries from being erased by the merge; it
-    // does not mean a native player takes one of the party seats. Do not size the cap on that premise.
-    // (The remark inside Admit about a native player holding a seat describes the stock window in general;
-    // in SPT that case does not arise.)
+    // In SPT a native friend never joins a raid party: a real profile's friends array is empty
+    // (doc/specs/2026-10-31-spt-team-manager-design.md section 5-3 measured it as []) and Fika
+    // compatibility is a non-goal (same document, section 3). So FriendKind.Native exists to keep native
+    // friend-list entries from being erased by the merge; it does not mean a native player takes one of
+    // the party seats. Do not size the cap on that premise.
     public static class PartySlotPolicy
     {
         public const int MaxTeammateSlots = 3;
@@ -28,9 +27,9 @@ namespace pitTeam.Shared
                 return new SlotDecision(false, "Cannot add this teammate: the current party size could not be determined.");
             }
 
-            // A native player does occupy one of the window's four seats, but the native party window
-            // enforces its own limit for them. This policy only meters the AI teammate seats, so a native
-            // join is never counted against (or refused by) those 3.
+            // Native joins are not metered: in SPT no native friend takes a party seat (see the class
+            // comment). This policy only meters the AI teammate seats, so a native join is never counted
+            // against (or refused by) those 3.
             if (joining == FriendKind.Native)
             {
                 return new SlotDecision(true, null);
