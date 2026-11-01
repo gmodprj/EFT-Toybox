@@ -40,9 +40,24 @@ Plan 1 (foundation) is committed; **nothing has been installed or run in the gam
 - Server: lists launcher profiles and judges which can be teammates, stores the registration of a
   profile as a teammate, merges registered profiles into the friend list (native entries and
   mercenaries are kept), and has a pure party-seat policy (3 AI teammate seats) that is deliberately
-  not wired into the invite path yet. Unit tests: 51 passing; server builds with 0 warnings and 0 errors.
+  not wired into the invite path yet. Unit tests: 53 passing; server builds with 0 warnings and 0 errors.
 - Client: roster screen code for profile teammates. **The client has never been compiled** - the
   4.1.0.0 client references do not exist on this machine.
+
+A profile member can be registered and will appear in the roster and the party-invite window, but
+**cannot yet be invited into a raid**: clicking invite on one sends a "not supported yet" system message
+and nothing else.
+
+Known limitation (Plan 2 item): the native friend-list "delete" action does nothing for a profile member
+(it only removes PIT mercenaries, and the entry returns on the next poll); remove a profile member from
+STM's own roster screen instead.
+
+Shared sources in `shared/` are linked by hand, one line per file and no wildcards, to keep the upstream
+merge surface small. Forgetting a link fails silently in the project that lacks it, so check all three
+when adding a shared file: `ProfileRosterPolicy.cs` is linked into the server, the client and the tests;
+`FriendListMergePolicy.cs` and `PartySlotPolicy.cs` into the server and the tests only (they are server-side
+policy); `StmRosterWire.cs` into the client and the tests only, **not the server**, because it depends on
+`Newtonsoft.Json.Linq`, which the server does not need.
 
 Not done (later plans): editing a profile teammate's equipment, stash transfer, and applying raid
 results (experience, skills, stats, loot, losses). See `doc/WORKLOG.md` (repo root) for the full list,

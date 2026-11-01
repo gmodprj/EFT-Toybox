@@ -73,7 +73,8 @@ public class FriendlyTeammateSocialCallbacks(
         }
         catch (Exception ex)
         {
-            logger.Error($"[STM] Friend list: profile members could not be read for session '{sessionId}'; none are offered. {ex}");
+            LogFaultOnce($"read|{sessionId}|{ex.GetType().FullName}",
+                $"[STM] Friend list: profile members could not be read for session '{sessionId}'; none are offered (logged once per run for this fault; it recurs on every poll until fixed). {ex}");
             readyMembers = Array.Empty<ProfileCandidate>();
         }
 
@@ -89,7 +90,8 @@ public class FriendlyTeammateSocialCallbacks(
             }
             catch (Exception ex)
             {
-                logger.Error($"[STM] Friend list: profile member '{candidate.ProfileId}' could not be converted and is left out (session '{sessionId}'). {ex}");
+                LogFaultOnce($"convert|{sessionId}|{candidate.ProfileId}|{ex.GetType().FullName}",
+                    $"[STM] Friend list: profile member '{candidate.ProfileId}' could not be converted and is left out (session '{sessionId}'; logged once per run for this fault). {ex}");
             }
         }
 
@@ -122,6 +124,20 @@ public class FriendlyTeammateSocialCallbacks(
 
         response.Friends = merged;
         return new ValueTask<string>(httpResponseUtil.GetBody(response, body?.Err ?? 0, body?.ErrMsg));
+    }
+
+    private static readonly HashSet<string> LoggedFaults = new(StringComparer.Ordinal);
+
+    // The game polls /client/friend/list, and a corrupt registration document throws on every poll by
+    // design. The full exception is logged once per distinct fault per server run, then not again.
+    private void LogFaultOnce(string key, string message)
+    {
+        bool first;
+        lock (LoggedFaults) first = LoggedFaults.Add(key);
+        if (first)
+        {
+            logger.Error(message);
+        }
     }
 
     private static readonly HashSet<string> LoggedSkips = new(StringComparer.Ordinal);

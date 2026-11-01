@@ -9,7 +9,9 @@ namespace pitTeam.Shared
     // {To, InLobby} and there is no accept/leave/kick route, so the cap cannot be evaluated server-side
     // today. This is the gate for when a client->server composition report exists. Never invent a
     // count from invite traffic - a stale count would silently refuse legitimate mercenary invites.
-    // The cap is a native limit, not a tunable - do not make it a setting.
+    // The cap is a native limit, not a tunable - do not make it a setting. Its source is the repository
+    // owner's observation of the party window, not a measurement or documentation; that measurement is
+    // still pending as doc/WORKLOG.md human-gate item 8.
     // In SPT a native friend never joins a raid party: a real profile's friends array is empty
     // (doc/specs/2026-10-31-spt-team-manager-design.md section 5-3 measured it as []) and Fika
     // compatibility is a non-goal (same document, section 3). So FriendKind.Native exists to keep native

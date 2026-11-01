@@ -59,7 +59,8 @@ public class StmProfileMemberStore(FriendlyTeammateStorage storage, StmProfileCa
         }
     }
 
-    // Shared (account-wide) document, so the team does not change with the Guns for Hire / Allegiance mode.
+    // Per logged-in profile (keyed by sessionId) and independent of the Guns for Hire / Allegiance mode: the
+    // team does not change with the mode. (Upstream calls this "account-wide"; it is not shared across profiles.)
     private List<StmProfileMember> Load(MongoId sessionId) =>
         storage.ReadSharedDocument<StmProfileMembersDocument>(sessionId, Document)?.Members ?? [];
 

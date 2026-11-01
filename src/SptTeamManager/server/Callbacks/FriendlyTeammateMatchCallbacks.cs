@@ -1,5 +1,6 @@
 using pitTeam.Server.Models;
 using pitTeam.Server.Services;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
@@ -18,7 +19,9 @@ public class FriendlyTeammateMatchCallbacks(
     FollowerInsuranceRaidDiagnostics insuranceDiagnostics,
     HttpResponseUtil httpResponseUtil,
     NotificationSendHelper notificationSendHelper,
-    MailSendService mailSendService
+    MailSendService mailSendService,
+    StmProfileMemberStore profileMemberStore,
+    ISptLogger<FriendlyTeammateMatchCallbacks> logger
 )
 {
     public ValueTask<string> SendGroupInvite(
@@ -53,6 +56,28 @@ public class FriendlyTeammateMatchCallbacks(
                 });
 
                 return new ValueTask<string>(previousOutput ?? httpResponseUtil.GetBody("pitfireteam-teammate-invite"));
+            }
+
+            // STM: PIT's lookup found nothing. If the id is a registered launcher-profile member, say so
+            // instead of staying silent (profile members cannot be taken into a raid yet). Contained: any
+            // failure here is logged and falls through to exactly the return below, as before STM.
+            if (teammate == null)
+            {
+                try
+                {
+                    string target = request.To?.Trim() ?? string.Empty;
+                    if (target.Length > 0 && profileMemberStore.List(sessionId).Any(m => string.Equals(m.ProfileId, target, StringComparison.Ordinal)))
+                    {
+                        mailSendService.SendSystemMessageToPlayer(
+                            sessionId,
+                            "Profile teammates cannot join a raid yet. This is planned.",
+                            null);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"[STM] Group invite: could not check whether '{request.To}' is a profile member (session '{sessionId}'); no message sent. {ex}");
+                }
             }
 
             return new ValueTask<string>(previousOutput ?? httpResponseUtil.NullResponse());

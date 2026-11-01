@@ -7,11 +7,20 @@ namespace pitTeam.Server.Models;
 // team-level choices made about it. No nickname, level, gear, stash or stats are stored here -
 // the launcher profile is the single source of truth, and a copy would become "ghost assets".
 // Tactic and AutoJoin are persisted only; nothing in this task interprets them.
-public record StmProfileMember(string ProfileId, string Tactic, bool AutoJoin);
+// Property names are pinned: this is persisted data, and renaming a property later orphans what
+// the human gate writes through SPT's real serializer.
+// NOTE: StmProfileMember is a positional record, so reading it back depends on constructor-parameter
+// binding (parameters are matched to the pinned property names below), not on settable properties -
+// unlike every other persisted model in this codebase.
+public record StmProfileMember(
+    [property: JsonPropertyName("profileId")] string ProfileId,
+    [property: JsonPropertyName("tactic")] string Tactic,
+    [property: JsonPropertyName("autoJoin")] bool AutoJoin);
 
 // Shape of the stm-profile-members.json document.
 public record StmProfileMembersDocument
 {
+    [JsonPropertyName("members")]
     public List<StmProfileMember> Members { get; set; } = [];
 }
 

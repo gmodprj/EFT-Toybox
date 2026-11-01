@@ -78,6 +78,19 @@ public class StmRosterWireTests
     }
 
     [Fact]
+    public void Missing_문자열은_Missing_으로_읽힌다()
+    {
+        Assert.Equal(RosterRowStatus.Missing, StmRosterWire.ParseStatus("Missing"));
+    }
+
+    [Fact]
+    public void 멤버는_서버가_보낸_등록_순서대로_나온다()
+    {
+        var s = StmRosterWire.Interpret(Env($"[{Row("c", 3, "Ready")},{Row("a", 1, "Ready")},{Row("b", 2, "Ready")}]"), Own);
+        Assert.Equal(new[] { "c", "a", "b" }, s.Members.Select(m => m.ProfileId).ToArray());
+    }
+
+    [Fact]
     public void 후보는_Ready_이고_Aid_가_있는_것만_남는다()
     {
         var s = StmRosterWire.Interpret(

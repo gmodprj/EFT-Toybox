@@ -65,7 +65,8 @@ if ($Remove) {
     $keep = Join-Path $serverDest 'Resources\settings.json'
     foreach ($p in $plan) {
         if ($p.To -eq $keep) { continue }
-        if (Test-Path $p.To) { Remove-Item $p.To -Force; "제거됨: $($p.To)" }
+        # 파일만 지운다: 원본 폴더가 없어 계획에 폴더 경로가 들어간 항목은 -Recurse 없이 지우지 않는다.
+        if (Test-Path $p.To -PathType Leaf) { Remove-Item $p.To -Force; "제거됨: $($p.To)" }
     }
     foreach ($d in @($clientDest, $serverDest)) {
         if (Test-Path $d) {
@@ -89,7 +90,8 @@ if ($pitDirs) {
     $list = ($pitDirs | ForEach-Object { "  $_" }) -join "`n"
     throw ("PIT Fireteam 이 설치돼 있어 중단한다. 아무것도 복사하지 않았다.`n" +
         "STM 은 PIT Fireteam 의 포크라 둘을 함께 설치할 수 없다. 둘이 /singleplayer/pitfireteam/* 서버 라우트를 같이 쓴다.`n" +
-        "찾은 폴더 — 아래를 지운 뒤 다시 실행한다:`n$list")
+        "찾은 폴더 — 아래를 지운 뒤 다시 실행한다:`n$list`n" +
+        "(BepInEx\plugins\pitFireTeam 안에 BattleRecords 폴더만 있다면 PIT 의 BattleRecorder 가 남긴 찌꺼기이므로 모드가 설치된 것이 아니다. 그냥 지워도 된다.)")
 }
 
 # 원본이 없으면 조용히 건너뛰지 않고 중단한다.

@@ -39,8 +39,8 @@ namespace pitTeam.Shared
             var accepted = new HashSet<int>();
             foreach (var index in Enumerable.Range(0, incoming.Count).OrderBy(i => Rank(incoming[i].Kind)))
             {
+                // Elements are never null (the sort key above already dereferences each one), so no null guard here.
                 var entry = incoming[index];
-                if (entry == null) continue;
                 if (entry.Id != null && seenIds.TryGetValue(entry.Id, out var sameId))
                 {
                     skipped.Add((entry, $"same Id as {sameId.Kind} entry '{sameId.Id}'"));
