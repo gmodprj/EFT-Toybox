@@ -244,9 +244,12 @@ public class FriendlyTeammateMatchCallbacks(
             // different temporary loadout.
             // Of PIT's two post-spawn calls below, only RegisterProtectedRaidItemIds is made for a
             // profile teammate (inside the helper). insuranceDiagnostics.CaptureGeneratedFollower is
-            // NOT: it persists the raid diagnostic document and drives insurance settlement
-            // (FollowerInsuranceRaidDiagnostics.cs:132-153 via Update/SaveAndReport :214-241), which
-            // is mercenary insurance machinery a launcher profile has no policies in.
+            // NOT, and must not be restored for symmetry with PIT: it is not diagnostics. It reads the
+            // mercenary's {aid}-settings.json policies and writes the raid diagnostic document, then
+            // runs gift cancellation, policy transfer, courier authorisation and settlement
+            // (FollowerInsuranceRaidDiagnostics.cs:132-153 via Update/SaveAndReport :214-241). A
+            // launcher profile has no policy file, so that pass is a no-op at best and a way into the
+            // player's own insurance at worst. Teammate insurance for profile members is out of scope.
             var generated = TryBuildProfileMemberSpawn(sessionId, request.MemberId, request.Custom?.Health);
             if (generated != null)
             {
@@ -296,7 +299,12 @@ public class FriendlyTeammateMatchCallbacks(
             // raid end. Without it, Real gear would be copied into the player's stash while it still
             // exists in its own launcher profile (duplication), and Temporary gear - generated out of
             // nothing - would be free loot.
-            HashSet<string> protectedSpawnIds = teammateService.GetProtectedSpawnItemIdsForExtraction(spawn);
+            // Deliberately the UNGATED collection, not PIT's GetProtectedSpawnItemIdsForExtraction: that
+            // one protects nothing in Immersive/Extreme mode (the default), which is a loot choice for a
+            // mercenary whose gear exists nowhere else. A profile teammate's gear is also sitting in a
+            // real launcher profile, so the same delivery would COPY an item instead of moving it -
+            // protected in every mode. Not delivering it destroys nothing: it stays in that profile.
+            HashSet<string> protectedSpawnIds = teammateService.CollectSpawnEquipmentTreeIds(spawn);
             postRaidService.RegisterProtectedRaidItemIds(
                 sessionId,
                 protectedSpawnIds,
