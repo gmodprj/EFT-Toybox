@@ -41,8 +41,16 @@ Plan 1 (foundation) is committed; **nothing has been installed or run in the gam
   profile as a teammate, merges registered profiles into the friend list (native entries and
   mercenaries are kept), and has a pure party-seat policy (3 AI teammate seats) that is deliberately
   not wired into the invite path yet. Unit tests: 53 passing; server builds with 0 warnings and 0 errors.
-- Client: roster screen code for profile teammates. **The client has never been compiled** - the
-  4.1.0.0 client references do not exist on this machine.
+- Client: roster screen code for profile teammates. It **compiles** with 0 warnings and 0 errors as of
+  2026-11-01, but has never been **run** - nothing has been installed or played yet.
+
+**SPT requirement of this fork: 4.1.6, not 4.1.x.** Upstream compiles against the oldest supported
+patch (4.1.0) so one build runs across the whole 4.1.x range; those 4.1.0.0 client assemblies are not
+obtainable on this machine, and a personal fork on a single 4.1.6 install gains nothing from the wider
+range. So the client's reference check was moved to 4.1.6.0 - the check itself is still enforced. Note
+that the server metadata still declares `SptVersion = "~4.1.0"`, which is therefore no longer true for
+the client; that is recorded, deliberately unchanged, and must be settled before any distribution. See
+`doc/WORKLOG.md`, "클라이언트 기준 변경과 첫 빌드".
 
 A profile member can be registered and will appear in the roster and the party-invite window, but
 **cannot yet be invited into a raid**: clicking invite on one currently does nothing (no message, no

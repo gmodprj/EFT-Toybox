@@ -58,7 +58,9 @@ git subtree add --prefix=src/SptTeamManager pit-upstream f32a41b
 
 서버는 `server/refs/4.1.0/`에 `SPTarkov.Common.dll`·`SPTarkov.DI.dll`·`SPTarkov.Server.Core.dll`·`SemanticVersioning.dll`이, 클라이언트는 `client/libs4.1/spt4.1.0`에 SPT 공통/리플렉션 어셈블리가 있어야 한다. 설치본 `E:\Spt\SPT_Runtime`과 `E:\Spt\BepInEx`에서 복사한다. **이 DLL들은 커밋하지 않는다** — `.gitignore`에 경로를 추가한다.
 
-→ **정정(2026-11-01, 실측).** 위 "설치본에서 복사한다"는 **틀렸다.** 이 기계의 설치본은 전부 SPT 4.1.6 이고 4.1.0.0 은 어디에도 없다(E:\ 와 사용자 폴더 전체, NuGet 캐시 포함 검색). 서버 참조 셋(`SPTarkov.Server.Core`·`SPTarkov.Common`·`SPTarkov.DI`)은 SPT 공식 NuGet 패키지의 `4.1.0`(`lib/net10.0/`)에서 꺼냈고, `SemanticVersioning.dll` 만 `E:\Spt\SPT_Runtime` 에서 복사했다(방법: `doc/install-records/stm-fork-import.md`). `.gitignore` 에 추가하라는 줄도 이미 돼 있었다 — 업스트림 `src/SptTeamManager/.gitignore:63-64` 가 `/server/refs/` 와 `*.dll` 을 제외한다. **클라이언트** 쪽 `client/libs4.1/spt4.1.0` 의 `spt-common.dll`·`spt-reflection.dll` 은 NuGet 에 없고(net472 BepInEx 어셈블리) 설치본에는 4.1.6 뿐이라 **구하지 못했다.** 그래서 이 계획 안에서 클라이언트는 한 번도 컴파일되지 않았다. 4.1.6 기준으로 낮출지, SPT 4.1.0 릴리스를 받을지는 사용자 결정 대기다.
+→ **정정(2026-11-01, 실측).** 위 "설치본에서 복사한다"는 **틀렸다.** 이 기계의 설치본은 전부 SPT 4.1.6 이고 4.1.0.0 은 어디에도 없다(E:\ 와 사용자 폴더 전체, NuGet 캐시 포함 검색). 서버 참조 셋(`SPTarkov.Server.Core`·`SPTarkov.Common`·`SPTarkov.DI`)은 SPT 공식 NuGet 패키지의 `4.1.0`(`lib/net10.0/`)에서 꺼냈고, `SemanticVersioning.dll` 만 `E:\Spt\SPT_Runtime` 에서 복사했다(방법: `doc/install-records/stm-fork-import.md`). `.gitignore` 에 추가하라는 줄도 이미 돼 있었다 — 업스트림 `src/SptTeamManager/.gitignore:63-64` 가 `/server/refs/` 와 `*.dll` 을 제외한다. **클라이언트** 쪽 `client/libs4.1/spt4.1.0` 의 `spt-common.dll`·`spt-reflection.dll` 은 NuGet 에 없고(net472 BepInEx 어셈블리) 설치본에는 4.1.6 뿐이라 **구하지 못했다.** 그래서 이 계획을 실행하는 동안 클라이언트는 한 번도 컴파일되지 않았다.
+
+→ **후속 정정(2026-11-01, 해결됨).** 소유자가 **이 설치본의 4.1.6 을 컴파일 기준으로** 택했다. 4.1.x 전체 호환은 공개 배포된 업스트림의 사정이고 이 개인 포크에는 값이 없다는 판단이다("낮춘다" 는 표현도 틀렸다 — 4.1.0 은 하한선이 아니라 지원 범위의 가장 오래된 끝이므로, 4.1.6 으로 옮기는 것은 기준을 **올리고** 호환 범위를 좁히는 것이다). 설치본에서 클라이언트 참조 34개를 모으고 검사 조건 한 줄만 `4.1.0.0` → `4.1.6.0` 으로 옮겼다. 검사는 끄지 않았다. **클라이언트가 경고 0·오류 0 으로 빌드된다.** 근거·대가·재현 방법은 `doc/WORKLOG.md` 의 "클라이언트 기준 변경과 첫 빌드" 와 `doc/install-records/stm-fork-import.md` 에 있다.
 
 - [ ] **Step 3: 두 프로젝트를 빌드한다**
 

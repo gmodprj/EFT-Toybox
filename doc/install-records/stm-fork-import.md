@@ -33,5 +33,26 @@ dotnet build src/SptTeamManager/server/pitFireTeam.Server.csproj -c Debug
 ```
 결과: 성공, 경고 0, 오류 0. 산출물 `server/bin/Debug/net10.0/pitFireTeam.Server.dll`.
 
-## 클라이언트 빌드: 보류
-클라이언트가 요구하는 `spt-common.dll`·`spt-reflection.dll` 4.1.0.0 을 이 기계에서 구할 수 없다(SPT 4.1.0 릴리스 전체를 내려받아야 함). 사용자 결정 대기 중이라 시도하지 않았다.
+## 클라이언트 빌드: 2026-11-01 해결
+처음에는 보류였다 — 클라이언트가 요구하는 `spt-common.dll`·`spt-reflection.dll` **4.1.0.0** 을 이 기계에서 구할 수 없었다(net472 BepInEx 어셈블리라 NuGet 에 없고, 설치본에는 4.1.6 뿐이며, 받으려면 SPT 4.1.0 릴리스를 통째로 내려받아야 한다).
+
+소유자 결정에 따라 **컴파일 기준을 이 설치본의 4.1.6 으로 맞췄다.** 근거와 대가는 `doc/WORKLOG.md` 의 "클라이언트 기준 변경과 첫 빌드" 에 적었다. 검사(`ValidateSptClientReferences`)는 끄지 않았고 기대 버전만 옮겼다.
+
+### 클라이언트 참조를 모은 방법 (재현용)
+csproj 의 `HintPath` 가 요구하는 **34개**를 설치본에서 찾아 복사했다. 이름으로 색인을 만들고 우선순위 경로 순으로 첫 일치를 택했다:
+
+1. `E:\Spt\EscapeFromTarkov_Data\Managed\` — Unity 모듈, `Assembly-CSharp`, `Comfort*`, `bsg.console.core`, `Item*.Types`, `Newtonsoft.Json`, `Sirenix.Serialization`, `DissonanceVoip`, `CommonExtensions`
+2. `E:\Spt\BepInEx\core\` — `BepInEx.dll`, `0Harmony.dll`
+3. `E:\Spt\BepInEx\plugins\` — `ConfigurationManager.dll`, `DrakiaXYZ-BigBrain.dll`
+4. `E:\Spt\BepInEx\plugins\spt\` — `spt-common.dll`, `spt-reflection.dll` (둘 다 4.1.6.0)
+
+놓은 곳은 `client/libs/` 와 `client/libs4.1/`(spt 둘은 `client/libs4.1/spt4.1.0/`). 색인에서 525개 중 34개 전부를 찾았고 누락은 0이었다. **커밋되지 않는다** — 업스트림 `.gitignore:64` 의 `*.dll` 이 제외한다.
+
+폴더 이름 `spt4.1.0` 은 그대로 두었다(HintPath 네 곳을 흔들지 않으려는 것). 그 안에는 4.1.6 어셈블리가 있고, csproj 주석이 그 사실을 적는다.
+
+### 결과
+```
+dotnet build src/SptTeamManager/client/pitFireTeam.csproj -c Debug -p:BuildSAINAddon=false
+→ 경고 0개, 오류 0개
+```
+산출물: `client/bin/Debug/net472/SptTeamManager.dll`, 어셈블리 1.0.0.0, 3.1MB.

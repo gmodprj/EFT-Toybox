@@ -142,18 +142,27 @@
     </ItemGroup>
 
     <Target Name="ValidateSptClientReferences" BeforeTargets="ResolveReferences">
-        <!-- These are the SPT libraries called by the core plugin. Keep the 4.1.0 baseline. -->
+        <!--
+            STM deviation from upstream (2026-11-01): the baseline is this install's 4.1.6, not 4.1.0.
+            Upstream compiles against the oldest supported patch so one build runs on all of 4.1.x, which
+            matters for a published mod. STM is a personal fork on a single 4.1.6 install, and the 4.1.0.0
+            client assemblies (spt-common, spt-reflection) are not obtainable here without downloading a
+            whole SPT 4.1.0 release. The check stays on; only the expected version moved.
+            Consequence recorded in doc/WORKLOG.md: the server metadata still declares SptVersion "~4.1.0",
+            which is no longer true for the client. Revisit before distributing.
+            The folder is still named spt4.1.0 to avoid churning four HintPaths; it holds 4.1.6 assemblies.
+        -->
         <ItemGroup>
             <SptClientReference Include="$(MSBuildProjectDirectory)/libs4.1/spt4.1.0/spt-common.dll" />
             <SptClientReference Include="$(MSBuildProjectDirectory)/libs4.1/spt4.1.0/spt-reflection.dll" />
         </ItemGroup>
         <Error Condition="!Exists('%(SptClientReference.Identity)')"
-               Text="Required SPT 4.1.0 client reference was not found: %(SptClientReference.Identity)" />
+               Text="Required SPT client reference was not found: %(SptClientReference.Identity)" />
         <GetAssemblyIdentity AssemblyFiles="@(SptClientReference)">
             <Output TaskParameter="Assemblies" ItemName="SptClientReferenceIdentity" />
         </GetAssemblyIdentity>
-        <Error Condition="'%(SptClientReferenceIdentity.Version)' != '4.1.0.0'"
-               Text="SPT 4.1.x compatibility requires 4.1.0.0 compile references. %(SptClientReferenceIdentity.Identity) is %(SptClientReferenceIdentity.Version)." />
+        <Error Condition="'%(SptClientReferenceIdentity.Version)' != '4.1.6.0'"
+               Text="STM compiles against 4.1.6.0 client references. %(SptClientReferenceIdentity.Identity) is %(SptClientReferenceIdentity.Version)." />
     </Target>
 
     <Target Name="BuildSAINAddon" AfterTargets="Build" Condition="'$(BuildSAINAddon)' != 'false' and '$(IsBuildingSAINAddon)' != 'true'">
