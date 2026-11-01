@@ -2732,3 +2732,37 @@ follower=Zofia  role=pmcBEAR  difficulty=hard  profile=1.5   visibleDistance=225
 
 **교훈**: 두 결함 모두 "프로필의 이 칸은 비어 있다/이 손질은 실제 장비를 고친다" 는 **내가 확인하지 않은 전제**에서 나왔다.
 실제 프로필 JSON 을 한 번 열어 봤으면 둘 다 설계 단계에서 잡혔다.
+
+### 계획 3 후보 — 제스처 명령 메뉴(Y-Y) 대응 범위
+
+사용자 질문으로 조사했다. 게임 어셈블리(`EscapeFromTarkov_Data/Managed/Assembly-CSharp.dll`)에서 `EPhraseTrigger` 110개를
+PEReader 로 뽑고, 라우터 `client/Components/AIBossPlayer.cs` 의 `PhraseSaid` 가 실제로 분기하는 구문과 대조했다.
+메뉴 라벨과 enum 이름을 추측하지 않고 양쪽을 실측해 맞췄다.
+
+**메뉴 18개 중 대응 11개**
+
+| 메뉴 | enum |
+|---|---|
+| FOLLOW ME | `FollowMe` |
+| COVER ME | `CoverMe` |
+| ATTENTION! | `Look` (라우터 주석: 시선 압력 해제 후 보스 쪽 재집중) |
+| GO GO GO | `Gogogo` |
+| SUPPRESS | `Suppress` |
+| REGROUP | `Regroup` |
+| HOLD POSITION | `HoldPosition` |
+| GO FORWARD | `GoForward` |
+| ON YOUR OWN | `OnYourOwn` |
+| GET THE LOOT | `LootGeneric` |
+| STOP | `Stop` |
+
+**대응 안 하는 7개**: `SILENCE`(`Silence`) · `TAKE COVER`(`GetInCover`) · `KNIVES ONLY`(`KnifesOnly`) ·
+**`FIRE`(`Fire`)** · **`HOLD FIRE`(`HoldFire`)** · `SPREADOUT`(`Spreadout`) · `GET BACK`(`GetBack`)
+
+**메뉴에 없으나 처리하는 것들**(맥락·방향 명령): `CheckHim`·`LootBody`·`LootWeapon`·`LootKey`·`LootMoney`·`LootContainer`,
+`InTheFront`·`LeftFlank`·`RightFlank`·`OnSix`, `OpenDoor`·`NeedHelp`·`NeedSniper`·`ExitLocated`,
+그리고 모드 자체 구문 `CustomPhrases.TeamStatus`(상태 보고).
+
+**계획 3 후보로 올리는 이유**: 빠진 7개 중 **`FIRE`·`HOLD FIRE`·`TAKE COVER`** 는 교전 통제 손잡이다.
+계획 2 가 팀원을 레이드에 넣었으니 다음으로 "쏴라 / 쏘지 마라 / 엄폐하라" 를 직접 주고 싶어지는 것이 자연스럽다.
+나머지 넷(`SILENCE`·`KNIVES ONLY`·`SPREADOUT`·`GET BACK`)은 우선순위가 낮다.
+**계획 2 범위 밖이고, 지금 겪는 "팀원이 전투하지 않는다" 문제와는 별개다** — 그쪽은 역할·난이도 결함이다.
