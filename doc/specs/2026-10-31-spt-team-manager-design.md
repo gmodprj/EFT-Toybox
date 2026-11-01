@@ -45,7 +45,7 @@ STM이 바꾸려는 것은 팀원이 **어디서 오는가** 하나다. SPT 런�
 
 **5-1. PIT 구조.** 클라이언트 330개 `.cs`(BepInEx, .NET Framework 4.7.2) + 서버 98개 `.cs`(net10.0, `SPTarkov.Server.Core` 4.1.0 참조) + 선택 SAIN 애드온 47개. 라이선스 MIT. 필수 의존: BigBrain ≥1.5.0, Waypoints - Expanded Navmesh ≥1.9.0.
 
-→ **정정(2026-11-01, 실측).** "라이선스 MIT"는 모드 페이지의 표기이고, 업스트림 저장소에는 LICENSE 파일이 없다. 자세한 것은 §6-1 의 정정.
+→ **정정(2026-11-01, 실측).** "라이선스 MIT"는 모드 페이지의 "License" 필드("MIT License", choosealicense.com/licenses/mit/ 로 연결)에서 온 **저작자의 선언**이고(2026-11-01 직접 확인), 업스트림 저장소에는 LICENSE 파일이 없다. 자세한 것은 §6-1 의 정정.
 
 **5-2. 팀원은 모드 소유 프로필이다.** PIT 문서 원문: "Teammates are mod-owned profiles, not full independent stock `SptProfile` accounts." 프로필별 LiteDB(`Resources/teammates/<profileId>.db`, Allegiance는 `teammates-allegiance/`)에 AES-GCM으로 암호화해 저장한다. LiteDB 5.0.21, `LiteDB.dll` 하나만 함께 배포한다.
 
@@ -102,7 +102,7 @@ PIT Fireteam을 포크한 **단일 모드**다. 설치하면 PIT는 뺀다. 기�
 
 MIT이므로 원 저작권 고지를 유지하고, 포크임을 README와 모드 페이지에 밝힌다. GUID·어셈블리 이름·설정 파일 이름·DB 경로는 전부 새 이름으로 바꿔 PIT와 파일이 섞이지 않게 한다.
 
-→ **정정(2026-11-01, 실측).** "MIT이므로 원 저작권 고지를 유지한다"의 전제가 확인되지 않았다. **업스트림 저장소에는 LICENSE 파일이 없다**(`git ls-files src/SptTeamManager | grep -i licen` 이 빈 출력). MIT 는 모드 페이지(https://sp-mod.com/mod/2676/pit-fireteam)의 표기일 뿐이다. 따라서 유지할 고지 파일이 없고, 문서는 MIT 를 사실로 단정하지 않는다(`src/SptTeamManager/README.md`). 더해서 복사된 SAIN 코드의 고지 파일 `addon/SAIN-LICENSE.txt` 가 업스트림에서 이미 삭제돼 있고 업스트림 자신이 미해결로 적어 두었다(`addon/docs/References.md:24`, `addon/docs/Validation.md:566`). 포크가 이를 물려받았으므로 **배포 전에 해소해야 한다.** 저작자 표시(Author·Url)는 PitAlex 와 원 저장소로 유지한다.
+→ **정정(2026-11-01, 실측).** "MIT이므로 원 저작권 고지를 유지한다"의 전제 중 일부가 확인되지 않았다. 모드 페이지(https://sp-mod.com/mod/2676/pit-fireteam)의 Details 절에 **"License" 필드가 있고 값은 "MIT License"**(https://choosealicense.com/licenses/mit/ 로 연결)이다 — 저작자가 배포 페이지에 MIT 를 **선언**했다(2026-11-01 직접 확인; 페이지는 라이선스 본문을 싣지 않는다). 그러나 **업스트림 저장소에는 LICENSE 파일이 없다**(`git ls-files src/SptTeamManager | grep -i licen` 이 빈 출력). 따라서 유지할 고지 파일이 없고, 문서는 MIT 를 스스로 단정하지 않는다(`src/SptTeamManager/README.md`). 더해서 복사된 SAIN 코드의 고지 파일 `addon/SAIN-LICENSE.txt` 가 업스트림 작업 트리에서 이미 삭제돼 있고 업스트림 자신이 미해결로 적어 두었다(`addon/docs/References.md:24`, `addon/docs/Validation.md:566`). **실측(2026-11-01, 컨트롤러):** `find E:/Spt -iname "SAIN-LICENSE*"` 가 아무것도 찾지 못하고, 설치된 PIT 두 디렉터리(`BepInEx/plugins/pitFireTeam`, `SPT_Runtime/user/mods/pitFireTeam-ServerMod`) 어디에도 라이선스 파일이 없다. 즉 고지는 업스트림 작업 트리·이 레포·살아 있는 설치본 어디에도 없으며, `Validation.md:566` 의 "이미 설치돼 있고 유지했다"는 적어도 이 설치본에서는 사실이 아니다. 포크가 이를 물려받았으므로 **배포 전에 해소해야 한다.** 저작자 표시(Author·Url)는 PitAlex 와 원 저장소로 유지한다.
 
 ### 6-2. 팀원 두 종류
 

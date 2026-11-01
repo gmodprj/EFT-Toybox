@@ -16,16 +16,18 @@ intact so upstream changes can still be merged.
 
 **Licence status is not settled, and this README does not claim a licence.** What is known:
 
-- The mod page above lists the licence as MIT.
+- The mod page above has a labelled "License" field in its Details section whose value is "MIT License" (linking to https://choosealicense.com/licenses/mit/). The author therefore **declared** MIT on the distribution page (verified 2026-11-01). The page does not reproduce the licence text.
 - The upstream repository has **no LICENSE file** (`git ls-files src/SptTeamManager` finds none), so the
   source tree itself carries no licence notice.
-- The author's decision is not recorded anywhere we can read. Whether this fork may be redistributed,
-  and on what terms, is for the repository owner to settle (ideally by asking the author) before any
-  public release.
+- The declaration therefore exists only on the mod page; no licence text accompanies the source. Whether and how this fork may be redistributed (including the missing licence file and the SAIN notice below) is for the repository owner to settle, ideally by asking the author, before any public release.
 
 **Unresolved attribution defect inherited from upstream (must be resolved before distributing).**
 The optional SAIN addon in `addon/` contains code copied from SAIN, which needs its own upstream notice
-file `addon/SAIN-LICENSE.txt`. That file is already deleted in the upstream working tree. Upstream's own
+file `addon/SAIN-LICENSE.txt`. That file is already deleted in the upstream working tree. It is also
+absent from the live installation: a search of `E:/Spt` for `SAIN-LICENSE*` finds nothing, and neither installed
+PIT directory (`BepInEx/plugins/pitFireTeam`, `SPT_Runtime/user/mods/pitFireTeam-ServerMod`) contains any
+licence file (measured 2026-11-01). That makes upstream's claim in `addon/docs/Validation.md` that the notice "is
+already installed and was retained" untrue at least for this installation. Upstream's own
 documents record the problem: `addon/docs/References.md` (line 24) says the notice must be resolved
 before packaging, and `addon/docs/Validation.md` (line 566) says the build output lacks it and the issue
 "remains unresolved". This fork imported the addon as-is, so it has the same gap. Plan 1 neither builds
