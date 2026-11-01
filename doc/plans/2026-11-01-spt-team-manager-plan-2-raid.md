@@ -1,5 +1,10 @@
 # SPT Team Manager — 구현 계획 2: 레이드 투입
 
+> **끝났다 (2026-11-02).** Task 10개 완료 · 인게임 13개 확인 · 최종 전체 리뷰 approved 와 그
+> 수정 웨이브까지 반영했다. 결과는 [WORKLOG](../WORKLOG.md) 의 "2026-11-01 — STM 계획 2(레이드 투입)"
+> 절에, 지금 상태와 열린 항목은 [STM-HANDOVER](../STM-HANDOVER.md) 에 있다.
+> 이 문서는 그때의 계획 기록이다.
+
 > **에이전트 작업자에게:** 필수 하위 스킬 — `superpowers:subagent-driven-development`(권장) 또는 `superpowers:executing-plans`로 Task 단위로 구현한다. 단계는 체크박스(`- [ ]`)로 추적한다.
 
 **Goal:** 등록한 프로필 팀원을 파티에 합류시켜 **자기 장비를 입고** 레이드에 데려가고, 죽으면 그 프로필에서 착용 장비를 실제로 잃게 한다.
@@ -56,7 +61,7 @@
 >
 > `Ready`가 둘이면 어느 프로필인지 가릴 수 없으므로 `NotAvailable` + `Unreadable`로 막는다(§6-9: 판단이 서지 않으면 사용 불가).
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```csharp
 [Fact] void 등록되고_Ready_인_Aid_는_ProfileId_를_돌려준다()
@@ -68,10 +73,10 @@
 [Fact] void 같은_Aid_의_Ready_가_둘이면_어느_쪽도_고르지_않는다()
 ```
 
-- [ ] **Step 2: 테스트가 실패하는지 확인한다** — Run: `dotnet test src/SptTeamManager.Tests/SptTeamManager.Tests.csproj` / Expected: FAIL (`ProfileMemberLookup` 없음)
-- [ ] **Step 3: `ProfileMemberLookup.ByAid`를 구현한다.** 예외를 밖으로 던지지 않는다. 입력이 null이면 `NotAMember`.
-- [ ] **Step 4: 테스트가 통과하는지 확인한다** — Expected: PASS
-- [ ] **Step 5: 커밋**
+- [x] **Step 2: 테스트가 실패하는지 확인한다** — Run: `dotnet test src/SptTeamManager.Tests/SptTeamManager.Tests.csproj` / Expected: FAIL (`ProfileMemberLookup` 없음)
+- [x] **Step 3: `ProfileMemberLookup.ByAid`를 구현한다.** 예외를 밖으로 던지지 않는다. 입력이 null이면 `NotAMember`.
+- [x] **Step 4: 테스트가 통과하는지 확인한다** — Expected: PASS
+- [x] **Step 5: 커밋**
 
 ---
 
@@ -94,10 +99,10 @@
 
 > **Aid 충돌(Review Focus).** 등록된 `Ready` 프로필 팀원의 Aid라면 **프로필 팀원이 이긴다.** 계획 1의 `FriendListMergePolicy`가 친구 목록에서 같은 우선순위(프로필 > 용병)를 쓰므로, 해석이 반대로 가면 목록에 없는 용병이 초대된다. 호출부(Task 4·5)는 이 해석기를 **먼저** 묻고, 아니면 PIT의 기존 경로로 흘려보낸다.
 
-- [ ] **Step 1: 해석기를 만든다.** 카탈로그와 등록 목록을 **호출할 때마다 새로 읽는다**(캐시 금지 — 설계 §4 "유령 재산").
-- [ ] **Step 2: 읽기를 보호한다.** 저장소·카탈로그·`SaveServer` 읽기와 `new MongoId(...)` 변환을 try/catch로 감싸고, 실패하면 오류를 남기고 `false`를 돌려준다. **호출부가 PIT 경로를 그대로 타도록** 하는 것이 목적이다.
-- [ ] **Step 3: 서버가 빌드되는지 확인한다** — Run: `dotnet build src/SptTeamManager/server/pitFireTeam.Server.csproj -c Debug` / Expected: 경고 0, 오류 0
-- [ ] **Step 4: 커밋**
+- [x] **Step 1: 해석기를 만든다.** 카탈로그와 등록 목록을 **호출할 때마다 새로 읽는다**(캐시 금지 — 설계 §4 "유령 재산").
+- [x] **Step 2: 읽기를 보호한다.** 저장소·카탈로그·`SaveServer` 읽기와 `new MongoId(...)` 변환을 try/catch로 감싸고, 실패하면 오류를 남기고 `false`를 돌려준다. **호출부가 PIT 경로를 그대로 타도록** 하는 것이 목적이다.
+- [x] **Step 3: 서버가 빌드되는지 확인한다** — Run: `dotnet build src/SptTeamManager/server/pitFireTeam.Server.csproj -c Debug` / Expected: 경고 0, 오류 0
+- [x] **Step 4: 커밋**
 
 ---
 
@@ -131,7 +136,7 @@
 
 > **PIT의 용병 전용 손질을 적용하지 않는다.** `EnsureFollowerHasSecureContainerSupplies`는 보안 컨테이너 **내용물을 비우고** 보급을 넣으며, `EnsureFollowerHasScabbardKnife`와 탄창 리필도 실제 캐릭터의 장비를 고쳐 쓴다. `Real`에는 이것들을 쓰지 않는다. 죽지 않기 위해 필요한 최소(`EnsureFollowerHasPockets`, 역할 채우기, 체력 배수)만 적용한다. `Temporary`는 생성물이므로 PIT의 기존 손질을 그대로 써도 된다.
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```csharp
 [Fact] void 착용_장비가_없으면_Temporary_다()
@@ -140,12 +145,12 @@
 [Fact] void 어느_쪽이든_사람이_읽을_사유가_담긴다()
 ```
 
-- [ ] **Step 2: 테스트가 실패하는지 확인한다** — Expected: FAIL
-- [ ] **Step 3: `SpawnGearPolicy.Decide`를 구현한다**
-- [ ] **Step 4: 테스트가 통과하는지 확인한다** — Expected: PASS
-- [ ] **Step 5: `StmSpawnProfileFactory.Build`를 구현한다**(위 제약대로)
-- [ ] **Step 6: 서버 빌드와 전체 테스트를 확인한다** — Expected: 경고 0 오류 0 / 전부 통과
-- [ ] **Step 7: 커밋**
+- [x] **Step 2: 테스트가 실패하는지 확인한다** — Expected: FAIL
+- [x] **Step 3: `SpawnGearPolicy.Decide`를 구현한다**
+- [x] **Step 4: 테스트가 통과하는지 확인한다** — Expected: PASS
+- [x] **Step 5: `StmSpawnProfileFactory.Build`를 구현한다**(위 제약대로)
+- [x] **Step 6: 서버 빌드와 전체 테스트를 확인한다** — Expected: 경고 0 오류 0 / 전부 통과
+- [x] **Step 7: 커밋**
 
 ---
 
@@ -161,13 +166,13 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 
 현재 그 자리에 **죽은 블록**이 있다(계획 1이 `ProfileId`와 Aid를 비교해 영영 참이 되지 않는다). 그것을 이 Task가 대체한다.
 
-- [ ] **Step 1: 해석을 끼운다.** PIT의 `TryGetRaidGroupCharacter`가 아무것도 찾지 못했을 때(`teammate == null`) Task 2의 해석기를 묻는다. 프로필 팀원이 아니면 **기존 반환을 그대로** 한다.
-- [ ] **Step 2: 수락 알림을 보낸다.** Task 3의 공장으로 스폰 프로필을 만들고, 그 `Id`·`Aid`·`Info`·`VisualRepresentation`으로 PIT와 같은 모양의 `FriendlyGroupMatchInviteAccept`를 1초 지연 뒤 보낸다. PIT와 같이 `FriendlyModeRequestGate.RunIfCurrent(modeGeneration, ...)`로 감싼다.
-- [ ] **Step 3: 사용 불가는 사유를 말한다.** 등록돼 있으나 `Ready`가 아니면 `mailSendService.SendSystemMessageToPlayer(sessionId, reason, null)`로 알린다(PIT가 kit 거부에 쓰는 것과 같은 경로).
-- [ ] **Step 4: 죽은 블록과 그 주석을 지운다.**
-- [ ] **Step 5: 용병 경로가 글자 그대로 그대로인지 확인한다.** 보고서에 before/after를 적는다.
-- [ ] **Step 6: 서버 빌드** — Expected: 경고 0 오류 0
-- [ ] **Step 7: 커밋**
+- [x] **Step 1: 해석을 끼운다.** PIT의 `TryGetRaidGroupCharacter`가 아무것도 찾지 못했을 때(`teammate == null`) Task 2의 해석기를 묻는다. 프로필 팀원이 아니면 **기존 반환을 그대로** 한다.
+- [x] **Step 2: 수락 알림을 보낸다.** Task 3의 공장으로 스폰 프로필을 만들고, 그 `Id`·`Aid`·`Info`·`VisualRepresentation`으로 PIT와 같은 모양의 `FriendlyGroupMatchInviteAccept`를 1초 지연 뒤 보낸다. PIT와 같이 `FriendlyModeRequestGate.RunIfCurrent(modeGeneration, ...)`로 감싼다.
+- [x] **Step 3: 사용 불가는 사유를 말한다.** 등록돼 있으나 `Ready`가 아니면 `mailSendService.SendSystemMessageToPlayer(sessionId, reason, null)`로 알린다(PIT가 kit 거부에 쓰는 것과 같은 경로).
+- [x] **Step 4: 죽은 블록과 그 주석을 지운다.**
+- [x] **Step 5: 용병 경로가 글자 그대로 그대로인지 확인한다.** 보고서에 before/after를 적는다.
+- [x] **Step 6: 서버 빌드** — Expected: 경고 0 오류 0
+- [x] **Step 7: 커밋**
 
 ---
 
@@ -181,12 +186,12 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 
 `followergenerate`는 `MemberId`(Aid 문자열)로 `BotBase[]`를 돌려준다. `followerdetails`는 팀원마다 `{Aid, Tactic, Aggression, SelfDetermination, Proficiency, Equipment, Voice, Head}`를 돌려주고 클라이언트가 스폰 id마다 찾아 쓴다 — **프로필 팀원이 그 목록에 없으면 클라이언트가 무엇을 하는지 확인되지 않았다.** 그러므로 넣는다.
 
-- [ ] **Step 1: `GenerateFollowerProfile`에 프로필 팀원을 더한다.** PIT가 못 찾으면 해석기를 묻고, 찾으면 Task 3의 공장 결과를 PIT와 같은 모양(`BotBase[]`)으로 돌려준다.
-- [ ] **Step 2: `GetFollowerDetails`에 프로필 팀원 줄을 더한다.** `Tactic`은 등록 문서의 값, `Voice`/`Head`는 프로필의 `Customization`에서. 나머지는 PIT의 기본값과 같은 값을 쓴다.
-- [ ] **Step 3: `PersistFollowerProgress`가 프로필 팀원을 건드리지 않게 막는다.** PIT의 `ApplyFollowerProgress`는 경험치를 더하고 `RecalculateTeammateLevel`로 **레벨을 다시 계산한다.** 실제 캐릭터에 그것을 적용하면 그 프로필로 로그인했을 때 레벨이 어긋난다(설계 §4 "팀원 프로필이 조용히 망가진다"). 프로필 팀원의 Aid는 **건너뛰고**, 건너뛰었다는 것을 한 번만 로그에 남긴다. 경험치 적립은 계획 4의 몫이다.
-- [ ] **Step 4: 세 경로의 새 읽기를 모두 보호한다.** 실패 시 PIT 경로가 그대로 흐른다.
-- [ ] **Step 5: 서버 빌드** — Expected: 경고 0 오류 0
-- [ ] **Step 6: 커밋**
+- [x] **Step 1: `GenerateFollowerProfile`에 프로필 팀원을 더한다.** PIT가 못 찾으면 해석기를 묻고, 찾으면 Task 3의 공장 결과를 PIT와 같은 모양(`BotBase[]`)으로 돌려준다.
+- [x] **Step 2: `GetFollowerDetails`에 프로필 팀원 줄을 더한다.** `Tactic`은 등록 문서의 값, `Voice`/`Head`는 프로필의 `Customization`에서. 나머지는 PIT의 기본값과 같은 값을 쓴다.
+- [x] **Step 3: `PersistFollowerProgress`가 프로필 팀원을 건드리지 않게 막는다.** PIT의 `ApplyFollowerProgress`는 경험치를 더하고 `RecalculateTeammateLevel`로 **레벨을 다시 계산한다.** 실제 캐릭터에 그것을 적용하면 그 프로필로 로그인했을 때 레벨이 어긋난다(설계 §4 "팀원 프로필이 조용히 망가진다"). 프로필 팀원의 Aid는 **건너뛰고**, 건너뛰었다는 것을 한 번만 로그에 남긴다. 경험치 적립은 계획 4의 몫이다.
+- [x] **Step 4: 세 경로의 새 읽기를 모두 보호한다.** 실패 시 PIT 경로가 그대로 흐른다.
+- [x] **Step 5: 서버 빌드** — Expected: 경고 0 오류 0
+- [x] **Step 6: 커밋**
 
 ---
 
@@ -205,7 +210,7 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 
 규칙은 셋뿐이다. **이미 적용된 키면 `Nothing`**(멱등, 설계 §6-8). **임시 장비였으면 `Nothing`** — 그 프로필은 레이드에 재산을 내보내지 않았다. **실물 장비로 나갔다 탈출하지 못했으면 `StripWornGear`.**
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```csharp
 [Fact] void 실물_장비로_나갔다_죽으면_착용_장비를_지운다()
@@ -215,10 +220,10 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 [Fact] void 어느_결정이든_사유가_담긴다()
 ```
 
-- [ ] **Step 2: 테스트가 실패하는지 확인한다** — Expected: FAIL
-- [ ] **Step 3: `RaidOutcomePolicy.Decide`를 구현한다**
-- [ ] **Step 4: 테스트가 통과하는지 확인한다** — Expected: PASS
-- [ ] **Step 5: 커밋**
+- [x] **Step 2: 테스트가 실패하는지 확인한다** — Expected: FAIL
+- [x] **Step 3: `RaidOutcomePolicy.Decide`를 구현한다**
+- [x] **Step 4: 테스트가 통과하는지 확인한다** — Expected: PASS
+- [x] **Step 5: 커밋**
 
 ---
 
@@ -237,9 +242,9 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 
 멱등 키는 **`레이드 ID + 팀원 프로필 ID`**다(설계 §6-8). 계획 1의 `StmProfileMemberStore`와 같은 저장 계층(PIT의 암호화 LiteDB)을 쓰고, 문서 이름은 **`stm-raid-receipts.json`** — `{정수}.json` 모양을 피한다(Global Constraints).
 
-- [ ] **Step 1: 모델과 저장소를 만든다.** 읽기는 fail-closed: 문서를 읽을 수 없으면 **"적용됐다"로 친다**(중복 적용보다 미적용이 안전하다 — 장비 삭제는 되돌릴 수 없다).
-- [ ] **Step 2: 서버 빌드** — Expected: 경고 0 오류 0
-- [ ] **Step 3: 커밋**
+- [x] **Step 1: 모델과 저장소를 만든다.** 읽기는 fail-closed: 문서를 읽을 수 없으면 **"적용됐다"로 친다**(중복 적용보다 미적용이 안전하다 — 장비 삭제는 되돌릴 수 없다).
+- [x] **Step 2: 서버 빌드** — Expected: 경고 0 오류 0
+- [x] **Step 3: 커밋**
 
 ---
 
@@ -261,11 +266,11 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 
 **플레이어가 시체를 털어 나왔다면 그 아이템은 플레이어 것이다.** 되돌려 주려 하지 말라 — 돌려주려는 순간 한 자루가 양쪽에 생긴다(설계 §6-6 6번, §4). 우리는 **빼는 쪽만** 쓰고, 플레이어가 무엇을 가져왔는지는 보지도 않는다. 결과적으로 장비가 팀원에게서 플레이어에게 넘어간 모양이 되고 그것이 타르코프의 보통 규칙이다.
 
-- [ ] **Step 1: 서비스를 만든다.** 해석 → 영수증 조회 → `RaidOutcomePolicy.Decide` → `StripWornGear`면 쓰기 → 다시 읽어 확인 → 영수증 기록.
-- [ ] **Step 2: 사망·탈출 보고 경로에 건다.** PIT의 `PersistDeathEscapeOutcomes`는 프로필 팀원 Aid를 **조용히 건너뛰면서도** 요약의 탈출·손실 이름 목록에는 이미 넣는다. 프로필 팀원은 이 서비스가 처리하고, **요약 메시지는 사실과 맞아야 한다.**
-- [ ] **Step 3: 보호한다.** 이 경로의 실패가 PIT 용병의 결과 처리를 막지 않아야 한다.
-- [ ] **Step 4: 서버 빌드와 전체 테스트** — Expected: 경고 0 오류 0 / 전부 통과
-- [ ] **Step 5: 커밋**
+- [x] **Step 1: 서비스를 만든다.** 해석 → 영수증 조회 → `RaidOutcomePolicy.Decide` → `StripWornGear`면 쓰기 → 다시 읽어 확인 → 영수증 기록.
+- [x] **Step 2: 사망·탈출 보고 경로에 건다.** PIT의 `PersistDeathEscapeOutcomes`는 프로필 팀원 Aid를 **조용히 건너뛰면서도** 요약의 탈출·손실 이름 목록에는 이미 넣는다. 프로필 팀원은 이 서비스가 처리하고, **요약 메시지는 사실과 맞아야 한다.**
+- [x] **Step 3: 보호한다.** 이 경로의 실패가 PIT 용병의 결과 처리를 막지 않아야 한다.
+- [x] **Step 4: 서버 빌드와 전체 테스트** — Expected: 경고 0 오류 0 / 전부 통과
+- [x] **Step 5: 커밋**
 
 ---
 
@@ -275,8 +280,8 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 
 > **사람만 할 수 있다.** 계획 1의 관문과 같은 성격이다. 설치는 `tools/install-sptteammanager.ps1`(`-Remove` 후 재설치). 서버·게임을 다시 켜야 적용된다.
 
-- [ ] **Step 1: 프로필과 모드 DB를 백업한다**(계획 1이 `backup/2026-11-01-before-stm/`에 한 것과 같은 방식)
-- [ ] **Step 2: 다음을 확인한다**
+- [x] **Step 1: 프로필과 모드 DB를 백업한다**(계획 1이 `backup/2026-11-01-before-stm/`에 한 것과 같은 방식)
+- [x] **Step 2: 다음을 확인한다**
 
 1. 프로필 팀원을 초대하면 **파티원이 된다**(계획 1에서 멈춰 있던 자리).
 2. 레이드에 들어가면 **그 프로필의 장비를 입고** 스폰한다.
@@ -288,7 +293,7 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 8. 레이드를 두 번 끝내도(또는 보고가 중복돼도) 장비가 두 번 지워지지 않는다.
 9. **파티에 팀원 넷째를 넣으려 할 때 무엇이 일어나는지 잰다**(계획 1에서 넘어온 관문 항목). 조용히 잘리는지, 창이 막는지, 사유가 뜨는지. 이 실측이 서버측 자리 관문이 필요한지를 정한다.
 
-- [ ] **Step 3: 결과를 적는다.** 어긋나면 **여기서 멈추고 보고한다.**
+- [x] **Step 3: 결과를 적는다.** 어긋나면 **여기서 멈추고 보고한다.**
 
 ---
 
@@ -298,9 +303,9 @@ PIT의 용병 합류는 **파티 상태를 서버에 두지 않는다** — 초�
 - Modify: `doc/WORKLOG.md`, `src/SptTeamManager/README.md`
 - Modify: `tools/gen-installed-mods.mjs` (STM 줄의 "아직 안 되는 것"을 갱신하고 `node tools/gen-installed-mods.mjs` 재생성)
 
-- [ ] **Step 1: 되는 것과 안 되는 것을 다시 가른다.** 이 계획으로 **되는 것**: 파티 합류, 실물/임시 장비 스폰, 사망 시 착용 장비 상실. **아직 안 되는 것**: 장비 편집, 스태시 전송, 경험치·전적·전리품 적립(계획 3·4).
-- [ ] **Step 2: 계획 1에서 이월한 열린 결정을 닫는다.** `doc/WORKLOG.md`의 "열린 결정 — 프로필 팀원 초대 응답"은 이 계획이 (a)·(b) 중 무엇으로 풀었는지 적고 닫는다.
-- [ ] **Step 3: 커밋**
+- [x] **Step 1: 되는 것과 안 되는 것을 다시 가른다.** 이 계획으로 **되는 것**: 파티 합류, 실물/임시 장비 스폰, 사망 시 착용 장비 상실. **아직 안 되는 것**: 장비 편집, 스태시 전송, 경험치·전적·전리품 적립(계획 3·4).
+- [x] **Step 2: 계획 1에서 이월한 열린 결정을 닫는다.** `doc/WORKLOG.md`의 "열린 결정 — 프로필 팀원 초대 응답"은 이 계획이 (a)·(b) 중 무엇으로 풀었는지 적고 닫는다.
+- [x] **Step 3: 커밋**
 
 ---
 

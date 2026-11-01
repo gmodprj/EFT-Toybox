@@ -1,5 +1,9 @@
 # SPT Team Manager — 구현 계획 1: 기반
 
+> **끝났다 (2026-11-01).** Task 9개 전부 구현하고 인게임 관문까지 통과했다. 결과는
+> [WORKLOG](../WORKLOG.md) 의 "2026-11-01 — STM 기반 단계(계획 1) 결과와 사람 관문" 절에,
+> 지금 상태는 [STM-HANDOVER](../STM-HANDOVER.md) 에 있다. 이 문서는 그때의 계획 기록이다.
+
 > **에이전트 작업자에게:** 필수 하위 스킬 — `superpowers:subagent-driven-development`(권장) 또는 `superpowers:executing-plans`로 Task 단위로 구현한다. 단계는 체크박스(`- [ ]`)로 추적한다.
 
 **Goal:** PIT Fireteam 1.0.0을 포크해 STM으로 이름을 갈고, SPT 런처 프로필을 팀원 명단에 올려 레이드에 데려간다(장비는 임시).
@@ -43,7 +47,7 @@
 **Interfaces:**
 - Produces: 빌드되는 `pitFireTeam.dll`(클라이언트)과 `pitFireTeam.Server.dll`(서버). 이름 변경은 Task 2에서 한다.
 
-- [ ] **Step 1: 업스트림을 remote로 붙여 히스토리째 가져온다**
+- [x] **Step 1: 업스트림을 remote로 붙여 히스토리째 가져온다**
 
 ```bash
 cd E:/Spt_Mods
@@ -54,7 +58,7 @@ git subtree add --prefix=src/SptTeamManager pit-upstream f32a41b
 
 기준 커밋은 `f32a41b`(1.0.0 머지). 다른 커밋을 쓰지 않는다.
 
-- [ ] **Step 2: 참조 DLL을 놓는다**
+- [x] **Step 2: 참조 DLL을 놓는다**
 
 서버는 `server/refs/4.1.0/`에 `SPTarkov.Common.dll`·`SPTarkov.DI.dll`·`SPTarkov.Server.Core.dll`·`SemanticVersioning.dll`이, 클라이언트는 `client/libs4.1/spt4.1.0`에 SPT 공통/리플렉션 어셈블리가 있어야 한다. 설치본 `E:\Spt\SPT_Runtime`과 `E:\Spt\BepInEx`에서 복사한다. **이 DLL들은 커밋하지 않는다** — `.gitignore`에 경로를 추가한다.
 
@@ -62,7 +66,7 @@ git subtree add --prefix=src/SptTeamManager pit-upstream f32a41b
 
 → **후속 정정(2026-11-01, 해결됨).** 소유자가 **이 설치본의 4.1.6 을 컴파일 기준으로** 택했다. 4.1.x 전체 호환은 공개 배포된 업스트림의 사정이고 이 개인 포크에는 값이 없다는 판단이다("낮춘다" 는 표현도 틀렸다 — 4.1.0 은 하한선이 아니라 지원 범위의 가장 오래된 끝이므로, 4.1.6 으로 옮기는 것은 기준을 **올리고** 호환 범위를 좁히는 것이다). 설치본에서 클라이언트 참조 34개를 모으고 검사 조건 한 줄만 `4.1.0.0` → `4.1.6.0` 으로 옮겼다. 검사는 끄지 않았다. **클라이언트가 경고 0·오류 0 으로 빌드된다.** 근거·대가·재현 방법은 `doc/WORKLOG.md` 의 "클라이언트 기준 변경과 첫 빌드" 와 `doc/install-records/stm-fork-import.md` 에 있다.
 
-- [ ] **Step 3: 두 프로젝트를 빌드한다**
+- [x] **Step 3: 두 프로젝트를 빌드한다**
 
 ```bash
 dotnet build src/SptTeamManager/server/pitFireTeam.Server.csproj -c Debug
@@ -71,11 +75,11 @@ dotnet build src/SptTeamManager/client/pitFireTeam.csproj -c Debug -p:BuildSAINA
 
 Expected: 둘 다 성공. 서버가 `Required SPT 4.1.0 server reference was not found` 또는 `compatibility requires 4.1.0.0 compile references`로 실패하면 Step 2의 DLL 버전이 틀린 것이다 — 설치본이 4.1.6이어도 참조는 4.1.0.0이어야 한다.
 
-- [ ] **Step 4: 들여온 것을 기록한다**
+- [x] **Step 4: 들여온 것을 기록한다**
 
 `doc/install-records/stm-fork-import.md`에 기준 커밋, 참조 DLL 출처 경로와 버전, 빌드 명령과 결과를 적는다.
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add .gitignore doc/install-records/stm-fork-import.md
@@ -96,15 +100,15 @@ git commit -m "chore: PIT Fireteam 1.0.0 을 포크로 들여온다"
 **Interfaces:**
 - Produces: GUID `xyz.stm.teammanager`, 어셈블리 `SptTeamManager`·`SptTeamManager.Server`, 설정 파일 `xyz.stm.teammanager.cfg`, DB 디렉터리 `Resources/stm-teammates/`·`Resources/stm-teammates-allegiance/`.
 
-- [ ] **Step 1: 식별자만 바꾼다**
+- [x] **Step 1: 식별자만 바꾼다**
 
 GUID·표시 이름·어셈블리명·DB 디렉터리 이름만 바꾼다. **네임스페이스 `pitTeam`, 클래스명, 파일 경로는 건드리지 않는다** — 업스트림 머지를 살리기 위한 제약이다(Global Constraints).
 
-- [ ] **Step 2: 설치 스크립트를 쓴다**
+- [x] **Step 2: 설치 스크립트를 쓴다**
 
 `tools/install-sptteammanager.ps1`. 기존 `tools/install-goggleswheel.ps1`과 같은 형식으로, 클라이언트 DLL은 `E:\Spt\BepInEx\plugins\SptTeamManager\`로, 서버 DLL과 `LiteDB.dll`·`Resources/`는 `E:\Spt\SPT_Runtime\user\mods\SptTeamManager-ServerMod\`로 복사한다. **덮어쓰기가 생기면 중단한다**(`doc/PROCEDURE.md`).
 
-- [ ] **Step 3: 빌드하고 설치한다**
+- [x] **Step 3: 빌드하고 설치한다**
 
 ```bash
 dotnet build src/SptTeamManager/server/pitFireTeam.Server.csproj -c Debug
@@ -114,11 +118,11 @@ pwsh -File tools/install-sptteammanager.ps1
 
 Expected: 설치 완료. 기존 `pitFireTeam` 디렉터리와 파일이 하나도 겹치지 않는다.
 
-- [ ] **Step 4: 서버를 띄워 로드를 확인한다**
+- [x] **Step 4: 서버를 띄워 로드를 확인한다**
 
 Expected: 서버 로그에 STM 서버 모드가 로드되고 **오류 0건**. PIT 서버 모드는 이 시점에 빼 둔다(둘 다 로드하면 같은 팀원 DB를 두 이름으로 들게 된다).
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add src/SptTeamManager tools/install-sptteammanager.ps1
@@ -137,16 +141,16 @@ git commit -m "chore: 포크 식별자를 STM 으로 가른다"
 
 > 설계 §6-3과 §7이 "다른 작업보다 먼저"라고 못박은 단계다. 선례(pmc-squadmates)가 바로 이 자리에서 메인메뉴 목록을 포기했다. **사람만 할 수 있다.**
 
-- [ ] **Step 1: 게임을 띄워 메인메뉴를 연다**
+- [x] **Step 1: 게임을 띄워 메인메뉴를 연다**
 
-- [ ] **Step 2: 다음을 확인한다**
+- [x] **Step 2: 다음을 확인한다**
 
 1. STM 버튼이 메인메뉴에 뜬다.
 2. 눌러서 화면이 열리고 닫힌다.
 3. 게임의 스쿼드/파티 UI가 정상 동작한다(버튼이 가리거나 입력을 먹지 않는다).
 4. 레이드에 들어갔다 나온 뒤에도 버튼 가시성이 정상이다.
 
-- [ ] **Step 3: 결과를 기록한다**
+- [x] **Step 3: 결과를 기록한다**
 
 `doc/WORKLOG.md`에 날짜·확인 항목·결과를 적는다. **충돌이 있으면 여기서 멈추고 보고한다** — 명단 화면을 어디에 둘지(메인메뉴 / 소셜 화면 / 메신저)부터 다시 정해야 한다.
 
@@ -167,7 +171,7 @@ git commit -m "chore: 포크 식별자를 STM 으로 가른다"
   - `static IReadOnlyList<ProfileCandidate> ProfileRosterPolicy.Select(IEnumerable<ProfileSnapshot> all, string currentSessionId)`
   - `record ProfileSnapshot(string ProfileId, int Aid, string? Nickname, int? Level, string? Side, bool ReadFailed)` — 서버가 `SaveServer.GetProfiles()`에서 채워 넣는 입력. 순수 클래스가 SPT 타입을 참조하지 않게 하는 경계다.
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```csharp
 [Fact] void 현재_세션_프로필은_CurrentSession_으로_표시된다()
@@ -179,25 +183,25 @@ git commit -m "chore: 포크 식별자를 STM 으로 가른다"
 
 `Empty`·`Unreadable`·`CurrentSession`은 목록에 남되 `Ready`가 아니다. 호출자는 `Ready`만 팀에 넣는다.
 
-- [ ] **Step 2: 테스트가 실패하는지 확인한다**
+- [x] **Step 2: 테스트가 실패하는지 확인한다**
 
 Run: `dotnet test src/SptTeamManager.Tests/SptTeamManager.Tests.csproj`
 Expected: FAIL — `ProfileRosterPolicy` 없음.
 
-- [ ] **Step 3: `ProfileRosterPolicy.Select`를 구현한다**
+- [x] **Step 3: `ProfileRosterPolicy.Select`를 구현한다**
 
 판정 순서는 현재 세션 → 읽기 실패 → `Info` 없음 → `Ready`. 예외를 밖으로 던지지 않는다.
 
-- [ ] **Step 4: 테스트가 통과하는지 확인한다**
+- [x] **Step 4: 테스트가 통과하는지 확인한다**
 
 Run: `dotnet test src/SptTeamManager.Tests/SptTeamManager.Tests.csproj`
 Expected: PASS
 
-- [ ] **Step 5: 서버에서 스냅샷을 채우는 어댑터를 붙인다**
+- [x] **Step 5: 서버에서 스냅샷을 채우는 어댑터를 붙인다**
 
 `src/SptTeamManager/server/Services/StmProfileCatalog.cs`를 만들고 `[Injectable]` 싱글턴으로 등록한다. `SaveServer.GetProfiles()`를 **호출할 때마다 새로 읽어** `ProfileSnapshot`으로 바꾼다 — 기동 시점에 캐시하면 런처에서 새로 만든 프로필이 영영 보이지 않는다(Review Focus). 프로필 하나의 변환이 던지면 `ReadFailed = true`로 바꿔 담고 계속한다.
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add src/SptTeamManager/shared/ProfileRosterPolicy.cs src/SptTeamManager/server/Services/StmProfileCatalog.cs src/SptTeamManager.Tests
@@ -222,20 +226,20 @@ git commit -m "feat: 런처 프로필을 팀원 후보로 추린다"
   - `StmProfileMemberStore.Add(MongoId sessionId, string profileId)` / `Remove(...)`
   - 라우트 `/stm/members/list`, `/stm/members/add`, `/stm/members/remove`
 
-- [ ] **Step 1: 저장 위치를 정해 모델을 만든다**
+- [x] **Step 1: 저장 위치를 정해 모델을 만든다**
 
 등록 사실만 저장한다(어느 프로필을 팀에 넣었는지). 프로필 본문은 저장하지 않는다 — 원본이 진실이다. PIT의 암호화 LiteDB(`FriendlyTeammateStorage`)에 `stm-profile-members.json` 문서로 넣는다. 로스터 열거에서 제외되는 문서 목록에 이 키를 추가한다.
 
-- [ ] **Step 2: 라우트를 더한다**
+- [x] **Step 2: 라우트를 더한다**
 
 `StaticRouter`에 **STM 고유 경로**(`/stm/...`)로 등록한다. EFT 네이티브 경로를 새로 가로채지 않는다.
 
-- [ ] **Step 3: 서버를 띄워 라우트를 확인한다**
+- [x] **Step 3: 서버를 띄워 라우트를 확인한다**
 
 Run: 서버 기동 후 `/stm/members/list` 호출
 Expected: 빈 목록이 200으로 돌아온다. 서버 로그에 오류 없음.
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git commit -am "feat: 프로필 팀원 등록을 저장한다"
@@ -262,7 +266,7 @@ git commit -am "feat: 프로필 팀원 등록을 저장한다"
 
 > PIT의 기존 병합은 `Id` 또는 `Aid`가 같으면 건너뛴다. 용병의 가짜 `Aid`가 실제 프로필 `Aid`와 겹치면 **진짜 프로필이 명단에서 사라진다**(Review Focus).
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```csharp
 [Fact] void 같은_ProfileId_는_한_번만_들어간다()
@@ -272,24 +276,24 @@ git commit -am "feat: 프로필 팀원 등록을 저장한다"
 [Fact] void 네이티브_친구는_어떤_경우에도_제거되지_않는다()
 ```
 
-- [ ] **Step 2: 테스트가 실패하는지 확인한다**
+- [x] **Step 2: 테스트가 실패하는지 확인한다**
 
 Run: `dotnet test src/SptTeamManager.Tests/SptTeamManager.Tests.csproj`
 Expected: FAIL
 
-- [ ] **Step 3: `FriendListMergePolicy.Plan`을 구현한다**
+- [x] **Step 3: `FriendListMergePolicy.Plan`을 구현한다**
 
 우선순위는 네이티브 > 프로필 팀원 > 용병. 밀려난 항목은 버리지 말고 이유와 함께 돌려주어 호출자가 로그에 남기게 한다.
 
-- [ ] **Step 4: 테스트가 통과하는지 확인한다**
+- [x] **Step 4: 테스트가 통과하는지 확인한다**
 
 Expected: PASS
 
-- [ ] **Step 5: `MergeFriendList`가 이 정책을 쓰게 바꾼다**
+- [x] **Step 5: `MergeFriendList`가 이 정책을 쓰게 바꾼다**
 
 기존 `Any(existing => ...)` 중복 검사를 `FriendListMergePolicy.Plan` 호출로 바꾸고, 프로필 팀원을 용병과 **다른 회원 분류**로 담는다. 어떤 분류가 어떤 아이콘으로 보이는지는 Task 7의 인게임 확인에서 맞춘다(설계 §8).
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git commit -am "feat: 프로필 팀원을 친구 목록에 병합한다"
@@ -308,22 +312,22 @@ git commit -am "feat: 프로필 팀원을 친구 목록에 병합한다"
 - Consumes: Task 5의 `/stm/members/*`, Task 6의 친구 목록 분류.
 - Produces: 명단에 프로필 팀원 줄과 "프로필 불러오기" 항목.
 
-- [ ] **Step 1: 명단 좌측에 프로필 팀원을 그린다**
+- [x] **Step 1: 명단 좌측에 프로필 팀원을 그린다**
 
 카드 한 줄에 닉네임·레벨·진영, 그리고 실물 장비인지 임시 장비인지. `Ready`가 아닌 후보는 회색으로 두고 사유를 표시한다(`Empty` → "게임에 한 번 들어가야 합니다").
 
-- [ ] **Step 2: "프로필 불러오기"를 붙인다**
+- [x] **Step 2: "프로필 불러오기"를 붙인다**
 
 누르면 `Ready` 후보 목록을 띄우고, 고르면 `/stm/members/add`를 부른 뒤 명단을 새로 읽는다.
 
-- [ ] **Step 3: 인게임으로 확인한다**
+- [x] **Step 3: 인게임으로 확인한다**
 
 1. 명단에 런처 프로필이 보이고, 지금 로그인한 프로필은 없다.
 2. 빈 프로필이 회색으로 뜨고 선택되지 않는다.
 3. 불러오기로 추가한 프로필이 "파티에 초대" 창에도 뜬다.
 4. 용병과 프로필 팀원이 **서로 다른 아이콘**으로 보인다. 같아 보이면 회원 분류 값을 바꿔 가며 맞추고, 맞춘 값을 설계 §8에 적는다.
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git commit -am "feat: 명단에 프로필 팀원을 보여준다"
@@ -342,7 +346,7 @@ git commit -am "feat: 명단에 프로필 팀원을 보여준다"
 - Consumes: Task 5의 등록 목록, Task 6의 분류.
 - Produces: `static SlotDecision PartySlotPolicy.Admit(int mercenariesInParty, int profileMembersInParty, FriendKind joining)` — 허용/거부와 거부 사유.
 
-- [ ] **Step 1: 실패하는 테스트를 쓴다**
+- [x] **Step 1: 실패하는 테스트를 쓴다**
 
 ```csharp
 [Fact] void 팀원_자리는_셋이다()
@@ -351,30 +355,30 @@ git commit -am "feat: 명단에 프로필 팀원을 보여준다"
 [Fact] void 거부는_조용히_자르지_않고_사유_문자열을_돌려준다()
 ```
 
-- [ ] **Step 2: 테스트가 실패하는지 확인한다**
+- [x] **Step 2: 테스트가 실패하는지 확인한다**
 
 Expected: FAIL
 
-- [ ] **Step 3: `PartySlotPolicy.Admit`을 구현한다**
+- [x] **Step 3: `PartySlotPolicy.Admit`을 구현한다**
 
 상한 3은 상수로 두고 설정으로 올리지 않는다 — 네이티브 한계다(Global Constraints).
 
-- [ ] **Step 4: 테스트가 통과하는지 확인한다**
+- [x] **Step 4: 테스트가 통과하는지 확인한다**
 
 Expected: PASS
 
-- [ ] **Step 5: 초대 경로에 정책을 건다**
+- [x] **Step 5: 초대 경로에 정책을 건다**
 
 `SendGroupInvite`에서 정책을 먼저 묻고, 거부면 기존 `mailSendService.SendSystemMessageToPlayer(sessionId, rejectionReason, null)` 경로로 사유를 알린다.
 
-- [ ] **Step 6: 인게임으로 확인한다**
+- [x] **Step 6: 인게임으로 확인한다**
 
 1. 프로필 팀원을 파티에 넣고 레이드에 들어간다. 임시 장비를 입고 스폰한다.
 2. 용병과 프로필 팀원을 섞어 셋까지 들어간다.
 3. 넷째를 넣으려 하면 거부되고 메시지가 뜬다.
 4. 레이드가 정상 종료된다. **이 계획 범위에서는 레이드 결과가 프로필에 반영되지 않는다** — 계획 3의 몫이다.
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git commit -am "feat: 프로필 팀원을 레이드에 투입한다"
@@ -389,11 +393,11 @@ git commit -am "feat: 프로필 팀원을 레이드에 투입한다"
 - Modify: `doc/INSTALLED-MODS.md` (생성 스크립트로)
 - Modify: `doc/WORKLOG.md`
 
-- [ ] **Step 1: README를 쓴다**
+- [x] **Step 1: README를 쓴다**
 
 PIT Fireteam 1.0.0 포크임을 밝히고 원 저작권 고지(MIT)와 원 저장소 링크를 남긴다. 이 계획에서 동작하는 범위와 아직 안 되는 것(장비 편집, 레이드 후 반영)을 적는다.
 
-- [ ] **Step 2: 설치 목록을 다시 만든다**
+- [x] **Step 2: 설치 목록을 다시 만든다**
 
 ```bash
 node tools/gen-installed-mods.mjs
@@ -401,7 +405,7 @@ node tools/gen-installed-mods.mjs
 
 `doc/INSTALLED-MODS.md`는 직접 고치지 않는다.
 
-- [ ] **Step 3: 커밋**
+- [x] **Step 3: 커밋**
 
 ```bash
 git add src/SptTeamManager/README.md doc/INSTALLED-MODS.md doc/WORKLOG.md
