@@ -20,6 +20,7 @@ public class FriendlyPostRaidCallbacks(
     FollowerInsuranceCourierTransferService courierTransfers,
     FriendlyTeammateService teammateService,
     FriendlyScavCargoService scavCargo,
+    StmRaidOutcomeService stmRaidOutcomes,
     ISptLogger<FriendlyPostRaidCallbacks> logger
 )
 {
@@ -92,12 +93,22 @@ public class FriendlyPostRaidCallbacks(
         }
 
         List<FriendlyTeammateDeathEscapeEntry> entries = request.Entries ?? [];
+        // STM: whether the escape rolls were settled in THIS request decides whether an entry's
+        // Escaped flag may be trusted for a profile teammate (see ApplyProfileTeammateOutcomes).
+        bool rollsResolvedHere = false;
         if (entries.Any(entry => entry?.RollEscape == true))
         {
             entries = teammateService.ResolveRaidOutcomes(entries).Entries;
+            rollsResolvedHere = true;
         }
 
+        // PIT's own persistence runs first and unchanged. It lists every entry's name in the summary's
+        // escaped/lost lists - profile teammates included, which is factually right - and then skips the
+        // profile teammates themselves because TryFindByAccountId finds no mercenary for their Aid
+        // (FriendlyTeammateService.cs:1519-1522). STM applies their outcome below, which is what makes
+        // the names it already printed true.
         FriendlyTeammateDeathEscapeSummary summary = teammateService.PersistDeathEscapeOutcomes(sessionId, entries);
+        ApplyProfileTeammateOutcomes(sessionId, request.InsuranceServerId, entries, rollsResolvedHere);
         insuranceDiagnostics.ObserveOutcomes(sessionId, entries, request.InsuranceServerId, request.InsuranceReportId);
         if (request.Notify)
         {
@@ -110,6 +121,54 @@ public class FriendlyPostRaidCallbacks(
     public ValueTask<string> DeathEscape(string url, FriendlyTeammateDeathEscapeRequest request, MongoId sessionId)
     {
         return RaidOutcomes(url, request, sessionId);
+    }
+
+    // STM: hands each reported outcome to StmRaidOutcomeService, which ignores anything that is not a
+    // registered launcher-profile teammate. Wrapped per entry AND as a whole: a failure here must not
+    // stop PIT's own mercenary outcome handling, nor the remaining entries.
+    //
+    // 'escaped' is read from FriendlyTeammateDeathEscapeEntry.Escaped
+    // (server/Models/FriendlyTeammateDeathEscapeRequest.cs:27). Not-escaped is what causes a DELETION,
+    // so an entry whose escape state is not settled must never be reported as not-escaped: an entry that
+    // still asks for a roll (RollEscape) which was not resolved in this request carries Escaped=false
+    // only as a placeholder (client/Modules/FollowerDeathEscapeResolver.cs:209), so it is skipped and
+    // said out loud instead of guessed in either direction.
+    private void ApplyProfileTeammateOutcomes(
+        MongoId sessionId,
+        string? raidId,
+        List<FriendlyTeammateDeathEscapeEntry> entries,
+        bool rollsResolvedHere)
+    {
+        try
+        {
+            foreach (var entry in entries)
+            {
+                if (entry == null || string.IsNullOrWhiteSpace(entry.Aid))
+                {
+                    continue;
+                }
+
+                if (entry.RollEscape && !rollsResolvedHere)
+                {
+                    logger.Warning(
+                        $"[STM] 레이드 결과: '{entry.Nickname}'(aid {entry.Aid})의 탈출 여부가 아직 정해지지 않았다(RollEscape). 생존했는지 알 수 없으므로 아무것도 하지 않는다.");
+                    continue;
+                }
+
+                try
+                {
+                    stmRaidOutcomes.Apply(sessionId, raidId, entry.Aid, entry.Escaped);
+                }
+                catch (Exception ex)
+                {
+                    logger.Error($"[STM] 레이드 결과: aid '{entry.Aid}' 처리에 실패했다(나머지 항목은 계속 처리한다): {ex}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 레이드 결과: 프로필 팀원 결과 적용 경로가 실패했다(PIT 용병 처리는 이미 끝났다): {ex}");
+        }
     }
 
     public ValueTask<string> InsuranceReportsComplete(string url, FollowerInsuranceRaidCompletionRequest request, MongoId sessionId)
