@@ -40,7 +40,7 @@ public class StmProfileMemberStore(FriendlyTeammateStorage storage, StmProfileCa
         {
             var members = Load(sessionId).ToList();
             if (members.Any(m => m.ProfileId == candidate.ProfileId)) return;
-            members.Add(new StmProfileMember(candidate.ProfileId, DefaultTactic, DefaultAutoJoin));
+            members.Add(new StmProfileMember(candidate.ProfileId, DefaultTactic, DefaultAutoJoin, false));
             Save(sessionId, members);
         }
     }
@@ -56,6 +56,28 @@ public class StmProfileMemberStore(FriendlyTeammateStorage storage, StmProfileCa
             // Removal needs no availability check: a profile that went bad must still be removable.
             if (members.RemoveAll(m => m.ProfileId == profileId) == 0) return;
             Save(sessionId, members);
+        }
+    }
+
+    // Changes fields of an existing registration. Returns false - and writes nothing - when the
+    // profile is not registered, so a stale click can never create or resurrect a registration.
+    public bool Update(MongoId sessionId, string profileId, StmProfileMemberChange change)
+    {
+        if (string.IsNullOrWhiteSpace(profileId)) return false;
+        profileId = profileId.Trim();
+        lock (sync)
+        {
+            var members = Load(sessionId).ToList();
+            var index = members.FindIndex(m => m.ProfileId == profileId);
+            if (index < 0) return false;
+            var current = members[index];
+            var updated = ProfileMemberUpdatePolicy.Apply(
+                new StmProfileMemberFields(current.ProfileId, current.Tactic, current.AutoJoin, current.HandEdited), change);
+            // Fail closed: a policy that cannot judge changes nothing.
+            if (updated == null) return false;
+            members[index] = new StmProfileMember(updated.ProfileId, updated.Tactic, updated.AutoJoin, updated.HandEdited);
+            Save(sessionId, members);
+            return true;
         }
     }
 

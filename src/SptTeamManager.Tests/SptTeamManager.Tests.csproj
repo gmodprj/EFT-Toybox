@@ -41,6 +41,8 @@
     <Compile Include="WornGearLossPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/RaidProtectionReleasePolicy.cs" Link="Shared/RaidProtectionReleasePolicy.cs" />
     <Compile Include="RaidProtectionReleasePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileMemberUpdatePolicy.cs" Link="Shared/ProfileMemberUpdatePolicy.cs" />
+    <Compile Include="ProfileMemberUpdatePolicyTests.cs" />
   </ItemGroup>
 
 </Project>

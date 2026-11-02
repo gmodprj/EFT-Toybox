@@ -15,7 +15,11 @@ namespace pitTeam.Server.Models;
 public record StmProfileMember(
     [property: JsonPropertyName("profileId")] string ProfileId,
     [property: JsonPropertyName("tactic")] string Tactic,
-    [property: JsonPropertyName("autoJoin")] bool AutoJoin);
+    [property: JsonPropertyName("autoJoin")] bool AutoJoin,
+    // Appended last: documents written before it existed have no "handEdited" and must still bind (missing
+    // constructor parameter reads as false - proven in the plan 3 task 1 report). One-way: set once the
+    // teammate's gear was hand-edited, never cleared by an update (ProfileMemberUpdatePolicy).
+    [property: JsonPropertyName("handEdited")] bool HandEdited);
 
 // Shape of the stm-profile-members.json document.
 public record StmProfileMembersDocument
@@ -42,6 +46,8 @@ public record StmRosterRow
     [JsonPropertyName("side")] public string Side { get; set; } = string.Empty;
     // Ready | Empty | Unreadable | CurrentSession | Missing
     [JsonPropertyName("status")] public string Status { get; set; } = string.Empty;
+    [JsonPropertyName("autoJoin")] public bool AutoJoin { get; set; }
+    [JsonPropertyName("handEdited")] public bool HandEdited { get; set; }
 }
 
 public record StmRosterResponse
