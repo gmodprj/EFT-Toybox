@@ -90,7 +90,9 @@ namespace pitTeam.Patches
             RectTransform loadoutSelector,
             Transform parent,
             ResultProfile profile,
-            StmProfileDetailWire detail)
+            StmProfileDetailWire detail,
+            EFT.InventoryLogic.InventoryController inventoryController,
+            EFT.IEftSession session)
         {
             try
             {
@@ -101,14 +103,14 @@ namespace pitTeam.Patches
                     StmKitButtonRoot, rowOffset: 2,
                     name: "pitFireTeam_StmKitButton",
                     text: StmKitButtonText,
-                    onClick: () => OpenStmKitScreen(profile, detail, teammateBuilds: null));
+                    onClick: () => OpenStmKitScreen(profile, detail, null, inventoryController, session));
 
                 StmKitTeammateButtonRoot = CreateStmKitRowButton(
                     screen, loadoutSelector, parent, detail,
                     StmKitTeammateButtonRoot, rowOffset: 3,
                     name: "pitFireTeam_StmTeammateKitButton",
                     text: StmKitTeammateButtonText,
-                    onClick: () => OpenStmTeammateKitScreen(profile, detail));
+                    onClick: () => OpenStmTeammateKitScreen(profile, detail, inventoryController, session));
             }
             catch (Exception ex)
             {
@@ -195,14 +197,30 @@ namespace pitTeam.Patches
 
         // 게임의 기본 장비 프리셋 화면을 연다. STM 모드를 먼저 켜고 PIT 의 흐름에 넘긴다 - 그 안에서
         // 값과 구매만 STM 의 경로로 갈라진다(StmKitNativeFlow).
-        private static void OpenStmKitScreen(ResultProfile profile, StmProfileDetailWire detail, StmGearBuildRowWire[] teammateBuilds)
+        private static void OpenStmKitScreen(
+            ResultProfile profile,
+            StmProfileDetailWire detail,
+            StmGearBuildRowWire[] teammateBuilds,
+            EFT.InventoryLogic.InventoryController inventoryController,
+            EFT.IEftSession session)
         {
             try
             {
                 if (profile == null || detail == null) return;
 
-                StmKitNativeFlow.Begin(profile, detail, teammateBuilds, ActiveProfileSession);
-                TeammateEquipmentBuildsScreenFlow.Open(profile, ActiveProfileSession, ActiveProfileInventoryController);
+                // 전역(ActiveProfile*)에 기대지 않고 상세 화면이 받은 값을 그대로 쓴다 - 그 전역은
+                // PIT 의 용병 분기에서 채워지는 것이라 STM 경로에서는 비어 있을 수 있다.
+                var useSession = session ?? ActiveProfileSession;
+                var useController = inventoryController ?? ActiveProfileInventoryController;
+                if (useSession == null || useController == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 장비 꾸러미를 열지 못했다: 세션이나 인벤토리 컨트롤러가 없다.");
+                    AddTeammateCreationFlow.ShowToast(StmKitLoadFailedToast);
+                    return;
+                }
+
+                StmKitNativeFlow.Begin(profile, detail, teammateBuilds, useSession);
+                TeammateEquipmentBuildsScreenFlow.Open(profile, useSession, useController);
             }
             catch (Exception ex)
             {
@@ -214,7 +232,11 @@ namespace pitTeam.Patches
         }
 
         // 팀원 빌드로 같은 화면을 연다. 목록을 먼저 서버에서 받아(아이템까지) 화면에 실어 준다.
-        private static async void OpenStmTeammateKitScreen(ResultProfile profile, StmProfileDetailWire detail)
+        private static async void OpenStmTeammateKitScreen(
+            ResultProfile profile,
+            StmProfileDetailWire detail,
+            EFT.InventoryLogic.InventoryController inventoryController,
+            EFT.IEftSession session)
         {
             if (StmKitBusy || profile == null || detail == null) return;
             StmKitBusy = true;
@@ -242,7 +264,7 @@ namespace pitTeam.Patches
                     return;
                 }
 
-                OpenStmKitScreen(profile, detail, rows);
+                OpenStmKitScreen(profile, detail, rows, inventoryController, session);
             }
             catch (Exception ex)
             {

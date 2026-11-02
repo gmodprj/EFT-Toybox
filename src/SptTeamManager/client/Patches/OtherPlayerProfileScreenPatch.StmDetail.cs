@@ -102,6 +102,15 @@ namespace pitTeam.Patches
             ResetStmOptionsRefusal();
             StmShownDetailAccountId = profile?.AccountId;
 
+            // PIT 는 이 셋을 PatchPostfix 의 **용병 분기 아래**에서 채운다. STM 분기는 그 위에서 돌아가므로
+            // 여기서 채우지 않으면 PIT 의 화면 부품들이 세션 없이 불린다 - 2026-11-02 인게임에서
+            // 기본 장비 프리셋 화면이 "열 수 없습니다" 로 거절한 것이 그 때문이었다.
+            // 장비 편집기는 자기 경로에서 같은 일을 이미 하고 있었다(StmGearEditService 쪽).
+            ActiveProfileScreen = screen;
+            ActiveProfileInventoryController = inventoryController;
+            ActiveProfileSession = session;
+            RememberActiveBackendInventoryController(session, inventoryController);
+
             StmProfileDetailWire detail = options?.Stm;
             try
             {
@@ -209,7 +218,7 @@ namespace pitTeam.Patches
                 ApplyLoadoutPanelLayout(panel, clothingSelectionPanel);
                 ReplaceStmLoadoutDropdownWithEditButton(screen, profile, detail, panel, inventoryController, session, playerModelWindow);
                 // 그 아래 한 줄 더: 장비 꾸러미(계획 4). 못 만들어도 위의 줄은 그대로 선다.
-                CreateStmKitButton(screen, clone, parent, profile, detail);
+                CreateStmKitButton(screen, clone, parent, profile, detail, inventoryController, session);
 
                 StmControlRowRoot = clone.gameObject;
                 return true;
