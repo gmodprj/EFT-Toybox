@@ -92,7 +92,9 @@ namespace SptKoreanConfig
         private static FieldInfo _categoryField;
 
         private static readonly HashSet<string> Missing = new HashSet<string>(StringComparer.Ordinal);
-        private const int MissingLogLimit = 60;
+        // 번역을 이어 붙일 때 이 목록이 유일한 단서다. 60 으로 두었더니 2026-11-02 run 에서 딱 60줄이 차
+        // 더 있는지 알 수 없었다. 로그가 길어지는 것보다 빠진 것을 다 보는 쪽이 낫다.
+        private const int MissingLogLimit = 300;
 
         internal static int Translated { get; private set; }
         internal static int Seen { get; private set; }

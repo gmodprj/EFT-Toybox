@@ -334,7 +334,7 @@
     "AddTeammateInProgress": "{0} 을(를) 친구 목록에 더했습니다",
     "AddTeammateConfirm": "팀원 추가",
     "AddTeammateNext": "다음",
-    "TeammateHireWithoutKit": "장비 없이 추가",
+    "TeammateHireWithoutKit": "장비 없이",
     "TeammateHireRegenerate": "다시 뽑기",
     "TeammateHireRegenerateFailed": "새 팀원 후보를 불러오지 못했습니다. 다시 뽑거나 뒤로 돌아가세요.",
     "TeammateHirePrice": "장비 가격: {0} ₽",
