@@ -23,6 +23,15 @@ public record StmProfileDetail
     [JsonPropertyName("journalId")] public string? JournalId { get; set; }
     [JsonPropertyName("canClose")] public bool CanClose { get; set; }
     [JsonPropertyName("closeWarning")] public string? CloseWarning { get; set; }
+    // 저널 문서를 읽을 수 없을 때의 출구(문서를 통째로 버린다). 이때만 true 이고 경고문이 따라온다.
+    [JsonPropertyName("canDiscardJournal")] public bool CanDiscardJournal { get; set; }
+    [JsonPropertyName("discardWarning")] public string? DiscardWarning { get; set; }
+}
+
+// 읽을 수 없는 저널 문서를 플레이어가 버리겠다고 확인했을 때의 요청. Acknowledged 기본값은 false.
+public record StmDiscardJournalRequest : IRequestData
+{
+    [JsonPropertyName("acknowledged")] public bool Acknowledged { get; set; }
 }
 
 // 플레이어가 막힌 전송 항목을 닫겠다고 확인했을 때의 요청. Acknowledged 는 기본값이 false 이고, 화면은 경고창에서

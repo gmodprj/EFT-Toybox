@@ -73,6 +73,17 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }
 
+    // 읽을 수 없는 저널 문서를 플레이어가 통째로 버린다(확인창 뒤에만). 읽히는 문서는 서버가 거절한다.
+    public ValueTask<string> DiscardUnreadableJournal(string url, StmDiscardJournalRequest request, MongoId sessionId)
+    {
+        if (journal.TryDiscardUnreadableByPlayer(sessionId, request.Acknowledged, out var message))
+        {
+            return new ValueTask<string>(httpResponse.NullResponse());
+        }
+
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
     // Failure never reads as success: the client gets an error body with a key, not an empty list.
     private ValueTask<string> Run<T>(string action, Func<T> work)
     {

@@ -206,6 +206,16 @@ public class FriendlyTeammateSocialCallbacks(
         // 그 응답은 Equipment.Items 에 프로필의 인벤토리 전체(스태시 포함)를 싣고, 못 찾으면 로그인한 본인 프로필로 대체한다.
         // 그래서 프로필 팀원의 Aid 는 SPT 의 응답을 흘려보내지 않고 착용 장비로 줄인 STM 의 응답으로 바꾼다.
         // 등록됐지만 쓸 수 없는 팀원은 오류로 돌린다 - SPT 의 "본인 프로필로 대체" 가 팀원인 척 보이면 안 된다.
+        // 등록을 믿을 수 없는 상태(시작 검사가 실패했다)에서는 이 Aid 가 등록된 프로필인지 알 수 없다. 해석기는 이때 던졌다 잡고 사유 없이
+        // "팀원 아님" 을 돌려주는데, 이 라우트의 꼬리는 PIT 의 길이 아니라 SPT 의 응답(다른 프로필의 인벤토리 전체, 또는 본인
+        // 프로필로의 대체)이라 거기로 흘리면 위 수정이 무너진다. 모르면 닫힌 쪽: 조회를 거절한다.
+        if (!profileMemberStore.RegistrationsUsable)
+        {
+            LogFaultOnce("view-registrations-unusable",
+                "[STM] 프로필 조회: 등록된 프로필 팀원을 믿고 읽을 수 없는 상태라 이 Aid 가 프로필 팀원인지 알 수 없어, SPT 의 응답(다른 프로필의 인벤토리 전체일 수 있다)을 내보내지 않고 조회를 거절한다. 원인은 시작 검사의 Error 로그를 보라(이 로그는 실행당 한 번).");
+            return new ValueTask<string>(httpResponseUtil.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: "Unreadable"));
+        }
+
         if (profileViewFactory.TryBuildView(sessionId, request.AccountId, out var profileMemberView, out var profileMemberUnavailableReason))
         {
             return new ValueTask<string>(httpResponseUtil.GetBody(profileMemberView));

@@ -298,7 +298,7 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
         message = string.Empty;
         // 빈 profileId 는 BlocksEditing 이 "모르면 막는다" 로 true 를 주므로, 비어 있으면 어떤 항목에도 맞아 버린다.
         // 어느 팀원의 항목인지 모르는 닫기 요청은 여기서 끊는다.
-        if (string.IsNullOrWhiteSpace(journalId) || string.IsNullOrWhiteSpace(profileId))
+        if (!TransferEntryClosePolicy.HasUsableCloseTarget(journalId, profileId))
         {
             message = "닫을 기록이나 팀원을 알 수 없어 닫지 않았습니다.";
             return false;
@@ -347,6 +347,47 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
         {
             logger.Error($"[STM] 플레이어의 전송 항목 닫기 중 오류. 항목 '{journalId}' 을(를) 그대로 둔다: {ex}");
             message = "기록을 닫지 못했습니다. 서버 로그를 확인하세요.";
+            return false;
+        }
+    }
+
+    // 저널 문서가 "읽을 수 없는" 상태일 때의 출구. 항목을 닫을 수 없다(어느 항목인지 모른다) - 플레이어가 경고를 읽고 확인하면
+    // 문서를 빈 문서로 갈아 끼운다. 읽히는 문서는 거절한다(진행 중인 다른 기록까지 사라지므로 항목 단위 닫기만 허용).
+    // 쓰기는 읽기와 별개 경로(WriteSharedDocument)라 읽을 수 없는 문서 위에도 쓸 수 있다. 쓰기마저 실패하면(데이터베이스 자체가
+    // 열리지 않는 등) 그대로 실패를 알린다 - 반쯤 된 상태를 만들지 않는다. 던지지 않는다.
+    public bool TryDiscardUnreadableByPlayer(MongoId sessionId, bool acknowledged, out string message)
+    {
+        message = string.Empty;
+        try
+        {
+            lock (sync)
+            {
+                bool unreadable;
+                try { Load(sessionId); unreadable = false; }
+                catch { unreadable = true; }
+
+                if (!TransferEntryClosePolicy.MayDiscardUnreadableJournal(unreadable, acknowledged))
+                {
+                    message = !unreadable
+                        ? "전송 기록 파일이 읽히므로 통째로 버릴 수 없습니다. 항목을 하나씩 닫으세요."
+                        : "경고를 확인하지 않아 버리지 않았습니다.";
+                    logger.Warning($"[STM] 플레이어의 전송 기록 파일 버리기 요청을 거절했다: 읽을 수 없음 {unreadable} / 확인 {acknowledged}.");
+                    return false;
+                }
+
+                logger.Warning(
+                    $"[STM] 플레이어가 읽을 수 없는 전송 기록 파일을 직접 버린다(경고 확인함). 문서 '{Document}' / 데이터베이스 파일 '{storage.SharedDocumentDatabasePath(sessionId)}'. " +
+                    "안에 있던 기록은 알 수 없고 모두 사라진다. 아이템이 어느 쪽에 있는지는 알 방법이 없다.");
+                Save(sessionId, []);
+                reportedStopped.Clear();
+                unreadableLogged = false;
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 읽을 수 없는 전송 기록 파일을 버리지 못했다. 그대로 둔다: {ex}");
+            message = "전송 기록 파일을 버리지 못했습니다. 서버 로그를 확인하세요.";
             return false;
         }
     }

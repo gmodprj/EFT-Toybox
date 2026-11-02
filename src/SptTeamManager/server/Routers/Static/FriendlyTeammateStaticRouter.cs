@@ -146,6 +146,10 @@ public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCal
                 "/stm/members/close-transfer",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.CloseTransfer(url, info, sessionId))
             ),
+            new RouteAction<StmDiscardJournalRequest>(
+                "/stm/members/discard-journal",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.DiscardUnreadableJournal(url, info, sessionId))
+            ),
         ]
     )
 { }

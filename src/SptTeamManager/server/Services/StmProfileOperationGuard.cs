@@ -13,15 +13,25 @@ namespace pitTeam.Server.Services;
 // 등록됐지만 지금 쓸 수 없는 프로필(로그인 중·읽을 수 없음)도 거부다: PIT 에는 그 Aid 의 용병이 없다.
 // 던지지 않는다(PIT 콜백 안에서 불린다).
 [Injectable(InjectionType.Singleton)]
-public class StmProfileOperationGuard(StmProfileMemberResolver resolver, ISptLogger<StmProfileOperationGuard> logger)
+public class StmProfileOperationGuard(
+    StmProfileMemberResolver resolver,
+    StmProfileMemberStore store,
+    StmProfileCatalog catalog,
+    ISptLogger<StmProfileOperationGuard> logger)
 {
-    // true  = 프로필 팀원이다. 호출자는 PIT 를 부르지 않고 message 로 오류 응답을 돌린다.
-    // false = 프로필 팀원이 아니다(또는 식별 전에 실패했다). 호출자는 PIT 경로를 그대로 탄다.
+    // true  = 프로필 팀원이거나, 프로필 팀원인지 알 수 없다. 호출자는 PIT 를 부르지 않고 message 로 오류 응답을 돌린다.
+    // false = 프로필 팀원이 아님이 확인됐다. 호출자는 PIT 경로를 그대로 탄다.
+    // 가드는 모를 때 거부 쪽으로 닫는다: 해석기는 등록·카탈로그를 못 읽으면 던졌다 잡고 사유 없이 "팀원 아님" 을 돌려주는데,
+    // 그대로 믿으면 Aid 가 겹칠 때 PIT 가 보이지 않는 용병을 고친다. 그래서 읽기가 되는지를 먼저 직접 확인한다.
     public bool TryRefuse(MongoId sessionId, string? accountId, ProfileMemberOperation operation, out string message)
     {
         message = string.Empty;
         try
         {
+            // 해석기가 삼키는 실패를 여기서 먼저 드러낸다. 읽을 수 없으면 판별 불가 = 거부.
+            store.List(sessionId);
+            catalog.GetCandidates(sessionId.ToString());
+
             var resolved = resolver.TryResolve(sessionId, accountId, out var member, out var unavailableReason);
             if (!(resolved && member != null) && string.IsNullOrWhiteSpace(unavailableReason))
             {
@@ -34,8 +44,9 @@ public class StmProfileOperationGuard(StmProfileMemberResolver resolver, ISptLog
         }
         catch (Exception ex)
         {
-            logger.Error($"[STM] 프로필 팀원 여부를 확인하지 못했다(Aid '{accountId}', {operation}). 기본 경로로 넘긴다: {ex}");
-            return false;
+            message = ProfileMemberOperationPolicy.UndeterminedReason(operation);
+            logger.Error($"[STM] 프로필 팀원 여부를 확인하지 못해(Aid '{accountId}', {operation}) 조작을 거부한다: {ex}");
+            return true;
         }
     }
 }

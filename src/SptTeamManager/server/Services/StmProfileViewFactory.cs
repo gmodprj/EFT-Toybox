@@ -139,6 +139,8 @@ public class StmProfileViewFactory(
         {
             detail.Blocked = true;
             detail.BlockedNotice = TransferEntryClosePolicy.JournalUnreadableNotice;
+            detail.CanDiscardJournal = true;
+            detail.DiscardWarning = TransferEntryClosePolicy.DiscardUnreadableJournalWarning;
             return detail;
         }
 
