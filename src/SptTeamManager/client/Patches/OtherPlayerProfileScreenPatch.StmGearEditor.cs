@@ -7,10 +7,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using pitTeam.Modules;
 using pitTeam.Shared;
+using HarmonyLib;
 using SPT.Common.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -141,11 +143,19 @@ namespace pitTeam.Patches
             rect.localScale = Vector3.one;
             rect.SetAsLastSibling();
 
+            // 안내 상자가 없을 때만 ARENA 탭 옆으로 옮긴다. 안내 상자가 서면 그 아래(entryTop)가 제자리다.
+            if (pendingRefusal == null)
+            {
+                TryPlaceEntryBesideArenaTab(screen, rect);
+            }
+
             Image background = root.GetComponent<Image>();
             background.color = new Color(0f, 0f, 0f, 0f);
             background.raycastTarget = false;
 
-            DefaultUIButton button = CreateOverlayButton(buttonTemplate, root.transform, new Vector2(0f, 4f), new Vector2(300f, 40f));
+            // 버튼은 자리를 잡은 뒤의 상자 크기를 따른다(ARENA 탭 옆으로 가면 좁아진다).
+            Vector2 buttonSize = new Vector2(rect.sizeDelta.x - 8f, Mathf.Max(rect.sizeDelta.y - 8f, 32f));
+            DefaultUIButton button = CreateOverlayButton(buttonTemplate, root.transform, new Vector2(0f, 4f), buttonSize);
             button.name = "pitFireTeam_StmGearEditButton";
             button.SetRawText(StmEditEntryText, 20);
             button.OnClick.RemoveAllListeners();
@@ -153,6 +163,40 @@ namespace pitTeam.Patches
 
             if (pendingRefusal == null) StmDetailRoot = root;
             else StmGearEditEntryRoot = root;
+        }
+
+        // 통계 화면의 EFT / ARENA 탭. 입구 버튼을 그 줄 오른쪽에 붙이려고만 쓴다(2026-11-02 인게임에서 입구가 두 탭 **아래**에
+        // 겹쳐 보였다). 화면 모양이 바뀌어 못 찾으면 그냥 쓰지 않는다 — 입구는 원래 자리인 가운데 위에 선다.
+        private static readonly FieldInfo ArenaToggleField = AccessTools.Field(typeof(OtherPlayerProfileScreen), "_arenaToggle");
+
+        private const float StmEntryTabGap = 12f;
+
+        private static void TryPlaceEntryBesideArenaTab(OtherPlayerProfileScreen screen, RectTransform rect)
+        {
+            try
+            {
+                if (!(ArenaToggleField?.GetValue(screen) is Component toggle)) return;
+                if (!(toggle.transform is RectTransform arenaRect)) return;
+                if (!(arenaRect.parent is RectTransform row)) return;
+
+                // 탭 줄이 아직 그려지지 않았으면 폭이 0 이다. 그 상태로 붙이면 겹치므로 그냥 두고 간다.
+                float arenaWidth = arenaRect.rect.width;
+                if (arenaWidth <= 1f) return;
+
+                rect.SetParent(row, false);
+                rect.anchorMin = arenaRect.anchorMin;
+                rect.anchorMax = arenaRect.anchorMax;
+                rect.pivot = arenaRect.pivot;
+                rect.sizeDelta = new Vector2(240f, Mathf.Max(arenaRect.rect.height, 36f));
+                rect.anchoredPosition = arenaRect.anchoredPosition + new Vector2(arenaWidth + StmEntryTabGap, 0f);
+                rect.localScale = Vector3.one;
+                rect.SetAsLastSibling();
+            }
+            catch (Exception ex)
+            {
+                // 자리를 못 잡아도 입구는 이미 가운데 위에 있다. 쓸 수 없게 되는 것은 아니다.
+                pitFireTeam.Log.LogWarning($"[STM] Could not place the gear edit entry next to the ARENA tab: {ex.Message}");
+            }
         }
 
         // ---- 열기 ----

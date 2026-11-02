@@ -107,6 +107,7 @@ namespace pitTeam.Patches
                 // 등록된 프로필 팀원인데 지금 쓸 수 없다: 이유를 말한다. 정확히 상태 이름일 때만 - PIT 의 오류 문장은 해당 없음이다.
                 if (refusal != null && ProfileStatePolicy.TryDescribeRefusal(refusal, out ProfileStateNotice notice))
                 {
+                    HideStockHideoutButtonForStm(screen);
                     ShowStmBannerWithPending(screen, notice.Message, profile?.AccountId, null, null);
                     return true;
                 }
@@ -115,6 +116,8 @@ namespace pitTeam.Patches
                 {
                     return false;
                 }
+
+                HideStockHideoutButtonForStm(screen);
 
                 // 프로필 팀원이다. 막혀 있으면 그 사실과 출구를, 아니면 장비 편집 입구를 얹는다.
                 if (detail.Blocked)
@@ -139,6 +142,26 @@ namespace pitTeam.Patches
                 pitFireTeam.Log.LogError(ex);
                 // 프로필 팀원이라고 서버가 알렸는데 그리기만 실패했다: PIT 의 용병 UI 를 그 위에 만들지 않는다. 편집 차단은 서버가 한다.
                 return detail != null;
+            }
+        }
+
+        // 바닐라의 "VIEW HIDEOUT" 버튼을 프로필 팀원 화면에서는 감춘다.
+        //
+        // 2026-11-02 인게임에서 확인했다: 프로필 팀원 화면에서 그 버튼을 누르면 **그 팀원이 아니라 플레이어 자신의 은신처**가
+        // 열린다. SPT 는 다른 프로필의 은신처 화면을 만들지 않으므로(조회 응답의 `Hideout` 은 구역 id 목록일 뿐이다 —
+        // 인계 문서 §3-10) 버튼이 할 수 있는 일이 없고, 누르면 틀린 화면을 연다. PIT 도 용병 화면에서 같은 이유로 이 패널을
+        // 감추고 자기 버튼의 템플릿으로만 쓴다(`RenameUi.HideStockHideoutButtonPanel`) — 같은 함수를 쓴다.
+        // 되돌리기는 PIT 가 화면을 열 때마다 하는 `RestoreHideoutButtonVisuals` 가 맡는다(`OtherPlayerProfileScreenPatch.cs:955`).
+        private static void HideStockHideoutButtonForStm(OtherPlayerProfileScreen screen)
+        {
+            try
+            {
+                HideStockHideoutButtonPanel(HideoutButtonField?.GetValue(screen) as DefaultUIButton);
+            }
+            catch (Exception ex)
+            {
+                // 못 감춰도 화면은 그대로 쓸 수 있다. 버튼이 남을 뿐이다.
+                pitFireTeam.Log.LogWarning($"[STM] Could not hide the stock hideout button on the teammate screen: {ex.Message}");
             }
         }
 
