@@ -25,10 +25,9 @@ namespace pitTeam.Patches
     //     고르기 전에는 값을 말하지 않고 고른 뒤 서버가 매긴 값만 보여 준다.
     //   · 구매 - PIT 의 키트 구매(플레이어 스태시를 출처로 쓰는 길)가 아니라 STM 의 경로로 간다.
     //
-    // 지금은 **플레이어 자신의 빌드**만 이 화면에 뜬다. 그 화면이 session.EquipmentBuildsStorage 를 읽는데
-    // 그것은 플레이어의 보관소이기 때문이다(EquipmentBuildsScreen 역컴파일로 확인). 팀원 본인의 빌드를
-    // 이 목록에 끼워 넣는 것은 플레이어의 보관소를 건드리는 일이라 따로 한다 - 그때까지 팀원 빌드는
-    // 상세 화면의 작은 창에서 고른다.
+    // 팀원 빌드도 이 화면에 뜬다(2026-11-02). 화면이 session.EquipmentBuildsStorage 를 읽으므로 그 안의
+    // 사전 **참조만** 잠깐 바꿔 끼우고 닫을 때 되돌린다 - 플레이어의 사전 객체 자체는 건드리지 않는다.
+    // 어느 쪽 빌드가 실렸는지가 구매 요청의 owner 를 가른다(CurrentOwner).
     internal static class StmKitNativeFlow
     {
         private const string StmKitQuoteRoute = "/stm/members/kit-quote";
@@ -307,15 +306,20 @@ namespace pitTeam.Patches
         {
             CloseOverlay();
 
-            var canvas = GameObject.FindObjectOfType<Canvas>();
-            if (canvas == null)
+            // **열려 있는 그 화면에 붙인다.** 처음에는 FindObjectOfType<Canvas>() 로 아무 캔버스나 잡았는데,
+            // 유니티가 어느 것을 주는지 정해져 있지 않다 - 2026-11-02 인게임에서 `구매` 를 열한 번 눌렀는데
+            // 창이 만들어지되 **보이지 않았다**(오류도 남지 않는다: 캔버스를 찾기는 했으니까).
+            // PIT 은 같은 화면에서 TeammateEquipmentBuildsScreenFlow._activeScreen 에 붙인다. 같은 방식을 쓴다.
+            Transform parent = TeammateEquipmentBuildsScreenFlow._activeScreen?.transform
+                ?? GameObject.FindObjectOfType<Canvas>()?.transform;
+            if (parent == null)
             {
-                pitFireTeam.Log.LogWarning("[STM] 꾸러미 창을 띄울 캔버스를 찾지 못했다.");
+                pitFireTeam.Log.LogWarning("[STM] 꾸러미 창을 띄울 자리를 찾지 못했다: 화면도 캔버스도 없다.");
                 return null;
             }
 
             GameObject root = new GameObject("pitFireTeam_StmKitNativeOverlay", typeof(RectTransform), typeof(Image), typeof(Canvas), typeof(GraphicRaycaster));
-            root.transform.SetParent(canvas.transform, false);
+            root.transform.SetParent(parent, false);
             RectTransform rootRect = root.GetComponent<RectTransform>();
             rootRect.anchorMin = Vector2.zero;
             rootRect.anchorMax = Vector2.one;
@@ -326,6 +330,9 @@ namespace pitTeam.Patches
             Canvas overlayCanvas = root.GetComponent<Canvas>();
             overlayCanvas.overrideSorting = true;
             overlayCanvas.sortingOrder = 30000;
+
+            rootRect.SetAsLastSibling();
+            pitFireTeam.Log.LogInfo($"[STM] 꾸러미 창을 '{parent.name}' 위에 띄웠다.");
 
             Image backdrop = root.GetComponent<Image>();
             backdrop.color = new Color(0f, 0f, 0f, 0.6f);
