@@ -3518,3 +3518,45 @@ RectTransform 이 눈에 보이는 탭보다 작았다(그림과 글자가 자�
 `xyz.stm.teammanager.json`·STM `kr.json`·`ko.json` 모두 md5 일치. **DLL 둘은 잠겨 있어 남았다**:
 `SptTeamManager.dll`(`181f6b56…`, ARENA 자리), `SptKoreanConfig.dll`(`04b85772…`, 로그 상한).
 게임을 닫은 뒤 넣어야 한다.
+
+## 2026-11-02 — 프로필 팀원의 AI 타입 (계획 4 의 앞 절반)
+
+**요청.** 용병 화면이 가진 것을 프로필 팀원에게도 — 장비 편집(이미 있다)은 두고, **AI 타입 변경**과
+**장비 꾸러미**. 둘의 성격이 아주 달라 앞의 것만 이번에 끝냈다. 뒤의 것은
+[계획 4 문서](plans/2026-11-02-stm-plan4-kit-loadouts.md)로 쪼갰다.
+
+**전술은 이미 절반이 깔려 있었다.** 등록 문서의 `Tactic` 이 투입 payload 를 타고 봇까지 간다:
+`FriendlyTeammateMatchCallbacks`(팀원 상세 응답) → 클라이언트 `botsTactic[aid]` →
+`profileTactic[profileId]` → `BotFollowerPlayer.CombatTactic`. 모델 주석이 "저장만 하고 아무도
+해석하지 않는다" 고 적어 둔 것은 **그 사이에 코드가 붙은 뒤에도 갱신되지 않은 문장**이었다.
+없었던 것은 **바꿀 길**뿐이다 — 상세 화면이 전술 조작을 거부했고(`ProfileMemberOperationPolicy`),
+옵션 응답이 **현재 값 하나만** 목록으로 실어 드롭다운에 고를 것이 없었다.
+
+**연 것.** `StmTacticService.TrySetTactic`(STM 먼저, `StmAutoJoinService` 와 같은 모양) →
+`FriendlyTeammateCallbacks.SetTactic` 이 PIT 보다 먼저 묻는다. 허용 목록은 PIT 의
+`TacticOptions` 하나이고(§3-4 의 허용 범위 안에서 `private` → `internal` 승격) 값은
+`NormalizeCombatTactic` 으로 정규화해 저장한다 — 목록을 STM 쪽에 또 적으면 다음에 하나만 고쳐 갈라진다(§3-8).
+`ProfileMemberUpdatePolicy` 에 `Tactic` 을 더했고, **빈 값은 "건드리지 않는다"** 로 읽는다: 빈 값을
+저장하면 투입 때 기본 전술로 떨어지는데 그것은 지우기가 아니라 **사용자가 모르는 되돌리기**다.
+거부 열거에서 `Tactic` 을 아예 뺐다 — 아무도 부르지 않는 거부 사유는 거짓말이 된다.
+
+**화면은 용병과 같은 한 줄로 바꿨다.** 사용자가 보내 준 용병 화면처럼 `팀원 장비 편집 | AI 타입` 한 줄이다
+(`TryShowStmProfileControlRow`). PIT 의 용병 경로가 하는 일을 그대로 하되 — 옷장 패널을 복제해
+`DisplayLoadoutOptions` 로 두 칸을 채운다 — **프로필 팀원에게 뜻이 없는 것은 부르지 않는다**:
+의상·이름·숙련은 서버가 거부하는 조작이다. 왼쪽 칸은 PIT 의 편집기가 아니라 STM 의 편집기를 연다
+(`ReplaceStmLoadoutDropdownWithEditButton`). 장비 편집이 막혀 있어도(레이드 중 등) 줄은 만들고
+왼쪽 버튼만 죽인다 — AI 타입은 그때도 바꿀 수 있다. 줄을 못 만들면 예전의 떠 있는 버튼으로 떨어진다.
+
+**전술 드롭다운의 저장은 PIT 의 코드가 그대로 한다.** 선택하면 전술 라우트로 보내고, 그 뒤에 부르는
+`SetProficiencyAggressionForTactic` 은 네트워크를 타지 않는 클라이언트 상태뿐임을 읽어 확인했다
+(숙련 슬라이더가 없는 우리 화면에서는 아무 일도 하지 않는다).
+
+**실측.** 테스트 **511 → 513**(전술 갱신 5개 추가, 거부 열거에서 `Tactic` 이 빠지며 Theory 3개 감소 —
+숫자가 맞는지 세어서 확인했다). 서버·클라이언트·한글화 플러그인 빌드 모두 경고 0·오류 0.
+설치본 md5 가 셋 다 산출물과 일치하고 빌드보다 새로운 `.cs` 가 없다.
+**한 건 잡혔다**: 한글화 플러그인의 로그 상한 변경이 앞선 빌드에 들어가지 않은 채 설치될 뻔했다
+(`04b85772` → 다시 빌드 `bcb25caf`). 매번 타임스탬프를 보는 절차가 잡은 것이다.
+
+**확인하지 않은 것.** 게임에서 보지 않았다. 특히 ① 한 줄이 용병 화면과 같은 자리에 뜨는지
+② 드롭다운에 네 전술이 다 보이는지 ③ 고른 뒤 다시 열었을 때 그 값이 남아 있는지
+④ 실제 레이드에서 그 전술로 싸우는지(투입 경로는 코드로만 따라갔다).

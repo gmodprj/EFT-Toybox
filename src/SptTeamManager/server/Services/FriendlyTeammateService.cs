@@ -146,7 +146,8 @@ public partial class FriendlyTeammateService(
         }
     }
     internal const string DefaultLoadoutId = "000000000000000000000000";
-    private static readonly string[] TacticOptions = ["Rifleman", "Marksman", "SainMan", "SAINShooter"];
+    // STM 이 프로필 팀원의 전술 드롭다운에 같은 목록을 쓰려고 internal 로 올렸다(PIT 파일에는 private -> internal 승격만 한다 - 인계 §3-4).
+    internal static readonly string[] TacticOptions = ["Rifleman", "Marksman", "SainMan", "SAINShooter"];
     private const int RelativeLevelDelta = 5;
     private const int SecureContainerAmmoStackCount = 10;
     private const string TeammateGenerationLocation = "factory4_day";

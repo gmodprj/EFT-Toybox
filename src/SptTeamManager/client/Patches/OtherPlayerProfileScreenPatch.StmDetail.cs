@@ -57,6 +57,9 @@ namespace pitTeam.Patches
         private const string StmCloseFailedToast = "전송 기록을 닫지 못했습니다";
 
         private static GameObject StmDetailRoot;
+        // 조작 줄(장비 편집 | AI 타입). 안내 상자와 따로 치워야 해서 자기 자리를 가진다 - 한 칸에 둘을 담으면
+        // 안내 상자가 설 때 줄이 조용히 새어 화면에 남는다.
+        private static GameObject StmControlRowRoot;
         private static GameObject StmConfirmRoot;
         private static bool StmCloseInFlight;
 
@@ -133,7 +136,7 @@ namespace pitTeam.Patches
                 }
 
                 // 막히지 않은 프로필 팀원: 장비 편집 입구. 서버가 열 수 없다고 했으면(레이드 중 등) 이유를 말하는 안내 상자가 선다.
-                ShowStmGearEditEntry(screen, profile, detail, inventoryController, session, playerModelWindow);
+                ShowStmGearEditEntry(screen, profile, options, detail, inventoryController, session, playerModelWindow);
                 return true;
             }
             catch (Exception ex)
@@ -142,6 +145,78 @@ namespace pitTeam.Patches
                 pitFireTeam.Log.LogError(ex);
                 // 프로필 팀원이라고 서버가 알렸는데 그리기만 실패했다: PIT 의 용병 UI 를 그 위에 만들지 않는다. 편집 차단은 서버가 한다.
                 return detail != null;
+            }
+        }
+
+        // 용병 화면과 같은 한 줄을 프로필 팀원에게도 만든다: 왼쪽은 "팀원 장비 편집", 오른쪽은 AI 타입(전술) 드롭다운.
+        //
+        // PIT 의 용병 경로가 하는 일을 그대로 하되(옷장 패널을 복제해 두 칸짜리 줄을 만들고 DisplayLoadoutOptions 로
+        // 채운다), **프로필 팀원에게 뜻이 없는 것은 부르지 않는다**: 의상(Suit)·이름(Rename)·숙련(Proficiency)은
+        // 서버가 거부하는 조작이고 키트 구매는 아직 없다. 왼쪽 칸은 PIT 의 장비 편집기가 아니라 STM 의 편집기를 연다.
+        //
+        // 전술 드롭다운의 저장은 PIT 의 코드가 그대로 한다(선택하면 전술 라우트로 보낸다). 서버가 2026-11-02 부터
+        // 프로필 팀원의 전술을 자기 등록 문서에 쓴다(StmTacticService) - 그 전에는 거부였다.
+        //
+        // 실패하면 false 를 돌려 호출자가 예전 방식(화면 위에 뜨는 버튼 하나)으로 떨어지게 한다.
+        private static bool TryShowStmProfileControlRow(
+            OtherPlayerProfileScreen screen,
+            ResultProfile profile,
+            FriendlyTeammateProfileOptions options,
+            StmProfileDetailWire detail,
+            InventoryController inventoryController,
+            EFT.IEftSession session,
+            InventoryPlayerModelWithStatsWindow playerModelWindow)
+        {
+            try
+            {
+                if (screen == null || profile == null || options == null || playerModelWindow == null) return false;
+
+                // 고를 수 있는 전술이 없으면 줄을 만들 이유가 없다(서버가 목록을 못 싣는 상태).
+                if (options.Tactics == null || options.Tactics.Count == 0) return false;
+
+                if (!TryGetClothingPanel(screen, playerModelWindow, out RectTransform clothingPanel,
+                        out InventoryClothingSelectionPanel clothingSelectionPanel, out Transform parent))
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 프로필 팀원 조작 줄을 만들지 못했다: 옷장 패널을 찾지 못했다.");
+                    return false;
+                }
+
+                if (!(UiField?.GetValue(screen) is EFT.UI.UIParent ui)) return false;
+
+                if (LoadoutSelector != null)
+                {
+                    GameObject.Destroy(LoadoutSelector.gameObject);
+                    LoadoutSelector = null;
+                }
+
+                RectTransform clone = GameObject.Instantiate(clothingPanel, parent, true);
+                clone.name = "pitFireTeam_StmLoadoutSelector";
+                clone.anchoredPosition = clothingPanel.anchoredPosition + GetProfileControlRowOffset(clothingPanel, 1);
+
+                InventoryClothingSelectionPanel panel = clone.GetComponent<InventoryClothingSelectionPanel>();
+                if (panel == null)
+                {
+                    GameObject.Destroy(clone.gameObject);
+                    return false;
+                }
+
+                ui.AddDisposable(panel);
+                LoadoutSelector = clone;
+
+                ConfigureLoadoutPanel(panel, clothingSelectionPanel);
+                // 왼쪽 칸(장비 프리셋)은 곧 버튼으로 덮는다. 오른쪽 칸이 전술이다.
+                DisplayLoadoutOptions(screen, profile, inventoryController, session, panel, playerModelWindow, options, replaceLoadoutDropdown: false);
+                ApplyLoadoutPanelLayout(panel, clothingSelectionPanel);
+                ReplaceStmLoadoutDropdownWithEditButton(screen, profile, detail, panel, inventoryController, session, playerModelWindow);
+
+                StmControlRowRoot = clone.gameObject;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] 프로필 팀원 조작 줄을 만들다 실패했다. 예전 방식의 버튼으로 떨어진다.");
+                pitFireTeam.Log.LogError(ex);
+                return false;
             }
         }
 
@@ -416,6 +491,14 @@ namespace pitTeam.Patches
         private static void CloseStmDetail()
         {
             CloseStmConfirm();
+            if (StmControlRowRoot != null)
+            {
+                GameObject.Destroy(StmControlRowRoot);
+                StmControlRowRoot = null;
+                // 줄은 PIT 의 LoadoutSelector 자리에 들어가 있다. 가리키는 것을 지웠으니 그 칸도 비운다.
+                LoadoutSelector = null;
+            }
+
             if (StmGearEditEntryRoot != null)
             {
                 GameObject.Destroy(StmGearEditEntryRoot);
