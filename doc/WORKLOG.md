@@ -3018,3 +3018,47 @@ aid 로 돌려주는지에 달려 있고, 그것은 **역컴파일이나 실측 
 **갱신 경로가 없다.** `StmProfileMember.AutoJoin` 은 레코드에 있으나 "저장만 하고 아무도 해석하지
 않는다"(모델 주석 그대로). 명단 UI 가 배지 상태를 보여 주려면 로스터 와이어(`StmRosterRow`)에도
 `autoJoin` 이 실려야 한다. 결이 **계획 3(팀원 상세·설정)** 에 가깝다.
+
+## 2026-11-02 — STM 계획 3 Task 5: 팀원 상세 화면에 프로필 팀원을 태운다
+
+### 상세 화면이 서버에 묻는 라우트 전수 조사
+
+출발점은 `OtherPlayerProfileScreenPatch*.cs` 의 라우트 상수와 `RequestHandler.PostJson` 호출부다.
+
+| 라우트 | 누가 부르나 | 프로필 팀원에게 | 처리 |
+|---|---|---|---|
+| `/client/profile/view` (SPT) | 친구 목록에서 팀원을 눌러 화면을 열 때(네이티브) | 뜻 있음 | `MergeProfileView` 가 STM 을 먼저 묻는다 (아래 "다섯 번째 경로") |
+| `…/teammate/profile` | auto-join 로더(RaidStartPatch) — 상세 화면 아님 | 뜻 있음 | 이전 작업에서 `TryBuildView` 로 끝남 |
+| `…/profile/options` | 화면이 열린 직후 `TryLoadProfileOptions` | 뜻 있음 | `TryBuildOptions` (세 값 계약). 막힘 여부·안내문·경고문을 싣는다 |
+| `…/profile/suit` | 의상 드롭다운 | 뜻 없음 (그 프로필의 외형) | 사유와 함께 거부 |
+| `…/profile/rename` | 이름 변경 | 뜻 없음 (그 프로필의 이름) | 사유와 함께 거부 |
+| `…/profile/aggression` | 공격성 슬라이더 | 뜻 없음 (프로필 팀원에게 저장할 자리가 없다) | 사유와 함께 거부 |
+| `…/profile/proficiency` | 숙련 창 | 뜻 없음 (같은 이유) | 사유와 함께 거부 |
+| `…/profile/tactic` | 전술 선택 | 아직 뜻 없음 (`Tactic` 은 저장만 되고 갱신 경로·해석이 없다) | 사유와 함께 거부 |
+| `…/profile/insurance` | 보험 구매 | 뜻 없음 (프로필 자체의 보험이 따로 있다) | 사유와 함께 거부 |
+| `…/profile/loadout` | 클라이언트 호출 없음(옛 호환 라우트) | 뜻 없음 | 일관을 위해 거부 |
+| `…/profile/default-equipment` | 장비 편집 창 | 뜻 있음 | **Task 6 의 몫.** 손대지 않았다. 지금은 PIT 가 용병을 못 찾아 오류로 던진다(성공한 척하지 않는다) |
+| `…/profile/buy-kit` | 장비 빌드 화면 | 범위 밖(계획 3 의 출처는 본인 스태시뿐) | 손대지 않았다. 위와 같이 오류 |
+| `…/profile/repair-equipment` | 수리 | 범위 밖 | 손대지 않았다. 위와 같이 오류 |
+| `…/teammate/autojoin` | 명단 컨텍스트 메뉴 | 뜻 있음 | 계획 3 Task 2 에서 끝남. 거절 사유는 상태 이름 그대로 오류 본문에 실린다 |
+
+거부는 `StmProfileOperationGuard` 가 한다 — 해석기를 PIT 보다 먼저 묻는다. 이유는 둘이다: 용병이 없으면 PIT 가
+not-found 로 던지고, **같은 Aid 의 용병이 있으면 화면에 보이지 않는 용병의 이름·외형이 바뀐다.**
+
+### 다섯 번째 경로 — `/client/profile/view` 는 프로필 팀원의 Aid 로 무엇을 돌려주나 (실측)
+
+**SPT 가 직접 찾아 돌려준다.** 추측이 아니라 설치된 서버 어셈블리를 역컴파일해서 읽었다
+(`E:\Spt\SPT_Runtime\SPTarkov.Server.Core.dll`, 제품 버전 4.1.6; 레포의 `server/refs/4.1.0` 도 같은 코드):
+
+- 라우트 `/client/profile/view` → `ProfileCallbacks.GetOtherProfile` → `ProfileController.GetOtherProfile(sessionId, request)`.
+- 그 첫 줄: `profileHelper.GetFullProfileByAccountId(request.AccountId)` — `SaveServer.GetProfiles()` 에서
+  `p.Value.ProfileInfo.Aid == aid` 인 **첫 프로필**을 돌려준다. 로그인한 프로필인지, 다른 런처 프로필인지 가리지 않는다.
+- 못 찾으면 경고만 남기고 **로그인한 본인 프로필로 대체**한다(`falling back to own profile`).
+- 응답의 `Equipment.Items = pmcData.Inventory.Items` — 프로필의 **인벤토리 전체**(스태시 포함)를 싣는다. 이것이
+  `TryBuildView` 가 `TrimToWornEquipment` 로 막은 바로 그 문제다. `Items`·`Hideout`·`HideoutAreaStashes` 도 실린다.
+
+따라서 고치기 전에는 친구 목록에서 프로필 팀원을 누르면 (a) 그 프로필의 스태시 전체가 조회 화면으로 가고, (b) Aid 가
+어긋나면 본인 프로필이 팀원인 척 보였다. 고친 것은 한 줄 호출이다: `MergeProfileView` 맨 앞에서 `TryBuildView` 를 부르고,
+`true` 면 그 응답, 사유가 있으면 오류, 없으면 기존 흐름(PIT 보류 팀원·용병·신병·SPT 응답).
+
+한 가지 다른 점: SPT 는 `ProfileInfo.Aid` 로, STM 해석기는 `pmc.Aid` 로 찾는다. 실제로는 같은 값이지만 같은 필드는 아니다.
