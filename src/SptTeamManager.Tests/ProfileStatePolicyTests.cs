@@ -70,6 +70,36 @@ public class ProfileStatePolicyTests
         Assert.False(string.IsNullOrWhiteSpace(notice.Message));
     }
 
+    // 옵션 조회의 오류 본문(errmsg)에는 STM 의 사유도, PIT 의 "팀원을 찾을 수 없다" 같은 문장도 온다. 정확히 상태 이름일 때만
+    // 상태 안내로 읽어야 PIT 의 오류 문장이 "읽을 수 없는 프로필" 로 둔갑하지 않는다.
+    [Theory]
+    [InlineData("CurrentSession", "로그인")]
+    [InlineData("Unreadable", "읽을 수 없")]
+    [InlineData("Empty", "게임에 한 번")]
+    [InlineData("Missing", "더 이상 없")]
+    [InlineData("Unavailable", "읽을 수 없")]
+    public void 오류_본문이_정확히_상태_이름이면_안내로_읽는다(string errmsg, string expectedPart)
+    {
+        Assert.True(ProfileStatePolicy.TryDescribeRefusal(errmsg, out var notice));
+        Assert.False(notice.AutoJoinChangeable);
+        Assert.Contains(expectedPart, notice.Message);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("Ready")]
+    [InlineData("currentsession")]
+    [InlineData("Unable to find teammate with accountId '5'")]
+    [InlineData("TeammateDeleteFailed")]
+    public void 상태_이름이_아닌_오류_본문은_안내로_읽지_않는다(string? errmsg)
+    {
+        Assert.False(ProfileStatePolicy.TryDescribeRefusal(errmsg, out var notice));
+        Assert.Equal(string.Empty, notice.Message);
+        Assert.False(notice.AutoJoinChangeable);
+    }
+
     [Fact]
     public void Ready_문자열이_사유로_와도_열어_주지_않는다()
     {
