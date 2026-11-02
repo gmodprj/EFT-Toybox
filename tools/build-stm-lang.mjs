@@ -79,6 +79,9 @@ if (problems.length > 0) {
   process.exit(1);
 }
 
-const text = JSON.stringify(kr, null, 2) + '\n';
+// 줄바꿈은 원본(en.json)과 같은 것을 쓴다. 다르면 git 이 파일 전체를 바뀐 것으로 본다.
+const enText = readFileSync(EN, 'utf8');
+const eol = enText.includes('\r\n') ? '\r\n' : '\n';
+const text = (JSON.stringify(kr, null, 2) + '\n').split('\n').join(eol);
 for (const out of OUTPUTS) writeFileSync(out, text, 'utf8');
 console.log(`OK 문구 ${used.size}개 — ${OUTPUTS.join(', ')}`);
