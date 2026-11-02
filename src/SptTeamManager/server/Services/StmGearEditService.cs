@@ -214,7 +214,11 @@ public class StmGearEditService(
                     target.Location = null;
                 }
 
-                applied.Add((itemId, parentId, slotId, toStash));
+                // 기대값은 **실제로 쓴 값**에서 받아 적는다. 요청의 철자를 그대로 쓰면 안 된다:
+                // 어휘 검사는 대소문자를 무시하고 받아 주지만(요청이 "Hideout" 이어도 통과) 스태시
+                // 배치는 SPT 가 템플릿의 격자 이름("hideout")을 쓰고, 디스크 재독 대조는 Ordinal 이다 -
+                // 그러면 맞게 저장된 편집이 "기대와 다르다" 로 되돌려진다(안전하지만 거짓 실패다).
+                applied.Add((itemId, target.ParentId ?? parentId, target.SlotId ?? slotId, toStash));
             }
 
             // 6. 유일한 쓰기: SaveServer 가 들고 있는 객체를 고치고 그 자신의 저장을 부른다. 프로필
@@ -470,6 +474,7 @@ public class StmGearEditService(
     {
         var templateIdByItemId = new Dictionary<string, string>(StringComparer.Ordinal);
         var slotsByTemplateId = new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal);
+        var parentByTemplateId = new Dictionary<string, string>(StringComparer.Ordinal);
         try
         {
             foreach (var item in items)
@@ -478,6 +483,10 @@ public class StmGearEditService(
                 var itemId = item.Id.ToString();
                 var templateId = item.Template.ToString();
                 templateIdByItemId[itemId] = templateId;
+                // 조상 사슬. 슬롯 필터가 아이템 tpl 대신 **범주 노드**를 담기 때문에 필요하다
+                // (ProfileGearEditPolicy.FilterAccepts 의 실측 주석). 노드도 items.json 의 항목이라
+                // 같은 GetItem 으로 읽힌다. 32칸으로 끊는다 - 손상된 사슬에서 돌지 않게.
+                CollectTemplateAncestry(item.Template, parentByTemplateId);
                 if (slotsByTemplateId.ContainsKey(templateId)) continue;
 
                 var found = itemHelper.GetItem(item.Template);
@@ -508,10 +517,28 @@ public class StmGearEditService(
             logger.Error($"[STM] 장비 편집: 아이템 데이터베이스를 읽지 못해 넣을 자리 검사를 할 수 없다(전부 거부된다): {ex}");
             return new GearSlotFacts(
                 new Dictionary<string, string>(StringComparer.Ordinal),
-                new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal));
+                new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal),
+                new Dictionary<string, string>(StringComparer.Ordinal));
         }
 
-        return new GearSlotFacts(templateIdByItemId, slotsByTemplateId);
+        return new GearSlotFacts(templateIdByItemId, slotsByTemplateId, parentByTemplateId);
+    }
+
+    // tpl → `_parent` 사슬을 위로 모은다. 이미 들어 있는 고리를 만나면 멈춘다(두 번 걷지 않는다).
+    private void CollectTemplateAncestry(MongoId templateId, Dictionary<string, string> parentByTemplateId)
+    {
+        var current = templateId;
+        for (var step = 0; step < 32; step++)
+        {
+            var key = current.ToString();
+            if (parentByTemplateId.ContainsKey(key)) return;
+
+            var found = itemHelper.GetItem(current);
+            if (!found.Key || found.Value == null || found.Value.Parent.IsEmpty) return;
+
+            parentByTemplateId[key] = found.Value.Parent.ToString();
+            current = found.Value.Parent;
+        }
     }
 
     // SPT 의 Item 을 판정이 쓰는 세 필드로 줄인다. 정책은 SPT 타입을 모른다.

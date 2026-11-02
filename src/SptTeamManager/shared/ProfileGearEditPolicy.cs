@@ -29,9 +29,12 @@ namespace pitTeam.Shared
     //   TemplateIdByItemId : 이 프로필 아이템 id → 그 아이템의 템플릿 id
     //   SlotsByTemplateId  : 템플릿 id → 그 템플릿이 **정의한** 슬롯들(없는 템플릿은 슬롯이 없다는 뜻이 아니라,
     //                        읽지 못했다는 뜻으로 읽는다 - 거부)
+    //   ParentTemplateIdByTemplateId : 템플릿 id → 그 템플릿의 `_parent`. 슬롯 필터가 **범주 노드**를
+    //                        담기 때문에 반드시 필요하다 - 아래 FilterAccepts 의 주석에 실측 근거가 있다.
     public sealed record GearSlotFacts(
         IReadOnlyDictionary<string, string> TemplateIdByItemId,
-        IReadOnlyDictionary<string, IReadOnlyList<GearSlotDefinition>> SlotsByTemplateId);
+        IReadOnlyDictionary<string, IReadOnlyList<GearSlotDefinition>> SlotsByTemplateId,
+        IReadOnlyDictionary<string, string> ParentTemplateIdByTemplateId);
 
     // 설계 §6-4 의 두 문장을 코드로 옮긴 곳이다.
     //   "편집하면 실물이 된다"  - 쓰기는 프로필에 박힌다(서비스 쪽), 그래서 이 판정은 쓰기 전에 거절할 유일한 관문이다.
@@ -165,6 +168,19 @@ namespace pitTeam.Shared
                 {
                     return Reject($"아이템 '{itemId}' 이(가) 스태시와 장비 양쪽에 보여 어느 쪽이 맞는지 알 수 없습니다.");
                 }
+
+                // 프로필에서 떼어내선 안 되는 슬롯. 판정의 권위는 **WornGearLossPolicy** 다 - 사망이
+                // 가져가지 않는 슬롯(주머니·칼집·완장·보안 컨테이너)과 영구 조각(Dogtag·SpecialSlot)을
+                // 거기서 그대로 가져온다. 두 번째 목록을 만들지 않았다: 둘이 갈라지면 한쪽에서 지키는
+                // 것을 다른 쪽에서 떼어낸다(교차 계약 테스트가 못박는다).
+                // 주머니를 떼면 장비 손실이 아니라 **구조 손상**이고, EFT 가 그 프로필의 적재를 거부할
+                // 수 있다 - 아이템은 사라지지 않지만 플레이어가 플레이하는 프로필이 망가진다.
+                // 주머니 **안의 짐**은 이 검사에 걸리지 않는다(그 아이템들의 슬롯은 pocket1 등이다).
+                var current = FindItem(items, itemId);
+                if (WornGearLossPolicy.IsNeverRemovedSlot(current?.SlotId))
+                {
+                    return Reject($"'{current!.SlotId!.Trim()}' 은(는) 프로필에서 떼어낼 수 없는 자리라서 벗기지 않습니다.");
+                }
             }
 
             var slot = request.TargetSlotId.Trim();
@@ -190,6 +206,11 @@ namespace pitTeam.Shared
             //       격자가 있는지는 같은 SPT 호출이 템플릿에서 읽어 판정한다.
             //   (c) 필터 - 스태시는 그 프로필의 일반 보관소이고, 벗기는 아이템은 **이미 그 프로필의 것**
             //       이다. 받을 수 없는 아이템을 새로 들여오는 경우가 아니다.
+            // 대신 벗기기 쪽에서 **살아 있는** 검사는 위에 다 있다: 출처가 이 팀원의 장비 트리인지,
+            // 장비 루트 자체가 아닌지, 두 트리에 겹쳐 보이지 않는지, 목적지가 스태시 루트인지, 칸 이름이
+            // 허용 목록인지, 그리고 **프로필에서 떼어낼 수 없는 자리가 아닌지**
+            // (WornGearLossPolicy.IsNeverRemovedSlot - 주머니·보안 컨테이너·완장·칼집·영구 조각).
+            // 자리가 있는지는 서비스에서 SPT 의 PlaceItemInContainer 가 답한다.
             if (toStash)
             {
                 return GearEditVerdict.Allow();
@@ -243,7 +264,7 @@ namespace pitTeam.Shared
                 return Reject($"'{parentId}' 의 '{slot}' 슬롯이 무엇을 받는지 읽을 수 없어 넣지 않습니다.");
             }
 
-            if (!definition.AllowedTemplateIds.Contains(itemTemplateId!, StringComparer.OrdinalIgnoreCase))
+            if (!FilterAccepts(slotFacts, definition, itemTemplateId!))
             {
                 return Reject($"아이템 '{itemId}' 은(는) '{parentId}' 의 '{slot}' 슬롯에 들어가지 않는 종류라서 넣지 않습니다.");
             }
@@ -417,6 +438,46 @@ namespace pitTeam.Shared
                 if (string.IsNullOrWhiteSpace(id)) continue;
                 target.Add(id.Trim());
             }
+        }
+
+        private static WornGearItem? FindItem(IReadOnlyCollection<WornGearItem> items, string itemId)
+        {
+            foreach (var item in items)
+            {
+                if (item?.Id == null) continue;
+                if (string.Equals(item.Id, itemId, StringComparison.Ordinal)) return item;
+            }
+
+            return null;
+        }
+
+        // 슬롯 필터가 이 아이템을 받는가. 아이템 자신의 템플릿 id 와 **조상 템플릿 id 들**을 차례로 본다.
+        //
+        // 조상까지 봐야 하는 이유는 실측이다(2026-11-02, E:\Spt\SPT_Runtime\SPT_Data\database\templates\items.json):
+        // 'Default Inventory' 템플릿 `55d7217a4bdc2d86028b456d` 의 Headwear 슬롯 필터는 정확히
+        // `["5a341c4086f77401f2541505"]` 하나이고, 그 id 는 `_type: "Node"`·`_name: "Headwear"` 인
+        // **범주 노드**다(아이템 템플릿이 아니다). TacticalVest·Backpack·ArmorVest·Pockets·
+        // SecuredContainer·FaceCover·Eyewear·ArmBand·Scabbard 도 같다. 그래서 아이템 자신의 id 만
+        // 비교하면 **모든 몸 장비가 "안 들어가는 종류" 로 거부**되고 무기 개조 슬롯만 동작한다
+        // (그쪽 필터는 실제 아이템 tpl 을 늘어놓는다).
+        // 예: 헬멧 `5645bc214bdc2d363b8b4571` 의 `_parent` 가 바로 그 노드다 - 한 칸 올라가면 맞는다.
+        //
+        // 닫힌 쪽은 그대로다: 필터를 읽지 못했으면(비었으면) 애초에 여기 오지 않고 거부되고, 조상을
+        // 끝까지 올라가도 못 만나면 거부다. 조상 사슬을 모르면(맵에 없으면) 그 자리에서 멈춘다 -
+        // 없는 조상을 지어내지 않는다. 같은 id 를 두 번 밟지 않으므로 손상된 사슬(고리)도 끝난다.
+        private static bool FilterAccepts(GearSlotFacts facts, GearSlotDefinition definition, string itemTemplateId)
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var templateId = itemTemplateId;
+            while (!string.IsNullOrWhiteSpace(templateId) && seen.Add(templateId!))
+            {
+                if (definition.AllowedTemplateIds.Contains(templateId!, StringComparer.OrdinalIgnoreCase)) return true;
+                if (facts.ParentTemplateIdByTemplateId == null) return false;
+                facts.ParentTemplateIdByTemplateId.TryGetValue(templateId!, out var parentTemplateId);
+                templateId = parentTemplateId;
+            }
+
+            return false;
         }
 
         private static bool IsKnownNestedSlot(string slot)

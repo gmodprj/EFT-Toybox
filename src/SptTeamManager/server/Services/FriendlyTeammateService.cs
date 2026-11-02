@@ -1267,36 +1267,48 @@ public partial class FriendlyTeammateService(
         try
         {
             var replacementEquipment = cloner.Clone(replacementEquipmentItems) ?? replacementEquipmentItems;
-            var mergedEquipment = MergeEquipmentWithPreservedSpecialItems(
+            // [STM] storedTeammateItems: 이 변수 하나가 **보존 검사의 입력**이면서 **팀원에게 배정되는
+            // 집합**이다. 아래 세 덩이(병합 → 검사 → 배정)가 서로 붙어 있는 것이 그 불변식을 지키는
+            // 방식이다. 검사에 다른 목록(특히 제출본 replacementEquipment/replacementEquipmentItems)을
+            // 넘기면 검사가 **저장되지 않는 집합**을 보게 되고, 그것이 정확히 보안 컨테이너 소실 결함이었다.
+            // 이름을 바꾸지도, 두 자리를 떼어 놓지도 말 것 - 단위 테스트로 이 배선을 잡을 수 없다.
+            var storedTeammateItems = MergeEquipmentWithPreservedSpecialItems(
                 teammate.Inventory.Items,
                 replacementEquipment,
                 useReplacementSecureContainer: IsExtremeLoadoutManagementMode(mode));
 
             // [STM] 보존 검사. 위의 검증들은 **제출된** 아이템만 훑는다(ValidateRealCommitItemSet) - 제출에서
-            // 빠진 아이템은 아무도 찾지 않는데, 바로 아래에서 현재 스태시 트리의 id 를 전부 지우고 제출된
+            // 빠진 아이템은 아무도 찾지 않는데, 아래에서 현재 스태시 트리의 id 를 전부 지우고 제출된
             // 항목으로 갈아 끼운다. 그래서 아이템을 잃는 커밋이 지금까지 어디에서도 걸리지 않았다.
-            // 불변식: 원래 스태시의 모든 id 는 제출된 스태시나 팀원 장비 어느 한쪽에 반드시 나타난다
-            // (옮겨 간 것은 정상, 어디에도 없는 것은 소실). 재매김된 id 도 찾아 준다. 설계 §4 안티골.
+            // 불변식: 원래 스태시의 모든 id 는 제출된 스태시나 **저장될** 팀원 장비 어느 한쪽에 반드시
+            // 나타난다(옮겨 간 것은 정상, 어디에도 없는 것은 소실). 재매김된 id 도 찾아 준다. 설계 §4.
             //
-            // 목적지로 보는 것은 제출된 장비가 아니라 **mergedEquipment** 다 - 실제로 저장되는 집합이기
-            // 때문이다. MergeEquipmentWithPreservedSpecialItems 는 비(非)extreme 모드에서
-            // RemoveSecureContainerTree 로 제출된 보안 컨테이너·개목걸이 슬롯 항목을 버리고 닿지 않는
-            // 것을 잘라낸다(:4823-4825). 제출된 목록으로 검사하면 플레이어 스태시에서 보안 컨테이너로
-            // 넣은 아이템이 검사를 통과하고 → 병합이 지우고 → 바로 아래에서 스태시에서도 지워져, 이
-            // 불변식이 막으려던 바로 그 소실이 "통과" 도장을 받고 일어난다.
+            // 왜 "저장될" 집합이어야 하는가: MergeEquipmentWithPreservedSpecialItems 는 비(非)extreme
+            // 모드에서 RemoveSecureContainerTree 로 제출된 보안 컨테이너·개목걸이 슬롯 항목을 버리고 닿지
+            // 않는 것을 잘라낸다(:4823-4825). 제출본으로 검사하면 플레이어 스태시에서 보안 컨테이너로 넣은
+            // 아이템이 검사를 통과하고 → 병합이 지우고 → 스태시에서도 지워져, 이 불변식이 막으려던 바로
+            // 그 소실이 "통과" 도장을 받고 일어난다.
             // 병합은 제출본의 복제 위에서 계산되므로 여기까지도 아무것도 쓰지 않았다: 던지면 catch 가
             // 아직 바뀌지 않은 두 인벤토리를 그대로 되돌려 놓고 다시 던지고, 플레이어 스태시는 온전하다.
             // 클라이언트 관문 밖에서 라우트로 직접 쏘는 호출자에 대한 유일한 방어이기도 하다.
             var conservation = pitTeam.Shared.ProfileGearEditPolicy.CheckStashConservation(
                 currentPlayerStashIds,
                 replacementStashItems.Where(item => item?.Id != null).Select(item => item.Id.ToString()).ToList(),
-                mergedEquipment.Where(item => item?.Id != null).Select(item => item.Id.ToString()).ToList(),
+                storedTeammateItems.Where(item => item?.Id != null).Select(item => item.Id.ToString()).ToList(),
                 remappedTeammateItemIds);
             if (!conservation.Conserved)
             {
-                logger.Error($"[STM] 팀원 '{teammate.Aid}' 장비 저장을 거부했다(보존 검사, 병합 뒤 저장될 집합 기준): {conservation.Reason}");
+                logger.Error($"[STM] 팀원 '{teammate.Aid}' 장비 저장을 거부했다(보존 검사, 저장될 집합 기준): {conservation.Reason}");
                 throw new FriendlyTeammateException(conservation.Reason);
             }
+
+            // The teammate stores the committed equipment as its new Default snapshot. Spawn preparation may
+            // still inject mode-specific protected items such as a fallback knife on the temporary spawn clone.
+            // [STM] 바로 위 검사가 본 그 변수를 그대로 배정한다. 이 두 자리 사이에 다른 문장을 넣지 말 것.
+            // (아래 플레이어 스태시 교체보다 먼저 배정한다 - 둘은 서로 다른 객체에 대한 독립적인 대입이고,
+            //  사이에 읽는 코드가 없다. 검사와 배정을 붙여 두는 것이 이 배선의 유일한 방어다.)
+            teammate.Inventory.Items = storedTeammateItems;
+            teammate.Inventory.Equipment = teammate.Inventory.Items.First().Id;
 
             // Replace only the stash tree. Player equipment, quest inventory, sorting table, and other
             // profile-owned item roots are left untouched by real teammate loadout commits.
@@ -1304,11 +1316,6 @@ public partial class FriendlyTeammateService(
                 .Where(item => !currentPlayerStashIds.Contains(item.Id.ToString()))
                 .ToList();
             playerPmc.Inventory.Items.AddRange(cloner.Clone(replacementStashItems) ?? replacementStashItems);
-
-            // The teammate stores the committed equipment as its new Default snapshot. Spawn preparation may
-            // still inject mode-specific protected items such as a fallback knife on the temporary spawn clone.
-            teammate.Inventory.Items = mergedEquipment;
-            teammate.Inventory.Equipment = teammate.Inventory.Items.First().Id;
 
             settings.SelectedLoadoutId = DefaultLoadoutId;
             teammateInsuranceService.ReconcileEquipmentCommit(playerPmc, teammate, settings,

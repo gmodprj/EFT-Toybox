@@ -21,6 +21,13 @@ public class ProfileGearEditPolicyTests
         new WornGearItem("worn-rifle", Equip, "FirstPrimaryWeapon"),
         new WornGearItem("worn-rifle-mag", "worn-rifle", "mod_magazine"),
         new WornGearItem("worn-pistol", Equip, "Holster"),
+        // 프로필에서 떼어낼 수 없는 자리들(WornGearLossPolicy 가 지키는 것들).
+        new WornGearItem("worn-pockets", Equip, "Pockets"),
+        new WornGearItem("pocket-cash", "worn-pockets", "pocket1"),
+        new WornGearItem("worn-secure", Equip, "SecuredContainer"),
+        new WornGearItem("worn-band", Equip, "ArmBand"),
+        new WornGearItem("worn-knife", Equip, "Scabbard"),
+        new WornGearItem("worn-tag", Equip, "Dogtag"),
         new WornGearItem(Stash, null, null),
         new WornGearItem("stash-helmet", Stash, "hideout"),
         new WornGearItem("stash-helmet2", Stash, "hideout"),
@@ -43,14 +50,22 @@ public class ProfileGearEditPolicyTests
             ["stash-helmet2"] = "tpl-helmet",
             ["stash-mag"] = "tpl-mag",
             ["stash-ammo"] = "tpl-ammo",
+            ["worn-pockets"] = "tpl-pockets",
+            ["pocket-cash"] = "tpl-cash",
+            ["worn-secure"] = "tpl-secure",
+            ["worn-band"] = "tpl-band",
+            ["worn-knife"] = "tpl-knife",
+            ["worn-tag"] = "tpl-tag",
         };
 
         var slots = new Dictionary<string, IReadOnlyList<GearSlotDefinition>>
         {
             ["tpl-equip-root"] = new[]
             {
-                new GearSlotDefinition("Headwear", new[] { "tpl-helmet" }),
-                new GearSlotDefinition("TacticalVest", new[] { "tpl-rig" }),
+                // 실제 데이터베이스처럼 **범주 노드**를 담는다 - 아이템 tpl 이 아니다. 그래서 이 밑의
+                // 거의 모든 테스트가 조상 사슬 걷기를 지나간다.
+                new GearSlotDefinition("Headwear", new[] { "node-headwear" }),
+                new GearSlotDefinition("TacticalVest", new[] { "node-vest" }),
                 new GearSlotDefinition("FirstPrimaryWeapon", new[] { "tpl-rifle" }),
                 new GearSlotDefinition("Holster", new[] { "tpl-pistol" }),
             },
@@ -70,7 +85,15 @@ public class ProfileGearEditPolicyTests
             ["tpl-ammo"] = Array.Empty<GearSlotDefinition>(),
         };
 
-        return new GearSlotFacts(templates, slots);
+        // 조상 사슬. 실제 데이터베이스처럼 **범주 노드**를 거친다: Headwear 슬롯 필터는 아이템 tpl 이
+        // 아니라 노드를 담으므로(아래 실측 테스트) 헬멧은 한 칸 올라가야 맞는다.
+        var parents = new Dictionary<string, string>
+        {
+            ["tpl-helmet"] = "node-headwear",
+            ["tpl-rig"] = "node-vest",
+        };
+
+        return new GearSlotFacts(templates, slots, parents);
     }
 
     private static GearEditRequest Edit(string itemId, string slot, string? parent) =>
@@ -226,6 +249,66 @@ public class ProfileGearEditPolicyTests
     }
 
     [Fact]
+    public void 프로필에서_떼어낼_수_없는_자리는_벗기지_않는다()
+    {
+        // 주머니를 떼면 장비 손실이 아니라 **구조 손상**이다. 보안 컨테이너·완장·칼집도 같은 자리이고,
+        // 개목걸이는 영구 조각이다. 아이템이 사라지지는 않지만 플레이어가 플레이하는 프로필이 망가진다.
+        foreach (var itemId in new[] { "worn-pockets", "worn-secure", "worn-band", "worn-knife", "worn-tag" })
+        {
+            var verdict = Judge(Edit(itemId, "hideout", Stash));
+            Assert.False(verdict.Allowed, $"'{itemId}' 이(가) 벗겨졌다");
+            Assert.Contains("떼어낼 수 없는", verdict.Reason);
+        }
+
+        // 주머니 **안의 짐**은 벗길 수 있다 - 지키는 것은 주머니 용기이고 그 내용물이 아니다.
+        Assert.True(Judge(Edit("pocket-cash", "hideout", Stash)).Allowed);
+
+        // 묶음 안에서도 같다: 통과하는 건과 섞여 와도 전체가 거절된다.
+        var batch = new[] { Edit("worn-rifle", "hideout", Stash), Edit("worn-pockets", "hideout", Stash) };
+        Assert.False(ProfileGearEditPolicy.ValidateBatch(batch, Profile(), Stash, Equip, Facts()).Allowed);
+    }
+
+    [Fact]
+    public void 떼어낼_수_없는_자리의_어휘는_WornGearLossPolicy_의_것이다()
+    {
+        // 두 번째 목록을 만들지 않았다는 것을 기계로 확인한다. 갈라지면 한쪽에서 지키는 것을 다른
+        // 쪽에서 떼어낸다. WornGearLossPolicyTests 가 쓰는 것과 같은 방식의 교차 계약이다.
+        foreach (var slot in WornGearLossPolicy.NeverRemovedSlotNames)
+        {
+            Assert.True(
+                WornGearLossPolicy.IsNeverRemovedSlot(slot),
+                $"'{slot}' 이 집합에는 있는데 판정 함수가 아니라고 한다.");
+            Assert.False(
+                WornGearLossPolicy.LostOnDeathSlotNames.Contains(slot, StringComparer.OrdinalIgnoreCase),
+                $"'{slot}' 은 사망이 가져가는 슬롯이면서 떼어낼 수 없는 자리다 - 두 판단이 어긋난다.");
+        }
+
+        // 사망이 가져가는 슬롯은 모두 벗길 수 있어야 한다. 아니면 죽으면 잃는 장비를 손으로는 못 벗는다.
+        foreach (var slot in WornGearLossPolicy.LostOnDeathSlotNames)
+        {
+            Assert.False(
+                WornGearLossPolicy.IsNeverRemovedSlot(slot),
+                $"'{slot}' 은 죽으면 잃는데 손으로는 벗을 수 없다 - 앞뒤가 맞지 않는다.");
+        }
+
+        // 모든 프로필이 기본으로 가진 슬롯(SpawnGearPolicy 의 판단)은 전부 떼어낼 수 없어야 한다.
+        foreach (var slot in SpawnGearPolicy.DefaultSlotNames)
+        {
+            Assert.True(
+                WornGearLossPolicy.IsNeverRemovedSlot(slot),
+                $"'{slot}' 은 모든 프로필이 기본으로 가진 자리인데 떼어낼 수 있다 - 프로필이 망가진다.");
+        }
+
+        // 영구 조각은 이름이 정확히 같지 않아도 걸린다(Dogtag·SpecialSlot).
+        Assert.True(WornGearLossPolicy.IsNeverRemovedSlot("Dogtag"));
+        Assert.True(WornGearLossPolicy.IsNeverRemovedSlot("SpecialSlot1"));
+        // 모르는 이름은 이 함수의 답이 아니다(허용 목록이 앞에서 걸러낸다).
+        Assert.False(WornGearLossPolicy.IsNeverRemovedSlot("Headwear"));
+        Assert.False(WornGearLossPolicy.IsNeverRemovedSlot(null));
+        Assert.False(WornGearLossPolicy.IsNeverRemovedSlot("   "));
+    }
+
+    [Fact]
     public void 벗기기도_스태시_칸_이름을_허용_목록으로_받는다()
     {
         foreach (var slot in new[] { "main", "1", "Headwear", "mod_magazine", "뭔가이상한칸" })
@@ -320,6 +403,59 @@ public class ProfileGearEditPolicyTests
     }
 
     [Fact]
+    public void 슬롯_필터는_아이템의_조상_템플릿까지_본다()
+    {
+        // 몸 장비 슬롯의 필터는 아이템 tpl 이 아니라 **범주 노드**를 담는다. 자기 id 만 비교하면
+        // 모든 몸 장비가 거부된다 - 조상 사슬을 한 칸 올라가야 맞는다.
+        Assert.True(Judge(Edit("stash-helmet", "Headwear", Equip)).Allowed);
+
+        // 조상 사슬을 모르면 거부다(없는 조상을 지어내지 않는다).
+        var noAncestry = new GearSlotFacts(
+            Facts().TemplateIdByItemId,
+            Facts().SlotsByTemplateId,
+            new Dictionary<string, string>());
+        Assert.False(ProfileGearEditPolicy.Validate(Edit("stash-helmet", "Headwear", Equip), Profile(), Stash, Equip, noAncestry).Allowed);
+
+        // 사슬이 고리를 이뤄도 끝난다(손상된 데이터베이스).
+        var cycle = new GearSlotFacts(
+            Facts().TemplateIdByItemId,
+            Facts().SlotsByTemplateId,
+            new Dictionary<string, string> { ["tpl-helmet"] = "tpl-a", ["tpl-a"] = "tpl-b", ["tpl-b"] = "tpl-helmet" });
+        Assert.False(ProfileGearEditPolicy.Validate(Edit("stash-helmet", "Headwear", Equip), Profile(), Stash, Equip, cycle).Allowed);
+    }
+
+    [Fact]
+    public void 실제_데이터베이스의_Headwear_필터로도_헬멧이_통과한다()
+    {
+        // 2026-11-02 실측(E:\Spt\SPT_Runtime\SPT_Data\database\templates\items.json):
+        //   'Default Inventory' 템플릿 55d7217a4bdc2d86028b456d 의 Headwear 슬롯 필터 = ["5a341c4086f77401f2541505"]
+        //   5a341c4086f77401f2541505 는 _type "Node", _name "Headwear" (아이템 템플릿이 아니다)
+        //   헬멧 5645bc214bdc2d363b8b4571 의 _parent 가 바로 그 노드
+        // 이 셋을 그대로 적어 두면 픽스처가 아니라 사실에 묶인다.
+        const string defaultInventory = "55d7217a4bdc2d86028b456d";
+        const string headwearNode = "5a341c4086f77401f2541505";
+        const string helmet = "5645bc214bdc2d363b8b4571";
+
+        var items = new List<WornGearItem>
+        {
+            new WornGearItem(Equip, null, null),
+            new WornGearItem(Stash, null, null),
+            new WornGearItem("real-helmet", Stash, "hideout"),
+        };
+        var facts = new GearSlotFacts(
+            new Dictionary<string, string> { [Equip] = defaultInventory, ["real-helmet"] = helmet },
+            new Dictionary<string, IReadOnlyList<GearSlotDefinition>>
+            {
+                [defaultInventory] = new[] { new GearSlotDefinition("Headwear", new[] { headwearNode }) },
+            },
+            new Dictionary<string, string> { [helmet] = headwearNode });
+
+        var verdict = ProfileGearEditPolicy.Validate(
+            new GearEditRequest("profile-1", "real-helmet", "Headwear", Equip), items, Stash, Equip, facts);
+        Assert.True(verdict.Allowed, verdict.Reason);
+    }
+
+    [Fact]
     public void 아이템_정보를_읽을_수_없으면_거부한다()
     {
         var request = Edit("stash-helmet", "Headwear", Equip);
@@ -330,19 +466,22 @@ public class ProfileGearEditPolicyTests
         // 부모의 종류를 모른다.
         var noParentTemplate = new GearSlotFacts(
             new Dictionary<string, string> { ["stash-helmet"] = "tpl-helmet" },
-            new Dictionary<string, IReadOnlyList<GearSlotDefinition>>());
+            new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(),
+            Facts().ParentTemplateIdByTemplateId);
         Assert.False(ProfileGearEditPolicy.Validate(request, Profile(), Stash, Equip, noParentTemplate).Allowed);
 
         // 부모의 슬롯 목록을 모른다.
         var noSlots = new GearSlotFacts(
             new Dictionary<string, string> { [Equip] = "tpl-equip-root", ["stash-helmet"] = "tpl-helmet" },
-            new Dictionary<string, IReadOnlyList<GearSlotDefinition>>());
+            new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(),
+            Facts().ParentTemplateIdByTemplateId);
         Assert.False(ProfileGearEditPolicy.Validate(request, Profile(), Stash, Equip, noSlots).Allowed);
 
         // 옮길 아이템의 종류를 모른다.
         var noItemTemplate = new GearSlotFacts(
             new Dictionary<string, string> { [Equip] = "tpl-equip-root" },
-            Facts().SlotsByTemplateId);
+            Facts().SlotsByTemplateId,
+            Facts().ParentTemplateIdByTemplateId);
         Assert.False(ProfileGearEditPolicy.Validate(request, Profile(), Stash, Equip, noItemTemplate).Allowed);
 
         // 슬롯의 필터가 비어 있다 = "제한 없음" 이 아니라 "모름". 이것도 거부다.
