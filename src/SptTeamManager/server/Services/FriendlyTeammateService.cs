@@ -4422,7 +4422,9 @@ public partial class FriendlyTeammateService(
         };
     }
 
-    private GetOtherProfileResponse ToOtherProfileResponse(BotBase teammate)
+    // internal, not private: STM calls it for launcher-profile teammates (StmProfileViewFactory), which
+    // works only because PmcData inherits BotBase. Promotion only - the body is PIT's and stays PIT's.
+    internal GetOtherProfileResponse ToOtherProfileResponse(BotBase teammate)
     {
         var info = teammate.Info ?? throw new FriendlyTeammateException("Teammate profile is missing Info");
         var customization = teammate.Customization ?? new CommonCustomization();
