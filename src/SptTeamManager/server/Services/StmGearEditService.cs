@@ -75,7 +75,7 @@ public class StmGearEditService(
 
     // 편집기를 열기 전에 그 팀원 **자신의** 스태시를 읽는다(설계 §6-4: 출처는 본인 스태시뿐 - 화면의 출처 칸이 플레이어
     // 스태시일 수 없다). 읽기 전용이다: member.Pmc 는 SaveServer 의 살아 있는 객체이므로 읽기만 하고, 보내는 것은 깊은
-    // 복제본이다. 저장(TryApply)과 같은 관문 셋 - 레이드, 미결 전송, 해석 - 을 같은 순서로 서고, 열 수 없는데 편집기를
+    // 복제본이다. 저장(TryApply)과 같은 관문 - 레이드, 미결 전송, 해석, 프로필 손상 표시 - 을 같은 순서로 서고, 열 수 없는데 편집기를
     // 열어 저장에서 거절당하게 하지 않는다. 던지지 않는다(라우트 안에서 불린다). false 일 때 refusalReason 은 비지 않는다.
     public bool TryReadStash(MongoId sessionId, string? accountId, string? requestedProfileId, out StmGearStashResponse? stash, out string? refusalReason)
     {
@@ -107,6 +107,14 @@ public class StmGearEditService(
             {
                 logger.Error($"[STM] 스태시 읽기 거부: 요청의 프로필 '{requestedProfileId}' 과(와) Aid '{accountId}' 로 해석된 프로필 '{member.ProfileId}' 이(가) 다르다.");
                 refusalReason = "요청한 프로필과 이 팀원의 프로필이 달라 스태시를 보내지 않습니다.";
+                return false;
+            }
+
+            // 저장(TryApply)과 같은 관문: SPT 가 쓰지 않을 프로필이면 편집기를 열어 주지 않는다. 열어 주면 저장에서 거절당한다.
+            if (saveServer.IsProfileInvalidOrUnloadable(new MongoId(member.ProfileId)))
+            {
+                logger.Error($"[STM] 스태시 읽기 거부: 프로필 '{member.ProfileId}' 이(가) SPT 에서 손상/적재 불가로 표시돼 있어 저장이 되지 않는다.");
+                refusalReason = "이 프로필이 손상으로 표시돼 있어 편집기를 열 수 없습니다.";
                 return false;
             }
 
