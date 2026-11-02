@@ -76,10 +76,12 @@ namespace pitTeam.Patches
 
         // ---- 화면 문구 ----
         private const string StmKitButtonText = "장비 꾸러미";
+        // 기본 화면에는 플레이어의 빌드만 뜬다(그 화면이 플레이어 보관소를 읽는다). 팀원 본인의 빌드는
+        // 이 작은 창에서 고른다 - 기본 목록에 끼워 넣으려면 플레이어의 보관소를 건드려야 해서 따로 둔다.
+        private const string StmKitTeammateButtonText = "팀원 빌드";
         private const string StmKitPickerTitle = "장비 꾸러미";
         private const string StmKitTeammateGroupFormat = "{0} 의 빌드";
-        private const string StmKitPlayerGroupText = "내 빌드";
-        private const string StmKitNoBuildsText = "저장된 장비 빌드가 없습니다. 게임에서 장비 프리셋을 먼저 저장하세요.";
+        private const string StmKitNoBuildsText = "이 팀원의 프로필에 저장된 장비 빌드가 없습니다. 그 프로필로 로그인해 장비 프리셋을 먼저 저장하세요.";
         private const string StmKitLoadFailedToast = "빌드 목록을 불러오지 못했습니다";
         private const string StmKitQuoteFailedToast = "값을 매기지 못했습니다";
         private const string StmKitBuyFailedToast = "장비를 사지 못했습니다";
@@ -100,6 +102,7 @@ namespace pitTeam.Patches
 
         private static GameObject StmKitOverlayRoot;
         private static RectTransform StmKitButtonRoot;
+        private static RectTransform StmKitTeammateButtonRoot;
         private static bool StmKitBusy;
 
         // ---- 입구 버튼 ----
@@ -150,7 +153,7 @@ namespace pitTeam.Patches
                 // 장비 편집이 막혀 있으면 꾸러미도 막힌다: 서버가 같은 관문(레이드·미결 전송)을 선다.
                 button.Interactable = detail != null && detail.CanEditGear;
                 button.OnClick.RemoveAllListeners();
-                button.OnClick.AddListener(() => OpenStmKitPicker(screen, profile, detail));
+                button.OnClick.AddListener(() => OpenStmKitScreen(profile, detail));
 
                 if (button.transform is RectTransform buttonRect && buttonTemplate.transform is RectTransform templateRect)
                 {
@@ -163,6 +166,8 @@ namespace pitTeam.Patches
                 }
 
                 StmKitButtonRoot = rowClone;
+
+                CreateStmTeammateBuildsButton(screen, loadoutSelector, parent, profile, detail);
             }
             catch (Exception ex)
             {
@@ -171,7 +176,93 @@ namespace pitTeam.Patches
             }
         }
 
-        // ---- 목록 ----
+        // 팀원 본인의 빌드로 가는 입구. 기본 화면이 플레이어 빌드만 보여 주므로 이쪽은 남겨 둔다.
+        private static void CreateStmTeammateBuildsButton(
+            OtherPlayerProfileScreen screen,
+            RectTransform loadoutSelector,
+            Transform parent,
+            ResultProfile profile,
+            StmProfileDetailWire detail)
+        {
+            try
+            {
+                if (StmKitTeammateButtonRoot != null)
+                {
+                    GameObject.Destroy(StmKitTeammateButtonRoot.gameObject);
+                    StmKitTeammateButtonRoot = null;
+                }
+
+                RectTransform rowClone = GameObject.Instantiate(loadoutSelector, parent, true);
+                rowClone.name = "pitFireTeam_StmTeammateBuildsRow";
+                rowClone.anchoredPosition = loadoutSelector.anchoredPosition + GetProfileControlRowOffset(loadoutSelector, 3);
+                rowClone.gameObject.SetActive(true);
+
+                foreach (var name in new[] { "Upper", "Lower" })
+                {
+                    Transform part = rowClone.Find(name);
+                    if (part != null) part.gameObject.SetActive(false);
+                }
+
+                DefaultUIButton buttonTemplate = HideoutButtonField?.GetValue(screen) as DefaultUIButton;
+                if (buttonTemplate == null)
+                {
+                    GameObject.Destroy(rowClone.gameObject);
+                    return;
+                }
+
+                DefaultUIButton button = GameObject.Instantiate(buttonTemplate, rowClone, false);
+                button.name = "pitFireTeam_StmTeammateBuildsButton";
+                button.gameObject.SetActive(true);
+                button.SetRawText(StmKitTeammateButtonText, 18);
+                HideProfileButtonIconContainer(button);
+                button.Interactable = detail != null && detail.CanEditGear;
+                button.OnClick.RemoveAllListeners();
+                button.OnClick.AddListener(() => OpenStmKitPicker(screen, profile, detail));
+
+                if (button.transform is RectTransform buttonRect && buttonTemplate.transform is RectTransform templateRect)
+                {
+                    buttonRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    buttonRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    buttonRect.pivot = new Vector2(0.5f, 0.5f);
+                    buttonRect.anchoredPosition = Vector2.zero;
+                    buttonRect.sizeDelta = templateRect.sizeDelta;
+                    buttonRect.localScale = Vector3.one;
+                }
+
+                StmKitTeammateButtonRoot = rowClone;
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] 팀원 빌드 버튼을 만들다 실패했다.");
+                pitFireTeam.Log.LogError(ex);
+            }
+        }
+
+        // 게임의 기본 장비 프리셋 화면을 연다(용병의 장비 꾸러미와 같은 화면). STM 모드를 먼저 켜고
+        // PIT 의 흐름에 넘긴다 - 그 안에서 값과 구매만 STM 의 경로로 갈라진다(StmKitNativeFlow).
+        //
+        // 그 화면에 뜨는 것은 **플레이어의 빌드**다(session.EquipmentBuildsStorage). 팀원 본인의 빌드는
+        // 아래의 작은 창에서 고른다 - 그것을 기본 목록에 끼워 넣으려면 플레이어의 보관소를 건드려야 해서
+        // 따로 한다.
+        private static void OpenStmKitScreen(ResultProfile profile, StmProfileDetailWire detail)
+        {
+            try
+            {
+                if (profile == null || detail == null) return;
+
+                StmKitNativeFlow.Begin(profile, detail);
+                TeammateEquipmentBuildsScreenFlow.Open(profile, ActiveProfileSession, ActiveProfileInventoryController);
+            }
+            catch (Exception ex)
+            {
+                StmKitNativeFlow.End();
+                pitFireTeam.Log.LogError("[STM] 기본 장비 프리셋 화면을 열지 못했다.");
+                pitFireTeam.Log.LogError(ex);
+                AddTeammateCreationFlow.ShowToast(StmKitLoadFailedToast);
+            }
+        }
+
+        // ---- 팀원 빌드 목록(작은 창) ----
 
         private static async void OpenStmKitPicker(OtherPlayerProfileScreen screen, ResultProfile profile, StmProfileDetailWire detail)
         {
@@ -212,8 +303,7 @@ namespace pitTeam.Patches
         private static void ShowStmKitList(OtherPlayerProfileScreen screen, ResultProfile profile, StmProfileDetailWire detail, StmGearBuildsWire builds)
         {
             var teammate = builds?.TeammateBuilds ?? new List<StmGearBuildRowWire>();
-            var player = builds?.PlayerBuilds ?? new List<StmGearBuildRowWire>();
-            if (teammate.Count == 0 && player.Count == 0)
+            if (teammate.Count == 0)
             {
                 ShowStmKitMessage(screen, StmKitNoBuildsText);
                 return;
@@ -228,10 +318,8 @@ namespace pitTeam.Patches
                 string.IsNullOrWhiteSpace(builds?.TeammateNickname) ? "팀원" : builds.TeammateNickname);
 
             // 두 묶음을 머리글로 갈라 세운다. 섞어 놓고 꼬리표로 구분하지 않는다.
-            fromTop = AddStmKitGroup(panel, buttonTemplate, teammateHeading, teammate, fromTop,
+            AddStmKitGroup(panel, buttonTemplate, teammateHeading, teammate, fromTop,
                 row => OpenStmKitQuote(screen, profile, detail, row, "teammate"));
-            AddStmKitGroup(panel, buttonTemplate, StmKitPlayerGroupText, player, fromTop,
-                row => OpenStmKitQuote(screen, profile, detail, row, "player"));
         }
 
         private static float AddStmKitGroup(

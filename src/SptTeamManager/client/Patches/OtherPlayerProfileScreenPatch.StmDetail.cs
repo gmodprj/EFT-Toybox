@@ -500,6 +500,12 @@ namespace pitTeam.Patches
                 StmKitButtonRoot = null;
             }
 
+            if (StmKitTeammateButtonRoot != null)
+            {
+                GameObject.Destroy(StmKitTeammateButtonRoot.gameObject);
+                StmKitTeammateButtonRoot = null;
+            }
+
             if (StmControlRowRoot != null)
             {
                 GameObject.Destroy(StmControlRowRoot);
