@@ -125,6 +125,62 @@ namespace pitTeam.Shared
             return GearEditVerdict.Allow();
         }
 
+        // 편집 여러 건을 한 번에 판정한다. 쓰기 한 번(SaveProfile 한 번 + 디스크 재독 한 번)으로 끝내려면
+        // 최종 상태를 **서버가** 만들어야 한다 - 클라이언트가 최종 집합을 제출하는 모양은 계약 2 의
+        // 보존 검사를 만들게 한 바로 그 구멍이다. 그래서 요청은 "아이템 하나를 어디로" 가 여러 건이고,
+        // 각 건은 **자기 혼자** Validate 를 통과해야 하며, 통과한 건만 작업 사본에 반영한 뒤 다음 건을 본다.
+        //
+        // 순서대로 누적해서 보는 것이 요구사항이다(한 건씩 원래 상태에 대고 보면 안 된다): 탄창을 총에
+        // 꽂고 그 탄창에 탄을 넣는 연쇄는 두 번째 건의 부모(탄창)가 **첫 번째 건의 결과로** 장비 트리
+        // 안에 들어와 있어야 통과한다. 인계 문서 열린 항목 4(빈 탄창)가 바로 그 연쇄다.
+        //
+        // 하나라도 거절되면 **전체를 거절하고 아무것도 쓰지 않는다.** 반쯤 입은 상태를 만들지 않는다.
+        public static GearEditVerdict ValidateBatch(
+            IReadOnlyList<GearEditRequest>? requests,
+            IEnumerable<WornGearItem>? profileItems,
+            string? stashRootId,
+            string? equipmentRootId)
+        {
+            if (requests == null || requests.Count == 0) return Reject("고칠 아이템이 없어 편집하지 않습니다.");
+            if (profileItems == null) return Reject("이 프로필의 아이템 목록을 읽을 수 없어 편집하지 않습니다.");
+            if (string.IsNullOrWhiteSpace(equipmentRootId)) return Reject("이 프로필의 장비 루트를 읽을 수 없어 편집하지 않습니다.");
+
+            var working = new List<WornGearItem>();
+            foreach (var item in profileItems)
+            {
+                if (item != null) working.Add(item);
+            }
+
+            var equipmentRoot = equipmentRootId!.Trim();
+            string? batchProfileId = null;
+            foreach (var request in requests)
+            {
+                if (request == null) return Reject("편집 요청 하나가 비어 있어 전체를 취소합니다.");
+                // 한 번의 요청은 한 프로필만 고친다. 섞여 오면 어느 프로필을 저장할지 알 수 없다.
+                if (batchProfileId == null) batchProfileId = request.ProfileId;
+                else if (!string.Equals(batchProfileId, request.ProfileId, StringComparison.Ordinal))
+                {
+                    return Reject("한 번의 편집 요청이 여러 프로필을 가리켜 전체를 취소합니다.");
+                }
+
+                var verdict = Validate(request, working, stashRootId, equipmentRoot);
+                if (!verdict.Allowed) return verdict;
+
+                var itemId = request.ItemId.Trim();
+                var parentId = string.IsNullOrWhiteSpace(request.TargetParentId) ? equipmentRoot : request.TargetParentId!.Trim();
+                var index = working.FindIndex(i => string.Equals(i.Id, itemId, StringComparison.Ordinal));
+                if (index < 0)
+                {
+                    // Validate 가 통과시켰으면 있어야 한다. 그래도 믿고 쓰지 않는다.
+                    return Reject($"아이템 '{itemId}' 을(를) 프로필에서 찾지 못해 전체를 취소합니다.");
+                }
+
+                working[index] = working[index] with { ParentId = parentId, SlotId = request.TargetSlotId.Trim() };
+            }
+
+            return GearEditVerdict.Allow();
+        }
+
         // PIT 의 실물 커밋 경로에 없는 불변식: **원래 플레이어 스태시의 모든 id 는 제출된 플레이어
         // 스태시나 팀원 장비 어느 한쪽에는 반드시 나타난다.** 아무것도 그냥 사라지지 않는다.
         //

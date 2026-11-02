@@ -217,6 +217,100 @@ public class ProfileGearEditPolicyTests
         Assert.True(verdict.Conserved);
     }
 
+    // ---- 여러 건을 한 번에 (쓰기 한 번) ----
+
+    [Fact]
+    public void 여러_건은_순서대로_누적해_판정한다()
+    {
+        // 탄창을 총에 꽂고 → 그 탄창에 탄을 넣는 연쇄. 두 번째 건의 부모(탄창)는 첫 번째 건의
+        // 결과로 장비 트리에 들어와 있어야 통과한다. 인계 문서 열린 항목 4(빈 탄창)가 이 연쇄다.
+        var batch = new[]
+        {
+            Edit("stash-mag", "mod_magazine", "worn-rifle"),
+            Edit("stash-ammo", "cartridges", "stash-mag"),
+        };
+
+        Assert.True(ProfileGearEditPolicy.ValidateBatch(batch, Profile(), Stash, Equip).Allowed);
+    }
+
+    [Fact]
+    public void 순서가_뒤집히면_거절한다()
+    {
+        // 탄을 먼저 넣으려 하면 그때 탄창은 아직 스태시에 있어 장비 트리의 부모가 아니다.
+        var batch = new[]
+        {
+            Edit("stash-ammo", "cartridges", "stash-mag"),
+            Edit("stash-mag", "mod_magazine", "worn-rifle"),
+        };
+
+        var verdict = ProfileGearEditPolicy.ValidateBatch(batch, Profile(), Stash, Equip);
+        Assert.False(verdict.Allowed);
+        Assert.False(string.IsNullOrWhiteSpace(verdict.Reason));
+    }
+
+    [Fact]
+    public void 한_건이라도_거절되면_전체를_거절한다()
+    {
+        // 첫 건은 혼자서는 통과하지만, 두 번째가 거절되면 전체가 거절이다 - 반쯤 입은 상태를 만들지 않는다.
+        var batch = new[]
+        {
+            Edit("stash-helmet", "Headwear", Equip),
+            Edit("stash-mag", "뭔가이상한슬롯", "worn-rifle"),
+        };
+
+        var verdict = ProfileGearEditPolicy.ValidateBatch(batch, Profile(), Stash, Equip);
+        Assert.False(verdict.Allowed);
+        // 거절 사유는 **실패한 그 건**의 사유다 - 어느 건이 왜 막혔는지 플레이어가 알아야 한다.
+        Assert.Equal(
+            ProfileGearEditPolicy.Validate(Edit("stash-mag", "뭔가이상한슬롯", "worn-rifle"), Profile(), Stash, Equip).Reason,
+            verdict.Reason);
+    }
+
+    [Fact]
+    public void 같은_아이템을_두_번_옮기려_하면_거절한다()
+    {
+        // 두 번째 건의 시점에 그 아이템은 이미 스태시 밖이다(출처가 아니다).
+        var batch = new[]
+        {
+            Edit("stash-helmet", "Headwear", Equip),
+            Edit("stash-helmet", "Eyewear", Equip),
+        };
+
+        Assert.False(ProfileGearEditPolicy.ValidateBatch(batch, Profile(), Stash, Equip).Allowed);
+    }
+
+    [Fact]
+    public void 빈_묶음과_읽을_수_없는_입력은_거절한다()
+    {
+        foreach (var verdict in new[]
+                 {
+                     ProfileGearEditPolicy.ValidateBatch(null, Profile(), Stash, Equip),
+                     ProfileGearEditPolicy.ValidateBatch(Array.Empty<GearEditRequest>(), Profile(), Stash, Equip),
+                     ProfileGearEditPolicy.ValidateBatch(new[] { Edit("stash-helmet", "Headwear", Equip) }, null, Stash, Equip),
+                     ProfileGearEditPolicy.ValidateBatch(new[] { Edit("stash-helmet", "Headwear", Equip) }, Profile(), Stash, null),
+                     ProfileGearEditPolicy.ValidateBatch(new[] { Edit("stash-helmet", "Headwear", Equip) }, Profile(), null, Equip),
+                     ProfileGearEditPolicy.ValidateBatch(new GearEditRequest[] { null! }, Profile(), Stash, Equip),
+                 })
+        {
+            Assert.False(verdict.Allowed);
+            Assert.False(string.IsNullOrWhiteSpace(verdict.Reason));
+        }
+    }
+
+    [Fact]
+    public void 한_번의_요청은_한_프로필만_고친다()
+    {
+        var batch = new[]
+        {
+            new GearEditRequest("profile-1", "stash-helmet", "Headwear", Equip),
+            new GearEditRequest("profile-2", "stash-mag", "mod_magazine", "worn-rifle"),
+        };
+
+        var verdict = ProfileGearEditPolicy.ValidateBatch(batch, Profile(), Stash, Equip);
+        Assert.False(verdict.Allowed);
+        Assert.Contains("여러 프로필", verdict.Reason);
+    }
+
     // ---- 디스크 재독 대조의 집합 부분 (§6-8 3단계) ----
     // 한 프로필 안의 이동이므로 편집 전후의 아이템 집합은 정확히 같아야 한다. 저널을 쓰지 않는 대신
     // 이 대조가 "성공했다고 말할 근거" 전부다.

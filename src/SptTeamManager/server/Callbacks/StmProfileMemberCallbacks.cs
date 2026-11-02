@@ -91,13 +91,19 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
     // 실패는 성공처럼 보이지 않는다(오류 본문 + 플레이어가 읽는 사유).
     public ValueTask<string> EditGear(string url, StmGearEditRequest request, MongoId sessionId)
     {
-        var edit = new GearEditRequest(
-            request.ProfileId ?? string.Empty,
-            request.ItemId ?? string.Empty,
-            request.TargetSlotId ?? string.Empty,
-            request.TargetParentId);
+        // 와이어의 건들을 순수 레코드로 옮긴다. ProfileId 는 봉투에 하나뿐이므로 모든 건이 같은 프로필을
+        // 가리킨다(정책이 그 약속을 다시 확인한다). 순서는 클라이언트가 보낸 그대로 - 판정이 순서대로
+        // 누적해 보므로 "탄창을 꽂고 그 탄창에 탄을 넣는" 연쇄가 그 순서로 통과한다.
+        var edits = (request.Edits ?? [])
+            .Where(e => e != null)
+            .Select(e => new GearEditRequest(
+                request.ProfileId ?? string.Empty,
+                e.ItemId ?? string.Empty,
+                e.TargetSlotId ?? string.Empty,
+                e.TargetParentId))
+            .ToList();
 
-        if (gearEdits.TryApply(sessionId, request.Aid, edit, out var rejectionReason))
+        if (gearEdits.TryApply(sessionId, request.Aid, edits, out var rejectionReason))
         {
             return new ValueTask<string>(httpResponse.NullResponse());
         }
