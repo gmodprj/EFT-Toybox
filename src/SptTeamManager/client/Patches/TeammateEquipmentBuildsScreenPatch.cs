@@ -602,8 +602,23 @@ namespace pitTeam.Patches
 
         private static void EnsureExcludeExistingItemsToggle(Transform screen)
         {
+            // STM: 이 칸은 서버가 보지 않는다. 프로필 팀원의 꾸러미는 늘 **전부 새로 산다**(사용자가 고른 규칙).
+            // 눌러도 아무 일이 없는 칸을 두면 거짓말이 되므로 숨기고, 용병 쪽에서 켜 두었던 값도 끈다
+            // (static 이라 모드를 넘어 남는다 - 남으면 버튼 글자가 "장착" 으로 바뀐다).
+            if (StmKitNativeFlow.IsActive)
+            {
+                _excludeExistingItems = false;
+                if (_screenChromeState?.ExcludeExistingItemsToggleRoot != null)
+                {
+                    _screenChromeState.ExcludeExistingItemsToggleRoot.SetActive(false);
+                }
+
+                return;
+            }
+
             if (_screenChromeState?.ExcludeExistingItemsToggleRoot != null)
             {
+                _screenChromeState.ExcludeExistingItemsToggleRoot.SetActive(true);
                 return;
             }
 
@@ -1961,6 +1976,11 @@ namespace pitTeam.Patches
 
         private static void ApplySelectedBuildPrice(EquipmentBuildsScreen screen)
         {
+            // STM: 목록 줄과 같은 이유로 고른 빌드의 값도 쓰지 않는다. PIT 의 값은 용병용 규칙이 붙은 것이라
+            // 우리가 청구하는 값과 다르다 - 2026-11-03 에 이 자리만 분기가 빠져 있는 것을 로그에서 찾았다
+            // (STM 모드인데 [UI][KitPrice] 진단이 쏟아지고 있었다).
+            if (StmKitNativeFlow.IsActive) return;
+
             if (screen == null)
             {
                 return;
@@ -3975,7 +3995,9 @@ namespace pitTeam.Patches
         private static void ApplyActionButtonState(Transform screen)
         {
             string label = GetSocialUiText("PurchaseKitAction");
-            if (_excludeExistingItems && TryCreateBuyQuote(out EquipmentBuildBuyQuote quote) && quote.CanEquipFromStash)
+            // STM 모드에서는 스태시에서 꺼내 쓰지 않으므로 "장착" 이 될 일이 없고, PIT 의 값 계산도 타지 않는다.
+            if (!StmKitNativeFlow.IsActive
+                && _excludeExistingItems && TryCreateBuyQuote(out EquipmentBuildBuyQuote quote) && quote.CanEquipFromStash)
             {
                 label = GetSocialUiText("EquipKitAction");
             }
@@ -4046,6 +4068,10 @@ namespace pitTeam.Patches
 
         private static void ApplyRoublesIcon(Transform row)
         {
+            // STM: 값을 쓰지 않으니 루블 아이콘도 달지 않는다. 달아 두면 그 자리에 남는 **무게** 숫자가
+            // 값처럼 보인다(2026-11-02 인게임에서 44.3·25.2 를 값으로 읽을 뻔했다).
+            if (StmKitNativeFlow.IsActive) return;
+
             Transform iconTransform = FindChildRecursive(row, "WeightIcon");
             Image image = iconTransform?.GetComponent<Image>();
             Sprite sprite = LoadRoublesSprite();

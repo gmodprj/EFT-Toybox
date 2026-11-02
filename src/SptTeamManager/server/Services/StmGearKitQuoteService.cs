@@ -10,6 +10,7 @@ using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Servers;
+using SPTarkov.Server.Core.Services.Locales;
 
 namespace pitTeam.Server.Services;
 
@@ -28,6 +29,7 @@ public class StmGearKitQuoteService(
     FriendlyTeammateService teammateService,
     SaveServer saveServer,
     ItemHelper itemHelper,
+    LocaleService localeService,
     ISptLogger<StmGearKitQuoteService> logger)
 {
     internal const string OwnerTeammate = "teammate";
@@ -102,9 +104,11 @@ public class StmGearKitQuoteService(
             if (!GearBuildQuotePolicy.TryQuote(plan.AllItemsToBuy, tpl => unitPrice(PriceProbe(tpl)),
                     out var priced, out var unpriceable) || priced == null)
             {
-                var names = string.Join(", ", unpriceable.Take(5));
-                logger.Warning($"[STM] 꾸러미 견적 거부: 값을 매길 수 없는 물건 {unpriceable.Count}개 (앞 5: {names}).");
-                refusalReason = $"값을 매길 수 없는 물건이 {unpriceable.Count}개 있어 이 빌드는 살 수 없습니다. 상인이 팔지 않는 물건이 들어 있을 수 있습니다.";
+                var tpls = string.Join(", ", unpriceable.Take(5));
+                var shown = unpriceable.Take(3).Select(DescribeItem).ToList();
+                var andMore = unpriceable.Count > shown.Count ? $" 외 {unpriceable.Count - shown.Count}개" : string.Empty;
+                logger.Warning($"[STM] 꾸러미 견적 거부: 값을 매길 수 없는 물건 {unpriceable.Count}개 ({string.Join(" / ", shown)}{andMore}, tpl 앞 5: {tpls}).");
+                refusalReason = $"{string.Join(", ", shown)}{andMore} 의 값을 매길 수 없어 이 빌드는 살 수 없습니다. 상인이 팔지 않거나 플리마켓에서 막힌 물건입니다.";
                 return false;
             }
 
@@ -174,6 +178,31 @@ public class StmGearKitQuoteService(
         {
             logger.Warning($"[STM] 꾸러미 견적: 프로필 '{profileId}' 의 빌드를 읽지 못했다: {ex.Message}");
             return null;
+        }
+    }
+
+    // tpl 을 사람이 읽을 수 있는 이름으로. 거절 문구에만 쓴다 - 판정에는 쓰지 않으므로
+    // 읽지 못하면 tpl 을 그대로 보여 주고 넘어간다(이름을 못 읽었다고 거절을 못 내면 더 나쁘다).
+    private string DescribeItem(string tpl)
+    {
+        try
+        {
+            var locale = localeService.GetLocaleDb();
+            if (locale != null
+                && locale.TryGetValue($"{tpl} Name", out var localized)
+                && !string.IsNullOrWhiteSpace(localized))
+            {
+                return localized.Trim();
+            }
+
+            var (found, template) = itemHelper.GetItem(tpl);
+            var fallback = found ? template?.Properties?.ShortName ?? template?.Name : null;
+            return string.IsNullOrWhiteSpace(fallback) ? tpl : fallback!.Trim();
+        }
+        catch (Exception ex)
+        {
+            logger.Warning($"[STM] 물건 이름을 읽지 못해 tpl 을 그대로 쓴다 ({tpl}): {ex.Message}");
+            return tpl;
         }
     }
 
