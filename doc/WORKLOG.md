@@ -3344,6 +3344,16 @@ targetGraphic = 타일 배경)과 `RosterTileHoverController` 를 얹고 `OpenPr
 밝은 회색이라 어두운 글자가 된다), 제거 버튼이 가려지지 않는지 전부 미확인이다. 관문 2~5번이
 **실행 불가에서 미실행으로** 바뀐 것이 이 변경의 결과다.
 
+**설치(2026-11-02 15:33).** 클라이언트 DLL 한 개만 갈았다. 서버는 이 변경에 관여하지 않고
+설치본 서버 DLL md5 가 빌드 산출물과 **같다**(`18674bd5…`, 2026-11-02 설치 때와 동일) — 서버를 내릴
+이유가 없어 **SPT.Server(PID 46984)를 그대로 두었다.** 게임은 꺼져 있었다. `install-sptteammanager.ps1`
+은 덮어쓰기를 만나면 중단하도록 돼 있고 `-Remove` 가 돌아가는 서버의 서버 DLL 을 지우려다 중간에
+멈추므로, 이번에는 스크립트 대신 **클라이언트 DLL 한 파일만** 복사했다. 절차는 같은 것을 지켰다:
+빌드보다 새로운 `.cs` 가 없음을 확인하고, 설치본을 `backup/2026-11-02-before-tile-click/` 로 백업한 뒤
+(옛 md5 `4a0e89e3…`), 복사하고 md5 를 대조했다 — 설치본·산출물 모두 `dbeb48d4…`. 설치된 DLL 에
+`StmTileAccountId` 가 들어 있다(메타데이터 문자열로 확인). `doc/INSTALLED-MODS.md` 는 내용이 바뀌지
+않는다(모드 목록이 그대로다). **게임을 켜서 눌러 보는 것은 아직이다.**
+
 **옆에서 드러난 것 — auto-join 토글도 길이 없다.** 상세 화면에는 auto-join 토글이 없고
 (`OtherPlayerProfileScreenPatch.StmDetail.cs` 는 막힘 안내와 편집 입구만 얹는다), 토글은 **용병 타일의
 우클릭 메뉴**에만 있다(`SquadControlMenuUi.ContextMenu.cs:117-120` → `ToggleTeammateAutoJoin`).
