@@ -8,7 +8,10 @@ namespace SptTeamManager.Tests;
 // (모르는 enum 값 포함)은 담지 않는다. 담았다가 못 쓰는 팀원을 출격에 넣으면 클라이언트가 조용히 떨군다.
 public class AutoJoinRosterPolicyTests
 {
-    private static StmProfileMemberFields Member(string id, bool autoJoin) => new(id, "Rifleman", autoJoin, false);
+    // 이 정책은 전술을 보지 않는다. 값은 유효한 임의의 전술일 뿐 의미가 없다.
+    private const string ArbitraryTactic = "Rifleman";
+
+    private static StmProfileMemberFields Member(string id, bool autoJoin) => new(id, ArbitraryTactic, autoJoin, false);
 
     private static ProfileCandidate Candidate(string id, int aid, ProfileAvailability availability = ProfileAvailability.Ready) =>
         new(id, aid, "nick", 10, "Usec", availability);
@@ -82,5 +85,41 @@ public class AutoJoinRosterPolicyTests
         Assert.Empty(AutoJoinRosterPolicy.SelectAccountIds(null, null));
         Assert.Empty(AutoJoinRosterPolicy.SelectAccountIds(new[] { Member("p1", true) }, null));
         Assert.Empty(AutoJoinRosterPolicy.SelectAccountIds(null, new[] { Candidate("p1", 1234) }));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-5)]
+    public void 양수가_아닌_aid_는_목록에_없다(int aid)
+    {
+        var result = AutoJoinRosterPolicy.SelectAccountIds(
+            new[] { Member("p1", true) },
+            new[] { Candidate("p1", aid) });
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void 카탈로그에_같은_프로필id_가_둘이면_첫_항목만_본다()
+    {
+        var firstReady = AutoJoinRosterPolicy.SelectAccountIds(
+            new[] { Member("p1", true) },
+            new[] { Candidate("p1", 1111), Candidate("p1", 2222, ProfileAvailability.Unreadable) });
+        var firstUnreadable = AutoJoinRosterPolicy.SelectAccountIds(
+            new[] { Member("p1", true) },
+            new[] { Candidate("p1", 1111, ProfileAvailability.Unreadable), Candidate("p1", 2222) });
+
+        Assert.Equal(new[] { "1111" }, firstReady);
+        Assert.Empty(firstUnreadable);
+    }
+
+    [Fact]
+    public void 널_원소는_건너뛰고_나머지는_처리한다()
+    {
+        var result = AutoJoinRosterPolicy.SelectAccountIds(
+            new[] { null!, Member("p1", true) },
+            new[] { null!, Candidate("p1", 1234) });
+
+        Assert.Equal(new[] { "1234" }, result);
     }
 }
