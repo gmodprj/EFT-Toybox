@@ -3985,3 +3985,56 @@ OpenSesame 6·AmmoGen 1·DirectReload 1 뿐이고 **우리 플러그인의 것�
 쓰지 않는지 ③ "스태시의 물건을 쓴다" 칸이 **안 보이고** 버튼이 늘 `구매` 인지 ④ Hawk 의 `NEW PRESET 1`
 거절 문구에 **Thunderbolt 이름이 나오는지** ⑤ 용병(Guns for Hire) 쪽 꾸러미는 **예전 그대로**인지
 (체크박스·값·아이콘이 돌아와야 한다 - 3번에서 static 값을 건드렸다).
+
+### 같은 날 — 기동 경고를 끝까지 따라갔다. 하나는 우리 것이었다
+
+사용자가 "우리 것이고 나발이고 다 고치라" 고 해서 기동 경고를 종류별로 전부 추적했다.
+
+**우리 버그 — 택배원 트레이더의 보충 주기 (10-27부터 매 기동).**
+`TraderHelper: 트레이더 67d3a28a3d6f4f7dbd09ed13 찾을 수 없음, 기본 새로 고침 시간으로 임시 항목을
+생성합니다` 의 그 id 가 **우리 택배원 트레이더**였다(`FriendlyCourierTraderProfile.CourierTraderIdValue`).
+처음에는 "다른 모드 것" 칸에 넣을 뻔했는데, 10-27 로그를 역추적하다 바로 윗줄의
+`pitTeam.Server.PitFireTeamServerPlugin: Registered courier trader '67d3a28a…'` 를 보고 잡았다.
+**이름에서 뜻을 지어내지 말라는 교훈이 로그에도 그대로 적용된다 - 남의 것처럼 보이는 경고도 한 번은 역추적한다.**
+
+원인: 트레이더를 `TradersTable` 에 넣는 것만으로는 모자라다. `TraderHelper.GetTraderUpdateSeconds` 는
+**trader 설정의 `UpdateTime` 목록**에서 주기를 찾고, 없으면 경고를 내고 기본값 항목을 스스로 끼워 넣는다
+(역컴파일로 확인). 고침: `EnsureCourierTraderRefreshTime()` 이 등록 직후 같은 기본값
+(`UpdateTimeDefault`)으로 항목을 넣는다. **실측**: 재기동 로그에서 경고가 사라지고
+`Registered courier trader refresh time (3600s)` 가 찍힌다.
+
+**다른 모드 것 — 고친 둘.**
+- **CaseTrader** 가 `Developer case`·`moderator toolbox` 를 핸드북 가격이 없다고 매번 건너뛰며 경고했다.
+  플레이어에게 팔 물건이 아니므로 **가격을 지어내지 않고** `blacklistItemIds` 로 대상에서 뺐다.
+  원본 config 는 `backup/2026-11-03-mod-warning-fixes/` 에 있다. 재기동에서 2건 → **0건**.
+
+**내가 더 나쁘게 만들었다가 되돌린 것.**
+- Eukyre-BetterOKP7 의 **빈** `db/CustomItems` 폴더를 지웠더니 WTT 라이브러리가 경고 대신
+  `Error: Directory not found` 를 냈다. 폴더가 있으면 Warning, 없으면 Error 다. **되돌렸다.**
+  지우기 전이 더 나은 상태였고, 확인 없이 "빈 폴더니 지우면 조용해지겠지" 로 움직인 것이 틀렸다.
+
+**내 공이 아닌 것.** Fence 경고 3건이 이번 기동에 안 나왔다. 고친 것이 아니라 **Fence 재고가 기동마다
+무작위**라 그 방탄복이 안 뽑힌 것뿐이다. 다시 나올 수 있다.
+
+**원인까지 찾았지만 손대지 않은 것.**
+- **번들 충돌** `barrel_vpo215_600mm_366tkm.bundle`: `SPTBetterRearSights` 와 `WTT-ContentBackport` 가
+  **같은 경로에 서로 다른 파일**(md5 `bf30e412` vs `af7a73f7`)을 넣는다. 폴더 이름 순으로 앞선
+  BetterRearSights 가 이기고 WTT 쪽 추가가 실패한다. **지금 이기는 쪽이 의도대로**(가늠자를 고치는 모드)이고,
+  지는 선언을 지우면 WTT 가 BetterRearSights 에 숨은 의존을 갖게 된다. 두는 쪽이 낫다.
+- **Lotus 퀘스트 보급품**: `WTTCustomQuestService` 가 트레이더 `6747208e…`(Lotus)를 못 찾는 것은
+  **로드 순서**다. ISB 계열이 Lotus 퀘스트를 들고 있는데 Lotus 등록(22:30:04.666)보다 2ms 먼저 들여온다.
+  고치려면 남의 서명된 DLL 의 `ModDependencies` 를 바꿔야 해서 하지 않았다 - 모드 제작자 쪽 일이다.
+- **방탄복 플레이트 칸 없음**(Fence): `BlueheadsAIOTrader` 가 파는 WTT 계열 방탄복의 설계다.
+  칸을 만들면 방어 동작이 바뀐다.
+- **없는 tpl 48개**(Error 48 + Warning 48): **디스크 어디에도 없다.** user/mods·SPT_Data·프로필·DLL·번들을
+  전부 뒤졌고 핸드북 4,288항목·프리셋 399개에도 없다. 그런데 기동이 달라도 **48개가 똑같다** - 어떤 모드가
+  고정된 id 를 만들어 플리마켓 쪽에 올리면서 아이템 자체는 만들지 않는다. 10-27 로그부터 있다.
+  SPT 는 건너뛰고 계속 돈다. 확실히 집으려면 모드를 하나씩 꺼야 하는데 **아이템 추가 모드를 끄면 프로필의
+  그 아이템이 사라지므로** 임의로 하지 않았다.
+
+**집계(이번 기동 / 고치기 전).** TraderHelper 0/1, CaseTrader 0/2, Fence 0/3(무작위), 나머지 그대로:
+ItemBaseClass 48+48, ProfileMigration 5(정상 흐름), SVM 3("오류 아님, 보고하지 말라"고 모드가 직접 말한다),
+WTT 퀘스트 1, WTT 아이템 1, 보험 1, 번들 1.
+
+**실측.** 서버 빌드 경고 0·오류 0, 테스트 566개 통과. 설치본 md5 서버 `4fffcb90`, 클라이언트 `4fd943ff`.
+재기동 뒤 `PitFireTeam loaded`·`Teammate database ready` ×5·`끝나지 않은 전송` 0건.
