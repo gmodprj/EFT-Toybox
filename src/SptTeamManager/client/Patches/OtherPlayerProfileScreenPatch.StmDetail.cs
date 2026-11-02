@@ -24,6 +24,8 @@ namespace pitTeam.Patches
         public string JournalId { get; set; }
         public bool CanClose { get; set; }
         public string CloseWarning { get; set; }
+        public bool CanDiscardJournal { get; set; }
+        public string DiscardWarning { get; set; }
     }
 
     // 프로필 팀원의 상세 화면(design 6-3 오른쪽). 새 화면을 만들지 않는다: PIT 의 OtherPlayerProfileScreen 이 이미 착용 장비를
@@ -35,9 +37,15 @@ namespace pitTeam.Patches
     internal partial class OtherPlayerProfileScreenPatch
     {
         private const string StmCloseTransferRoute = "/stm/members/close-transfer";
+        private const string StmDiscardJournalRoute = "/stm/members/discard-journal";
 
         // ---- 화면 문구 (StmProfileRosterClient 와 같은 관례: 한 곳에 모은다) ----
         private const string StmCloseButtonText = "이 기록 닫기";
+        private const string StmDiscardButtonText = "기록 파일 버리기";
+        private const string StmDiscardConfirmTitle = "읽을 수 없는 전송 기록 파일 버리기";
+        private const string StmDiscardConfirmButtonText = "위 내용을 이해했고, 버립니다";
+        private const string StmDiscardedToast = "전송 기록 파일을 버렸습니다. 이제 이 팀원의 장비를 편집할 수 있습니다.";
+        private const string StmDiscardFailedToast = "전송 기록 파일을 버리지 못했습니다";
         private const string StmConfirmTitle = "멈춘 전송 기록 닫기";
         private const string StmConfirmButtonText = "위 내용을 이해했고, 닫습니다";
         private const string StmCancelButtonText = "취소";
@@ -88,7 +96,7 @@ namespace pitTeam.Patches
                 // 등록된 프로필 팀원인데 지금 쓸 수 없다: 이유를 말한다. 정확히 상태 이름일 때만 - PIT 의 오류 문장은 해당 없음이다.
                 if (refusal != null && ProfileStatePolicy.TryDescribeRefusal(refusal, out ProfileStateNotice notice))
                 {
-                    ShowStmBanner(screen, notice.Message, null);
+                    ShowStmBanner(screen, notice.Message, null, null);
                     return true;
                 }
 
@@ -100,31 +108,33 @@ namespace pitTeam.Patches
                 // 프로필 팀원이다. 막혀 있으면 그 사실과 출구를, 아니면 아무것도 얹지 않는다(조용한 화면이 정상이다).
                 if (detail.Blocked)
                 {
+                    // 안내문이 비어 왔으면 서버가 이유를 못 실은 것이다. 저널 문제라고 지어내지 않고 중립 문구를 쓴다.
                     string text = string.IsNullOrWhiteSpace(detail.BlockedNotice)
-                        ? TransferEntryClosePolicy.JournalUnreadableNotice
+                        ? TransferEntryClosePolicy.NeutralBlockedNotice
                         : detail.BlockedNotice;
                     bool closable = detail.CanClose && !string.IsNullOrWhiteSpace(detail.JournalId) && !string.IsNullOrWhiteSpace(detail.CloseWarning);
-                    ShowStmBanner(screen, text, closable ? detail : null);
+                    bool discardable = detail.CanDiscardJournal && !string.IsNullOrWhiteSpace(detail.DiscardWarning);
+                    ShowStmBanner(screen, text, closable ? detail : null, discardable ? detail : null);
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                Modules.Logger.LogError("[STM] Failed to draw the profile teammate notice; the screen is left as the game made it.");
-                Modules.Logger.LogError(ex);
+                pitFireTeam.Log.LogError("[STM] Failed to draw the profile teammate notice; the screen is left as the game made it.");
+                pitFireTeam.Log.LogError(ex);
                 // 프로필 팀원이라고 서버가 알렸는데 그리기만 실패했다: PIT 의 용병 UI 를 그 위에 만들지 않는다. 편집 차단은 서버가 한다.
                 return detail != null;
             }
         }
 
         // 화면 위쪽에 얹는 안내 상자. closable 이 있을 때만 닫기 버튼이 붙는다.
-        private static void ShowStmBanner(OtherPlayerProfileScreen screen, string text, StmProfileDetailWire closable)
+        private static void ShowStmBanner(OtherPlayerProfileScreen screen, string text, StmProfileDetailWire closable, StmProfileDetailWire discardable)
         {
             if (screen == null || string.IsNullOrWhiteSpace(text)) return;
 
             DefaultUIButton buttonTemplate = BackButtonField?.GetValue(screen) as DefaultUIButton;
-            bool withButton = closable != null && buttonTemplate != null;
+            bool withButton = (closable != null || discardable != null) && buttonTemplate != null;
 
             GameObject root = new GameObject("pitFireTeam_StmDetailNotice", typeof(RectTransform), typeof(Image));
             root.transform.SetParent(screen.transform, false);
@@ -154,19 +164,28 @@ namespace pitTeam.Patches
             if (withButton)
             {
                 DefaultUIButton closeButton = CreateOverlayButton(buttonTemplate, root.transform, new Vector2(18f, 14f), new Vector2(240f, 38f));
-                closeButton.name = "pitFireTeam_StmCloseTransferButton";
-                closeButton.SetRawText(StmCloseButtonText, 20);
                 closeButton.OnClick.RemoveAllListeners();
-                // 이 버튼은 닫지 않는다. 경고창을 열 뿐이고, 닫기는 경고창의 확인 버튼에서만 일어난다.
-                closeButton.OnClick.AddListener(() => ShowStmCloseConfirm(screen, closable));
+                // 이 버튼은 닫지도 버리지도 않는다. 경고창을 열 뿐이고, 실제 요청은 경고창의 확인 버튼에서만 나간다.
+                if (closable != null)
+                {
+                    closeButton.name = "pitFireTeam_StmCloseTransferButton";
+                    closeButton.SetRawText(StmCloseButtonText, 20);
+                    closeButton.OnClick.AddListener(() => ShowStmConfirm(screen, StmConfirmTitle, closable.CloseWarning, StmConfirmButtonText, () => SubmitStmCloseTransfer(closable)));
+                }
+                else
+                {
+                    closeButton.name = "pitFireTeam_StmDiscardJournalButton";
+                    closeButton.SetRawText(StmDiscardButtonText, 20);
+                    closeButton.OnClick.AddListener(() => ShowStmConfirm(screen, StmDiscardConfirmTitle, discardable.DiscardWarning, StmDiscardConfirmButtonText, () => SubmitStmDiscardJournal()));
+                }
             }
 
             StmDetailRoot = root;
         }
 
-        private static void ShowStmCloseConfirm(OtherPlayerProfileScreen screen, StmProfileDetailWire detail)
+        private static void ShowStmConfirm(OtherPlayerProfileScreen screen, string title, string warning, string confirmLabel, Action onConfirm)
         {
-            if (screen == null || detail == null) return;
+            if (screen == null || string.IsNullOrWhiteSpace(warning) || onConfirm == null) return;
             CloseStmConfirm();
 
             DefaultUIButton buttonTemplate = BackButtonField?.GetValue(screen) as DefaultUIButton;
@@ -222,7 +241,7 @@ namespace pitTeam.Patches
                 new Vector2(18f, 0f),
                 new Vector2(-54f, 0f),
                 TextAlignmentOptions.MidlineLeft,
-                StmConfirmTitle,
+                title,
                 20f,
                 new Color(0.95f, 0.9f, 0.85f, 1f));
 
@@ -243,7 +262,7 @@ namespace pitTeam.Patches
                 new Vector2(30f, 84f),
                 new Vector2(-30f, -54f),
                 TextAlignmentOptions.TopLeft,
-                detail.CloseWarning,
+                warning,
                 20f,
                 new Color(0.9f, 0.88f, 0.84f, 1f));
 
@@ -256,11 +275,45 @@ namespace pitTeam.Patches
 
             DefaultUIButton confirmButton = CreateOverlayButton(buttonTemplate, panel.transform, new Vector2(470f, 24f), new Vector2(300f, 40f));
             confirmButton.name = "pitFireTeam_StmCloseConfirmButton";
-            confirmButton.SetRawText(StmConfirmButtonText, 19);
+            confirmButton.SetRawText(confirmLabel, 19);
             confirmButton.OnClick.RemoveAllListeners();
-            confirmButton.OnClick.AddListener(() => SubmitStmCloseTransfer(detail));
+            confirmButton.OnClick.AddListener(() => onConfirm());
 
             StmConfirmRoot = overlay;
+        }
+
+        // 읽을 수 없는 저널 문서를 버리는 요청. 확인창의 확인 버튼에서만 불린다.
+        private static async void SubmitStmDiscardJournal()
+        {
+            if (StmCloseInFlight) return;
+            StmCloseInFlight = true;
+            try
+            {
+                string body = JsonConvert.SerializeObject(new { acknowledged = true });
+                string json = await Task.Run(() => RequestHandler.PostJson(StmDiscardJournalRoute, body));
+                string failure = ReadStmCloseFailure(json, StmDiscardFailedToast);
+
+                CloseStmConfirm();
+                if (failure != null)
+                {
+                    AddTeammateCreationFlow.ShowToast(failure);
+                    return;
+                }
+
+                CloseStmDetail();
+                AddTeammateCreationFlow.ShowToast(StmDiscardedToast);
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] Discarding the unreadable transfer journal failed.");
+                pitFireTeam.Log.LogError(ex);
+                CloseStmConfirm();
+                AddTeammateCreationFlow.ShowToast(StmDiscardFailedToast);
+            }
+            finally
+            {
+                StmCloseInFlight = false;
+            }
         }
 
         // 확인 버튼에서만 불린다. acknowledged 는 이 호출에서만 true 로 보낸다 - 다른 어떤 경로도 이 요청을 만들지 않는다.
@@ -277,7 +330,7 @@ namespace pitTeam.Patches
                     acknowledged = true,
                 });
                 string json = await Task.Run(() => RequestHandler.PostJson(StmCloseTransferRoute, body));
-                string failure = ReadStmCloseFailure(json);
+                string failure = ReadStmCloseFailure(json, StmCloseFailedToast);
 
                 CloseStmConfirm();
                 if (failure != null)
@@ -304,16 +357,16 @@ namespace pitTeam.Patches
         }
 
         // 성공이면 null. 빈 응답이나 읽을 수 없는 응답은 성공이 아니다. 서버의 errmsg 는 플레이어가 읽는 말이다.
-        private static string ReadStmCloseFailure(string json)
+        private static string ReadStmCloseFailure(string json, string fallback)
         {
-            if (string.IsNullOrWhiteSpace(json)) return StmCloseFailedToast;
+            if (string.IsNullOrWhiteSpace(json)) return fallback;
 
             JToken root = JToken.Parse(json);
             int err = root["err"]?.Value<int>() ?? -1;
             if (err == 0) return null;
 
             string errmsg = root["errmsg"]?.ToString();
-            return string.IsNullOrWhiteSpace(errmsg) ? StmCloseFailedToast : errmsg;
+            return string.IsNullOrWhiteSpace(errmsg) ? fallback : errmsg;
         }
 
         private static void CloseStmConfirm()
