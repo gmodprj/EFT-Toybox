@@ -346,6 +346,15 @@ namespace pitTeam.Components
                     ApplyCoverMeCommandDrop(info.PlayerRequester);
                     return;
                 }
+                else if (info.phrase == EPhraseTrigger.Fire ||
+                         info.phrase == EPhraseTrigger.HoldFire ||
+                         info.phrase == EPhraseTrigger.GetInCover)
+                {
+                    // Fire / Hold Fire / Take Cover: the meaning is decided by GestureCommandPolicy (shared,
+                    // tested); this only carries it to the AI. A phrase the policy returns null for is left
+                    // to fall through untouched.
+                    if (ApplyEngagementGesture(info.PlayerRequester, info.phrase)) return;
+                }
                 else if (info.phrase == EPhraseTrigger.OpenDoor)
                 {
                     // Open Door: closest eligible follower opens the target door.
@@ -3515,6 +3524,63 @@ namespace pitTeam.Components
         private void ApplyGoGoGoCombatAggression(IPlayer requester)
         {
             ApplyTemporaryCombatAggressionCommand(requester, null, EPhraseTrigger.Roger);
+        }
+
+        // Returns true when the phrase was a known engagement command and was carried out, so PhraseSaid does
+        // not also hand it to the vanilla receiver. Unknown -> false and nothing changes.
+        private bool ApplyEngagementGesture(IPlayer requester, EPhraseTrigger phrase)
+        {
+            string menuCommand = phrase == EPhraseTrigger.Fire ? pitTeam.Shared.GestureCommandPolicy.FireCommand
+                : phrase == EPhraseTrigger.HoldFire ? pitTeam.Shared.GestureCommandPolicy.HoldFireCommand
+                : phrase == EPhraseTrigger.GetInCover ? pitTeam.Shared.GestureCommandPolicy.TakeCoverCommand
+                : null;
+            pitTeam.Shared.GestureCommandEffect effect = pitTeam.Shared.GestureCommandPolicy.Translate(menuCommand);
+            if (effect == null) return false;
+
+            switch (effect.Engagement)
+            {
+                case pitTeam.Shared.GestureCommandPolicy.WeaponsFree:
+                    // Same lever Go Go Go uses: drop the temporary override so the persisted tactic decides.
+                    ApplyTemporaryCombatAggressionCommand(requester, null, EPhraseTrigger.Roger);
+                    return true;
+                case pitTeam.Shared.GestureCommandPolicy.HoldFire:
+                    // Same lever Hold Position uses for combat: aggression 0, without the movement hold.
+                    ApplyTemporaryCombatAggressionCommand(requester, 0f, EPhraseTrigger.Roger);
+                    return true;
+                case pitTeam.Shared.GestureCommandPolicy.SeekCover:
+                    ApplyTakeCoverCommand(requester);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Take Cover: followers in contact fall back to cover near the boss (the same short combat command
+        // Come With Me issues). Followers not in contact are left alone - there is nothing to take cover from.
+        private void ApplyTakeCoverCommand(IPlayer requester)
+        {
+            if (requester == null) return;
+
+            BotOwner focusedFollower = null;
+            if (requester is Player requesterPlayer)
+            {
+                focusedFollower = FindLookedAtFollower(requesterPlayer, PhraseCommandDistance, 0.15f, 4f);
+            }
+
+            foreach (BotOwner follower in Followers)
+            {
+                if (follower == null || follower.IsDead || follower.BotState != EBotState.Active) continue;
+                if (IsFollowerLockedByLootCommand(follower)) continue;
+                if (focusedFollower != null && follower != focusedFollower) continue;
+                if (!HasActiveCombatEnemy(follower)) continue;
+
+                BotFollowerPlayer followerData = BossPlayers.Instance?.GetFollower(follower);
+                if (followerData == null) continue;
+
+                followerData.SetCombatComeToBossCover(8f);
+                follower.BotTalk.TrySay(EPhraseTrigger.Roger, false);
+                follower.Gesture.TryGestus(EInteraction.OkGesture, false);
+            }
         }
 
         private void ApplyTemporaryCombatAggressionCommand(IPlayer requester, float? overrideAggression, EPhraseTrigger response)
