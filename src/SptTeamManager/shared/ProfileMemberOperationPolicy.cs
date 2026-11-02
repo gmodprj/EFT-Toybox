@@ -10,7 +10,9 @@ namespace pitTeam.Shared
         Suit,
         Aggression,
         Proficiency,
-        Tactic,
+        // Tactic 은 여기 없다. 2026-11-02 에 STM 이 자기 등록 문서에 저장하는 길을 열었다(StmTacticService) -
+        // 전술은 원래부터 등록에 저장되고 투입 경로까지 흐르는데 바꿀 길만 막혀 있었다. 거부 사유를 남겨 두면
+        // 아무도 부르지 않는 거짓말이 되므로 열거에서 뺐다.
         Insurance,
         Loadout,
         // 키트 구매·장비 수리. 둘 다 플레이어 프로필(돈·수리 키트)과 팀원 쪽을 함께 고치는 조작이라
@@ -45,7 +47,6 @@ namespace pitTeam.Shared
                     return "런처 프로필의 외형은 그 프로필의 것입니다. 팀 화면에서는 바꿀 수 없습니다.";
                 case ProfileMemberOperation.Aggression:
                 case ProfileMemberOperation.Proficiency:
-                case ProfileMemberOperation.Tactic:
                     return "이 설정은 고용한 용병 팀원용입니다. 프로필 팀원에게는 아직 적용되지 않습니다.";
                 case ProfileMemberOperation.Insurance:
                     return "프로필 팀원의 보험은 그 프로필 자체의 보험입니다. 팀 화면에서는 구매할 수 없습니다.";

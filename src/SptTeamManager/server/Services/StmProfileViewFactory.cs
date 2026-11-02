@@ -124,14 +124,19 @@ public class StmProfileViewFactory(
             }
 
             identifiedAsMember = true;
-            var tactic = store.List(sessionId).FirstOrDefault(m => m.ProfileId == member.ProfileId)?.Tactic;
-            if (string.IsNullOrWhiteSpace(tactic)) tactic = "Rifleman";
+            // 저장된 전술(없으면 PIT 의 기본값). 고를 수 있는 목록은 PIT 의 것 하나뿐이다 - 여기서 따로 적으면
+            // 둘이 갈라진다(인계 §3-8). 2026-11-02 전에는 현재 값 하나만 실어 보내 드롭다운이 있어도 바꿀 것이
+            // 없었다.
+            var stored = store.List(sessionId).FirstOrDefault(m => m.ProfileId == member.ProfileId)?.Tactic;
+            var tactic = FriendlyTeammateService.NormalizeCombatTactic(stored);
             options = new FriendlyTeammateProfileOptionsResponse
             {
                 CurrentLoadoutId = FriendlyTeammateService.DefaultLoadoutId,
-                CurrentTactic = tactic!,
+                CurrentTactic = tactic,
                 Loadouts = [new FriendlyTeammateLoadoutOption { Id = FriendlyTeammateService.DefaultLoadoutId, Name = FriendlyTeammateService.DefaultLoadoutName }],
-                Tactics = [new FriendlyTeammateTacticOption { Id = tactic!, Name = tactic! }],
+                Tactics = FriendlyTeammateService.TacticOptions
+                    .Select(id => new FriendlyTeammateTacticOption { Id = id, Name = id })
+                    .ToList(),
                 Stm = WithEditEntry(BuildDetail(sessionId, member)),
             };
             return true;

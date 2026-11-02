@@ -23,6 +23,7 @@ public class FriendlyTeammateCallbacks(
     JsonUtil jsonUtil,
     StmProfileViewFactory profileViewFactory,
     StmAutoJoinService autoJoinService,
+    StmTacticService tacticService,
     StmProfileOperationGuard operationGuard,
     ISptLogger<FriendlyTeammateCallbacks> logger
 )
@@ -364,7 +365,18 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetTactic(string url, FriendlyTeammateTacticRequest request, MongoId sessionId)
     {
-        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Tactic, out var profileMemberRefusal)) return profileMemberRefusal;
+        // STM 먼저(불변식 3). 처리했으면 PIT 를 부르지 않는다. 프로필 팀원이 아니면(false + 사유 없음) PIT 경로가 그대로다.
+        // 2026-11-02 전에는 여기서 프로필 팀원을 거부했다 - 전술이 등록 문서에 저장되고 투입 경로까지 흐르는데
+        // 바꿀 길만 없었다. 이제 STM 이 자기 등록에 쓴다(StmTacticService).
+        if (tacticService.TrySetTactic(sessionId, request.Aid, request.Tactic, out var unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.NullResponse());
+        }
+
+        if (!string.IsNullOrWhiteSpace(unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: unavailableReason));
+        }
 
         try
         {

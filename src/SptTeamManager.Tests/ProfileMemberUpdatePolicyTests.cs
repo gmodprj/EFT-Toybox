@@ -59,12 +59,47 @@ public class ProfileMemberUpdatePolicyTests
     }
 
     [Fact]
-    public void 프로필id와_전술은_변경_대상이_아니다()
+    public void 프로필id는_변경_대상이_아니다()
     {
         var result = ProfileMemberUpdatePolicy.Apply(Current(), new StmProfileMemberChange(true, true));
 
         Assert.Equal("profile-1", result!.ProfileId);
-        Assert.Equal("Rifleman", result.Tactic);
+    }
+
+    // 전술은 2026-11-02 에 열었다: 그 전에는 저장만 되고 바꿀 길이 없었다.
+    [Fact]
+    public void 전술을_바꾼다()
+    {
+        var result = ProfileMemberUpdatePolicy.Apply(Current(), new StmProfileMemberChange(null, null, "Marksman"));
+
+        Assert.Equal("Marksman", result!.Tactic);
+    }
+
+    [Fact]
+    public void 전술이_없으면_그대로_둔다()
+    {
+        var result = ProfileMemberUpdatePolicy.Apply(Current(), new StmProfileMemberChange(true, null));
+
+        Assert.Equal("Rifleman", result!.Tactic);
+    }
+
+    // 빈 값은 "지우기" 가 아니라 조용한 되돌리기다. 투입 때 기본 전술로 떨어지는 것을 사용자가 모른다.
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void 빈_전술은_그대로_둔다(string blank)
+    {
+        var result = ProfileMemberUpdatePolicy.Apply(Current(), new StmProfileMemberChange(null, null, blank));
+
+        Assert.Equal("Rifleman", result!.Tactic);
+    }
+
+    [Fact]
+    public void 전술의_앞뒤_공백을_떼고_저장한다()
+    {
+        var result = ProfileMemberUpdatePolicy.Apply(Current(), new StmProfileMemberChange(null, null, "  SainMan  "));
+
+        Assert.Equal("SainMan", result!.Tactic);
     }
 
     [Fact]

@@ -97,6 +97,7 @@ namespace pitTeam.Patches
         private static void ShowStmGearEditEntry(
             OtherPlayerProfileScreen screen,
             ResultProfile profile,
+            FriendlyTeammateProfileOptions options,
             StmProfileDetailWire detail,
             InventoryController inventoryController,
             EFT.IEftSession session,
@@ -108,6 +109,8 @@ namespace pitTeam.Patches
             if (!detail.CanEditGear)
             {
                 ShowStmBannerWithPending(screen, GearEditEntryPolicy.NoticeWhenNotEditable(detail.EditNotice), profile?.AccountId, null, null);
+                // 장비 편집이 막혀도(레이드 중 등) AI 타입은 바꿀 수 있다. 줄은 만들되 편집 버튼은 눌리지 않는다.
+                TryShowStmProfileControlRow(screen, profile, options, detail, inventoryController, session, playerModelWindow);
                 return;
             }
 
@@ -122,6 +125,14 @@ namespace pitTeam.Patches
                 // 그려진 뒤에야 비운다(위 ShowStmBanner 가 던지면 대기에 남는다).
                 ClearStmPendingGearRefusalIf(pendingRefusal);
                 entryTop = -240f;
+            }
+
+            // 용병 화면과 같은 한 줄(장비 편집 | AI 타입)을 먼저 시도한다. 성공하면 입구는 그 줄의 왼쪽 칸이다.
+            // 거절 사유가 떠 있을 때는 안내 상자 아래의 떠 있는 버튼이 제자리이므로 줄을 만들지 않는다.
+            if (pendingRefusal == null
+                && TryShowStmProfileControlRow(screen, profile, options, detail, inventoryController, session, playerModelWindow))
+            {
+                return;
             }
 
             DefaultUIButton buttonTemplate = BackButtonField?.GetValue(screen) as DefaultUIButton;
@@ -163,6 +174,74 @@ namespace pitTeam.Patches
 
             if (pendingRefusal == null) StmDetailRoot = root;
             else StmGearEditEntryRoot = root;
+        }
+
+        // 조작 줄의 왼쪽 칸(원래는 장비 프리셋 드롭다운)을 "팀원 장비 편집" 버튼으로 덮는다.
+        // PIT 의 ReplaceLoadoutDropdownWithEditButton 과 같은 자리·같은 모양이고, 누를 때 여는 것만 STM 의 편집기다
+        // (PIT 의 편집기는 플레이어 스태시를 출처로 쓴다 - 프로필 팀원에게는 틀린 경로다. 서버도 그 저장을 거부한다).
+        private static void ReplaceStmLoadoutDropdownWithEditButton(
+            OtherPlayerProfileScreen screen,
+            ResultProfile profile,
+            StmProfileDetailWire detail,
+            InventoryClothingSelectionPanel panel,
+            InventoryController inventoryController,
+            EFT.IEftSession session,
+            InventoryPlayerModelWithStatsWindow playerModelWindow)
+        {
+            try
+            {
+                if (screen == null || profile == null || panel == null) return;
+
+                DropDownBox upperDropdown = UpperDropdownField?.GetValue(panel) as DropDownBox;
+                RectTransform sourceRect = upperDropdown?.transform as RectTransform;
+                Transform buttonParent = sourceRect?.parent ?? panel.transform.Find("Upper") ?? panel.transform;
+
+                Transform existing = buttonParent.Find("pitFireTeam_StmGearEditRowButton");
+                if (existing != null) GameObject.Destroy(existing.gameObject);
+
+                DefaultUIButton buttonTemplate = HideoutButtonField?.GetValue(screen) as DefaultUIButton;
+                if (buttonTemplate == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 조작 줄의 장비 편집 버튼을 만들지 못했다: 버튼 템플릿이 없다.");
+                    return;
+                }
+
+                DefaultUIButton button = GameObject.Instantiate(buttonTemplate, buttonParent, false);
+                button.name = "pitFireTeam_StmGearEditRowButton";
+                button.gameObject.SetActive(true);
+                button.SetRawText(StmEditEntryText, 18);
+                HideProfileButtonIconContainer(button);
+                // 서버가 열 수 없다고 했으면(레이드 중 등) 버튼은 보이되 눌리지 않는다. 사유는 위의 안내 상자가 말한다.
+                button.Interactable = detail != null && detail.CanEditGear;
+                button.OnClick.RemoveAllListeners();
+                button.OnClick.AddListener(() => OpenStmGearEditor(screen, profile, detail, inventoryController, session, playerModelWindow));
+
+                if (button.transform is RectTransform buttonRect)
+                {
+                    if (sourceRect != null)
+                    {
+                        buttonRect.anchorMin = sourceRect.anchorMin;
+                        buttonRect.anchorMax = sourceRect.anchorMax;
+                        buttonRect.pivot = sourceRect.pivot;
+                        buttonRect.anchoredPosition = sourceRect.anchoredPosition;
+                        buttonRect.sizeDelta = sourceRect.sizeDelta;
+                        buttonRect.offsetMin = sourceRect.offsetMin;
+                        buttonRect.offsetMax = sourceRect.offsetMax;
+                    }
+
+                    buttonRect.localScale = Vector3.one;
+                }
+
+                if (upperDropdown != null) upperDropdown.gameObject.SetActive(false);
+
+                Transform icon = panel.transform.Find("Upper/Icon");
+                if (icon != null) icon.gameObject.SetActive(false);
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] 조작 줄의 장비 편집 버튼을 만들다 실패했다. 줄은 전술 드롭다운만 남는다.");
+                pitFireTeam.Log.LogError(ex);
+            }
         }
 
         // 통계 화면의 EFT / ARENA 탭. 입구 버튼을 그 줄 오른쪽에 붙이려고만 쓴다(2026-11-02 인게임에서 입구가 두 탭 **아래**에
