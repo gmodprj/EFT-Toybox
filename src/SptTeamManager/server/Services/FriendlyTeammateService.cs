@@ -1256,6 +1256,24 @@ public partial class FriendlyTeammateService(
             playerStashRootId,
             lockedStashItemMessageTemplate);
 
+        // [STM] 보존 검사. 위의 검증들은 **제출된** 아이템만 훑는다(ValidateRealCommitItemSet) - 제출에서
+        // 빠진 아이템은 아무도 찾지 않는데, 바로 아래에서 현재 스태시 트리의 id 를 전부 지우고 제출된
+        // 항목으로 갈아 끼운다. 그래서 아이템을 잃는 커밋이 지금까지 어디에서도 걸리지 않았다.
+        // 불변식: 원래 스태시의 모든 id 는 제출된 스태시나 팀원 장비 어느 한쪽에 반드시 나타난다
+        // (옮겨 간 것은 정상, 어디에도 없는 것은 소실). 재매김된 id 도 찾아 준다. 설계 §4 안티골.
+        // 쓰기 전에 던지므로 실패해도 원래 스태시가 그대로 남는다. 클라이언트 관문 밖에서 라우트로
+        // 직접 쏘는 호출자에 대한 유일한 방어이기도 하다.
+        var conservation = pitTeam.Shared.ProfileGearEditPolicy.CheckStashConservation(
+            currentPlayerStashIds,
+            replacementStashItems.Where(item => item?.Id != null).Select(item => item.Id.ToString()).ToList(),
+            replacementEquipmentItems.Where(item => item?.Id != null).Select(item => item.Id.ToString()).ToList(),
+            remappedTeammateItemIds);
+        if (!conservation.Conserved)
+        {
+            logger.Error($"[STM] 팀원 '{teammate.Aid}' 장비 저장을 거부했다(보존 검사): {conservation.Reason}");
+            throw new FriendlyTeammateException(conservation.Reason);
+        }
+
         var originalPlayerItems = cloner.Clone(playerPmc.Inventory.Items) ?? playerPmc.Inventory.Items.ToList();
         var originalTeammateItems = cloner.Clone(teammate.Inventory.Items) ?? teammate.Inventory.Items.ToList();
         var originalTeammateEquipment = teammate.Inventory.Equipment;

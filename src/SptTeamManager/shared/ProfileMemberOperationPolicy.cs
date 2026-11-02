@@ -1,7 +1,9 @@
 namespace pitTeam.Shared
 {
-    // 상세 화면이 서버에 요청하는 조작 중, 런처 프로필 팀원에게는 뜻이 없는 것들.
-    // 장비 편집(default-equipment)은 여기 없다: 그것은 프로필 팀원에게 뜻이 있는 조작이고 별도 경로가 판정한다.
+    // 상세 화면이 서버에 요청하는 조작 중, 런처 프로필 팀원에게 PIT 의 용병 경로로는 뜻이 없는 것들.
+    // DefaultEquipmentCommit(장비 편집 저장)이 여기 들어온 것은 계획 3 Task 6 의 결정이다: 장비 편집
+    // 자체는 프로필 팀원에게 뜻이 있지만, **PIT 의 저장 경로**는 플레이어 스태시를 출처로 쓰므로
+    // 프로필 팀원에게 쓸 수 없다. 프로필 팀원의 장비는 STM 자신의 경로로만 바뀐다.
     public enum ProfileMemberOperation
     {
         Rename,
@@ -11,6 +13,12 @@ namespace pitTeam.Shared
         Tactic,
         Insurance,
         Loadout,
+        // 키트 구매·장비 수리. 둘 다 플레이어 프로필(돈·수리 키트)과 팀원 쪽을 함께 고치는 조작이라
+        // 프로필 팀원에게는 프로필 두 개를 오가는 전송이 된다 - 설계 §6-5 가 다음으로 미룬 그것이다.
+        // 손대지 않고 두면 같은 Aid 의 용병에게 적용되므로(계획 3 Task 5 이월) 거부로 닫는다.
+        BuyKit,
+        RepairEquipment,
+        DefaultEquipmentCommit,
     }
 
     // 프로필 팀원에게 이 조작을 거부할 때 플레이어에게 보여 줄 사유.
@@ -43,6 +51,16 @@ namespace pitTeam.Shared
                     return "프로필 팀원의 보험은 그 프로필 자체의 보험입니다. 팀 화면에서는 구매할 수 없습니다.";
                 case ProfileMemberOperation.Loadout:
                     return "프로필 팀원에게는 장비 프리셋이 없습니다. 장비는 장비 편집으로 바꿉니다.";
+                case ProfileMemberOperation.BuyKit:
+                    return "프로필 팀원에게는 키트를 사 줄 수 없습니다. 장비는 그 프로필 스태시에 있는 것으로만 꾸립니다.";
+                case ProfileMemberOperation.RepairEquipment:
+                    return "프로필 팀원의 장비 수리는 그 프로필로 로그인해서 합니다. 팀 화면에서는 수리할 수 없습니다.";
+                // PIT 의 저장 경로는 제출된 PlayerStashItems 로 **플레이어** 스태시 트리를 갈아 끼우고
+                // 결과를 PIT 의 용병 문서에 쓴다. 프로필 팀원에게는 둘 다 틀렸다: 출처는 그 팀원
+                // 스태시뿐이고(§6-4), 장비가 가야 할 곳은 그 런처 프로필이다. 조용히 성공한 척하면
+                // 같은 Aid 의 **보이지 않는 용병** 장비가 바뀐다(인계 문서 불변식 3).
+                case ProfileMemberOperation.DefaultEquipmentCommit:
+                    return "프로필 팀원의 장비는 용병 장비 저장 경로로 바꿀 수 없습니다. 그 경로는 플레이어 스태시를 출처로 쓰지만, 프로필 팀원의 장비 출처는 그 팀원 자신의 스태시뿐입니다.";
                 default:
                     return "이 조작은 프로필 팀원에게 지원하지 않습니다.";
             }

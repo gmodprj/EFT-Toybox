@@ -282,6 +282,11 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SaveDefaultEquipment(string url, FriendlyTeammateDefaultEquipmentRequest request, MongoId sessionId)
     {
+        // STM 먼저(불변식 3). PIT 의 이 경로는 제출된 PlayerStashItems 로 플레이어 스태시 트리를 갈아 끼우고
+        // 결과를 PIT 의 용병 문서에 쓴다 - 프로필 팀원에게는 출처도(§6-4 "출처는 본인 스태시뿐") 목적지도 틀렸다.
+        // 그냥 두면 같은 Aid 의 보이지 않는 용병 장비가 바뀐다(계획 3 Task 5 이월 사항).
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.DefaultEquipmentCommit, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             var response = teammateService.SaveTeammateDefaultEquipment(sessionId, request);
@@ -295,6 +300,10 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> BuyKit(string url, FriendlyTeammateBuyKitRequest request, MongoId sessionId)
     {
+        // 플레이어 돈이 나가고 팀원 쪽에 장비가 생기는 조작이다. 프로필 팀원에게는 프로필 두 개를 오가는
+        // 전송이 되고(설계 §6-5, 다음으로 미뤘다), PIT 는 생긴 장비를 용병 문서에 쓴다 - 런처 프로필에는 닿지 않는다.
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.BuyKit, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             var response = teammateService.BuyTeammateKit(sessionId, request);
@@ -308,6 +317,10 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> RepairDefaultEquipment(string url, FriendlyTeammateRepairEquipmentRequest request, MongoId sessionId)
     {
+        // 플레이어의 수리 키트·돈을 쓰고 팀원 아이템의 내구도를 고치는 조작이다. 프로필 팀원에게는 역시
+        // 프로필 두 개를 오가고(§6-5), PIT 는 용병 문서의 아이템을 고친다 - 런처 프로필의 아이템이 아니다.
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.RepairEquipment, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             var response = teammateService.RepairTeammateDefaultEquipment(sessionId, request);
