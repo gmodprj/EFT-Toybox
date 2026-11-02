@@ -7,6 +7,36 @@ namespace SptTeamManager.Tests;
 // PIT 자기 용병은 STM 의 고장으로 못 보게 되면 안 된다.
 public class ProfileViewPolicyTests
 {
+    // ---- 조회 결과의 분류: "읽다 실패" 와 "팀원이 아님이 확인됨" 은 같지 않다 ----
+    [Fact]
+    public void 읽다_실패하면_다른_신호가_뭐든_읽기_실패다()
+    {
+        // 해석기는 읽기에서 던지면 삼키고 사유 없이 false 를 준다. 그 모양(resolved=false, reason=null)이 확인된 비팀원과 같아 보여도
+        // 읽기 실패가 앞선다 - 아니면 SPT 의 응답(다른 프로필의 인벤토리 전체)이 흘러간다.
+        Assert.Equal(ProfileLookupOutcome.ReadFailed, ProfileViewPolicy.ClassifyLookup(readFailed: true, resolved: false, unavailableReason: null));
+        Assert.Equal(ProfileLookupOutcome.ReadFailed, ProfileViewPolicy.ClassifyLookup(readFailed: true, resolved: true, unavailableReason: "CurrentSession"));
+    }
+
+    [Fact]
+    public void 읽기가_성공했고_사유가_없으면_확인된_비팀원이다()
+    {
+        // 이 경우는 그대로 PIT 길로 흘러야 한다 - 평범한 조회를 막으면 안 된다.
+        Assert.Equal(ProfileLookupOutcome.NonMember, ProfileViewPolicy.ClassifyLookup(readFailed: false, resolved: false, unavailableReason: null));
+        Assert.Equal(ProfileLookupOutcome.NonMember, ProfileViewPolicy.ClassifyLookup(readFailed: false, resolved: false, unavailableReason: "  "));
+    }
+
+    [Fact]
+    public void 읽기가_성공하고_해석됐으면_팀원이다()
+    {
+        Assert.Equal(ProfileLookupOutcome.Resolved, ProfileViewPolicy.ClassifyLookup(readFailed: false, resolved: true, unavailableReason: null));
+    }
+
+    [Fact]
+    public void 읽기가_성공했고_사유가_있으면_쓸_수_없는_팀원이다()
+    {
+        Assert.Equal(ProfileLookupOutcome.Unavailable, ProfileViewPolicy.ClassifyLookup(readFailed: false, resolved: false, unavailableReason: "CurrentSession"));
+    }
+
     [Fact]
     public void 등록을_읽을_수_있으면_평소_순서대로_STM_먼저다()
     {

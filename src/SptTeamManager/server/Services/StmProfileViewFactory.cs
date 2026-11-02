@@ -50,6 +50,13 @@ public class StmProfileViewFactory(
         var identifiedAsMember = false;
         try
         {
+            // 해석기가 삼키는 읽기 실패를 먼저 드러낸다. 읽다 실패한 것은 "팀원이 아님" 이 아니다.
+            if (!ReadsSucceed(sessionId, "프로필 조회", accountId))
+            {
+                unavailableReason = "Unreadable";
+                return false;
+            }
+
             if (!resolver.TryResolve(sessionId, accountId, out var member, out var resolveReason) || member == null)
             {
                 unavailableReason = resolveReason;
@@ -96,6 +103,12 @@ public class StmProfileViewFactory(
         var identifiedAsMember = false;
         try
         {
+            if (!ReadsSucceed(sessionId, "프로필 옵션", accountId))
+            {
+                unavailableReason = "Unreadable";
+                return false;
+            }
+
             if (!resolver.TryResolve(sessionId, accountId, out var member, out var resolveReason) || member == null)
             {
                 unavailableReason = resolveReason;
@@ -127,6 +140,26 @@ public class StmProfileViewFactory(
             logger.Error($"[STM] 프로필 옵션: '{accountId}'(세션 '{sessionId}') 처리 실패 ({(identifiedAsMember ? "프로필 팀원, 읽을 수 없다고 보고" : "기본 경로로 넘긴다")}): {ex}");
             return false;
         }
+    }
+
+    // 등록과 카탈로그가 읽히는지 직접 확인한다. 해석기(TryResolve)는 읽다 던지면 식별 전 실패로 삼켜 사유 없는 false 를 돌려주는데,
+    // 그것은 확인된 비팀원과 같은 모양이라 호출자가 SPT 의 응답(다른 프로필의 인벤토리 전체)을 흘려보내게 된다.
+    // 분류는 ProfileViewPolicy.ClassifyLookup 이 한다 - 읽기 실패는 비팀원이 아니다.
+    private bool ReadsSucceed(MongoId sessionId, string what, string? accountId)
+    {
+        var readFailed = false;
+        try
+        {
+            store.List(sessionId);
+            catalog.GetCandidates(sessionId.ToString());
+        }
+        catch (Exception ex)
+        {
+            readFailed = true;
+            logger.Error($"[STM] {what}: 등록 또는 프로필 목록을 읽지 못해(Aid '{accountId}', 세션 '{sessionId}') 이 Aid 가 프로필 팀원인지 알 수 없다. 팀원 아님으로 넘기지 않고 읽을 수 없다고 보고한다: {ex}");
+        }
+
+        return ProfileViewPolicy.ClassifyLookup(readFailed, resolved: false, unavailableReason: null) != ProfileLookupOutcome.ReadFailed;
     }
 
     // 이 팀원의 편집이 전송 저널에 막혀 있으면 그 사실과 닫는 길을 싣는다. 막힘 여부는 HasOpenEntry 와 같은 판정
