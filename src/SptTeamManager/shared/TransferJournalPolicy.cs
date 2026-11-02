@@ -78,5 +78,28 @@ namespace pitTeam.Shared
             // 안 움직였다면 저장이 되돌려졌다는 뜻일 수 있어 조용히 닫지 않는다.
             return stage == TransferStage.Prepared ? RecoveryDecision.RollBack : RecoveryDecision.StopAndReport;
         }
+
+        // 이 저널 항목이 profileId 의 편집을 막는가. 의심스러우면 막는다(설계 §6-9): 거절하면 편집 한 번을 잃고,
+        // 깨진 저널 위에서 허락하면 아이템을 잃는다. 막지 않는 경우는 딱 하나 - 확인까지 끝난 항목이거나,
+        // 끝나지 않았어도 출처·목적지가 둘 다 읽히고 둘 다 이 프로필이 아닌 경우.
+        // 프로필 식별자는 앞뒤 공백·대소문자를 무시하고 비교한다(RaidReceiptKeyPolicy 와 같은 방향: 애매하면 같다).
+        public static bool BlocksEditing(string? stageName, string? sourceProfileId, string? destinationProfileId, string? profileId)
+        {
+            if (ParseStage(stageName) == TransferStage.Verified)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(profileId)
+                || string.IsNullOrWhiteSpace(sourceProfileId)
+                || string.IsNullOrWhiteSpace(destinationProfileId))
+            {
+                return true;
+            }
+
+            var id = profileId!.Trim();
+            return string.Equals(sourceProfileId!.Trim(), id, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(destinationProfileId!.Trim(), id, StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

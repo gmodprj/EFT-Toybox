@@ -95,3 +95,50 @@ public class TransferJournalPolicyTests
         Assert.Equal(TransferJournalPolicy.UnknownStage, TransferJournalPolicy.ParseStage(""));
     }
 }
+
+// 편집 차단 판정(HasOpenEntry 의 핵심). 의심스러우면 "막는다" 쪽이다: 편집을 거절하는 비용은 편집 한 번이고,
+// 깨진 저널 위에서 편집을 허락하는 비용은 아이템이다.
+public class TransferJournalBlockingTests
+{
+    [Fact]
+    public void 미결_저널이_있으면_출처와_목적지_둘_다_편집을_막는다()
+    {
+        Assert.True(TransferJournalPolicy.BlocksEditing("Prepared", "src", "dst", "src"));
+        Assert.True(TransferJournalPolicy.BlocksEditing("Committed", "src", "dst", "dst"));
+    }
+
+    [Fact]
+    public void 관계없는_프로필은_막지_않는다()
+    {
+        Assert.False(TransferJournalPolicy.BlocksEditing("Committed", "src", "dst", "other"));
+    }
+
+    [Fact]
+    public void 확인까지_끝난_항목은_막지_않는다()
+    {
+        Assert.False(TransferJournalPolicy.BlocksEditing("Verified", "src", "dst", "src"));
+    }
+
+    [Fact]
+    public void 모르는_단계는_막는다()
+    {
+        Assert.True(TransferJournalPolicy.BlocksEditing("Whatever", "src", "dst", "src"));
+        Assert.True(TransferJournalPolicy.BlocksEditing(null, "src", "dst", "src"));
+    }
+
+    [Fact]
+    public void 대소문자와_공백이_달라도_같은_프로필로_본다()
+    {
+        Assert.True(TransferJournalPolicy.BlocksEditing("Prepared", "AbC", "dst", "  abc "));
+    }
+
+    [Fact]
+    public void 비어_있거나_읽을_수_없는_식별자는_막는다()
+    {
+        Assert.True(TransferJournalPolicy.BlocksEditing("Prepared", "src", "dst", null));
+        Assert.True(TransferJournalPolicy.BlocksEditing("Prepared", "src", "dst", " "));
+        // 출처·목적지가 비어 읽을 수 없는 항목은 누가 관련됐는지 모른다 - 모두를 막는다.
+        Assert.True(TransferJournalPolicy.BlocksEditing("Prepared", null, "dst", "other"));
+        Assert.True(TransferJournalPolicy.BlocksEditing("Prepared", "src", "", "other"));
+    }
+}
