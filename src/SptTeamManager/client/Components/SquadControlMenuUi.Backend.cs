@@ -9,6 +9,7 @@ using EFT.UI.Matchmaker;
 using EFT.UI.Settings;
 using pitTeam.Modules;
 using pitTeam.Patches;
+using pitTeam.Shared;
 using HarmonyLib;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -434,6 +435,15 @@ namespace pitTeam.Components
                 UpdateAutoJoinBadge(accountId, nextState);
                 string successTemplate = GetSocialUiText(nextState ? "SquadControlAutoJoinEnabledToast" : "SquadControlAutoJoinDisabledToast");
                 AddTeammateCreationFlow.ShowToast(string.Format(successTemplate, nickname ?? string.Empty));
+                yield break;
+            }
+
+            // 등록된 프로필 팀원이 로그인 중이거나 읽을 수 없어 서버가 거절한 경우, 거절 본문에 상태 이름이 실려 온다. 플레이어가
+            // 실제로 이 거절을 만나는 곳이 여기라서 이유를 토스트에 싣는다. 상태 이름이 아닌 실패(PIT 용병 등)는 아래 기존 문구 그대로다.
+            string stateToast = ProfileStatePolicy.ToggleRefusalToast(nickname, backendError);
+            if (stateToast != null)
+            {
+                AddTeammateCreationFlow.ShowToast(stateToast);
                 yield break;
             }
 

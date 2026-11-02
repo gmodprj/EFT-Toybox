@@ -58,6 +58,14 @@ namespace pitTeam.Shared
             }
         }
 
+        // 명단의 자동 합류 토글이 거절당했을 때 보여 줄 토스트. 상태 이름이 아닌 실패(PIT 의 오류 문장 등)는 null 이고, 호출자가
+        // 기존의 일반 실패 토스트를 그대로 쓴다 - 이유를 아는 경우에만 바꾼다. 이유의 말은 Describe 의 것 하나뿐이다.
+        public static string? ToggleRefusalToast(string? nickname, string? errmsg)
+        {
+            if (!TryDescribeRefusal(errmsg, out var notice)) return null;
+            return string.IsNullOrWhiteSpace(nickname) ? notice.Message : nickname!.Trim() + ": " + notice.Message;
+        }
+
         // 서버가 거절 사유로 돌려준 문자열(해석기의 사유는 로스터 와이어의 상태 이름과 같은 어휘다)을 읽는다.
         // 로스터와 같은 해석(StmRosterWire.ParseStatus)을 쓴다 - 어휘를 둘로 나누지 않는다.
         // 비었거나 모르는 사유, 그리고 사유 자리에 Ready 가 온 경우는 모두 읽을 수 없음이다: 거절의 사유가 "문제 없음" 일 수는 없다.

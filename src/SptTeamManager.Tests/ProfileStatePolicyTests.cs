@@ -100,6 +100,42 @@ public class ProfileStatePolicyTests
         Assert.False(notice.AutoJoinChangeable);
     }
 
+    // 명단의 자동 합류 토글이 거절당하는 자리. 플레이어가 실제로 거절을 만나는 곳이라 이유가 여기 닿아야 한다.
+    [Theory]
+    [InlineData("Unreadable", "읽을 수 없")]
+    [InlineData("Empty", "게임에 한 번")]
+    [InlineData("Missing", "더 이상 없")]
+    [InlineData("CurrentSession", "로그인")]
+    public void 토글_거절_토스트는_팀원_이름과_이유를_함께_말한다(string errmsg, string expectedPart)
+    {
+        var toast = ProfileStatePolicy.ToggleRefusalToast("Knox", errmsg);
+        Assert.NotNull(toast);
+        Assert.Contains("Knox", toast);
+        Assert.Contains(expectedPart, toast);
+        Assert.Contains("자동 합류를 바꿀 수 없습니다", toast);
+    }
+
+    [Theory]
+    [InlineData("Unable to find teammate with accountId '5'")]
+    [InlineData("TeammateDeleteFailed")]
+    [InlineData("Backend returned err=1.")]
+    [InlineData("")]
+    [InlineData(null)]
+    public void 상태_이름이_아닌_토글_실패는_토스트를_바꾸지_않는다(string? errmsg)
+    {
+        // null 이면 호출자가 기존 일반 실패 토스트를 그대로 쓴다.
+        Assert.Null(ProfileStatePolicy.ToggleRefusalToast("Knox", errmsg));
+    }
+
+    [Fact]
+    public void 이름이_비어도_이유는_말한다()
+    {
+        var toast = ProfileStatePolicy.ToggleRefusalToast(null, "Unreadable");
+        Assert.NotNull(toast);
+        Assert.Contains("읽을 수 없", toast);
+        Assert.False(toast!.StartsWith(":"));
+    }
+
     [Fact]
     public void Ready_문자열이_사유로_와도_열어_주지_않는다()
     {
