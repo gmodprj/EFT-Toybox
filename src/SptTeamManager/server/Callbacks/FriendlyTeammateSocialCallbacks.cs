@@ -209,10 +209,42 @@ public class FriendlyTeammateSocialCallbacks(
         // 등록을 믿을 수 없는 상태(시작 검사가 실패했다)에서는 이 Aid 가 등록된 프로필인지 알 수 없다. 해석기는 이때 던졌다 잡고 사유 없이
         // "팀원 아님" 을 돌려주는데, 이 라우트의 꼬리는 PIT 의 길이 아니라 SPT 의 응답(다른 프로필의 인벤토리 전체, 또는 본인
         // 프로필로의 대체)이라 거기로 흘리면 위 수정이 무너진다. 모르면 닫힌 쪽: 조회를 거절한다.
-        if (!profileMemberStore.RegistrationsUsable)
+        // 단, PIT 자기 용병은 통과시킨다(ProfileViewPolicy): 용병 데이터는 PIT 의 것이라 다른 프로필의 스태시가 샐 수 없고, STM 의
+        // 고장으로 PIT 의 조회까지 막으면 PIT 의 기능이 깨진다. 이 완화는 STM 이 아무것도 해석하지 못하는 상태에서만 돈다 -
+        // 평소에는 Decide 가 PIT 를 묻지 않고 아래의 STM 먼저 순서가 그대로다.
+        string? pitMercenaryView = null;
+        var viewRoute = ProfileViewPolicy.Decide(profileMemberStore.RegistrationsUsable, () =>
+        {
+            if (teammateService.TryGetPendingTeammateProfile(sessionId, request.AccountId, out var pending))
+            {
+                pitMercenaryView = httpResponseUtil.GetBody(pending);
+                return true;
+            }
+
+            if (teammateService.TryGetTeammateProfile(sessionId, request.AccountId, out var mercenary) && mercenary != null)
+            {
+                pitMercenaryView = httpResponseUtil.GetBody(mercenary);
+                return true;
+            }
+
+            if (recruitService.TryGetRecruitProfile(sessionId, request.AccountId, out var recruit) && recruit != null)
+            {
+                pitMercenaryView = httpResponseUtil.GetBody(recruit);
+                return true;
+            }
+
+            return false;
+        });
+
+        if (viewRoute == ProfileViewRoute.ServePit && pitMercenaryView != null)
+        {
+            return new ValueTask<string>(pitMercenaryView);
+        }
+
+        if (viewRoute != ProfileViewRoute.StmFirst)
         {
             LogFaultOnce("view-registrations-unusable",
-                "[STM] 프로필 조회: 등록된 프로필 팀원을 믿고 읽을 수 없는 상태라 이 Aid 가 프로필 팀원인지 알 수 없어, SPT 의 응답(다른 프로필의 인벤토리 전체일 수 있다)을 내보내지 않고 조회를 거절한다. 원인은 시작 검사의 Error 로그를 보라(이 로그는 실행당 한 번).");
+                "[STM] 프로필 조회: 등록된 프로필 팀원을 믿고 읽을 수 없는 상태라 이 Aid 가 프로필 팀원인지 알 수 없어, SPT 의 응답(다른 프로필의 인벤토리 전체일 수 있다)을 내보내지 않고 조회를 거절한다. PIT 용병의 조회는 계속 낸다. 원인은 시작 검사의 Error 로그를 보라(이 로그는 실행당 한 번).");
             return new ValueTask<string>(httpResponseUtil.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: "Unreadable"));
         }
 

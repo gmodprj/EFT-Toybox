@@ -55,6 +55,8 @@
     <Compile Include="ProfileStatePolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/TransferEntryClosePolicy.cs" Link="Shared/TransferEntryClosePolicy.cs" />
     <Compile Include="TransferEntryClosePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileViewPolicy.cs" Link="Shared/ProfileViewPolicy.cs" />
+    <Compile Include="ProfileViewPolicyTests.cs" />
   </ItemGroup>
 
 </Project>

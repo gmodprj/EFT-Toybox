@@ -30,6 +30,7 @@
     <Compile Include="../shared/StashRevalidationPolicy.cs" Link="Shared/StashRevalidationPolicy.cs" />
     <Compile Include="../shared/TransferJournalPolicy.cs" Link="Shared/TransferJournalPolicy.cs" />
     <Compile Include="../shared/ProfileMemberOperationPolicy.cs" Link="Shared/ProfileMemberOperationPolicy.cs" />
+    <Compile Include="../shared/ProfileViewPolicy.cs" Link="Shared/ProfileViewPolicy.cs" />
     <Compile Include="../shared/TransferEntryClosePolicy.cs" Link="Shared/TransferEntryClosePolicy.cs" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="HarmonyX" Version="2.16.1" />
