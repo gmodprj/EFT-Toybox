@@ -3934,3 +3934,54 @@ MarkCommitted → Verify` 를 끝까지 돌고 항목을 닫았다. 서버의 �
 기동 복구가 `끝나지 않은 전송을 자동으로 정할 수 없어…` 로 보고하는지, 그 팀원의 편집이 막히는지,
 상세 화면에 `이 기록 닫기` 가 뜨는지 보는 실험이다. 프로필 백업(`backup/2026-11-02-before-kit/`)이
 있어야만 한다.
+
+## 2026-11-03 — 다시 테스트하기 전에 서버를 돌려 보고 나온 것을 고쳤다
+
+**서버 쪽은 깨끗했다.** 게임·서버를 모두 내린 상태에서 서버만 올려 기동 642줄을 전수로 분류했다.
+`Error`/`Critical`/`Warning` 는 전부 SPT 코어나 **다른 모드**의 것이고 **pitTeam·STM 의 것은 0건**이다.
+
+| 낸 쪽 | 수 | 무엇 | 우리 것인가 |
+|---|---|---|---|
+| `ItemBaseClassService` | 48+48 | 아이템 DB 에 없는 tpl 48개를 캐시에 못 넣음. **플리마켓 상품 생성 직후**에 난다 | 아니다(플리마켓/아이템 추가 모드) |
+| `ProfileMigrationService` | 5 | `TraderGenPocketMigration` 대기 → **전부 성공**으로 이어진다 | 아니다(정상 흐름) |
+| `BundleLoader` | 1 | `barrel_vpo215_600mm_366tkm.bundle` 추가 실패 | 아니다 |
+| `FenceService`·`TraderHelper`·SVM·CaseTrader·WTT·RealisticInsurance | 9 | 각 모드의 자기 경고 | 아니다 |
+
+클라이언트 로그(6,029줄)도 같이 봤다. `Warning`/`Error` 는 HarmonyX 21·FixPluginTypesSerialization 13·
+OpenSesame 6·AmmoGen 1·DirectReload 1 뿐이고 **우리 플러그인의 것은 0건**이다.
+
+**그래서 고친 것은 로그가 아니라 화면이다 — 같은 종류의 결함 넷.** 전부 "STM 모드인데 PIT 의 용병용
+동작이 그대로 돈다" 이고, 셋은 **보여 주는 숫자와 청구가 어긋나는** 자리였다.
+
+1. **목록 줄의 ₽ 아이콘** (`ApplyRoublesIcon`). 값은 안 쓰면서 루블 아이콘만 달아 두어, 그 자리에 남는
+   **무게**(44.3·25.2)가 값처럼 보였다. 어제 내가 직접 값으로 읽을 뻔했다. → STM 모드에서는 아이콘도 달지 않는다.
+2. **고른 빌드의 값** (`ApplySelectedBuildPrice`). 이 자리만 STM 분기가 **빠져 있었다**. 화면 위쪽 패널에
+   PIT 가 매긴 값을 그대로 썼다. 로그에서 찾았다 - STM 모드인데 `[UI][KitPrice]` 진단이 쏟아지고 있었다.
+   → 같은 이유로 쓰지 않는다. 덤으로 빌드 하나당 수십 줄의 진단 로그도 사라진다.
+3. **"스태시의 물건을 쓴다" 체크박스** (`EnsureExcludeExistingItemsToggle`). STM 서버는 이 값을 **보지
+   않는다**(사용자가 "전부 새로 구매" 를 골랐다). 눌러도 아무 일이 없는 칸이었고, 켜 두면 버튼 글자가
+   `장착` 으로 바뀌어 **실제 동작과 반대로** 읽혔다. → STM 모드에서는 숨기고, 용병 쪽에서 켜 두었던
+   static 값도 끈다(모드를 넘어 남는 값이었다). 버튼 글자도 늘 `구매` 다(`ApplyActionButtonState`).
+4. **거절 문구가 무엇 때문인지 말하지 않았다.** 계획 §5-3 의 약속은 "무엇이 없어서인지 말한다" 인데
+   개수만 말했다("값을 매길 수 없는 물건이 1개"). 어제 Hawk 의 빌드가 이걸로 막혔고 사용자는 어느
+   물건인지 알 길이 없었다. **실물을 찾아보니** tpl `6a565aede592c037e10a3c16` =
+   `[WTT-ContentBackport] Thunderbolt 체스트 리그` 이고, `platinum-theblacklist` 가 플리마켓에서
+   **블랙리스트로 막아** 둔 물건이라 값이 정말로 없었다(= 전체 거절은 옳은 판정이었다).
+   → 이제 `LocaleService` 로 이름을 찾아 앞 세 개를 말한다: "Thunderbolt … 의 값을 매길 수 없어 …
+   상인이 팔지 않거나 플리마켓에서 막힌 물건입니다." 이름을 못 읽으면 tpl 을 그대로 쓴다(이름 때문에
+   거절을 못 내는 일은 없다).
+
+**판정만 하고 고치지 않은 것.** 어제 09:47·11:02(UTC)에 `kit-buy`·`kit-quote` 가 각각
+`Critical: The archive entry was compressed using an unsupported compression method` 로 끝났다.
+스택이 SPT 의 `SptHttpListener` 가 **요청 본문을 푸는 자리**라 우리 콜백에 닿기 전이고, 그 뒤 지금까지
+한 번도 재현되지 않았다(어제 저녁의 견적 14회·구매 1회 전부 정상). **재현하지 못한 것을 추측으로
+고치지 않는다** - 다시 나오면 그때 잡는다.
+
+**실측.** 클라이언트·서버 빌드 경고 0·오류 0, 테스트 566개 통과. 설치본 md5 클라이언트 `4fd943ff`,
+서버 `e0ea1189` 둘 다 산출물과 일치하고 더 새로운 `.cs` 없다. 새 서버 DLL 로 기동해 `PitFireTeam loaded`·
+`Teammate database ready` ×5 확인, `끝나지 않은 전송`·pitTeam 오류 **0건**. 서버는 켜진 채로 둔다.
+
+**게임에서 볼 것(다음 차례).** ① 목록 줄에 ₽ 아이콘이 없고 무게로 보이는지 ② 화면 위쪽 패널이 PIT 값을
+쓰지 않는지 ③ "스태시의 물건을 쓴다" 칸이 **안 보이고** 버튼이 늘 `구매` 인지 ④ Hawk 의 `NEW PRESET 1`
+거절 문구에 **Thunderbolt 이름이 나오는지** ⑤ 용병(Guns for Hire) 쪽 꾸러미는 **예전 그대로**인지
+(체크박스·값·아이콘이 돌아와야 한다 - 3번에서 static 값을 건드렸다).
