@@ -346,13 +346,12 @@ namespace pitTeam.Components
                     ApplyCoverMeCommandDrop(info.PlayerRequester);
                     return;
                 }
-                else if (info.phrase == EPhraseTrigger.Fire ||
-                         info.phrase == EPhraseTrigger.HoldFire ||
-                         info.phrase == EPhraseTrigger.GetInCover)
+                else if (IsEngagementPhrase(info.phrase))
                 {
-                    // Fire / Hold Fire / Take Cover: the meaning is decided by GestureCommandPolicy (shared,
-                    // tested); this only carries it to the AI. A phrase the policy returns null for is left
-                    // to fall through untouched.
+                    // Fire / Hold Fire / Take Cover: which phrases these are, and what they mean, both come
+                    // from GestureCommandPolicy (shared, tested); this only carries the result to the AI.
+                    // Vanilla is kept off the same phrase by BotReceiverPhraseOverridePatch, which asks the
+                    // same IsEngagementPhrase - this return alone does not do that.
                     if (ApplyEngagementGesture(info.PlayerRequester, info.phrase)) return;
                 }
                 else if (info.phrase == EPhraseTrigger.OpenDoor)
@@ -3526,11 +3525,24 @@ namespace pitTeam.Components
             ApplyTemporaryCombatAggressionCommand(requester, null, EPhraseTrigger.Roger);
         }
 
-        // Returns true when the phrase was a known engagement command and was carried out, so PhraseSaid does
-        // not also hand it to the vanilla receiver. Unknown -> false and nothing changes.
+        // The ONE place an EFT phrase is mapped onto the policy (by name, so shared/ stays free of EFT types).
+        // The router, ApplyEngagementGesture and BotReceiverPhraseOverridePatch all ask through here.
+        public static bool IsEngagementPhrase(EPhraseTrigger phrase)
+        {
+            return pitTeam.Shared.GestureCommandPolicy.Translate(EngagementMenuCommand(phrase)) != null;
+        }
+
+        private static string EngagementMenuCommand(EPhraseTrigger phrase)
+        {
+            return pitTeam.Shared.GestureCommandPolicy.MenuCommandForPhrase(phrase.ToString());
+        }
+
+        // Returns true when the phrase was a known engagement command and was carried out, so PhraseSaid skips
+        // its own fan-out to followers. Unknown -> false and nothing changes. (Keeping the vanilla receiver
+        // off the phrase is a separate guarantee: BotReceiverPhraseOverridePatch.)
         private bool ApplyEngagementGesture(IPlayer requester, EPhraseTrigger phrase)
         {
-            string menuCommand = pitTeam.Shared.GestureCommandPolicy.MenuCommandForPhrase(phrase.ToString());
+            string menuCommand = EngagementMenuCommand(phrase);
             pitTeam.Shared.GestureCommandEffect effect = pitTeam.Shared.GestureCommandPolicy.Translate(menuCommand);
             if (effect == null) return false;
 

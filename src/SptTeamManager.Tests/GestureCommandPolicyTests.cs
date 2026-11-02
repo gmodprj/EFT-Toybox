@@ -56,7 +56,6 @@ public class GestureCommandPolicyTests
     [InlineData("  Fire  ")]
     [InlineData("hold fire")]
     [InlineData("Hold   Fire")]
-    [InlineData("HOLDFIRE")]
     [InlineData("take cover")]
     [InlineData(" Take Cover ")]
     public void 대소문자와_공백은_무시한다(string command)
@@ -64,12 +63,21 @@ public class GestureCommandPolicyTests
         Assert.NotNull(GestureCommandPolicy.Translate(command));
     }
 
-    [Fact]
-    public void 공백을_지워도_다른_명령으로_넘어가지_않는다()
+    [Theory]
+    [InlineData("F I R E")]
+    [InlineData("HO LD FIRE")]
+    [InlineData("HOLDFIRE")]
+    public void 낱말_안의_공백은_메뉴_철자로_보지_않아_거절한다(string command)
     {
-        // 공백을 모두 지우는 정규화가 FIRE 를 HOLD FIRE 의 부분으로 읽으면 안 된다.
-        Assert.Equal(GestureCommandPolicy.WeaponsFree, GestureCommandPolicy.Translate("F I R E")?.Engagement);
+        // 메뉴 철자는 FIRE / HOLD FIRE / TAKE COVER. 낱말 사이 공백의 개수와 앞뒤 공백만 봐주고, 낱말을 쪼개거나 붙인 것은 받지 않는다.
+        Assert.Null(GestureCommandPolicy.Translate(command));
+    }
+
+    [Fact]
+    public void 한_낱말만으로는_다른_명령이_되지_않는다()
+    {
         Assert.Null(GestureCommandPolicy.Translate("HOLD"));
+        Assert.Null(GestureCommandPolicy.Translate("COVER"));
     }
 
     [Theory]

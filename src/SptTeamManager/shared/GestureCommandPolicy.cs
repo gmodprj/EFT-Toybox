@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace pitTeam.Shared
 {
@@ -24,8 +23,7 @@ namespace pitTeam.Shared
         public const string HoldFire = "HoldFire";
         public const string SeekCover = "SeekCover";
 
-        // Menu labels as the game shows them (WORKLOG table). Compared with whitespace removed, so the
-        // enum-style spelling "HOLDFIRE" and the label "HOLD FIRE" are the same entry.
+        // Menu labels as the game shows them (WORKLOG table).
         public const string FireCommand = "FIRE";
         public const string HoldFireCommand = "HOLD FIRE";
         public const string TakeCoverCommand = "TAKE COVER";
@@ -86,6 +84,9 @@ namespace pitTeam.Shared
             return null;
         }
 
+        // Case and surrounding whitespace do not matter, and a run of whitespace between words counts as one.
+        // Words are never split or joined: "F I R E" and "HOLDFIRE" are not menu spellings, and accepting them
+        // would widen the allow list past what the menu can actually send.
         private static string Normalize(string? command)
         {
             if (command == null)
@@ -93,7 +94,7 @@ namespace pitTeam.Shared
                 return string.Empty;
             }
 
-            return new string(command.Where(c => !char.IsWhiteSpace(c)).ToArray())
+            return string.Join(" ", command.Split(new char[0], StringSplitOptions.RemoveEmptyEntries))
                 .ToUpperInvariant();
         }
     }

@@ -47,7 +47,11 @@ namespace pitTeam.Patches
                 case EPhraseTrigger.CoverMe:
                     return false;
                 default:
-                    return true;
+                    // Fire / Hold Fire / Take Cover are asked of the policy, not listed here, so this skip and
+                    // the router cannot disagree. They were hidden from the menu before, so vanilla handling
+                    // of them was never a player-facing behavior; two systems acting on one command - with
+                    // opposite intent for Hold Fire - is the risk this closes.
+                    return !pitTeam.Components.pitAIBossPlayer.IsEngagementPhrase(info.phrase);
             }
         }
     }
