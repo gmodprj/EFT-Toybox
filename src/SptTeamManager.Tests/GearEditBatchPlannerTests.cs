@@ -14,7 +14,7 @@ public class GearEditBatchPlannerTests
     private static EditorItemState Item(string id, string? parent, string? slot, string? location = null)
         => new EditorItemState(id, parent, slot, location);
 
-    // 시작 상태: 장비 = 헬멧(없음), 소총(worn-rifle) + 빈 탄창 슬롯. 스태시 = 헬멧, 탄창(+탄 한 알), 조끼.
+    // 시작 상태: 장비 = 소총(worn-rifle). 스태시 = 헬멧, 탄창(+탄 한 알), 조끼. 마지막 인자는 LayoutKey(칸 위치).
     private static List<EditorItemState> Before() => new()
     {
         Item(Equip, null, null),
@@ -27,7 +27,7 @@ public class GearEditBatchPlannerTests
     };
 
     private static List<EditorItemState> Moved(List<EditorItemState> items, string id, string? parent, string? slot, string? location = null)
-        => items.Select(i => i.Id == id ? i with { ParentId = parent, SlotId = slot, LocationKey = location } : i).ToList();
+        => items.Select(i => i.Id == id ? i with { ParentId = parent, SlotId = slot, LayoutKey = location } : i).ToList();
 
     [Fact]
     public void 바뀐_것이_없으면_빈_목록이고_성공이다()
@@ -36,7 +36,7 @@ public class GearEditBatchPlannerTests
 
         Assert.True(plan.Ok);
         Assert.Empty(plan.Edits);
-        Assert.Equal(0, plan.LocationOnlyCount);
+        Assert.Equal(0, plan.LayoutOnlyCount);
     }
 
     [Fact]
@@ -187,7 +187,7 @@ public class GearEditBatchPlannerTests
 
         Assert.True(plan.Ok);
         Assert.Empty(plan.Edits);
-        Assert.Equal(1, plan.LocationOnlyCount);
+        Assert.Equal(1, plan.LayoutOnlyCount);
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class GearEditBatchPlannerTests
 
         Assert.True(plan.Ok);
         Assert.Equal("stash-helmet", Assert.Single(plan.Edits).ItemId);
-        Assert.Equal(1, plan.LocationOnlyCount);
+        Assert.Equal(1, plan.LayoutOnlyCount);
     }
 
     [Fact]
@@ -209,7 +209,7 @@ public class GearEditBatchPlannerTests
         // 슬롯으로 들어가면 좌표가 사라진다(null). 이동 건으로 이미 잡혔으므로 위치 개수에 더하지 않는다.
         var after = Moved(Before(), "stash-helmet", Equip, "Headwear", null);
 
-        Assert.Equal(0, GearEditBatchPlanner.Plan(Before(), after).LocationOnlyCount);
+        Assert.Equal(0, GearEditBatchPlanner.Plan(Before(), after).LayoutOnlyCount);
     }
 
     [Fact]

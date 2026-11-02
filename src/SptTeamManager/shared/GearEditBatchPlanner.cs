@@ -4,16 +4,16 @@ using System.Collections.Generic;
 namespace pitTeam.Shared
 {
     // 편집기 화면이 들고 있는 아이템 하나를 이 판정에 필요한 네 칸으로 줄인 것. 클라이언트가 EFT 아이템 트리를
-    // 평평하게 펴서 만든다 - 여기서는 그 타입이 있다는 것조차 모른다. LocationKey 는 격자 좌표를 문자열로
-    // 바꾼 것이고, 같은 좌표면 같은 문자열이면 된다(뜻은 보지 않는다).
-    public sealed record EditorItemState(string? Id, string? ParentId, string? SlotId, string? LocationKey);
+    // 평평하게 펴서 만든다 - 여기서는 그 타입이 있다는 것조차 모른다. LayoutKey 는 이 경로가 저장하지
+    // 못하는 속성(격자 칸 위치, 접힘·잠금 같은 상태)을 문자열로 바꾼 것이다. 같으면 같은 문자열이면 되고 뜻은 보지 않는다.
+    public sealed record EditorItemState(string? Id, string? ParentId, string? SlotId, string? LayoutKey);
 
     // 서버 라우트(/stm/members/edit-gear)에 보낼 한 건: 이 아이템을 이 부모의 이 슬롯으로.
     public sealed record PlannedGearEdit(string ItemId, string TargetSlotId, string TargetParentId);
 
-    // Ok == false 면 Reason 이 플레이어가 읽는 한 줄이고 Edits 는 비어 있다. LocationOnlyCount 는 부모·슬롯은
-    // 그대로이고 격자 칸 위치만 바뀐 아이템의 수 - 이 경로가 좌표를 받지 않아 저장되지 않는 변화다.
-    public sealed record GearEditPlan(bool Ok, string Reason, IReadOnlyList<PlannedGearEdit> Edits, int LocationOnlyCount);
+    // Ok == false 면 Reason 이 플레이어가 읽는 한 줄이고 Edits 는 비어 있다. LayoutOnlyCount 는 부모·슬롯은
+    // 그대로이고 LayoutKey 만 바뀐 아이템의 수 - 이 경로가 좌표와 상태를 받지 않아 저장되지 않는 변화다.
+    public sealed record GearEditPlan(bool Ok, string Reason, IReadOnlyList<PlannedGearEdit> Edits, int LayoutOnlyCount);
 
     // 편집기를 연 때의 상태와 저장 버튼을 누른 때의 상태를 비교해, 서버에 보낼 "한 건씩의 이동" 목록과 그 순서를 정한다.
     //
@@ -76,7 +76,7 @@ namespace pitTeam.Shared
                 var sameSlot = string.Equals(original.SlotId, item.SlotId, StringComparison.Ordinal);
                 if (sameParent && sameSlot)
                 {
-                    if (!string.Equals(original.LocationKey, item.LocationKey, StringComparison.Ordinal))
+                    if (!string.Equals(original.LayoutKey, item.LayoutKey, StringComparison.Ordinal))
                     {
                         locationOnly++;
                     }
