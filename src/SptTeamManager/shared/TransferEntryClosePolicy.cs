@@ -66,7 +66,8 @@ namespace pitTeam.Shared
                 case TransferCloseVerdict.MayClose:
                     return head + " 두 프로필의 장비와 스태시를 직접 확인한 뒤, 아래 버튼으로 이 기록을 닫을 수 있습니다.";
                 case TransferCloseVerdict.NotYetReported:
-                    return head + " 진행 중인 작업일 수 있으니, 서버를 다시 시작한 뒤에 다시 확인하세요.";
+                    return head + " 지금은 닫을 수 없습니다. 이 기록은 이번에 서버를 켠 뒤에 생겼거나 아직 진행 중인 작업일 수 있어, 서버가 시작할 때 점검한 기록만 닫을 수 있게 해 두었습니다. " +
+                        "서버를 한 번 다시 시작하면 시작할 때 이 기록을 점검하고, 그 뒤부터 이 화면에서 닫을 수 있습니다.";
                 case TransferCloseVerdict.ResolvesItself:
                     return head + " 지금은 양쪽 상태가 서로 맞아 보입니다. 서버를 다시 시작하면 저절로 정리됩니다.";
                 default:
@@ -100,7 +101,7 @@ namespace pitTeam.Shared
                 case TransferCloseVerdict.AlreadyClosed:
                     return "이 기록은 이미 닫혔습니다.";
                 case TransferCloseVerdict.NotYetReported:
-                    return "이 기록은 진행 중일 수 있어 지금 닫을 수 없습니다. 서버를 다시 시작한 뒤에 다시 확인하세요.";
+                    return "이 기록은 진행 중일 수 있어 지금 닫을 수 없습니다. 서버를 한 번 다시 시작하면 시작할 때 점검하고, 그 뒤에 닫을 수 있습니다.";
                 case TransferCloseVerdict.ResolvesItself:
                     return "이 기록은 서버를 다시 시작하면 저절로 정리되므로 직접 닫을 필요가 없습니다.";
                 default:

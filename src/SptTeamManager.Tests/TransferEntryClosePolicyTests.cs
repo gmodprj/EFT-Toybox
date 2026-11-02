@@ -152,6 +152,43 @@ public class TransferEntryClosePolicyTests
         Assert.Contains("다시 시작", TransferEntryClosePolicy.BlockedNotice(Hero, Mate, 2, TransferCloseVerdict.NotYetReported));
     }
 
+    // 지금 닫을 수 있는 항목과 재시작이 먼저 필요한 항목을 안내가 구별한다: 닫을 수 없는 이유와 언제 가능해지는지를 말해야
+    // 출구 없는 막다른 길이 되지 않는다.
+    [Fact]
+    public void 재시작이_필요한_안내는_지금은_닫을_수_없다고_말한다()
+    {
+        Assert.Contains("지금은 닫을 수 없습니다", TransferEntryClosePolicy.BlockedNotice(Hero, Mate, 2, TransferCloseVerdict.NotYetReported));
+    }
+
+    [Fact]
+    public void 재시작이_필요한_안내는_왜_그런지_말한다()
+    {
+        var notice = TransferEntryClosePolicy.BlockedNotice(Hero, Mate, 2, TransferCloseVerdict.NotYetReported);
+        Assert.Contains("진행 중", notice);
+        Assert.Contains("시작할 때", notice);
+    }
+
+    [Fact]
+    public void 재시작이_필요한_안내는_언제_닫을_수_있게_되는지_말한다()
+    {
+        var notice = TransferEntryClosePolicy.BlockedNotice(Hero, Mate, 2, TransferCloseVerdict.NotYetReported);
+        Assert.Contains("한 번 다시 시작", notice);
+        Assert.Contains("이 화면에서 닫을 수 있습니다", notice);
+    }
+
+    [Fact]
+    public void 지금_닫을_수_있는_안내는_재시작을_요구하지_않는다()
+    {
+        Assert.DoesNotContain("다시 시작", TransferEntryClosePolicy.BlockedNotice(Hero, Mate, 2, TransferCloseVerdict.MayClose));
+    }
+
+    [Fact]
+    public void 재시작이_필요한_거절_메시지도_언제_가능한지_말한다()
+    {
+        var message = TransferEntryClosePolicy.RefusalMessage(TransferCloseVerdict.NotYetReported);
+        Assert.Contains("한 번 다시 시작", message);
+    }
+
     [Fact]
     public void 저널을_읽을_수_없을_때의_안내는_닫는_길이_없다고_솔직히_말한다()
     {
