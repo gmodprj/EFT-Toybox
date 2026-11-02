@@ -67,6 +67,8 @@
     <Compile Include="PendingRefusalPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/SaveOutcomePolicy.cs" Link="Shared/SaveOutcomePolicy.cs" />
     <Compile Include="SaveOutcomePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GestureCommandPolicy.cs" Link="Shared/GestureCommandPolicy.cs" />
+    <Compile Include="GestureCommandPolicyTests.cs" />
   </ItemGroup>
 
 </Project>
