@@ -1198,21 +1198,25 @@ namespace pitTeam.Patches
             return ordered.ToArray();
         }
 
-        // 판정은 EFT 가 이미 했다(오류 목록). 여기서는 그 오류를 항목에 대응시켜 정책에 넘기고, 정책이 남기라 한 것만
-        // 돌려준다. 건너뛴 항목마다 경고 한 줄을 남긴다 — 조용히 버리면 사용자는 아이템이 왜 사라졌는지 알 길이 없다.
+        // 판정은 EFT 가 이미 했다(오류 목록). 여기서는 게임이 알려 준 오류를 (id, 통과 여부, 사유, 부모) 로 옮기기만 하고,
+        // 무엇을 남기고 뺄지(자손 포함)는 StashRevalidationPolicy 가 정한다. 건너뛴 항목마다 경고 한 줄을 남긴다 -
+        // 조용히 버리면 사용자는 아이템이 왜 사라졌는지 알 길이 없다.
+        // 정책이 판단할 수 없는 경우(오류가 어느 항목인지 모름, 스태시 루트가 거부됨)는 추측하지 않고 던진다.
         private static JsonType.FlatItem[] SkipEftRejectedStashItems(
             JsonType.FlatItem[] items,
             List<string> errorTexts,
-            string stashRootId)
+            string stashRootId,
+            out List<string> skippedIds)
         {
-            var itemsById = new Dictionary<string, JsonType.FlatItem>(StringComparer.Ordinal);
+            // 16진 id 의 대소문자 표기가 달라도 같은 항목이다(ExpandFlatItemRoots 와 같은 비교).
+            var knownIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (JsonType.FlatItem item in items)
-                itemsById[item._id.ToString()] = item;
+                knownIds.Add(item._id.ToString());
 
-            var rejectedById = new Dictionary<string, string>(StringComparer.Ordinal);
+            var rejectedById = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (string errorText in errorTexts)
             {
-                if (!StashRevalidationPolicy.TryExtractItemId(errorText, out string rejectedId) || !itemsById.ContainsKey(rejectedId))
+                if (!StashRevalidationPolicy.TryExtractItemId(errorText, out string rejectedId) || !knownIds.Contains(rejectedId))
                 {
                     throw CreateLiveStashRefreshException(
                         $"Server-saved player stash had a deserialization error that names no known item, so it cannot be skipped: {errorText}");
@@ -1231,36 +1235,22 @@ namespace pitTeam.Patches
             foreach (JsonType.FlatItem item in items)
             {
                 string id = item._id.ToString();
-                if (rejectedById.TryGetValue(id, out string ownReason))
-                {
-                    candidates.Add(new StashCandidate(id, false, ownReason));
-                    continue;
-                }
-
-                // 규칙을 어긴 항목의 자식은 붙을 곳이 없어진다. 남기면 트리 밖 고아가 되어 다시 스냅샷이 깨진다.
-                string rejectedAncestor = null;
-                string parentId = GetParentId(item);
-                for (int guard = 0; !string.IsNullOrWhiteSpace(parentId) && guard <= items.Length; guard++)
-                {
-                    if (rejectedById.ContainsKey(parentId))
-                    {
-                        rejectedAncestor = parentId;
-                        break;
-                    }
-
-                    parentId = itemsById.TryGetValue(parentId, out JsonType.FlatItem parent) ? GetParentId(parent) : null;
-                }
-
-                candidates.Add(rejectedAncestor == null
-                    ? new StashCandidate(id, true, null)
-                    : new StashCandidate(id, false, $"parent item {rejectedAncestor} was skipped"));
+                bool rejected = rejectedById.TryGetValue(id, out string ownReason);
+                candidates.Add(new StashCandidate(id, !rejected, ownReason, GetParentId(item)));
             }
 
             StashRevalidationResult result = StashRevalidationPolicy.Partition(candidates);
             foreach (StashRejection skipped in result.Skipped)
                 pitFireTeam.Log.LogWarning($"[UI] Skipped stash item {skipped.Id ?? "(no id)"}: {skipped.Reason}");
 
-            var kept = new HashSet<string>(result.KeptIds, StringComparer.Ordinal);
+            skippedIds = new List<string>();
+            foreach (StashRejection skipped in result.Skipped)
+            {
+                if (!string.IsNullOrWhiteSpace(skipped.Id))
+                    skippedIds.Add(skipped.Id);
+            }
+
+            var kept = new HashSet<string>(result.KeptIds, StringComparer.OrdinalIgnoreCase);
             return items.Where(item => kept.Contains(item._id.ToString())).ToArray();
         }
 
@@ -1269,6 +1259,8 @@ namespace pitTeam.Patches
             InventoryController activeInventoryController,
             JsonType.FlatItem[] savedStashItems)
         {
+            JsonType.FlatItem[] unfilteredSavedStashItems = savedStashItems;
+            List<string> skippedStashItemIds = null;
             EFT.ItemFactory.FlatItemsToResultTree tree = Singleton<EFT.ItemFactory>.Instance.FlatItemsToTree(savedStashItems, false, null);
             if (tree.DeserializationErrors != null && tree.DeserializationErrors.Count > 0)
             {
@@ -1276,12 +1268,13 @@ namespace pitTeam.Patches
                 foreach (var error in tree.DeserializationErrors)
                 {
                     pitFireTeam.Log.LogWarning($"[UI] Server-saved stash item deserialization detail: {error}");
-                    errorTexts.Add(error?.ToString());
+                    errorTexts.Add(error?.ToString() ?? "(error text unavailable)");
                 }
 
                 // 규칙을 어긴 항목 하나가 스태시 전체 재검증을 죽이지 않게 한다(doc/fixes/2026-10-27-pit-stash-ammo.md).
                 // 항목을 특정할 수 없거나, 빼고 나서도 오류가 남으면 예전처럼 던진다: 모르는 채로 일부만 적용하지 않는다.
-                savedStashItems = SkipEftRejectedStashItems(savedStashItems, errorTexts, savedStashItems[0]._id.ToString());
+                savedStashItems = SkipEftRejectedStashItems(
+                    savedStashItems, errorTexts, savedStashItems[0]._id.ToString(), out skippedStashItemIds);
                 tree = Singleton<EFT.ItemFactory>.Instance.FlatItemsToTree(savedStashItems, false, null);
                 if (tree.DeserializationErrors != null && tree.DeserializationErrors.Count > 0)
                 {
@@ -1304,6 +1297,22 @@ namespace pitTeam.Patches
                     "Player inventory controller was unavailable for owner-safe live stash refresh.");
             }
 
+            // 건너뛴 항목이 있으면, 만들어진 스태시에서 빠진 것이 정확히 그 항목들뿐인지 기계로 확인한다. 그 밖의 것이
+            // 사라졌다면 계단식 제외나 트리 구성의 버그이고, 조용히 통과시키면 사용자가 이유 모를 아이템 손실을 겪는다.
+            // 플레이어의 인벤토리를 바꾸기 전에 확인해, 실패해도 원래 스태시가 그대로 남게 한다.
+            if (skippedStashItemIds != null && skippedStashItemIds.Count > 0)
+            {
+                List<string> unexplainedMissing = StashRevalidationPolicy.FindUnexplainedMissingIds(
+                    unfilteredSavedStashItems.Select(item => item._id.ToString()),
+                    EnumerateLoadoutEditorItemTree(savedStash).Where(item => item != null).Select(item => item.Id),
+                    skippedStashItemIds);
+                if (unexplainedMissing.Count > 0)
+                {
+                    throw CreateLiveStashRefreshException(
+                        $"Server-saved player stash lost {unexplainedMissing.Count} item(s) beyond the skipped ones: {string.Join(", ", unexplainedMissing)}");
+                }
+            }
+
             Inventory activeInventory = activeProfile.Inventory;
             activeInventory.Stash = savedStash;
             activeInventoryController.ReplaceInventory(activeInventory);
@@ -1322,6 +1331,15 @@ namespace pitTeam.Patches
             foreach (Item item in EnumerateLoadoutEditorItemTree(savedStash))
             {
                 item?.RaiseRefreshEvent(true, true);
+            }
+
+            if (skippedStashItemIds != null)
+            {
+                // 이 세션의 클라이언트 스태시에서만 빠진 것이다(서버 프로필은 그대로). 다만 이 상태에서 동료 장비 편집을
+                // 저장하면 서버는 클라이언트의 스태시로 플레이어 스태시를 통째로 바꾸므로(FriendlyTeammateService.cs 의
+                // SaveTeammateDefaultEquipmentWithRealItemCommit) 그 아이템이 영구히 사라질 수 있다.
+                foreach (string skippedId in skippedStashItemIds)
+                    pitFireTeam.Log.LogWarning($"[UI] Stash item {skippedId} is hidden from the stash for this session because it broke item rules. Restart the game before saving teammate loadout edits, or the item may be lost from the profile.");
             }
 
             Modules.Logger.LogInfo("[UI] Applied live player stash refresh from server-saved snapshot.");

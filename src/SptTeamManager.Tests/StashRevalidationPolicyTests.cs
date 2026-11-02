@@ -129,12 +129,33 @@ public class StashRevalidationPolicyTests
     }
 
     [Fact]
-    public void id_가_여럿이면_첫_번째_어긴_항목을_뽑는다()
+    public void 서로_다른_id_가_둘_이상이면_어느_쪽이_어긴_항목인지_모르니_뽑지_않는다()
     {
+        // 첫 id 가 어긴 항목이라는 가정은 "부모는 이름으로만 나온다"는 실제 문구 한 줄에 기댄다. 부모까지 id 로 적힌
+        // 문구가 나오면 그 가정이 깨진 것이므로 추측하지 않고 닫힌 쪽(뽑지 않음 -> 클라이언트가 던짐)으로 간다.
         var text = "No filter for item A (id: aaaaaaaaaaaaaaaaaaaaaaaa) in slot of item B (id: bbbbbbbbbbbbbbbbbbbbbbbb)";
+
+        Assert.False(StashRevalidationPolicy.TryExtractItemId(text, out var id));
+        Assert.Null(id);
+    }
+
+    [Fact]
+    public void 같은_id_가_반복되면_하나로_본다()
+    {
+        var text = "item (id: aaaaaaaaaaaaaaaaaaaaaaaa) again (id: AAAAAAAAAAAAAAAAAAAAAAAA)";
 
         Assert.True(StashRevalidationPolicy.TryExtractItemId(text, out var id));
         Assert.Equal("aaaaaaaaaaaaaaaaaaaaaaaa", id);
+    }
+
+    [Fact]
+    public void 부모가_이름으로만_나오는_문구에서는_자식_id_를_뽑는다()
+    {
+        // 실제 문구: 어긴 탄약은 id 로, 부모 탄창은 이름(mag_glock_...)으로만 나온다. 그래서 id 는 하나뿐이고 어긴 항목의 것이다.
+        Assert.DoesNotContain("(id:", RealErrorLine.Substring(RealErrorLine.IndexOf(") in ") + 1));
+
+        Assert.True(StashRevalidationPolicy.TryExtractItemId(RealErrorLine, out var id));
+        Assert.Equal("6adea532010015d86e5ffb7e", id);
     }
 
     [Fact]
@@ -158,5 +179,156 @@ public class StashRevalidationPolicyTests
         var skipped = Assert.Single(result.Skipped);
         Assert.Equal("6adea532010015d86e5ffb7e", skipped.Id);
         Assert.Equal(RealErrorLine, skipped.Reason);
+    }
+
+    private static StashCandidate Node(string id, string? parent, bool accepted = true, string? reason = null) =>
+        new(id, accepted, reason, parent);
+
+    [Fact]
+    public void 위반_항목의_자식은_함께_건너뛰고_사유에_조상을_적는다()
+    {
+        var result = StashRevalidationPolicy.Partition(new[]
+        {
+            Node("stash", null),
+            Node("mag", "stash"),
+            Node("round", "mag", accepted: false, reason: "No filter"),
+        });
+        var rejectedMag = StashRevalidationPolicy.Partition(new[]
+        {
+            Node("stash", null),
+            Node("mag", "stash", accepted: false, reason: "No filter"),
+            Node("round", "mag"),
+        });
+
+        Assert.Equal(new[] { "stash", "mag" }, result.KeptIds);
+        Assert.Equal(new[] { "stash" }, rejectedMag.KeptIds);
+        var child = Assert.Single(rejectedMag.Skipped, s => s.Id == "round");
+        Assert.Contains("mag", child.Reason);
+    }
+
+    [Fact]
+    public void 손자도_함께_건너뛰고_사유는_처음_어긴_항목을_가리킨다()
+    {
+        var result = StashRevalidationPolicy.Partition(new[]
+        {
+            Node("stash", null),
+            Node("bad", "stash", accepted: false, reason: "No filter"),
+            Node("child", "bad"),
+            Node("grandchild", "child"),
+        });
+
+        Assert.Equal(new[] { "stash" }, result.KeptIds);
+        Assert.Equal(3, result.Skipped.Count);
+        // 사용자가 로그에서 따라가야 할 것은 중간 후손이 아니라 원인이 된 항목이다.
+        Assert.Contains("bad", Assert.Single(result.Skipped, s => s.Id == "grandchild").Reason);
+        Assert.Equal("No filter", Assert.Single(result.Skipped, s => s.Id == "bad").Reason);
+    }
+
+    [Fact]
+    public void 자손이_먼저_나열돼도_조상을_찾아_건너뛴다()
+    {
+        var result = StashRevalidationPolicy.Partition(new[]
+        {
+            Node("grandchild", "child"),
+            Node("child", "bad"),
+            Node("bad", "stash", accepted: false, reason: "No filter"),
+            Node("stash", null),
+        });
+
+        Assert.Equal(new[] { "stash" }, result.KeptIds);
+    }
+
+    [Fact]
+    public void 부모가_목록에_없는_항목은_남긴다()
+    {
+        // 부모를 알 수 없다고 떨구는 것은 이 정책이 판단할 일이 아니다. 어긴 조상이 확인될 때만 함께 뺀다.
+        var result = StashRevalidationPolicy.Partition(new[] { Node("a", "missing-parent"), Node("b", null) });
+
+        Assert.Equal(new[] { "a", "b" }, result.KeptIds);
+        Assert.Empty(result.Skipped);
+    }
+
+    [Fact]
+    public void 위반_항목과_무관한_가지는_그대로_남는다()
+    {
+        var result = StashRevalidationPolicy.Partition(new[]
+        {
+            Node("stash", null),
+            Node("bad", "stash", accepted: false, reason: "No filter"),
+            Node("sibling", "stash"),
+            Node("siblingChild", "sibling"),
+        });
+
+        Assert.Equal(new[] { "stash", "sibling", "siblingChild" }, result.KeptIds);
+    }
+
+    [Fact]
+    public void 부모_사슬에_순환이_있어도_끝난다()
+    {
+        // 망가진 프로필의 a <-> b. 어긴 조상이 없으니 남기되, 무한 루프에 빠지지 않는 것이 핵심이다.
+        var result = StashRevalidationPolicy.Partition(new[] { Node("a", "b"), Node("b", "a"), Node("c", null) });
+
+        Assert.Equal(new[] { "a", "b", "c" }, result.KeptIds);
+    }
+
+    [Fact]
+    public void 순환_속에_어긴_항목이_있으면_순환의_다른_항목도_뺀다()
+    {
+        var result = StashRevalidationPolicy.Partition(new[]
+        {
+            Node("a", "b"),
+            Node("b", "a", accepted: false, reason: "No filter"),
+        });
+
+        Assert.Empty(result.KeptIds);
+        Assert.Equal(2, result.Skipped.Count);
+    }
+
+    [Fact]
+    public void 부모_id_의_대소문자가_달라도_조상을_찾는다()
+    {
+        var result = StashRevalidationPolicy.Partition(new[]
+        {
+            Node("AbCdEf", null, accepted: false, reason: "No filter"),
+            Node("child", "abcdef"),
+        });
+
+        Assert.Empty(result.KeptIds);
+    }
+
+    [Fact]
+    public void 건너뛴_것만_없으면_설명되지_않는_누락은_없다()
+    {
+        var missing = StashRevalidationPolicy.FindUnexplainedMissingIds(
+            new[] { "stash", "mag", "round" }, new[] { "stash", "mag" }, new[] { "round" });
+
+        Assert.Empty(missing);
+    }
+
+    [Fact]
+    public void 건너뛰지_않은_항목이_빠졌으면_그_id_를_돌려준다()
+    {
+        // 계단식 제외나 트리 구성이 건너뛰라 하지 않은 것을 잃었다는 뜻이다. 조용히 통과시키면 안 된다.
+        var missing = StashRevalidationPolicy.FindUnexplainedMissingIds(
+            new[] { "stash", "mag", "round", "rifle" }, new[] { "stash", "mag" }, new[] { "round" });
+
+        Assert.Equal(new[] { "rifle" }, missing);
+    }
+
+    [Fact]
+    public void 누락_비교는_대소문자를_가리지_않는다()
+    {
+        var missing = StashRevalidationPolicy.FindUnexplainedMissingIds(
+            new[] { "AbC", "dEf" }, new[] { "abc" }, new[] { "DEF" });
+
+        Assert.Empty(missing);
+    }
+
+    [Fact]
+    public void 현재_목록을_알_수_없으면_전부_설명되지_않은_누락이다()
+    {
+        var missing = StashRevalidationPolicy.FindUnexplainedMissingIds(new[] { "a", "b" }, null, new[] { "a" });
+
+        Assert.Equal(new[] { "b" }, missing);
     }
 }
