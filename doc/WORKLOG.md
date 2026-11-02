@@ -3274,3 +3274,40 @@ PIT 의 실물 커밋 경로(`FriendlyTeammateService.SaveTeammateDefaultEquipme
    못 받을 수 있다. 창이 좁고 손실이 없다.
 3. **`HOLD FIRE` 에서 거절로 응답한 팔로워도 "포크가 처리함" 으로 센다**(부정 대사 뒤 `continue`).
    그래서 그 팔로워에게는 바닐라가 돌지 않는다. **의도된 반응이지 침묵이 아니다.**
+
+### 계획 3 설치와 첫 인게임 확인 (2026-11-02)
+
+**설치.** 프로필 5개를 `backup/2026-11-02-before-plan3/profiles/` 로 백업하고(계획 3 은 프로필에 쓰는
+첫 코드다), 서버·클라이언트를 새로 빌드해 `-Remove` 후 재설치했다. 설치본 md5 가 양쪽 다 빌드
+산출물과 일치한다(서버 `18674bd5…`, 클라이언트 `4a0e89e3…`). 설치된 DLL 에 `StmGearEditService`·
+`ProfileGearEditPolicy`·`StmTransferJournal`·`ProfileViewPolicy`(서버), `StmGearEditor`·
+`GestureCommandPolicy`(클라이언트)가 들어 있다. `GestureCommandPolicy` 가 **서버 DLL 에 없는 것은
+정상**이다 — 클라이언트·테스트 csproj 에만 링크돼 있고 서버는 제스처를 다루지 않는다.
+
+**기동(관문 1번의 수동 절반).** `Teammate database ready` ×5, `PitFireTeam loaded`,
+`StmRegistrationsUnreadable`·`StopAndReport` **없음**, `[STM]` 줄 자체가 없다(클라이언트 요청이
+없었으므로 정상). 오류는 **이번 run 에만 있는 종류가 없다**. 개수 비교(243 vs 49)는 구간 길이가
+달라 증거가 아니다 — 믿을 것은 **종류의 집합 차이가 비었다**는 쪽이다.
+
+**인게임에서 실제로 본 것.** 명단에 프로필 팀원 셋(SPT02 Lv15 Usec, Knox Lv69 Bear, Hawk Lv15 Usec)이
+`프로필 팀원` 캡션과 함께 뜬다. 계획 1·2 의 명단 기능은 살아 있다. `장비 구분: 아직 판정하지 않음`
+은 오류가 아니라 명단이 의도적으로 내는 문구다(`StmProfileRosterClient.EquipmentUndecided`) —
+레이드에 넣기 전에는 실물/임시를 정하지 않는다.
+
+**그리고 계획 3 의 화면을 열 길이 없다는 것이 드러났다.** 프로필 팀원 타일
+(`SquadControlMenuUi.ProfileRoster.cs:150-196`)은 배경 Image 하나, 글자 넷(캡션·이름·`Lv·진영`·장비
+구분), 제거 버튼이 전부이고 **클릭 핸들러가 없다.** 용병 타일은 `Roster.cs:379` 에서
+`button.onClick → OpenProfile(accountId)` 를 걸고, 상세 화면은 그 `OpenProfile` 로만 열린다. 따라서
+Task 5 의 상세 화면(막힌 팀원 출구 포함)과 Task 6b 의 장비 편집기 진입구가 **사용자에게 닿지 않는다.**
+이번 세션 로그에 상세·편집 라우트 호출이 한 건도 없는 것이 그 증거다.
+
+**이 계획에서 네 번째 "지었는데 닿지 않는다" 다.** 열린 항목 1(네 번째 경로), Task 6(편집 UI 없음),
+Task 7(메뉴에서 숨김), 그리고 이것. 앞의 셋은 리뷰가 잡았는데 이것은 못 잡았다 — **진입구가 계획 1
+에서 만든 타일에 있고, 계획 3 의 어느 Task 파일 목록에도 그 파일이 없어서** 어떤 리뷰도 그 자리를
+보지 않았다. 계획서가 "상세 화면에서 진입" 이라고 쓰면서 **상세 화면을 여는 길**을 누구에게도
+맡기지 않은 결과다. 다음 계획을 쓸 때: **새 화면·새 기능을 넣으면 "사용자가 거기에 어떻게
+도달하는가" 를 Task 의 파일 목록에 명시적으로 넣어라.**
+
+**아직 원인을 모르는 것(추측하지 않는다).** 스크롤 중 스크린샷에서 ① Hawk 카드에 `Lv·진영` 줄이
+비었다가 다음 장면에서 채워졌고 ② 용병 타일 초상과 `ROSTER`/`SETTINGS`/`MODE` 탭이 빈 네모로
+보였다. 로딩 중 한 장면일 수도, 레이아웃 문제일 수도 있다. 진입구를 고친 뒤 같이 본다.
