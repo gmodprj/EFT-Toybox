@@ -524,7 +524,9 @@ public class StmGearEditService(
     // (refs/4.1.0: itemWithChildren[0] 의 크기를 재서 FindSlotForItem 으로 자리를 찾고, 성공했을 때만
     // 세 필드를 쓴다). 격자 지도를 만드는 두 호출의 조합은 RestrictedMagazineRecovery.TryPlace 와 같다.
     // 던지지 않는다: 실패는 false + 사람이 읽을 사유이고, 호출자가 전체를 취소한다(아직 아무것도 안 썼다).
-    private bool TryPlaceInStash(List<Item> items, Item target, string stashRootId, string slotId, out string failure)
+    // 꾸러미 구매(계획 4 Task 3)도 헌 장비를 그 팀원 스태시로 돌릴 때 이 자리 찾기를 쓴다.
+    // 격자 자리를 찾는 판정이 두 곳에 생기면 한쪽만 고쳐져 아이템이 겹쳐 놓인다.
+    internal bool TryPlaceInStash(List<Item> items, Item target, string stashRootId, string slotId, out string failure)
     {
         failure = string.Empty;
         try
