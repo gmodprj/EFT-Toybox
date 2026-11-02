@@ -239,7 +239,7 @@ namespace pitTeam.Components
                         row.ProfileId,
                         string.IsNullOrWhiteSpace(row.Nickname) ? row.ProfileId : row.Nickname,
                         ready ? $"Lv {row.Level}  {row.Side}" : string.Empty,
-                        StmStatusLine(row.Status),
+                        StmStatusLine(row),
                         unavailable: !ready,
                         removeProfileId: row.ProfileId,
                         openAccountId: StmTileAccountId(row, ready));
@@ -276,12 +276,16 @@ namespace pitTeam.Components
 
         // One line per status. CurrentSession never reaches here (filtered in StmProfileRosterClient.Load);
         // if it ever did it would read as unreadable, never as usable.
-        private static string StmStatusLine(RosterRowStatus status)
+        private static string StmStatusLine(RegisteredProfileRow row)
         {
-            switch (status)
+            switch (row.Status)
             {
                 case RosterRowStatus.Ready:
-                    return StmProfileRosterClient.EquipmentUndecided;
+                    // 쓸 수 있는 팀원만 장비 구분을 말한다. 못 쓰는 줄에 장비 이야기를 얹으면
+                    // 왜 못 쓰는지가 묻힌다.
+                    return row.HandEdited
+                        ? StmProfileRosterClient.EquipmentHandEdited
+                        : StmProfileRosterClient.EquipmentTemporary;
                 case RosterRowStatus.Empty:
                     return StmProfileRosterClient.ReasonEmpty;
                 case RosterRowStatus.Missing:

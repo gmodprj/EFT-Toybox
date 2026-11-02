@@ -14,7 +14,11 @@ namespace pitTeam.Shared
     // Roster-screen view of one REGISTERED profile: Missing = registered but no longer in the catalog.
     public enum RosterRowStatus { Ready, Empty, Unreadable, CurrentSession, Missing }
 
-    public sealed record RegisteredProfileRow(string ProfileId, int Aid, string Nickname, int Level, string Side, RosterRowStatus Status);
+    // HandEdited: 이 팀원의 장비를 STM 화면에서 손으로 맞춘 적이 있는가(StmProfileMember.HandEdited 와 같은 뜻).
+    // 한 방향이다 - true 가 되면 그 팀원은 레이드마다 만들어지는 임시 장비 대상에서 빠진다. 화면이 그 둘을
+    // 구분해 말하는 데에만 쓴다. 기본값 false: 이 값을 싣지 않는 경로(JoinRegistered)는 "모른다" 가 아니라
+    // "아직 손대지 않았다" 로 읽히는데, 등록 정보를 함께 보는 쪽이 채워 주는 것이 계약이다.
+    public sealed record RegisteredProfileRow(string ProfileId, int Aid, string Nickname, int Level, string Side, RosterRowStatus Status, bool HandEdited = false);
 
     // Decides which launcher profiles may be offered as teammates. Only Ready may join a team;
     // every other availability stays listed so the user can see why it is blocked.
