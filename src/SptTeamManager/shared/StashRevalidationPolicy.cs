@@ -22,6 +22,28 @@ namespace pitTeam.Shared
     // item that cannot be named is never kept, because nothing downstream could refer to it.
     public static class StashRevalidationPolicy
     {
+        // EFT's error text names the offending item as "(id: <24 hex>)", e.g.
+        //   No filter for item Pro+ (id: 6adea532010015d86e5ffb7e) in StackSlot cartridges in item mag_...
+        // (the real line from doc/fixes/2026-10-27-pit-stash-ammo.md). The closing paren is part of the
+        // pattern on purpose: it is what rejects an id of the wrong length instead of truncating it.
+        private static readonly System.Text.RegularExpressions.Regex ItemIdPattern =
+            new System.Text.RegularExpressions.Regex(@"\(id:\s*([0-9a-fA-F]{24})\)");
+
+        // Pulls the FIRST item id out of an EFT error line (the offending item; a parent is named by name
+        // only). False when nothing trustworthy is there - the caller must then not guess which item to
+        // skip. Lives here, not in the client, so the one assumption this repair rests on is test-pinned.
+        public static bool TryExtractItemId(string? errorText, out string? itemId)
+        {
+            itemId = null;
+            if (string.IsNullOrWhiteSpace(errorText)) return false;
+
+            var match = ItemIdPattern.Match(errorText!);
+            if (!match.Success) return false;
+
+            itemId = match.Groups[1].Value;
+            return true;
+        }
+
         public static StashRevalidationResult Partition(IEnumerable<StashCandidate>? items)
         {
             var kept = new List<string>();

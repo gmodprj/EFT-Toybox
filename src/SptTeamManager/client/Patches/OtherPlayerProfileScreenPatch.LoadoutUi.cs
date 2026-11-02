@@ -1198,10 +1198,6 @@ namespace pitTeam.Patches
             return ordered.ToArray();
         }
 
-        // EFT 의 오류 문구는 항목을 "(id: <24자리 16진>)" 로 가리킨다. 첫 번째가 어긴 항목이다(부모는 이름으로만 나온다).
-        private static readonly System.Text.RegularExpressions.Regex StashErrorItemIdPattern =
-            new System.Text.RegularExpressions.Regex(@"(id:s*([0-9a-fA-F]{24}))");
-
         // 판정은 EFT 가 이미 했다(오류 목록). 여기서는 그 오류를 항목에 대응시켜 정책에 넘기고, 정책이 남기라 한 것만
         // 돌려준다. 건너뛴 항목마다 경고 한 줄을 남긴다 — 조용히 버리면 사용자는 아이템이 왜 사라졌는지 알 길이 없다.
         private static JsonType.FlatItem[] SkipEftRejectedStashItems(
@@ -1216,9 +1212,7 @@ namespace pitTeam.Patches
             var rejectedById = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (string errorText in errorTexts)
             {
-                var match = errorText == null ? null : StashErrorItemIdPattern.Match(errorText);
-                string rejectedId = match != null && match.Success ? match.Groups[1].Value : null;
-                if (rejectedId == null || !itemsById.ContainsKey(rejectedId))
+                if (!StashRevalidationPolicy.TryExtractItemId(errorText, out string rejectedId) || !itemsById.ContainsKey(rejectedId))
                 {
                     throw CreateLiveStashRefreshException(
                         $"Server-saved player stash had a deserialization error that names no known item, so it cannot be skipped: {errorText}");
