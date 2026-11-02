@@ -967,7 +967,7 @@ namespace pitTeam.Patches
             FriendlyTeammateProfileOptions options = TryLoadProfileOptions(profile.AccountId);
 
             // STM: 프로필 팀원의 화면이면 여기서 처리하고 PIT 의 용병 편집 UI 는 만들지 않는다. 아니면 아래가 그대로 흐른다.
-            if (TryApplyStmDetail(__instance, profile, options))
+            if (TryApplyStmDetail(__instance, profile, options, inventoryController, session, playerModelWindow))
             {
                 return;
             }

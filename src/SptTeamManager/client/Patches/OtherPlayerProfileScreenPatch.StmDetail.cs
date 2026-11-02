@@ -1,3 +1,4 @@
+using EFT.InventoryLogic;
 using EFT.UI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -26,6 +27,9 @@ namespace pitTeam.Patches
         public string CloseWarning { get; set; }
         public bool CanDiscardJournal { get; set; }
         public string DiscardWarning { get; set; }
+        // 장비 편집 입구(서버의 GearEditEntryPolicy 판정). 값이 없는 응답은 false - 열 수 없음으로 읽는다.
+        public bool CanEditGear { get; set; }
+        public string EditNotice { get; set; }
     }
 
     // 프로필 팀원의 상세 화면(design 6-3 오른쪽). 새 화면을 만들지 않는다: PIT 의 OtherPlayerProfileScreen 이 이미 착용 장비를
@@ -77,7 +81,13 @@ namespace pitTeam.Patches
 
         // PatchPostfix 의 분기. true 면 이 화면은 프로필 팀원의 것이고 STM 이 처리했다 - PIT 의 용병 UI 를 만들지 않는다.
         // false 면 PIT 의 경로가 그대로 흐른다(용병이거나 친구 등 STM 과 무관한 프로필).
-        private static bool TryApplyStmDetail(OtherPlayerProfileScreen screen, ResultProfile profile, FriendlyTeammateProfileOptions options)
+        private static bool TryApplyStmDetail(
+            OtherPlayerProfileScreen screen,
+            ResultProfile profile,
+            FriendlyTeammateProfileOptions options,
+            InventoryController inventoryController,
+            EFT.IEftSession session,
+            InventoryPlayerModelWithStatsWindow playerModelWindow)
         {
             string refusal = null;
             if (StmPendingRefusalAccountId != null
@@ -105,7 +115,7 @@ namespace pitTeam.Patches
                     return false;
                 }
 
-                // 프로필 팀원이다. 막혀 있으면 그 사실과 출구를, 아니면 아무것도 얹지 않는다(조용한 화면이 정상이다).
+                // 프로필 팀원이다. 막혀 있으면 그 사실과 출구를, 아니면 장비 편집 입구를 얹는다.
                 if (detail.Blocked)
                 {
                     // 안내문이 비어 왔으면 서버가 이유를 못 실은 것이다. 저널 문제라고 지어내지 않고 중립 문구를 쓴다.
@@ -115,8 +125,11 @@ namespace pitTeam.Patches
                     bool closable = detail.CanClose && !string.IsNullOrWhiteSpace(detail.JournalId) && !string.IsNullOrWhiteSpace(detail.CloseWarning);
                     bool discardable = detail.CanDiscardJournal && !string.IsNullOrWhiteSpace(detail.DiscardWarning);
                     ShowStmBanner(screen, text, closable ? detail : null, discardable ? detail : null);
+                    return true;
                 }
 
+                // 막히지 않은 프로필 팀원: 장비 편집 입구. 서버가 열 수 없다고 했으면(레이드 중 등) 이유를 말하는 안내 상자가 선다.
+                ShowStmGearEditEntry(screen, profile, detail, inventoryController, session, playerModelWindow);
                 return true;
             }
             catch (Exception ex)

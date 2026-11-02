@@ -22,6 +22,8 @@
         <Compile Include="../shared/TransferJournalPolicy.cs" Link="Shared/TransferJournalPolicy.cs" />
         <Compile Include="../shared/TransferEntryClosePolicy.cs" Link="Shared/TransferEntryClosePolicy.cs" />
         <Compile Include="../shared/ProfileStatePolicy.cs" Link="Shared/ProfileStatePolicy.cs" />
+        <Compile Include="../shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
+        <Compile Include="../shared/GearEditBatchPlanner.cs" Link="Shared/GearEditBatchPlanner.cs" />
         <Reference Include="0Harmony">
             <HintPath>libs\0Harmony.dll</HintPath>
         </Reference>
