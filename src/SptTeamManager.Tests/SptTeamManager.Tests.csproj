@@ -43,6 +43,8 @@
     <Compile Include="RaidProtectionReleasePolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/ProfileMemberUpdatePolicy.cs" Link="Shared/ProfileMemberUpdatePolicy.cs" />
     <Compile Include="ProfileMemberUpdatePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/AutoJoinRosterPolicy.cs" Link="Shared/AutoJoinRosterPolicy.cs" />
+    <Compile Include="AutoJoinRosterPolicyTests.cs" />
   </ItemGroup>
 
 </Project>

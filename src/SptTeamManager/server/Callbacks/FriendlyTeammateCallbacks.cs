@@ -21,6 +21,7 @@ public class FriendlyTeammateCallbacks(
     FollowerInsuranceCourierTransferService courierTransfers,
     JsonUtil jsonUtil,
     StmProfileViewFactory profileViewFactory,
+    StmAutoJoinService autoJoinService,
     ISptLogger<FriendlyTeammateCallbacks> logger
 )
 {
@@ -101,7 +102,9 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> ListAutoJoin(string url, EmptyRequestData _, MongoId sessionId)
     {
-        return new ValueTask<string>(httpResponse.GetBody(teammateService.GetAutoJoinTeammateAccountIds(sessionId)));
+        // PIT 결과가 먼저 나오고 STM 은 뒤에 붙기만 한다. AppendAccountIds 는 던지지 않는다(실패하면 PIT 목록 그대로).
+        return new ValueTask<string>(httpResponse.GetBody(
+            autoJoinService.AppendAccountIds(sessionId, teammateService.GetAutoJoinTeammateAccountIds(sessionId))));
     }
 
     public ValueTask<string> GetGameplayMode(string url, EmptyRequestData request, MongoId sessionId)
@@ -315,6 +318,17 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetAutoJoin(string url, FriendlyTeammateAutoJoinRequest request, MongoId sessionId)
     {
+        // STM 먼저(불변식 3). 처리했으면 PIT 를 부르지 않는다. 프로필 팀원이 아니면(false + 사유 없음) PIT 경로가 그대로다.
+        if (autoJoinService.TrySetAutoJoin(sessionId, request.Aid, request.Enabled, out var unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.NullResponse());
+        }
+
+        if (!string.IsNullOrWhiteSpace(unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: unavailableReason));
+        }
+
         try
         {
             teammateService.SetTeammateAutoJoin(sessionId, request);

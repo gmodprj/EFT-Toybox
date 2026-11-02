@@ -23,7 +23,10 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
     public ValueTask<string> Roster(string url, EmptyRequestData request, MongoId sessionId) =>
         Run("roster", () =>
         {
-            var registeredIds = store.List(sessionId).Select(m => m.ProfileId).ToList();
+            var registered = store.List(sessionId);
+            var registeredIds = registered.Select(m => m.ProfileId).ToList();
+            // 로스터 줄의 autoJoin 은 등록 정보에서 채운다(handEdited 는 이 줄이 채우지 않는다 - 뒤 작업의 몫).
+            var autoJoinIds = registered.Where(m => m.AutoJoin).Select(m => m.ProfileId).ToHashSet(StringComparer.Ordinal);
             var candidates = catalog.GetCandidates(sessionId.ToString());
             return new StmRosterResponse
             {
@@ -31,7 +34,7 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
                     .Select(r => new StmRosterRow
                     {
                         ProfileId = r.ProfileId, Aid = r.Aid, Nickname = r.Nickname, Level = r.Level,
-                        Side = r.Side, Status = r.Status.ToString(),
+                        Side = r.Side, Status = r.Status.ToString(), AutoJoin = autoJoinIds.Contains(r.ProfileId),
                     }).ToList(),
                 Candidates = ProfileRosterPolicy.SelectUnregisteredReady(candidates, registeredIds)
                     .Select(c => new StmRosterRow
