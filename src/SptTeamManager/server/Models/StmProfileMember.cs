@@ -6,7 +6,9 @@ namespace pitTeam.Server.Models;
 // The fact of registration only: which launcher profile the user put on the team, plus the two
 // team-level choices made about it. No nickname, level, gear, stash or stats are stored here -
 // the launcher profile is the single source of truth, and a copy would become "ghost assets".
-// Tactic and AutoJoin are persisted only; nothing in this task interprets them.
+// Tactic is persisted only and nothing interprets it yet. AutoJoin and HandEdited are changed after
+// registration through StmProfileMemberStore.Update (ProfileMemberUpdatePolicy); whoever acts on them
+// is a later task.
 // Property names are pinned: this is persisted data, and renaming a property later orphans what
 // the human gate writes through SPT's real serializer.
 // NOTE: StmProfileMember is a positional record, so reading it back depends on constructor-parameter
@@ -16,9 +18,10 @@ public record StmProfileMember(
     [property: JsonPropertyName("profileId")] string ProfileId,
     [property: JsonPropertyName("tactic")] string Tactic,
     [property: JsonPropertyName("autoJoin")] bool AutoJoin,
-    // Appended last: documents written before it existed have no "handEdited" and must still bind (missing
-    // constructor parameter reads as false - proven in the plan 3 task 1 report). One-way: set once the
-    // teammate's gear was hand-edited, never cleared by an update (ProfileMemberUpdatePolicy).
+    // Appended last, and documents written before it existed have no "handEdited": a constructor parameter
+    // missing from the JSON binds to false. That is checked by a machine at every server start
+    // (StmProfileMemberStore.VerifyOldDocumentBinding), not assumed. One-way: set once the teammate's gear
+    // was hand-edited, never cleared by an update (ProfileMemberUpdatePolicy).
     [property: JsonPropertyName("handEdited")] bool HandEdited);
 
 // Shape of the stm-profile-members.json document.

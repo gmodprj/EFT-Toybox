@@ -139,7 +139,9 @@ public class PitFireTeamServerPlugin(
 [Injectable(TypePriority = OnLoadOrder.PostLoad + 1)]
 public class PitFireTeamServerPostLoad(
     ISptLogger<PitFireTeamServerPostLoad> logger,
-    FriendlyTeammateService teammateService
+    FriendlyTeammateService teammateService,
+    pitTeam.Server.Services.StmProfileMemberStore profileMemberStore,
+    SPTarkov.Server.Core.Utils.JsonUtil jsonUtil
 ) : IOnLoad
 {
     public Task OnLoadAsync(CancellationToken cancellationToken)
@@ -148,8 +150,25 @@ public class PitFireTeamServerPostLoad(
         teammateService.InitializeStorageForAllProfiles();
         teammateService.RecoverDuplicateTeammateItemsForAllProfiles();
         AssertRequiredWeaponSlotVocabulariesAgree();
+        AssertProfileMemberBindingHolds();
         logger.Info("PitFireTeam loaded");
         return Task.CompletedTask;
+    }
+
+    // 등록 기록(StmProfileMember)은 위치 기반 레코드라 읽기가 생성자 파라미터 바인딩에 기댄다. handEdited 를
+    // 뒤에 덧붙였으니, 그것이 없는 옛 문서가 false 로 읽힌다는 가정이 깨지면 사용자의 등록된 프로필 팀원이
+    // 로스터에서 조용히 사라진다. 그래서 시작 때 기계가 확인하고, 깨졌으면 Error 를 남기고 등록 목록을
+    // "읽을 수 없음" 으로 닫는다(Store 가 이후 읽기를 거부한다). 던지지 않는다.
+    private void AssertProfileMemberBindingHolds()
+    {
+        if (profileMemberStore.VerifyOldDocumentBinding(jsonUtil, out var detail))
+        {
+            return;
+        }
+
+        logger.Error(
+            "[STM] 등록된 프로필 팀원을 안정적으로 읽을 수 없다: 옛 모양 등록 문서가 기대대로 바인딩되지 않았다 " +
+            $"({detail}). 등록 목록은 읽을 수 없음으로 처리된다.");
     }
 
     // PIT's FriendlyTeammateService.RequiredRaidWeaponSlots and STM's SpawnGearPolicy's own set hold the

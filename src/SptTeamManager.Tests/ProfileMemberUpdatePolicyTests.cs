@@ -27,6 +27,19 @@ public class ProfileMemberUpdatePolicyTests
 
         Assert.True(result!.AutoJoin);
         Assert.True(result.HandEdited);
+
+        // 반대 방향도: HandEdited 가 false 인 채로 AutoJoin 만 바꾸면 HandEdited 는 false 로 남는다.
+        var other = ProfileMemberUpdatePolicy.Apply(Current(handEdited: false), new StmProfileMemberChange(true, null));
+        Assert.True(other!.AutoJoin);
+        Assert.False(other.HandEdited);
+    }
+
+    [Fact]
+    public void 자동_합류를_끌_수_있다()
+    {
+        var result = ProfileMemberUpdatePolicy.Apply(Current(autoJoin: true), new StmProfileMemberChange(false, null));
+
+        Assert.False(result!.AutoJoin);
     }
 
     [Fact]
