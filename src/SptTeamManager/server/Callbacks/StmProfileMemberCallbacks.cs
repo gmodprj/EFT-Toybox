@@ -12,7 +12,7 @@ namespace pitTeam.Server.Callbacks;
 
 [Injectable]
 public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfileMemberStore store, StmProfileCatalog catalog,
-    ISptLogger<StmProfileMemberCallbacks> logger)
+    StmTransferJournal journal, ISptLogger<StmProfileMemberCallbacks> logger)
 {
     public ValueTask<string> List(string url, EmptyRequestData request, MongoId sessionId) =>
         Run("list", () => store.List(sessionId));
@@ -58,6 +58,20 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
             store.Remove(sessionId, request.ProfileId ?? string.Empty);
             return store.List(sessionId);
         });
+
+    // 멈추고 보고한 전송 항목을 플레이어가 직접 닫는다(상세 화면의 닫기 확인창 뒤에만 불린다). 이 길은 STM 의 것이고
+    // EFT 의 기존 라우트를 가로채지 않는다. 닫을 수 있는지의 판정은 서버가 다시 한다(TransferEntryClosePolicy):
+    // acknowledged 가 true 여도 기동 때 보고되지 않은 항목이나 지금 일관된 항목은 거절된다. 거절 사유는 플레이어가
+    // 읽는 말이고, 실패는 성공처럼 보이지 않는다(오류 본문).
+    public ValueTask<string> CloseTransfer(string url, StmCloseTransferRequest request, MongoId sessionId)
+    {
+        if (journal.TryCloseByPlayer(sessionId, request.JournalId ?? string.Empty, request.ProfileId ?? string.Empty, request.Acknowledged, out var message))
+        {
+            return new ValueTask<string>(httpResponse.NullResponse());
+        }
+
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
 
     // Failure never reads as success: the client gets an error body with a key, not an empty list.
     private ValueTask<string> Run<T>(string action, Func<T> work)

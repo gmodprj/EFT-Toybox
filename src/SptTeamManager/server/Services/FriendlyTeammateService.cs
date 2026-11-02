@@ -145,7 +145,7 @@ public partial class FriendlyTeammateService(
             }
         }
     }
-    private const string DefaultLoadoutId = "000000000000000000000000";
+    internal const string DefaultLoadoutId = "000000000000000000000000";
     private static readonly string[] TacticOptions = ["Rifleman", "Marksman", "SainMan", "SAINShooter"];
     private const int RelativeLevelDelta = 5;
     private const int SecureContainerAmmoStackCount = 10;

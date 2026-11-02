@@ -1,5 +1,6 @@
 using pitTeam.Server.Models;
 using pitTeam.Server.Services;
+using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
@@ -22,11 +23,28 @@ public class FriendlyTeammateCallbacks(
     JsonUtil jsonUtil,
     StmProfileViewFactory profileViewFactory,
     StmAutoJoinService autoJoinService,
+    StmProfileOperationGuard operationGuard,
     ISptLogger<FriendlyTeammateCallbacks> logger
 )
 {
+    // 프로필 팀원에게 뜻이 없는 조작을 PIT 에 닿기 전에 거부한다(STM 먼저, 불변식 3). 프로필 팀원이 아니면 false 이고 PIT 경로가
+    // 그대로 흐른다. 사유는 플레이어가 읽는 말이다(ProfileMemberOperationPolicy).
+    private bool RefuseProfileMember(MongoId sessionId, string? accountId, ProfileMemberOperation operation, out ValueTask<string> refusal)
+    {
+        if (operationGuard.TryRefuse(sessionId, accountId, operation, out var message))
+        {
+            refusal = new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+            return true;
+        }
+
+        refusal = default;
+        return false;
+    }
+
     public ValueTask<string> InsureEquipment(string url, FriendlyTeammateInsuranceRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Insurance, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             return new ValueTask<string>(httpResponse.GetBody(teammateService.InsureTeammateEquipment(sessionId, request)));
@@ -189,6 +207,18 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> GetProfileOptions(string url, FriendlyTeammateProfileOptionsRequest request, MongoId sessionId)
     {
+        // STM 먼저. 프로필 팀원이면 여기서 답하고 PIT 의 옵션 조회(용병 문서를 찾다 던진다)는 부르지 않는다.
+        // 쓸 수 없는 등록 팀원은 사유(상태 이름)를 오류로 돌려 화면이 설명으로 바꾼다.
+        if (profileViewFactory.TryBuildOptions(sessionId, request.Aid, out var profileMemberOptions, out var optionsUnavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody(profileMemberOptions));
+        }
+
+        if (!string.IsNullOrWhiteSpace(optionsUnavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: optionsUnavailableReason));
+        }
+
         try
         {
             return new ValueTask<string>(httpResponse.GetBody(teammateService.GetProfileOptions(sessionId, request)));
@@ -201,6 +231,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetSuit(string url, FriendlyTeammateSuitRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Suit, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateSuit(sessionId, request);
@@ -214,6 +246,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> Rename(string url, FriendlyTeammateRenameRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Rename, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.RenameTeammate(sessionId, request);
@@ -227,6 +261,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetLoadout(string url, FriendlyTeammateLoadoutRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Loadout, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateLoadout(sessionId, request);
@@ -279,6 +315,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetAggression(string url, FriendlyTeammateAggressionRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Aggression, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateAggression(sessionId, request);
@@ -292,6 +330,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetProficiency(string url, FriendlyTeammateProficiencyRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Proficiency, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateProficiency(sessionId, request);
@@ -305,6 +345,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetTactic(string url, FriendlyTeammateTacticRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Tactic, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateTactic(sessionId, request);

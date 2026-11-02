@@ -40,6 +40,12 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
 
     private readonly object sync = new();
 
+    // 기동 때 RecoverOpenEntries 가 "코드가 정할 수 없다" 고 멈추고 보고한 항목의 id. 메모리에만 둔다 - 다음 기동이 같은
+    // 항목을 다시 판정해 다시 채우므로 저장할 이유가 없고, 저장하면 "보고된 적 있다" 가 낡은 사실로 남는다.
+    // 플레이어가 항목을 닫을 수 있는지의 첫 조건이다(TransferEntryClosePolicy): 이번 실행에서 막 열린 항목은 쓰기가
+    // 진행 중일 수 있어 여기 없고, 따라서 닫을 수 없다. sync 로 보호한다.
+    private readonly HashSet<string> reportedStopped = new(StringComparer.Ordinal);
+
     // 저널에 먼저 적는다. 성공하면 journalId 를 돌려주고, 실패하면 던진다(반환값을 무시해도 아이템을 옮길 수
     // 없게). 같은 프로필이 이미 미결 항목에 걸려 있으면 거절한다 - 끊긴 전송 위에 새 전송을 쌓지 않는다.
     public string Prepare(MongoId sessionId, string kind, string sourceProfileId, string destinationProfileId, IReadOnlyList<string> itemIds)
@@ -226,6 +232,7 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
                 if (decision == RecoveryDecision.StopAndReport)
                 {
                     stopped++;
+                    lock (sync) reportedStopped.Add(entry.JournalId);
                     // 한 줄로 사람이 행동할 수 있게: 어느 파일의 어느 문서인가, 어느 항목인가, 언제 시작됐나, 무엇이 걸려 있나.
                     // 문서는 암호화된 데이터베이스 안의 레코드라 메모장으로 고칠 수 없다 - 그래서 경로와 문서 이름을 둘 다 적는다.
                     var started = FormatStart(entry.CreatedAtUnixSeconds);
@@ -255,6 +262,98 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
         }
         return stopped;
     }
+
+    // ---- 플레이어가 막힌 항목을 닫는 길 ----
+    // 저널 문서는 세션별 암호화 데이터베이스 안에 있어 손으로 고칠 수 없고, 다시 시작해도 멈춤 판정은 같은 이유로 다시
+    // 멈춘다. 코드가 추측으로 풀 수 없는 상태에서 사람에게도 출구가 없으면 그 팀원의 편집은 영영 막힌다. 그래서 이 한
+    // 가지 출구를 둔다. 닫을 수 있는지의 판정은 TransferEntryClosePolicy 가 하고 이 클래스는 사실만 모은다.
+
+    // 이 팀원의 편집을 막고 있는 항목과 각 항목을 지금 닫을 수 있는지의 판정. 던지지 않는다.
+    // 문서를 못 읽으면 JournalReadable == false: 어느 항목이 문제인지 모르므로 닫을 대상이 없다(HasOpenEntry 는 이때 true).
+    public StmBlockingEntries GetBlockingEntries(MongoId sessionId, string profileId)
+    {
+        try
+        {
+            lock (sync)
+            {
+                var blocking = Load(sessionId)
+                    .Where(e => TransferJournalPolicy.BlocksEditing(e.Stage, e.SourceProfileId, e.DestinationProfileId, profileId))
+                    .Select(e => new StmBlockingEntry(e, JudgeClose(e)))
+                    .ToList();
+                return new StmBlockingEntries(true, blocking);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 팀원 프로필 '{profileId}' 을(를) 막는 전송 항목을 읽지 못했다: {ex.Message}");
+            return new StmBlockingEntries(false, []);
+        }
+    }
+
+    // 플레이어가 경고를 읽고 확인한 뒤에만 부른다(acknowledged). 판정과 닫기를 같은 락 안에서 하므로 판정과 닫기 사이에
+    // 다른 호출이 끼어들 수 없다. 항목이 profileId 의 편집을 막는 항목이 아니면 닫지 않는다 - 다른 팀원의 항목을 이
+    // 화면에서 닫는 길은 없다. 거절하면 false 와 플레이어에게 보여 줄 말(message)을 준다. 던지지 않는다.
+    public bool TryCloseByPlayer(MongoId sessionId, string journalId, string profileId, bool acknowledged, out string message)
+    {
+        message = string.Empty;
+        // 빈 profileId 는 BlocksEditing 이 "모르면 막는다" 로 true 를 주므로, 비어 있으면 어떤 항목에도 맞아 버린다.
+        // 어느 팀원의 항목인지 모르는 닫기 요청은 여기서 끊는다.
+        if (string.IsNullOrWhiteSpace(journalId) || string.IsNullOrWhiteSpace(profileId))
+        {
+            message = "닫을 기록이나 팀원을 알 수 없어 닫지 않았습니다.";
+            return false;
+        }
+
+        try
+        {
+            lock (sync)
+            {
+                var entry = Load(sessionId).FirstOrDefault(e => e.JournalId == journalId);
+                if (entry == null)
+                {
+                    message = TransferEntryClosePolicy.RefusalMessage(TransferCloseVerdict.AlreadyClosed);
+                    return false;
+                }
+
+                if (!TransferJournalPolicy.BlocksEditing(entry.Stage, entry.SourceProfileId, entry.DestinationProfileId, profileId))
+                {
+                    message = "이 기록은 이 팀원의 편집을 막고 있지 않아 여기서 닫을 수 없습니다.";
+                    return false;
+                }
+
+                var verdict = JudgeClose(entry);
+                if (!TransferEntryClosePolicy.MayCloseNow(verdict, acknowledged))
+                {
+                    message = acknowledged
+                        ? TransferEntryClosePolicy.RefusalMessage(verdict)
+                        : "경고를 확인하지 않아 닫지 않았습니다.";
+                    logger.Warning($"[STM] 플레이어의 전송 항목 닫기 요청을 거절했다: 항목 '{journalId}' / 판정 {verdict} / 확인 {acknowledged}.");
+                    return false;
+                }
+
+                // 기록이 남는 닫기다: 나중에 아이템이 이상하다는 말이 나왔을 때 무엇이 닫혔는지 로그에서 찾을 수 있어야 한다.
+                logger.Warning(
+                    $"[STM] 플레이어가 멈춘 전송 항목을 직접 닫기를 시도한다(경고 확인함). 항목 '{entry.JournalId}' / 종류 '{entry.Kind}' / 단계 {entry.Stage} / " +
+                    $"시작 {FormatStart(entry.CreatedAtUnixSeconds)}(UTC) / 출처 프로필 '{entry.SourceProfileId}' / 목적지 프로필 '{entry.DestinationProfileId}' / " +
+                    $"아이템 [{string.Join(", ", entry.ItemIds ?? [])}] / 목적지 기록 id [{string.Join(", ", entry.DestinationItemIds ?? [])}]. " +
+                    "아이템은 복구되지 않는다: 기록만 지운다.");
+                // 락 안에서 한 번 더 판정하고 닫는다(CloseIf 의 판정 인자). 같은 스레드의 재진입이라 다른 호출이 끼지 않는다.
+                var closed = CloseIf(sessionId, journalId, e => TransferEntryClosePolicy.MayCloseNow(JudgeClose(e), acknowledged), "플레이어 닫기");
+                if (!closed) message = "기록을 닫지 못했습니다. 서버 로그를 확인하세요.";
+                return closed;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 플레이어의 전송 항목 닫기 중 오류. 항목 '{journalId}' 을(를) 그대로 둔다: {ex}");
+            message = "기록을 닫지 못했습니다. 서버 로그를 확인하세요.";
+            return false;
+        }
+    }
+
+    // 락 안에서 부른다.
+    private TransferCloseVerdict JudgeClose(StmTransferJournalEntry entry) =>
+        TransferEntryClosePolicy.Judge(entry.Stage, reportedStopped.Contains(entry.JournalId), Decide(entry));
 
     // 사실 모으기. 판정 자체는 TransferJournalPolicy.DecideFromInventories(순수)가 한다 - 여기는 id 목록을 꺼내 넘길 뿐이다.
     // 목적지는 기록된 DestinationItemIds 로 본다. "전부 있다" 와 "일부만 있다" 를 따로 본다: 일부만 있는 쪽은 일부가 옮겨졌거나 사라진
