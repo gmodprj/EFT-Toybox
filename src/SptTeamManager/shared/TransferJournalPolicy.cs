@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace pitTeam.Shared
 {
@@ -100,6 +101,91 @@ namespace pitTeam.Shared
             var id = profileId!.Trim();
             return string.Equals(sourceProfileId!.Trim(), id, StringComparison.OrdinalIgnoreCase)
                 || string.Equals(destinationProfileId!.Trim(), id, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // 기록된 목적지 id 를 쓸 수 있는가: 출처와 같은 개수, 비지 않음, 서로 다름. 쓸 수 없는 기록으로 판정하면
+        // 엉뚱한 아이템을 "목적지에 있다" 로 읽을 수 있어서, 이 검사는 기록할 때와 읽을 때 둘 다 쓴다.
+        public static bool IsUsableDestinationIds(IReadOnlyList<string>? sourceIds, IReadOnlyList<string>? destinationIds)
+        {
+            if (sourceIds == null || destinationIds == null || destinationIds.Count == 0 || destinationIds.Count != sourceIds.Count)
+            {
+                return false;
+            }
+
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var id in destinationIds)
+            {
+                if (string.IsNullOrWhiteSpace(id) || !seen.Add(id.Trim()))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // 인벤토리(아이템 id 목록)만 보고 복구를 정하는 순수 판정. 서비스는 SaveServer 에서 id 목록을 꺼내 넘기기만 한다.
+        // 출처는 Prepare 때 적은 id 로, 목적지는 "커밋 전에 기록된 실제 저장 id" 로 본다. 기록이 없으면(null) 재매김이
+        // 없었다는 전제로 출처 id 와 같게 본다 - 기록 없이 재매김이 일어났다면 목적지가 안 보여 없음/없음이 되어
+        // 멈춘다. 새 id 를 추측해 찾지 않는다. 기록이 있는데 쓸 수 없으면 멈춘다. 재매김은 "목적지를 보는 id" 만 바꾼다:
+        // 양쪽 다 가짐은 여전히 멈춤이라 재매김이 복제를 설명해 주지 못한다.
+        // 인벤토리가 null(읽지 못함)이거나 일부만 있으면 어느 쪽 사실도 아니므로 멈춘다.
+        public static RecoveryDecision DecideFromInventories(
+            TransferStage stage,
+            IReadOnlyList<string>? sourceItemIds,
+            IReadOnlyList<string>? recordedDestinationItemIds,
+            IEnumerable<string>? sourceInventory,
+            IEnumerable<string>? destinationInventory)
+        {
+            if (sourceItemIds == null || sourceItemIds.Count == 0 || sourceInventory == null || destinationInventory == null)
+            {
+                return RecoveryDecision.StopAndReport;
+            }
+
+            IReadOnlyList<string> destinationIds = sourceItemIds;
+            if (recordedDestinationItemIds != null)
+            {
+                if (!IsUsableDestinationIds(sourceItemIds, recordedDestinationItemIds))
+                {
+                    return RecoveryDecision.StopAndReport;
+                }
+
+                destinationIds = recordedDestinationItemIds;
+            }
+
+            var src = Classify(sourceItemIds, sourceInventory);
+            var dst = Classify(destinationIds, destinationInventory);
+            if (src == Presence.Partial || dst == Presence.Partial)
+            {
+                return RecoveryDecision.StopAndReport;
+            }
+
+            return DecideRecovery(stage, src == Presence.All, dst == Presence.All);
+        }
+
+        private enum Presence { None, Partial, All }
+
+        private static Presence Classify(IReadOnlyList<string> wanted, IEnumerable<string> inventory)
+        {
+            var present = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var id in inventory)
+            {
+                if (id != null)
+                {
+                    present.Add(id.Trim());
+                }
+            }
+
+            var found = 0;
+            foreach (var id in wanted)
+            {
+                if (id != null && present.Contains(id.Trim()))
+                {
+                    found++;
+                }
+            }
+
+            return found == 0 ? Presence.None : found == wanted.Count ? Presence.All : Presence.Partial;
         }
     }
 }

@@ -59,10 +59,64 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
         }
     }
 
-    // 두 저장이 둘 다 끝난 "뒤" 에 부른다. 표시를 못 남기면 false - 항목은 Prepared 로 남아 복구가 사실(실물)을
+    // 목적지에 실제로 쓸 id 가 확정되면(재매김이 있었다면 재매김 뒤의 id) 목적지에 쓰기 "전에" 부른다. 복구가 이 기록으로
+    // 목적지를 본다. 출처 ItemIds 와 같은 순서·개수여야 하고, 아니면 false(기록하지 않음) - 호출자는 전송을 중단한다.
+    // 이미 열린 항목의 Prepared 단계에서만 받는다.
+    public bool RecordDestinationItemIds(MongoId sessionId, string journalId, IReadOnlyList<string> destinationItemIds)
+    {
+        try
+        {
+            lock (sync)
+            {
+                var entries = Load(sessionId).ToList();
+                var index = entries.FindIndex(e => e.JournalId == journalId);
+                if (index < 0) return false;
+                if (TransferJournalPolicy.ParseStage(entries[index].Stage) != TransferStage.Prepared) return false;
+                if (!TransferJournalPolicy.IsUsableDestinationIds(entries[index].ItemIds, destinationItemIds)) return false;
+                entries[index] = entries[index] with { DestinationItemIds = destinationItemIds.Select(i => i.Trim()).ToList() };
+                Save(sessionId, entries);
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 전송 '{journalId}' 의 목적지 id 를 기록하지 못했다: {ex}");
+            return false;
+        }
+    }
+
+    // 두 저장이 둘 다 끝난 "뒤"  부른다. 표시를 못 남기면 false - 항목은 Prepared 로 남아 복구가 사실(실물)을
     // 보고 정하므로, 표시 실패가 아이템을 해치지는 않는다.
-    public bool MarkCommitted(MongoId sessionId, string journalId) =>
-        Advance(sessionId, journalId, TransferStage.Committed);
+    // 목적지 id 를 미리 RecordDestinationItemIds 로 기록하지 않았다면 여기서 넘겨도 된다(둘 다 안 하면 재매김이 없었다는
+    // 전제로 읽힌다). 이미 기록된 것과 다른 id 를 넘기면 false - 기록을 조용히 덮어쓰지 않는다.
+    public bool MarkCommitted(MongoId sessionId, string journalId, IReadOnlyList<string>? destinationItemIds = null)
+    {
+        if (destinationItemIds != null)
+        {
+            try
+            {
+                lock (sync)
+                {
+                    var existing = Load(sessionId).FirstOrDefault(e => e.JournalId == journalId);
+                    if (existing == null) return false;
+                    if (existing.DestinationItemIds != null)
+                    {
+                        if (!existing.DestinationItemIds.SequenceEqual(destinationItemIds.Select(i => i?.Trim() ?? string.Empty), StringComparer.OrdinalIgnoreCase)) return false;
+                    }
+                    else if (!RecordDestinationItemIds(sessionId, journalId, destinationItemIds))
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"[STM] 전송 '{journalId}' 의 목적지 id 를 확인하지 못했다: {ex}");
+                return false;
+            }
+        }
+        return Advance(sessionId, journalId, TransferStage.Committed);
+    }
 
     // readBackMatches: 호출자가 SaveProfile 뒤 디스크에서 다시 읽어 기대와 대조한 결과. 저널은 프로필을 읽는
     // 방법을 모른다 - 대신 대조가 통과했다는 증명 없이는 항목을 닫지 않는다.
@@ -155,34 +209,23 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
         return stopped;
     }
 
-    // 사실 모으기. "전부 있다" 와 "일부만 있다" 를 따로 본다: 일부만 있는 쪽은 일부가 옮겨졌거나 사라진
+    // 사실 모으기. 판정 자체는 TransferJournalPolicy.DecideFromInventories(순수)가 한다 - 여기는 id 목록을 꺼내 넘길 뿐이다.
+    // 목적지는 기록된 DestinationItemIds 로 본다. "전부 있다" 와 "일부만 있다" 를 따로 본다: 일부만 있는 쪽은 일부가 옮겨졌거나 사라진
     // 반쯤 된 상태이므로 어느 쪽 사실도 아니다. 프로필을 못 읽어도 같다 -> 둘 다 멈추고 보고한다.
-    private RecoveryDecision Decide(StmTransferJournalEntry entry)
-    {
-        if (entry.ItemIds == null || entry.ItemIds.Count == 0)
-            return RecoveryDecision.StopAndReport;
-        var src = Presence(entry.SourceProfileId, entry.ItemIds);
-        var dst = Presence(entry.DestinationProfileId, entry.ItemIds);
-        if (src == null || dst == null || src == ItemPresence.Partial || dst == ItemPresence.Partial)
-            return RecoveryDecision.StopAndReport;
-        return TransferJournalPolicy.DecideRecovery(
-            TransferJournalPolicy.ParseStage(entry.Stage), src == ItemPresence.All, dst == ItemPresence.All);
-    }
+    private RecoveryDecision Decide(StmTransferJournalEntry entry) =>
+        TransferJournalPolicy.DecideFromInventories(
+            TransferJournalPolicy.ParseStage(entry.Stage), entry.ItemIds, entry.DestinationItemIds,
+            InventoryIds(entry.SourceProfileId), InventoryIds(entry.DestinationProfileId));
 
-    private enum ItemPresence { None, Partial, All }
-
-    // 인메모리 SaveServer 프로필(= 기동 직후엔 디스크에서 막 읽은 것)의 PMC 인벤토리에서 본다. 읽을 수 없으면 null.
-    private ItemPresence? Presence(string profileId, IReadOnlyList<string> itemIds)
+    // 인메모리 SaveServer 프로필(= 기동 직후엔 디스크에서 막 읽은 것)의 PMC 인벤토리 아이템 id 들. 읽을 수 없으면 null.
+    private List<string>? InventoryIds(string profileId)
     {
         try
         {
             var profiles = saveServer.GetProfiles();
             if (!profiles.TryGetValue(new MongoId(profileId), out var profile)) return null;
             var items = profile?.CharacterData?.PmcData?.Inventory?.Items;
-            if (items == null) return null;
-            var present = new HashSet<string>(items.Select(i => i.Id.ToString()), StringComparer.OrdinalIgnoreCase);
-            var found = itemIds.Count(id => present.Contains(id));
-            return found == 0 ? ItemPresence.None : found == itemIds.Count ? ItemPresence.All : ItemPresence.Partial;
+            return items?.Select(i => i.Id.ToString()).ToList();
         }
         catch (Exception ex)
         {

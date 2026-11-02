@@ -142,3 +142,77 @@ public class TransferJournalBlockingTests
         Assert.True(TransferJournalPolicy.BlocksEditing("Prepared", "src", "", "other"));
     }
 }
+
+// PIT 은 실제 커밋에서 아이템 id 를 다시 매길 수 있다(플레이어 장착품과 id 가 겹칠 때만). 그래서 복구는 "출처 id" 가
+// 아니라 "목적지에 실제로 저장된 id" 로 목적지를 본다. 간헐적으로만 일어나는 일이라 둘 다 못박는다.
+public class TransferJournalRemapTests
+{
+    private static readonly string[] Src = { "a", "b" };
+
+    [Fact]
+    public void id가_다시_매겨진_전송도_목적지에_있으면_앞으로_확정한다()
+    {
+        var decision = TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Committed, Src, new[] { "a2", "b2" },
+            sourceInventory: new[] { "x" }, destinationInventory: new[] { "a2", "b2", "y" });
+        Assert.Equal(RecoveryDecision.RollForward, decision);
+    }
+
+    [Fact]
+    public void id가_그대로인_전송은_예전과_똑같이_판정한다()
+    {
+        Assert.Equal(RecoveryDecision.RollForward, TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Committed, Src, null, new[] { "x" }, new[] { "a", "b" }));
+        Assert.Equal(RecoveryDecision.RollBack, TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Prepared, Src, null, new[] { "a", "b" }, new[] { "x" }));
+    }
+
+    [Fact]
+    public void 다시_매겼어도_양쪽이_다_가지면_멈추고_보고한다()
+    {
+        // 재매김이 복제를 설명해 주지 못한다: 출처는 원래 id 로, 목적지는 새 id 로 둘 다 갖고 있다.
+        Assert.Equal(RecoveryDecision.StopAndReport, TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Committed, Src, new[] { "a2", "b2" }, new[] { "a", "b" }, new[] { "a2", "b2" }));
+    }
+
+    [Fact]
+    public void 기록된_id가_없는데_다시_매겨졌으면_멈추고_보고한다()
+    {
+        // 목적지 id 를 못 남기고 끊겼다: 새 id 를 추측하지 않는다. 출처도 비었으니 없음/없음 -> 멈춘다.
+        Assert.Equal(RecoveryDecision.StopAndReport, TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Prepared, Src, null, new[] { "x" }, new[] { "a2", "b2" }));
+    }
+
+    [Fact]
+    public void 기록된_목적지_id가_쓸_수_없으면_멈추고_보고한다()
+    {
+        foreach (var bad in new[] { new string[0], new[] { "a2" }, new[] { "a2", "a2" }, new[] { "a2", " " } })
+            Assert.Equal(RecoveryDecision.StopAndReport, TransferJournalPolicy.DecideFromInventories(
+                TransferStage.Committed, Src, bad, new[] { "x" }, new[] { "a2", "b2" }));
+    }
+
+    [Fact]
+    public void 일부만_있으면_멈추고_보고한다()
+    {
+        Assert.Equal(RecoveryDecision.StopAndReport, TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Committed, Src, new[] { "a2", "b2" }, new[] { "x" }, new[] { "a2" }));
+        Assert.Equal(RecoveryDecision.StopAndReport, TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Prepared, Src, null, new[] { "a" }, new[] { "x" }));
+    }
+
+    [Fact]
+    public void 인벤토리를_읽지_못했으면_멈추고_보고한다()
+    {
+        Assert.Equal(RecoveryDecision.StopAndReport, TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Prepared, Src, null, null, new[] { "x" }));
+        Assert.Equal(RecoveryDecision.StopAndReport, TransferJournalPolicy.DecideFromInventories(
+            TransferStage.Prepared, Src, null, new[] { "a", "b" }, null));
+    }
+
+    [Fact]
+    public void 모르는_단계는_인벤토리가_깨끗해도_멈추고_보고한다()
+    {
+        Assert.Equal(RecoveryDecision.StopAndReport, TransferJournalPolicy.DecideFromInventories(
+            TransferJournalPolicy.UnknownStage, Src, null, new[] { "x" }, new[] { "a", "b" }));
+    }
+}
