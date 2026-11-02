@@ -63,6 +63,10 @@
     <Compile Include="../SptTeamManager/shared/GearEditBatchPlanner.cs" Link="Shared/GearEditBatchPlanner.cs" />
     <Compile Include="../SptTeamManager/shared/GearBuildListPolicy.cs" Link="Shared/GearBuildListPolicy.cs" />
     <Compile Include="GearBuildListPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GearBuildPlanPolicy.cs" Link="Shared/GearBuildPlanPolicy.cs" />
+    <Compile Include="GearBuildPlanPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GearBuildQuotePolicy.cs" Link="Shared/GearBuildQuotePolicy.cs" />
+    <Compile Include="GearBuildQuotePolicyTests.cs" />
     <Compile Include="GearEditBatchPlannerTests.cs" />
     <Compile Include="../SptTeamManager/shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
     <Compile Include="GearEditEntryPolicyTests.cs" />

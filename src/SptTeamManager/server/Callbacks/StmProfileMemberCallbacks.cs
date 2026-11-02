@@ -13,6 +13,7 @@ namespace pitTeam.Server.Callbacks;
 [Injectable]
 public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfileMemberStore store, StmProfileCatalog catalog,
     StmTransferJournal journal, StmGearEditService gearEdits, StmGearBuildCatalog gearBuilds,
+    StmGearKitQuoteService kitQuotes,
     ISptLogger<StmProfileMemberCallbacks> logger)
 {
     public ValueTask<string> List(string url, EmptyRequestData request, MongoId sessionId) =>
@@ -142,6 +143,20 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
 
         var message = string.IsNullOrWhiteSpace(refusalReason)
             ? "빌드 목록을 읽지 못했습니다. 서버 로그를 확인하세요."
+            : refusalReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 계획 4 Task 2. 읽기 전용 견적 - 돈도 물건도 건드리지 않는다.
+    public ValueTask<string> KitQuote(string url, StmGearKitQuoteRequest request, MongoId sessionId)
+    {
+        if (kitQuotes.TryQuote(sessionId, request, out var quote, out var refusalReason) && quote != null)
+        {
+            return new ValueTask<string>(httpResponse.GetBody(quote));
+        }
+
+        var message = string.IsNullOrWhiteSpace(refusalReason)
+            ? "값을 매기지 못했습니다. 서버 로그를 확인하세요."
             : refusalReason!;
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }

@@ -152,6 +152,7 @@ public class PitFireTeamServerPostLoad(
         teammateService.InitializeStorageForAllProfiles();
         teammateService.RecoverDuplicateTeammateItemsForAllProfiles();
         AssertRequiredWeaponSlotVocabulariesAgree();
+        AssertGearBuildRootSlotVocabulariesAgree();
         AssertProfileMemberBindingHolds();
         RecoverOpenTransferJournals();
         logger.Info("PitFireTeam loaded");
@@ -201,6 +202,36 @@ public class PitFireTeamServerPostLoad(
     //
     // Logs rather than throws: a drift is a wrong gear judgment, not a reason to take the whole mod
     // down, and refusing to load would cost the player far more than the mismatch does.
+    // PIT 의 TeammateEquipmentPrice.Roots(값을 매기는 자리)와 STM 의 GearBuildPlanPolicy.RootSlotNames
+    // (무엇을 살지 정하는 자리)는 같은 열 자리여야 한다. 어긋나면 값을 매기지 않은 것을 사거나, 산 것에
+    // 값을 매기지 않는다 - 둘 다 플레이어의 돈이 걸린 어긋남이다. 중복은 의도다(정책은 SPT 어셈블리 없이
+    // 테스트돼야 한다), 그래서 일치를 여기서 기계가 지킨다.
+    private void AssertGearBuildRootSlotVocabulariesAgree()
+    {
+        try
+        {
+            var pit = new HashSet<string>(
+                pitTeam.Server.Services.TeammateEquipmentPrice.RootSlotNames,
+                StringComparer.OrdinalIgnoreCase);
+            var stm = new HashSet<string>(
+                pitTeam.Shared.GearBuildPlanPolicy.RootSlotNames,
+                StringComparer.OrdinalIgnoreCase);
+            if (pit.SetEquals(stm))
+            {
+                return;
+            }
+
+            logger.Error(
+                "[STM] 장비 뿌리 칸 어휘가 어긋났다. PIT(TeammateEquipmentPrice.Roots): " +
+                $"[{string.Join(", ", pit.Order())}] / STM(GearBuildPlanPolicy): [{string.Join(", ", stm.Order())}]. " +
+                "두 목록은 같아야 한다 - 값을 매기는 자리와 사는 자리가 달라지면 플레이어가 틀린 돈을 낸다.");
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 장비 뿌리 칸 어휘를 대조하지 못했다: {ex}");
+        }
+    }
+
     private void AssertRequiredWeaponSlotVocabulariesAgree()
     {
         try

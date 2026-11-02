@@ -9,7 +9,9 @@ namespace pitTeam.Server.Services;
 
 public partial class FriendlyTeammateService
 {
-    private static bool IsPaymentMoney(Item item) =>
+    // STM 의 장비 꾸러미 견적이 플레이어가 가진 돈을 셀 때 같은 기준을 쓴다(계획 4 Task 2).
+    // PIT 파일에는 private -> internal 승격만 한다(인계 §3-4).
+    internal static bool IsPaymentMoney(Item item) =>
         item.Template.ToString() == Constants.FriendlyItemTemplateIds.Currency.Roubles;
 
     private List<Item> SnapshotRefundMoney(IEnumerable<Item> items) =>
