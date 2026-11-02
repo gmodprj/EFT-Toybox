@@ -141,6 +141,8 @@ public class PitFireTeamServerPostLoad(
     ISptLogger<PitFireTeamServerPostLoad> logger,
     FriendlyTeammateService teammateService,
     pitTeam.Server.Services.StmProfileMemberStore profileMemberStore,
+    pitTeam.Server.Services.StmTransferJournal transferJournal,
+    SPTarkov.Server.Core.Servers.SaveServer saveServer,
     SPTarkov.Server.Core.Utils.JsonUtil jsonUtil
 ) : IOnLoad
 {
@@ -151,6 +153,7 @@ public class PitFireTeamServerPostLoad(
         teammateService.RecoverDuplicateTeammateItemsForAllProfiles();
         AssertRequiredWeaponSlotVocabulariesAgree();
         AssertProfileMemberBindingHolds();
+        RecoverOpenTransferJournals();
         logger.Info("PitFireTeam loaded");
         return Task.CompletedTask;
     }
@@ -169,6 +172,23 @@ public class PitFireTeamServerPostLoad(
         logger.Error(
             "[STM] 등록된 프로필 팀원을 안정적으로 읽을 수 없다: 옛 모양 등록 문서가 기대대로 바인딩되지 않았다 " +
             $"({detail}). 등록 목록은 읽을 수 없음으로 처리된다.");
+    }
+
+    // 끝나지 않은 전송 저널을 세션마다 한 번 처리한다(설계 §6-8). 판정이 애매한 항목은 열어 둔 채 Error 를 남기고
+    // 그 팀원 편집을 막는다. 던지지 않는다 - 저널 하나 때문에 모드 전체를 못 올리는 비용이 더 크다.
+    private void RecoverOpenTransferJournals()
+    {
+        try
+        {
+            foreach (var sessionId in saveServer.GetProfiles().Keys)
+            {
+                transferJournal.RecoverOpenEntries(sessionId);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 전송 저널 기동 처리에 실패했다: {ex}");
+        }
     }
 
     // PIT's FriendlyTeammateService.RequiredRaidWeaponSlots and STM's SpawnGearPolicy's own set hold the
