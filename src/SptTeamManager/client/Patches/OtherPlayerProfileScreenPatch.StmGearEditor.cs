@@ -105,18 +105,20 @@ namespace pitTeam.Patches
 
             if (!detail.CanEditGear)
             {
-                ShowStmBanner(screen, WithStmPendingGearRefusal(GearEditEntryPolicy.NoticeWhenNotEditable(detail.EditNotice), profile?.AccountId), null, null);
+                ShowStmBannerWithPending(screen, GearEditEntryPolicy.NoticeWhenNotEditable(detail.EditNotice), profile?.AccountId, null, null);
                 return;
             }
 
             // 대기 중이던 거절 사유가 있으면 입구 위에 안내 상자로 먼저 말한다. 입구는 그 아래로 내려 겹치지 않게 한다.
-            // 사유는 안내 상자가 **그려진 뒤에야** 비워진다(Take 와 Show 가 한 덩어리). 아래 버튼 템플릿이 없어 입구를 못 그려도
-            // 사유는 이미 말해졌고, 입구가 없다는 사실은 경고 로그에 남는다.
+            // 사유는 안내 상자 그리기가 던지지 않고 돌아온 뒤에야 대기에서 비워진다(그리기가 던지면 대기에 남는다). 아래 버튼 템플릿이
+            // 없어 입구를 못 그려도 사유는 이미 안내 상자로 말해진 뒤이고, 입구가 없다는 사실은 경고 로그에 남는다.
             float entryTop = -96f;
-            string pendingRefusal = TakeStmPendingGearRefusal(profile?.AccountId);
+            string pendingRefusal = PeekStmPendingGearRefusal(profile?.AccountId);
             if (pendingRefusal != null)
             {
                 ShowStmBanner(screen, StmRefusalPrefix + pendingRefusal, null, null);
+                // 그려진 뒤에야 비운다(위 ShowStmBanner 가 던지면 대기에 남는다).
+                ClearStmPendingGearRefusalIf(pendingRefusal);
                 entryTop = -240f;
             }
 
@@ -814,60 +816,91 @@ namespace pitTeam.Patches
         {
             bool editorAlive = StmGearEditStatusLabel != null;
             SetStmGearEditStatus(message);
-            AddTeammateCreationFlow.ShowToast(message);
-            if (editorAlive) return;
 
-            // 불확실한 결과(저장되었을 수 있음)는 나중 화면에 거절되었다고 되살리지 않는다. 지금 보이는 곳에서만 말한다.
-            string text = (remember ? StmRefusalPrefix : string.Empty) + message;
-            // 화면이 재사용돼 다른 팀원의 상세일 수 있다 - 지금 화면의 팀원이 이 저장의 주인일 때만 올린다.
-            if (screen != null && screen.gameObject.activeInHierarchy
-                && PendingRefusalPolicy.SameOwner(profile?.AccountId, StmShownDetailAccountId))
+            if (!editorAlive)
             {
-                CloseStmDetail();
-                ShowStmBanner(screen, text, null, null);
-                return;
+                // 사유를 지키는 일은 UI 호출이 성공하는지에 기대지 않는다: 먼저 기억하고, 그다음에 보여 주고, 마지막에 토스트를 낸다.
+                // 불확실한 결과(저장되었을 수 있음)는 나중 화면에 거절되었다고 되살리지 않는다(remember == false).
+                if (remember) RememberStmPendingGearRefusal(message, profile?.AccountId);
+
+                // 화면이 재사용돼 다른 팀원의 상세일 수 있다 - 지금 화면의 팀원이 이 저장의 주인일 때만 올린다.
+                if (screen != null && screen.gameObject.activeInHierarchy
+                    && PendingRefusalPolicy.SameOwner(profile?.AccountId, StmShownDetailAccountId))
+                {
+                    try
+                    {
+                        CloseStmDetail();
+                        ShowStmBanner(screen, (remember ? StmRefusalPrefix : string.Empty) + message, null, null);
+                        // 안내 상자가 그려졌다 - 이제야 대기를 비운다(방금 기억한 그 사유일 때만).
+                        if (remember) ClearStmPendingGearRefusalIf(message);
+                    }
+                    catch (Exception ex)
+                    {
+                        // 그리기가 실패했다. 대기에 남겨 두었으므로 이 팀원의 다음 화면이 말한다.
+                        pitFireTeam.Log.LogWarning($"[STM] The gear-save refusal could not be drawn on the live detail screen; it stays pending for the next one: {ex.Message}");
+                    }
+                }
             }
 
-            if (!remember) return;
+            AddTeammateCreationFlow.ShowToast(message);
+        }
 
-            // 가장 새 것만 남긴다. 아직 읽히지 않은 이전 사유를 버릴 때는 조용히 버리지 않고 로그에 주인과 함께 남긴다.
+        // 가장 새 것만 남긴다. 아직 읽히지 않은 이전 사유를 버릴 때는 조용히 버리지 않고 로그에 주인과 함께 남긴다.
+        private static void RememberStmPendingGearRefusal(string message, string accountId)
+        {
             if (StmPendingGearRefusalMessage != null)
             {
-                pitFireTeam.Log.LogWarning($"[STM] An unread gear-save refusal for teammate '{StmPendingGearRefusalAccountId}' was replaced by a newer one for '{profile?.AccountId}'. Dropped reason: {StmPendingGearRefusalMessage}");
+                pitFireTeam.Log.LogWarning($"[STM] An unread gear-save refusal for teammate '{StmPendingGearRefusalAccountId}' was replaced by a newer one for '{accountId}'. Dropped reason: {StmPendingGearRefusalMessage}");
             }
 
-            StmPendingGearRefusalAccountId = profile?.AccountId;
+            StmPendingGearRefusalAccountId = accountId;
             StmPendingGearRefusalMessage = message;
             StmPendingGearRefusalAtUtc = DateTime.UtcNow;
         }
 
-        // 대기 중인 거절 사유를 한 번만 꺼낸다. 이 팀원 것이 아니거나 오래됐으면(다른 세션의 잔재일 수 있다) 버린다.
-        private static string TakeStmPendingGearRefusal(string accountId)
+        private static void ClearStmPendingGearRefusalIf(string message)
+        {
+            if (!string.Equals(StmPendingGearRefusalMessage, message, StringComparison.Ordinal)) return;
+            StmPendingGearRefusalMessage = null;
+            StmPendingGearRefusalAccountId = null;
+        }
+
+        // 대기 중인 거절 사유를 **들여다본다** - 비우지 않는다. 비우는 것은 사유가 실제로 화면에 그려진 뒤의 일이다
+        // (ShowStmBannerWithPending). 이 팀원 것이 아니면 null 이고 대기는 그대로다(그 팀원의 화면이 기다린다). 만료됐으면 로그를
+        // 남기고 버린다(다른 세션의 잔재일 수 있다).
+        private static string PeekStmPendingGearRefusal(string accountId)
         {
             string message = StmPendingGearRefusalMessage;
             if (message == null) return null;
 
-            // 주인·만료 판정은 shared 의 PendingRefusalPolicy 다. 주인이 다르면 대기를 그대로 둔다(그 팀원의 화면이 기다린다).
+            // 주인·만료 판정은 shared 의 PendingRefusalPolicy 다.
             PendingRefusalVerdict verdict = PendingRefusalPolicy.Judge(StmPendingGearRefusalAccountId, StmPendingGearRefusalAtUtc, accountId, DateTime.UtcNow);
             if (verdict == PendingRefusalVerdict.NotOwner) return null;
 
-            string owner = StmPendingGearRefusalAccountId;
-            StmPendingGearRefusalMessage = null;
-            StmPendingGearRefusalAccountId = null;
             if (verdict == PendingRefusalVerdict.Expired)
             {
-                pitFireTeam.Log.LogWarning($"[STM] An expired gear-save refusal for teammate '{owner}' was dropped unread: {message}");
+                pitFireTeam.Log.LogWarning($"[STM] An expired gear-save refusal for teammate '{StmPendingGearRefusalAccountId}' was dropped unread: {message}");
+                StmPendingGearRefusalMessage = null;
+                StmPendingGearRefusalAccountId = null;
                 return null;
             }
 
             return message;
         }
 
-        // 안내문 앞에 대기 중이던 거절 사유를 붙인다(없으면 그대로).
-        private static string WithStmPendingGearRefusal(string text, string accountId)
+        // 안내 상자를 그리고, 대기 중이던 사유가 있으면 앞머리에 붙인다. 대기는 ShowStmBanner 가 **던지지 않고 돌아온 뒤에만** 비운다 -
+        // 그리기가 던지면 사유는 대기에 남아 이 팀원의 다음 화면이 말한다.
+        private static void ShowStmBannerWithPending(
+            OtherPlayerProfileScreen screen,
+            string baseText,
+            string accountId,
+            StmProfileDetailWire closable,
+            StmProfileDetailWire discardable)
         {
-            string pending = TakeStmPendingGearRefusal(accountId);
-            return pending == null ? text : StmRefusalPrefix + pending + Environment.NewLine + Environment.NewLine + text;
+            string pending = PeekStmPendingGearRefusal(accountId);
+            string text = pending == null ? baseText : StmRefusalPrefix + pending + Environment.NewLine + Environment.NewLine + baseText;
+            ShowStmBanner(screen, text, closable, discardable);
+            if (pending != null) ClearStmPendingGearRefusalIf(pending);
         }
 
         private static void SetStmGearEditStatus(string message)

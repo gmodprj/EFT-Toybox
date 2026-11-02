@@ -107,7 +107,7 @@ namespace pitTeam.Patches
                 // 등록된 프로필 팀원인데 지금 쓸 수 없다: 이유를 말한다. 정확히 상태 이름일 때만 - PIT 의 오류 문장은 해당 없음이다.
                 if (refusal != null && ProfileStatePolicy.TryDescribeRefusal(refusal, out ProfileStateNotice notice))
                 {
-                    ShowStmBanner(screen, WithStmPendingGearRefusal(notice.Message, profile?.AccountId), null, null);
+                    ShowStmBannerWithPending(screen, notice.Message, profile?.AccountId, null, null);
                     return true;
                 }
 
@@ -125,8 +125,7 @@ namespace pitTeam.Patches
                         : detail.BlockedNotice;
                     bool closable = detail.CanClose && !string.IsNullOrWhiteSpace(detail.JournalId) && !string.IsNullOrWhiteSpace(detail.CloseWarning);
                     bool discardable = detail.CanDiscardJournal && !string.IsNullOrWhiteSpace(detail.DiscardWarning);
-                    text = WithStmPendingGearRefusal(text, profile?.AccountId);
-                    ShowStmBanner(screen, text, closable ? detail : null, discardable ? detail : null);
+                    ShowStmBannerWithPending(screen, text, profile?.AccountId, closable ? detail : null, discardable ? detail : null);
                     return true;
                 }
 
