@@ -129,4 +129,22 @@ public class StmRosterWireTests
         var s = StmRosterWire.Interpret(Env($"[{Row("", 1, "Ready")},{{\"aid\":2}}]"), Own);
         Assert.Empty(s.Members);
     }
+
+    // 2026-11-03: 명단 타일이 "임시 장비" 와 "맞춰 둔 장비" 를 가르려면 이 값이 전선을 건너야 한다.
+    // 빠뜨리면 화면은 조용히 전부 "임시 장비" 라고 말한다 - 거짓이 기본값이 되는 쪽이라 테스트로 못 박는다.
+    [Fact]
+    public void handEdited_가_true_면_그대로_읽는다()
+    {
+        string row = $"{{\"profileId\":\"p1\",\"aid\":5,\"nickname\":\"N\",\"level\":3,\"side\":\"Usec\",\"status\":\"Ready\",\"handEdited\":true}}";
+        var s = StmRosterWire.Interpret(Env($"[{row}]"), Own);
+        Assert.True(s.Ok);
+        Assert.True(Assert.Single(s.Members).HandEdited);
+    }
+
+    [Fact]
+    public void handEdited_가_없거나_false_면_false_다()
+    {
+        var s = StmRosterWire.Interpret(Env($"[{Row("p1", 5, "Ready")}]"), Own);
+        Assert.False(Assert.Single(s.Members).HandEdited);
+    }
 }
