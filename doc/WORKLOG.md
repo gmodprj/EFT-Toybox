@@ -2984,3 +2984,37 @@ PIT 의 매퍼는 `Inventory.Items` 를 **그대로** `Equipment.Items` 에 넣�
 **친구 목록에서 프로필 팀원을 눌러 조회 화면을 열었을 때** 무엇이 보이는지는 SPT 가 다른 런처 프로필을
 aid 로 돌려주는지에 달려 있고, 그것은 **역컴파일이나 실측 없이는 모른다 — 추측하지 않는다.**
 고칠 자리가 생기면 모양은 이번 것과 같다(`StmProfileViewFactory.TryBuildView` 를 그대로 부르면 된다).
+
+### 정정 — auto-join 은 "지난 분대 복원" 이 아니다. 그리고 네 번째 경로는 아직 닿지 않는다
+
+위 항목에서 이 경로를 "클라이언트가 **지난 분대를 복원할 때**" 묻는다고 적었다. **틀렸다.**
+인게임 확인에서 분대가 복원되지 않아 로그를 되짚어 알아낸 것이다. 전제를 확인하지 않고 이름
+(`SyntheticTeammateAutoJoinLoader`)에서 뜻을 지어냈다 — 계획 2 에서 세 번 겪은 실수와 같은 종류다.
+
+**auto-join 의 실제 뜻**: 팀원마다 켜는 토글이고, 켜 두면 **출격 화면**
+(`MatchMakerAcceptScreen.Show` → `EnsureLoaded`, RaidStartPatch.cs:1147)에서 그 팀원이 분대에
+자동으로 들어간다. 레이드가 끝난 뒤 메인메뉴에서 지난 분대를 되살리는 기능이 **아니다.**
+기본값은 꺼짐(`AutoJoinEnabled = false`)이다.
+
+**로그 증거**(2026-11-02 09:10 KST 레이드, 프로필 팀원 3명 SPT02·Knox·Hawk 전원 생환):
+
+- `/singleplayer/autoteam` 요청이 **0건**. 목록을 물은 적이 없다.
+- `/singleplayer/pitfireteam/teammate/profile` 요청도 **0건**. 그래서 `[STM] 프로필 조회:` 줄이 없다.
+- 레이드 자체는 정상(`[STM] 레이드 결과 접수` 3건, 삭제 없음).
+
+**auto-join 이 프로필 팀원에게 동작하려면 세 곳이 필요하고, 전부 PIT 만 안다:**
+
+| | 자리 | 지금 |
+|---|---|---|
+| 1 | 토글 저장 — `/singleplayer/pitfireteam/teammate/autojoin` → `SetTeammateAutoJoin` → `FindByAccountId` | 프로필 팀원이면 **throw**. 명단에서 토글해도 실패한다 |
+| 2 | 목록 조회 — `/singleplayer/autoteam` → `GetAutoJoinTeammateAccountIds`(FriendlyTeammateService.cs:646) | **PIT 팀원만 열거**한다. 프로필 팀원은 절대 나오지 않는다 |
+| 3 | 플레이어 구성 — `/singleplayer/pitfireteam/teammate/profile` | **메웠다**(위 항목). 그러나 2번 때문에 호출되지 않는다 |
+
+**따라서 이 수정은 지금 닿지 않는 코드다.** 그 경로의 클라이언트 호출부는 auto-join 로더 한 곳뿐이고
+(RaidStartPatch.cs:432), 그 로더는 2번이 준 id 로만 돈다. 수정 자체는 맞고 2번의 전제 조건이지만,
+**단독으로는 사용자가 볼 수 있는 변화가 없다.**
+
+2번을 메우려면 저장 계층도 손봐야 한다 — `StmProfileMemberStore` 는 `List`·`Add`·`Remove` 뿐이고
+**갱신 경로가 없다.** `StmProfileMember.AutoJoin` 은 레코드에 있으나 "저장만 하고 아무도 해석하지
+않는다"(모델 주석 그대로). 명단 UI 가 배지 상태를 보여 주려면 로스터 와이어(`StmRosterRow`)에도
+`autoJoin` 이 실려야 한다. 결이 **계획 3(팀원 상세·설정)** 에 가깝다.

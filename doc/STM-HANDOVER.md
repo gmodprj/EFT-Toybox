@@ -77,7 +77,8 @@ src/SptTeamManager/
 
 | | 무엇 | 비고 |
 |---|---|---|
-| 1 | ~~`/singleplayer/pitfireteam/teammate/profile` 이 프로필 팀원을 모른다~~ | **메웠다 (2026-11-02, `fix/stm-profile-view-fourth-path`).** 망가진 것의 정체는 **auto-join(지난 분대 복원)에서 프로필 팀원이 조용히 빠지는 것**이었다. 고친 모양은 앞의 셋과 같다(`StmProfileViewFactory`). **인게임 확인은 아직 안 했다** — 볼 것 넷이 WORKLOG "2026-11-02 — STM 열린 항목 1" 에 있다 |
+| 1 | ~~`/singleplayer/pitfireteam/teammate/profile` 이 프로필 팀원을 모른다~~ | **메웠다 (2026-11-02, `fix/stm-profile-view-fourth-path`).** 다만 **지금은 닿지 않는 코드다** — 그 경로를 부르는 유일한 자리가 auto-join 로더이고, 그 로더가 쓰는 **목록 쪽이 아직 프로필 팀원을 모른다**(아래 1-c). 수정은 맞고 전제 조건이지만 단독으로는 보이는 변화가 없다 |
+| 1-c | auto-join 이 프로필 팀원에게 동작하지 않는다 | **인게임에서 확인된 미동작.** auto-join 은 "지난 분대 복원" 이 아니라 **출격 화면에서 자동 합류**시키는 팀원별 토글이다(기본 꺼짐). 필요한 세 곳 중 **토글 저장**(`SetTeammateAutoJoin`, 프로필 팀원이면 throw)과 **목록 조회**(`GetAutoJoinTeammateAccountIds`, PIT 만 열거)가 남았다. `StmProfileMemberStore` 에 **갱신 경로가 없어** 저장 계층도 손대야 하고, 로스터 와이어에 `autoJoin` 도 실어야 한다 → 결이 **계획 3** 에 가깝다. 대조표가 WORKLOG 정정 항목에 있다 |
 | 1-b | `/client/profile/view`(`MergeProfileView`)도 프로필 팀원을 모른다 | 같은 성격의 **다섯 번째 경로**, 1번을 메우다 발견. 친구 목록에서 프로필 팀원을 눌렀을 때 무엇이 보이는지는 **SPT 가 다른 런처 프로필을 aid 로 돌려주는지에 달렸고 미판정이다**(추측하지 않았다). 고칠 자리면 `StmProfileViewFactory.TryBuildView` 를 그대로 부르면 된다 |
 | 2 | 라이선스·`SptVersion` 표기 | 모드 페이지는 MIT 라는데 LICENSE 파일이 없고, 서버가 `SptVersion = "~4.1.0"` 을 선언하는데 클라이언트는 4.1.6 기준으로 컴파일한다. **배포 전에 정리해야 한다**(개인용이면 무관) |
 | 3 | 제스처 명령 `FIRE`·`HOLD FIRE`·`TAKE COVER` 미대응 | 메뉴 18개 중 11개만 처리한다. 교전 통제 손잡이라 **계획 3 후보**. 대조표가 WORKLOG 에 있다 |
