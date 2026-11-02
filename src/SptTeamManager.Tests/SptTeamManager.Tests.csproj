@@ -59,6 +59,10 @@
     <Compile Include="ProfileViewPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/ProfileGearEditPolicy.cs" Link="Shared/ProfileGearEditPolicy.cs" />
     <Compile Include="ProfileGearEditPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GearEditBatchPlanner.cs" Link="Shared/GearEditBatchPlanner.cs" />
+    <Compile Include="GearEditBatchPlannerTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
+    <Compile Include="GearEditEntryPolicyTests.cs" />
   </ItemGroup>
 
 </Project>
