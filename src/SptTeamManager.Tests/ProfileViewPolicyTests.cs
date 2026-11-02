@@ -37,6 +37,45 @@ public class ProfileViewPolicyTests
         Assert.Equal(ProfileLookupOutcome.Unavailable, ProfileViewPolicy.ClassifyLookup(readFailed: false, resolved: false, unavailableReason: "CurrentSession"));
     }
 
+    // ---- 단일 분류가 길을 정한다: 런타임 읽기 실패도 시작 때 실패와 같은 길을 탄다 ----
+    [Fact]
+    public void 런타임_읽기_실패여도_PIT_용병이면_PIT_응답을_낸다()
+    {
+        // 4차의 퇴보를 고정한다: 읽기 실패를 곧바로 거절하면 PIT 용병 조회가 STM 의 고장으로 깨진다.
+        Assert.Equal(ProfileViewRoute.ServePit, ProfileViewPolicy.RouteAfterLookup(ProfileLookupOutcome.ReadFailed, () => true));
+    }
+
+    [Fact]
+    public void 런타임_읽기_실패이고_PIT_용병도_아니면_거절한다()
+    {
+        Assert.Equal(ProfileViewRoute.Refuse, ProfileViewPolicy.RouteAfterLookup(ProfileLookupOutcome.ReadFailed, () => false));
+    }
+
+    [Theory]
+    [InlineData(ProfileLookupOutcome.NonMember)]
+    [InlineData(ProfileLookupOutcome.Unavailable)]
+    [InlineData(ProfileLookupOutcome.Resolved)]
+    public void 읽기가_성공한_결과는_조회_결과를_그대로_따르고_PIT_에게_묻지_않는다(ProfileLookupOutcome outcome)
+    {
+        // 확인된 비팀원은 PIT 길로 그대로 흐르고(StmFirst 의 꼬리), 평소 순서는 건드리지 않는다.
+        var asked = false;
+        Assert.Equal(ProfileViewRoute.StmFirst, ProfileViewPolicy.RouteAfterLookup(outcome, () => { asked = true; return true; }));
+        Assert.False(asked);
+    }
+
+    [Fact]
+    public void 정의_밖_분류는_읽기_실패처럼_닫힌_쪽이다()
+    {
+        Assert.Equal(ProfileViewRoute.Refuse, ProfileViewPolicy.RouteAfterLookup((ProfileLookupOutcome)99, () => false));
+    }
+
+    [Fact]
+    public void 읽기_실패_사유는_상태_이름이_아니다()
+    {
+        // 화면이 상태 안내로 잘못 읽지 않도록: 읽기 실패 신호는 어떤 상태 이름과도 다르다.
+        Assert.False(ProfileStatePolicy.TryDescribeRefusal(ProfileViewPolicy.ReadFailedReason, out _));
+    }
+
     [Fact]
     public void 등록을_읽을_수_있으면_평소_순서대로_STM_먼저다()
     {

@@ -212,8 +212,9 @@ public class FriendlyTeammateSocialCallbacks(
         // 단, PIT 자기 용병은 통과시킨다(ProfileViewPolicy): 용병 데이터는 PIT 의 것이라 다른 프로필의 스태시가 샐 수 없고, STM 의
         // 고장으로 PIT 의 조회까지 막으면 PIT 의 기능이 깨진다. 이 완화는 STM 이 아무것도 해석하지 못하는 상태에서만 돈다 -
         // 평소에는 Decide 가 PIT 를 묻지 않고 아래의 STM 먼저 순서가 그대로다.
+        // PIT 자기 용병의 응답을 찾는다. 평소에는 아래 STM 먼저 순서가 끝난 뒤에야 쓰이고, 읽기가 실패한 경우에만 STM 보다 먼저 쓰인다.
         string? pitMercenaryView = null;
-        var viewRoute = ProfileViewPolicy.Decide(profileMemberStore.RegistrationsUsable, () =>
+        bool PitKnowsAid()
         {
             if (teammateService.TryGetPendingTeammateProfile(sessionId, request.AccountId, out var pending))
             {
@@ -234,8 +235,17 @@ public class FriendlyTeammateSocialCallbacks(
             }
 
             return false;
-        });
+        }
 
+        ValueTask<string> RefuseUnreadableView()
+        {
+            LogFaultOnce("view-registrations-unusable",
+                "[STM] 프로필 조회: 등록된 프로필 팀원을 읽을 수 없는 상태라 이 Aid 가 프로필 팀원인지 알 수 없어, SPT 의 응답(다른 프로필의 인벤토리 전체일 수 있다)을 내보내지 않고 조회를 거절한다. PIT 용병의 조회는 계속 낸다. 원인은 시작 검사나 읽기 실패의 Error 로그를 보라(이 로그는 실행당 한 번).");
+            return new ValueTask<string>(httpResponseUtil.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: "Unreadable"));
+        }
+
+        // 시작 때 등록을 믿을 수 없다고 표시된 경우: STM 은 아무것도 해석하지 못하므로 PIT 용병 먼저(ProfileViewPolicy), 아니면 거절.
+        var viewRoute = ProfileViewPolicy.Decide(profileMemberStore.RegistrationsUsable, PitKnowsAid);
         if (viewRoute == ProfileViewRoute.ServePit && pitMercenaryView != null)
         {
             return new ValueTask<string>(pitMercenaryView);
@@ -243,14 +253,25 @@ public class FriendlyTeammateSocialCallbacks(
 
         if (viewRoute != ProfileViewRoute.StmFirst)
         {
-            LogFaultOnce("view-registrations-unusable",
-                "[STM] 프로필 조회: 등록된 프로필 팀원을 믿고 읽을 수 없는 상태라 이 Aid 가 프로필 팀원인지 알 수 없어, SPT 의 응답(다른 프로필의 인벤토리 전체일 수 있다)을 내보내지 않고 조회를 거절한다. PIT 용병의 조회는 계속 낸다. 원인은 시작 검사의 Error 로그를 보라(이 로그는 실행당 한 번).");
-            return new ValueTask<string>(httpResponseUtil.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: "Unreadable"));
+            return RefuseUnreadableView();
         }
 
         if (profileViewFactory.TryBuildView(sessionId, request.AccountId, out var profileMemberView, out var profileMemberUnavailableReason))
         {
             return new ValueTask<string>(httpResponseUtil.GetBody(profileMemberView));
+        }
+
+        // 실행 중 읽기 실패(해석기가 한 번 읽고 한 번 분류한 결과): 시작 때 실패와 같은 길 - PIT 용병이면 낸다, 아니면 거절한다.
+        // 확인된 비팀원(사유 없음)은 이 분기에 오지 않고 아래 PIT 길로 그대로 흐른다.
+        if (string.Equals(profileMemberUnavailableReason, ProfileViewPolicy.ReadFailedReason, StringComparison.Ordinal))
+        {
+            var failedRoute = ProfileViewPolicy.RouteAfterLookup(ProfileLookupOutcome.ReadFailed, PitKnowsAid);
+            if (failedRoute == ProfileViewRoute.ServePit && pitMercenaryView != null)
+            {
+                return new ValueTask<string>(pitMercenaryView);
+            }
+
+            return RefuseUnreadableView();
         }
 
         if (!string.IsNullOrWhiteSpace(profileMemberUnavailableReason))

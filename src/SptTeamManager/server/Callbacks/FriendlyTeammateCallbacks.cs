@@ -41,6 +41,9 @@ public class FriendlyTeammateCallbacks(
         return false;
     }
 
+    private static bool IsReadFailure(string reason) =>
+        string.Equals(reason, ProfileViewPolicy.ReadFailedReason, StringComparison.Ordinal);
+
     public ValueTask<string> InsureEquipment(string url, FriendlyTeammateInsuranceRequest request, MongoId sessionId)
     {
         if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Insurance, out var profileMemberRefusal)) return profileMemberRefusal;
@@ -190,7 +193,9 @@ public class FriendlyTeammateCallbacks(
             return new ValueTask<string>(httpResponse.GetBody(profileMemberView));
         }
 
-        if (!string.IsNullOrWhiteSpace(unavailableReason))
+        // 읽기 실패는 거절이 아니라 PIT 길이다: 이 라우트의 PIT 길에는 SPT 응답 꼬리가 없어(용병이 없으면 오류) 새는 것이 없고,
+        // 거절하면 PIT 용병의 조회가 STM 의 읽기 실패로 깨진다.
+        if (!string.IsNullOrWhiteSpace(unavailableReason) && !IsReadFailure(unavailableReason))
         {
             return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: unavailableReason));
         }
@@ -214,7 +219,8 @@ public class FriendlyTeammateCallbacks(
             return new ValueTask<string>(httpResponse.GetBody(profileMemberOptions));
         }
 
-        if (!string.IsNullOrWhiteSpace(optionsUnavailableReason))
+        // 읽기 실패는 PIT 길로 보낸다(위 GetProfile 과 같은 이유): PIT 용병의 옵션 화면이 STM 의 읽기 실패로 깨지면 안 된다.
+        if (!string.IsNullOrWhiteSpace(optionsUnavailableReason) && !IsReadFailure(optionsUnavailableReason))
         {
             return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: optionsUnavailableReason));
         }

@@ -46,6 +46,25 @@ namespace pitTeam.Shared
             return string.IsNullOrWhiteSpace(unavailableReason) ? ProfileLookupOutcome.NonMember : ProfileLookupOutcome.Unavailable;
         }
 
+        // 팩토리가 "읽기 실패" 를 호출자에게 알리는 사유 값. 상태 이름(CurrentSession 등)과 겹치지 않고, "Unreadable"(식별된
+        // 팀원을 읽을 수 없음)과도 다르다 - 호출자마다 이 신호에 맞는 길(PIT 용병 먼저 / PIT 길)을 고르게 하려는 것이다.
+        public const string ReadFailedReason = "ReadFailed";
+
+        // 조회 결과 하나로 길을 정한다. 읽기 실패만 길이 갈린다(PIT 용병이면 PIT 응답, 아니면 거절). 그 밖의 결과는 호출자가 평소처럼
+        // 결과를 따른다(StmFirst) - 확인된 비팀원이 PIT 길로 흐르는 것도 거기에 든다. 정의 밖 분류는 닫힌 쪽(읽기 실패와 같다).
+        public static ProfileViewRoute RouteAfterLookup(ProfileLookupOutcome outcome, Func<bool> pitKnowsAid)
+        {
+            switch (outcome)
+            {
+                case ProfileLookupOutcome.Resolved:
+                case ProfileLookupOutcome.NonMember:
+                case ProfileLookupOutcome.Unavailable:
+                    return ProfileViewRoute.StmFirst;
+                default:
+                    return Decide(registrationsUsable: false, pitKnowsAid);
+            }
+        }
+
         public static ProfileViewRoute Decide(bool registrationsUsable, Func<bool> pitKnowsAid)
         {
             if (registrationsUsable)

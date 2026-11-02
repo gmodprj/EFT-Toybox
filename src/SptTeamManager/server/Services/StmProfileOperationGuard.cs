@@ -13,11 +13,7 @@ namespace pitTeam.Server.Services;
 // 등록됐지만 지금 쓸 수 없는 프로필(로그인 중·읽을 수 없음)도 거부다: PIT 에는 그 Aid 의 용병이 없다.
 // 던지지 않는다(PIT 콜백 안에서 불린다).
 [Injectable(InjectionType.Singleton)]
-public class StmProfileOperationGuard(
-    StmProfileMemberResolver resolver,
-    StmProfileMemberStore store,
-    StmProfileCatalog catalog,
-    ISptLogger<StmProfileOperationGuard> logger)
+public class StmProfileOperationGuard(StmProfileMemberResolver resolver, ISptLogger<StmProfileOperationGuard> logger)
 {
     // true  = 프로필 팀원이거나, 프로필 팀원인지 알 수 없다. 호출자는 PIT 를 부르지 않고 message 로 오류 응답을 돌린다.
     // false = 프로필 팀원이 아님이 확인됐다. 호출자는 PIT 경로를 그대로 탄다.
@@ -28,17 +24,17 @@ public class StmProfileOperationGuard(
         message = string.Empty;
         try
         {
-            // 해석기가 삼키는 실패를 여기서 먼저 드러낸다. 읽을 수 없으면 판별 불가 = 거부.
-            store.List(sessionId);
-            catalog.GetCandidates(sessionId.ToString());
-
-            var resolved = resolver.TryResolve(sessionId, accountId, out var member, out var unavailableReason);
-            if (!(resolved && member != null) && string.IsNullOrWhiteSpace(unavailableReason))
+            // 읽기는 해석기(Lookup)가 한 번만 하고 결과를 한 번만 분류한다. 확인된 비팀원만 PIT 로 보낸다.
+            var outcome = resolver.Lookup(sessionId, accountId, out _, out _);
+            if (outcome == ProfileLookupOutcome.NonMember)
             {
                 return false;
             }
 
-            message = ProfileMemberOperationPolicy.RefusalReason(operation);
+            // 읽기 실패(판별 불가)는 "아직 모른다" 는 문구로, 그 밖(팀원·쓸 수 없는 팀원)은 이 조작이 왜 뜻이 없는지로 거부한다.
+            message = outcome == ProfileLookupOutcome.ReadFailed
+                ? ProfileMemberOperationPolicy.UndeterminedReason(operation)
+                : ProfileMemberOperationPolicy.RefusalReason(operation);
             logger.Info($"[STM] 프로필 팀원(Aid '{accountId}')에게 온 {operation} 요청을 거부했다.");
             return true;
         }

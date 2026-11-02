@@ -28,7 +28,48 @@ public class StmProfileMemberResolver(
     // true  = resolved, member is set.
     // false + unavailableReason == null  = not a profile teammate (caller continues with PIT's path).
     // false + unavailableReason != null  = a profile teammate that must not be taken (or could not be read).
+    //
+    // 등록과 카탈로그를 읽는 곳은 이 클래스에서 단 한 군데(Lookup)이고, "읽기가 실패했다" 는 신호가 사라지는 경계도 없다.
+    // 읽은 결과를 ResolveFrom 에 넘기므로 그 뒤에는 읽다 던질 길이 없다 - 이전에는 호출자가 미리 읽어 확인해도 해석기가 다시
+    // 읽다 던지면 삼켜 "사유 없는 false"(= 확인된 비팀원과 같은 모양)가 됐다.
+    public ProfileLookupOutcome Lookup(MongoId sessionId, string? accountId, out StmResolvedMember? member, out string? unavailableReason)
+    {
+        member = null;
+        unavailableReason = null;
+        IReadOnlyList<string> registered;
+        IReadOnlyList<ProfileCandidate> candidates;
+        try
+        {
+            // Fresh reads on every call. Never store these in a field.
+            registered = store.List(sessionId).Select(m => m.ProfileId).ToList();
+            candidates = catalog.GetCandidates(sessionId.ToString());
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] Resolving account '{accountId}': the registrations or the profile catalog could not be read, so it is unknown whether this is a profile member (reported as a read failure, not as a non-member): {ex}");
+            return ProfileViewPolicy.ClassifyLookup(readFailed: true, resolved: false, unavailableReason: null);
+        }
+
+        var resolved = ResolveFrom(sessionId, accountId, registered, candidates, out member, out unavailableReason);
+        return ProfileViewPolicy.ClassifyLookup(readFailed: false, resolved, unavailableReason);
+    }
+
+    // 기존 호출자(초대·스폰·결과 정산·auto-join)용. 읽기 실패는 예전처럼 "사유 없는 false" 로 돌린다 - 그 호출자들의 PIT 길에는
+    // SPT 응답 꼬리가 없고, 이 작업의 범위가 아니다. 읽기는 Lookup 한 곳에서만 일어난다.
     public bool TryResolve(MongoId sessionId, string? accountId, out StmResolvedMember? member, out string? unavailableReason)
+    {
+        var outcome = Lookup(sessionId, accountId, out member, out unavailableReason);
+        if (outcome == ProfileLookupOutcome.ReadFailed)
+        {
+            member = null;
+            unavailableReason = null;
+        }
+
+        return outcome == ProfileLookupOutcome.Resolved && member != null;
+    }
+
+    private bool ResolveFrom(MongoId sessionId, string? accountId, IReadOnlyList<string> registered, IReadOnlyList<ProfileCandidate> candidates,
+        out StmResolvedMember? member, out string? unavailableReason)
     {
         member = null;
         unavailableReason = null;
@@ -40,9 +81,6 @@ public class StmProfileMemberResolver(
             // Decimal digits only: no sign, no whitespace.
             if (!int.TryParse(accountId, NumberStyles.None, CultureInfo.InvariantCulture, out var aid) || aid <= 0) return false;
 
-            // Fresh reads on every call. Never store these in a field.
-            var registered = store.List(sessionId).Select(m => m.ProfileId).ToList();
-            var candidates = catalog.GetCandidates(sessionId.ToString());
             var lookup = ProfileMemberLookup.ByAid(aid, registered, candidates);
 
             switch (lookup.Result)
