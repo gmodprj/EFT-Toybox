@@ -3311,3 +3311,45 @@ Task 7(메뉴에서 숨김), 그리고 이것. 앞의 셋은 리뷰가 잡았는
 **아직 원인을 모르는 것(추측하지 않는다).** 스크롤 중 스크린샷에서 ① Hawk 카드에 `Lv·진영` 줄이
 비었다가 다음 장면에서 채워졌고 ② 용병 타일 초상과 `ROSTER`/`SETTINGS`/`MODE` 탭이 빈 네모로
 보였다. 로딩 중 한 장면일 수도, 레이아웃 문제일 수도 있다. 진입구를 고친 뒤 같이 본다.
+
+## 2026-11-02 — STM 열린 항목 7: 명단 타일에서 상세 화면으로 가는 길
+
+**한 일.** 프로필 팀원 타일에 클릭 핸들러를 걸었다. `SquadControlMenuUi.ProfileRoster.cs` 의
+`CreateStmTile` 이 `openAccountId` 를 받아, 값이 있으면 타일에 `Button`(transition None,
+targetGraphic = 타일 배경)과 `RosterTileHoverController` 를 얹고 `OpenProfile(accountId)` 를 건다.
+용병 타일(`Components/SquadControlMenuUi.Roster.cs:379`)과 같은 구성이다. 같이 바뀐 것:
+`AddStmTileText` 가 만든 `TextMeshProUGUI` 를 돌려주게 됐다(호버 컨트롤러가 이름 라벨을 받는다).
+
+**계정 id 는 aid 를 문자열로 쓴 것이다.** `OpenProfile` → `ShowPlayerProfileScreen(accountId)` 로
+들어가는 그 id 는 `StmRosterWire.IsCurrentSession` 이 `row.Aid.ToString()` 과 비교하는 것과 같은 값이다.
+`RegisteredProfileRow` 는 `ProfileId`(등록 키)와 `Aid`(계정 id) 를 **둘 다** 들고 있어서, 제거 버튼은
+`ProfileId`, 여는 쪽은 `Aid` 를 쓴다 — 섞으면 조용히 틀린 프로필을 연다. 판정은 `StmTileAccountId`
+한 곳이고, **쓸 수 있는 행(`Ready`)이면서 aid 가 0 이 아닐 때만** id 를 준다. aid 0 은 등록만 남고
+프로필이 없는 `Missing` 행인데, 알 수 없는 계정 id 로 SPT 의 `GetOtherProfile` 을 부르면
+**플레이어 자신의 프로필로 대체**되므로(열린 항목 1-b 의 역컴파일 실측) 여는 것 자체가 위험하다.
+쓸 수 없는 행과 안내 타일(불러오기 실패·세션 미확인)은 `openAccountId: null` 로 전과 같이 먹통이다.
+
+**제거 버튼과 안 부딪친다.** 제거 버튼은 타일의 **자식 `Button`** 이고 `IPointerClickHandler` 가
+클릭을 먹으므로 부모 타일의 `onClick` 으로 올라가지 않는다. 용병 타일이 이미 같은 구조다
+(타일 `Button` + `CreateRemoveButton`). 글자 넷은 전부터 `raycastTarget = false` 다.
+
+**실측.** `dotnet build src/SptTeamManager/client/pitFireTeam.csproj -c Debug -p:BuildSAINAddon=false`
+경고 0·오류 0(DLL 타임스탬프가 수정한 `.cs` 보다 새로운 것을 확인했다 — "최신 상태" 로 넘어간 빌드가
+아니다). `dotnet test` **511개 전부 통과**(총 개수를 전과 맞췄다). 이 변경에 새 테스트는 없다:
+클라이언트 `Components` 는 테스트 프로젝트가 참조하지 않는 자리이고, 여기 들어간 판정은
+`StmTileAccountId` 의 두 줄뿐이다.
+
+**확인하지 않은 것.** **게임에서 눌러 보지 않았다.** 타일이 실제로 눌리는지, 상세 화면이 뜨는지,
+호버 색이 쓸 만한지(이름 라벨의 호버 색은 컨트롤러가 `1 - 색` 으로 만든다 — 프로필 타일의 이름은
+밝은 회색이라 어두운 글자가 된다), 제거 버튼이 가려지지 않는지 전부 미확인이다. 관문 2~5번이
+**실행 불가에서 미실행으로** 바뀐 것이 이 변경의 결과다.
+
+**옆에서 드러난 것 — auto-join 토글도 길이 없다.** 상세 화면에는 auto-join 토글이 없고
+(`OtherPlayerProfileScreenPatch.StmDetail.cs` 는 막힘 안내와 편집 입구만 얹는다), 토글은 **용병 타일의
+우클릭 메뉴**에만 있다(`SquadControlMenuUi.ContextMenu.cs:117-120` → `ToggleTeammateAutoJoin`).
+그 메뉴는 `SquadRosterEntry`·그룹 초대·초상 로딩에 묶여 있어 프로필 타일에 그대로 달 수 없다.
+명단 응답은 행마다 `autoJoin` 을 싣는데(`StmProfileMemberCallbacks.cs:29-37`) **클라이언트가 그 필드를
+파싱하지 않는다** — `RegisteredProfileRow` 에 자리가 없다. 그래서 **관문 15번은 여전히 실행 불가**이고
+열린 항목 **8번**으로 적었다. 계획 3 이 "지었는데 닿지 않는다" 를 네 번 낸 자리에서, 같은 종류가
+**다섯 번째**로 하나 더 있었다는 뜻이다 — 이번에는 서버 쪽 Task(1-c) 가 "완료" 로 닫히면서
+**누를 곳**을 아무 Task 도 맡지 않았다.
