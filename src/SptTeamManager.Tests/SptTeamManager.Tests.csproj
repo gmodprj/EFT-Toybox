@@ -57,6 +57,7 @@
     <Compile Include="TransferEntryClosePolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/ProfileViewPolicy.cs" Link="Shared/ProfileViewPolicy.cs" />
     <Compile Include="ProfileViewPolicyTests.cs" />
+    <Compile Include="ProfileEditPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/ProfileGearEditPolicy.cs" Link="Shared/ProfileGearEditPolicy.cs" />
     <Compile Include="ProfileGearEditPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/GearEditBatchPlanner.cs" Link="Shared/GearEditBatchPlanner.cs" />

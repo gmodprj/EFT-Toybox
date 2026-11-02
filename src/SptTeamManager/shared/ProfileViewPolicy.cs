@@ -35,8 +35,19 @@ namespace pitTeam.Shared
     // 아니므로 더 싼 오류 쪽이다.
     //
     // 평소(등록을 읽을 수 있음)의 순서는 건드리지 않는다: pitKnowsAid 는 StmFirst 일 때 호출되지 않는다(테스트로 고정).
-    // 편집 쪽 가드(StmProfileOperationGuard)는 이 정책의 대상이 아니다 - 보이지 않는 용병을 고치면 장비가 사라질 수 있어 거기서는
-    // 모를 때 계속 거부한다.
+    // 편집 쪽 가드(StmProfileOperationGuard)도 같은 탈출구를 쓴다(RouteEditAfterLookup): 등록을 읽을 수 없어도 PIT 가 자기 용병으로 아는
+    // Aid 면 PIT 로 넘긴다. 그렇지 않으면 문서 하나의 손상이 PIT 용병 조작 열한 가지를 전부 막는다(릴리스 차단). 등록을 읽을 수 없고
+    // PIT 의 용병도 아닌 Aid 는 등록된 프로필 팀원일 수 있고, 보이지 않는 용병을 고치면 장비가 사라질 수 있어 거절로 닫는다.
+    public enum ProfileEditRoute
+    {
+        // PIT 의 조작으로 넘긴다: 확인된 비팀원이거나, 등록을 읽을 수 없지만 PIT 가 자기 용병으로 아는 Aid 다.
+        PassToPit,
+        // 등록된 프로필 팀원이다(쓸 수 없는 팀원 포함). PIT 에 용병이 없으니 뜻이 없는 조작이다.
+        RefuseProfileMember,
+        // 등록을 읽을 수 없고 PIT 의 용병도 아니다: 등록된 프로필일 수 있다. 판별 불가로 거절한다.
+        RefuseUndetermined,
+    }
+
     public static class ProfileViewPolicy
     {
         public static ProfileLookupOutcome ClassifyLookup(bool readFailed, bool resolved, string? unavailableReason)
@@ -62,6 +73,22 @@ namespace pitTeam.Shared
                     return ProfileViewRoute.StmFirst;
                 default:
                     return Decide(registrationsUsable: false, pitKnowsAid);
+            }
+        }
+
+        // 편집 조작 하나의 길. 조회와 같은 모양이다: 읽기가 성공한 결과는 그대로 따르고(PIT 에게 묻지 않는다), 읽기 실패만 PIT 용병 여부로 갈린다.
+        public static ProfileEditRoute RouteEditAfterLookup(ProfileLookupOutcome outcome, Func<bool> pitKnowsAid)
+        {
+            switch (outcome)
+            {
+                case ProfileLookupOutcome.NonMember:
+                    return ProfileEditRoute.PassToPit;
+                case ProfileLookupOutcome.Resolved:
+                case ProfileLookupOutcome.Unavailable:
+                    return ProfileEditRoute.RefuseProfileMember;
+                default:
+                    // 읽기 실패와 정의 밖 분류: PIT 에 물을 수 없거나 PIT 의 용병이 아니면 닫힌 쪽.
+                    return pitKnowsAid != null && pitKnowsAid() ? ProfileEditRoute.PassToPit : ProfileEditRoute.RefuseUndetermined;
             }
         }
 
