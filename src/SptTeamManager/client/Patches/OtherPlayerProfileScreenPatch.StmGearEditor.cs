@@ -64,13 +64,18 @@ namespace pitTeam.Patches
         private const string StmEditorSaveFailedToast = "장비를 저장하지 못했습니다";
         private const string StmEditorNoChangeToast = "바뀐 것이 없어 저장하지 않았습니다.";
         private const string StmEditorSavedToastFormat = "장비를 저장했습니다({0}건).";
-        private const string StmEditorLayoutNoteFormat = " 칸 위치나 상태만 바꾼 {0}개는 저장되지 않습니다.";
+        private const string StmEditorLayoutNoteFormat = " 칸 위치만 바꾼 {0}개는 저장되지 않습니다.";
+        private const string StmEditorSavingText = "저장하는 중입니다. 끝날 때까지 편집기를 닫을 수 없습니다...";
+        private const string StmEditorPanelFailedToast = "이 팀원의 스태시나 장비 칸을 그리지 못해 편집기를 열지 않았습니다";
+        private const string StmEditorStashMismatchToast = "편집기의 스태시가 이 팀원의 것임을 확인하지 못해 편집기를 열지 않았습니다";
 
         // 편집기를 여는 중(스태시 요청)과 저장 중. 둘 다 한 번에 하나만 - 중복 요청이 같은 편집을 두 번 보내지 않게 한다.
         private static bool StmGearEditOpening;
         private static bool StmGearEditSaving;
         // 저장 버튼 곁에 서버의 거절 사유를 남겨 두는 줄. 토스트는 금방 사라지므로 읽을 시간이 필요한 사유는 여기에도 둔다.
         private static CustomTextMeshProUGUI StmGearEditStatusLabel;
+        // 편집기를 열지 못한 이유(플레이어가 읽는 말). 여는 쪽이 토스트로 보인다.
+        private static string StmGearEditOpenFailure;
 
         // ---- 입구 ----
 
@@ -160,16 +165,17 @@ namespace pitTeam.Patches
                     return;
                 }
 
+                StmGearEditOpenFailure = null;
                 if (!TryShowStmGearEditorOverlay(screen, profile, detail, stash, inventoryController, session, playerModelWindow))
                 {
-                    AddTeammateCreationFlow.ShowToast(StmEditorOpenFailedToast);
+                    AddTeammateCreationFlow.ShowToast(StmGearEditOpenFailure ?? StmEditorOpenFailedToast);
                 }
             }
             catch (Exception ex)
             {
                 pitFireTeam.Log.LogError("[STM] Opening the profile teammate gear editor failed.");
                 pitFireTeam.Log.LogError(ex);
-                CloseStmGearEditor();
+                TeardownStmGearEditor();
                 AddTeammateCreationFlow.ShowToast(ex.Message ?? StmEditorOpenFailedToast);
             }
             finally
@@ -308,7 +314,7 @@ namespace pitTeam.Patches
             if (!TryBuildStmGearEditorPanels(profile, stash, leftSection, rightSection, session))
             {
                 // 패널을 세우지 못했다. 빈 겉틀로 저장 버튼을 두지 않고 닫는다.
-                CloseStmGearEditor();
+                TeardownStmGearEditor();
                 return false;
             }
 
@@ -405,6 +411,15 @@ namespace pitTeam.Patches
             TryBuildLoadoutEditorStashPanel(leftSection, editorProfile, editorInventoryController);
             TryBuildLoadoutEditorFollowerPanel(profile, rightSection, itemUiContext, editorProfile, editorInventoryController);
 
+            // PIT 의 두 패널 함수는 실패를 삼켜 대체 글자로 바꾸고 void 로 돌아온다 - 겉으로는 쓸 수 있는 편집기처럼 보인다.
+            // 패널 필드는 성공했을 때만 채워진다(편집기를 열기 직전 CloseLoadoutEditorOverlay 가 비웠다). 비어 있으면 열지 않는다.
+            if (LoadoutEditorStashPanel == null || LoadoutEditorEquipmentPanel == null)
+            {
+                pitFireTeam.Log.LogError($"[STM] Gear editor panels were not built (stash={(LoadoutEditorStashPanel != null)}, equipment={(LoadoutEditorEquipmentPanel != null)}); the editor is not opened.");
+                StmGearEditOpenFailure = StmEditorPanelFailedToast;
+                return false;
+            }
+
             // 패널을 세우는 동안 아이템 컴포넌트 상태(특히 무기 부착물)가 초기화될 수 있다. 플레이어가 만지기 전의 이 시점이
             // "바뀌었는가" 를 따질 첫 안정된 기준이다(PIT 편집기와 같은 이유).
             try
@@ -463,7 +478,18 @@ namespace pitTeam.Patches
 
                 editorProfile = baseProfile;
                 editorInventoryController = new InventoryController(editorProfile, false);
-                return editorProfile.Inventory?.Equipment != null && editorProfile.Inventory.Stash != null;
+
+                // 편집기의 스태시가 서버가 말한 그 팀원 스태시 루트인가 - 아니면 출처 칸을 믿을 수 없다.
+                if (editorProfile.Inventory?.Equipment == null || editorProfile.Inventory.Stash == null
+                    || !string.Equals(editorProfile.Inventory.Stash.Id, stash.StashRootId, StringComparison.OrdinalIgnoreCase))
+                {
+                    StmGearEditOpenFailure = StmEditorStashMismatchToast;
+                    editorProfile = null;
+                    editorInventoryController = null;
+                    return false;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
@@ -541,7 +567,8 @@ namespace pitTeam.Patches
             try
             {
                 CloseLoadoutEditorChildWindows();
-                SetStmGearEditStatus(string.Empty);
+                // 저장 중에는 닫을 수 없고(CloseStmGearEditor), 멈춘 것처럼 보이지 않게 말해 둔다. 거절되면 이 줄이 사유로 바뀐다.
+                SetStmGearEditStatus(StmEditorSavingText);
 
                 if (profile == null || detail == null || LoadoutEditorProfile?.Inventory?.Equipment == null || LoadoutEditorProfile.Inventory.Stash == null)
                 {
@@ -565,7 +592,7 @@ namespace pitTeam.Patches
                 string layoutNote = plan.LayoutOnlyCount > 0 ? string.Format(StmEditorLayoutNoteFormat, plan.LayoutOnlyCount) : string.Empty;
                 if (plan.Edits.Count == 0)
                 {
-                    CloseStmGearEditor();
+                    TeardownStmGearEditor();
                     AddTeammateCreationFlow.ShowToast(StmEditorNoChangeToast + layoutNote);
                     return;
                 }
@@ -593,7 +620,7 @@ namespace pitTeam.Patches
 
                 int saved = plan.Edits.Count;
                 RefreshStmDetailAfterSave(profile, inventoryController, session, playerModelWindow);
-                CloseStmGearEditor();
+                TeardownStmGearEditor();
                 AddTeammateCreationFlow.ShowToast(string.Format(StmEditorSavedToastFormat, saved) + layoutNote);
             }
             catch (Exception ex)
@@ -610,7 +637,8 @@ namespace pitTeam.Patches
         }
 
         // 편집기 아이템을 shared 판정이 읽는 모양으로 줄인다. 장비와 스태시는 별개 트리지만 id 는 한 프로필 안에서 겹치지 않는다.
-        // LayoutKey: 이 경로가 저장하지 못하는 속성(칸 위치, upd 상태)을 문자열로 바꾼 것.
+        // LayoutKey: 칸 위치만. 부모·슬롯이 같은데 위치만 다르면 "저장되지 않는 변화" 로 센다. upd 는 넣지 않는다 - EFT 가
+        // 무기 등을 초기화하며 플레이어가 만지지 않은 아이템의 upd 를 바꿀 수 있어, 넣으면 안내가 헛되이 뜬다.
         private static List<EditorItemState> ToStmEditorStates(JsonType.FlatItem[] equipment, JsonType.FlatItem[] stash)
         {
             if (equipment == null || stash == null) return null;
@@ -622,7 +650,7 @@ namespace pitTeam.Patches
                     item._id.ToString(),
                     GetParentId(item),
                     item.slotId,
-                    StmTokenKey(item.location) + "|" + StmTokenKey(item.upd)));
+                    StmTokenKey(item.location)));
             }
 
             return states;
@@ -672,7 +700,15 @@ namespace pitTeam.Patches
 
         // 취소·X·저장 뒤의 정리. PIT 의 CloseLoadoutEditorOverlay 가 패널·컨텍스트·전역을 치우고(아이템 UI 컨텍스트를 플레이어
         // 프로필로 되돌리는 것 포함), 그 뒤에 이 편집기가 채운 전역을 비운다.
+        // X·취소 버튼이 부르는 길. 저장 요청이 나가 있는 동안은 닫지 않는다 - 닫으면 뒤늦게 오는 거절 사유가 상태 줄 없이 토스트로만
+        // 간다. 저장 코드와 열기 실패 정리는 가드 없는 TeardownStmGearEditor 를 쓴다.
         private static void CloseStmGearEditor()
+        {
+            if (StmGearEditSaving) return;
+            TeardownStmGearEditor();
+        }
+
+        private static void TeardownStmGearEditor()
         {
             CloseLoadoutEditorOverlay();
             ActiveProfileSession = null;
