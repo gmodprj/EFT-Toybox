@@ -83,7 +83,8 @@ namespace pitTeam.Components
                         string.Empty,
                         StmProfileRosterClient.LoadFailedLine,
                         unavailable: true,
-                        removeProfileId: null);
+                        removeProfileId: null,
+                        openAccountId: null);
                     return;
                 }
 
@@ -99,7 +100,8 @@ namespace pitTeam.Components
                         ready ? $"Lv {row.Level}  {row.Side}" : string.Empty,
                         StmStatusLine(row.Status),
                         unavailable: !ready,
-                        removeProfileId: row.ProfileId);
+                        removeProfileId: row.ProfileId,
+                        openAccountId: StmTileAccountId(row, ready));
                 }
 
                 // Rows stay visible; the user is told the client-side session filter did not run.
@@ -112,7 +114,8 @@ namespace pitTeam.Components
                         string.Empty,
                         StmProfileRosterClient.SessionUnverifiedLine,
                         unavailable: true,
-                        removeProfileId: null);
+                        removeProfileId: null,
+                        openAccountId: null);
                 }
             }
             catch (Exception ex)
@@ -120,6 +123,14 @@ namespace pitTeam.Components
                 pitFireTeam.Log.LogError("[STM] Failed to draw profile teammate tiles; the mercenary roster is unaffected.");
                 pitFireTeam.Log.LogError(ex);
             }
+        }
+
+        // The account id every profile route is keyed by is the aid as a string (StmRosterWire.IsCurrentSession
+        // compares it the same way). A row without a usable aid - a Missing registration has aid 0 - cannot be
+        // opened: SPT's GetOtherProfile would fall back to the player's own profile for an unknown account id.
+        private static string StmTileAccountId(RegisteredProfileRow row, bool ready)
+        {
+            return ready && row.Aid != 0 ? row.Aid.ToString() : null;
         }
 
         // One line per status. CurrentSession never reaches here (filtered in StmProfileRosterClient.Load);
@@ -146,7 +157,8 @@ namespace pitTeam.Components
             string infoLine,
             string statusLine,
             bool unavailable,
-            string removeProfileId)
+            string removeProfileId,
+            string openAccountId)
         {
             GameObject tileObject = new GameObject(
                 $"pitFireTeam_StmTile_{key}",
@@ -175,7 +187,7 @@ namespace pitTeam.Components
 
             AddStmTileText(tileRect, "Caption", StmProfileRosterClient.TileCaption, 16f,
                 new Color(0.55f, 0.55f, 0.53f, 1f), new Vector2(16f, 176f), new Vector2(-44f, -10f));
-            AddStmTileText(tileRect, "Name", title, 24f, nameColor, new Vector2(16f, 114f), new Vector2(-16f, -44f));
+            TextMeshProUGUI nameLabel = AddStmTileText(tileRect, "Name", title, 24f, nameColor, new Vector2(16f, 114f), new Vector2(-16f, -44f));
             AddStmTileText(tileRect, "Info", infoLine, 20f, infoColor, new Vector2(16f, 84f), new Vector2(-16f, -100f));
             AddStmTileText(tileRect, "Status", statusLine, 18f, statusColor, new Vector2(16f, 14f), new Vector2(-16f, -134f));
 
@@ -194,10 +206,30 @@ namespace pitTeam.Components
                 removeButton.onClick.AddListener(() => RemoveStmProfile(profileId));
             }
 
+            // The way in to the teammate detail screen (and from there the gear editor). Same construction as
+            // the mercenary tile (SquadControlMenuUi.Roster.cs CreateRosterTile): a Button on the tile itself
+            // plus the shared hover controller. The remove button is a child Button and consumes its own click,
+            // so it does not open the screen. An unavailable row is passed no account id and stays inert.
+            if (!string.IsNullOrWhiteSpace(openAccountId))
+            {
+                Color hoverColor = new Color(0.6235f, 0.6157f, 0.5647f, 1f);
+                Color pressedColor = new Color(0.16f, 0.16f, 0.16f, 0.99f);
+
+                Button tileButton = tileObject.AddComponent<Button>();
+                tileButton.transition = Selectable.Transition.None;
+                tileButton.targetGraphic = tileBackground;
+
+                string accountId = openAccountId;
+                tileButton.onClick.AddListener(() => OpenProfile(accountId));
+
+                RosterTileHoverController hoverController = tileObject.AddComponent<RosterTileHoverController>();
+                hoverController.Configure(tileBackground, nameLabel, tileBackground.color, hoverColor, pressedColor);
+            }
+
             return tileObject;
         }
 
-        private void AddStmTileText(
+        private TextMeshProUGUI AddStmTileText(
             RectTransform tileRect,
             string name,
             string text,
@@ -219,6 +251,7 @@ namespace pitTeam.Components
             label.overflowMode = TextOverflowModes.Ellipsis;
             label.color = color;
             label.raycastTarget = false;
+            return label;
         }
 
         // ---- "프로필 불러오기" ---------------------------------------------------------------
