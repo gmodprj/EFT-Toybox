@@ -30,6 +30,36 @@ namespace pitTeam.Shared
         public const string HoldFireCommand = "HOLD FIRE";
         public const string TakeCoverCommand = "TAKE COVER";
 
+        // The phrases the COMMAND group of the squad-command menu shows, by EPhraseTrigger name, in menu
+        // order. This is the ONE list of what the menu offers: the menu filter reads it instead of keeping
+        // its own, so the menu and the translation cannot drift apart. The first ten are handled by the
+        // fork's PhraseSaid router in their own branches; the last three are the ones Translate covers.
+        // Not listed (and so hidden): Silence, KnifesOnly, Spreadout, GetBack.
+        public static readonly string[] CommandGroupPhrases =
+        {
+            "Suppress", "Regroup", "HoldPosition", "Look", "Gogogo", "GoForward", "FollowMe", "CoverMe",
+            "Stop", "OnYourOwn",
+            "Fire", "HoldFire", "GetInCover",
+        };
+
+        // Allow list: a phrase not named above is not supported, whatever it is called.
+        public static bool IsSupportedPhrase(string? phraseName)
+        {
+            return phraseName != null && Array.IndexOf(CommandGroupPhrases, phraseName) >= 0;
+        }
+
+        // The menu label of the phrases Translate covers, from the game's phrase name; null for any other.
+        public static string? MenuCommandForPhrase(string? phraseName)
+        {
+            switch (phraseName)
+            {
+                case "Fire": return FireCommand;
+                case "HoldFire": return HoldFireCommand;
+                case "GetInCover": return TakeCoverCommand;
+                default: return null;
+            }
+        }
+
         public static GestureCommandEffect? Translate(string? menuCommand)
         {
             var key = Normalize(menuCommand);

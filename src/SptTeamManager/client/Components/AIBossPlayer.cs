@@ -3530,10 +3530,7 @@ namespace pitTeam.Components
         // not also hand it to the vanilla receiver. Unknown -> false and nothing changes.
         private bool ApplyEngagementGesture(IPlayer requester, EPhraseTrigger phrase)
         {
-            string menuCommand = phrase == EPhraseTrigger.Fire ? pitTeam.Shared.GestureCommandPolicy.FireCommand
-                : phrase == EPhraseTrigger.HoldFire ? pitTeam.Shared.GestureCommandPolicy.HoldFireCommand
-                : phrase == EPhraseTrigger.GetInCover ? pitTeam.Shared.GestureCommandPolicy.TakeCoverCommand
-                : null;
+            string menuCommand = pitTeam.Shared.GestureCommandPolicy.MenuCommandForPhrase(phrase.ToString());
             pitTeam.Shared.GestureCommandEffect effect = pitTeam.Shared.GestureCommandPolicy.Translate(menuCommand);
             if (effect == null) return false;
 
