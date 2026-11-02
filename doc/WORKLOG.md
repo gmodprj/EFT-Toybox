@@ -3363,3 +3363,71 @@ targetGraphic = 타일 배경)과 `RosterTileHoverController` 를 얹고 `OpenPr
 열린 항목 **8번**으로 적었다. 계획 3 이 "지었는데 닿지 않는다" 를 네 번 낸 자리에서, 같은 종류가
 **다섯 번째**로 하나 더 있었다는 뜻이다 — 이번에는 서버 쪽 Task(1-c) 가 "완료" 로 닫히면서
 **누를 곳**을 아무 Task 도 맡지 않았다.
+
+## 2026-11-02 — STM·SAIN 한글화 (빠져 있던 것을 메운다)
+
+**빠져 있던 것.** 한글화는 두 갈래인데 한쪽만 되어 있었다. ① F12 설정 창은 `SptKoreanConfig` 의
+사전(`lang/<GUID>.json`)이 덮는다. ② 게임 안의 모드 UI 는 그 모드 자신의 문구 체계를 써야 한다.
+①만 있었고 ②는 STM·SAIN 둘 다 손대지 않은 채였다. 게다가 ①도 STM 에서는 끊겨 있었다.
+
+**왜 끊겼나(실측).** `SptKoreanConfig` 는 `setting.PluginInfo.GUID` 로 사전을 찾고 파일명이 그 GUID 다
+(`Plugin.cs:145`). PIT 포크 때 플러그인 GUID 를 `xyz.pit.fireteam` → `xyz.stm.teammanager` 로
+바꿨으므로(PIT 와 공존 금지라 피할 수 없었다) 그 순간 사전이 조용히 끊겼다. **아무도 못 본 이유는
+검사 도구에 있었다** — `check-lang-coverage.mjs` 가 **사전 파일을 기준으로** 돌아서 사전이 아예 없는
+모드는 목록에 나타나지도 않았다. 두 cfg 의 섹션·키 집합은 `diff` 로 완전히 같음을 확인했다.
+
+**한 일 1 — STM 인게임 UI(355개).** PIT 는 클라이언트가 `/singleplayer/pitfireteam/lang` 으로 물어
+서버의 `Resources/lang/<언어코드>.json` 을 읽고, 없으면 내장 영어로 떨어진다
+(`friendlyPlugin.LoadLanguageOptions`). 거기에 `chs/en/ru` 뿐이라 분대 화면이 전부 영문이었다.
+`kr.json` 을 만들었다(355개 문구 전부). **언어 코드는 `ko` 가 아니라 `kr` 이다** — 설치본
+`SPT_Runtime/SPT_Data/database/locales/global/` 에 `kr.json` 이 있는 것으로 확인했고, 클라이언트가
+`ko` 를 넘기는 경우에도 영문으로 떨어지지 않게 같은 내용을 `ko.json` 으로도 둔다.
+덤으로 **F12 설정 창도 이것으로 한글이 된다** — PIT 가 `Config.Bind` 의 `DispName`·`Description` 을
+이 lang 파일에서 꺼내 쓴다(`CreateConfigAttributes`, `friendlyPlugin.cs:1354`).
+
+손으로 쓴 26KB JSON 은 믿을 수 없으므로 **생성 + 검사**로 바꿨다: 번역은 `tools/lang/stm-kr.json`
+(열쇠가 en.json 의 경로), 산출은 `node tools/build-stm-lang.mjs`. 검사가 **번역 누락, 자리틀({0})
+어긋남, 줄바꿈 수 어긋남, 원문과 같은 값, en.json 에 없는 열쇠**를 보고 하나라도 걸리면 아무 파일도
+쓰지 않는다. 지금 355/355 통과. `kr.json`·`ko.json` 은 한 벌에서 나오므로 서로 어긋날 수 없다.
+
+**한 일 2 — STM 의 F12 사전.** `lang/xyz.stm.teammanager.json` 을 PIT 사전에서 복사해 `guid`·`name` 만
+고쳤다(키 집합이 같으므로 그대로 맞는다). 검사 도구가 63/63 OK 를 찍는다.
+
+**한 일 3 — SAIN 편집기(772개).** SAIN 의 설정 글자는 `[Name("..")]`·`[Description("..")]`·
+`[Category("..")]` 속성에 있고(`SAIN.Preset.Shared.dll`: 423 + 340 + 268개, 서로 다른 값 732개),
+편집기는 그것을 모아 둔 `SAIN.Attributes.ConfigInfoClass` 의 `Name`·`Description`·`Category` 를
+그대로 그린다 — `AttributesGUI.cs`: `SAINLayout.Label(info.Name + ": ")`,
+`new GUIContent(info.Name, info.Description)`. 속성 쪽 값은 `readonly` 필드라 거기서는 손댈 수 없으므로
+**그 객체의 생성자 Postfix 에서** 세 값만 바꾼다(`SainAttributePatch`). SAIN 은 멤버마다 한 번 만들어
+정적 사전에 쌓으므로(`AddAttributesToDictionary`) 교체도 한 번씩이다.
+
+**저장이 깨지지 않는 근거(확인함).** SAIN 은 값을 **필드 이름**으로 프리셋 JSON 에 저장한다. `Name` 을
+열쇠로 쓰는 곳은 `ConfigEditingTracker`(메모리 안의 "저장하지 않은 변경" 표시)와 편집기 검색창
+(`SkipForSearch`) 둘뿐이다. 그래서 한글로 바꿔도 저장·불러오기에 영향이 없고, **검색은 한글로** 하게 된다.
+`Category` 도 묶음 제목으로만 쓰이고 같은 원문은 항상 같은 번역이 되므로 묶임이 흐트러지지 않는다.
+
+창 안에 코드로 박힌 글자(버튼·제목·안내문·성향 설명) 41개는 `UiStringPatch` 와 같은 방법(ldstr 상수
+교체)으로 바꾼다(`SainUiStringPatch`, 대상 어셈블리만 SAIN 으로). **로그 문구와 디버그 화면의 글자는
+일부러 넣지 않았다** — `[SAIN] …` 같은 줄은 문제를 추적할 때 영문이 낫고, 디버그 오버레이는 개발용이다.
+
+SAIN 이 없으면 둘 다 조용히 꺼진다(타입을 못 찾으면 그대로 돌아간다). `[BepInDependency(SoftDependency)]`
+로 SAIN 뒤에 올라오게만 했다. 모양이 달라지면(백킹 필드나 생성자를 못 찾으면) 경고만 찍고 아무것도 바꾸지 않는다.
+
+**번역 열쇠의 오타를 기계가 잡게 했다.** 긴 설명은 열쇠를 손으로 다시 적지 않는다 — 역컴파일한 원문을
+정렬해 **번호로 짝지은 배열**로 번역하고, 각 항목에 원문 앞 40자를 적어 자리가 어긋나면 멈추게 했다
+(`zip-long.mjs`). 실제로 한 건(`Bots are not as careful with grenades as…`)을 그 검사가 잡았다.
+합친 사전은 역컴파일에서 뽑은 집합과 **양방향으로** 대조한다(빠진 것·집합에 없는 열쇠 둘 다).
+
+**한 일 4 — 검사 도구가 "사전이 없는 모드" 를 잡게 했다.** 이번 누락의 직접 원인이었다. 설치된 `.cfg`
+쪽에서도 한 바퀴 돌고, 설정 이름이 이미 한글인 우리 모드는 `원문이 이미 한글이다` 로 구별한다.
+지금: 사전 105개, 사전 없는 모드 6개 모두 `번역이 필요한 것 0개`.
+
+**실측.** `dotnet build src/SptKoreanConfig -c Release` 경고 0·오류 0. 설치본 DLL md5 가 산출물과 일치
+(`ec94c526…`). STM lang 두 파일도 설치본과 md5 일치(`9364c497…`). 게임은 꺼져 있었고 SAIN·STM 의
+DLL 은 건드리지 않았다(서버를 내릴 이유가 없었다).
+
+**확인하지 않은 것.** **게임에서 눈으로 본 것이 없다.** 분대 화면이 한글로 뜨는지, SAIN 편집기의 이름·
+설명·분류가 바뀌는지, 글자가 칸을 넘치지 않는지, 한글 폰트가 SAIN 의 IMGUI 스타일에서 제대로 그려지는지
+전부 미확인이다. 특히 ① SAIN 편집기는 IMGUI 라 폰트가 EFT UI 와 다를 수 있고 ② 번역문이 원문보다 길면
+줄이 잘릴 수 있다. 기동 뒤 `SAIN 편집기 한글화 패치 완료`, `SAIN 창 UI 한글화 — … 문자열 N개 교체`,
+`SAIN 사전에 없음: "…"` 세 줄을 로그에서 보고 판정한다.

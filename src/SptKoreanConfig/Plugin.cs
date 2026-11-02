@@ -11,15 +11,19 @@ using HarmonyLib;
 namespace SptKoreanConfig
 {
     /// <summary>
-    /// F12(ConfigurationManager) 창에 보이는 글자만 한글로 바꾼다.
-    /// 다른 모드의 파일은 건드리지 않고, 설정 값과 .cfg 파일도 그대로 둔다.
+    /// F12(ConfigurationManager) 창과, 깔려 있으면 SAIN 편집기에 보이는 글자만 한글로 바꾼다.
+    /// 다른 모드의 파일은 건드리지 않고, 설정 값과 .cfg·프리셋 파일도 그대로 둔다.
     /// </summary>
-    [BepInPlugin(PluginGuid, "F12 설정 한글화", "0.1.0")]
+    [BepInPlugin(PluginGuid, "F12 설정 한글화", "0.2.0")]
     [BepInDependency(CmGuid, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(SainGuid, BepInDependency.DependencyFlags.SoftDependency)]
     public class KoreanConfigPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.koreanconfig";
         public const string CmGuid = "com.bepis.bepinex.configurationmanager";
+
+        /// <summary>SAIN 보다 뒤에 올라오도록만 쓴다. 없으면 SAIN 쪽 한글화가 스스로 꺼진다.</summary>
+        public const string SainGuid = "me.sol.sain";
 
         internal static ManualLogSource Log;
         internal static TranslationStore Store;
@@ -53,6 +57,17 @@ namespace SptKoreanConfig
                 harmony.PatchAll(typeof(UiStringPatch));
                 Log.LogInfo($"창 UI 한글화 — 사전 {UiStringPatch.Loaded}개, 메서드 {UiStringPatch.PatchedMethods}개, 문자열 {UiStringPatch.ReplacedLiterals}개 교체");
                 UiStringPatch.LogUnused();
+            }
+
+            // SAIN 편집기. 설정 이름·설명·분류는 SAIN 이 속성에서 읽어 만든 객체를 고쳐서,
+            // 창 안에 박힌 글자는 위와 같은 방법으로 바꾼다. SAIN 이 없으면 둘 다 조용히 꺼진다.
+            SainDictionary.Load(langDir);
+            SainAttributePatch.TryPatch(harmony);
+            if (SainDictionary.UiStrings.Count > 0)
+            {
+                harmony.PatchAll(typeof(SainUiStringPatch));
+                Log.LogInfo($"SAIN 창 UI 한글화 — 사전 {SainDictionary.UiStrings.Count}개, 메서드 {SainUiStringPatch.PatchedMethods}개, 문자열 {SainUiStringPatch.ReplacedLiterals}개 교체");
+                SainUiStringPatch.LogUnused();
             }
         }
     }
