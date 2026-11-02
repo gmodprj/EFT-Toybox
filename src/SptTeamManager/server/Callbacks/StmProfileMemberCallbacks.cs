@@ -13,7 +13,7 @@ namespace pitTeam.Server.Callbacks;
 [Injectable]
 public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfileMemberStore store, StmProfileCatalog catalog,
     StmTransferJournal journal, StmGearEditService gearEdits, StmGearBuildCatalog gearBuilds,
-    StmGearKitQuoteService kitQuotes,
+    StmGearKitQuoteService kitQuotes, StmGearKitPurchaseService kitPurchases,
     ISptLogger<StmProfileMemberCallbacks> logger)
 {
     public ValueTask<string> List(string url, EmptyRequestData request, MongoId sessionId) =>
@@ -157,6 +157,21 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
 
         var message = string.IsNullOrWhiteSpace(refusalReason)
             ? "값을 매기지 못했습니다. 서버 로그를 확인하세요."
+            : refusalReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 계획 4 Task 3. **쓰는 경로다** - 돈이 나가고 물건이 들어간다. 거절은 전부 "아무것도 바뀌지 않았다" 이거나,
+    // 바뀐 것이 있으면 그 사실을 사유에 담는다(조용한 반쯤 성공은 없다).
+    public ValueTask<string> KitBuy(string url, StmGearKitPurchaseRequest request, MongoId sessionId)
+    {
+        if (kitPurchases.TryBuy(sessionId, request, out var bought, out var refusalReason) && bought != null)
+        {
+            return new ValueTask<string>(httpResponse.GetBody(bought));
+        }
+
+        var message = string.IsNullOrWhiteSpace(refusalReason)
+            ? "장비를 사지 못했습니다. 서버 로그를 확인하세요."
             : refusalReason!;
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }

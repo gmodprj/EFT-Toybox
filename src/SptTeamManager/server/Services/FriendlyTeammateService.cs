@@ -2274,7 +2274,10 @@ public partial class FriendlyTeammateService(
         }
     }
 
-    private void DeductRoublesFromPlayerStash(PmcData profile, int amount)
+    // STM 의 꾸러미 구매가 같은 규칙으로 돈을 뺀다(계획 4 Task 3). 돈을 세고 빼는 집은 하나여야 한다 -
+    // STM 쪽에서 스태시·잠금 규칙을 다시 적으면 "살 수 있다" 고 해 놓고 결제에서 거절하는 일이 생긴다.
+    // PIT 파일에는 private -> internal 승격만 한다(인계 §3-4).
+    internal void DeductRoublesFromPlayerStash(PmcData profile, int amount)
     {
         profile.Inventory ??= new BotBaseInventory { Items = [] };
         profile.Inventory.Items ??= [];

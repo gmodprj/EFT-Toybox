@@ -67,6 +67,8 @@
     <Compile Include="GearBuildPlanPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/GearBuildQuotePolicy.cs" Link="Shared/GearBuildQuotePolicy.cs" />
     <Compile Include="GearBuildQuotePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GearKitPurchasePolicy.cs" Link="Shared/GearKitPurchasePolicy.cs" />
+    <Compile Include="GearKitPurchasePolicyTests.cs" />
     <Compile Include="GearEditBatchPlannerTests.cs" />
     <Compile Include="../SptTeamManager/shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
     <Compile Include="GearEditEntryPolicyTests.cs" />
