@@ -179,17 +179,24 @@ namespace pitTeam.Patches
                 if (!(toggle.transform is RectTransform arenaRect)) return;
                 if (!(arenaRect.parent is RectTransform row)) return;
 
-                // 탭 줄이 아직 그려지지 않았으면 폭이 0 이다. 그 상태로 붙이면 겹치므로 그냥 두고 간다.
-                float arenaWidth = arenaRect.rect.width;
-                if (arenaWidth <= 1f) return;
+                // 탭의 자기 RectTransform 은 눈에 보이는 탭보다 작을 수 있다(그림과 글자가 자식이다).
+                // 2026-11-02 인게임에서 `anchoredPosition + rect.width` 로 붙였더니 ARENA 위에 겹쳐 그려졌다.
+                // 자식까지 포함한 실제 경계를 재서 그 오른쪽 끝에 붙인다.
+                Bounds bounds = RectTransformUtility.CalculateRelativeRectTransformBounds(row, arenaRect);
+                if (bounds.size.x <= 1f) return;
 
+                // 앵커·피벗은 ARENA 와 같게 두고 거기서 옮긴다. 그래야 줄의 피벗이 어디에 있든 계산이 맞는다.
+                // 옮기는 양은 좌표가 아니라 **경계로** 잰다: 우리 상자의 왼쪽 끝이 ARENA 의 오른쪽 끝 옆에 오게 한다.
                 rect.SetParent(row, false);
                 rect.anchorMin = arenaRect.anchorMin;
                 rect.anchorMax = arenaRect.anchorMax;
                 rect.pivot = arenaRect.pivot;
-                rect.sizeDelta = new Vector2(240f, Mathf.Max(arenaRect.rect.height, 36f));
-                rect.anchoredPosition = arenaRect.anchoredPosition + new Vector2(arenaWidth + StmEntryTabGap, 0f);
+                rect.sizeDelta = new Vector2(240f, Mathf.Max(bounds.size.y, 36f));
                 rect.localScale = Vector3.one;
+                rect.anchoredPosition = arenaRect.anchoredPosition;
+
+                Bounds mine = RectTransformUtility.CalculateRelativeRectTransformBounds(row, rect);
+                rect.anchoredPosition += new Vector2(bounds.max.x - mine.min.x + StmEntryTabGap, bounds.center.y - mine.center.y);
                 rect.SetAsLastSibling();
             }
             catch (Exception ex)
