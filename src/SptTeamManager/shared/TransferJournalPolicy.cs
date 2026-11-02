@@ -187,5 +187,19 @@ namespace pitTeam.Shared
 
             return found == 0 ? Presence.None : found == wanted.Count ? Presence.All : Presence.Partial;
         }
+
+        // 단계 전이 판정. 전이는 Prepared -> Committed -> Verified 한 줄이고, 그 밖은 전부 거절이다(모르는 단계 포함).
+        // 서비스는 이 판정을 통과한 뒤에만 단계를 바꾸거나 항목을 닫는다.
+        // 커밋은 목적지 id 가 "미리" 기록돼 있어야만 된다: 커밋 표시 시점에 처음 넘긴 id 는 목적지 쓰기 뒤에 알게 된
+        // 것이라, 쓰기 전에 기록한다는 방어를 무력화한다.
+        public static bool CanCommit(string? currentStageName, bool destinationIdsRecorded) =>
+            destinationIdsRecorded && ParseStage(currentStageName) == TransferStage.Prepared;
+
+        // 확인은 커밋된 항목만. 준비 직후 Verify 가 통하면 아무것도 안 옮긴 항목이 "확인됨" 으로 닫힌다.
+        public static bool CanVerify(string? currentStageName) => ParseStage(currentStageName) == TransferStage.Committed;
+
+        // 취소(커밋 없이 닫기)는 준비 단계에서만. 출처에서 뺀 뒤에는 취소할 것이 없고, 그때의 취소는 소실을 가리는
+        // 길이다. 준비 단계는 "실물이 안 움직였다" 가 약속된 유일한 단계다.
+        public static bool CanAbort(string? currentStageName) => ParseStage(currentStageName) == TransferStage.Prepared;
     }
 }

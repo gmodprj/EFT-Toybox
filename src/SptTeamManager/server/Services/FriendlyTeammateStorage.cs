@@ -20,6 +20,11 @@ public class FriendlyTeammateStorage(FileUtil fileUtil, JsonUtil jsonUtil, ISptL
     private string GetRoot(bool allegiance) => Path.Combine(fileUtil.GetModPath("SptTeamManager-ServerMod"), "Resources", allegiance ? "stm-teammates-allegiance" : "stm-teammates");
     private string RootDirectory => GetRoot(settingsService.LoadSettings().IsAllegiance);
 
+    // 공유 문서(WriteSharedDocument)가 들어 있는 데이터베이스 파일의 전체 경로. 데이터베이스를 열지 않고 계산만 한다 -
+    // 사람에게 "어느 파일 안의 문서인가" 를 알려 주는 로그용이다(TeammateDatabase 생성자와 같은 규칙).
+    public string SharedDocumentDatabasePath(MongoId sessionId) =>
+        Path.GetFullPath(Path.Combine(GetRoot(false), sessionId.ToString() + ".db"));
+
     public void PrepareMode(MongoId sessionId, bool allegiance) => GetDatabase(sessionId, allegiance);
 
     public void InitializeAllProfiles(IEnumerable<MongoId> profileIds)

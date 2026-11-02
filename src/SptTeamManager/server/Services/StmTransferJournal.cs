@@ -14,6 +14,8 @@ namespace pitTeam.Server.Services;
 //   1. Prepare            - 저널에 먼저 적는다. 실패하면 던진다. 던졌으면 아이템을 건드리지 않는다.
 //   2. 출처에서 뺀다       - SaveServer 인메모리 객체를 고치고 SaveProfile. (빼는 쪽 먼저)
 //   3. 목적지에 넣는다     - 같은 방식. (넣는 쪽 나중)
+//   (2 전에) RecordDestinationItemIds - 목적지에 실제로 쓸 id 를 기록한다. 안 하면 MarkCommitted 가 거절한다.
+//   (취소)  Abort         - 2 전에만. 출처를 건드린 뒤에는 거절된다.
 //   4. MarkCommitted      - 두 저장이 "둘 다" 끝난 뒤에만 부른다. 그 전에 부르면 복구가 거짓 사실 위에서 판정한다.
 //   5. Verify             - SaveProfile 뒤 디스크에서 다시 읽은 결과를 대조해 맞으면 항목을 닫는다.
 // 1 에서 4 사이 어디서 끊겨도 항목은 열린 채 남고, 다음 기동의 RecoverOpenEntries 가 TransferJournalPolicy 로
@@ -85,44 +87,68 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
         }
     }
 
-    // 두 저장이 둘 다 끝난 "뒤"  부른다. 표시를 못 남기면 false - 항목은 Prepared 로 남아 복구가 사실(실물)을
+    // 두 저장이 둘 다 끝난 "뒤" 에 부른다. 표시를 못 남기면 false - 항목은 Prepared 로 남아 복구가 사실(실물)을
     // 보고 정하므로, 표시 실패가 아이템을 해치지는 않는다.
-    // 목적지 id 를 미리 RecordDestinationItemIds 로 기록하지 않았다면 여기서 넘겨도 된다(둘 다 안 하면 재매김이 없었다는
-    // 전제로 읽힌다). 이미 기록된 것과 다른 id 를 넘기면 false - 기록을 조용히 덮어쓰지 않는다.
-    public bool MarkCommitted(MongoId sessionId, string journalId, IReadOnlyList<string>? destinationItemIds = null)
+    // 목적지 id 는 여기서 받지 않는다(받으면 목적지 쓰기 "뒤" 에 기록하는 길이 열려, 쓰기 전에 기록한다는 방어가
+    // 무력화된다). RecordDestinationItemIds 로 미리 기록하지 않았으면 거절한다 - 재매김이 없는 전송도 같은 id 를
+    // 기록한다. 준비 단계가 아니어도 거절한다(TransferJournalPolicy.CanCommit).
+    public bool MarkCommitted(MongoId sessionId, string journalId)
     {
-        if (destinationItemIds != null)
+        try
         {
-            try
+            lock (sync)
             {
-                lock (sync)
+                var entries = Load(sessionId).ToList();
+                var index = entries.FindIndex(e => e.JournalId == journalId);
+                if (index < 0) return false;
+                var entry = entries[index];
+                if (!TransferJournalPolicy.CanCommit(entry.Stage, entry.DestinationItemIds != null))
                 {
-                    var existing = Load(sessionId).FirstOrDefault(e => e.JournalId == journalId);
-                    if (existing == null) return false;
-                    if (existing.DestinationItemIds != null)
-                    {
-                        if (!existing.DestinationItemIds.SequenceEqual(destinationItemIds.Select(i => i?.Trim() ?? string.Empty), StringComparer.OrdinalIgnoreCase)) return false;
-                    }
-                    else if (!RecordDestinationItemIds(sessionId, journalId, destinationItemIds))
-                    {
-                        return false;
-                    }
+                    logger.Error($"[STM] 전송 '{journalId}' 을(를) 커밋 표시할 수 없다(단계 {entry.Stage}, 목적지 id 기록 {(entry.DestinationItemIds != null ? "있음" : "없음")}). 항목을 그대로 둔다.");
+                    return false;
                 }
-            }
-            catch (Exception ex)
-            {
-                logger.Error($"[STM] 전송 '{journalId}' 의 목적지 id 를 확인하지 못했다: {ex}");
-                return false;
+                entries[index] = entry with { Stage = nameof(TransferStage.Committed) };
+                Save(sessionId, entries);
+                return true;
             }
         }
-        return Advance(sessionId, journalId, TransferStage.Committed);
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 전송 '{journalId}' 을(를) 커밋으로 표시하지 못했다: {ex}");
+            return false;
+        }
     }
+
+    // 커밋 없이 닫는다 - Prepare 뒤 RecordDestinationItemIds 가 실패했거나 호출자가 깨끗이 취소할 때. 준비 단계에서만
+    // 된다(TransferJournalPolicy.CanAbort): 그 단계는 실물이 안 움직였다고 약속된 유일한 단계이고, 출처에서 뺀 뒤의
+    // 취소는 항목만 지워 소실을 가리는 길이다. 따라서 출처에 쓰기 "전에" 만 부를 수 있다. 커밋 이후는 거절(false).
+    public bool Abort(MongoId sessionId, string journalId) =>
+        CloseIf(sessionId, journalId, TransferJournalPolicy.CanAbort, "취소");
 
     // readBackMatches: 호출자가 SaveProfile 뒤 디스크에서 다시 읽어 기대와 대조한 결과. 저널은 프로필을 읽는
     // 방법을 모른다 - 대신 대조가 통과했다는 증명 없이는 항목을 닫지 않는다.
-    // false 이거나 대조가 던지면 항목은 열려 있고 편집은 계속 막힌다.
+    // 커밋된 항목만 확인할 수 있다(TransferJournalPolicy.CanVerify): 준비 직후 Verify 는 아무것도 안 옮긴 항목을
+    // 닫는 길이라 대조를 부르기 전에 거절한다. false 이거나 대조가 던지면 항목은 열려 있고 편집은 계속 막힌다.
     public bool Verify(MongoId sessionId, string journalId, Func<bool> readBackMatches)
     {
+        try
+        {
+            lock (sync)
+            {
+                var entry = Load(sessionId).FirstOrDefault(e => e.JournalId == journalId);
+                if (entry == null || !TransferJournalPolicy.CanVerify(entry.Stage))
+                {
+                    logger.Error($"[STM] 전송 '{journalId}' 은(는) 커밋된 항목이 아니라 확인할 수 없다(단계 {entry?.Stage ?? "항목 없음"}).");
+                    return false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 전송 '{journalId}' 의 단계를 읽을 수 없어 확인하지 않는다: {ex.Message}");
+            return false;
+        }
+
         bool matched;
         try
         {
@@ -138,8 +164,12 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
             logger.Error($"[STM] 전송 '{journalId}' 의 디스크 재확인이 기대와 다르다. 항목을 닫지 않고 편집을 막은 채 둔다.");
             return false;
         }
-        return Close(sessionId, journalId);
+        return CloseIf(sessionId, journalId, TransferJournalPolicy.CanVerify, "확인");
     }
+
+    // 문서를 못 읽는 동안 HasOpenEntry 가 매 호출 Error 를 남기면 로그가 묻힌다. 프로세스당 한 번만 남기고, 다시
+    // 읽히면 플래그를 풀어 다음 장애는 다시 한 번 남긴다. 답(true)은 호출마다 그대로다.
+    private volatile bool unreadableLogged;
 
     // 던지지 않는다. 읽을 수 없으면 true("열린 항목이 있다") - 편집을 거절하는 비용은 편집 한 번이고, 깨진 저널
     // 위에서 허락하는 비용은 아이템이다. 매 편집 시도마다 불리므로 문서 하나를 읽는 것 말고는 하지 않는다.
@@ -148,11 +178,19 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
         try
         {
             lock (sync)
-                return Load(sessionId).Any(e => TransferJournalPolicy.BlocksEditing(e.Stage, e.SourceProfileId, e.DestinationProfileId, profileId));
+            {
+                var open = Load(sessionId).Any(e => TransferJournalPolicy.BlocksEditing(e.Stage, e.SourceProfileId, e.DestinationProfileId, profileId));
+                unreadableLogged = false;
+                return open;
+            }
         }
         catch (Exception ex)
         {
-            logger.Error($"[STM] 전송 저널을 읽을 수 없어 프로필 '{profileId}' 에 열린 항목이 있는 것으로 친다(편집 차단): {ex.Message}");
+            if (!unreadableLogged)
+            {
+                unreadableLogged = true;
+                logger.Error($"[STM] 전송 저널을 읽을 수 없어 열린 항목이 있는 것으로 치고 팀원 편집을 막는다(이후 같은 로그는 생략, 처음 프로필 '{profileId}'): {ex.Message}");
+            }
             return true;
         }
     }
@@ -184,11 +222,16 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
                 if (decision == RecoveryDecision.StopAndReport)
                 {
                     stopped++;
+                    // 한 줄로 사람이 행동할 수 있게: 어느 파일의 어느 문서인가, 어느 항목인가, 언제 시작됐나, 무엇이 걸려 있나.
+                    // 문서는 암호화된 데이터베이스 안의 레코드라 메모장으로 고칠 수 없다 - 그래서 경로와 문서 이름을 둘 다 적는다.
+                    var started = DateTimeOffset.FromUnixTimeSeconds(entry.CreatedAtUnixSeconds).ToString("u");
                     logger.Error(
-                        $"[STM] 끝나지 않은 전송 '{entry.JournalId}'({entry.Kind}, 단계 {entry.Stage}) 을 자동으로 정할 수 없다. " +
-                        $"출처 프로필 '{entry.SourceProfileId}' 와 목적지 프로필 '{entry.DestinationProfileId}' 의 편집을 막는다. " +
-                        $"아이템 {string.Join(", ", entry.ItemIds ?? [])} 이(가) 복제됐거나 사라졌을 수 있다 - 두 프로필의 스태시/장비를 직접 확인한 뒤 " +
-                        $"stm-transfer-journal.json 의 이 항목을 지워야 편집이 풀린다.");
+                        $"[STM] 끝나지 않은 전송을 자동으로 정할 수 없어 두 프로필의 팀원 편집을 막는다. " +
+                        $"항목 '{entry.JournalId}' / 종류 '{entry.Kind}' / 단계 {entry.Stage} / 시작 {started}(UTC) / " +
+                        $"출처 프로필 '{entry.SourceProfileId}' / 목적지 프로필 '{entry.DestinationProfileId}' / " +
+                        $"아이템 [{string.Join(", ", entry.ItemIds ?? [])}] / 목적지 기록 id [{string.Join(", ", entry.DestinationItemIds ?? [])}]. " +
+                        $"저널 문서 '{Document}' 는 데이터베이스 파일 '{storage.SharedDocumentDatabasePath(sessionId)}' 안에 있다. " +
+                        $"아이템이 복제됐거나 사라졌을 수 있다: 두 프로필의 장비·스태시를 직접 확인해 바로잡은 뒤 이 항목을 닫아야 편집이 풀린다.");
                     continue;
                 }
 
@@ -234,35 +277,24 @@ public class StmTransferJournal(FriendlyTeammateStorage storage, SaveServer save
         }
     }
 
-    private bool Advance(MongoId sessionId, string journalId, TransferStage stage)
-    {
-        try
-        {
-            lock (sync)
-            {
-                var entries = Load(sessionId).ToList();
-                var index = entries.FindIndex(e => e.JournalId == journalId);
-                if (index < 0) return false;
-                entries[index] = entries[index] with { Stage = stage.ToString() };
-                Save(sessionId, entries);
-                return true;
-            }
-        }
-        catch (Exception ex)
-        {
-            logger.Error($"[STM] 전송 '{journalId}' 을(를) {stage} 로 표시하지 못했다: {ex}");
-            return false;
-        }
-    }
+    private bool Close(MongoId sessionId, string journalId) => CloseIf(sessionId, journalId, _ => true, "복구");
 
-    private bool Close(MongoId sessionId, string journalId)
+    // 단계 판정을 락 안에서 다시 확인하고 닫는다. 판정이 거절하면 항목을 그대로 둔다.
+    private bool CloseIf(MongoId sessionId, string journalId, Func<string?, bool> stageAllows, string what)
     {
         try
         {
             lock (sync)
             {
                 var entries = Load(sessionId).ToList();
-                if (entries.RemoveAll(e => e.JournalId == journalId) == 0) return false;
+                var entry = entries.FirstOrDefault(e => e.JournalId == journalId);
+                if (entry == null) return false;
+                if (!stageAllows(entry.Stage))
+                {
+                    logger.Error($"[STM] 전송 '{journalId}' {what} 거절: 현재 단계 {entry.Stage} 에서는 허용되지 않는다. 항목을 그대로 둔다.");
+                    return false;
+                }
+                entries.Remove(entry);
                 Save(sessionId, entries);
                 return true;
             }

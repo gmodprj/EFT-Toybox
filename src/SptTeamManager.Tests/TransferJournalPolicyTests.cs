@@ -216,3 +216,64 @@ public class TransferJournalRemapTests
             TransferJournalPolicy.UnknownStage, Src, null, new[] { "x" }, new[] { "a", "b" }));
     }
 }
+
+// 단계 전이는 Prepared -> Committed -> Verified 한 줄뿐이다. 순서를 어기는 호출은 거절한다: 준비 직후의 Verify 는
+// 아무것도 안 옮기고 항목을 닫고, 목적지 쓰기 뒤에 기록한 id 는 "쓰기 전에 기록" 방어를 무력화한다.
+public class TransferJournalTransitionTests
+{
+    [Fact]
+    public void 커밋은_준비_단계이고_목적지_id가_미리_기록됐을_때만_된다()
+    {
+        Assert.True(TransferJournalPolicy.CanCommit("Prepared", destinationIdsRecorded: true));
+    }
+
+    [Fact]
+    public void 목적지_id를_기록하지_않았으면_커밋을_거절한다()
+    {
+        Assert.False(TransferJournalPolicy.CanCommit("Prepared", destinationIdsRecorded: false));
+    }
+
+    [Fact]
+    public void 준비가_아닌_단계에서는_커밋을_거절한다()
+    {
+        foreach (var stage in new[] { "Committed", "Verified", "Whatever", null })
+            Assert.False(TransferJournalPolicy.CanCommit(stage, destinationIdsRecorded: true));
+    }
+
+    [Fact]
+    public void 확인은_커밋_뒤에만_된다()
+    {
+        Assert.True(TransferJournalPolicy.CanVerify("Committed"));
+        // 준비 직후의 Verify 는 아무것도 안 옮긴 항목을 닫는 길이다.
+        Assert.False(TransferJournalPolicy.CanVerify("Prepared"));
+        Assert.False(TransferJournalPolicy.CanVerify("Verified"));
+        Assert.False(TransferJournalPolicy.CanVerify("Whatever"));
+        Assert.False(TransferJournalPolicy.CanVerify(null));
+    }
+
+    [Fact]
+    public void 취소는_준비_단계에서만_된다()
+    {
+        Assert.True(TransferJournalPolicy.CanAbort("Prepared"));
+    }
+
+    [Fact]
+    public void 커밋_뒤에는_취소를_거절한다()
+    {
+        // 출처 쓰기가 이미 일어났을 수 있다. 그때의 취소는 항목만 지우고 소실을 가리는 길이다.
+        Assert.False(TransferJournalPolicy.CanAbort("Committed"));
+        Assert.False(TransferJournalPolicy.CanAbort("Verified"));
+        Assert.False(TransferJournalPolicy.CanAbort("Whatever"));
+        Assert.False(TransferJournalPolicy.CanAbort(null));
+    }
+
+    [Fact]
+    public void 새_전송의_열린_항목_검사는_관계없는_프로필_쌍을_막지_않는다()
+    {
+        // StmTransferJournal.Prepare 가 쓰는 판정과 같은 모양: 열린 항목(src,dst)이 새 전송의 두 끝 어디에도 안 걸린다.
+        Assert.False(TransferJournalPolicy.BlocksEditing("Prepared", "src", "dst", "newSrc"));
+        Assert.False(TransferJournalPolicy.BlocksEditing("Prepared", "src", "dst", "newDst"));
+        // 한 끝만 겹쳐도 막는다.
+        Assert.True(TransferJournalPolicy.BlocksEditing("Prepared", "src", "dst", "dst"));
+    }
+}
