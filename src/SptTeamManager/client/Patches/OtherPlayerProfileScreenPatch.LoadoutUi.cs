@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using pitTeam.Shared;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -1197,6 +1198,78 @@ namespace pitTeam.Patches
             return ordered.ToArray();
         }
 
+        // EFT 의 오류 문구는 항목을 "(id: <24자리 16진>)" 로 가리킨다. 첫 번째가 어긴 항목이다(부모는 이름으로만 나온다).
+        private static readonly System.Text.RegularExpressions.Regex StashErrorItemIdPattern =
+            new System.Text.RegularExpressions.Regex(@"(id:s*([0-9a-fA-F]{24}))");
+
+        // 판정은 EFT 가 이미 했다(오류 목록). 여기서는 그 오류를 항목에 대응시켜 정책에 넘기고, 정책이 남기라 한 것만
+        // 돌려준다. 건너뛴 항목마다 경고 한 줄을 남긴다 — 조용히 버리면 사용자는 아이템이 왜 사라졌는지 알 길이 없다.
+        private static JsonType.FlatItem[] SkipEftRejectedStashItems(
+            JsonType.FlatItem[] items,
+            List<string> errorTexts,
+            string stashRootId)
+        {
+            var itemsById = new Dictionary<string, JsonType.FlatItem>(StringComparer.Ordinal);
+            foreach (JsonType.FlatItem item in items)
+                itemsById[item._id.ToString()] = item;
+
+            var rejectedById = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (string errorText in errorTexts)
+            {
+                var match = errorText == null ? null : StashErrorItemIdPattern.Match(errorText);
+                string rejectedId = match != null && match.Success ? match.Groups[1].Value : null;
+                if (rejectedId == null || !itemsById.ContainsKey(rejectedId))
+                {
+                    throw CreateLiveStashRefreshException(
+                        $"Server-saved player stash had a deserialization error that names no known item, so it cannot be skipped: {errorText}");
+                }
+
+                if (!rejectedById.ContainsKey(rejectedId))
+                    rejectedById[rejectedId] = errorText;
+            }
+
+            if (rejectedById.ContainsKey(stashRootId))
+            {
+                throw CreateLiveStashRefreshException("Server-saved player stash root itself was rejected, so it cannot be skipped.");
+            }
+
+            var candidates = new List<StashCandidate>(items.Length);
+            foreach (JsonType.FlatItem item in items)
+            {
+                string id = item._id.ToString();
+                if (rejectedById.TryGetValue(id, out string ownReason))
+                {
+                    candidates.Add(new StashCandidate(id, false, ownReason));
+                    continue;
+                }
+
+                // 규칙을 어긴 항목의 자식은 붙을 곳이 없어진다. 남기면 트리 밖 고아가 되어 다시 스냅샷이 깨진다.
+                string rejectedAncestor = null;
+                string parentId = GetParentId(item);
+                for (int guard = 0; !string.IsNullOrWhiteSpace(parentId) && guard <= items.Length; guard++)
+                {
+                    if (rejectedById.ContainsKey(parentId))
+                    {
+                        rejectedAncestor = parentId;
+                        break;
+                    }
+
+                    parentId = itemsById.TryGetValue(parentId, out JsonType.FlatItem parent) ? GetParentId(parent) : null;
+                }
+
+                candidates.Add(rejectedAncestor == null
+                    ? new StashCandidate(id, true, null)
+                    : new StashCandidate(id, false, $"parent item {rejectedAncestor} was skipped"));
+            }
+
+            StashRevalidationResult result = StashRevalidationPolicy.Partition(candidates);
+            foreach (StashRejection skipped in result.Skipped)
+                pitFireTeam.Log.LogWarning($"[UI] Skipped stash item {skipped.Id ?? "(no id)"}: {skipped.Reason}");
+
+            var kept = new HashSet<string>(result.KeptIds, StringComparer.Ordinal);
+            return items.Where(item => kept.Contains(item._id.ToString())).ToArray();
+        }
+
         private static void ApplyServerSavedPlayerStashSnapshot(
             Profile activeProfile,
             InventoryController activeInventoryController,
@@ -1205,10 +1278,24 @@ namespace pitTeam.Patches
             EFT.ItemFactory.FlatItemsToResultTree tree = Singleton<EFT.ItemFactory>.Instance.FlatItemsToTree(savedStashItems, false, null);
             if (tree.DeserializationErrors != null && tree.DeserializationErrors.Count > 0)
             {
+                var errorTexts = new List<string>();
                 foreach (var error in tree.DeserializationErrors)
+                {
                     pitFireTeam.Log.LogWarning($"[UI] Server-saved stash item deserialization detail: {error}");
-                throw CreateLiveStashRefreshException(
-                    $"Server-saved player stash contained {tree.DeserializationErrors.Count} deserialization error(s).");
+                    errorTexts.Add(error?.ToString());
+                }
+
+                // 규칙을 어긴 항목 하나가 스태시 전체 재검증을 죽이지 않게 한다(doc/fixes/2026-10-27-pit-stash-ammo.md).
+                // 항목을 특정할 수 없거나, 빼고 나서도 오류가 남으면 예전처럼 던진다: 모르는 채로 일부만 적용하지 않는다.
+                savedStashItems = SkipEftRejectedStashItems(savedStashItems, errorTexts, savedStashItems[0]._id.ToString());
+                tree = Singleton<EFT.ItemFactory>.Instance.FlatItemsToTree(savedStashItems, false, null);
+                if (tree.DeserializationErrors != null && tree.DeserializationErrors.Count > 0)
+                {
+                    foreach (var error in tree.DeserializationErrors)
+                        pitFireTeam.Log.LogWarning($"[UI] Server-saved stash item deserialization detail after skipping: {error}");
+                    throw CreateLiveStashRefreshException(
+                        $"Server-saved player stash contained {tree.DeserializationErrors.Count} deserialization error(s) even after skipping rejected items.");
+                }
             }
 
             string stashRootId = savedStashItems[0]._id.ToString();

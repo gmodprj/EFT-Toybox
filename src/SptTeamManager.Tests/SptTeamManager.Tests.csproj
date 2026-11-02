@@ -45,6 +45,8 @@
     <Compile Include="ProfileMemberUpdatePolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/AutoJoinRosterPolicy.cs" Link="Shared/AutoJoinRosterPolicy.cs" />
     <Compile Include="AutoJoinRosterPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/StashRevalidationPolicy.cs" Link="Shared/StashRevalidationPolicy.cs" />
+    <Compile Include="StashRevalidationPolicyTests.cs" />
   </ItemGroup>
 
 </Project>
