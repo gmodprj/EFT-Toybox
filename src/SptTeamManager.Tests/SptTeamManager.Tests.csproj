@@ -47,6 +47,8 @@
     <Compile Include="AutoJoinRosterPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/StashRevalidationPolicy.cs" Link="Shared/StashRevalidationPolicy.cs" />
     <Compile Include="StashRevalidationPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/TransferJournalPolicy.cs" Link="Shared/TransferJournalPolicy.cs" />
+    <Compile Include="TransferJournalPolicyTests.cs" />
   </ItemGroup>
 
 </Project>

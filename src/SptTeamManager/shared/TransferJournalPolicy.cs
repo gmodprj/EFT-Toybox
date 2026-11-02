@@ -1,0 +1,82 @@
+using System;
+
+namespace pitTeam.Shared
+{
+    // 두 프로필을 고치는 조작의 3단계. 순서가 곧 안전 방향이다: 실제 이동(빼는 쪽 먼저, 넣는 쪽 나중)은
+    // Prepared 와 Committed 사이에서 일어나고, 그 순서라서 끊기면 아이템이 복제되는 대신 사라지는 쪽으로 기운다.
+    //   Prepared  - 무엇을 어디서 어디로 옮기는지 적었다. 실물은 아직 안 움직였다.
+    //   Committed - 출처에서 뺀 저장과 목적지에 넣은 저장이 둘 다 끝났다(이 표시는 두 번째 저장 "뒤"에 남긴다).
+    //   Verified  - 저장 뒤 디스크에서 다시 읽어 대조까지 끝났다. 이 단계의 항목은 닫힌다.
+    public enum TransferStage
+    {
+        Prepared = 0,
+        Committed = 1,
+        Verified = 2,
+    }
+
+    public enum RecoveryDecision
+    {
+        // 목적지가 이미 가졌다 - 이동이 끝난 상태이므로 저널만 닫으면 된다.
+        RollForward,
+        // 출처가 아직 가졌고 목적지는 없다 - 이동이 일어나지 않은 상태이므로 저널만 닫으면 된다.
+        RollBack,
+        // 코드가 정할 수 없다. 사람이 본다. 이 값 말고 "알아서 고친다" 는 결과는 없다.
+        StopAndReport,
+    }
+
+    // 끊긴 전송을 어느 쪽으로 마무리할지 "사실" 만 보고 정한다. 프로필을 읽지도, 로그를 남기지도, SPT 를 건드리지도
+    // 않는 순수 판정이다. 사실을 모으는 일(프로필에서 아이템이 있는지 보기)은 호출자 몫이다.
+    // 의도적으로 catch 가 없다: 입력으로 닿을 수 있는 모든 경로가 아래 분기로 끝나고, catch 가 있으면 분기를
+    // 지워도 테스트가 통과해 버린다.
+    // 열린 결과는 둘뿐이다 - 출처만 가졌다(안 움직임) / 목적지만 가졌다(다 움직임). 그 밖의 모든 모양 -
+    // 양쪽 다 가짐(복제 가능, 어느 쪽이 진짜인지 모름), 양쪽 다 없음(사라짐, 코드가 지어낼 수 없음),
+    // 단계와 실물이 어긋남, 모르는 단계 - 은 StopAndReport 다.
+    public static class TransferJournalPolicy
+    {
+        // 저장된 문서에서 읽은 단계 이름이 알려진 값이 아닐 때 쓰는 값. Enum 정의 밖이라 DecideRecovery 가 닫는다.
+        public const TransferStage UnknownStage = (TransferStage)(-1);
+
+        // Enum.TryParse 를 쓰지 않는다: "7" 같은 숫자 문자열도 통과시켜 정의 밖 값이 알려진 값처럼 보인다.
+        public static TransferStage ParseStage(string? name)
+        {
+            switch (name?.Trim().ToLowerInvariant())
+            {
+                case "prepared": return TransferStage.Prepared;
+                case "committed": return TransferStage.Committed;
+                case "verified": return TransferStage.Verified;
+                default: return UnknownStage;
+            }
+        }
+
+        public static RecoveryDecision DecideRecovery(TransferStage stage, bool sourceStillHasItems, bool destinationHasItems)
+        {
+            if (stage != TransferStage.Prepared && stage != TransferStage.Committed && stage != TransferStage.Verified)
+            {
+                return RecoveryDecision.StopAndReport;
+            }
+
+            // 양쪽 다 가졌다: 복제일 수 있고 어느 쪽이 진짜인지 모른다. 단계와 무관하게 멈춘다.
+            if (sourceStillHasItems && destinationHasItems)
+            {
+                return RecoveryDecision.StopAndReport;
+            }
+
+            // 양쪽 다 없다: 빼는 쪽을 먼저 저장하고 넣는 쪽 전에 끊긴 모양. 사라졌다고 사람에게 알린다.
+            if (!sourceStillHasItems && !destinationHasItems)
+            {
+                return RecoveryDecision.StopAndReport;
+            }
+
+            // 여기부터는 정확히 한쪽만 가졌다.
+            if (destinationHasItems)
+            {
+                // 다 움직였다. 어느 단계 표시든 사실과 어긋나지 않는다(커밋 표시만 못 남기고 끊겼을 수 있다).
+                return RecoveryDecision.RollForward;
+            }
+
+            // 출처만 가졌다 = 안 움직였다. 이건 준비 단계에서만 말이 된다. 커밋·확인이라 적혀 있는데
+            // 안 움직였다면 저장이 되돌려졌다는 뜻일 수 있어 조용히 닫지 않는다.
+            return stage == TransferStage.Prepared ? RecoveryDecision.RollBack : RecoveryDecision.StopAndReport;
+        }
+    }
+}
