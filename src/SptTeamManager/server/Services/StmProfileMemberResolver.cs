@@ -1,4 +1,5 @@
 using System.Globalization;
+using pitTeam.Server.Models;
 using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
@@ -12,7 +13,10 @@ namespace pitTeam.Server.Services;
 /// (Task 3) and never mutate it: changing it alters the player's stored profile with no SaveProfile call in sight.
 /// (Doc comment on purpose, not a plain one: this is the field whose misuse corrupts a profile the
 /// player plays, so the warning has to reach an IDE tooltip at the point of use.)
-public sealed record StmResolvedMember(string ProfileId, int Aid, string Nickname, int Level, string Side, PmcData Pmc);
+/// HandEdited: 플레이어가 STM 화면에서 이 팀원의 장비를 손으로 고친 적이 있는가(설계 §6-4 "편집하면
+/// 실물이 된다"). 등록 문서에서 오고, Lookup 이 이미 읽은 그 목록에서 함께 꺼낸다 - 이 값을 위해 등록을
+/// 다시 읽는 경로는 없다. 한 방향이다: 한 번 true 가 되면 그 팀원은 임시 장비 대상이 아니다.
+public sealed record StmResolvedMember(string ProfileId, int Aid, string Nickname, int Level, string Side, PmcData Pmc, bool HandEdited);
 
 // Bridges the game's numeric Aid to a registered launcher-profile teammate and its PMC character.
 // Called from inside PIT's invite/spawn handlers, so it must never throw: any failure is logged and
@@ -36,12 +40,13 @@ public class StmProfileMemberResolver(
     {
         member = null;
         unavailableReason = null;
-        IReadOnlyList<string> registered;
+        IReadOnlyList<StmProfileMember> registered;
         IReadOnlyList<ProfileCandidate> candidates;
         try
         {
-            // Fresh reads on every call. Never store these in a field.
-            registered = store.List(sessionId).Select(m => m.ProfileId).ToList();
+            // Fresh reads on every call. Never store these in a field. 레코드 전체를 들고 간다 -
+            // HandEdited 가 필요해서인데, 이 한 번의 읽기에 이미 들어 있으므로 읽기는 늘지 않는다.
+            registered = store.List(sessionId);
             candidates = catalog.GetCandidates(sessionId.ToString());
         }
         catch (Exception ex)
@@ -68,7 +73,7 @@ public class StmProfileMemberResolver(
         return outcome == ProfileLookupOutcome.Resolved && member != null;
     }
 
-    private bool ResolveFrom(MongoId sessionId, string? accountId, IReadOnlyList<string> registered, IReadOnlyList<ProfileCandidate> candidates,
+    private bool ResolveFrom(MongoId sessionId, string? accountId, IReadOnlyList<StmProfileMember> registered, IReadOnlyList<ProfileCandidate> candidates,
         out StmResolvedMember? member, out string? unavailableReason)
     {
         member = null;
@@ -81,7 +86,7 @@ public class StmProfileMemberResolver(
             // Decimal digits only: no sign, no whitespace.
             if (!int.TryParse(accountId, NumberStyles.None, CultureInfo.InvariantCulture, out var aid) || aid <= 0) return false;
 
-            var lookup = ProfileMemberLookup.ByAid(aid, registered, candidates);
+            var lookup = ProfileMemberLookup.ByAid(aid, registered.Select(m => m.ProfileId).ToList(), candidates);
 
             switch (lookup.Result)
             {
@@ -125,7 +130,12 @@ public class StmProfileMemberResolver(
             }
 
             var nickname = string.IsNullOrWhiteSpace(info.Nickname) ? aid.ToString(CultureInfo.InvariantCulture) : info.Nickname;
-            member = new StmResolvedMember(lookup.ProfileId, aid, nickname, info.Level.Value, info.Side, pmc);
+            // 이미 읽은 등록 목록에서 꺼낸다(새 읽기 없음). 레코드를 못 찾으면 false 쪽으로 떨어진다 -
+            // "손으로 고쳤는지 모른다" 를 "고쳤다" 로 읽으면 장비가 빈 팀원이 알몸으로 나간다. 모를 때는
+            // 평소 판정(임시 장비)이 더 닫힌 쪽이다.
+            var handEdited = registered.Any(m =>
+                string.Equals(m.ProfileId, lookup.ProfileId, StringComparison.Ordinal) && m.HandEdited);
+            member = new StmResolvedMember(lookup.ProfileId, aid, nickname, info.Level.Value, info.Side, pmc, handEdited);
             return true;
         }
         catch (Exception ex)
