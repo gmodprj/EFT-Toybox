@@ -20,6 +20,7 @@ public class FriendlyTeammateCallbacks(
     FriendlyTeammateInsuranceService teammateInsuranceService,
     FollowerInsuranceCourierTransferService courierTransfers,
     JsonUtil jsonUtil,
+    StmProfileViewFactory profileViewFactory,
     ISptLogger<FriendlyTeammateCallbacks> logger
 )
 {
@@ -160,6 +161,19 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> GetProfile(string url, GetOtherProfileRequest request, MongoId sessionId)
     {
+        // STM asks before PIT (invariant: the roster showed the player a PROFILE, so an Aid both own
+        // must resolve to the profile). A registered teammate PIT has no mercenary for is answered
+        // here, or reported - never handed on to throw a not-found.
+        if (profileViewFactory.TryBuildView(sessionId, request.AccountId, out var profileMemberView, out var unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody(profileMemberView));
+        }
+
+        if (!string.IsNullOrWhiteSpace(unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: unavailableReason));
+        }
+
         try
         {
             return new ValueTask<string>(httpResponse.GetBody(teammateService.GetTeammateProfile(sessionId, request)));
