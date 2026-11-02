@@ -33,6 +33,8 @@ PIT Fireteam 1.0.0 의 **포크**다. PIT 는 모드가 소유한 **용병**을 
   레벨이 어긋난다(설계 §4). → **계획 4**
 - 장비 편집, 팀원 상세 화면, **팀원별 auto-join 토글** → **계획 3**
   (auto-join 은 2026-11-02 에 사용자 결정으로 계획 3 에 넣었다. 왜 거기인지는 §5 의 1-c)
+  → 계획서가 있다: [plans/2026-11-02-spt-team-manager-plan-3-gear-editing.md](plans/2026-11-02-spt-team-manager-plan-3-gear-editing.md).
+  한글화는 결이 달라 별 계획이다: [plans/2026-11-02-korean-localization-plan.md](plans/2026-11-02-korean-localization-plan.md)
 - 임시 장비로 죽은 팀원의 시체에서 털어 온 것은 레이드 종료 때 **사라진다**. 풀어 주면 맨몸 프로필을
   초대해 죽게 두고 터는 **무한 장비 공급원**이 열린다. 소멸이 버그처럼 보이므로 로그로 알린다
 
