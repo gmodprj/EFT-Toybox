@@ -47,11 +47,15 @@ namespace pitTeam.Patches
                 case EPhraseTrigger.CoverMe:
                     return false;
                 default:
-                    // Fire / Hold Fire / Take Cover are asked of the policy, not listed here, so this skip and
-                    // the router cannot disagree. They were hidden from the menu before, so vanilla handling
-                    // of them was never a player-facing behavior; two systems acting on one command - with
-                    // opposite intent for Hold Fire - is the risk this closes.
-                    return !pitTeam.Components.pitAIBossPlayer.IsEngagementPhrase(info.phrase);
+                    // Fire / Hold Fire / Take Cover. DELIBERATE BEHAVIOR CHANGE: with default settings
+                    // (hideUnsupportedCommands is false) these three were visible in the menu and vanilla
+                    // BotReceiver acted on them for the player's squad. Where the fork now handles the command,
+                    // its handler REPLACES vanilla's, because two systems acting on one command is worse than
+                    // either - and for Hold Fire they pull in opposite directions.
+                    // Vanilla is skipped ONLY where the fork handler will actually run for this follower - the
+                    // same predicate the router uses. For any other follower (another boss's squad, an
+                    // unregistered speaker) vanilla still runs, so the command never silently does nothing.
+                    return !pitTeam.Components.pitAIBossPlayer.ForkHandlesEngagementFor(botOwner, info.PlayerRequester, info.phrase);
             }
         }
     }

@@ -346,12 +346,12 @@ namespace pitTeam.Components
                     ApplyCoverMeCommandDrop(info.PlayerRequester);
                     return;
                 }
-                else if (IsEngagementPhrase(info.phrase))
+                else if (HandlesEngagementPhrase(info.PlayerRequester, info.phrase))
                 {
                     // Fire / Hold Fire / Take Cover: which phrases these are, and what they mean, both come
                     // from GestureCommandPolicy (shared, tested); this only carries the result to the AI.
                     // Vanilla is kept off the same phrase by BotReceiverPhraseOverridePatch, which asks the
-                    // same IsEngagementPhrase - this return alone does not do that.
+                    // same HandlesEngagementPhrase - this return alone does not do that.
                     if (ApplyEngagementGesture(info.PlayerRequester, info.phrase)) return;
                 }
                 else if (info.phrase == EPhraseTrigger.OpenDoor)
@@ -3530,6 +3530,31 @@ namespace pitTeam.Components
         public static bool IsEngagementPhrase(EPhraseTrigger phrase)
         {
             return pitTeam.Shared.GestureCommandPolicy.Translate(EngagementMenuCommand(phrase)) != null;
+        }
+
+        // THE condition under which this fork handles an engagement phrase for this boss: the phrase is one the
+        // policy translates AND the speaker is this boss's own player. PhraseSaid's branch and the vanilla
+        // skip below both use it, so vanilla is silenced exactly where a fork handler will run.
+        public bool HandlesEngagementPhrase(IPlayer requester, EPhraseTrigger phrase)
+        {
+            return requester != null &&
+                   realPlayer != null &&
+                   requester.ProfileId == realPlayer.ProfileId &&
+                   IsEngagementPhrase(phrase);
+        }
+
+        // Should vanilla BotReceiver skip this phrase for this follower? Only when the fork will handle it for
+        // this follower: the speaker is a registered boss whose own squad contains the follower. Anywhere else
+        // (another boss's squad, an unregistered speaker) nothing in the fork acts on the phrase, so vanilla
+        // must still run or the command would silently do nothing.
+        public static bool ForkHandlesEngagementFor(BotOwner follower, IPlayer requester, EPhraseTrigger phrase)
+        {
+            if (follower == null || requester == null) return false;
+            pitAIBossPlayer boss = BossPlayers.GetBoss(requester.ProfileId);
+            return boss != null &&
+                   boss.HandlesEngagementPhrase(requester, phrase) &&
+                   boss.Followers != null &&
+                   boss.Followers.Contains(follower);
         }
 
         private static string EngagementMenuCommand(EPhraseTrigger phrase)
