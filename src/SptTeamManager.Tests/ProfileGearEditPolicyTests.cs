@@ -489,6 +489,42 @@ public class ProfileGearEditPolicyTests
     }
 
     [Fact]
+    public void 슬롯_이름은_요청의_철자가_아니라_정식_철자로_저장된다()
+    {
+        // SPT·EFT 는 슬롯 이름을 대소문자까지 그대로 본다. "headwear" 로 저장된 헬멧은 착용으로
+        // 인식되지 않는다 - 검사가 대소문자를 무시하고 받아 주는 만큼, 쓰는 값은 정식이어야 한다.
+        // 정식 철자의 출처는 부모 아이템 템플릿이 정의한 슬롯 이름이다(데이터베이스 자신의 철자).
+        Assert.Equal("Headwear", ProfileGearEditPolicy.CanonicalSlotName("headwear", Equip, Equip, Stash, Facts()));
+        Assert.Equal("Headwear", ProfileGearEditPolicy.CanonicalSlotName("  HEADWEAR  ", Equip, Equip, Stash, Facts()));
+        Assert.Equal("mod_magazine", ProfileGearEditPolicy.CanonicalSlotName("MOD_Magazine", "worn-pistol", Equip, Stash, Facts()));
+        Assert.Equal("cartridges", ProfileGearEditPolicy.CanonicalSlotName("Cartridges", "worn-rifle-mag", Equip, Stash, Facts()));
+        // 스태시 칸도 같다(서비스의 격자 배치는 템플릿의 격자 이름을 직접 쓰므로 그쪽은 이미 정식이다).
+        Assert.Equal("hideout", ProfileGearEditPolicy.CanonicalSlotName("HideOut", Stash, Equip, Stash, Facts()));
+
+        // 그리고 철자만 다른 요청은 **통과한다** - 그래서 정식화가 필요하다.
+        Assert.True(Judge(Edit("stash-helmet", "headwear", Equip)).Allowed);
+        Assert.True(Judge(Edit("worn-rifle", "HIDEOUT", Stash)).Allowed);
+
+        // 장비 루트 슬롯은 템플릿이 없어도 허용 목록이 정식 철자를 안다(EquipmentSlots 이름 그대로).
+        Assert.Equal("Headwear", ProfileGearEditPolicy.CanonicalSlotName("headwear", Equip, Equip, Stash, null));
+
+        // 어느 출처에도 없으면 null 이다. 호출자는 그때 거부한다(철자를 지어내지 않는다).
+        Assert.Null(ProfileGearEditPolicy.CanonicalSlotName("뭔가이상한슬롯", Equip, Equip, Stash, Facts()));
+        // 장비 트리 **안쪽** 슬롯은 템플릿 말고 출처가 없다 - 사실이 없으면 null 이다.
+        Assert.Null(ProfileGearEditPolicy.CanonicalSlotName("mod_magazine", "worn-pistol", Equip, Stash, null));
+        Assert.Null(ProfileGearEditPolicy.CanonicalSlotName("main", Stash, Equip, Stash, Facts()));
+        Assert.Null(ProfileGearEditPolicy.CanonicalSlotName(null, Equip, Equip, Stash, Facts()));
+        Assert.Null(ProfileGearEditPolicy.CanonicalSlotName("   ", Equip, Equip, Stash, Facts()));
+
+        // 템플릿 사실이 없어도 장비 루트 슬롯은 허용 목록이 백업한다(EquipmentSlots 이름 그대로).
+        var noSlots = new GearSlotFacts(
+            Facts().TemplateIdByItemId,
+            new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(),
+            Facts().ParentTemplateIdByTemplateId);
+        Assert.Equal("Headwear", ProfileGearEditPolicy.CanonicalSlotName("headwear", Equip, Equip, Stash, noSlots));
+    }
+
+    [Fact]
     public void 장비_루트_슬롯_어휘는_SpawnGearPolicy_와_같다()
     {
         // 두 어휘가 조용히 갈라지면, 한쪽이 "착용 장비" 로 세지 않는 슬롯에 편집이 아이템을 넣을 수

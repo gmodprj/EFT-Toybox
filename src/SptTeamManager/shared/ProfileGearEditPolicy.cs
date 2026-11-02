@@ -440,6 +440,53 @@ namespace pitTeam.Shared
             }
         }
 
+        // 프로필에 **쓸** 정식 슬롯 이름. 요청의 철자는 쓰지 않는다: 어휘 검사는 대소문자를 무시하고
+        // 받아 주지만 SPT·EFT 는 슬롯 이름을 대소문자까지 그대로 본다 - "headwear" 로 저장된 헬멧은
+        // 착용으로 인식되지 않는다. 검사를 통과한 요청이 깨진 프로필을 쓰는 길이 여기였다.
+        //
+        // 정식 이름의 출처는 **부모 아이템 템플릿이 정의한 슬롯 이름**(GearSlotDefinition.Name)이다 -
+        // 데이터베이스 자신의 철자이므로 추측이 아니다. 장비 루트 슬롯은 허용 목록의 항목이 그 백업이고
+        // (EquipmentSlots 이름 그대로), 스태시 칸은 StashSlots 의 항목이다(서비스의 격자 배치는 템플릿의
+        // 격자 이름을 직접 쓰므로 그쪽은 이미 정식이다).
+        // 어느 출처에도 없으면 null 이다. 호출자는 그때 **거부한다** - 철자를 지어내지 않는다.
+        public static string? CanonicalSlotName(
+            string? slot,
+            string? parentId,
+            string? equipmentRootId,
+            string? stashRootId,
+            GearSlotFacts? slotFacts)
+        {
+            if (string.IsNullOrWhiteSpace(slot)) return null;
+
+            var wanted = slot!.Trim();
+            var parent = parentId?.Trim();
+            if (!string.IsNullOrWhiteSpace(stashRootId) && string.Equals(parent, stashRootId!.Trim(), StringComparison.Ordinal))
+            {
+                return StashSlots.TryGetValue(wanted, out var stashSlot) ? stashSlot : null;
+            }
+
+            if (!string.IsNullOrWhiteSpace(parent) && slotFacts?.TemplateIdByItemId != null
+                && slotFacts.TemplateIdByItemId.TryGetValue(parent!, out var parentTemplateId)
+                && !string.IsNullOrWhiteSpace(parentTemplateId)
+                && slotFacts.SlotsByTemplateId != null
+                && slotFacts.SlotsByTemplateId.TryGetValue(parentTemplateId!, out var slots)
+                && slots != null)
+            {
+                foreach (var definition in slots)
+                {
+                    if (definition?.Name == null) continue;
+                    if (string.Equals(definition.Name, wanted, StringComparison.OrdinalIgnoreCase)) return definition.Name;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(equipmentRootId) && string.Equals(parent, equipmentRootId!.Trim(), StringComparison.Ordinal))
+            {
+                return EquipmentRootSlots.TryGetValue(wanted, out var rootSlot) ? rootSlot : null;
+            }
+
+            return null;
+        }
+
         private static WornGearItem? FindItem(IReadOnlyCollection<WornGearItem> items, string itemId)
         {
             foreach (var item in items)

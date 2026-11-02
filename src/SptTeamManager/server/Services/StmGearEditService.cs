@@ -167,8 +167,9 @@ public class StmGearEditService(
 
             // 5. 판정 **전부 먼저**. 하나라도 거절되면 아무것도 쓰지 않는다. 순서대로 누적해 보므로
             //    "탄창을 총에 꽂고 그 탄창에 탄을 넣는" 연쇄가 통과한다(인계 문서 열린 항목 4).
+            var slotFacts = BuildSlotFacts(edited);
             var verdict = ProfileGearEditPolicy.ValidateBatch(
-                requests, ToWornGearItems(edited), stashRootId, equipmentRootId, BuildSlotFacts(edited));
+                requests, ToWornGearItems(edited), stashRootId, equipmentRootId, slotFacts);
             if (!verdict.Allowed)
             {
                 // 사유는 실패한 그 건의 사유다. 플레이어가 어느 아이템이 왜 막혔는지 알 수 있다.
@@ -207,8 +208,24 @@ public class StmGearEditService(
                 }
                 else
                 {
-                    target.ParentId = parentId;
-                    target.SlotId = slotId;
+                    // 요청의 철자를 프로필에 쓰지 않는다. 어휘 검사는 대소문자를 무시하고 받아 주지만
+                    // SPT·EFT 는 슬롯 이름을 대소문자까지 그대로 보므로 "headwear" 로 저장된 헬멧은
+                    // 착용으로 인식되지 않는다 - 검사를 통과한 요청이 깨진 프로필을 쓰는 길이었다.
+                    // 정식 이름은 부모 아이템 템플릿이 정의한 슬롯 이름이다(데이터베이스 자신의 철자).
+                    var canonicalSlot = ProfileGearEditPolicy.CanonicalSlotName(slotId, parentId, equipmentRootId, stashRootId, slotFacts);
+                    if (canonicalSlot == null)
+                    {
+                        logger.Error($"[STM] 장비 편집: 슬롯 '{slotId}'(부모 '{parentId}')의 정식 이름을 찾지 못해 전체를 취소한다 - 철자를 지어내지 않는다.");
+                        rejectionReason = $"슬롯 '{slotId}' 의 정식 이름을 확인하지 못해 전체를 취소했습니다.";
+                        return false;
+                    }
+
+                    // 부모 id 도 요청의 것을 믿지 않고 프로필에서 찾은 그 아이템의 id 를 쓴다. 판정이
+                    // Ordinal 로 소속을 확인했으므로 실제로는 같은 문자열이지만, 쓰는 값의 출처를
+                    // 프로필 한 곳으로 모아 둔다(장비 루트는 Inventory.Equipment 에서 온 값이다).
+                    var parentItem = edited.FirstOrDefault(i => i?.Id != null && string.Equals(i.Id.ToString(), parentId, StringComparison.Ordinal));
+                    target.ParentId = parentItem?.Id.ToString() ?? parentId;
+                    target.SlotId = canonicalSlot;
                     // 슬롯에 들어간 아이템은 격자 좌표를 갖지 않는다. 스태시 칸에 있던 Location 을 그대로 두면
                     // 슬롯 안에 좌표가 있는 모양이 되고, PIT 의 검증도 그 모양을 수상한 것으로 본다.
                     target.Location = null;
