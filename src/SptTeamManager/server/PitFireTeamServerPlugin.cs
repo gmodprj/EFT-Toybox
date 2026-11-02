@@ -2,6 +2,7 @@ using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
+using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Routers;
@@ -34,6 +35,7 @@ public class PitFireTeamServerPlugin(
     TradersTable traders,
     LocaleTable locales,
     FriendlyServerSettingsService settingsService,
+    TraderConfig traderConfig,
     ImageRouter imageRouter
 ) : IOnLoad
 {
@@ -41,6 +43,7 @@ public class PitFireTeamServerPlugin(
     {
         cancellationToken.ThrowIfCancellationRequested();
         EnsureCourierTraderRegistered();
+        EnsureCourierTraderRefreshTime();
         EnsureCourierTraderLocales();
         EnsureCourierAvatarIsServed();
         settingsService.ApplyPersistedSettings();
@@ -62,6 +65,43 @@ public class PitFireTeamServerPlugin(
         catch (Exception ex)
         {
             logger.Warning($"Failed to register courier trader: {ex.Message}");
+        }
+    }
+
+    // 트레이더를 표에 넣는 것만으로는 모자라다. SPT 의 TraderHelper 는 **trader 설정의 UpdateTime 목록**에서
+    // 보충 주기를 찾고, 없으면 기동마다 경고를 내며 기본값 항목을 스스로 끼워 넣는다
+    // (`트레이더 … 찾을 수 없음, 기본 새로 고침 시간으로 임시 항목을 생성합니다`).
+    // 2026-11-03 서버 로그를 훑다가 그 경고가 **우리 택배원 트레이더** 것임을 알았다 - 10-27 부터 매 기동 났다.
+    // 같은 기본값을 우리가 먼저 넣어 두면 경고 없이 같은 결과가 된다.
+    private void EnsureCourierTraderRefreshTime()
+    {
+        try
+        {
+            var updateTimes = traderConfig.UpdateTime;
+            if (updateTimes == null)
+            {
+                logger.Warning("Courier trader refresh time was left to SPT: trader config had no UpdateTime list.");
+                return;
+            }
+
+            if (updateTimes.Any(entry => entry?.TraderId == FriendlyCourierTraderProfile.CourierTraderId))
+            {
+                return;
+            }
+
+            int seconds = traderConfig.UpdateTimeDefault;
+            updateTimes.Add(new UpdateTime
+            {
+                Name = FriendlyCourierTraderProfile.CourierNickname,
+                TraderId = FriendlyCourierTraderProfile.CourierTraderId,
+                Seconds = new MinMax<int>(seconds, seconds),
+            });
+            logger.Info($"Registered courier trader refresh time ({seconds}s)");
+        }
+        catch (Exception ex)
+        {
+            // 보충 주기가 없어도 SPT 가 기본값으로 채운다 - 경고 한 줄이 더 날 뿐이므로 여기서 멈추지 않는다.
+            logger.Warning($"Failed to register courier trader refresh time: {ex.Message}");
         }
     }
 
