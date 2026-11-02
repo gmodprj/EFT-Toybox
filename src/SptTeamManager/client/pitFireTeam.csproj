@@ -19,6 +19,9 @@
         <Compile Include="../shared/ProfileRosterPolicy.cs" Link="Shared/ProfileRosterPolicy.cs" />
         <Compile Include="../shared/StmRosterWire.cs" Link="Shared/StmRosterWire.cs" />
         <Compile Include="../shared/StashRevalidationPolicy.cs" Link="Shared/StashRevalidationPolicy.cs" />
+        <Compile Include="../shared/TransferJournalPolicy.cs" Link="Shared/TransferJournalPolicy.cs" />
+        <Compile Include="../shared/TransferEntryClosePolicy.cs" Link="Shared/TransferEntryClosePolicy.cs" />
+        <Compile Include="../shared/ProfileStatePolicy.cs" Link="Shared/ProfileStatePolicy.cs" />
         <Reference Include="0Harmony">
             <HintPath>libs\0Harmony.dll</HintPath>
         </Reference>
