@@ -180,6 +180,104 @@ public class ProfileGearEditPolicyTests
         Assert.False(Judge(new GearEditRequest("profile-1", "  ", "Headwear", Equip)).Allowed);
     }
 
+    // ---- 벗기기: 그 팀원 장비 → 그 팀원 **자신의** 스태시 ----
+    // §6-4 의 "출처는 본인 스태시뿐" 은 새 아이템이 어디서 오는가의 규칙이고, 그 팀원 자신의 장비가
+    // 자기 스태시로 돌아가는 것을 막는 규칙이 아니다. 한 프로필 안의 이동이고 공짜 생성도 없다.
+
+    [Fact]
+    public void 착용한_것을_그_팀원_자신의_스태시로_벗긴다()
+    {
+        // 장비 루트의 직접 자식(착용 장비)
+        Assert.True(Judge(Edit("worn-rifle", "hideout", Stash)).Allowed);
+        // 장비 트리 안쪽의 장착물(총에 꽂힌 탄창)도 같다.
+        Assert.True(Judge(Edit("worn-rifle-mag", "hideout", Stash)).Allowed);
+    }
+
+    [Fact]
+    public void 어느_트리에도_없는_아이템은_벗길_수_없다()
+    {
+        var verdict = Judge(Edit("없는아이템", "hideout", Stash));
+        Assert.False(verdict.Allowed);
+        Assert.False(string.IsNullOrWhiteSpace(verdict.Reason));
+
+        // 플레이어 스태시의 것도 이 목록에 없다 - 벗기기로도 들어올 길이 없다.
+        Assert.False(Judge(Edit("player-stash-helmet", "hideout", Stash)).Allowed);
+
+        // 이미 스태시에 있는 것은 벗길 것이 없다(착용·장착한 것이 아니다).
+        Assert.False(Judge(Edit("stash-helmet", "hideout", Stash)).Allowed);
+    }
+
+    [Fact]
+    public void 팀원_자신의_스태시가_아닌_곳으로는_벗길_수_없다()
+    {
+        // 스태시 **안의** 가방 칸은 목적지가 아니다(§6-5 가 미뤘다). 스태시 루트만 받는다.
+        Assert.False(Judge(Edit("worn-rifle-mag", "hideout", "stash-mag")).Allowed);
+
+        // 장비 트리 안의 용기로 옮기는 것도 이 경로가 아니다 - 'hideout' 은 장비 슬롯 어휘가 아니다.
+        Assert.False(Judge(Edit("worn-rifle-mag", "hideout", "worn-rig")).Allowed);
+
+        // 장비 루트 자체를 스태시로 옮기면 그 프로필의 장비 트리가 사라진다.
+        var root = Judge(Edit(Equip, "hideout", Stash));
+        Assert.False(root.Allowed);
+        Assert.Contains("장비 루트", root.Reason);
+
+        // 존재하지 않는 부모도 거부다(추측하지 않는다).
+        Assert.False(Judge(Edit("worn-rifle-mag", "hideout", "없는부모")).Allowed);
+    }
+
+    [Fact]
+    public void 벗기기도_스태시_칸_이름을_허용_목록으로_받는다()
+    {
+        foreach (var slot in new[] { "main", "1", "Headwear", "mod_magazine", "뭔가이상한칸" })
+        {
+            var verdict = Judge(Edit("worn-rifle-mag", slot, Stash));
+            Assert.False(verdict.Allowed);
+            Assert.False(string.IsNullOrWhiteSpace(verdict.Reason));
+        }
+
+        // 허용 목록은 비어 있지 않다 - 어휘가 비면 벗기기 자체가 불가능해진다.
+        Assert.NotEmpty(ProfileGearEditPolicy.StashSlotNames);
+    }
+
+    [Fact]
+    public void 벗기고_다른_것을_그_자리에_넣는_묶음이_통과한다()
+    {
+        // 라이플의 탄창 슬롯은 차 있다. 벗긴 뒤에는 그 자리에 다른 탄창을 넣을 수 있다 -
+        // 점유 판정이 누적되기 때문이다. 부분 장전 탄창의 막다른 길이 이렇게 풀린다.
+        var batch = new[]
+        {
+            Edit("worn-rifle-mag", "hideout", Stash),
+            Edit("stash-mag", "mod_magazine", "worn-rifle"),
+        };
+
+        Assert.True(ProfileGearEditPolicy.ValidateBatch(batch, Profile(), Stash, Equip, Facts()).Allowed);
+
+        // 순서를 뒤집으면 그때 슬롯은 아직 차 있다.
+        var reversed = new[]
+        {
+            Edit("stash-mag", "mod_magazine", "worn-rifle"),
+            Edit("worn-rifle-mag", "hideout", Stash),
+        };
+        Assert.False(ProfileGearEditPolicy.ValidateBatch(reversed, Profile(), Stash, Equip, Facts()).Allowed);
+    }
+
+    [Fact]
+    public void 벗기기는_아이템_집합을_바꾸지_않으므로_대조를_통과한다()
+    {
+        // 벗기기는 부모와 슬롯만 바꾼다. 집합이 그대로이므로 디스크 재독 대조가 통과한다.
+        var before = new[] { Stash, Equip, "worn-rifle", "worn-rifle-mag" };
+        var after = new[] { Stash, Equip, "worn-rifle", "worn-rifle-mag" };
+        Assert.True(ProfileGearEditPolicy.CheckItemSetUnchanged(before, after).Conserved);
+
+        // PIT 경로의 보존 검사도 같다: 팀원 쪽으로 간 것이 아니라 스태시에 남아도 보존이다.
+        var conservation = ProfileGearEditPolicy.CheckStashConservation(
+            new[] { "root", "helmet" },
+            new[] { "root", "helmet" },
+            new[] { "teammate-equip" },
+            null);
+        Assert.True(conservation.Conserved);
+    }
+
     // ---- 넣을 자리가 실제로 맞는가 (어휘만으로는 부족하다) ----
     // 집합은 보존되고 트리도 멀쩡한데 EFT 가 적재를 거부할 수 있는 프로필이 만들어지는 경우들.
 

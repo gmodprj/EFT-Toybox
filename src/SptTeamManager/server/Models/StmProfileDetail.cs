@@ -57,7 +57,10 @@ public record StmGearEditRequest : IRequestData
 }
 
 // 한 건: 이 아이템을 이 부모의 이 슬롯으로. TargetParentId 가 비면 장비 루트 아래를 뜻한다.
-// Location(격자 좌표)이 없는 것은 의도다 - 이 경로는 슬롯에 넣는 조작만 표현한다(ProfileGearEditPolicy).
+// 방향 둘을 같은 모양으로 적는다: 부모가 장비 트리면 **입히기**, 부모가 그 팀원의 스태시 루트이고
+// 슬롯이 'hideout' 이면 **벗기기**다. 그 밖의 부모는 거부다(ProfileGearEditPolicy).
+// Location(격자 좌표)이 없는 것은 의도다 - 입힐 때는 슬롯이라 좌표가 없고, 벗길 때는 SPT 자신의
+// PlaceItemInContainer 가 빈 자리를 찾아 좌표를 쓴다. 어느 쪽도 클라이언트가 좌표를 정하지 않는다.
 public record StmGearEditItem
 {
     [JsonPropertyName("itemId")] public string? ItemId { get; set; }

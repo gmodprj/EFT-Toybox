@@ -2,6 +2,7 @@ using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers.Items;
+using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
@@ -13,7 +14,10 @@ using Path = System.IO.Path;
 
 namespace pitTeam.Server.Services;
 
-// 프로필 팀원의 장비를 고친다 - 한 요청의 여러 건을 **쓰기 한 번**으로 적용한다. 설계 §6-4: "편집하면 실물이 된다" - 중간 상태를 두지 않고
+// 프로필 팀원의 장비를 고친다 - 한 요청의 여러 건을 **쓰기 한 번**으로 적용한다. 방향은 둘이고 둘 다
+// 한 프로필 안의 이동이다: 입히기(그 팀원 스태시 → 그 팀원 장비 트리)와 벗기기(그 팀원 장비 트리 →
+// 그 팀원 자신의 스태시). 어느 쪽도 아이템을 그 프로필 밖으로 내보내지 않고, 플레이어 스태시에서
+// 들여오지도 않는다. 설계 §6-4: "편집하면 실물이 된다" - 중간 상태를 두지 않고
 // 그 순간 그 런처 프로필에 박힌다. "출처는 본인 스태시뿐" - 집어넣을 수 있는 것은 그 팀원 스태시에
 // 실제로 있는 것뿐이고, 플레이어 스태시에서 흘러드는 경로는 없다(공짜 생성 금지).
 //
@@ -44,6 +48,7 @@ public class StmGearEditService(
     SaveServer saveServer,
     ICloner cloner,
     ItemHelper itemHelper,
+    InventoryHelper inventoryHelper,
     JsonUtil jsonUtil,
     FileUtil fileUtil,
     ISptLogger<StmGearEditService> logger)
@@ -172,7 +177,7 @@ public class StmGearEditService(
             }
 
             // 판정이 끝난 뒤 한 클론에 전부 반영한다. 정책이 본 것과 같은 순서다.
-            var applied = new List<(string ItemId, string ParentId, string SlotId)>(requests.Count);
+            var applied = new List<(string ItemId, string ParentId, string SlotId, bool ToStash)>(requests.Count);
             foreach (var request in requests)
             {
                 var itemId = request.ItemId.Trim();
@@ -186,12 +191,30 @@ public class StmGearEditService(
                     return false;
                 }
 
-                target.ParentId = parentId;
-                target.SlotId = slotId;
-                // 슬롯에 들어간 아이템은 격자 좌표를 갖지 않는다. 스태시 칸에 있던 Location 을 그대로 두면
-                // 슬롯 안에 좌표가 있는 모양이 되고, PIT 의 검증도 그 모양을 수상한 것으로 본다.
-                target.Location = null;
-                applied.Add((itemId, parentId, slotId));
+                var toStash = string.Equals(parentId, stashRootId!.Trim(), StringComparison.Ordinal);
+                if (toStash)
+                {
+                    // 벗기기. 격자에는 좌표가 필요하고 좌표를 지어내지 않는다 - SPT 자신의
+                    // PlaceItemInContainer 가 빈 자리를 찾아 ParentId·SlotId·Location 을 함께 쓴다
+                    // (refs/4.1.0; RestrictedMagazineRecovery.TryPlace 가 같은 두 호출을 쓴다).
+                    // 자리가 없거나 격자를 읽지 못하면 거부한다 - 여기까지도 아무것도 쓰지 않았다.
+                    if (!TryPlaceInStash(edited, target, stashRootId!.Trim(), slotId, out var placementFailure))
+                    {
+                        logger.Error($"[STM] 장비 편집: 아이템 '{itemId}' 을(를) 프로필 '{member.ProfileId}' 스태시에 놓지 못해 전체를 취소한다: {placementFailure}");
+                        rejectionReason = $"벗긴 아이템 '{itemId}' 을(를) 놓을 스태시 자리를 찾지 못해 전체를 취소했습니다.";
+                        return false;
+                    }
+                }
+                else
+                {
+                    target.ParentId = parentId;
+                    target.SlotId = slotId;
+                    // 슬롯에 들어간 아이템은 격자 좌표를 갖지 않는다. 스태시 칸에 있던 Location 을 그대로 두면
+                    // 슬롯 안에 좌표가 있는 모양이 되고, PIT 의 검증도 그 모양을 수상한 것으로 본다.
+                    target.Location = null;
+                }
+
+                applied.Add((itemId, parentId, slotId, toStash));
             }
 
             // 6. 유일한 쓰기: SaveServer 가 들고 있는 객체를 고치고 그 자신의 저장을 부른다. 프로필
@@ -280,7 +303,7 @@ public class StmGearEditService(
     // 못 읽거나 한 가지라도 어긋나면 false 다(닫힌 쪽). mismatch 는 로그에 남는 한 줄이다.
     private bool VerifyFromDisk(
         string profileId,
-        IReadOnlyList<(string ItemId, string ParentId, string SlotId)> applied,
+        IReadOnlyList<(string ItemId, string ParentId, string SlotId, bool ToStash)> applied,
         string stashRootId,
         string equipmentRootId,
         List<Item> beforeEdit,
@@ -316,7 +339,7 @@ public class StmGearEditService(
         var diskEquipmentIds = WornGearLossPolicy.CollectSubtreeIds(diskTriples, new[] { equipmentRootId });
         var diskStashIds = WornGearLossPolicy.CollectSubtreeIds(diskTriples, new[] { stashRootId });
 
-        foreach (var (itemId, expectedParentId, expectedSlotId) in applied)
+        foreach (var (itemId, expectedParentId, expectedSlotId, toStash) in applied)
         {
             var moved = onDisk.FirstOrDefault(i => i?.Id != null && string.Equals(i.Id.ToString(), itemId, StringComparison.Ordinal));
             if (moved == null)
@@ -325,23 +348,29 @@ public class StmGearEditService(
                 return false;
             }
 
+            // 좌표의 기대가 방향마다 뒤집힌다: 슬롯에 들어간 것은 좌표가 **없어야** 하고, 스태시 격자에
+            // 놓인 것은 좌표가 **있어야** 한다(없으면 그 아이템이 어느 칸에 있는지 아무도 모른다).
+            var locationWrong = toStash ? moved.Location == null : moved.Location != null;
             if (!string.Equals(moved.ParentId, expectedParentId, StringComparison.Ordinal)
                 || !string.Equals(moved.SlotId, expectedSlotId, StringComparison.Ordinal)
-                || moved.Location != null)
+                || locationWrong)
             {
-                mismatch = $"디스크의 아이템 '{itemId}' 이(가) 기대와 다르다(부모 '{moved.ParentId}' 기대 '{expectedParentId}', 슬롯 '{moved.SlotId}' 기대 '{expectedSlotId}', 좌표 {(moved.Location == null ? "없음" : "있음")}).";
+                mismatch = $"디스크의 아이템 '{itemId}' 이(가) 기대와 다르다(부모 '{moved.ParentId}' 기대 '{expectedParentId}', 슬롯 '{moved.SlotId}' 기대 '{expectedSlotId}', 좌표 {(moved.Location == null ? "없음" : "있음")}, 기대 {(toStash ? "있음" : "없음")}).";
                 return false;
             }
 
-            if (!diskEquipmentIds.Contains(itemId))
+            // 트리 기대도 뒤집힌다.
+            var mustBeIn = toStash ? diskStashIds : diskEquipmentIds;
+            var mustBeOutOf = toStash ? diskEquipmentIds : diskStashIds;
+            if (!mustBeIn.Contains(itemId))
             {
-                mismatch = $"디스크의 아이템 '{itemId}' 이(가) 장비 트리 안에 없다.";
+                mismatch = $"디스크의 아이템 '{itemId}' 이(가) {(toStash ? "스태시" : "장비")} 트리 안에 없다.";
                 return false;
             }
 
-            if (diskStashIds.Contains(itemId))
+            if (mustBeOutOf.Contains(itemId))
             {
-                mismatch = $"디스크의 아이템 '{itemId}' 이(가) 아직 스태시 트리 안에 있다.";
+                mismatch = $"디스크의 아이템 '{itemId}' 이(가) 아직 {(toStash ? "장비" : "스태시")} 트리 안에 있다.";
                 return false;
             }
         }
@@ -371,6 +400,63 @@ public class StmGearEditService(
         catch (Exception ex)
         {
             logger.Error($"[STM] 장비 편집 되돌리기가 실패했다(프로필 '{profileId}'): {ex}");
+            return false;
+        }
+    }
+
+    // 벗긴 아이템을 그 프로필 **자신의** 스태시 격자에 놓는다. 좌표를 지어내지 않는다 - 빈 자리를 찾고
+    // ParentId·SlotId·Location 을 쓰는 것은 SPT 자신의 InventoryHelper.PlaceItemInContainer 다
+    // (refs/4.1.0: itemWithChildren[0] 의 크기를 재서 FindSlotForItem 으로 자리를 찾고, 성공했을 때만
+    // 세 필드를 쓴다). 격자 지도를 만드는 두 호출의 조합은 RestrictedMagazineRecovery.TryPlace 와 같다.
+    // 던지지 않는다: 실패는 false + 사람이 읽을 사유이고, 호출자가 전체를 취소한다(아직 아무것도 안 썼다).
+    private bool TryPlaceInStash(List<Item> items, Item target, string stashRootId, string slotId, out string failure)
+    {
+        failure = string.Empty;
+        try
+        {
+            var stash = items.FirstOrDefault(i => i?.Id != null && string.Equals(i.Id.ToString(), stashRootId, StringComparison.Ordinal));
+            if (stash == null)
+            {
+                failure = $"스태시 루트 '{stashRootId}' 를 아이템 목록에서 찾지 못했다.";
+                return false;
+            }
+
+            var found = itemHelper.GetItem(stash.Template);
+            var grid = (found.Key ? found.Value?.Properties?.Grids : null)?
+                .FirstOrDefault(g => g?.Name != null && string.Equals(g.Name, slotId, StringComparison.OrdinalIgnoreCase));
+            if (grid?.Properties?.CellsH is not > 0 || grid.Properties.CellsV is not > 0)
+            {
+                failure = $"스태시 템플릿 '{stash.Template}' 에서 '{slotId}' 격자의 크기를 읽지 못했다.";
+                return false;
+            }
+
+            // 이 격자에 이미 있는 것만 지도에 넣는다(GetContainerMap 은 리그처럼 격자가 여러 개인 용기의
+            // 모든 격자를 합쳐 버린다 - RestrictedMagazineRecovery 가 같은 이유로 같은 필터를 쓴다).
+            // 벗길 아이템 자신은 아직 장비 트리에 있으므로 지도에 들어가지 않는다.
+            var gridItems = items.Where(i => i?.ParentId == null
+                || !string.Equals(i.ParentId, stashRootId, StringComparison.Ordinal)
+                || string.Equals(i.SlotId, grid.Name, StringComparison.OrdinalIgnoreCase));
+            var map = inventoryHelper.GetContainerMap(grid.Properties.CellsH!.Value, grid.Properties.CellsV!.Value, gridItems, stash.Id);
+
+            // 크기 계산은 하위 아이템(접히는 개조·부착물)까지 본다. 트리 판정은 CollectSubtreeIds 하나다.
+            var subtreeIds = WornGearLossPolicy.CollectSubtreeIds(ToWornGearItems(items), new[] { target.Id.ToString() });
+            var tree = items.Where(i => i?.Id != null && subtreeIds.Contains(i.Id.ToString())).ToList();
+            // PlaceItemInContainer 는 itemWithChildren[0] 을 크기 계산의 주체로 쓴다 - 루트가 먼저여야 한다.
+            tree.Remove(target);
+            tree.Insert(0, target);
+
+            var placement = inventoryHelper.PlaceItemInContainer(map, tree, stashRootId, grid.Name!);
+            if (placement?.Success != true)
+            {
+                failure = $"'{grid.Name}' 격자에 빈 자리가 없다.";
+                return false;
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            failure = $"스태시 자리 찾기가 실패했다: {ex.Message}";
             return false;
         }
     }

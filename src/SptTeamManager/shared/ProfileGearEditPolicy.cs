@@ -63,6 +63,17 @@ namespace pitTeam.Shared
 
         private const string CartridgeSlot = "cartridges";
 
+        // 스태시 루트의 격자 이름. 벗긴 장비가 돌아가는 유일한 목적지다 - SPT 의
+        // InventoryHelper.PlaceItemInContainer 의 기본 desiredSlotId 와 같은 값이고(refs/4.1.0),
+        // 스태시 템플릿의 격자 이름이다. 역시 허용 목록이다: 모르는 칸 이름으로는 넣지 않는다.
+        private static readonly HashSet<string> StashSlots = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "hideout",
+        };
+
+        // 테스트가 "벗기기의 목적지 칸" 어휘를 기계로 확인할 수 있게 열어 둔다. 읽기 전용.
+        internal static IReadOnlySet<string> StashSlotNames => StashSlots;
+
         // 테스트가 두 어휘의 약속(장비 루트 슬롯은 SpawnGearPolicy 가 아는 이름과 같다)을 사람 말이 아니라
         // 기계로 지킬 수 있게 열어 둔다. 읽기 전용 - 바깥에서 쓰지 않는다.
         internal static IReadOnlySet<string> EquipmentRootSlotNames => EquipmentRootSlots;
@@ -99,40 +110,89 @@ namespace pitTeam.Shared
             var equipmentIds = WornGearLossPolicy.CollectSubtreeIds(items, new[] { equipmentRoot });
 
             var itemId = request.ItemId.Trim();
-            // 출처는 본인 스태시뿐. 플레이어 스태시의 id 는 이 목록에 아예 없으므로 여기서 떨어진다.
-            if (!stashIds.Contains(itemId))
-            {
-                return Reject($"아이템 '{itemId}' 은(는) 이 팀원의 스태시에 없어 장비에 넣을 수 없습니다.");
-            }
 
-            // 루트 자체는 아이템이 아니다(옮기면 스태시가 장비 아래로 들어간다).
-            if (string.Equals(itemId, stashRoot, StringComparison.Ordinal))
-            {
-                return Reject("스태시 루트 자체는 장비에 넣을 수 없습니다.");
-            }
-
-            // 같은 id 가 두 트리에 다 보이는 프로필은 깨져 있다. 어느 쪽이 진짜인지 모르므로 쓰지 않는다.
-            if (equipmentIds.Contains(itemId))
-            {
-                return Reject($"아이템 '{itemId}' 이(가) 스태시와 장비 양쪽에 보여 어느 쪽이 맞는지 알 수 없습니다.");
-            }
-
-            // 부모를 적지 않으면 장비 루트 아래로 읽는다. 적었다면 그 부모는 이 프로필의 장비 트리
-            // 안이어야 한다 - 스태시 안의 가방에 넣는 길은 이 경로가 아니다(§6-5 는 다음으로 미뤘다).
+            // 방향을 먼저 정한다. 목적지가 어디냐가 "출처가 어디여야 하는가" 를 정하기 때문이다.
+            //   장비 트리로  = 입히기(장착). 출처는 이 팀원 스태시뿐이다(§6-4).
+            //   스태시 루트로 = 벗기기(해제). 출처는 이 팀원 장비 트리뿐이다.
+            // 둘 다 한 프로필 안의 이동이고, 공짜 생성이 없다는 점도 같다 - 벗기는 아이템은 이미 그
+            // 프로필의 것이다. §6-4 의 "출처는 본인 스태시뿐" 은 **새 아이템이 어디서 오는가** 의 규칙이고,
+            // 그 팀원 자신의 장비가 그 팀원 자신의 스태시로 돌아가는 것을 금지하는 규칙이 아니다.
+            // 둘 다 아닌 목적지는 거부다: 스태시 안의 가방 칸도(§6-5 가 미뤘다), 다른 프로필의 무엇도
+            // 이 경로로는 닿을 수 없다 - 애초에 이 목록에는 이 프로필의 아이템만 있다.
             var parentId = string.IsNullOrWhiteSpace(request.TargetParentId) ? equipmentRoot : request.TargetParentId!.Trim();
-            if (!equipmentIds.Contains(parentId))
+            var toStash = string.Equals(parentId, stashRoot, StringComparison.Ordinal);
+            var toEquipment = !toStash && equipmentIds.Contains(parentId);
+            if (!toStash && !toEquipment)
             {
-                return Reject($"넣을 자리 '{parentId}' 이(가) 이 팀원의 장비 트리에 없어 편집하지 않습니다.");
+                return Reject($"넣을 자리 '{parentId}' 이(가) 이 팀원의 장비 트리도 스태시 루트도 아니어서 편집하지 않습니다.");
+            }
+
+            // 출처 판정. 방향마다 "있어야 하는 트리" 와 "루트 자체" 가 뒤집힌다.
+            if (toEquipment)
+            {
+                // 출처는 본인 스태시뿐. 플레이어 스태시의 id 는 이 목록에 아예 없으므로 여기서 떨어진다.
+                if (!stashIds.Contains(itemId))
+                {
+                    return Reject($"아이템 '{itemId}' 은(는) 이 팀원의 스태시에 없어 장비에 넣을 수 없습니다.");
+                }
+
+                // 루트 자체는 아이템이 아니다(옮기면 스태시가 장비 아래로 들어간다).
+                if (string.Equals(itemId, stashRoot, StringComparison.Ordinal))
+                {
+                    return Reject("스태시 루트 자체는 장비에 넣을 수 없습니다.");
+                }
+
+                // 같은 id 가 두 트리에 다 보이는 프로필은 깨져 있다. 어느 쪽이 진짜인지 모르므로 쓰지 않는다.
+                if (equipmentIds.Contains(itemId))
+                {
+                    return Reject($"아이템 '{itemId}' 이(가) 스태시와 장비 양쪽에 보여 어느 쪽이 맞는지 알 수 없습니다.");
+                }
+            }
+            else
+            {
+                if (!equipmentIds.Contains(itemId))
+                {
+                    return Reject($"아이템 '{itemId}' 은(는) 이 팀원이 착용·장착한 것이 아니어서 벗길 수 없습니다.");
+                }
+
+                // 장비 루트를 스태시 안으로 옮기면 그 프로필의 장비 트리가 사라진다.
+                if (string.Equals(itemId, equipmentRoot, StringComparison.Ordinal))
+                {
+                    return Reject("장비 루트 자체는 스태시로 옮길 수 없습니다.");
+                }
+
+                if (stashIds.Contains(itemId))
+                {
+                    return Reject($"아이템 '{itemId}' 이(가) 스태시와 장비 양쪽에 보여 어느 쪽이 맞는지 알 수 없습니다.");
+                }
             }
 
             var slot = request.TargetSlotId.Trim();
-            var atEquipmentRoot = string.Equals(parentId, equipmentRoot, StringComparison.Ordinal);
-            var known = atEquipmentRoot ? EquipmentRootSlots.Contains(slot) : IsKnownNestedSlot(slot);
+            var atEquipmentRoot = toEquipment && string.Equals(parentId, equipmentRoot, StringComparison.Ordinal);
+            var known = toStash
+                ? StashSlots.Contains(slot)
+                : atEquipmentRoot ? EquipmentRootSlots.Contains(slot) : IsKnownNestedSlot(slot);
             if (!known)
             {
-                return Reject(atEquipmentRoot
-                    ? $"슬롯 '{slot}' 은(는) 아는 장비 슬롯 이름이 아니어서 편집하지 않습니다."
-                    : $"슬롯 '{slot}' 은(는) 아는 장착 슬롯 이름이 아니어서 편집하지 않습니다.");
+                return Reject(toStash
+                    ? $"슬롯 '{slot}' 은(는) 아는 스태시 칸 이름이 아니어서 편집하지 않습니다."
+                    : atEquipmentRoot
+                        ? $"슬롯 '{slot}' 은(는) 아는 장비 슬롯 이름이 아니어서 편집하지 않습니다."
+                        : $"슬롯 '{slot}' 은(는) 아는 장착 슬롯 이름이 아니어서 편집하지 않습니다.");
+            }
+
+            // 스태시로 벗기는 쪽에는 아래 (a)(b)(c) 를 적용하지 **않는다** - 빠뜨린 것이 아니라 질문이
+            // 성립하지 않아서다. 셋 다 "슬롯" 의 성질을 묻는데 스태시 목적지는 슬롯이 아니라 **격자**다:
+            //   (a) 점유 - 격자는 아이템 하나가 아니라 여러 개를 담는다. 자리가 있는지는 좌표 계산의
+            //       문제이고, 그 판정은 SPT 자신의 PlaceItemInContainer 가 한다(StmGearEditService).
+            //       거기서 자리를 못 찾으면 편집은 거부된다 - 즉 "자리 있나" 는 여전히 검사된다.
+            //   (b) 슬롯 존재 - 스태시 격자의 이름은 StashSlots 허용 목록이 이미 못박았고, 실제로 그
+            //       격자가 있는지는 같은 SPT 호출이 템플릿에서 읽어 판정한다.
+            //   (c) 필터 - 스태시는 그 프로필의 일반 보관소이고, 벗기는 아이템은 **이미 그 프로필의 것**
+            //       이다. 받을 수 없는 아이템을 새로 들여오는 경우가 아니다.
+            if (toStash)
+            {
+                return GearEditVerdict.Allow();
             }
 
             // 여기까지는 **어휘**만 봤다. 이름이 맞는 슬롯이라도 (a) 이미 차 있을 수 있고, (b) 그 부모
