@@ -20,6 +20,7 @@
     <Compile Include="../shared/FriendListMergePolicy.cs" Link="Shared/FriendListMergePolicy.cs" />
     <Compile Include="../shared/ProfileMemberLookup.cs" Link="Shared/ProfileMemberLookup.cs" />
     <Compile Include="../shared/SpawnGearPolicy.cs" Link="Shared/SpawnGearPolicy.cs" />
+    <Compile Include="../shared/GearBuildListPolicy.cs" Link="Shared/GearBuildListPolicy.cs" />
     <Compile Include="../shared/RaidOutcomePolicy.cs" Link="Shared/RaidOutcomePolicy.cs" />
     <Compile Include="../shared/FollowerAiProfilePolicy.cs" Link="Shared/FollowerAiProfilePolicy.cs" />
     <Compile Include="../shared/RaidReceiptKeyPolicy.cs" Link="Shared/RaidReceiptKeyPolicy.cs" />

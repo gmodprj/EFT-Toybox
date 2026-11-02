@@ -12,7 +12,8 @@ namespace pitTeam.Server.Callbacks;
 
 [Injectable]
 public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfileMemberStore store, StmProfileCatalog catalog,
-    StmTransferJournal journal, StmGearEditService gearEdits, ISptLogger<StmProfileMemberCallbacks> logger)
+    StmTransferJournal journal, StmGearEditService gearEdits, StmGearBuildCatalog gearBuilds,
+    ISptLogger<StmProfileMemberCallbacks> logger)
 {
     public ValueTask<string> List(string url, EmptyRequestData request, MongoId sessionId) =>
         Run("list", () => store.List(sessionId));
@@ -126,6 +127,21 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
 
         var message = string.IsNullOrWhiteSpace(refusalReason)
             ? "스태시를 읽지 못했습니다. 서버 로그를 확인하세요."
+            : refusalReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 계획 4 Task 1. 읽기 전용이고, 거절 사유는 플레이어가 읽는 말이다(빈 목록으로 조용히 성공하지 않는다 -
+    // 빈 목록은 "저장해 둔 빌드가 없다" 는 사실이라 실패와 같은 모양이면 안 된다).
+    public ValueTask<string> GearBuilds(string url, StmGearBuildsRequest request, MongoId sessionId)
+    {
+        if (gearBuilds.TryList(sessionId, request.Aid, request.ProfileId, out var builds, out var refusalReason) && builds != null)
+        {
+            return new ValueTask<string>(httpResponse.GetBody(builds));
+        }
+
+        var message = string.IsNullOrWhiteSpace(refusalReason)
+            ? "빌드 목록을 읽지 못했습니다. 서버 로그를 확인하세요."
             : refusalReason!;
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }

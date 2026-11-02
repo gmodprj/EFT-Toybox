@@ -24,6 +24,7 @@
         <Compile Include="../shared/ProfileStatePolicy.cs" Link="Shared/ProfileStatePolicy.cs" />
         <Compile Include="../shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
         <Compile Include="../shared/GearEditBatchPlanner.cs" Link="Shared/GearEditBatchPlanner.cs" />
+        <Compile Include="../shared/GearBuildListPolicy.cs" Link="Shared/GearBuildListPolicy.cs" />
         <Compile Include="../shared/PendingRefusalPolicy.cs" Link="Shared/PendingRefusalPolicy.cs" />
         <Compile Include="../shared/SaveOutcomePolicy.cs" Link="Shared/SaveOutcomePolicy.cs" />
         <Compile Include="../shared/GestureCommandPolicy.cs" Link="Shared/GestureCommandPolicy.cs" />
