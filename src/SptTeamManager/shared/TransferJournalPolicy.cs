@@ -188,18 +188,72 @@ namespace pitTeam.Shared
             return found == 0 ? Presence.None : found == wanted.Count ? Presence.All : Presence.Partial;
         }
 
-        // 단계 전이 판정. 전이는 Prepared -> Committed -> Verified 한 줄이고, 그 밖은 전부 거절이다(모르는 단계 포함).
-        // 서비스는 이 판정을 통과한 뒤에만 단계를 바꾸거나 항목을 닫는다.
-        // 커밋은 목적지 id 가 "미리" 기록돼 있어야만 된다: 커밋 표시 시점에 처음 넘긴 id 는 목적지 쓰기 뒤에 알게 된
-        // 것이라, 쓰기 전에 기록한다는 방어를 무력화한다.
-        public static bool CanCommit(string? currentStageName, bool destinationIdsRecorded) =>
-            destinationIdsRecorded && ParseStage(currentStageName) == TransferStage.Prepared;
+        // ---- 전이 판정 ----
+        // Prepared 한 단계가 세 가지 다른 상태를 덮는다(안 움직임 / 출처 쓰기가 일어남 / 목적지 쓰기가 일어남). 단계는
+        // MarkCommitted 에서야 바뀌므로 단계만으로는 쓰기의 진행을 못 따라간다. 그래서 각 쓰기 "직전" 에 사실(출처 쓰기
+        // 시작, 목적지 쓰기 시작)을 저널에 적고, 모든 전이를 그 사실로 판정한다. 사실이 쓰기보다 먼저 남으므로 판정과
+        // 쓰기 사이에 창이 없다. 서비스는 락 안에서 이 판정을 통과해야만 사실을 적거나 단계를 바꾸거나 항목을 닫는다.
+        // 모르는 단계는 전부 거절이다.
+
+        // 출처 쓰기 시작: 호출자가 출처에서 빼기 "직전" 에 한 번.
+        public static bool CanBeginSourceWrite(string? currentStageName, bool sourceWriteStarted) =>
+            !sourceWriteStarted && ParseStage(currentStageName) == TransferStage.Prepared;
+
+        // 취소(커밋 없이 닫기): 출처 쓰기가 시작되기 전에만. 시작된 뒤에는 단계가 아직 Prepared 여도 거절 - 아이템이
+        // 이미 출처를 떠났을 수 있고, 그때의 취소는 항목만 지워 소실을 가린다.
+        public static bool CanAbort(string? currentStageName, bool sourceWriteStarted) =>
+            !sourceWriteStarted && ParseStage(currentStageName) == TransferStage.Prepared;
+
+        // 목적지 id 기록: 목적지 쓰기가 시작되기 전에만, 쓸 수 있는 id 만, 그리고 한 번 기록되면 바꿀 수 없다
+        // (같은 id 를 다시 기록하는 것은 허용 - 바꾸는 게 아니다). 쓰기 뒤의 기록은 "쓰기 전에 기록" 방어를 무력화한다.
+        public static bool CanRecordDestinationIds(
+            string? currentStageName, bool destinationWriteStarted, IReadOnlyList<string>? sourceIds,
+            IReadOnlyList<string>? recorded, IReadOnlyList<string>? proposed)
+        {
+            if (destinationWriteStarted || ParseStage(currentStageName) != TransferStage.Prepared)
+            {
+                return false;
+            }
+
+            if (!IsUsableDestinationIds(sourceIds, proposed))
+            {
+                return false;
+            }
+
+            if (recorded == null)
+            {
+                return true;
+            }
+
+            if (recorded.Count != proposed!.Count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < recorded.Count; i++)
+            {
+                if (!string.Equals(recorded[i]?.Trim(), proposed[i]?.Trim(), StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        // 목적지 쓰기 시작: 호출자가 목적지에 넣기 "직전" 에 한 번. 출처를 먼저 뺐고(빼는 쪽 먼저) 목적지 id 가
+        // 기록돼 있어야 한다.
+        public static bool CanBeginDestinationWrite(
+            string? currentStageName, bool sourceWriteStarted, bool destinationIdsRecorded, bool destinationWriteStarted) =>
+            sourceWriteStarted && destinationIdsRecorded && !destinationWriteStarted
+            && ParseStage(currentStageName) == TransferStage.Prepared;
+
+        // 커밋: 두 쓰기가 다 시작됐고 목적지 id 가 기록된 Prepared 에서만.
+        public static bool CanCommit(string? currentStageName, bool sourceWriteStarted, bool destinationWriteStarted, bool destinationIdsRecorded) =>
+            sourceWriteStarted && destinationWriteStarted && destinationIdsRecorded
+            && ParseStage(currentStageName) == TransferStage.Prepared;
 
         // 확인은 커밋된 항목만. 준비 직후 Verify 가 통하면 아무것도 안 옮긴 항목이 "확인됨" 으로 닫힌다.
         public static bool CanVerify(string? currentStageName) => ParseStage(currentStageName) == TransferStage.Committed;
-
-        // 취소(커밋 없이 닫기)는 준비 단계에서만. 출처에서 뺀 뒤에는 취소할 것이 없고, 그때의 취소는 소실을 가리는
-        // 길이다. 준비 단계는 "실물이 안 움직였다" 가 약속된 유일한 단계다.
-        public static bool CanAbort(string? currentStageName) => ParseStage(currentStageName) == TransferStage.Prepared;
     }
 }

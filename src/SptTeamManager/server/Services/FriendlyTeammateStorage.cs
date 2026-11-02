@@ -22,8 +22,12 @@ public class FriendlyTeammateStorage(FileUtil fileUtil, JsonUtil jsonUtil, ISptL
 
     // 공유 문서(WriteSharedDocument)가 들어 있는 데이터베이스 파일의 전체 경로. 데이터베이스를 열지 않고 계산만 한다 -
     // 사람에게 "어느 파일 안의 문서인가" 를 알려 주는 로그용이다(TeammateDatabase 생성자와 같은 규칙).
+    // 공유 문서는 현재 모드와 무관하게 항상 이 모드의 데이터베이스에 산다(Guns for Hire 쪽). 읽기·쓰기·경로 보고가 모두
+    // 이 상수 하나를 따르므로 로그가 알리는 파일은 실제로 쓰이는 파일과 어긋날 수 없다.
+    private const bool SharedDocumentsAllegiance = false;
+
     public string SharedDocumentDatabasePath(MongoId sessionId) =>
-        Path.GetFullPath(Path.Combine(GetRoot(false), sessionId.ToString() + ".db"));
+        Path.GetFullPath(Path.Combine(GetRoot(SharedDocumentsAllegiance), sessionId.ToString() + ".db"));
 
     public void PrepareMode(MongoId sessionId, bool allegiance) => GetDatabase(sessionId, allegiance);
 
@@ -64,10 +68,10 @@ public class FriendlyTeammateStorage(FileUtil fileUtil, JsonUtil jsonUtil, ISptL
     // Account-wide mod state lives in the canonical Guns for Hire database, independently
     // of the active roster. Explicit mode access never changes the global mode selection.
     public T? ReadSharedDocument<T>(MongoId sessionId, string name) where T : class =>
-        ReadModeDocument<T>(sessionId, name, false);
+        ReadModeDocument<T>(sessionId, name, SharedDocumentsAllegiance);
 
     public void WriteSharedDocument<T>(MongoId sessionId, string name, T value) =>
-        WriteModeDocuments(sessionId, false, new Dictionary<string, string>
+        WriteModeDocuments(sessionId, SharedDocumentsAllegiance, new Dictionary<string, string>
         {
             [name] = jsonUtil.Serialize(value) ?? throw new InvalidDataException($"Unable to serialize shared document: {name}")
         });

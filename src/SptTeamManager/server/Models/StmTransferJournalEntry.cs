@@ -12,6 +12,9 @@ namespace pitTeam.Server.Models;
 // id 가 겹칠 때 아이템 id 를 다시 매기므로 목적지 id 는 출처 id 와 같다는 보장이 없다. 쓰는 쪽이 id 를 확정한 뒤
 // 목적지에 쓰기 "전에" 기록하고, 복구는 이 기록으로 목적지를 본다 - 새 id 를 추측해 찾지 않는다. null 이면
 // 기록이 없다(= 재매김이 없었다는 전제, 있었다면 복구는 못 찾아 멈춘다). 옛 문서에는 이 키가 없어 null 로 읽힌다.
+// SourceWriteStarted / DestinationWriteStarted 는 각 쓰기 "직전" 에 저널에 적는 사실이다. Stage 는 MarkCommitted 에서야
+// 바뀌어 Prepared 한 단계가 "안 움직임 / 출처 쓰기 일어남 / 목적지 쓰기 일어남" 을 다 덮으므로, 취소·기록·커밋 가능 여부는
+// 단계가 아니라 이 사실로 판정한다(TransferJournalPolicy). 한 번 true 가 되면 되돌리지 않는다.
 // 속성 이름은 고정한다: 디스크에 남은 미결 항목이 이름 변경으로 고아가 되면 안 된다.
 public record StmTransferJournalEntry(
     [property: JsonPropertyName("journalId")] string JournalId,
@@ -21,7 +24,9 @@ public record StmTransferJournalEntry(
     [property: JsonPropertyName("itemIds")] List<string> ItemIds,
     [property: JsonPropertyName("stage")] string Stage,
     [property: JsonPropertyName("createdAtUnixSeconds")] long CreatedAtUnixSeconds,
-    [property: JsonPropertyName("destinationItemIds")] List<string>? DestinationItemIds = null);
+    [property: JsonPropertyName("destinationItemIds")] List<string>? DestinationItemIds = null,
+    [property: JsonPropertyName("sourceWriteStarted")] bool SourceWriteStarted = false,
+    [property: JsonPropertyName("destinationWriteStarted")] bool DestinationWriteStarted = false);
 
 // stm-transfer-journal.json 의 모양. Entries 에 기본값을 두지 않는다: "entries" 가 없거나 null 이면 null 로
 // 읽혀, 문서 없음(= 미결 없음)과 읽을 수 없는 문서를 구별할 수 있다(StmRaidReceiptsDocument 와 같은 이유).
