@@ -65,6 +65,8 @@ namespace pitTeam.Patches
         private const string StmEditorNoChangeToast = "바뀐 것이 없어 저장하지 않았습니다.";
         private const string StmEditorSavedToastFormat = "장비를 저장했습니다({0}건).";
         private const string StmEditorLayoutNoteFormat = " 칸 위치만 바꾼 {0}개는 저장되지 않습니다.";
+        private const string StmEditorSavedButCleanupFailedToast = "장비는 저장되었습니다. 편집기를 정리하다 오류가 났으니 팀원 화면을 다시 열어 확인하세요.";
+        private const string StmEditorSaveUnknownText = "저장 결과를 확인하지 못했습니다. 저장되었을 수 있으니 팀원 화면을 다시 열어 장비를 확인하세요.";
         private const string StmEditorSavingText = "저장하는 중입니다. 끝날 때까지 편집기를 닫을 수 없습니다...";
         private const string StmEditorPanelFailedToast = "이 팀원의 스태시나 장비 칸을 그리지 못해 편집기를 열지 않았습니다";
         private const string StmEditorStashMismatchToast = "편집기의 스태시가 이 팀원의 것임을 확인하지 못해 편집기를 열지 않았습니다";
@@ -82,6 +84,8 @@ namespace pitTeam.Patches
         private static string StmPendingGearRefusalAccountId;
         private static string StmPendingGearRefusalMessage;
         private static DateTime StmPendingGearRefusalAtUtc;
+        // 지금 상세 화면이 보여 주는 팀원. 화면이 재사용돼도 거절 사유가 다른 팀원의 화면에 뜨지 않게 대조하는 기준이다.
+        private static string StmShownDetailAccountId;
         private static GameObject StmGearEditEntryRoot;
         private const string StmRefusalPrefix = "직전 장비 저장이 거절되었습니다: ";
 
@@ -583,6 +587,8 @@ namespace pitTeam.Patches
             if (StmGearEditSaving || StmGearEditOpening) return;
             StmGearEditSaving = true;
             SetLoadoutEditorBusy(true);
+            bool requestSent = false;
+            bool confirmed = false;
             try
             {
                 CloseLoadoutEditorChildWindows();
@@ -628,6 +634,8 @@ namespace pitTeam.Patches
                         targetParentId = edit.TargetParentId,
                     }).ToList(),
                 });
+                // 요청이 나간 뒤부터는 서버가 썼는지 우리가 모른다. 아래 catch 가 그 차이를 말한다.
+                requestSent = true;
                 string json = await Task.Run(() => RequestHandler.PostJson(StmEditGearRoute, body));
                 string failure = ReadStmCloseFailure(json, StmEditorSaveFailedToast);
                 if (failure != null)
@@ -637,16 +645,42 @@ namespace pitTeam.Patches
                     return;
                 }
 
+                // 서버가 쓰기를 확인했다. 이 줄 아래의 어떤 실패도 "저장하지 못했습니다" 가 될 수 없다 - 쓰기는 일어났다.
+                confirmed = true;
                 int saved = plan.Edits.Count;
-                RefreshStmDetailAfterSave(profile, inventoryController, session, playerModelWindow);
-                TeardownStmGearEditor();
+                try
+                {
+                    RefreshStmDetailAfterSave(profile, inventoryController, session, playerModelWindow);
+                    TeardownStmGearEditor();
+                }
+                catch (Exception postEx)
+                {
+                    pitFireTeam.Log.LogError("[STM] The gear edit was saved, but cleaning up the editor afterwards failed.");
+                    pitFireTeam.Log.LogError(postEx);
+                    AddTeammateCreationFlow.ShowToast(StmEditorSavedButCleanupFailedToast);
+                    return;
+                }
+
                 AddTeammateCreationFlow.ShowToast(string.Format(StmEditorSavedToastFormat, saved) + layoutNote);
             }
             catch (Exception ex)
             {
                 pitFireTeam.Log.LogError("[STM] Saving the profile teammate gear edit failed.");
                 pitFireTeam.Log.LogError(ex);
-                ReportStmGearEditFailure(StmEditorSaveFailedToast, screen, profile);
+                if (confirmed)
+                {
+                    // 확인 뒤의 예외(위 안쪽 try 가 못 잡은 것). 거절로 보고하지 않는다.
+                    AddTeammateCreationFlow.ShowToast(StmEditorSavedButCleanupFailedToast);
+                }
+                else if (requestSent)
+                {
+                    // 요청이 나간 뒤 응답을 읽지 못했다: 서버가 썼는지 모른다. 저장하지 못했다고도 저장했다고도 말하지 않는다.
+                    ReportStmGearEditFailure(StmEditorSaveUnknownText, screen, profile, false);
+                }
+                else
+                {
+                    ReportStmGearEditFailure(StmEditorSaveFailedToast, screen, profile);
+                }
             }
             finally
             {
@@ -687,19 +721,30 @@ namespace pitTeam.Patches
         // 편집기를 치울 수 있고, 그 뒤에 도착한 거절 사유는 상태 줄(StmGearEditStatusLabel)이 이미 없다. 그때는 사유를
         // **메시지로만** 남긴다(화면 참조가 아니라 문자열): 화면이 살아 있고 보이면 상세 화면의 안내 상자에 바로 올리고,
         // 아니면 이 팀원 앞으로 대기시켜 다음에 이 팀원의 상세 화면이 열릴 때 그 안내 상자가 말한다.
-        private static void ReportStmGearEditFailure(string message, OtherPlayerProfileScreen screen, ResultProfile profile)
+        private static void ReportStmGearEditFailure(string message, OtherPlayerProfileScreen screen, ResultProfile profile, bool remember = true)
         {
             bool editorAlive = StmGearEditStatusLabel != null;
             SetStmGearEditStatus(message);
             AddTeammateCreationFlow.ShowToast(message);
             if (editorAlive) return;
 
-            string text = StmRefusalPrefix + message;
-            if (screen != null && screen.gameObject.activeInHierarchy)
+            // 불확실한 결과(저장되었을 수 있음)는 나중 화면에 거절되었다고 되살리지 않는다. 지금 보이는 곳에서만 말한다.
+            string text = (remember ? StmRefusalPrefix : string.Empty) + message;
+            // 화면이 재사용돼 다른 팀원의 상세일 수 있다 - 지금 화면의 팀원이 이 저장의 주인일 때만 올린다.
+            if (screen != null && screen.gameObject.activeInHierarchy
+                && PendingRefusalPolicy.SameOwner(profile?.AccountId, StmShownDetailAccountId))
             {
                 CloseStmDetail();
                 ShowStmBanner(screen, text, null, null);
                 return;
+            }
+
+            if (!remember) return;
+
+            // 가장 새 것만 남긴다. 아직 읽히지 않은 이전 사유를 버릴 때는 조용히 버리지 않고 로그에 주인과 함께 남긴다.
+            if (StmPendingGearRefusalMessage != null)
+            {
+                pitFireTeam.Log.LogWarning($"[STM] An unread gear-save refusal for teammate '{StmPendingGearRefusalAccountId}' was replaced by a newer one for '{profile?.AccountId}'. Dropped reason: {StmPendingGearRefusalMessage}");
             }
 
             StmPendingGearRefusalAccountId = profile?.AccountId;
@@ -711,13 +756,21 @@ namespace pitTeam.Patches
         private static string TakeStmPendingGearRefusal(string accountId)
         {
             string message = StmPendingGearRefusalMessage;
-            string owner = StmPendingGearRefusalAccountId;
-            DateTime at = StmPendingGearRefusalAtUtc;
             if (message == null) return null;
-            if (!string.Equals(owner, accountId, StringComparison.Ordinal)) return null;
+
+            // 주인·만료 판정은 shared 의 PendingRefusalPolicy 다. 주인이 다르면 대기를 그대로 둔다(그 팀원의 화면이 기다린다).
+            PendingRefusalVerdict verdict = PendingRefusalPolicy.Judge(StmPendingGearRefusalAccountId, StmPendingGearRefusalAtUtc, accountId, DateTime.UtcNow);
+            if (verdict == PendingRefusalVerdict.NotOwner) return null;
+
+            string owner = StmPendingGearRefusalAccountId;
             StmPendingGearRefusalMessage = null;
             StmPendingGearRefusalAccountId = null;
-            if (DateTime.UtcNow - at > TimeSpan.FromMinutes(10)) return null;
+            if (verdict == PendingRefusalVerdict.Expired)
+            {
+                pitFireTeam.Log.LogWarning($"[STM] An expired gear-save refusal for teammate '{owner}' was dropped unread: {message}");
+                return null;
+            }
+
             return message;
         }
 

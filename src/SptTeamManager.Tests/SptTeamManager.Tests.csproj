@@ -63,6 +63,8 @@
     <Compile Include="GearEditBatchPlannerTests.cs" />
     <Compile Include="../SptTeamManager/shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
     <Compile Include="GearEditEntryPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/PendingRefusalPolicy.cs" Link="Shared/PendingRefusalPolicy.cs" />
+    <Compile Include="PendingRefusalPolicyTests.cs" />
   </ItemGroup>
 
 </Project>
