@@ -36,7 +36,13 @@ nor installs the addon, so nothing is being distributed now. This repository als
 ## What is in this fork today (only the pure policy code is covered by tests)
 
 Plans 1 (foundation) and 2 (into the raid) are committed, installed, and **verified by playing the
-game** on 2026-11-01. Unit tests: 141 passing; server builds with 0 warnings and 0 errors.
+game** on 2026-11-01. Plan 3 (gear editing, teammate detail screen, auto-join, three gesture commands) is
+committed on branch `feat/stm-gear-editing` and **has never been run in the game**: it rests on 504 unit
+tests (all in `shared/` policy code) and per-task code review, and its in-game gate is still to be done
+(25 ordered checks in `doc/WORKLOG.md`, "인게임 관문"). Everything under "Plan 3" below is therefore *written and
+unit-tested*, not *observed*. Server builds with 0 warnings and 0 errors; the client compiles with 0 `error CS`
+and 0 `warning CS` only via `-p:BuildProjectReferences=false` (a full client build fails on this machine in
+the addon project, `MSB3644`: no .NET Framework 4.7.2 targeting pack - an environment problem).
 
 **What works**
 
@@ -54,6 +60,38 @@ game** on 2026-11-01. Unit tests: 141 passing; server builds with 0 warnings and
   raid-entry protection on that teammate's items is released once they are gone from the profile.
 - PIT's own mercenaries are untouched and can be mixed into the same squad.
 
+**Plan 3 - written, unit-tested, NOT yet seen in the game**
+
+- *Gear editing* for a profile teammate (teammate detail screen, "edit teammate gear"). The left pane is
+  **that teammate's own stash** - the player's stash is never a source. You can equip from that stash into
+  gear slots and unequip gear back into that stash; one save is one batch, applied by the server with a
+  single write and then **re-read from the profile file on disk and compared** (item sets must match in both
+  directions, or everything is rolled back). Not allowed during a raid. After a successful edit the
+  teammate is marked hand-edited and goes into raids with exactly that gear even if it is empty, instead
+  of being covered by a generated loadout. Editing moves items only: it never changes a stack count, and
+  it cannot place into bag/rig cells (slots only).
+- A server-side *conservation check* on PIT's real-gear commit path rejects a save that would make an
+  item of the player's stash vanish (applies to mercenaries too). It runs on the set that will actually
+  be **stored**, after PIT's merge - run on the submitted set it passed items the merge then deleted.
+- *Auto-join* now works for profile teammates (toggle in the roster, honoured on the pre-raid screen).
+- Teammate detail screen understands profile teammates, shows why one cannot be used, and refuses
+  mercenary-only actions (rename, outfit, proficiency, aggression, tactic, insurance, buy kit, repair,
+  default-equipment save) with a reason. A teammate blocked by an unfinished transfer record gets an
+  explanation and a confirm-first exit.
+- Opening a profile teammate from the friend list shows **worn gear only**. SPT's own handler for that
+  screen resolves another launcher profile by account id and sends its entire inventory; STM now answers
+  first for registered profiles. SPT's behaviour for *unregistered* local profiles is unchanged and out of
+  this fork's scope.
+- A stash item that breaks an EFT rule no longer aborts building the whole teammate: that item (and its
+  descendants) is skipped and logged, and saving teammate gear is blocked for the rest of that session.
+- A three-stage *transfer journal* exists for operations that write **two** profiles. **Nothing writes to it
+  yet** (gear editing is a single-profile write and deliberately does not use it - see WORKLOG).
+- Gesture commands `FIRE`, `HOLD FIRE` and `TAKE COVER` are handled by the fork. With the default
+  `hideUnsupportedCommands = false` these three were previously visible and handled by vanilla; for the
+  player's own squad the fork's handling now **replaces** vanilla (a second registered boss's squad still
+  gets vanilla). Their effect is weaker than the names: `HOLD FIRE` stops advancing but may not stop
+  shooting, `FIRE` only clears a temporary override, `TAKE COVER` only moves teammates already in contact.
+
 **What it deliberately does not do**
 
 - Nothing is ever *added* to a teammate's profile: no experience, no skills, no raid statistics, no
@@ -69,10 +107,8 @@ that the server metadata still declares `SptVersion = "~4.1.0"`, which is theref
 the client; that is recorded, deliberately unchanged, and must be settled before any distribution. See
 `doc/WORKLOG.md`, "클라이언트 기준 변경과 첫 빌드".
 
-Known limitation: the pre-raid matchmaker's auto-join path cannot rebuild a profile teammate, because
-`/singleplayer/pitfireteam/teammate/profile` still resolves only PIT's own mercenary documents - the one
-route of four that Plan 2 did not reach. The party screen itself draws them correctly and the spawn is
-unaffected; what is unverified is whether "restore last squad" works. See `doc/WORKLOG.md`.
+Auto-join for profile teammates was a known gap after Plan 2 (the route that rebuilds a profile teammate
+before the raid could not see them); Plan 3 closes it in code. Whether it works is **unverified**.
 
 Known limitation: the native friend-list "delete" action does nothing for a profile member
 (it only removes PIT mercenaries, and the entry returns on the next poll); remove a profile member from
@@ -80,7 +116,10 @@ STM's own roster screen instead.
 
 Shared sources in `shared/` are linked by hand, one line per file and no wildcards, to keep the upstream
 merge surface small. Forgetting a link fails silently in the project that lacks it, so check every
-project when adding a shared file: `ProfileRosterPolicy.cs` is linked into the server, the client and
+project when adding a shared file (Plan 3 added many - e.g. `GearEditBatchPlanner.cs`, `GearEditEntryPolicy.cs`,
+`GestureCommandPolicy.cs`, `PendingRefusalPolicy.cs` and `SaveOutcomePolicy.cs` are client-side and the tests; `ProfileGearEditPolicy.cs`
+and the transfer/stash policies are server-side and the tests - check the three `.csproj` files rather than this list):
+`ProfileRosterPolicy.cs` is linked into the server, the client and
 the tests; `FriendListMergePolicy.cs`, `SpawnGearPolicy.cs`, `RaidOutcomePolicy.cs`,
 `RaidReceiptKeyPolicy.cs`, `WornGearLossPolicy.cs`, `RaidProtectionReleasePolicy.cs` and
 `FollowerAiProfilePolicy.cs` into the server and
@@ -92,10 +131,16 @@ player plus FOUR teammates - five party slots - and found the client enforcing i
 had no caller, no future caller, and a constant (three teammate seats) the measurement had falsified.
 Tests pinning a number that has been measured false are worse than no policy at all.
 
-Not done (later plans): editing a profile teammate's equipment and the teammate detail screen (Plan 3),
-and applying raid results - experience, skills, stats, loot (Plan 4). See `doc/WORKLOG.md` (repo root)
-for the in-game results, the three defects the game found that unit tests and review did not, and the
-constraints for later plans.
+Not done: applying raid results - experience, skills, stats, loot (Plan 4); player-to-teammate transfers, kit
+buying and repair for profile teammates (refused with a reason); equipping into bag/rig cells and changing
+stack counts; gesture commands `SILENCE`, `KNIVES ONLY`, `SPREADOUT`, `GET BACK`. Deferred items are in
+`doc/BACKLOG.md`; the handover is `doc/STM-HANDOVER.md`; `doc/WORKLOG.md` (repo root) has the in-game
+results of Plan 2, the three defects the game found that unit tests and review did not, the Plan 3 record
+and its gate checklist.
+
+`src/SptTeamManager/tests/` is **PIT's upstream harness**, outside this repository's xunit project
+(`src/SptTeamManager.Tests`). Its sibling scripts default to paths on the upstream author's machine, so it
+has never been runnable here: edits there are documentation, not verification.
 
 Install with `tools/install-sptteammanager.ps1` from the repository root; it refuses if PIT Fireteam is
 installed, because STM keeps PIT's route prefix and the two cannot coexist.
