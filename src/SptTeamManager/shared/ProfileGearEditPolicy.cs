@@ -21,6 +21,18 @@ namespace pitTeam.Shared
     // 보존 판정의 결과. MissingItemIds 는 "원래 있었는데 어느 쪽에도 없는" 아이템 id - 비어 있으면 보존이다.
     public sealed record StashConservationVerdict(bool Conserved, string Reason, IReadOnlyList<string> MissingItemIds);
 
+    // 아이템 템플릿이 정의한 슬롯 하나. AllowedTemplateIds 는 그 슬롯의 필터가 허락하는 템플릿 id 들이고,
+    // **비어 있으면 "제한 없음" 이 아니라 "모름" 이다** - 그때는 넣지 않는다(§6-9 닫힌 쪽).
+    public sealed record GearSlotDefinition(string Name, IReadOnlyCollection<string> AllowedTemplateIds);
+
+    // 아이템 데이터베이스에서 옮겨 온 사실. 판정은 SPT 타입을 모르므로 서버가 이 모양으로 바꿔 넘긴다.
+    //   TemplateIdByItemId : 이 프로필 아이템 id → 그 아이템의 템플릿 id
+    //   SlotsByTemplateId  : 템플릿 id → 그 템플릿이 **정의한** 슬롯들(없는 템플릿은 슬롯이 없다는 뜻이 아니라,
+    //                        읽지 못했다는 뜻으로 읽는다 - 거부)
+    public sealed record GearSlotFacts(
+        IReadOnlyDictionary<string, string> TemplateIdByItemId,
+        IReadOnlyDictionary<string, IReadOnlyList<GearSlotDefinition>> SlotsByTemplateId);
+
     // 설계 §6-4 의 두 문장을 코드로 옮긴 곳이다.
     //   "편집하면 실물이 된다"  - 쓰기는 프로필에 박힌다(서비스 쪽), 그래서 이 판정은 쓰기 전에 거절할 유일한 관문이다.
     //   "출처는 본인 스태시뿐" - 집어넣을 수 있는 것은 그 팀원 스태시에 실제로 있는 것뿐이다. 공짜 생성은 없다.
@@ -61,7 +73,8 @@ namespace pitTeam.Shared
             GearEditRequest request,
             IEnumerable<WornGearItem>? profileItems,
             string? stashRootId,
-            string? equipmentRootId)
+            string? equipmentRootId,
+            GearSlotFacts? slotFacts)
         {
             if (request == null) return Reject("편집 요청이 비어 있습니다.");
             if (string.IsNullOrWhiteSpace(request.ProfileId)) return Reject("어느 프로필의 장비인지 알 수 없어 편집하지 않습니다.");
@@ -122,6 +135,59 @@ namespace pitTeam.Shared
                     : $"슬롯 '{slot}' 은(는) 아는 장착 슬롯 이름이 아니어서 편집하지 않습니다.");
             }
 
+            // 여기까지는 **어휘**만 봤다. 이름이 맞는 슬롯이라도 (a) 이미 차 있을 수 있고, (b) 그 부모
+            // 아이템에 아예 없는 슬롯일 수 있고, (c) 그 슬롯이 받지 않는 아이템일 수 있다. 셋 다 집합은
+            // 보존되고 트리도 멀쩡하므로 아래의 어떤 가드도 걸러 주지 않는다 - 결과는 EFT 가 적재를
+            // 거부할 수 있는, 플레이어가 **플레이하는** 프로필이다. 그래서 여기서 막는다.
+
+            // (a) 한 슬롯에 하나. 두 아이템이 같은 Headwear·같은 mod_magazine 에 앉으면 안 된다.
+            // cartridges 도 예외로 두지 않는다: 탄창에 여러 탄 더미를 넣는 것은 Location 색인이 필요한
+            // 조작이고 이 요청에는 좌표가 없다(자리를 지어내지 않는다). 빈 탄창에 넣는 길은 열려 있다.
+            foreach (var item in items)
+            {
+                if (item?.Id == null || string.IsNullOrWhiteSpace(item.SlotId)) continue;
+                if (string.Equals(item.Id, itemId, StringComparison.Ordinal)) continue;
+                if (!string.Equals(item.ParentId, parentId, StringComparison.Ordinal)) continue;
+                if (!string.Equals(item.SlotId!.Trim(), slot, StringComparison.OrdinalIgnoreCase)) continue;
+
+                return Reject($"'{parentId}' 의 '{slot}' 슬롯에는 이미 아이템 '{item.Id}' 이(가) 있어 넣지 않습니다.");
+            }
+
+            // (b)(c) 아이템 데이터베이스의 사실이 있어야 판정할 수 있다. 없으면 넣지 않는다.
+            if (slotFacts == null) return Reject("아이템 정보를 읽을 수 없어 넣을 자리가 맞는지 확인하지 못했습니다. 편집하지 않습니다.");
+            if (!slotFacts.TemplateIdByItemId.TryGetValue(parentId, out var parentTemplateId) || string.IsNullOrWhiteSpace(parentTemplateId))
+            {
+                return Reject($"넣을 자리 '{parentId}' 의 아이템 종류를 읽을 수 없어 편집하지 않습니다.");
+            }
+
+            if (!slotFacts.SlotsByTemplateId.TryGetValue(parentTemplateId!, out var slots) || slots == null)
+            {
+                return Reject($"넣을 자리 '{parentId}' 의 슬롯 정보를 읽을 수 없어 편집하지 않습니다.");
+            }
+
+            var definition = slots.FirstOrDefault(s => s != null && string.Equals(s.Name, slot, StringComparison.OrdinalIgnoreCase));
+            if (definition == null)
+            {
+                return Reject($"'{parentId}' 에는 '{slot}' 슬롯이 없어 넣지 않습니다.");
+            }
+
+            if (!slotFacts.TemplateIdByItemId.TryGetValue(itemId, out var itemTemplateId) || string.IsNullOrWhiteSpace(itemTemplateId))
+            {
+                return Reject($"아이템 '{itemId}' 의 종류를 읽을 수 없어 편집하지 않습니다.");
+            }
+
+            // 필터가 비면 "제한 없음" 이 아니라 "모름" 으로 읽는다. 제외 목록을 만들지 않는다 -
+            // 증명되지 않은 것은 넣지 않는다.
+            if (definition.AllowedTemplateIds == null || definition.AllowedTemplateIds.Count == 0)
+            {
+                return Reject($"'{parentId}' 의 '{slot}' 슬롯이 무엇을 받는지 읽을 수 없어 넣지 않습니다.");
+            }
+
+            if (!definition.AllowedTemplateIds.Contains(itemTemplateId!, StringComparer.OrdinalIgnoreCase))
+            {
+                return Reject($"아이템 '{itemId}' 은(는) '{parentId}' 의 '{slot}' 슬롯에 들어가지 않는 종류라서 넣지 않습니다.");
+            }
+
             return GearEditVerdict.Allow();
         }
 
@@ -139,7 +205,8 @@ namespace pitTeam.Shared
             IReadOnlyList<GearEditRequest>? requests,
             IEnumerable<WornGearItem>? profileItems,
             string? stashRootId,
-            string? equipmentRootId)
+            string? equipmentRootId,
+            GearSlotFacts? slotFacts)
         {
             if (requests == null || requests.Count == 0) return Reject("고칠 아이템이 없어 편집하지 않습니다.");
             if (profileItems == null) return Reject("이 프로필의 아이템 목록을 읽을 수 없어 편집하지 않습니다.");
@@ -163,7 +230,9 @@ namespace pitTeam.Shared
                     return Reject("한 번의 편집 요청이 여러 프로필을 가리켜 전체를 취소합니다.");
                 }
 
-                var verdict = Validate(request, working, stashRootId, equipmentRoot);
+                // 누적된 작업 사본 위에서 본다 - 앞 건이 채운 슬롯은 뒤 건에게 "이미 찬 슬롯" 이고,
+                // 앞 건이 장비 트리로 옮긴 아이템은 뒤 건의 부모가 될 수 있다.
+                var verdict = Validate(request, working, stashRootId, equipmentRoot, slotFacts);
                 if (!verdict.Allowed) return verdict;
 
                 var itemId = request.ItemId.Trim();

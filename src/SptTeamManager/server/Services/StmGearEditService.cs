@@ -1,6 +1,7 @@
 using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.Helpers.Items;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
@@ -42,6 +43,7 @@ public class StmGearEditService(
     StmTransferJournal journal,
     SaveServer saveServer,
     ICloner cloner,
+    ItemHelper itemHelper,
     JsonUtil jsonUtil,
     FileUtil fileUtil,
     ISptLogger<StmGearEditService> logger)
@@ -70,6 +72,11 @@ public class StmGearEditService(
     public bool TryApply(MongoId sessionId, string? accountId, IReadOnlyList<GearEditRequest>? requests, out string? rejectionReason)
     {
         rejectionReason = null;
+        // 살아 있는 인벤토리를 바꾼 뒤에만 채워진다. catch-all 이 이것으로 되돌릴지를 판단한다
+        // (원래 아이템 목록은 originalItems).
+        BotBaseInventory? liveInventory = null;
+        MongoId? liveProfileId = null;
+        List<Item>? originalItems = null;
         try
         {
             if (requests == null || requests.Count == 0 || requests[0] == null)
@@ -79,6 +86,18 @@ public class StmGearEditService(
             }
 
             var requestedProfileId = requests[0].ProfileId;
+
+            // 0. 레이드 중에는 고치지 않는다. 모드 전환이 같은 이유로 같은 관문을 쓴다
+            //    (FriendlyTeammateCallbacks.SetServerSettings 의 SettingsUnavailableDuringRaid).
+            //    레이드 중에 스태시 아이템을 착용 트리로 옮기면, 그 팀원이 죽었을 때 착용 장비 삭제
+            //    경로(WornGearLossPolicy)가 방금 옮긴 그 아이템을 지운다 - 플레이어는 편집한 줄만 알고
+            //    아이템은 사라진다. 그리고 레이드 스폰은 시작 시점의 복제본 위에서 돌므로 편집이 이번
+            //    레이드에 반영되지도 않는다.
+            if (FriendlyModeRequestGate.HasActiveRaid)
+            {
+                rejectionReason = "레이드가 진행 중일 때는 팀원의 장비를 고칠 수 없습니다. 레이드가 끝난 뒤에 다시 시도하세요.";
+                return false;
+            }
 
             // 1. 미결 전송이 이 팀원을 막고 있는가(§6-9). 저널 문서를 못 읽어도 true 다 - 편집 한 번을
             //    거절하는 비용이 깨진 저널 위에서 허락하는 비용(아이템)보다 싸다.
@@ -143,7 +162,8 @@ public class StmGearEditService(
 
             // 5. 판정 **전부 먼저**. 하나라도 거절되면 아무것도 쓰지 않는다. 순서대로 누적해 보므로
             //    "탄창을 총에 꽂고 그 탄창에 탄을 넣는" 연쇄가 통과한다(인계 문서 열린 항목 4).
-            var verdict = ProfileGearEditPolicy.ValidateBatch(requests, ToWornGearItems(edited), stashRootId, equipmentRootId);
+            var verdict = ProfileGearEditPolicy.ValidateBatch(
+                requests, ToWornGearItems(edited), stashRootId, equipmentRootId, BuildSlotFacts(edited));
             if (!verdict.Allowed)
             {
                 // 사유는 실패한 그 건의 사유다. 플레이어가 어느 아이템이 왜 막혔는지 알 수 있다.
@@ -177,6 +197,13 @@ public class StmGearEditService(
             // 6. 유일한 쓰기: SaveServer 가 들고 있는 객체를 고치고 그 자신의 저장을 부른다. 프로필
             //    JSON 을 직접 쓰지 않는다(§6-8: SPT 가 로그인하지 않은 프로필도 메모리에 들고 주기적으로
             //    저장하므로 직접 쓰면 조용히 덮어써진다).
+            // 이 순간부터 **살아 있는 객체가 바뀌어 있다.** 아래에서 무엇이 터져도 되돌려야 한다:
+            // SPT 는 로그인하지 않은 프로필도 주기적으로 저장하므로, 되돌리지 않으면 플레이어에게
+            // "아무 일도 없었다" 고 말한 편집이 나중에 조용히 디스크로 내려간다. 그리고 HandEdited 가
+            // 꺼진 채라 다음 레이드의 임시 장비가 그것을 덮어 가린다.
+            liveInventory = inventory;
+            liveProfileId = profileId;
+            originalItems = original;
             inventory.Items = edited;
             var elapsedMs = saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
 
@@ -199,7 +226,21 @@ public class StmGearEditService(
             // 8. 이제 이 팀원은 임시 장비 대상이 아니다(§6-4, 한 방향). 장비는 이미 실물이 됐으므로 이
             //    사실을 못 적었다면 숨기지 않고 실패로 알린다 - 그대로 두면 다음 레이드에서 임시 장비가
             //    이 편집을 덮어쓴다.
-            if (!store.Update(sessionId, member.ProfileId, new StmProfileMemberChange(AutoJoin: null, HandEdited: true)))
+            //    표시를 쓰다 **던지는** 경우도 같은 실패다(등록 문서를 못 읽거나 쓰지 못하는 상태).
+            //    여기서는 되돌리지 않는다: 장비 변경은 저장되고 디스크에서 확인까지 끝났고, 되돌리면
+            //    확인된 정상 상태를 다시 뒤집는 쓰기가 하나 더 생긴다. 플레이어에게는 다시 편집하라고 말한다.
+            bool flagged;
+            try
+            {
+                flagged = store.Update(sessionId, member.ProfileId, new StmProfileMemberChange(AutoJoin: null, HandEdited: true));
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"[STM] 장비 편집: 프로필 '{member.ProfileId}' 의 장비는 바뀌고 확인됐지만 '손으로 고침' 표시를 쓰다 실패했다: {ex}");
+                flagged = false;
+            }
+
+            if (!flagged)
             {
                 logger.Error($"[STM] 장비 편집: 프로필 '{member.ProfileId}' 의 장비는 바뀌고 저장됐지만 '손으로 고침' 표시를 쓰지 못했다. 다음 레이드에서 임시 장비가 이 편집을 덮어쓸 수 있다.");
                 rejectionReason = "장비는 바뀌었지만 '손으로 고침' 표시를 저장하지 못했습니다. 다시 한 번 편집해 주세요.";
@@ -210,7 +251,21 @@ public class StmGearEditService(
         }
         catch (Exception ex)
         {
-            logger.Error($"[STM] 장비 편집이 실패했다(프로필 '{(requests != null && requests.Count > 0 ? requests[0]?.ProfileId : null)}', {requests?.Count ?? 0}건): {ex}");
+            var failedProfileId = requests != null && requests.Count > 0 ? requests[0]?.ProfileId : null;
+            logger.Error($"[STM] 장비 편집이 실패했다(프로필 '{failedProfileId}', {requests?.Count ?? 0}건): {ex}");
+
+            // 살아 있는 객체를 이미 바꿔 놓고 터졌으면 되돌린다. 되돌리지 않으면 SPT 의 주기적 저장이
+            // "일어나지 않았다" 고 말한 편집을 나중에 디스크에 내려보낸다(HandEdited 도 꺼진 채라
+            // 다음 레이드의 임시 장비가 그것을 가린다). 되돌리기도 실패하면 그렇다고 말한다.
+            if (liveInventory != null && originalItems != null && liveProfileId != null)
+            {
+                var restored = TryRestore(liveProfileId.Value, liveInventory, originalItems);
+                rejectionReason = restored
+                    ? "장비를 고치는 중 오류가 나서 원래대로 되돌렸습니다. 서버 로그를 확인하세요."
+                    : "장비를 고치는 중 오류가 났고 되돌리기도 실패했습니다. 이 프로필의 장비와 스태시를 직접 확인하세요.";
+                return false;
+            }
+
             rejectionReason = "장비를 고치는 중 오류가 났습니다. 서버 로그를 확인하세요.";
             return false;
         }
@@ -318,6 +373,59 @@ public class StmGearEditService(
             logger.Error($"[STM] 장비 편집 되돌리기가 실패했다(프로필 '{profileId}'): {ex}");
             return false;
         }
+    }
+
+    // 아이템 데이터베이스의 사실을 정책이 쓰는 모양으로 옮긴다. 데이터베이스는 서버에서 닿는다 -
+    // ItemHelper.GetItem(tpl) 이 (찾았나, 템플릿) 을 주고, 템플릿의 Properties.Slots 가 그 아이템이
+    // **정의한** 슬롯과 각 슬롯의 필터(Props.Filters[].Filter = 허용 템플릿 id 집합)를 들고 있다.
+    // 하나라도 읽히지 않으면 그 항목을 넣지 않는다 - 정책이 "모름" 을 거부로 읽으므로 빈 칸이 곧 거부다.
+    // 던지지 않는다: 데이터베이스 읽기가 터지면 빈 사실을 돌려 정책이 전부 거부하게 한다(닫힌 쪽).
+    private GearSlotFacts BuildSlotFacts(IEnumerable<Item> items)
+    {
+        var templateIdByItemId = new Dictionary<string, string>(StringComparer.Ordinal);
+        var slotsByTemplateId = new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal);
+        try
+        {
+            foreach (var item in items)
+            {
+                if (item?.Id == null || item.Template.IsEmpty) continue;
+                var itemId = item.Id.ToString();
+                var templateId = item.Template.ToString();
+                templateIdByItemId[itemId] = templateId;
+                if (slotsByTemplateId.ContainsKey(templateId)) continue;
+
+                var found = itemHelper.GetItem(item.Template);
+                if (!found.Key || found.Value == null) continue;
+
+                var definitions = new List<GearSlotDefinition>();
+                foreach (var slot in found.Value.Properties?.Slots ?? [])
+                {
+                    if (slot?.Name == null) continue;
+                    var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    foreach (var filter in slot.Properties?.Filters ?? [])
+                    {
+                        foreach (var tpl in filter?.Filter ?? [])
+                        {
+                            if (!tpl.IsEmpty) allowed.Add(tpl.ToString());
+                        }
+                    }
+
+                    definitions.Add(new GearSlotDefinition(slot.Name, allowed));
+                }
+
+                slotsByTemplateId[templateId] = definitions;
+            }
+        }
+        catch (Exception ex)
+        {
+            // 반쯤 채운 사실로 판정하면 어떤 것은 통과하고 어떤 것은 거부되는 설명할 수 없는 결과가 된다.
+            logger.Error($"[STM] 장비 편집: 아이템 데이터베이스를 읽지 못해 넣을 자리 검사를 할 수 없다(전부 거부된다): {ex}");
+            return new GearSlotFacts(
+                new Dictionary<string, string>(StringComparer.Ordinal),
+                new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal));
+        }
+
+        return new GearSlotFacts(templateIdByItemId, slotsByTemplateId);
     }
 
     // SPT 의 Item 을 판정이 쓰는 세 필드로 줄인다. 정책은 SPT 타입을 모른다.
