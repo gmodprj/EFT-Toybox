@@ -1,8 +1,10 @@
+using EFT;
 using EFT.UI;
 using Newtonsoft.Json;
 using pitTeam.Modules;
 using SPT.Common.Http;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -32,9 +34,8 @@ namespace pitTeam.Patches
         private const string StmKitQuoteRoute = "/stm/members/kit-quote";
         private const string StmKitBuyRoute = "/stm/members/kit-buy";
 
-        // 기본 화면에 뜨는 것은 플레이어의 빌드다. 서버에 어느 쪽인지 말해 주는 값이고, 팀원 빌드를
-        // 끼워 넣게 되면 고른 줄에 따라 갈라진다.
-        private const string Owner = "player";
+        private const string OwnerPlayer = "player";
+        private const string OwnerTeammate = "teammate";
 
         private const string QuoteFailedToast = "값을 매기지 못했습니다";
         private const string BuyFailedToast = "장비를 사지 못했습니다";
@@ -44,21 +45,123 @@ namespace pitTeam.Patches
         private static bool _busy;
         private static GameObject _overlay;
 
+        // 팀원 빌드를 보고 있는 동안만 채워진다. 구매 요청의 owner 가 이 값으로 갈라진다.
+        private static bool _teammateBuilds;
+
+        // 화면의 빌드 보관소를 잠깐 바꿔 끼운 상태. 원래 사전을 그대로 들고 있다가 되돌린다.
+        // **플레이어의 사전 객체 자체는 건드리지 않는다** - 참조만 바꿔 끼우므로 원본은 손상되지 않는다.
+        private static EFT.UI.Builds.EquipmentBuildsStorage _swappedStorage;
+        private static Dictionary<MongoID, EFT.UI.Builds.EquipmentBuild> _originalBuilds;
+
         internal static bool IsActive => _profile != null && _detail != null;
 
+        // 지금 화면에 실린 빌드가 누구 것인가. 구매 요청이 이 값으로 갈라진다 - 화면에 보이는 것과
+        // 서버가 찾는 것이 어긋나면 엉뚱한 빌드를 입힌다.
+        private static string CurrentOwner => _teammateBuilds ? OwnerTeammate : OwnerPlayer;
+
         // 기본 화면을 열기 직전에 부른다. PIT 의 Open 이 그 다음에 화면을 띄운다.
-        internal static void Begin(ResultProfile profile, StmProfileDetailWire detail)
+        //
+        // teammateBuilds 가 있으면 **그 팀원의 빌드를 화면에 싣는다**: 화면은 session.EquipmentBuildsStorage 를
+        // 읽으므로(역컴파일 확인) 그 안의 사전 참조를 잠깐 바꿔 끼운다. 플레이어의 사전 객체는 그대로 두고
+        // 우리가 만든 사전을 대신 보여 주는 것이라, 되돌리면 흔적이 남지 않는다.
+        internal static void Begin(
+            ResultProfile profile,
+            StmProfileDetailWire detail,
+            StmGearBuildRowWire[] teammateBuilds,
+            EFT.IEftSession session)
         {
+            // 앞선 창이 제대로 닫히지 않았을 수 있다. 끼우기 전에 반드시 되돌린다(이중 안전장치).
+            RestoreBuilds();
+
             _profile = profile;
             _detail = detail;
+            _teammateBuilds = false;
             CloseOverlay();
+
+            if (teammateBuilds == null || teammateBuilds.Length == 0) return;
+            _teammateBuilds = TrySwapBuilds(session, teammateBuilds);
+        }
+
+        // 팀원 빌드를 EFT 의 EquipmentBuild 로 만들어 화면의 보관소에 끼운다.
+        // 실패하면 false - 그러면 플레이어 빌드가 그대로 보이고, 구매도 플레이어 쪽으로 간다(거짓말하지 않는다).
+        private static bool TrySwapBuilds(EFT.IEftSession session, StmGearBuildRowWire[] rows)
+        {
+            try
+            {
+                var storage = session?.EquipmentBuildsStorage;
+                if (storage == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 팀원 빌드를 실을 보관소를 찾지 못했다. 플레이어 빌드가 보인다.");
+                    return false;
+                }
+
+                var replacement = new Dictionary<MongoID, EFT.UI.Builds.EquipmentBuild>();
+                foreach (var row in rows)
+                {
+                    if (row?.Items == null || row.Items.Length == 0) continue;
+                    if (string.IsNullOrWhiteSpace(row.Id) || string.IsNullOrWhiteSpace(row.Root)) continue;
+
+                    var id = new MongoID(row.Id);
+                    replacement[id] = new EFT.UI.Builds.EquipmentBuild(
+                        id,
+                        string.IsNullOrWhiteSpace(row.Name) ? row.Id : row.Name,
+                        new MongoID(row.Root),
+                        row.Items,
+                        EFT.Builds.EEquipmentBuildType.Custom);
+                }
+
+                if (replacement.Count == 0) return false;
+
+                _originalBuilds = storage._equipmentBuilds;
+                _swappedStorage = storage;
+                storage._equipmentBuilds = replacement;
+                pitFireTeam.Log.LogInfo($"[STM] 기본 화면에 팀원 빌드 {replacement.Count}개를 실었다(원래 목록은 닫을 때 되돌린다).");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] 팀원 빌드를 화면에 싣다 실패했다. 원래 목록을 되돌린다.");
+                pitFireTeam.Log.LogError(ex);
+                RestoreBuilds();
+                return false;
+            }
+        }
+
+        // 끼워 둔 것을 반드시 되돌린다. 되돌리지 못하면 플레이어 자신의 프리셋 화면에 남의 빌드가 남으므로,
+        // 실패해도 참조는 비워 다음 시도가 원본을 덮어쓰지 않게 한다.
+        private static void RestoreBuilds()
+        {
+            if (_swappedStorage == null || _originalBuilds == null)
+            {
+                _swappedStorage = null;
+                _originalBuilds = null;
+                return;
+            }
+
+            try
+            {
+                _swappedStorage._equipmentBuilds = _originalBuilds;
+                pitFireTeam.Log.LogInfo("[STM] 기본 화면의 빌드 목록을 플레이어의 것으로 되돌렸다.");
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] 빌드 목록을 되돌리지 못했다. 게임을 다시 켜면 원래대로 돌아온다.");
+                pitFireTeam.Log.LogError(ex);
+            }
+            finally
+            {
+                _swappedStorage = null;
+                _originalBuilds = null;
+            }
         }
 
         // 화면을 떠날 때. 모드가 남아 있으면 용병 화면에서도 STM 분기가 걸린다.
         internal static void End()
         {
+            RestoreBuilds();
             _profile = null;
             _detail = null;
+            _teammateBuilds = false;
             CloseOverlay();
         }
 
@@ -91,7 +194,7 @@ namespace pitTeam.Patches
                     aid = _profile.AccountId,
                     profileId = _detail.ProfileId,
                     buildId,
-                    owner = Owner,
+                    owner = CurrentOwner,
                 });
                 string json = await Task.Run(() => RequestHandler.PostJson(StmKitQuoteRoute, body));
 
@@ -136,7 +239,7 @@ namespace pitTeam.Patches
                     aid = _profile.AccountId,
                     profileId = _detail.ProfileId,
                     buildId = quote.BuildId,
-                    owner = Owner,
+                    owner = CurrentOwner,
                     // 화면이 보여 준 값. 서버가 다시 매겨 다르면 거절한다.
                     expectedTotal = quote.Total,
                 });

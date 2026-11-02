@@ -493,18 +493,7 @@ namespace pitTeam.Patches
         private static void CloseStmDetail()
         {
             CloseStmConfirm();
-            CloseStmKitOverlay();
-            if (StmKitButtonRoot != null)
-            {
-                GameObject.Destroy(StmKitButtonRoot.gameObject);
-                StmKitButtonRoot = null;
-            }
-
-            if (StmKitTeammateButtonRoot != null)
-            {
-                GameObject.Destroy(StmKitTeammateButtonRoot.gameObject);
-                StmKitTeammateButtonRoot = null;
-            }
+            CloseStmKitButtons();
 
             if (StmControlRowRoot != null)
             {

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Utils;
 
 namespace pitTeam.Server.Models;
@@ -14,10 +15,17 @@ public record StmGearBuildsRequest : IRequestData
 }
 
 // 목록 한 줄. 고르면 Id 로 다시 찾는다.
+//
+// Root·Items 는 **팀원 빌드에만** 싣는다. 게임의 기본 장비 프리셋 화면은 플레이어의 보관소만 알기 때문에,
+// 팀원 빌드를 그 화면에 보이려면 클라이언트가 EquipmentBuild 를 직접 만들어야 하고 그러려면 아이템이 필요하다
+// (EquipmentBuild 생성자가 (id, name, root, FlatItem[], buildType) 를 받는다 - 역컴파일로 확인).
+// 플레이어 빌드는 게임이 이미 갖고 있으므로 싣지 않는다 - 같은 것을 두 번 보내지 않는다.
 public record StmGearBuildRow
 {
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    [JsonPropertyName("root")] public string Root { get; set; } = string.Empty;
+    [JsonPropertyName("items")] public List<Item>? Items { get; set; }
 }
 
 // **두 묶음을 각자의 자리에 담는다.** 한 목록에 꼬리표로 섞어 담지 않는다 - 사용자가 요구한

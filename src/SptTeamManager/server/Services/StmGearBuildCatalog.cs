@@ -8,6 +8,7 @@ using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Servers;
+using SPTarkov.Server.Core.Utils.Cloners;
 
 namespace pitTeam.Server.Services;
 
@@ -24,6 +25,7 @@ namespace pitTeam.Server.Services;
 public class StmGearBuildCatalog(
     StmProfileMemberResolver resolver,
     SaveServer saveServer,
+    ICloner cloner,
     ISptLogger<StmGearBuildCatalog> logger)
 {
     private static string DescribeLookupFailure(ProfileLookupOutcome outcome, string? unavailableReason) => outcome switch
@@ -61,9 +63,12 @@ public class StmGearBuildCatalog(
             // 두 묶음을 가르는 것도, 고를 수 없는 빌드를 빼는 것도 순수 정책 한 곳이다.
             var list = GearBuildListPolicy.Build(teammate, player);
 
+            // 팀원 빌드에는 아이템까지 붙인다(기본 화면에 보이려면 클라이언트가 EquipmentBuild 를 만들어야 한다).
+            var teammateById = ReadBuildsById(member.ProfileId);
+
             builds = new StmGearBuildsResponse
             {
-                TeammateBuilds = list.TeammateBuilds.Select(ToRow).ToList(),
+                TeammateBuilds = list.TeammateBuilds.Select(row => ToRow(row, teammateById)).ToList(),
                 PlayerBuilds = list.PlayerBuilds.Select(ToRow).ToList(),
                 TeammateNickname = member.Nickname,
                 ProfileId = member.ProfileId,
@@ -81,6 +86,39 @@ public class StmGearBuildCatalog(
     }
 
     private static StmGearBuildRow ToRow(GearBuildRow row) => new() { Id = row.Id, Name = row.Name };
+
+    // 팀원 줄: 아이템을 **값으로 베껴** 싣는다. SaveServer 가 들고 있는 목록을 그대로 넘기면 살아 있는 객체의
+    // 참조가 직렬화 뒤에도 남는 길을 여는 셈이라, 복제본을 만든다(불변식 1).
+    private StmGearBuildRow ToRow(GearBuildRow row, Dictionary<string, EquipmentBuild> byId)
+    {
+        var built = new StmGearBuildRow { Id = row.Id, Name = row.Name };
+        if (!byId.TryGetValue(row.Id, out var build) || build == null) return built;
+
+        built.Root = build.Root.ToString();
+        built.Items = cloner.Clone(build.Items) ?? [];
+        return built;
+    }
+
+    private Dictionary<string, EquipmentBuild> ReadBuildsById(string profileId)
+    {
+        var map = new Dictionary<string, EquipmentBuild>(StringComparer.Ordinal);
+        try
+        {
+            var builds = saveServer.GetProfile(new MongoId(profileId))?.UserBuildData?.EquipmentBuilds;
+            if (builds == null) return map;
+            foreach (var build in builds)
+            {
+                if (build == null) continue;
+                map[build.Id.ToString()] = build;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.Warning($"[STM] 빌드 목록: 팀원 프로필 '{profileId}' 의 빌드를 다시 읽지 못했다: {ex.Message}");
+        }
+
+        return map;
+    }
 
     // 한 프로필의 장비 빌드를 값만 베껴 온다. 살아 있는 Items 목록은 개수만 세고 참조는 버린다.
     // 프로필이 없거나 빌드 칸이 비어 있으면 빈 목록이다 - 그것은 실패가 아니라 "저장해 둔 빌드가 없다" 다.
