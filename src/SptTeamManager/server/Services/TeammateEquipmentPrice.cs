@@ -5,6 +5,9 @@ namespace pitTeam.Server.Services;
 // Traverses attachment slots only. Grid contents and ammunition never enter the quote.
 internal static class TeammateEquipmentPrice
 {
+    // STM 의 장비 꾸러미 계획이 같은 열 자리를 봐야 한다(계획 4 Task 2). 읽기 전용으로 노출만 한다.
+    internal static IReadOnlySet<string> RootSlotNames => Roots;
+
     private static readonly HashSet<string> Roots = new(StringComparer.OrdinalIgnoreCase)
     {
         "FirstPrimaryWeapon", "SecondPrimaryWeapon", "Holster", "Headwear", "FaceCover",
