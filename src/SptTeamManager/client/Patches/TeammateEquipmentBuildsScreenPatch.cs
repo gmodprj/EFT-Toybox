@@ -32,7 +32,8 @@ namespace pitTeam.Patches
     {
         private static readonly FieldInfo ButtonRawTextField = AccessTools.Field(typeof(DefaultUIButton), "_rawText");
         private static readonly FieldInfo BuildListWeightField = AccessTools.Field(typeof(EquipmentBuildListView), "_weight");
-        private static readonly FieldInfo ScreenSelectedBuildField = AccessTools.Field(typeof(EquipmentBuildsScreen), "_currentBuild");
+        // STM 의 꾸러미가 고른 빌드를 읽는다(계획 4 Task 4-b). PIT 파일에는 private -> internal 승격만 한다.
+        internal static readonly FieldInfo ScreenSelectedBuildField = AccessTools.Field(typeof(EquipmentBuildsScreen), "_currentBuild");
         private static readonly FieldInfo ScreenWeightField = AccessTools.Field(typeof(EquipmentBuildsScreen), "_weight");
         private static readonly FieldInfo EditBuildOnlyAvailableToggleField = AccessTools.Field(typeof(EditBuildScreen), "_onlyAvailableToggle");
         private const string BuyKitRoute = "/singleplayer/pitfireteam/teammate/profile/buy-kit";
@@ -60,7 +61,8 @@ namespace pitTeam.Patches
         private static ResultProfile _profile;
         private static EFT.IEftSession _session;
         private static EFT.InventoryLogic.BackEndInventoryController _backendInventoryController;
-        private static EquipmentBuildsScreen _activeScreen;
+        // STM 의 꾸러미가 고른 빌드를 읽을 때 쓴다. 승격만 한다.
+        internal static EquipmentBuildsScreen _activeScreen;
         private static Action _profileBackOverrideAction;
         private static bool _openingFromProfile;
         private static bool _returningToProfile;
@@ -261,6 +263,13 @@ namespace pitTeam.Patches
                 return false;
             }
 
+            // STM: 프로필 팀원이면 여기서 갈라진다. 값도 구매도 STM 의 경로가 한다.
+            if (StmKitNativeFlow.IsActive)
+            {
+                var stmBuild = ScreenSelectedBuildField?.GetValue(_activeScreen) as EFT.UI.Builds.EquipmentBuild;
+                return StmKitNativeFlow.HandleBuyRequest(stmBuild?.Id, stmBuild?.Name);
+            }
+
             if (!TryCreateBuyQuote(out EquipmentBuildBuyQuote quote))
             {
                 EFT.Communications.NotificationManager.DisplayWarningNotification(GetSocialUiText("KitLoadoutPriceFailed"), ENotificationDurationType.Default);
@@ -313,6 +322,9 @@ namespace pitTeam.Patches
             {
                 return;
             }
+
+            // STM 모드를 끈다(여기서 끄지 않으면 다음에 연 용병 화면이 STM 분기를 탄다).
+            StmKitNativeFlow.End();
 
             if (string.IsNullOrWhiteSpace(_accountId))
             {
@@ -1979,6 +1991,9 @@ namespace pitTeam.Patches
 
         private static void ApplyBuildListPrice(EquipmentBuildListView view, EFT.UI.Builds.EquipmentBuild build)
         {
+            // STM: 보여 준 숫자와 청구가 다른 것이 가장 나쁘다. 고르기 전에는 값을 말하지 않는다.
+            if (StmKitNativeFlow.IsActive) return;
+
             HealthParameterPanel weightPanel = BuildListWeightField?.GetValue(view) as HealthParameterPanel;
             if (weightPanel == null || build == null)
             {
