@@ -37,7 +37,7 @@ nor installs the addon, so nothing is being distributed now. This repository als
 
 Plans 1 (foundation) and 2 (into the raid) are committed, installed, and **verified by playing the
 game** on 2026-11-01. Plan 3 (gear editing, teammate detail screen, auto-join, three gesture commands) is
-committed on branch `feat/stm-gear-editing` and **has never been run in the game**: it rests on 504 unit
+committed on branch `feat/stm-gear-editing` and **has never been run in the game**: it rests on 511 unit
 tests (all in `shared/` policy code) and per-task code review, and its in-game gate is still to be done
 (25 ordered checks in `doc/WORKLOG.md`, "인게임 관문"). Everything under "Plan 3" below is therefore *written and
 unit-tested*, not *observed*. Server builds with 0 warnings and 0 errors; the client compiles with 0 `error CS`
