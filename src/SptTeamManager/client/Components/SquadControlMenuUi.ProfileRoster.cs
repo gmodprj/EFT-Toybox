@@ -9,6 +9,13 @@ using UnityEngine.UI;
 
 namespace pitTeam.Components
 {
+    /// <summary>명단의 하위 탭. 용병(PIT 가 소유한 동료)과 프로필 팀원(런처의 다른 프로필)은 한 격자에 섞지 않는다.</summary>
+    internal enum StmRosterSection
+    {
+        Mercenaries,
+        Profiles,
+    }
+
     // STM: launcher-profile teammates on the squad roster (design 6-3, left list).
     //
     // Everything here sits beside PIT's mercenary roster and never replaces it: the mercenary tiles
@@ -25,6 +32,140 @@ namespace pitTeam.Components
         private DefaultUIButton loadProfileButton;
         private GameObject stmPickerOverlay;
         private bool stmRequestBusy;
+
+        // ---- 명단 하위 탭 ----
+        internal const float StmRosterSectionTabsHeight = 36f;
+        private const float StmRosterTabWidth = 150f;
+        private const float StmRosterTabGap = 6f;
+
+        /// <summary>지금 보고 있는 쪽. 기본은 용병 — PIT 가 원래 보여 주던 것이다.</summary>
+        private StmRosterSection stmRosterSection = StmRosterSection.Mercenaries;
+
+        private readonly Dictionary<StmRosterSection, Button> stmSectionTabButtons = new Dictionary<StmRosterSection, Button>();
+        private readonly Dictionary<StmRosterSection, TextMeshProUGUI> stmSectionTabLabels = new Dictionary<StmRosterSection, TextMeshProUGUI>();
+
+        private static string StmSectionTabText(StmRosterSection section)
+        {
+            return section == StmRosterSection.Mercenaries ? "용병" : "프로필 팀원";
+        }
+
+        // 명단 위에 붙는 두 칸짜리 탭 줄. 탭을 바꾸면 명단을 다시 그린다(서버에 다시 묻는다 - 사이에 바뀌었을 수 있다).
+        // 그리기가 실패해도 명단 자체는 선다: 탭이 없으면 기본값인 용병 쪽이 그대로 보인다.
+        private void CreateStmRosterSectionTabs(RectTransform shellRect)
+        {
+            try
+            {
+                stmSectionTabButtons.Clear();
+                stmSectionTabLabels.Clear();
+
+                if (shellRect == null)
+                {
+                    return;
+                }
+
+                GameObject rowObject = new GameObject("pitFireTeam_StmRosterSectionTabs", typeof(RectTransform));
+                rowObject.transform.SetParent(shellRect, false);
+                RectTransform row = rowObject.GetComponent<RectTransform>();
+                row.anchorMin = new Vector2(0f, 1f);
+                row.anchorMax = new Vector2(1f, 1f);
+                row.pivot = new Vector2(0f, 1f);
+                row.offsetMin = new Vector2(18f, -(RosterViewportTopInset + StmRosterSectionTabsHeight));
+                row.offsetMax = new Vector2(-18f, -RosterViewportTopInset);
+
+                float x = 0f;
+                foreach (StmRosterSection section in new[] { StmRosterSection.Mercenaries, StmRosterSection.Profiles })
+                {
+                    CreateStmSectionTab(row, section, x);
+                    x += StmRosterTabWidth + StmRosterTabGap;
+                }
+
+                UpdateStmRosterSectionTabs();
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] Failed to draw the roster section tabs; the roster itself is unaffected.");
+                pitFireTeam.Log.LogError(ex);
+            }
+        }
+
+        private void CreateStmSectionTab(RectTransform row, StmRosterSection section, float x)
+        {
+            GameObject tabObject = new GameObject(
+                $"pitFireTeam_StmRosterSectionTab_{section}",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button));
+            tabObject.transform.SetParent(row, false);
+
+            RectTransform rect = tabObject.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0f, 0f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 0.5f);
+            rect.sizeDelta = new Vector2(StmRosterTabWidth, 0f);
+            rect.anchoredPosition = new Vector2(x, 0f);
+
+            GameObject textObject = CreateText(
+                $"pitFireTeam_StmRosterSectionTabText_{section}",
+                StmSectionTabText(section),
+                18f,
+                TextAlignmentOptions.Center);
+            RectTransform textRect = textObject.GetComponent<RectTransform>();
+            textRect.SetParent(rect, false);
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+
+            TextMeshProUGUI label = textObject.GetComponent<TextMeshProUGUI>();
+            label.raycastTarget = false;
+
+            Button button = tabObject.GetComponent<Button>();
+            button.transition = Selectable.Transition.None;
+            button.targetGraphic = tabObject.GetComponent<Image>();
+            StmRosterSection target = section;
+            button.onClick.AddListener(() => SelectStmRosterSection(target));
+
+            stmSectionTabButtons[section] = button;
+            stmSectionTabLabels[section] = label;
+        }
+
+        private void SelectStmRosterSection(StmRosterSection section)
+        {
+            if (stmRosterSection == section)
+            {
+                return;
+            }
+
+            stmRosterSection = section;
+            RebuildRosterTiles();
+        }
+
+        /// <summary>고른 탭을 밝게 둔다. 탭이 없으면(그리기 실패) 아무 일도 하지 않는다.</summary>
+        private void UpdateStmRosterSectionTabs()
+        {
+            foreach (KeyValuePair<StmRosterSection, Button> pair in stmSectionTabButtons)
+            {
+                if (pair.Value == null)
+                {
+                    continue;
+                }
+
+                bool selected = pair.Key == stmRosterSection;
+                if (pair.Value.targetGraphic is Image background)
+                {
+                    background.color = selected
+                        ? new Color(0.6235f, 0.6157f, 0.5647f, 1f)
+                        : new Color(0.045f, 0.045f, 0.045f, 0.9f);
+                }
+
+                if (stmSectionTabLabels.TryGetValue(pair.Key, out TextMeshProUGUI label) && label != null)
+                {
+                    label.color = selected
+                        ? new Color(0.08f, 0.08f, 0.08f, 1f)
+                        : new Color(0.78f, 0.78f, 0.76f, 1f);
+                }
+            }
+        }
 
         // Fetched on every roster rebuild. null = the profile section is not shown at all.
         private static StmRosterSnapshot LoadStmSnapshot()
