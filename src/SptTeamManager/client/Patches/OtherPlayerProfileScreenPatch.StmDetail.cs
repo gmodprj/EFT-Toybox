@@ -124,6 +124,7 @@ namespace pitTeam.Patches
                         : detail.BlockedNotice;
                     bool closable = detail.CanClose && !string.IsNullOrWhiteSpace(detail.JournalId) && !string.IsNullOrWhiteSpace(detail.CloseWarning);
                     bool discardable = detail.CanDiscardJournal && !string.IsNullOrWhiteSpace(detail.DiscardWarning);
+                    text = WithStmPendingGearRefusal(text, profile?.AccountId);
                     ShowStmBanner(screen, text, closable ? detail : null, discardable ? detail : null);
                     return true;
                 }
@@ -392,6 +393,12 @@ namespace pitTeam.Patches
         private static void CloseStmDetail()
         {
             CloseStmConfirm();
+            if (StmGearEditEntryRoot != null)
+            {
+                GameObject.Destroy(StmGearEditEntryRoot);
+                StmGearEditEntryRoot = null;
+            }
+
             if (StmDetailRoot == null) return;
             GameObject.Destroy(StmDetailRoot);
             StmDetailRoot = null;

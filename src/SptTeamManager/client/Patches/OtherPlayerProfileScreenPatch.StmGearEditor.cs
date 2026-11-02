@@ -77,6 +77,14 @@ namespace pitTeam.Patches
         // 편집기를 열지 못한 이유(플레이어가 읽는 말). 여는 쪽이 토스트로 보인다.
         private static string StmGearEditOpenFailure;
 
+        // 편집기가 사라진 뒤에 도착한 저장 거절 사유. 화면이 아니라 문자열과 그 주인(팀원)만 든다 - 죽은 편집기를 되살리지 않고,
+        // 다른 팀원의 화면에는 나오지 않으며(주인 대조), 한 번 꺼내면 비워지고, 10분이 지나면 버린다.
+        private static string StmPendingGearRefusalAccountId;
+        private static string StmPendingGearRefusalMessage;
+        private static DateTime StmPendingGearRefusalAtUtc;
+        private static GameObject StmGearEditEntryRoot;
+        private const string StmRefusalPrefix = "직전 장비 저장이 거절되었습니다: ";
+
         // ---- 입구 ----
 
         // 상세 화면의 입구. 서버가 열어도 된다고 한 팀원에게만 버튼을 얹는다(canEditGear). 열 수 없으면 이유를 말하는 안내 상자다.
@@ -91,8 +99,17 @@ namespace pitTeam.Patches
         {
             if (!detail.CanEditGear)
             {
-                ShowStmBanner(screen, GearEditEntryPolicy.NoticeWhenNotEditable(detail.EditNotice), null, null);
+                ShowStmBanner(screen, WithStmPendingGearRefusal(GearEditEntryPolicy.NoticeWhenNotEditable(detail.EditNotice), profile?.AccountId), null, null);
                 return;
+            }
+
+            // 대기 중이던 거절 사유가 있으면 입구 위에 안내 상자로 먼저 말한다. 입구는 그 아래로 내려 겹치지 않게 한다.
+            float entryTop = -96f;
+            string pendingRefusal = TakeStmPendingGearRefusal(profile?.AccountId);
+            if (pendingRefusal != null)
+            {
+                ShowStmBanner(screen, StmRefusalPrefix + pendingRefusal, null, null);
+                entryTop = -240f;
             }
 
             DefaultUIButton buttonTemplate = BackButtonField?.GetValue(screen) as DefaultUIButton;
@@ -109,7 +126,7 @@ namespace pitTeam.Patches
             rect.anchorMin = new Vector2(0.5f, 1f);
             rect.anchorMax = new Vector2(0.5f, 1f);
             rect.pivot = new Vector2(0.5f, 1f);
-            rect.anchoredPosition = new Vector2(0f, -96f);
+            rect.anchoredPosition = new Vector2(0f, entryTop);
             rect.sizeDelta = new Vector2(300f, 48f);
             rect.localScale = Vector3.one;
             rect.SetAsLastSibling();
@@ -124,7 +141,8 @@ namespace pitTeam.Patches
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener(() => OpenStmGearEditor(screen, profile, detail, inventoryController, session, playerModelWindow));
 
-            StmDetailRoot = root;
+            if (pendingRefusal == null) StmDetailRoot = root;
+            else StmGearEditEntryRoot = root;
         }
 
         // ---- 열기 ----
@@ -356,7 +374,7 @@ namespace pitTeam.Patches
             saveButton.name = "pitFireTeam_LoadoutEditorDoneButton";
             saveButton.SetRawText(StmEditorSaveText, 20);
             saveButton.OnClick.RemoveAllListeners();
-            saveButton.OnClick.AddListener(() => SaveStmGearEdit(profile, detail, inventoryController, session, playerModelWindow));
+            saveButton.OnClick.AddListener(() => SaveStmGearEdit(screen, profile, detail, inventoryController, session, playerModelWindow));
             if (saveButton.transform is RectTransform saveRect)
             {
                 saveRect.anchorMin = new Vector2(1f, 0f);
@@ -555,6 +573,7 @@ namespace pitTeam.Patches
         // ---- 저장 ----
 
         private static async void SaveStmGearEdit(
+            OtherPlayerProfileScreen screen,
             ResultProfile profile,
             StmProfileDetailWire detail,
             InventoryController inventoryController,
@@ -572,7 +591,7 @@ namespace pitTeam.Patches
 
                 if (profile == null || detail == null || LoadoutEditorProfile?.Inventory?.Equipment == null || LoadoutEditorProfile.Inventory.Stash == null)
                 {
-                    ReportStmGearEditFailure(StmEditorSaveFailedToast);
+                    ReportStmGearEditFailure(StmEditorSaveFailedToast, screen, profile);
                     return;
                 }
 
@@ -585,7 +604,7 @@ namespace pitTeam.Patches
 
                 if (!plan.Ok)
                 {
-                    ReportStmGearEditFailure(plan.Reason);
+                    ReportStmGearEditFailure(plan.Reason, screen, profile);
                     return;
                 }
 
@@ -614,7 +633,7 @@ namespace pitTeam.Patches
                 if (failure != null)
                 {
                     // 서버가 쓴 사유 그대로. 거절된 묶음은 아무것도 쓰지 않았으므로 편집기는 열어 둔다(고쳐서 다시 저장할 수 있다).
-                    ReportStmGearEditFailure(failure);
+                    ReportStmGearEditFailure(failure, screen, profile);
                     return;
                 }
 
@@ -627,7 +646,7 @@ namespace pitTeam.Patches
             {
                 pitFireTeam.Log.LogError("[STM] Saving the profile teammate gear edit failed.");
                 pitFireTeam.Log.LogError(ex);
-                ReportStmGearEditFailure(StmEditorSaveFailedToast);
+                ReportStmGearEditFailure(StmEditorSaveFailedToast, screen, profile);
             }
             finally
             {
@@ -663,10 +682,50 @@ namespace pitTeam.Patches
         }
 
         // 거절·실패: 토스트와 편집기 안의 줄 둘 다. 토스트는 금방 사라지고, 사유는 슬롯이나 아이템 이름을 담고 있어 읽을 시간이 필요하다.
-        private static void ReportStmGearEditFailure(string message)
+        //
+        // 저장 결과는 편집기가 아직 있는지에 기대지 않는다. PIT 화면의 숨김 처리 등 이 파일 밖의 길이 저장 요청이 나가 있는 동안
+        // 편집기를 치울 수 있고, 그 뒤에 도착한 거절 사유는 상태 줄(StmGearEditStatusLabel)이 이미 없다. 그때는 사유를
+        // **메시지로만** 남긴다(화면 참조가 아니라 문자열): 화면이 살아 있고 보이면 상세 화면의 안내 상자에 바로 올리고,
+        // 아니면 이 팀원 앞으로 대기시켜 다음에 이 팀원의 상세 화면이 열릴 때 그 안내 상자가 말한다.
+        private static void ReportStmGearEditFailure(string message, OtherPlayerProfileScreen screen, ResultProfile profile)
         {
+            bool editorAlive = StmGearEditStatusLabel != null;
             SetStmGearEditStatus(message);
             AddTeammateCreationFlow.ShowToast(message);
+            if (editorAlive) return;
+
+            string text = StmRefusalPrefix + message;
+            if (screen != null && screen.gameObject.activeInHierarchy)
+            {
+                CloseStmDetail();
+                ShowStmBanner(screen, text, null, null);
+                return;
+            }
+
+            StmPendingGearRefusalAccountId = profile?.AccountId;
+            StmPendingGearRefusalMessage = message;
+            StmPendingGearRefusalAtUtc = DateTime.UtcNow;
+        }
+
+        // 대기 중인 거절 사유를 한 번만 꺼낸다. 이 팀원 것이 아니거나 오래됐으면(다른 세션의 잔재일 수 있다) 버린다.
+        private static string TakeStmPendingGearRefusal(string accountId)
+        {
+            string message = StmPendingGearRefusalMessage;
+            string owner = StmPendingGearRefusalAccountId;
+            DateTime at = StmPendingGearRefusalAtUtc;
+            if (message == null) return null;
+            if (!string.Equals(owner, accountId, StringComparison.Ordinal)) return null;
+            StmPendingGearRefusalMessage = null;
+            StmPendingGearRefusalAccountId = null;
+            if (DateTime.UtcNow - at > TimeSpan.FromMinutes(10)) return null;
+            return message;
+        }
+
+        // 안내문 앞에 대기 중이던 거절 사유를 붙인다(없으면 그대로).
+        private static string WithStmPendingGearRefusal(string text, string accountId)
+        {
+            string pending = TakeStmPendingGearRefusal(accountId);
+            return pending == null ? text : StmRefusalPrefix + pending + Environment.NewLine + Environment.NewLine + text;
         }
 
         private static void SetStmGearEditStatus(string message)
