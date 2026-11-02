@@ -1198,6 +1198,10 @@ namespace pitTeam.Patches
             return ordered.ToArray();
         }
 
+        // 이 게임 세션에서 건너뛴 스태시 항목의 id. 메모리에만 두고 지우지 않는다: 건너뛴 순간부터 클라이언트의 스태시가
+        // 서버와 다르고, 그 차이는 재시작으로만 사라진다. 비어 있지 않으면 동료 장비 저장이 막힌다(EvaluateEditGate).
+        private static readonly HashSet<string> SessionSkippedStashItemIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         // 판정은 EFT 가 이미 했다(오류 목록). 여기서는 게임이 알려 준 오류를 (id, 통과 여부, 사유, 부모) 로 옮기기만 하고,
         // 무엇을 남기고 뺄지(자손 포함)는 StashRevalidationPolicy 가 정한다. 건너뛴 항목마다 경고 한 줄을 남긴다 -
         // 조용히 버리면 사용자는 아이템이 왜 사라졌는지 알 길이 없다.
@@ -1313,6 +1317,13 @@ namespace pitTeam.Patches
                 }
             }
 
+            // 인벤토리를 바꾸기 직전에 기록한다. 교체가 중간에 실패해도 기록은 남아 저장은 계속 막힌다(닫힌 쪽).
+            if (skippedStashItemIds != null)
+            {
+                foreach (string skippedId in skippedStashItemIds)
+                    SessionSkippedStashItemIds.Add(skippedId);
+            }
+
             Inventory activeInventory = activeProfile.Inventory;
             activeInventory.Stash = savedStash;
             activeInventoryController.ReplaceInventory(activeInventory);
@@ -1335,11 +1346,11 @@ namespace pitTeam.Patches
 
             if (skippedStashItemIds != null)
             {
-                // 이 세션의 클라이언트 스태시에서만 빠진 것이다(서버 프로필은 그대로). 다만 이 상태에서 동료 장비 편집을
-                // 저장하면 서버는 클라이언트의 스태시로 플레이어 스태시를 통째로 바꾸므로(FriendlyTeammateService.cs 의
-                // SaveTeammateDefaultEquipmentWithRealItemCommit) 그 아이템이 영구히 사라질 수 있다.
+                // 이 세션의 클라이언트 스태시에서만 빠진 것이다(서버 프로필은 그대로). 이 상태에서 동료 장비 저장을 하면
+                // 서버가 클라이언트 스태시로 플레이어 스태시를 통째로 바꿔 아이템이 영구히 사라지므로, 저장은 재시작 전까지
+                // 막혀 있다(CreateLoadoutEditorSaveStashItems).
                 foreach (string skippedId in skippedStashItemIds)
-                    pitFireTeam.Log.LogWarning($"[UI] Stash item {skippedId} is hidden from the stash for this session because it broke item rules. Restart the game before saving teammate loadout edits, or the item may be lost from the profile.");
+                    pitFireTeam.Log.LogWarning($"[UI] Stash item {skippedId} is hidden from the stash for this session because it broke item rules. It is intact in the server profile. Saving teammate loadout changes is blocked until the game is restarted.");
             }
 
             Modules.Logger.LogInfo("[UI] Applied live player stash refresh from server-saved snapshot.");
@@ -2360,6 +2371,15 @@ namespace pitTeam.Patches
 
         private static JsonType.FlatItem[] CreateLoadoutEditorSaveStashItems()
         {
+            // 장비 저장이 서버로 제출되는 두 경로(저장, 유료 서비스 전 선저장)가 모두 이 함수로 스태시를 만든 뒤에야 제출한다.
+            // 그래서 여기가 제출 전의 유일한 관문이다. 이 세션에서 스태시 항목을 건너뛰었다면 메모리 스태시에는 그 아이템이
+            // 없고, 서버는 제출된 스태시로 플레이어 스태시를 통째로 바꾸므로 그대로 저장하면 영구 손실이다.
+            string refusal = StashRevalidationPolicy.EvaluateEditGate(SessionSkippedStashItemIds);
+            if (refusal != null)
+            {
+                throw new InvalidOperationException(refusal);
+            }
+
             Item stash = LoadoutEditorProfile?.Inventory?.Stash;
             if (stash == null)
             {

@@ -331,4 +331,41 @@ public class StashRevalidationPolicyTests
 
         Assert.Equal(new[] { "b" }, missing);
     }
+
+    // 건너뛴 항목이 있는 세션은 클라이언트의 메모리 스태시에 그 아이템이 없다. 서버는 동료 장비 저장 때 제출된 스태시로
+    // 플레이어 스태시를 통째로 바꾸므로, 그 상태로 저장하면 아이템이 프로필에서 영구히 사라진다. 그래서 막는다.
+    [Fact]
+    public void 건너뛴_항목이_기록된_세션은_장비_저장을_거절한다()
+    {
+        var refusal = StashRevalidationPolicy.EvaluateEditGate(new[] { "6adea532010015d86e5ffb7e" });
+
+        Assert.False(string.IsNullOrWhiteSpace(refusal));
+    }
+
+    [Fact]
+    public void 건너뛴_항목이_없는_세션은_장비_저장을_허용한다()
+    {
+        Assert.Null(StashRevalidationPolicy.EvaluateEditGate(new string[0]));
+        Assert.Null(StashRevalidationPolicy.EvaluateEditGate(null));
+    }
+
+    [Fact]
+    public void 거절_메시지는_건너뛴_id_와_서버에_온전하다는_것과_재시작을_말한다()
+    {
+        var message = StashRevalidationPolicy.EvaluateEditGate(new[] { "aaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbb" });
+
+        Assert.NotNull(message);
+        Assert.Contains("aaaaaaaaaaaaaaaaaaaaaaaa", message);
+        Assert.Contains("bbbbbbbbbbbbbbbbbbbbbbbb", message);
+        Assert.Contains("intact", message);
+        Assert.Contains("server", message);
+        Assert.Contains("restart", message, System.StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void 기록된_id_가_전부_공백이어도_닫힌_쪽으로_거절한다()
+    {
+        // 기록이 있다는 사실이 중요하다. id 문자열이 망가졌다고 허용으로 넘어가면 안 된다.
+        Assert.False(string.IsNullOrWhiteSpace(StashRevalidationPolicy.EvaluateEditGate(new[] { "", "  " })));
+    }
 }

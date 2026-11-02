@@ -118,6 +118,34 @@ namespace pitTeam.Shared
             return new StashRevalidationResult(kept, skipped);
         }
 
+        // 이 세션에서 스태시 항목을 건너뛴 적이 있으면 동료 장비 저장을 거절하는 판단. null 이면 허용, 아니면 사용자에게
+        // 보일 거절 사유다. 경고가 아니라 차단인 이유: 건너뛴 세션의 메모리 스태시에는 그 아이템이 없고, 서버는 저장 때
+        // 제출된 스태시로 플레이어 스태시를 통째로 바꾸되 "빠진" 아이템은 검증하지 않아서(FriendlyTeammateService
+        // 의 실제 커밋 경로) 그대로 저장하면 아이템이 프로필에서 영구히 사라진다. 로그 한 줄을 읽어야 안전한 장치는
+        // 안전장치가 아니다. 이 수리 이전에는 흐름이 던지고 아무것도 저장하지 않았으니, 이 손실 경로는 수리가 만든 것이다.
+        // 기록이 있다는 사실만 본다 - id 문자열이 망가졌다는 이유로 허용 쪽으로 넘기지 않는다(닫힌 쪽).
+        public static string? EvaluateEditGate(IEnumerable<string>? skippedIdsThisSession)
+        {
+            if (skippedIdsThisSession == null) return null;
+
+            var ids = new List<string>();
+            var any = false;
+            foreach (var id in skippedIdsThisSession)
+            {
+                any = true;
+                if (!string.IsNullOrWhiteSpace(id)) ids.Add(id);
+            }
+
+            if (!any) return null;
+
+            var named = ids.Count > 0 ? string.Join(", ", ids) : "(unknown item)";
+            return "Teammate loadout changes cannot be saved right now: this session skipped stash item(s) "
+                + named
+                + " because they broke item rules, so your stash on screen is missing them. "
+                + "The items are intact in your server profile. Restart the game to clear this; "
+                + "saving now could remove them for good.";
+        }
+
         // 스냅샷에는 있었는데 지금 스태시에 없는 id 중, 건너뛰기로 한 것이 아닌 것. 비어 있어야 정상이다.
         // 비어 있지 않으면 계단식 제외나 트리 구성이 건너뛰라 하지 않은 아이템을 잃었다는 뜻이니 호출자는 던져야 한다.
         // 현재 목록을 알 수 없으면(null) 전부 설명되지 않은 누락으로 친다 - 못 읽으면 "괜찮다" 가 아니다.
