@@ -20,6 +20,7 @@ public class FriendlyTeammateSocialCallbacks(
     FriendlySquadOnboardingService onboarding,
     StmProfileMemberStore profileMemberStore,
     StmProfileCatalog profileCatalog,
+    StmProfileViewFactory profileViewFactory,
     ISptLogger<FriendlyTeammateSocialCallbacks> logger,
     HttpResponseUtil httpResponseUtil,
     JsonUtil jsonUtil
@@ -199,6 +200,21 @@ public class FriendlyTeammateSocialCallbacks(
     public ValueTask<string> MergeProfileView(string url, GetOtherProfileRequest request, MongoId sessionId, string? previousOutput)
     {
         var body = DeserializeBody<GetOtherProfileResponse>(previousOutput);
+
+        // STM 먼저(불변식 3). 이 라우트는 SPT 가 먼저 답한 뒤 불리는데, SPT 는 aid 로 "다른 런처 프로필" 을 직접 찾아 돌려준다
+        // (ProfileHelper.GetFullProfileByAccountId -> SaveServer 의 프로필을 ProfileInfo.Aid 로 조회, 4.1.0·4.1.6 역컴파일로 확인).
+        // 그 응답은 Equipment.Items 에 프로필의 인벤토리 전체(스태시 포함)를 싣고, 못 찾으면 로그인한 본인 프로필로 대체한다.
+        // 그래서 프로필 팀원의 Aid 는 SPT 의 응답을 흘려보내지 않고 착용 장비로 줄인 STM 의 응답으로 바꾼다.
+        // 등록됐지만 쓸 수 없는 팀원은 오류로 돌린다 - SPT 의 "본인 프로필로 대체" 가 팀원인 척 보이면 안 된다.
+        if (profileViewFactory.TryBuildView(sessionId, request.AccountId, out var profileMemberView, out var profileMemberUnavailableReason))
+        {
+            return new ValueTask<string>(httpResponseUtil.GetBody(profileMemberView));
+        }
+
+        if (!string.IsNullOrWhiteSpace(profileMemberUnavailableReason))
+        {
+            return new ValueTask<string>(httpResponseUtil.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: profileMemberUnavailableReason));
+        }
 
         if (teammateService.TryGetPendingTeammateProfile(sessionId, request.AccountId, out var pendingProfile))
             return new ValueTask<string>(httpResponseUtil.GetBody(pendingProfile));
