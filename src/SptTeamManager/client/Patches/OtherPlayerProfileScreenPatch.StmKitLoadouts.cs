@@ -275,7 +275,7 @@ namespace pitTeam.Patches
 
         // 위에서 fromTop 만큼 내려온 자리에 한 줄짜리 머리글을 둔다. CreateOverlayText 는 창 전체로 늘어나는
         // 모양이라(앵커가 0,0-1,1) 목록에는 쓸 수 없다 - 여러 줄이 같은 자리에 겹친다.
-        private static void CreateStmKitHeading(RectTransform panel, string text, float fromTop)
+        private static void CreateStmKitHeading(RectTransform panel, string text, float fromTop, float fontSize = 18f, Color? color = null)
         {
             GameObject textObject = new GameObject("pitFireTeam_StmKitHeading", typeof(RectTransform), typeof(CustomTextMeshProUGUI));
             textObject.transform.SetParent(panel, false);
@@ -290,9 +290,9 @@ namespace pitTeam.Patches
 
             CustomTextMeshProUGUI label = textObject.GetComponent<CustomTextMeshProUGUI>();
             label.text = text;
-            label.fontSize = 18f;
+            label.fontSize = fontSize;
             label.alignment = TextAlignmentOptions.MidlineLeft;
-            label.color = new Color(0.62f, 0.62f, 0.58f, 1f);
+            label.color = color ?? new Color(0.62f, 0.62f, 0.58f, 1f);
             label.raycastTarget = false;
         }
 
@@ -372,11 +372,13 @@ namespace pitTeam.Patches
                 $"바뀌는 칸: {(changed.Count == 0 ? "없음" : string.Join(", ", changed))}\n\n" +
                 "물건은 전부 새로 삽니다. 돈은 지금 플레이어 계정(스태시)에서 나갑니다.";
 
+            // offsetMin.y 는 **창 바닥에서** 재고 offsetMax.y 는 창 위에서 잰다(앵커가 0,0-1,1 이다).
+            // 버튼 줄(바닥에서 42+38) 위에서 끝나고 제목 아래에서 시작하게 둔다.
             CreateOverlayText(
                 "pitFireTeam_StmKitQuoteText",
                 panel,
-                new Vector2(24f, 92f),
-                new Vector2(-24f, -58f),
+                new Vector2(24f, 96f),
+                new Vector2(-24f, -52f),
                 TextAlignmentOptions.TopLeft,
                 summary,
                 18f,
@@ -502,15 +504,7 @@ namespace pitTeam.Patches
             panelImage.color = new Color(0.04f, 0.04f, 0.04f, 0.98f);
             panelImage.raycastTarget = true;
 
-            CreateOverlayText(
-                "pitFireTeam_StmKitTitle",
-                panel,
-                new Vector2(24f, -44f),
-                new Vector2(-70f, -10f),
-                TextAlignmentOptions.MidlineLeft,
-                StmKitPickerTitle,
-                20f,
-                new Color(0.86f, 0.86f, 0.84f, 1f));
+            CreateStmKitHeading(panel, StmKitPickerTitle, 14f, 20f, new Color(0.86f, 0.86f, 0.84f, 1f));
 
             DefaultUIButton close = CreateOverlayButton(buttonTemplate, panel, new Vector2(StmKitPanelWidth - 108f, StmKitPanelHeight - 46f), new Vector2(84f, 32f));
             close.name = "pitFireTeam_StmKitCloseButton";
@@ -531,7 +525,7 @@ namespace pitTeam.Patches
                 "pitFireTeam_StmKitMessage",
                 panel,
                 new Vector2(24f, 24f),
-                new Vector2(-24f, -58f),
+                new Vector2(-24f, -52f),
                 TextAlignmentOptions.TopLeft,
                 message,
                 18f,
