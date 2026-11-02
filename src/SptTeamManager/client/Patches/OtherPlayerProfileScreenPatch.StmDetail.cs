@@ -208,6 +208,8 @@ namespace pitTeam.Patches
                 DisplayLoadoutOptions(screen, profile, inventoryController, session, panel, playerModelWindow, options, replaceLoadoutDropdown: false);
                 ApplyLoadoutPanelLayout(panel, clothingSelectionPanel);
                 ReplaceStmLoadoutDropdownWithEditButton(screen, profile, detail, panel, inventoryController, session, playerModelWindow);
+                // 그 아래 한 줄 더: 장비 꾸러미(계획 4). 못 만들어도 위의 줄은 그대로 선다.
+                CreateStmKitButton(screen, clone, parent, profile, detail);
 
                 StmControlRowRoot = clone.gameObject;
                 return true;
@@ -491,6 +493,13 @@ namespace pitTeam.Patches
         private static void CloseStmDetail()
         {
             CloseStmConfirm();
+            CloseStmKitOverlay();
+            if (StmKitButtonRoot != null)
+            {
+                GameObject.Destroy(StmKitButtonRoot.gameObject);
+                StmKitButtonRoot = null;
+            }
+
             if (StmControlRowRoot != null)
             {
                 GameObject.Destroy(StmControlRowRoot);
