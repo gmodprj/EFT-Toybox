@@ -25,6 +25,15 @@
     <Compile Include="../shared/RaidReceiptKeyPolicy.cs" Link="Shared/RaidReceiptKeyPolicy.cs" />
     <Compile Include="../shared/WornGearLossPolicy.cs" Link="Shared/WornGearLossPolicy.cs" />
     <Compile Include="../shared/RaidProtectionReleasePolicy.cs" Link="Shared/RaidProtectionReleasePolicy.cs" />
+    <Compile Include="../shared/ProfileMemberUpdatePolicy.cs" Link="Shared/ProfileMemberUpdatePolicy.cs" />
+    <Compile Include="../shared/AutoJoinRosterPolicy.cs" Link="Shared/AutoJoinRosterPolicy.cs" />
+    <Compile Include="../shared/StashRevalidationPolicy.cs" Link="Shared/StashRevalidationPolicy.cs" />
+    <Compile Include="../shared/TransferJournalPolicy.cs" Link="Shared/TransferJournalPolicy.cs" />
+    <Compile Include="../shared/ProfileMemberOperationPolicy.cs" Link="Shared/ProfileMemberOperationPolicy.cs" />
+    <Compile Include="../shared/ProfileViewPolicy.cs" Link="Shared/ProfileViewPolicy.cs" />
+    <Compile Include="../shared/TransferEntryClosePolicy.cs" Link="Shared/TransferEntryClosePolicy.cs" />
+    <Compile Include="../shared/ProfileGearEditPolicy.cs" Link="Shared/ProfileGearEditPolicy.cs" />
+    <Compile Include="../shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="HarmonyX" Version="2.16.1" />
   </ItemGroup>

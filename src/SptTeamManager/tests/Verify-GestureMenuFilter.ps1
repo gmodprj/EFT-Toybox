@@ -32,7 +32,9 @@ try {
     $values = $phrases.Fields | Where-Object HasConstant | ForEach-Object { $_.Name + '=' + $_.Constant }
     $enum = 'public enum EPhraseTrigger { ' + ($values -join ',') + ' }'
 } finally { $assembly.Dispose() }
-$fixture = (Get-Content -Raw (Join-Path $PSScriptRoot 'GestureMenuFilterFixture.cs')).Replace('/* PHRASE_ENUM */', $enum).
+# The menu must ask the same policy the router uses, so the real policy source is compiled in (its usings are hoisted into the fixture).
+$policy = (Get-Content -Raw (Join-Path $RepositoryRoot 'shared/GestureCommandPolicy.cs')) -replace '(?m)^using [^;]+;[ \t]*\r?\n', ''
+$fixture = (Get-Content -Raw (Join-Path $PSScriptRoot 'GestureMenuFilterFixture.cs')).Replace('/* PHRASE_ENUM */', $enum).Replace('/* POLICY */', $policy).
     Replace('/* NATIVE_INIT */', $init).Replace('/* NATIVE_GROUPS */', $groups).
     Replace('/* GROUP_PATCH */', $group).Replace('/* VISIBILITY */', $visibility)
 Add-Type -TypeDefinition $fixture -Language CSharp

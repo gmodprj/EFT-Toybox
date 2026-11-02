@@ -47,7 +47,15 @@ namespace pitTeam.Patches
                 case EPhraseTrigger.CoverMe:
                     return false;
                 default:
-                    return true;
+                    // Fire / Hold Fire / Take Cover. DELIBERATE BEHAVIOR CHANGE: with default settings
+                    // (hideUnsupportedCommands is false) these three were visible in the menu and vanilla
+                    // BotReceiver acted on them for the player's squad. Where the fork now handles the command,
+                    // its handler REPLACES vanilla's, because two systems acting on one command is worse than
+                    // either - and for Hold Fire they pull in opposite directions.
+                    // Vanilla is skipped ONLY where the fork handler will actually run for this follower - the
+                    // same predicate the router uses. For any other follower (another boss's squad, an
+                    // unregistered speaker) vanilla still runs, so the command never silently does nothing.
+                    return !pitTeam.Components.pitAIBossPlayer.ForkHandlesEngagementFor(botOwner, info.PlayerRequester, info.phrase);
             }
         }
     }

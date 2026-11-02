@@ -20,6 +20,7 @@ public class FriendlyTeammateSocialCallbacks(
     FriendlySquadOnboardingService onboarding,
     StmProfileMemberStore profileMemberStore,
     StmProfileCatalog profileCatalog,
+    StmProfileViewFactory profileViewFactory,
     ISptLogger<FriendlyTeammateSocialCallbacks> logger,
     HttpResponseUtil httpResponseUtil,
     JsonUtil jsonUtil
@@ -199,6 +200,84 @@ public class FriendlyTeammateSocialCallbacks(
     public ValueTask<string> MergeProfileView(string url, GetOtherProfileRequest request, MongoId sessionId, string? previousOutput)
     {
         var body = DeserializeBody<GetOtherProfileResponse>(previousOutput);
+
+        // STM 먼저(불변식 3). 이 라우트는 SPT 가 먼저 답한 뒤 불리는데, SPT 는 aid 로 "다른 런처 프로필" 을 직접 찾아 돌려준다
+        // (ProfileHelper.GetFullProfileByAccountId -> SaveServer 의 프로필을 ProfileInfo.Aid 로 조회, 4.1.0·4.1.6 역컴파일로 확인).
+        // 그 응답은 Equipment.Items 에 프로필의 인벤토리 전체(스태시 포함)를 싣고, 못 찾으면 로그인한 본인 프로필로 대체한다.
+        // 그래서 프로필 팀원의 Aid 는 SPT 의 응답을 흘려보내지 않고 착용 장비로 줄인 STM 의 응답으로 바꾼다.
+        // 등록됐지만 쓸 수 없는 팀원은 오류로 돌린다 - SPT 의 "본인 프로필로 대체" 가 팀원인 척 보이면 안 된다.
+        // 등록을 믿을 수 없는 상태(시작 검사가 실패했다)에서는 이 Aid 가 등록된 프로필인지 알 수 없다. 해석기는 이때 던졌다 잡고 사유 없이
+        // "팀원 아님" 을 돌려주는데, 이 라우트의 꼬리는 PIT 의 길이 아니라 SPT 의 응답(다른 프로필의 인벤토리 전체, 또는 본인
+        // 프로필로의 대체)이라 거기로 흘리면 위 수정이 무너진다. 모르면 닫힌 쪽: 조회를 거절한다.
+        // 단, PIT 자기 용병은 통과시킨다(ProfileViewPolicy): 용병 데이터는 PIT 의 것이라 다른 프로필의 스태시가 샐 수 없고, STM 의
+        // 고장으로 PIT 의 조회까지 막으면 PIT 의 기능이 깨진다. 이 완화는 STM 이 아무것도 해석하지 못하는 상태에서만 돈다 -
+        // 평소에는 Decide 가 PIT 를 묻지 않고 아래의 STM 먼저 순서가 그대로다.
+        // PIT 자기 용병의 응답을 찾는다. 평소에는 아래 STM 먼저 순서가 끝난 뒤에야 쓰이고, 읽기가 실패한 경우에만 STM 보다 먼저 쓰인다.
+        string? pitMercenaryView = null;
+        bool PitKnowsAid()
+        {
+            if (teammateService.TryGetPendingTeammateProfile(sessionId, request.AccountId, out var pending))
+            {
+                pitMercenaryView = httpResponseUtil.GetBody(pending);
+                return true;
+            }
+
+            if (teammateService.TryGetTeammateProfile(sessionId, request.AccountId, out var mercenary) && mercenary != null)
+            {
+                pitMercenaryView = httpResponseUtil.GetBody(mercenary);
+                return true;
+            }
+
+            if (recruitService.TryGetRecruitProfile(sessionId, request.AccountId, out var recruit) && recruit != null)
+            {
+                pitMercenaryView = httpResponseUtil.GetBody(recruit);
+                return true;
+            }
+
+            return false;
+        }
+
+        ValueTask<string> RefuseUnreadableView()
+        {
+            LogFaultOnce("view-registrations-unusable",
+                "[STM] 프로필 조회: 등록된 프로필 팀원을 읽을 수 없는 상태라 이 Aid 가 프로필 팀원인지 알 수 없어, SPT 의 응답(다른 프로필의 인벤토리 전체일 수 있다)을 내보내지 않고 조회를 거절한다. PIT 용병의 조회는 계속 낸다. 원인은 시작 검사나 읽기 실패의 Error 로그를 보라(이 로그는 실행당 한 번).");
+            return new ValueTask<string>(httpResponseUtil.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: "Unreadable"));
+        }
+
+        // 시작 때 등록을 믿을 수 없다고 표시된 경우: STM 은 아무것도 해석하지 못하므로 PIT 용병 먼저(ProfileViewPolicy), 아니면 거절.
+        var viewRoute = ProfileViewPolicy.Decide(profileMemberStore.RegistrationsUsable, PitKnowsAid);
+        if (viewRoute == ProfileViewRoute.ServePit && pitMercenaryView != null)
+        {
+            return new ValueTask<string>(pitMercenaryView);
+        }
+
+        if (viewRoute != ProfileViewRoute.StmFirst)
+        {
+            return RefuseUnreadableView();
+        }
+
+        if (profileViewFactory.TryBuildView(sessionId, request.AccountId, out var profileMemberView, out var profileMemberUnavailableReason))
+        {
+            return new ValueTask<string>(httpResponseUtil.GetBody(profileMemberView));
+        }
+
+        // 실행 중 읽기 실패(해석기가 한 번 읽고 한 번 분류한 결과): 시작 때 실패와 같은 길 - PIT 용병이면 낸다, 아니면 거절한다.
+        // 확인된 비팀원(사유 없음)은 이 분기에 오지 않고 아래 PIT 길로 그대로 흐른다.
+        if (string.Equals(profileMemberUnavailableReason, ProfileViewPolicy.ReadFailedReason, StringComparison.Ordinal))
+        {
+            var failedRoute = ProfileViewPolicy.RouteAfterLookup(ProfileLookupOutcome.ReadFailed, PitKnowsAid);
+            if (failedRoute == ProfileViewRoute.ServePit && pitMercenaryView != null)
+            {
+                return new ValueTask<string>(pitMercenaryView);
+            }
+
+            return RefuseUnreadableView();
+        }
+
+        if (!string.IsNullOrWhiteSpace(profileMemberUnavailableReason))
+        {
+            return new ValueTask<string>(httpResponseUtil.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: profileMemberUnavailableReason));
+        }
 
         if (teammateService.TryGetPendingTeammateProfile(sessionId, request.AccountId, out var pendingProfile))
             return new ValueTask<string>(httpResponseUtil.GetBody(pendingProfile));

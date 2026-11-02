@@ -41,6 +41,35 @@
     <Compile Include="WornGearLossPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/RaidProtectionReleasePolicy.cs" Link="Shared/RaidProtectionReleasePolicy.cs" />
     <Compile Include="RaidProtectionReleasePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileMemberUpdatePolicy.cs" Link="Shared/ProfileMemberUpdatePolicy.cs" />
+    <Compile Include="ProfileMemberUpdatePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/AutoJoinRosterPolicy.cs" Link="Shared/AutoJoinRosterPolicy.cs" />
+    <Compile Include="AutoJoinRosterPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/StashRevalidationPolicy.cs" Link="Shared/StashRevalidationPolicy.cs" />
+    <Compile Include="StashRevalidationPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/TransferJournalPolicy.cs" Link="Shared/TransferJournalPolicy.cs" />
+    <Compile Include="TransferJournalPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileMemberOperationPolicy.cs" Link="Shared/ProfileMemberOperationPolicy.cs" />
+    <Compile Include="ProfileMemberOperationPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileStatePolicy.cs" Link="Shared/ProfileStatePolicy.cs" />
+    <Compile Include="ProfileStatePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/TransferEntryClosePolicy.cs" Link="Shared/TransferEntryClosePolicy.cs" />
+    <Compile Include="TransferEntryClosePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileViewPolicy.cs" Link="Shared/ProfileViewPolicy.cs" />
+    <Compile Include="ProfileViewPolicyTests.cs" />
+    <Compile Include="ProfileEditPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileGearEditPolicy.cs" Link="Shared/ProfileGearEditPolicy.cs" />
+    <Compile Include="ProfileGearEditPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GearEditBatchPlanner.cs" Link="Shared/GearEditBatchPlanner.cs" />
+    <Compile Include="GearEditBatchPlannerTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
+    <Compile Include="GearEditEntryPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/PendingRefusalPolicy.cs" Link="Shared/PendingRefusalPolicy.cs" />
+    <Compile Include="PendingRefusalPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/SaveOutcomePolicy.cs" Link="Shared/SaveOutcomePolicy.cs" />
+    <Compile Include="SaveOutcomePolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/GestureCommandPolicy.cs" Link="Shared/GestureCommandPolicy.cs" />
+    <Compile Include="GestureCommandPolicyTests.cs" />
   </ItemGroup>
 
 </Project>

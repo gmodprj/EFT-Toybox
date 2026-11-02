@@ -22,6 +22,10 @@ public record FriendlyTeammateProfileOptionsResponse
     public List<string> OwnedFeetCustomizationIds { get; set; } = [];
 
     public FriendlyTeammateProfileRecoveryNotice? RecoveryNotice { get; set; }
+
+    // 프로필 팀원일 때만 값이 있다(STM). PIT 용병의 응답은 null 이라 클라이언트가 기존 화면을 그대로 만든다.
+    [System.Text.Json.Serialization.JsonPropertyName("stm")]
+    public StmProfileDetail? Stm { get; set; }
 }
 
 public record FriendlyTeammateLoadoutOption

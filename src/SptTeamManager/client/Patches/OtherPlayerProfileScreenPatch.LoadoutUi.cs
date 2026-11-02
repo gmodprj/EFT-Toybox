@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using pitTeam.Shared;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -1197,18 +1198,95 @@ namespace pitTeam.Patches
             return ordered.ToArray();
         }
 
+        // 이 게임 세션에서 건너뛴 스태시 항목의 id. 메모리에만 두고 지우지 않는다: 건너뛴 순간부터 클라이언트의 스태시가
+        // 서버와 다르고, 그 차이는 재시작으로만 사라진다. 비어 있지 않으면 동료 장비 저장이 막힌다(EvaluateEditGate).
+        private static readonly HashSet<string> SessionSkippedStashItemIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        // 판정은 EFT 가 이미 했다(오류 목록). 여기서는 게임이 알려 준 오류를 (id, 통과 여부, 사유, 부모) 로 옮기기만 하고,
+        // 무엇을 남기고 뺄지(자손 포함)는 StashRevalidationPolicy 가 정한다. 건너뛴 항목마다 경고 한 줄을 남긴다 -
+        // 조용히 버리면 사용자는 아이템이 왜 사라졌는지 알 길이 없다.
+        // 정책이 판단할 수 없는 경우(오류가 어느 항목인지 모름, 스태시 루트가 거부됨)는 추측하지 않고 던진다.
+        private static JsonType.FlatItem[] SkipEftRejectedStashItems(
+            JsonType.FlatItem[] items,
+            List<string> errorTexts,
+            string stashRootId,
+            out List<string> skippedIds)
+        {
+            // 16진 id 의 대소문자 표기가 달라도 같은 항목이다(ExpandFlatItemRoots 와 같은 비교).
+            var knownIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (JsonType.FlatItem item in items)
+                knownIds.Add(item._id.ToString());
+
+            var rejectedById = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (string errorText in errorTexts)
+            {
+                if (!StashRevalidationPolicy.TryExtractItemId(errorText, out string rejectedId) || !knownIds.Contains(rejectedId))
+                {
+                    throw CreateLiveStashRefreshException(
+                        $"Server-saved player stash had a deserialization error that names no known item, so it cannot be skipped: {errorText}");
+                }
+
+                if (!rejectedById.ContainsKey(rejectedId))
+                    rejectedById[rejectedId] = errorText;
+            }
+
+            if (rejectedById.ContainsKey(stashRootId))
+            {
+                throw CreateLiveStashRefreshException("Server-saved player stash root itself was rejected, so it cannot be skipped.");
+            }
+
+            var candidates = new List<StashCandidate>(items.Length);
+            foreach (JsonType.FlatItem item in items)
+            {
+                string id = item._id.ToString();
+                bool rejected = rejectedById.TryGetValue(id, out string ownReason);
+                candidates.Add(new StashCandidate(id, !rejected, ownReason, GetParentId(item)));
+            }
+
+            StashRevalidationResult result = StashRevalidationPolicy.Partition(candidates);
+            foreach (StashRejection skipped in result.Skipped)
+                pitFireTeam.Log.LogWarning($"[UI] Skipped stash item {skipped.Id ?? "(no id)"}: {skipped.Reason}");
+
+            skippedIds = new List<string>();
+            foreach (StashRejection skipped in result.Skipped)
+            {
+                if (!string.IsNullOrWhiteSpace(skipped.Id))
+                    skippedIds.Add(skipped.Id);
+            }
+
+            var kept = new HashSet<string>(result.KeptIds, StringComparer.OrdinalIgnoreCase);
+            return items.Where(item => kept.Contains(item._id.ToString())).ToArray();
+        }
+
         private static void ApplyServerSavedPlayerStashSnapshot(
             Profile activeProfile,
             InventoryController activeInventoryController,
             JsonType.FlatItem[] savedStashItems)
         {
+            JsonType.FlatItem[] unfilteredSavedStashItems = savedStashItems;
+            List<string> skippedStashItemIds = null;
             EFT.ItemFactory.FlatItemsToResultTree tree = Singleton<EFT.ItemFactory>.Instance.FlatItemsToTree(savedStashItems, false, null);
             if (tree.DeserializationErrors != null && tree.DeserializationErrors.Count > 0)
             {
+                var errorTexts = new List<string>();
                 foreach (var error in tree.DeserializationErrors)
+                {
                     pitFireTeam.Log.LogWarning($"[UI] Server-saved stash item deserialization detail: {error}");
-                throw CreateLiveStashRefreshException(
-                    $"Server-saved player stash contained {tree.DeserializationErrors.Count} deserialization error(s).");
+                    errorTexts.Add(error?.ToString() ?? "(error text unavailable)");
+                }
+
+                // 규칙을 어긴 항목 하나가 스태시 전체 재검증을 죽이지 않게 한다(doc/fixes/2026-10-27-pit-stash-ammo.md).
+                // 항목을 특정할 수 없거나, 빼고 나서도 오류가 남으면 예전처럼 던진다: 모르는 채로 일부만 적용하지 않는다.
+                savedStashItems = SkipEftRejectedStashItems(
+                    savedStashItems, errorTexts, savedStashItems[0]._id.ToString(), out skippedStashItemIds);
+                tree = Singleton<EFT.ItemFactory>.Instance.FlatItemsToTree(savedStashItems, false, null);
+                if (tree.DeserializationErrors != null && tree.DeserializationErrors.Count > 0)
+                {
+                    foreach (var error in tree.DeserializationErrors)
+                        pitFireTeam.Log.LogWarning($"[UI] Server-saved stash item deserialization detail after skipping: {error}");
+                    throw CreateLiveStashRefreshException(
+                        $"Server-saved player stash contained {tree.DeserializationErrors.Count} deserialization error(s) even after skipping rejected items.");
+                }
             }
 
             string stashRootId = savedStashItems[0]._id.ToString();
@@ -1221,6 +1299,29 @@ namespace pitTeam.Patches
             {
                 throw CreateLiveStashRefreshException(
                     "Player inventory controller was unavailable for owner-safe live stash refresh.");
+            }
+
+            // 건너뛴 항목이 있으면, 만들어진 스태시에서 빠진 것이 정확히 그 항목들뿐인지 기계로 확인한다. 그 밖의 것이
+            // 사라졌다면 계단식 제외나 트리 구성의 버그이고, 조용히 통과시키면 사용자가 이유 모를 아이템 손실을 겪는다.
+            // 플레이어의 인벤토리를 바꾸기 전에 확인해, 실패해도 원래 스태시가 그대로 남게 한다.
+            if (skippedStashItemIds != null && skippedStashItemIds.Count > 0)
+            {
+                List<string> unexplainedMissing = StashRevalidationPolicy.FindUnexplainedMissingIds(
+                    unfilteredSavedStashItems.Select(item => item._id.ToString()),
+                    EnumerateLoadoutEditorItemTree(savedStash).Where(item => item != null).Select(item => item.Id),
+                    skippedStashItemIds);
+                if (unexplainedMissing.Count > 0)
+                {
+                    throw CreateLiveStashRefreshException(
+                        $"Server-saved player stash lost {unexplainedMissing.Count} item(s) beyond the skipped ones: {string.Join(", ", unexplainedMissing)}");
+                }
+            }
+
+            // 인벤토리를 바꾸기 직전에 기록한다. 교체가 중간에 실패해도 기록은 남아 저장은 계속 막힌다(닫힌 쪽).
+            if (skippedStashItemIds != null)
+            {
+                foreach (string skippedId in skippedStashItemIds)
+                    SessionSkippedStashItemIds.Add(skippedId);
             }
 
             Inventory activeInventory = activeProfile.Inventory;
@@ -1241,6 +1342,15 @@ namespace pitTeam.Patches
             foreach (Item item in EnumerateLoadoutEditorItemTree(savedStash))
             {
                 item?.RaiseRefreshEvent(true, true);
+            }
+
+            if (skippedStashItemIds != null)
+            {
+                // 이 세션의 클라이언트 스태시에서만 빠진 것이다(서버 프로필은 그대로). 이 상태에서 동료 장비 저장을 하면
+                // 서버가 클라이언트 스태시로 플레이어 스태시를 통째로 바꿔 아이템이 영구히 사라지므로, 저장은 재시작 전까지
+                // 막혀 있다(CreateLoadoutEditorSaveStashItems).
+                foreach (string skippedId in skippedStashItemIds)
+                    pitFireTeam.Log.LogWarning($"[UI] Stash item {skippedId} is hidden from the stash for this session because it broke item rules. It is intact in the server profile. Saving teammate loadout changes is blocked until the game is restarted.");
             }
 
             Modules.Logger.LogInfo("[UI] Applied live player stash refresh from server-saved snapshot.");
@@ -2261,6 +2371,15 @@ namespace pitTeam.Patches
 
         private static JsonType.FlatItem[] CreateLoadoutEditorSaveStashItems()
         {
+            // 장비 저장이 서버로 제출되는 두 경로(저장, 유료 서비스 전 선저장)가 모두 이 함수로 스태시를 만든 뒤에야 제출한다.
+            // 그래서 여기가 제출 전의 유일한 관문이다. 이 세션에서 스태시 항목을 건너뛰었다면 메모리 스태시에는 그 아이템이
+            // 없고, 서버는 제출된 스태시로 플레이어 스태시를 통째로 바꾸므로 그대로 저장하면 영구 손실이다.
+            string refusal = StashRevalidationPolicy.EvaluateEditGate(SessionSkippedStashItemIds);
+            if (refusal != null)
+            {
+                throw new InvalidOperationException(refusal);
+            }
+
             Item stash = LoadoutEditorProfile?.Inventory?.Stash;
             if (stash == null)
             {
