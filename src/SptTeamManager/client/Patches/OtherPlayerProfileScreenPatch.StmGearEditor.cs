@@ -66,7 +66,6 @@ namespace pitTeam.Patches
         private const string StmEditorSavedToastFormat = "장비를 저장했습니다({0}건).";
         private const string StmEditorLayoutNoteFormat = " 칸 위치만 바꾼 {0}개는 저장되지 않습니다.";
         private const string StmEditorSavedButCleanupFailedToast = "장비는 저장되었습니다. 편집기를 정리하다 오류가 났으니 팀원 화면을 다시 열어 확인하세요.";
-        private const string StmEditorSaveUnknownText = "저장 결과를 확인하지 못했습니다. 저장되었을 수 있으니 팀원 화면을 다시 열어 장비를 확인하세요.";
         private const string StmEditorSavingText = "저장하는 중입니다. 끝날 때까지 편집기를 닫을 수 없습니다...";
         private const string StmEditorPanelFailedToast = "이 팀원의 스태시나 장비 칸을 그리지 못해 편집기를 열지 않았습니다";
         private const string StmEditorStashMismatchToast = "편집기의 스태시가 이 팀원의 것임을 확인하지 못해 편집기를 열지 않았습니다";
@@ -101,6 +100,9 @@ namespace pitTeam.Patches
             EFT.IEftSession session,
             InventoryPlayerModelWithStatsWindow playerModelWindow)
         {
+            // 화면이 없으면 아무것도 그리지 못한다 - 대기 중인 사유를 꺼내 버리기 전에 돌아간다.
+            if (screen == null) return;
+
             if (!detail.CanEditGear)
             {
                 ShowStmBanner(screen, WithStmPendingGearRefusal(GearEditEntryPolicy.NoticeWhenNotEditable(detail.EditNotice), profile?.AccountId), null, null);
@@ -108,6 +110,8 @@ namespace pitTeam.Patches
             }
 
             // 대기 중이던 거절 사유가 있으면 입구 위에 안내 상자로 먼저 말한다. 입구는 그 아래로 내려 겹치지 않게 한다.
+            // 사유는 안내 상자가 **그려진 뒤에야** 비워진다(Take 와 Show 가 한 덩어리). 아래 버튼 템플릿이 없어 입구를 못 그려도
+            // 사유는 이미 말해졌고, 입구가 없다는 사실은 경고 로그에 남는다.
             float entryTop = -96f;
             string pendingRefusal = TakeStmPendingGearRefusal(profile?.AccountId);
             if (pendingRefusal != null)
@@ -576,6 +580,18 @@ namespace pitTeam.Patches
 
         // ---- 저장 ----
 
+        // 저장의 결과는 **한 번** 정해진다 - 서버가 실제로 한 말에서(SaveOutcomePolicy) - 그리고 그 뒤의 어떤 단계도 다시
+        // 분류하지 못한다. 알리기는 전달일 뿐이다: 전달이 실패하면 실패했다고 말할 뿐, 거절을 모름으로, 모름을 거절로 바꾸지 않는다.
+        private enum StmSaveKind { NotSent, NoChange, Confirmed, Refused, Unknown }
+
+        private sealed class StmSaveVerdict
+        {
+            public StmSaveKind Kind;
+            public string Message;
+            public int Saved;
+            public string LayoutNote = string.Empty;
+        }
+
         private static async void SaveStmGearEdit(
             OtherPlayerProfileScreen screen,
             ResultProfile profile,
@@ -587,8 +603,23 @@ namespace pitTeam.Patches
             if (StmGearEditSaving || StmGearEditOpening) return;
             StmGearEditSaving = true;
             SetLoadoutEditorBusy(true);
+            try
+            {
+                StmSaveVerdict verdict = await DecideStmSaveAsync(profile, detail);
+                DeliverStmSaveVerdict(verdict, screen, profile, inventoryController, session, playerModelWindow);
+            }
+            finally
+            {
+                StmGearEditSaving = false;
+                SetLoadoutEditorBusy(false);
+            }
+        }
+
+        // 결과를 정한다. 던지지 않는다: 요청 전의 예외는 NotSent(아무것도 보내지 않았다), 요청이 나간 뒤의 예외는 Unknown(서버가
+        // 썼는지 모른다)이다. 알리는 일은 여기서 하지 않는다.
+        private static async Task<StmSaveVerdict> DecideStmSaveAsync(ResultProfile profile, StmProfileDetailWire detail)
+        {
             bool requestSent = false;
-            bool confirmed = false;
             try
             {
                 CloseLoadoutEditorChildWindows();
@@ -597,8 +628,7 @@ namespace pitTeam.Patches
 
                 if (profile == null || detail == null || LoadoutEditorProfile?.Inventory?.Equipment == null || LoadoutEditorProfile.Inventory.Stash == null)
                 {
-                    ReportStmGearEditFailure(StmEditorSaveFailedToast, screen, profile);
-                    return;
+                    return new StmSaveVerdict { Kind = StmSaveKind.NotSent, Message = StmEditorSaveFailedToast };
                 }
 
                 // 시작 상태와 끝 상태 -> 건 목록. 판정과 순서는 GearEditBatchPlanner 의 것이다.
@@ -610,16 +640,13 @@ namespace pitTeam.Patches
 
                 if (!plan.Ok)
                 {
-                    ReportStmGearEditFailure(plan.Reason, screen, profile);
-                    return;
+                    return new StmSaveVerdict { Kind = StmSaveKind.NotSent, Message = plan.Reason };
                 }
 
                 string layoutNote = plan.LayoutOnlyCount > 0 ? string.Format(StmEditorLayoutNoteFormat, plan.LayoutOnlyCount) : string.Empty;
                 if (plan.Edits.Count == 0)
                 {
-                    TeardownStmGearEditor();
-                    AddTeammateCreationFlow.ShowToast(StmEditorNoChangeToast + layoutNote);
-                    return;
+                    return new StmSaveVerdict { Kind = StmSaveKind.NoChange, LayoutNote = layoutNote };
                 }
 
                 // 한 편집 세션 = 한 요청 = 서버의 쓰기 한 번. 아이템마다 따로 보내지 않는다.
@@ -634,58 +661,120 @@ namespace pitTeam.Patches
                         targetParentId = edit.TargetParentId,
                     }).ToList(),
                 });
-                // 요청이 나간 뒤부터는 서버가 썼는지 우리가 모른다. 아래 catch 가 그 차이를 말한다.
+                // 요청이 나간 뒤부터는 서버가 썼는지 우리가 모른다.
                 requestSent = true;
                 string json = await Task.Run(() => RequestHandler.PostJson(StmEditGearRoute, body));
-                string failure = ReadStmCloseFailure(json, StmEditorSaveFailedToast);
-                if (failure != null)
-                {
-                    // 서버가 쓴 사유 그대로. 거절된 묶음은 아무것도 쓰지 않았으므로 편집기는 열어 둔다(고쳐서 다시 저장할 수 있다).
-                    ReportStmGearEditFailure(failure, screen, profile);
-                    return;
-                }
 
-                // 서버가 쓰기를 확인했다. 이 줄 아래의 어떤 실패도 "저장하지 못했습니다" 가 될 수 없다 - 쓰기는 일어났다.
-                confirmed = true;
-                int saved = plan.Edits.Count;
-                try
+                SaveOutcome outcome = ClassifyStmSaveResponse(json);
+                switch (outcome.Kind)
                 {
-                    RefreshStmDetailAfterSave(profile, inventoryController, session, playerModelWindow);
-                    TeardownStmGearEditor();
+                    case SaveOutcomeKind.Confirmed:
+                        return new StmSaveVerdict { Kind = StmSaveKind.Confirmed, Saved = plan.Edits.Count, LayoutNote = layoutNote };
+                    case SaveOutcomeKind.Refused:
+                        // 서버가 쓴 사유 그대로. 거절된 묶음은 아무것도 쓰지 않았으므로 편집기는 열어 둔다(고쳐서 다시 저장할 수 있다).
+                        return new StmSaveVerdict { Kind = StmSaveKind.Refused, Message = outcome.Message };
+                    default:
+                        return new StmSaveVerdict { Kind = StmSaveKind.Unknown, Message = outcome.Message };
                 }
-                catch (Exception postEx)
-                {
-                    pitFireTeam.Log.LogError("[STM] The gear edit was saved, but cleaning up the editor afterwards failed.");
-                    pitFireTeam.Log.LogError(postEx);
-                    AddTeammateCreationFlow.ShowToast(StmEditorSavedButCleanupFailedToast);
-                    return;
-                }
-
-                AddTeammateCreationFlow.ShowToast(string.Format(StmEditorSavedToastFormat, saved) + layoutNote);
             }
             catch (Exception ex)
             {
-                pitFireTeam.Log.LogError("[STM] Saving the profile teammate gear edit failed.");
+                pitFireTeam.Log.LogError("[STM] Deciding the outcome of the profile teammate gear save threw.");
                 pitFireTeam.Log.LogError(ex);
-                if (confirmed)
+                return requestSent
+                    ? new StmSaveVerdict { Kind = StmSaveKind.Unknown, Message = SaveOutcomePolicy.UnknownText }
+                    : new StmSaveVerdict { Kind = StmSaveKind.NotSent, Message = StmEditorSaveFailedToast };
+            }
+        }
+
+        // 응답 본문을 읽어 shared 정책에 넘긴다. 비었거나 JSON 이 아니거나 err 가 없으면 "읽지 못함" 이고 정책이 모름으로 정한다.
+        private static SaveOutcome ClassifyStmSaveResponse(string json)
+        {
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                return SaveOutcomePolicy.Classify(false, null, null);
+            }
+
+            try
+            {
+                JToken root = JToken.Parse(json);
+                JToken errToken = root["err"];
+                int? err = errToken == null || errToken.Type == JTokenType.Null ? (int?)null : errToken.Value<int>();
+                return SaveOutcomePolicy.Classify(true, err, root["errmsg"]?.ToString());
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning($"[STM] The gear save response could not be read: {ex.Message}");
+                return SaveOutcomePolicy.Classify(false, null, null);
+            }
+        }
+
+        // 정해진 결과를 플레이어에게 전한다. 전달이 던져도 결과는 바뀌지 않는다 - 정해진 말을 가장 단순한 길(토스트)로 한 번 더 낸다.
+        private static void DeliverStmSaveVerdict(
+            StmSaveVerdict verdict,
+            OtherPlayerProfileScreen screen,
+            ResultProfile profile,
+            InventoryController inventoryController,
+            EFT.IEftSession session,
+            InventoryPlayerModelWithStatsWindow playerModelWindow)
+        {
+            try
+            {
+                switch (verdict.Kind)
                 {
-                    // 확인 뒤의 예외(위 안쪽 try 가 못 잡은 것). 거절로 보고하지 않는다.
-                    AddTeammateCreationFlow.ShowToast(StmEditorSavedButCleanupFailedToast);
-                }
-                else if (requestSent)
-                {
-                    // 요청이 나간 뒤 응답을 읽지 못했다: 서버가 썼는지 모른다. 저장하지 못했다고도 저장했다고도 말하지 않는다.
-                    ReportStmGearEditFailure(StmEditorSaveUnknownText, screen, profile, false);
-                }
-                else
-                {
-                    ReportStmGearEditFailure(StmEditorSaveFailedToast, screen, profile);
+                    case StmSaveKind.NotSent:
+                    case StmSaveKind.Refused:
+                        ReportStmGearEditFailure(verdict.Message, screen, profile);
+                        break;
+                    case StmSaveKind.Unknown:
+                        // 불확실한 결과는 나중 화면에 거절되었다고 되살리지 않는다.
+                        ReportStmGearEditFailure(verdict.Message, screen, profile, false);
+                        break;
+                    case StmSaveKind.NoChange:
+                        TeardownStmGearEditor();
+                        AddTeammateCreationFlow.ShowToast(StmEditorNoChangeToast + verdict.LayoutNote);
+                        break;
+                    case StmSaveKind.Confirmed:
+                        // 서버가 쓰기를 확인했다. 아래 후처리의 실패는 "저장하지 못했습니다" 가 될 수 없다 - 쓰기는 일어났다.
+                        try
+                        {
+                            RefreshStmDetailAfterSave(profile, inventoryController, session, playerModelWindow);
+                            TeardownStmGearEditor();
+                        }
+                        catch (Exception postEx)
+                        {
+                            pitFireTeam.Log.LogError("[STM] The gear edit was saved, but cleaning up the editor afterwards failed.");
+                            pitFireTeam.Log.LogError(postEx);
+                            AddTeammateCreationFlow.ShowToast(StmEditorSavedButCleanupFailedToast);
+                            break;
+                        }
+
+                        AddTeammateCreationFlow.ShowToast(string.Format(StmEditorSavedToastFormat, verdict.Saved) + verdict.LayoutNote);
+                        break;
                 }
             }
-            finally
+            catch (Exception ex)
             {
-                StmGearEditSaving = false;
-                SetLoadoutEditorBusy(false);
+                pitFireTeam.Log.LogError($"[STM] Delivering the gear save outcome ({verdict.Kind}) to the player failed; the outcome is unchanged.");
+                pitFireTeam.Log.LogError(ex);
+                try
+                {
+                    AddTeammateCreationFlow.ShowToast(StmFinalOutcomeText(verdict));
+                }
+                catch (Exception toastEx)
+                {
+                    pitFireTeam.Log.LogError(toastEx);
+                }
+            }
+        }
+
+        private static string StmFinalOutcomeText(StmSaveVerdict verdict)
+        {
+            switch (verdict.Kind)
+            {
+                case StmSaveKind.Confirmed: return string.Format(StmEditorSavedToastFormat, verdict.Saved);
+                case StmSaveKind.NoChange: return StmEditorNoChangeToast;
+                default: return verdict.Message;
             }
         }
 

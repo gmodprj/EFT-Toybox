@@ -25,6 +25,7 @@
         <Compile Include="../shared/GearEditEntryPolicy.cs" Link="Shared/GearEditEntryPolicy.cs" />
         <Compile Include="../shared/GearEditBatchPlanner.cs" Link="Shared/GearEditBatchPlanner.cs" />
         <Compile Include="../shared/PendingRefusalPolicy.cs" Link="Shared/PendingRefusalPolicy.cs" />
+        <Compile Include="../shared/SaveOutcomePolicy.cs" Link="Shared/SaveOutcomePolicy.cs" />
         <Reference Include="0Harmony">
             <HintPath>libs\0Harmony.dll</HintPath>
         </Reference>
