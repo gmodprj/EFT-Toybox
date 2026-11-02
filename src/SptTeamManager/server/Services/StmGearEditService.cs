@@ -1,3 +1,4 @@
+using pitTeam.Server.Models;
 using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
@@ -62,6 +63,96 @@ public class StmGearEditService(
     // 기능이 통째로 죽고, 그걸 인게임에서 발견하게 된다.
     private static string ProfileDirectory => Path.Combine(AppContext.BaseDirectory, "user", "profiles");
 
+    // 미결 전송이 이 팀원을 막고 있을 때의 사유. 저장(TryApply)과 스태시 읽기(TryReadStash)가 같은 문장을 쓴다.
+    private const string JournalBlockedReason = "이 팀원의 장비 편집이 막혀 있습니다. 끝나지 않은 아이템 전송 기록이 남아 있습니다.";
+
+    private static string DescribeLookupFailure(ProfileLookupOutcome outcome, string? unavailableReason) => outcome switch
+    {
+        ProfileLookupOutcome.ReadFailed => "이 팀원이 프로필 팀원인지 확인할 수 없어 장비를 고치지 않습니다. 잠시 뒤 다시 시도하세요.",
+        ProfileLookupOutcome.NonMember => "이 팀원은 프로필 팀원이 아니어서 이 경로로 장비를 고칠 수 없습니다.",
+        _ => $"이 프로필을 지금 쓸 수 없어 장비를 고치지 않습니다({unavailableReason ?? "Unavailable"}).",
+    };
+
+    // 편집기를 열기 전에 그 팀원 **자신의** 스태시를 읽는다(설계 §6-4: 출처는 본인 스태시뿐 - 화면의 출처 칸이 플레이어
+    // 스태시일 수 없다). 읽기 전용이다: member.Pmc 는 SaveServer 의 살아 있는 객체이므로 읽기만 하고, 보내는 것은 깊은
+    // 복제본이다. 저장(TryApply)과 같은 관문 셋 - 레이드, 미결 전송, 해석 - 을 같은 순서로 서고, 열 수 없는데 편집기를
+    // 열어 저장에서 거절당하게 하지 않는다. 던지지 않는다(라우트 안에서 불린다). false 일 때 refusalReason 은 비지 않는다.
+    public bool TryReadStash(MongoId sessionId, string? accountId, string? requestedProfileId, out StmGearStashResponse? stash, out string? refusalReason)
+    {
+        stash = null;
+        refusalReason = null;
+        try
+        {
+            if (FriendlyModeRequestGate.HasActiveRaid)
+            {
+                refusalReason = GearEditEntryPolicy.RaidInProgressReason;
+                return false;
+            }
+
+            if (journal.HasOpenEntry(sessionId, requestedProfileId ?? string.Empty))
+            {
+                refusalReason = JournalBlockedReason;
+                return false;
+            }
+
+            var outcome = resolver.Lookup(sessionId, accountId, out var member, out var unavailableReason);
+            if (outcome != ProfileLookupOutcome.Resolved || member == null)
+            {
+                refusalReason = DescribeLookupFailure(outcome, unavailableReason);
+                return false;
+            }
+
+            // 요청이 말한 프로필과 해석된 프로필이 다르면 보내지 않는다(저장과 같은 약속).
+            if (!string.Equals(member.ProfileId, requestedProfileId?.Trim(), StringComparison.Ordinal))
+            {
+                logger.Error($"[STM] 스태시 읽기 거부: 요청의 프로필 '{requestedProfileId}' 과(와) Aid '{accountId}' 로 해석된 프로필 '{member.ProfileId}' 이(가) 다르다.");
+                refusalReason = "요청한 프로필과 이 팀원의 프로필이 달라 스태시를 보내지 않습니다.";
+                return false;
+            }
+
+            var inventory = member.Pmc.Inventory;
+            var stashRootId = inventory?.Stash?.ToString();
+            var equipmentRootId = inventory?.Equipment?.ToString();
+            if (inventory?.Items == null || string.IsNullOrWhiteSpace(stashRootId) || string.IsNullOrWhiteSpace(equipmentRootId)
+                || string.Equals(stashRootId, equipmentRootId, StringComparison.Ordinal))
+            {
+                refusalReason = "이 프로필의 인벤토리를 읽을 수 없어 스태시를 보내지 않습니다.";
+                return false;
+            }
+
+            // 스태시 트리의 판정은 CollectSubtreeIds 하나다(저장의 판정과 같은 함수). 장비 트리는 싣지 않는다.
+            var stashIds = WornGearLossPolicy.CollectSubtreeIds(ToWornGearItems(inventory.Items), new[] { stashRootId! });
+            var stashItems = inventory.Items
+                .Where(i => i?.Id != null && stashIds.Contains(i.Id.ToString()))
+                .ToList();
+            // 루트가 맨 앞이어야 화면이 그것을 스태시 루트로 읽는다. 루트가 목록에 없으면 보낼 수 없다.
+            var root = stashItems.FirstOrDefault(i => string.Equals(i.Id.ToString(), stashRootId, StringComparison.Ordinal));
+            if (root == null)
+            {
+                refusalReason = "이 프로필의 스태시 루트를 아이템 목록에서 찾지 못해 스태시를 보내지 않습니다.";
+                return false;
+            }
+
+            stashItems.Remove(root);
+            stashItems.Insert(0, root);
+
+            stash = new StmGearStashResponse
+            {
+                StashRootId = stashRootId!,
+                EquipmentRootId = equipmentRootId!,
+                Items = cloner.Clone(stashItems) ?? throw new InvalidOperationException("StmGearStashCloneFailed"),
+            };
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 스태시 읽기가 실패했다(프로필 '{requestedProfileId}'): {ex}");
+            stash = null;
+            refusalReason = "스태시를 읽는 중 오류가 났습니다. 서버 로그를 확인하세요.";
+            return false;
+        }
+    }
+
     // true = 적용하고 디스크에서 확인했다. false = 아무것도 바뀌지 않았거나(거부), 바뀐 것을 되돌렸다
     // (확인 실패). false 일 때 rejectionReason 은 절대 비지 않는다 - 호출자가 "사유 없음 = 성공" 으로
     // 읽는 틈을 두지 않는다. 던지지 않는다(라우트 안에서 불린다).
@@ -100,7 +191,7 @@ public class StmGearEditService(
             //    레이드에 반영되지도 않는다.
             if (FriendlyModeRequestGate.HasActiveRaid)
             {
-                rejectionReason = "레이드가 진행 중일 때는 팀원의 장비를 고칠 수 없습니다. 레이드가 끝난 뒤에 다시 시도하세요.";
+                rejectionReason = GearEditEntryPolicy.RaidInProgressReason;
                 return false;
             }
 
@@ -108,7 +199,7 @@ public class StmGearEditService(
             //    거절하는 비용이 깨진 저널 위에서 허락하는 비용(아이템)보다 싸다.
             if (journal.HasOpenEntry(sessionId, requestedProfileId ?? string.Empty))
             {
-                rejectionReason = "이 팀원의 장비 편집이 막혀 있습니다. 끝나지 않은 아이템 전송 기록이 남아 있습니다.";
+                rejectionReason = JournalBlockedReason;
                 return false;
             }
 
@@ -117,12 +208,7 @@ public class StmGearEditService(
             var outcome = resolver.Lookup(sessionId, accountId, out var member, out var unavailableReason);
             if (outcome != ProfileLookupOutcome.Resolved || member == null)
             {
-                rejectionReason = outcome switch
-                {
-                    ProfileLookupOutcome.ReadFailed => "이 팀원이 프로필 팀원인지 확인할 수 없어 장비를 고치지 않습니다. 잠시 뒤 다시 시도하세요.",
-                    ProfileLookupOutcome.NonMember => "이 팀원은 프로필 팀원이 아니어서 이 경로로 장비를 고칠 수 없습니다.",
-                    _ => $"이 프로필을 지금 쓸 수 없어 장비를 고치지 않습니다({unavailableReason ?? "Unavailable"}).",
-                };
+                rejectionReason = DescribeLookupFailure(outcome, unavailableReason);
                 return false;
             }
 

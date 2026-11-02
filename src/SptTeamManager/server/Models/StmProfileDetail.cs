@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using pitTeam.Shared;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Utils;
 
 namespace pitTeam.Server.Models;
@@ -26,6 +27,27 @@ public record StmProfileDetail
     // 저널 문서를 읽을 수 없을 때의 출구(문서를 통째로 버린다). 이때만 true 이고 경고문이 따라온다.
     [JsonPropertyName("canDiscardJournal")] public bool CanDiscardJournal { get; set; }
     [JsonPropertyName("discardWarning")] public string? DiscardWarning { get; set; }
+    // 장비 편집 입구를 열어도 되는가(GearEditEntryPolicy). 막힘·레이드 중이면 false 이고 editNotice 가 이유다.
+    // 값이 없는 응답은 false 로 읽힌다(기본값) - 값이 없다고 열어 주지 않는다.
+    [JsonPropertyName("canEditGear")] public bool CanEditGear { get; set; }
+    [JsonPropertyName("editNotice")] public string? EditNotice { get; set; }
+}
+
+// 편집기를 열기 전에 그 팀원 **자신의** 스태시를 받아 가는 요청. 읽기 전용이다. Aid 로 찾고 ProfileId 는 대조한다
+// (StmGearEditRequest 와 같은 약속).
+public record StmGearStashRequest : IRequestData
+{
+    [JsonPropertyName("aid")] public string? Aid { get; set; }
+    [JsonPropertyName("profileId")] public string? ProfileId { get; set; }
+}
+
+// 그 팀원 자신의 스태시 트리(루트가 맨 앞). PIT 편집기가 플레이어 스태시를 받는 모양(아이템 평면 목록)과 같다 -
+// 화면이 같은 방식으로 트리를 세운다. 장비 트리는 싣지 않는다(상세 화면이 이미 갖고 있다).
+public record StmGearStashResponse
+{
+    [JsonPropertyName("stashRootId")] public string StashRootId { get; set; } = string.Empty;
+    [JsonPropertyName("equipmentRootId")] public string EquipmentRootId { get; set; } = string.Empty;
+    [JsonPropertyName("items")] public List<Item> Items { get; set; } = [];
 }
 
 // 읽을 수 없는 저널 문서를 플레이어가 버리겠다고 확인했을 때의 요청. Acknowledged 기본값은 false.

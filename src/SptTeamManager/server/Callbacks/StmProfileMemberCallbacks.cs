@@ -115,6 +115,21 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }
 
+    // 편집기를 열기 전에 그 팀원 자신의 스태시를 읽어 간다(읽기 전용). 열 수 없는 사유는 저장 때와 같은 문장이다.
+    // 실패는 성공처럼 보이지 않는다(오류 본문 + 플레이어가 읽는 사유).
+    public ValueTask<string> GearStash(string url, StmGearStashRequest request, MongoId sessionId)
+    {
+        if (gearEdits.TryReadStash(sessionId, request.Aid, request.ProfileId, out var stash, out var refusalReason) && stash != null)
+        {
+            return new ValueTask<string>(httpResponse.GetBody(stash));
+        }
+
+        var message = string.IsNullOrWhiteSpace(refusalReason)
+            ? "스태시를 읽지 못했습니다. 서버 로그를 확인하세요."
+            : refusalReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
     // Failure never reads as success: the client gets an error body with a key, not an empty list.
     private ValueTask<string> Run<T>(string action, Func<T> work)
     {

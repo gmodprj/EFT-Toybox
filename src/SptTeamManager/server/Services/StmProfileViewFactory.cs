@@ -132,7 +132,7 @@ public class StmProfileViewFactory(
                 CurrentTactic = tactic!,
                 Loadouts = [new FriendlyTeammateLoadoutOption { Id = FriendlyTeammateService.DefaultLoadoutId, Name = FriendlyTeammateService.DefaultLoadoutName }],
                 Tactics = [new FriendlyTeammateTacticOption { Id = tactic!, Name = tactic! }],
-                Stm = BuildDetail(sessionId, member),
+                Stm = WithEditEntry(BuildDetail(sessionId, member)),
             };
             return true;
         }
@@ -143,6 +143,16 @@ public class StmProfileViewFactory(
             logger.Error($"[STM] 프로필 옵션: '{accountId}'(세션 '{sessionId}') 처리 실패 ({(identifiedAsMember ? "프로필 팀원, 읽을 수 없다고 보고" : "기본 경로로 넘긴다")}): {ex}");
             return false;
         }
+    }
+
+    // 장비 편집 입구를 열어도 되는가를 상세 응답에 싣는다. 판정은 GearEditEntryPolicy 하나이고 여기는 사실을 모아 넘기기만 한다:
+    // 막힘(위 BuildDetail 이 이미 정했다)과 레이드 중 여부. 서버는 저장·스태시 읽기 때 같은 관문을 다시 선다.
+    private static StmProfileDetail WithEditEntry(StmProfileDetail detail)
+    {
+        var entry = GearEditEntryPolicy.Decide(detail.Blocked, detail.BlockedNotice, FriendlyModeRequestGate.HasActiveRaid);
+        detail.CanEditGear = entry.CanEdit;
+        detail.EditNotice = entry.CanEdit ? null : entry.Notice;
+        return detail;
     }
 
     // 이 팀원의 편집이 전송 저널에 막혀 있으면 그 사실과 닫는 길을 싣는다. 막힘 여부는 HasOpenEntry 와 같은 판정
