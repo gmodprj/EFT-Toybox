@@ -193,6 +193,38 @@ namespace pitTeam.Shared
                 missing);
         }
 
+        // 디스크 재독 대조(§6-8 3단계)의 집합 부분: 편집 전과 후의 아이템 id 집합이 **정확히 같은가.**
+        // 한 프로필 안의 이동이라 아이템이 사라져서도, 끼어들어서도 안 된다 - 편집은 부모와 슬롯만 바꾼다.
+        // 양방향으로 보존 검사를 쓴다: 사라진 쪽만 보면 "없던 아이템이 생겼다"(= 공짜 생성)를 놓친다.
+        // 널이면 어느 쪽도 주장할 수 없어 거절이다(닫힌 쪽). MissingItemIds 는 사라진 id 뒤에 끼어든 id 가 온다.
+        public static StashConservationVerdict CheckItemSetUnchanged(IEnumerable<string>? beforeIds, IEnumerable<string>? afterIds)
+        {
+            if (beforeIds == null || afterIds == null)
+            {
+                return new StashConservationVerdict(
+                    false,
+                    "편집 전후의 아이템 목록을 읽을 수 없어 대조하지 못했습니다.",
+                    Array.Empty<string>());
+            }
+
+            var before = beforeIds as IReadOnlyCollection<string> ?? beforeIds.ToList();
+            var after = afterIds as IReadOnlyCollection<string> ?? afterIds.ToList();
+            var none = Array.Empty<string>();
+            var lost = CheckStashConservation(before, after, none, null);
+            var gained = CheckStashConservation(after, before, none, null);
+            if (lost.Conserved && gained.Conserved)
+            {
+                return new StashConservationVerdict(true, string.Empty, none);
+            }
+
+            var changed = new List<string>(lost.MissingItemIds);
+            changed.AddRange(gained.MissingItemIds);
+            var parts = new List<string>();
+            if (lost.MissingItemIds.Count > 0) parts.Add($"사라진 아이템 {lost.MissingItemIds.Count}개: {string.Join(", ", lost.MissingItemIds)}");
+            if (gained.MissingItemIds.Count > 0) parts.Add($"끼어든 아이템 {gained.MissingItemIds.Count}개: {string.Join(", ", gained.MissingItemIds)}");
+            return new StashConservationVerdict(false, $"편집 전후의 아이템 목록이 다릅니다 - {string.Join(" / ", parts)}", changed);
+        }
+
         private static void AddAll(HashSet<string> target, IEnumerable<string> ids)
         {
             foreach (var id in ids)

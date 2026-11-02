@@ -217,6 +217,61 @@ public class ProfileGearEditPolicyTests
         Assert.True(verdict.Conserved);
     }
 
+    // ---- 디스크 재독 대조의 집합 부분 (§6-8 3단계) ----
+    // 한 프로필 안의 이동이므로 편집 전후의 아이템 집합은 정확히 같아야 한다. 저널을 쓰지 않는 대신
+    // 이 대조가 "성공했다고 말할 근거" 전부다.
+
+    [Fact]
+    public void 편집_전후의_아이템_집합이_같으면_대조를_통과한다()
+    {
+        var verdict = ProfileGearEditPolicy.CheckItemSetUnchanged(
+            new[] { "root", "helmet", "mag" },
+            new[] { "helmet", "root", "mag" });
+
+        Assert.True(verdict.Conserved);
+        Assert.Empty(verdict.MissingItemIds);
+    }
+
+    [Fact]
+    public void 아이템이_사라지면_대조가_실패하고_무엇이_사라졌는지_말한다()
+    {
+        var verdict = ProfileGearEditPolicy.CheckItemSetUnchanged(
+            new[] { "root", "helmet", "mag" },
+            new[] { "root", "mag" });
+
+        Assert.False(verdict.Conserved);
+        Assert.Contains("helmet", verdict.Reason);
+        Assert.Contains("helmet", verdict.MissingItemIds);
+    }
+
+    [Fact]
+    public void 없던_아이템이_끼어들면_대조가_실패한다()
+    {
+        // 사라진 쪽만 보면 공짜 생성을 놓친다 - 양방향으로 본다.
+        var verdict = ProfileGearEditPolicy.CheckItemSetUnchanged(
+            new[] { "root", "helmet" },
+            new[] { "root", "helmet", "어디서온것" });
+
+        Assert.False(verdict.Conserved);
+        Assert.Contains("어디서온것", verdict.Reason);
+        Assert.Contains("어디서온것", verdict.MissingItemIds);
+    }
+
+    [Fact]
+    public void 어느_쪽이든_읽을_수_없으면_대조를_통과시키지_않는다()
+    {
+        foreach (var verdict in new[]
+                 {
+                     ProfileGearEditPolicy.CheckItemSetUnchanged(null, new[] { "root" }),
+                     ProfileGearEditPolicy.CheckItemSetUnchanged(new[] { "root" }, null),
+                     ProfileGearEditPolicy.CheckItemSetUnchanged(null, null),
+                 })
+        {
+            Assert.False(verdict.Conserved);
+            Assert.False(string.IsNullOrWhiteSpace(verdict.Reason));
+        }
+    }
+
     [Fact]
     public void 빈_id_는_보존_판정에서_세지_않는다()
     {

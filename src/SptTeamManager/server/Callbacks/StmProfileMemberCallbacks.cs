@@ -12,7 +12,7 @@ namespace pitTeam.Server.Callbacks;
 
 [Injectable]
 public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfileMemberStore store, StmProfileCatalog catalog,
-    StmTransferJournal journal, ISptLogger<StmProfileMemberCallbacks> logger)
+    StmTransferJournal journal, StmGearEditService gearEdits, ISptLogger<StmProfileMemberCallbacks> logger)
 {
     public ValueTask<string> List(string url, EmptyRequestData request, MongoId sessionId) =>
         Run("list", () => store.List(sessionId));
@@ -81,6 +81,31 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
             return new ValueTask<string>(httpResponse.NullResponse());
         }
 
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 프로필 팀원의 장비를 한 아이템 옮긴다(§6-4). STM 자신의 길이고 EFT·PIT 의 기존 라우트를 가로채지 않는다 -
+    // PIT 의 default-equipment 는 플레이어 스태시를 출처로 쓰므로 프로필 팀원에게 쓸 수 없고, 그쪽은 사유와 함께
+    // 거부된다(FriendlyTeammateCallbacks.SaveDefaultEquipment). 3값 계약이 아니라 2값이다: 이 라우트는 프로필
+    // 팀원 전용이라 "PIT 경로로 흘려보낸다" 는 답이 없다 - 프로필 팀원이 아니면 사유와 함께 거부다.
+    // 실패는 성공처럼 보이지 않는다(오류 본문 + 플레이어가 읽는 사유).
+    public ValueTask<string> EditGear(string url, StmGearEditRequest request, MongoId sessionId)
+    {
+        var edit = new GearEditRequest(
+            request.ProfileId ?? string.Empty,
+            request.ItemId ?? string.Empty,
+            request.TargetSlotId ?? string.Empty,
+            request.TargetParentId);
+
+        if (gearEdits.TryApply(sessionId, request.Aid, edit, out var rejectionReason))
+        {
+            return new ValueTask<string>(httpResponse.NullResponse());
+        }
+
+        // TryApply 는 false 일 때 사유를 비우지 않지만, 비면 성공으로 읽히지 않게 중립 문구를 쓴다.
+        var message = string.IsNullOrWhiteSpace(rejectionReason)
+            ? "장비를 고치지 못했습니다. 서버 로그를 확인하세요."
+            : rejectionReason!;
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }
 
