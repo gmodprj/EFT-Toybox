@@ -58,14 +58,18 @@ public class StmAutoJoinService(
         }
     }
 
-    // PIT 목록을 앞에 그대로 두고 그 뒤에 프로필 팀원 Aid 를 붙인다(기존 순서 불변). STM 읽기가 무엇이든
-    // 실패하면(예: 등록 문서를 믿을 수 없다는 StmRegistrationsUnreadable) 로그만 남기고 PIT 목록을 그대로 돌린다.
+    // PIT 목록을 앞에 그대로 두고 그 뒤에 프로필 팀원 Aid 를 붙인다(기존 순서 불변). STM 읽기가 예기치 않게
+    // 실패하면 Error 를 남기고 PIT 목록을 그대로 돌린다. 등록을 믿을 수 없는 상태(RegistrationsUsable == false)는
+    // 예기치 않은 실패가 아니므로 로그 없이 PIT 목록을 돌린다(원인은 시작 검사가 이미 남겼다).
     public List<string> AppendAccountIds(MongoId sessionId, List<string> pitAccountIds)
     {
         try
         {
+            // 등록을 믿을 수 없으면(시작 검사가 원인을 한 번 Error 로 남겼다) 호출마다 던졌다 잡아 로그를 되풀이하지
+            // 않고 PIT 목록을 그대로 돌린다. Load 는 이 상태에서 던지므로 List 를 부르기 전에 묻는다.
+            if (!store.RegistrationsUsable) return pitAccountIds;
+
             // 등록이 하나도 없으면(PIT 용병만 쓰는 사용자) 런처 프로필 카탈로그를 읽지 않고 PIT 목록을 그대로 돌린다.
-            // 안 쓰는 기능 때문에 출격 화면을 열 때마다 디스크를 읽거나(등록 문서를 믿을 수 없을 때는) Error 를 남기지 않는다.
             var registered = store.List(sessionId);
             if (registered.Count == 0) return pitAccountIds;
 

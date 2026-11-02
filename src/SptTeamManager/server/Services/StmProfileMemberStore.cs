@@ -51,6 +51,10 @@ public class StmProfileMemberStore(FriendlyTeammateStorage storage, StmProfileCa
         return false;
     }
 
+    // 등록을 지금 믿고 읽을 수 있는지 던지지 않고 답한다. Load 의 던지는 동작은 그대로 두고(List/Add/Remove/Update 는
+    // 닫힌 쪽으로 실패해야 한다), 매 호출 던졌다 잡는 경로를 피하려는 호출자(auto-join 목록)만 쓴다.
+    public bool RegistrationsUsable => !bindingUnreliable;
+
     public IReadOnlyList<StmProfileMember> List(MongoId sessionId)
     {
         lock (sync) return Load(sessionId);
