@@ -30,6 +30,14 @@ public class TransferEntryClosePolicyTests
     }
 
     [Fact]
+    public void 확인까지_끝난_항목은_보고되지_않았어도_닫을_것이_없다()
+    {
+        // 순서가 중요하다: Verified 판정이 "보고 안 됨" 보다 앞서야 이미 끝난 항목에 재시작을 안내하지 않는다.
+        Assert.Equal(TransferCloseVerdict.AlreadyClosed,
+            TransferEntryClosePolicy.Judge("Verified", reportedAtStartup: false, RecoveryDecision.StopAndReport));
+    }
+
+    [Fact]
     public void 이미_확인까지_끝난_항목은_닫을_것이_없다()
     {
         Assert.Equal(TransferCloseVerdict.AlreadyClosed,
@@ -189,12 +197,68 @@ public class TransferEntryClosePolicyTests
         Assert.Contains("한 번 다시 시작", message);
     }
 
+    // ---- 읽을 수 없는 저널 문서를 플레이어가 버리는 길 ----
     [Fact]
-    public void 저널을_읽을_수_없을_때의_안내는_닫는_길이_없다고_솔직히_말한다()
+    public void 읽을_수_없는_문서는_확인했을_때만_버린다()
     {
-        var notice = TransferEntryClosePolicy.JournalUnreadableNotice;
-        Assert.Contains("읽을 수 없", notice);
+        Assert.True(TransferEntryClosePolicy.MayDiscardUnreadableJournal(journalUnreadable: true, playerAcknowledged: true));
+        Assert.False(TransferEntryClosePolicy.MayDiscardUnreadableJournal(journalUnreadable: true, playerAcknowledged: false));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void 읽을_수_있는_문서는_확인해도_버리지_않는다(bool acknowledged)
+    {
+        // 읽히는 저널의 항목은 항목 단위 닫기 규칙을 거친다. 문서째 버리면 진행 중인 다른 기록까지 사라진다.
+        Assert.False(TransferEntryClosePolicy.MayDiscardUnreadableJournal(journalUnreadable: false, acknowledged));
+    }
+
+    [Fact]
+    public void 버리기_경고는_진행_중인_기록이_사라진다고_말한다()
+    {
+        var warning = TransferEntryClosePolicy.DiscardUnreadableJournalWarning;
+        Assert.Contains("진행 중이던 전송 기록", warning);
+        Assert.Contains("모두 사라집니다", warning);
+    }
+
+    [Fact]
+    public void 버리기_경고는_아이템이_어느_쪽에_있는지_알_방법이_없다고_말한다()
+    {
+        var warning = TransferEntryClosePolicy.DiscardUnreadableJournalWarning;
+        Assert.Contains("어느 쪽에 있는지 알 방법이 없습니다", warning);
+        Assert.Contains("직접 결정", warning);
+    }
+
+    [Fact]
+    public void 저널을_읽을_수_없을_때의_안내는_버리는_길을_알린다()
+    {
+        Assert.Contains("버튼", TransferEntryClosePolicy.JournalUnreadableNotice);
+        Assert.Contains("읽을 수 없", TransferEntryClosePolicy.JournalUnreadableNotice);
+    }
+
+    [Fact]
+    public void 원인을_모르는_막힘_안내는_저널_문제라고_단정하지_않는다()
+    {
+        var notice = TransferEntryClosePolicy.NeutralBlockedNotice;
+        Assert.Contains("막혀 있습니다", notice);
+        Assert.DoesNotContain("전송 기록", notice);
         Assert.DoesNotContain("버튼", notice);
+        Assert.NotEqual(TransferEntryClosePolicy.JournalUnreadableNotice, notice);
+    }
+
+    [Theory]
+    [InlineData("journal-1", "profile-1", true)]
+    [InlineData(null, "profile-1", false)]
+    [InlineData("", "profile-1", false)]
+    [InlineData("  ", "profile-1", false)]
+    [InlineData("journal-1", null, false)]
+    [InlineData("journal-1", "", false)]
+    [InlineData("journal-1", "  ", false)]
+    public void 닫기_요청은_항목과_팀원을_둘_다_알아야_한다(string? journalId, string? profileId, bool expected)
+    {
+        // 빈 profileId 는 BlocksEditing 이 "모르면 막는다" 로 true 를 주므로 어떤 항목에도 맞아 버린다.
+        Assert.Equal(expected, TransferEntryClosePolicy.HasUsableCloseTarget(journalId, profileId));
     }
 
     [Theory]

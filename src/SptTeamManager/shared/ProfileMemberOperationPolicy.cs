@@ -22,6 +22,11 @@ namespace pitTeam.Shared
     // 반환값은 절대 비지 않는다: 호출자가 "사유 없음 = 거부 안 함" 으로 읽는 틈을 두지 않는다. 열거에 없는 값도 거부다.
     public static class ProfileMemberOperationPolicy
     {
+        // 이 Aid 가 프로필 팀원인지 판별하지 못했을 때(등록을 읽을 수 없는 등). "아니다" 로 읽어 PIT 로 넘기면 같은 Aid 의
+        // 보이지 않는 용병이 바뀔 수 있으므로, 모를 때도 거부한다.
+        public static string UndeterminedReason(ProfileMemberOperation operation) =>
+            "이 팀원이 프로필 팀원인지 확인할 수 없어 조작을 거부했습니다. 잠시 뒤 다시 시도하세요.";
+
         public static string RefusalReason(ProfileMemberOperation operation)
         {
             switch (operation)

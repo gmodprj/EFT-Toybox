@@ -88,10 +88,31 @@ namespace pitTeam.Shared
                 "- 닫기는 되돌릴 수 없고, 닫을지는 직접 결정하는 일입니다. 두 프로필의 장비와 스태시를 확인한 뒤에 닫으세요.";
         }
 
-        // 저널 문서 자체를 읽을 수 없을 때. 어느 항목이 문제인지 알 수 없으므로 닫을 대상이 없다 - 솔직히 그렇게 말한다.
+        // 저널 문서 자체를 읽을 수 없을 때. 어느 항목이 문제인지 알 수 없어 항목을 닫을 수는 없다. 파일은 암호화된 데이터베이스
+        // 안에 있어 손으로 고칠 수도 없으므로, 플레이어가 확인한 뒤 문서를 통째로 버리는 것이 유일한 출구다.
         public const string JournalUnreadableNotice =
-            "이 팀원의 장비 편집이 막혀 있습니다. 전송 기록을 읽을 수 없어 안전한지 확인할 수 없습니다. " +
-            "이 화면에서는 풀 수 없으니 서버 로그를 확인하세요.";
+            "이 팀원의 장비 편집이 막혀 있습니다. 전송 기록 파일을 읽을 수 없어 안전한지 확인할 수 없고, 파일은 손으로 고칠 수도 없습니다. " +
+            "두 프로필의 장비와 스태시를 직접 확인한 뒤, 아래 버튼으로 이 기록 파일을 버릴 수 있습니다.";
+
+        // 막혀 있다는 것만 알고 이유를 모를 때(서버가 안내문을 비워 보낸 경우 등). 없는 원인을 지어내지 않는다.
+        public const string NeutralBlockedNotice =
+            "이 팀원의 장비 편집이 막혀 있습니다. 자세한 이유를 불러오지 못했습니다. 서버 로그를 확인하세요.";
+
+        // 읽을 수 없는 저널 문서를 버리는 확인창의 본문. 버리면 무엇을 잃는지 있는 그대로 적는다.
+        public const string DiscardUnreadableJournalWarning =
+            "전송 기록 파일을 버리면 이 팀원의 장비 편집 제한이 풀립니다. 먼저 알아 두세요.\n\n" +
+            "- 읽을 수 없는 파일이라 안에 무엇이 있었는지 알 수 없습니다. 진행 중이던 전송 기록이 있었더라도 모두 사라집니다.\n" +
+            "- 옮기던 아이템이 어느 쪽에 있는지 알 방법이 없습니다. 양쪽에 모두 있거나 어디에도 없을 수 있습니다.\n" +
+            "- 버리기는 되돌릴 수 없고, 버릴지는 직접 결정하는 일입니다. 모든 프로필의 장비와 스태시를 확인한 뒤에 버리세요.";
+
+        // 문서를 버리는 것은 "정말 읽을 수 없고" "플레이어가 확인했을" 때만. 읽히는 문서는 항목 단위 규칙(MayCloseNow)을 거친다.
+        public static bool MayDiscardUnreadableJournal(bool journalUnreadable, bool playerAcknowledged) =>
+            journalUnreadable && playerAcknowledged;
+
+        // 닫기 요청이 어느 항목·어느 팀원인지 알려 주는가. 빈 profileId 는 BlocksEditing 이 "모르면 막는다" 로 true 를 주어
+        // 어떤 항목에도 맞아 버리므로 판정 앞에서 끊는다.
+        public static bool HasUsableCloseTarget(string? journalId, string? profileId) =>
+            !string.IsNullOrWhiteSpace(journalId) && !string.IsNullOrWhiteSpace(profileId);
 
         // 서버가 닫기를 거절했을 때 플레이어에게 보여 줄 말.
         public static string RefusalMessage(TransferCloseVerdict verdict)

@@ -39,11 +39,22 @@ public class ProfileMemberOperationPolicyTests
 
     [Theory]
     [MemberData(nameof(AllOperations))]
+    public void 팀원인지_확인할_수_없을_때도_거부하고_사유를_말한다(ProfileMemberOperation operation)
+    {
+        // 판별 실패는 "프로필 팀원이 아님" 이 아니다. 같은 Aid 의 보이지 않는 용병이 바뀌지 않도록 거부 쪽으로 닫는다.
+        var reason = ProfileMemberOperationPolicy.UndeterminedReason(operation);
+        Assert.Contains("확인할 수 없어", reason);
+        Assert.NotEqual(ProfileMemberOperationPolicy.RefusalReason(operation), reason);
+    }
+
+    [Theory]
+    [MemberData(nameof(AllOperations))]
     public void 사유는_센티넬_문자열이나_예외_이름이_아닌_사람의_말이다(ProfileMemberOperation operation)
     {
         var reason = ProfileMemberOperationPolicy.RefusalReason(operation);
         Assert.DoesNotContain("Exception", reason);
         Assert.DoesNotContain("Stm", reason);
-        Assert.Contains(" ", reason);
+        Assert.EndsWith(".", reason);
+        Assert.Matches("[가-힣]{2,}", reason);
     }
 }
