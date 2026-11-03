@@ -635,7 +635,13 @@ namespace pitTeam.Patches
                 ApplyLoadoutEditorOriginalPinLocks(baseProfile.Inventory?.Stash);
 
                 editorProfile = baseProfile;
-                editorInventoryController = new InventoryController(editorProfile, false);
+                // 두 번째 인자는 **examined**(이 컨트롤러가 모든 아이템을 "살펴본 것" 으로 보는가)다.
+                // PIT 가 false 를 주고 있었고, 그래서 EFT 의 조작 메뉴가 Inspect·Examine·Discard 셋만 남았다
+                // (ItemContextInteractionsSwitcher.IsActive: 살펴보지 않은 아이템은 그 셋만 보여 준다).
+                // 열기·장전·비우기·나누기가 메뉴에 없던 이유가 이것이다 - 플레이어 화면에서는 자기 백과사전에
+                // 있는 것이라 다 보인다. 팀원의 물건도 플레이어가 보고 있는 것이므로 true 로 연다.
+                // 이 값은 **읽는 쪽 판정**일 뿐 프로필에 아무것도 쓰지 않는다.
+                editorInventoryController = new InventoryController(editorProfile, true);
 
                 // 편집기의 스태시가 서버가 말한 그 팀원 스태시 루트인가 - 아니면 출처 칸을 믿을 수 없다.
                 if (editorProfile.Inventory?.Equipment == null || editorProfile.Inventory.Stash == null
