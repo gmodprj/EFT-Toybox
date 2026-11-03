@@ -123,7 +123,7 @@ namespace pitTeam.Shared
             var itemId = request.ItemId.Trim();
 
             // 방향을 먼저 정한다. 목적지가 어디냐가 "출처가 어디여야 하는가" 를 정하기 때문이다.
-            //   장비 트리로  = 입히기(장착). 출처는 이 팀원 스태시뿐이다(§6-4).
+            //   장비 트리로  = 입히기(장착). 출처는 **이 팀원의 것**이면 된다 - 스태시든 장비든.
             //   스태시 루트로 = 벗기기(해제). 출처는 이 팀원 장비 트리뿐이다.
             // 둘 다 한 프로필 안의 이동이고, 공짜 생성이 없다는 점도 같다 - 벗기는 아이템은 이미 그
             // 프로필의 것이다. §6-4 의 "출처는 본인 스태시뿐" 은 **새 아이템이 어디서 오는가** 의 규칙이고,
@@ -141,22 +141,53 @@ namespace pitTeam.Shared
             // 출처 판정. 방향마다 "있어야 하는 트리" 와 "루트 자체" 가 뒤집힌다.
             if (toEquipment)
             {
-                // 출처는 본인 스태시뿐. 플레이어 스태시의 id 는 이 목록에 아예 없으므로 여기서 떨어진다.
-                if (!stashIds.Contains(itemId))
+                // 출처는 **이 팀원의 것**이면 된다. 플레이어 스태시의 id 는 이 목록에 아예 없으므로
+                // 여기서 떨어진다. 2026-11-03 전에는 스태시 하위만 받았는데, 그러면 리그 안 탄창이나
+                // 가방 안 여분 탄창처럼 **그 팀원이 이미 가진** 것을 쓸 수 없었다(인게임에서 막혔다).
+                // 넓혀도 공짜 생성은 없다: 두 경우 모두 한 프로필 안의 이동이고 쓰기는 한 번이다.
+                var fromStash = stashIds.Contains(itemId);
+                var fromEquipment = equipmentIds.Contains(itemId);
+                if (!fromStash && !fromEquipment)
                 {
-                    return Reject($"아이템 '{itemId}' 은(는) 이 팀원의 스태시에 없어 장비에 넣을 수 없습니다.");
+                    return Reject($"아이템 '{itemId}' 은(는) 이 팀원의 것이 아니어서 장비에 넣을 수 없습니다.");
                 }
 
-                // 루트 자체는 아이템이 아니다(옮기면 스태시가 장비 아래로 들어간다).
+                // 같은 id 가 두 트리에 다 보이는 프로필은 깨져 있다. 어느 쪽이 진짜인지 모르므로 쓰지 않는다.
+                if (fromStash && fromEquipment)
+                {
+                    return Reject($"아이템 '{itemId}' 이(가) 스태시와 장비 양쪽에 보여 어느 쪽이 맞는지 알 수 없습니다.");
+                }
+
+                // 루트 자체는 아이템이 아니다(옮기면 트리 하나가 다른 트리 밑으로 들어간다).
                 if (string.Equals(itemId, stashRoot, StringComparison.Ordinal))
                 {
                     return Reject("스태시 루트 자체는 장비에 넣을 수 없습니다.");
                 }
 
-                // 같은 id 가 두 트리에 다 보이는 프로필은 깨져 있다. 어느 쪽이 진짜인지 모르므로 쓰지 않는다.
-                if (equipmentIds.Contains(itemId))
+                if (string.Equals(itemId, equipmentRoot, StringComparison.Ordinal))
                 {
-                    return Reject($"아이템 '{itemId}' 이(가) 스태시와 장비 양쪽에 보여 어느 쪽이 맞는지 알 수 없습니다.");
+                    return Reject("장비 루트 자체는 다른 자리에 넣을 수 없습니다.");
+                }
+
+                if (fromEquipment)
+                {
+                    // 장비 안에서 꺼내는 것도 "떼어내는" 것이다. 벗기기와 **같은 권위**
+                    // (WornGearLossPolicy)를 쓴다 - 주머니·보안 컨테이너·완장·칼집을 다른 슬롯으로
+                    // 옮기는 것도 구조 손상이고, EFT 가 그 프로필의 적재를 거부할 수 있다.
+                    var source = FindItem(items, itemId);
+                    if (WornGearLossPolicy.IsNeverRemovedSlot(source?.SlotId))
+                    {
+                        return Reject($"'{source!.SlotId!.Trim()}' 은(는) 프로필에서 떼어낼 수 없는 자리라서 옮기지 않습니다.");
+                    }
+
+                    // 고리 방지. 출처가 스태시뿐이던 때는 일어날 수 없었다(스태시 아이템은 장비 트리에
+                    // 자손이 없다). 이제는 리그를 그 리그 안의 탄창에 넣으라는 요청이 성립하고, 그대로
+                    // 쓰면 트리가 끊겨 그 가지 전체가 프로필에서 사라진 것처럼 보인다.
+                    var ownSubtree = WornGearLossPolicy.CollectSubtreeIds(items, new[] { itemId });
+                    if (ownSubtree.Contains(parentId))
+                    {
+                        return Reject($"아이템 '{itemId}' 은(는) 자기 자신이나 자기 안의 아이템에 넣을 수 없습니다.");
+                    }
                 }
             }
             else
@@ -325,6 +356,11 @@ namespace pitTeam.Shared
             if (profileItems == null) return Reject("이 프로필의 아이템 목록을 읽을 수 없어 편집하지 않습니다.");
             if (string.IsNullOrWhiteSpace(equipmentRootId)) return Reject("이 프로필의 장비 루트를 읽을 수 없어 편집하지 않습니다.");
 
+            // 한 아이템은 한 묶음에서 한 번만 옮긴다. 출처가 스태시뿐이던 때는 두 번째 건이 "스태시에
+            // 없다" 로 저절로 걸렸는데, 출처를 넓히면서 그 그물이 없어졌다. 두 번 적는 것은 최종 자리가
+            // 모호하다는 뜻이고(무엇을 쓸지 요청이 말하지 않는다), 디스크 재독의 기대도 둘이 된다.
+            var movedItemIds = new HashSet<string>(StringComparer.Ordinal);
+
             var working = new List<WornGearItem>();
             foreach (var item in profileItems)
             {
@@ -349,6 +385,11 @@ namespace pitTeam.Shared
                 if (!verdict.Allowed) return verdict;
 
                 var itemId = request.ItemId.Trim();
+                if (!movedItemIds.Add(itemId))
+                {
+                    return Reject($"아이템 '{itemId}' 을(를) 한 묶음에서 두 번 옮길 수 없습니다. 마지막 자리 하나만 보냅니다.");
+                }
+
                 var parentId = string.IsNullOrWhiteSpace(request.TargetParentId) ? equipmentRoot : request.TargetParentId!.Trim();
                 var index = working.FindIndex(i => string.Equals(i.Id, itemId, StringComparison.Ordinal));
                 if (index < 0)
