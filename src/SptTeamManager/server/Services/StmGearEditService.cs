@@ -322,7 +322,13 @@ public class StmGearEditService(
                     target.SlotId = canonicalSlot;
                     // 슬롯에 들어간 아이템은 격자 좌표를 갖지 않는다. 스태시 칸에 있던 Location 을 그대로 두면
                     // 슬롯 안에 좌표가 있는 모양이 되고, PIT 의 검증도 그 모양을 수상한 것으로 본다.
-                    target.Location = null;
+                    //
+                    // 예외는 탄을 담는 자리다: 거기 들어간 더미는 좌표가 아니라 **색인**을 갖는다
+                    // (실측: 프로필 JSON 의 cartridges 항목은 location 이 정수 0 이다. PIT 도
+                    // ItemHelper.CreateCartridges(..., 0) 로 같은 값을 쓴다). 색인을 지어내는 것이
+                    // 아니다 - 정책 (a) 가 그 자리가 **비어 있음**을 확인했으므로 첫 자리는 0 이다.
+                    var ammoCapacity = ProfileGearEditPolicy.SlotAmmoCapacity(canonicalSlot, parentId, slotFacts);
+                    target.Location = ammoCapacity.HasValue ? 0 : null;
                 }
 
                 // 기대값은 **실제로 쓴 값**에서 받아 적는다. 요청의 철자를 그대로 쓰면 안 된다:
@@ -588,6 +594,8 @@ public class StmGearEditService(
         var templateIdByItemId = new Dictionary<string, string>(StringComparer.Ordinal);
         var slotsByTemplateId = new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal);
         var parentByTemplateId = new Dictionary<string, string>(StringComparer.Ordinal);
+        // 더미 수량. 탄을 담는 자리의 용량 검사에만 쓰인다(PIT 의 GetItemStackCount 와 같은 식이다).
+        var stackCountByItemId = new Dictionary<string, int>(StringComparer.Ordinal);
         try
         {
             foreach (var item in items)
@@ -596,6 +604,7 @@ public class StmGearEditService(
                 var itemId = item.Id.ToString();
                 var templateId = item.Template.ToString();
                 templateIdByItemId[itemId] = templateId;
+                stackCountByItemId[itemId] = Math.Max(1, (int)Math.Ceiling(item.Upd?.StackObjectsCount ?? 1d));
                 // 조상 사슬. 슬롯 필터가 아이템 tpl 대신 **범주 노드**를 담기 때문에 필요하다
                 // (ProfileGearEditPolicy.FilterAccepts 의 실측 주석). 노드도 items.json 의 항목이라
                 // 같은 GetItem 으로 읽힌다. 32칸으로 끊는다 - 손상된 사슬에서 돌지 않게.
@@ -609,16 +618,35 @@ public class StmGearEditService(
                 foreach (var slot in found.Value.Properties?.Slots ?? [])
                 {
                     if (slot?.Name == null) continue;
-                    var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var filter in slot.Properties?.Filters ?? [])
-                    {
-                        foreach (var tpl in filter?.Filter ?? [])
-                        {
-                            if (!tpl.IsEmpty) allowed.Add(tpl.ToString());
-                        }
-                    }
+                    definitions.Add(new GearSlotDefinition(slot.Name, AllowedTemplatesOf(slot)));
+                }
 
-                    definitions.Add(new GearSlotDefinition(slot.Name, allowed));
+                // 탄을 담는 자리는 **Slots 에 없다**(2026-11-03 실측: 바닐라 탄창
+                // mag_stanag_colt_ar15_std_556x45_30 은 Slots 가 비어 있고 Cartridges 에 'cartridges'
+                // 하나를 둔다). 약실(patron_in_weapon)도 같은 이유로 Chambers 에 있다. 이 둘을 읽지
+                // 않으면 탄은 **어떤 탄창에도** 넣을 수 없다 - 인계 문서 열린 항목 4 가 그 결함이었다.
+                // 격자 좌표가 아니라 색인으로 담으므로 용량(_max_count)을 함께 싣는다.
+                // 탄창: 용량이 Cartridges 항목의 _max_count 에 있다(STANAG 30발 = 30, GP-5 = 33).
+                // 읽지 못하면 0 으로 싣는다 - 정책이 0 을 "몇 발인지 모른다" 로 읽어 거부한다. 자리를
+                // 빼 버리면 "그런 슬롯이 없다" 로 거부돼 사유가 사실과 달라진다.
+                foreach (var magazineSlot in found.Value.Properties?.Cartridges ?? [])
+                {
+                    if (magazineSlot?.Name == null) continue;
+                    definitions.Add(new GearSlotDefinition(
+                        magazineSlot.Name,
+                        AllowedTemplatesOf(magazineSlot),
+                        (int?)magazineSlot.MaxCount ?? 0));
+                }
+
+                // 약실: Chambers 항목에는 **개수 필드가 아예 없다**(2026-11-03 실측: M4A1 의
+                // patron_in_weapon 은 filters 하나만 들고 있다). 그래서 1 로 싣는다 - 이름에서 뜻을
+                // 지어낸 것이 아니라 (ㄱ) 데이터베이스가 개수를 말하지 않고 (ㄴ) 이 PC 의 프로필 여섯 개에
+                // 있는 약실 아이템 15개가 전부 수량 1 이고 (ㄷ) 1 이 닫힌 쪽이기 때문이다. 더 큰 더미를
+                // 약실에 넣으려는 편집은 이 값 때문에 거부된다.
+                foreach (var chamberSlot in found.Value.Properties?.Chambers ?? [])
+                {
+                    if (chamberSlot?.Name == null) continue;
+                    definitions.Add(new GearSlotDefinition(chamberSlot.Name, AllowedTemplatesOf(chamberSlot), 1));
                 }
 
                 slotsByTemplateId[templateId] = definitions;
@@ -631,10 +659,27 @@ public class StmGearEditService(
             return new GearSlotFacts(
                 new Dictionary<string, string>(StringComparer.Ordinal),
                 new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal),
-                new Dictionary<string, string>(StringComparer.Ordinal));
+                new Dictionary<string, string>(StringComparer.Ordinal),
+                new Dictionary<string, int>(StringComparer.Ordinal));
         }
 
-        return new GearSlotFacts(templateIdByItemId, slotsByTemplateId, parentByTemplateId);
+        return new GearSlotFacts(templateIdByItemId, slotsByTemplateId, parentByTemplateId, stackCountByItemId);
+    }
+
+    // 자리 하나가 받는 템플릿 집합. Slots·Cartridges·Chambers 가 같은 모양(Props.Filters[].Filter)이다.
+    // 비어 있으면 "제한 없음" 이 아니라 "모름" 이고, 정책이 그것을 거부로 읽는다.
+    private static HashSet<string> AllowedTemplatesOf(Slot slot)
+    {
+        var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var filter in slot.Properties?.Filters ?? [])
+        {
+            foreach (var tpl in filter?.Filter ?? [])
+            {
+                if (!tpl.IsEmpty) allowed.Add(tpl.ToString());
+            }
+        }
+
+        return allowed;
     }
 
     // tpl → `_parent` 사슬을 위로 모은다. 이미 들어 있는 고리를 만나면 멈춘다(두 번 걷지 않는다).

@@ -23,7 +23,11 @@ namespace pitTeam.Shared
 
     // 아이템 템플릿이 정의한 슬롯 하나. AllowedTemplateIds 는 그 슬롯의 필터가 허락하는 템플릿 id 들이고,
     // **비어 있으면 "제한 없음" 이 아니라 "모름" 이다** - 그때는 넣지 않는다(§6-9 닫힌 쪽).
-    public sealed record GearSlotDefinition(string Name, IReadOnlyCollection<string> AllowedTemplateIds);
+    //   AmmoCapacity : 탄을 **색인**으로 담는 자리(데이터베이스의 Cartridges·Chambers)의 최대 발수다.
+    //                  일반 슬롯은 null 이다. 값이 있으면 (1) 더미 수량이 용량을 넘으면 거부하고
+    //                  (2) 쓸 때 격자 좌표가 아니라 색인 0 을 쓴다(StmGearEditService). 둘을 한 값으로
+    //                  가르는 이유는 "탄 자리인가" 를 슬롯 이름으로 다시 추측하지 않으려는 것이다.
+    public sealed record GearSlotDefinition(string Name, IReadOnlyCollection<string> AllowedTemplateIds, int? AmmoCapacity = null);
 
     // 아이템 데이터베이스에서 옮겨 온 사실. 판정은 SPT 타입을 모르므로 서버가 이 모양으로 바꿔 넘긴다.
     //   TemplateIdByItemId : 이 프로필 아이템 id → 그 아이템의 템플릿 id
@@ -31,10 +35,14 @@ namespace pitTeam.Shared
     //                        읽지 못했다는 뜻으로 읽는다 - 거부)
     //   ParentTemplateIdByTemplateId : 템플릿 id → 그 템플릿의 `_parent`. 슬롯 필터가 **범주 노드**를
     //                        담기 때문에 반드시 필요하다 - 아래 FilterAccepts 의 주석에 실측 근거가 있다.
+    //   StackCountByItemId : 이 프로필 아이템 id → 그 더미의 발수(Upd.StackObjectsCount, 없으면 1).
+    //                  용량이 있는 자리의 판정에만 쓰인다. 비거나 그 id 가 없으면 "모른다" 이고,
+    //                  모르면 넣지 않는다 - "한 발이겠지" 로 치면 용량 검사가 그대로 뚫린다.
     public sealed record GearSlotFacts(
         IReadOnlyDictionary<string, string> TemplateIdByItemId,
         IReadOnlyDictionary<string, IReadOnlyList<GearSlotDefinition>> SlotsByTemplateId,
-        IReadOnlyDictionary<string, string> ParentTemplateIdByTemplateId);
+        IReadOnlyDictionary<string, string> ParentTemplateIdByTemplateId,
+        IReadOnlyDictionary<string, int>? StackCountByItemId = null);
 
     // 설계 §6-4 의 두 문장을 코드로 옮긴 곳이다.
     //   "편집하면 실물이 된다"  - 쓰기는 프로필에 박힌다(서비스 쪽), 그래서 이 판정은 쓰기 전에 거절할 유일한 관문이다.
@@ -269,6 +277,30 @@ namespace pitTeam.Shared
                 return Reject($"아이템 '{itemId}' 은(는) '{parentId}' 의 '{slot}' 슬롯에 들어가지 않는 종류라서 넣지 않습니다.");
             }
 
+            // (d) 용량. 탄을 담는 자리에는 발수 상한이 있고 이 편집은 **수량을 바꾸지 않는다**(설계) -
+            // 1080발 더미를 30발 탄창에 "일부만" 넣을 수 없다. 넘치는 더미를 그대로 쓰면 EFT 가 적재를
+            // 거부할 수 있는 프로필이 된다(관문 17 의 '규칙을 어긴 스태시 항목' 과 같은 부류다).
+            // 용량을 아는데 수량을 모르면 거부한다 - 모르는 쪽을 1 로 치면 검사가 뚫린다.
+            if (definition.AmmoCapacity is int capacity)
+            {
+                if (capacity <= 0)
+                {
+                    return Reject($"'{parentId}' 의 '{slot}' 자리가 몇 발을 받는지 읽을 수 없어 넣지 않습니다.");
+                }
+
+                if (slotFacts.StackCountByItemId == null
+                    || !slotFacts.StackCountByItemId.TryGetValue(itemId, out var stackCount)
+                    || stackCount <= 0)
+                {
+                    return Reject($"아이템 '{itemId}' 의 수량을 읽을 수 없어 '{slot}' 자리에 넣지 않습니다.");
+                }
+
+                if (stackCount > capacity)
+                {
+                    return Reject($"아이템 '{itemId}' 은(는) {stackCount}발이고 '{parentId}' 의 '{slot}' 자리는 {capacity}발까지라서 넣지 않습니다. 수량을 쪼개지 않습니다.");
+                }
+            }
+
             return GearEditVerdict.Allow();
         }
 
@@ -482,6 +514,31 @@ namespace pitTeam.Shared
             if (!string.IsNullOrWhiteSpace(equipmentRootId) && string.Equals(parent, equipmentRootId!.Trim(), StringComparison.Ordinal))
             {
                 return EquipmentRootSlots.TryGetValue(wanted, out var rootSlot) ? rootSlot : null;
+            }
+
+            return null;
+        }
+
+        // 이 자리가 탄을 색인으로 담는가, 담으면 몇 발까지인가. 서비스는 이 값으로 쓰는 Location 을
+        // 가른다(값이 있으면 색인 0, 없으면 null). 슬롯 이름으로 "cartridges 면 탄 자리" 라고 다시
+        // 판정하지 않는 것이 요점이다 - 어휘의 집은 데이터베이스 하나다(불변식 8).
+        public static int? SlotAmmoCapacity(string? slot, string? parentId, GearSlotFacts? slotFacts)
+        {
+            if (string.IsNullOrWhiteSpace(slot) || string.IsNullOrWhiteSpace(parentId)) return null;
+            if (slotFacts?.TemplateIdByItemId == null || slotFacts.SlotsByTemplateId == null) return null;
+            if (!slotFacts.TemplateIdByItemId.TryGetValue(parentId!.Trim(), out var parentTemplateId)
+                || string.IsNullOrWhiteSpace(parentTemplateId))
+            {
+                return null;
+            }
+
+            if (!slotFacts.SlotsByTemplateId.TryGetValue(parentTemplateId!, out var slots) || slots == null) return null;
+
+            var wanted = slot!.Trim();
+            foreach (var definition in slots)
+            {
+                if (definition?.Name == null) continue;
+                if (string.Equals(definition.Name, wanted, StringComparison.OrdinalIgnoreCase)) return definition.AmmoCapacity;
             }
 
             return null;
