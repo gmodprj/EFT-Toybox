@@ -272,7 +272,7 @@ public class StmGearEditService(
             }
 
             // 판정이 끝난 뒤 한 클론에 전부 반영한다. 정책이 본 것과 같은 순서다.
-            var applied = new List<(string ItemId, string ParentId, string SlotId, bool ToStash)>(requests.Count);
+            var applied = new List<(string ItemId, string ParentId, string SlotId, bool ToStash, bool ToAmmoSlot)>(requests.Count);
             foreach (var request in requests)
             {
                 var itemId = request.ItemId.Trim();
@@ -287,6 +287,9 @@ public class StmGearEditService(
                 }
 
                 var toStash = string.Equals(parentId, stashRootId!.Trim(), StringComparison.Ordinal);
+                // 탄을 담는 자리인가. 쓰는 Location 과 **디스크 재독의 기대**가 둘 다 이 값으로 갈린다 -
+                // 한쪽만 알면 맞게 저장된 편집이 "기대와 다르다" 로 되돌려진다(실측으로 겪었다).
+                var toAmmoSlot = false;
                 if (toStash)
                 {
                     // 벗기기. 격자에는 좌표가 필요하고 좌표를 지어내지 않는다 - SPT 자신의
@@ -327,15 +330,15 @@ public class StmGearEditService(
                     // (실측: 프로필 JSON 의 cartridges 항목은 location 이 정수 0 이다. PIT 도
                     // ItemHelper.CreateCartridges(..., 0) 로 같은 값을 쓴다). 색인을 지어내는 것이
                     // 아니다 - 정책 (a) 가 그 자리가 **비어 있음**을 확인했으므로 첫 자리는 0 이다.
-                    var ammoCapacity = ProfileGearEditPolicy.SlotAmmoCapacity(canonicalSlot, parentId, slotFacts);
-                    target.Location = ammoCapacity.HasValue ? 0 : null;
+                    toAmmoSlot = ProfileGearEditPolicy.SlotAmmoCapacity(canonicalSlot, parentId, slotFacts).HasValue;
+                    target.Location = toAmmoSlot ? 0 : null;
                 }
 
                 // 기대값은 **실제로 쓴 값**에서 받아 적는다. 요청의 철자를 그대로 쓰면 안 된다:
                 // 어휘 검사는 대소문자를 무시하고 받아 주지만(요청이 "Hideout" 이어도 통과) 스태시
                 // 배치는 SPT 가 템플릿의 격자 이름("hideout")을 쓰고, 디스크 재독 대조는 Ordinal 이다 -
                 // 그러면 맞게 저장된 편집이 "기대와 다르다" 로 되돌려진다(안전하지만 거짓 실패다).
-                applied.Add((itemId, target.ParentId ?? parentId, target.SlotId ?? slotId, toStash));
+                applied.Add((itemId, target.ParentId ?? parentId, target.SlotId ?? slotId, toStash, toAmmoSlot));
             }
 
             // 6. 유일한 쓰기: SaveServer 가 들고 있는 객체를 고치고 그 자신의 저장을 부른다. 프로필
@@ -424,7 +427,7 @@ public class StmGearEditService(
     // 못 읽거나 한 가지라도 어긋나면 false 다(닫힌 쪽). mismatch 는 로그에 남는 한 줄이다.
     private bool VerifyFromDisk(
         string profileId,
-        IReadOnlyList<(string ItemId, string ParentId, string SlotId, bool ToStash)> applied,
+        IReadOnlyList<(string ItemId, string ParentId, string SlotId, bool ToStash, bool ToAmmoSlot)> applied,
         string stashRootId,
         string equipmentRootId,
         List<Item> beforeEdit,
@@ -460,7 +463,7 @@ public class StmGearEditService(
         var diskEquipmentIds = WornGearLossPolicy.CollectSubtreeIds(diskTriples, new[] { equipmentRootId });
         var diskStashIds = WornGearLossPolicy.CollectSubtreeIds(diskTriples, new[] { stashRootId });
 
-        foreach (var (itemId, expectedParentId, expectedSlotId, toStash) in applied)
+        foreach (var (itemId, expectedParentId, expectedSlotId, toStash, toAmmoSlot) in applied)
         {
             var moved = onDisk.FirstOrDefault(i => i?.Id != null && string.Equals(i.Id.ToString(), itemId, StringComparison.Ordinal));
             if (moved == null)
@@ -469,14 +472,16 @@ public class StmGearEditService(
                 return false;
             }
 
-            // 좌표의 기대가 방향마다 뒤집힌다: 슬롯에 들어간 것은 좌표가 **없어야** 하고, 스태시 격자에
-            // 놓인 것은 좌표가 **있어야** 한다(없으면 그 아이템이 어느 칸에 있는지 아무도 모른다).
-            var locationWrong = toStash ? moved.Location == null : moved.Location != null;
+            // 좌표의 기대는 세 갈래다. 스태시 격자에 놓인 것은 좌표가 **있어야** 하고(없으면 그 아이템이
+            // 어느 칸에 있는지 아무도 모른다), 탄을 담는 자리에 들어간 것도 **색인**을 가지며, 그 밖의
+            // 슬롯에 들어간 것은 좌표가 **없어야** 한다.
+            var expectsLocation = toStash || toAmmoSlot;
+            var locationWrong = expectsLocation ? moved.Location == null : moved.Location != null;
             if (!string.Equals(moved.ParentId, expectedParentId, StringComparison.Ordinal)
                 || !string.Equals(moved.SlotId, expectedSlotId, StringComparison.Ordinal)
                 || locationWrong)
             {
-                mismatch = $"디스크의 아이템 '{itemId}' 이(가) 기대와 다르다(부모 '{moved.ParentId}' 기대 '{expectedParentId}', 슬롯 '{moved.SlotId}' 기대 '{expectedSlotId}', 좌표 {(moved.Location == null ? "없음" : "있음")}, 기대 {(toStash ? "있음" : "없음")}).";
+                mismatch = $"디스크의 아이템 '{itemId}' 이(가) 기대와 다르다(부모 '{moved.ParentId}' 기대 '{expectedParentId}', 슬롯 '{moved.SlotId}' 기대 '{expectedSlotId}', 좌표 {(moved.Location == null ? "없음" : "있음")}, 기대 {(expectsLocation ? "있음" : "없음")}).";
                 return false;
             }
 
