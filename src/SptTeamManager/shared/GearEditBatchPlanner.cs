@@ -8,7 +8,10 @@ namespace pitTeam.Shared
     // 못하는 속성인 격자 칸 위치를 문자열로 바꾼 것이다. 같으면 같은 문자열이면 되고 뜻은 보지 않는다.
     public sealed record EditorItemState(string? Id, string? ParentId, string? SlotId, string? LayoutKey);
 
-    // 서버 라우트(/stm/members/edit-gear)에 보낼 한 건: 이 아이템을 이 부모의 이 슬롯으로.
+    // 한 건: 이 아이템을 이 부모의 이 슬롯으로. **2026-11-03 이후 제품 경로에서는 쓰지 않는다** -
+    // 저장이 최종 상태 제출로 바뀌면서 이 플래너의 호출자가 없어졌고 /stm/members/edit-gear 도 지웠다.
+    // 파일을 남겨 둔 이유는 순서 규칙(새 부모 먼저·자식 먼저·자리를 비우는 건 먼저)이 다시 필요해질 수
+    // 있어서다. 되살릴 생각이 없다면 이 파일과 그 테스트를 함께 지운다.
     public sealed record PlannedGearEdit(string ItemId, string TargetSlotId, string TargetParentId);
 
     // Ok == false 면 Reason 이 플레이어가 읽는 한 줄이고 Edits 는 비어 있다. LayoutOnlyCount 는 부모·슬롯은
