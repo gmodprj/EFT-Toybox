@@ -69,6 +69,10 @@ namespace pitTeam.Patches
         private const string StmEditorSaveFailedToast = "장비를 저장하지 못했습니다";
         private const string StmEditorNoChangeToast = "바뀐 것이 없어 저장하지 않았습니다.";
         private const string StmEditorSkippedFormat = "이 팀원의 아이템 {0}개를 편집기가 읽지 못해 보이지 않습니다. 저장해도 그 아이템은 건드리지 않습니다.";
+        // 사라지는 아이템이 있으면 **한 번 더 눌러야** 저장한다. 탄박스를 열었는데 탄이 놓이지 못하고
+        // 사라지는 경우처럼, 플레이어가 의도하지 않은 소실이 조용히 저장되는 것을 막는다
+        // (2026-11-03: 탄박스 10종과 그 탄이 그렇게 사라졌다).
+        private const string StmEditorLossWarningFormat = "저장하면 아이템 {0}개가 사라집니다. 저장을 한 번 더 누르면 그대로 저장합니다.";
         private const string StmEditorSavedToastFormat = "장비를 저장했습니다({0}건).";
         private const string StmEditorLayoutNoteFormat = " 칸 위치만 바꾼 {0}개는 저장되지 않습니다.";
         private const string StmEditorSavedButCleanupFailedToast = "장비는 저장되었습니다. 편집기를 정리하다 오류가 났으니 팀원 화면을 다시 열어 확인하세요.";
@@ -81,6 +85,9 @@ namespace pitTeam.Patches
         // 건너뛰고 열리는데, 그러면 화면에 없는 아이템이 생긴다. 저장은 그것들을 건드리지 않지만
         // (서버가 loadedItemIds 밖의 손실을 거절한다) **플레이어는 그 사실을 알아야 한다**.
         private static int StmGearEditSkippedCount;
+
+        // 방금 경고한 소실 묶음의 서명(사라질 id 들을 정렬해 이은 것). 같은 묶음으로 다시 누르면 진행한다.
+        private static string StmPendingLossSignature;
 
         private static bool StmGearEditOpening;
         private static bool StmGearEditSaving;
@@ -602,7 +609,10 @@ namespace pitTeam.Patches
                 if (StmGearEditSkippedCount > 0)
                 {
                     // 저장은 이것들을 건드리지 않는다(서버가 거절한다). 보이지 않는다는 사실만 말한다.
-                    SetStmGearEditStatus(string.Format(StmEditorSkippedFormat, StmGearEditSkippedCount));
+                    string skippedNotice = string.Format(StmEditorSkippedFormat, StmGearEditSkippedCount);
+                    SetStmGearEditStatus(skippedNotice);
+                    // 상태 줄은 스태시 패널에 가릴 수 있다(실측). 토스트로도 한 번 말한다.
+                    AddTeammateCreationFlow.ShowToast(skippedNotice);
                 }
             }
             catch (Exception ex)
@@ -630,6 +640,7 @@ namespace pitTeam.Patches
             try
             {
                 StmGearEditSkippedCount = 0;
+                StmPendingLossSignature = null;
                 if (!TryBuildStmEditorStash(stash, out EFT.InventoryLogic.Stash teammateStash, out string stashFailure))
                 {
                     pitFireTeam.Log.LogWarning($"[STM] Teammate stash could not be built for the gear editor: {stashFailure}");
@@ -820,6 +831,27 @@ namespace pitTeam.Patches
                 // 거절한다 - EFT 가 읽지 못해 편집기에 실리지 않은 아이템이 제출본에 없다는 이유로
                 // 지워지는 것을 막는다(2026-11-03 실측: 그렇게 68개가 지워졌다).
                 List<string> loadedItemIds = StmItemIds(LoadoutEditorInitialEquipmentItems, LoadoutEditorInitialStashItems);
+
+                // 들고 있던 것 중 **최종 트리에 없는** 것 = 이 저장으로 사라질 아이템. 서버는 이것을
+                // 허용하지만(플레이어는 버릴 수 있다), 조용히 보내지는 않는다 - 한 번 더 누르게 한다.
+                HashSet<string> finalIds = new HashSet<string>(StmItemIds(endEquipment, endStash), StringComparer.Ordinal);
+                List<string> losing = loadedItemIds.Where(id => !finalIds.Contains(id)).ToList();
+                if (losing.Count > 0)
+                {
+                    string signature = string.Join(",", losing.OrderBy(id => id, StringComparer.Ordinal));
+                    if (!string.Equals(StmPendingLossSignature, signature, StringComparison.Ordinal))
+                    {
+                        StmPendingLossSignature = signature;
+                        string warning = string.Format(StmEditorLossWarningFormat, losing.Count);
+                        pitFireTeam.Log.LogWarning($"[STM] The save would remove {losing.Count} item(s): {string.Join(", ", losing)}");
+                        AddTeammateCreationFlow.ShowToast(warning);
+                        return new StmSaveVerdict { Kind = StmSaveKind.NotSent, Message = warning };
+                    }
+                }
+                else
+                {
+                    StmPendingLossSignature = null;
+                }
                 string body = JsonConvert.SerializeObject(new
                 {
                     aid = profile.AccountId,
@@ -835,6 +867,7 @@ namespace pitTeam.Patches
                 switch (outcome.Kind)
                 {
                     case SaveOutcomeKind.Confirmed:
+                        StmPendingLossSignature = null;
                         return new StmSaveVerdict { Kind = StmSaveKind.Confirmed, Saved = changed, LayoutNote = layoutNote };
                     case SaveOutcomeKind.Refused:
                         // 서버가 쓴 사유 그대로. 거절된 묶음은 아무것도 쓰지 않았으므로 편집기는 열어 둔다(고쳐서 다시 저장할 수 있다).
