@@ -19,6 +19,8 @@ namespace pitTeam.Patches
         public string Name { get; set; }
         // 팀원 빌드에만 온다. 게임의 기본 장비 프리셋 화면에 보이려면 클라이언트가 EquipmentBuild 를 직접
         // 만들어야 하고, 그 생성자가 (id, name, root, FlatItem[], buildType) 를 받는다(역컴파일로 확인).
+        // 이 팀원에게 입히는 데 드는 값. -1 이면 값을 매길 수 없다(살 수 없는 빌드다).
+        public int Price { get; set; } = -1;
         public string Root { get; set; }
         public JsonType.FlatItem[] Items { get; set; }
     }
@@ -103,14 +105,16 @@ namespace pitTeam.Patches
                     StmKitButtonRoot, rowOffset: 2,
                     name: "pitFireTeam_StmKitButton",
                     text: StmKitButtonText,
-                    onClick: () => OpenStmKitScreen(profile, detail, null, inventoryController, session));
+                    onClick: () => OpenStmKitScreen(profile, detail, teammateOwned: false,
+                        inventoryController: inventoryController, session: session));
 
                 StmKitTeammateButtonRoot = CreateStmKitRowButton(
                     screen, loadoutSelector, parent, detail,
                     StmKitTeammateButtonRoot, rowOffset: 3,
                     name: "pitFireTeam_StmTeammateKitButton",
                     text: StmKitTeammateButtonText,
-                    onClick: () => OpenStmTeammateKitScreen(profile, detail, inventoryController, session));
+                    onClick: () => OpenStmKitScreen(profile, detail, teammateOwned: true,
+                        inventoryController: inventoryController, session: session));
             }
             catch (Exception ex)
             {
@@ -197,44 +201,14 @@ namespace pitTeam.Patches
 
         // 게임의 기본 장비 프리셋 화면을 연다. STM 모드를 먼저 켜고 PIT 의 흐름에 넘긴다 - 그 안에서
         // 값과 구매만 STM 의 경로로 갈라진다(StmKitNativeFlow).
-        private static void OpenStmKitScreen(
+        //
+        // **두 입구가 모두 목록을 먼저 받는다.** 전에는 "내 꾸러미" 가 목록 없이 바로 열렸는데,
+        // 그러면 줄에 보여 줄 값이 없어 무게가 그대로 남았다(2026-11-03 사용자 지적). 값은 팀원이
+        // 이미 입고 있는 칸을 빼고 계산하므로 서버만 알 수 있고, 그것이 구매 창이 청구할 값이다.
+        private static async void OpenStmKitScreen(
             ResultProfile profile,
             StmProfileDetailWire detail,
-            StmGearBuildRowWire[] teammateBuilds,
-            EFT.InventoryLogic.InventoryController inventoryController,
-            EFT.IEftSession session)
-        {
-            try
-            {
-                if (profile == null || detail == null) return;
-
-                // 전역(ActiveProfile*)에 기대지 않고 상세 화면이 받은 값을 그대로 쓴다 - 그 전역은
-                // PIT 의 용병 분기에서 채워지는 것이라 STM 경로에서는 비어 있을 수 있다.
-                var useSession = session ?? ActiveProfileSession;
-                var useController = inventoryController ?? ActiveProfileInventoryController;
-                if (useSession == null || useController == null)
-                {
-                    pitFireTeam.Log.LogWarning("[STM] 장비 꾸러미를 열지 못했다: 세션이나 인벤토리 컨트롤러가 없다.");
-                    AddTeammateCreationFlow.ShowToast(StmKitLoadFailedToast);
-                    return;
-                }
-
-                StmKitNativeFlow.Begin(profile, detail, teammateBuilds, useSession);
-                TeammateEquipmentBuildsScreenFlow.Open(profile, useSession, useController);
-            }
-            catch (Exception ex)
-            {
-                StmKitNativeFlow.End();
-                pitFireTeam.Log.LogError("[STM] 기본 장비 프리셋 화면을 열지 못했다.");
-                pitFireTeam.Log.LogError(ex);
-                AddTeammateCreationFlow.ShowToast(StmKitLoadFailedToast);
-            }
-        }
-
-        // 팀원 빌드로 같은 화면을 연다. 목록을 먼저 서버에서 받아(아이템까지) 화면에 실어 준다.
-        private static async void OpenStmTeammateKitScreen(
-            ResultProfile profile,
-            StmProfileDetailWire detail,
+            bool teammateOwned,
             EFT.InventoryLogic.InventoryController inventoryController,
             EFT.IEftSession session)
         {
@@ -253,22 +227,43 @@ namespace pitTeam.Patches
                 }
 
                 StmGearBuildsWire builds = DeserializeBodySuccess<StmGearBuildsWire>(json)?.data;
-                var rows = builds?.TeammateBuilds?
-                    .Where(r => r != null && !string.IsNullOrWhiteSpace(r.Id) && r.Items != null && r.Items.Length > 0)
-                    .ToArray();
+                var owned = teammateOwned ? builds?.TeammateBuilds : builds?.PlayerBuilds;
+                var rows = owned?.Where(r => r != null && !string.IsNullOrWhiteSpace(r.Id)).ToArray();
                 if (rows == null || rows.Length == 0)
                 {
-                    // 빌드가 없는 것과 아이템이 비어 온 것을 가리지 않는다 - 둘 다 "고를 것이 없다" 이고,
-                    // 빈 화면을 여는 것보다 왜 못 여는지 말하는 쪽이 낫다.
                     AddTeammateCreationFlow.ShowToast(StmKitNoBuildsText);
                     return;
                 }
 
-                OpenStmKitScreen(profile, detail, rows, inventoryController, session);
+                // 팀원 빌드만 화면에 실어 준다(플레이어 빌드는 게임이 이미 갖고 있다). 실을 것은
+                // 아이템이 함께 온 줄뿐이다 - 아이템 없이 끼우면 빈 빌드가 보인다.
+                var toLoad = teammateOwned
+                    ? rows.Where(r => r.Items != null && r.Items.Length > 0).ToArray()
+                    : null;
+                if (teammateOwned && (toLoad == null || toLoad.Length == 0))
+                {
+                    AddTeammateCreationFlow.ShowToast(StmKitNoBuildsText);
+                    return;
+                }
+
+                // 전역(ActiveProfile*)에 기대지 않고 상세 화면이 받은 값을 그대로 쓴다 - 그 전역은
+                // PIT 의 용병 분기에서 채워지는 것이라 STM 경로에서는 비어 있을 수 있다.
+                var useSession = session ?? ActiveProfileSession;
+                var useController = inventoryController ?? ActiveProfileInventoryController;
+                if (useSession == null || useController == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 장비 꾸러미를 열지 못했다: 세션이나 인벤토리 컨트롤러가 없다.");
+                    AddTeammateCreationFlow.ShowToast(StmKitLoadFailedToast);
+                    return;
+                }
+
+                StmKitNativeFlow.Begin(profile, detail, toLoad, useSession, rows);
+                TeammateEquipmentBuildsScreenFlow.Open(profile, useSession, useController);
             }
             catch (Exception ex)
             {
-                pitFireTeam.Log.LogError("[STM] 팀원 빌드로 기본 화면을 열다 실패했다.");
+                StmKitNativeFlow.End();
+                pitFireTeam.Log.LogError("[STM] 기본 장비 프리셋 화면을 열지 못했다.");
                 pitFireTeam.Log.LogError(ex);
                 AddTeammateCreationFlow.ShowToast(StmKitLoadFailedToast);
             }
@@ -277,5 +272,6 @@ namespace pitTeam.Patches
                 StmKitBusy = false;
             }
         }
+
     }
 }

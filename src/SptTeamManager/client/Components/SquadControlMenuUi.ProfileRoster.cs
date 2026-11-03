@@ -282,10 +282,12 @@ namespace pitTeam.Components
             {
                 case RosterRowStatus.Ready:
                     // 쓸 수 있는 팀원만 장비 구분을 말한다. 못 쓰는 줄에 장비 이야기를 얹으면
-                    // 왜 못 쓰는지가 묻힌다.
-                    return row.HandEdited
-                        ? StmProfileRosterClient.EquipmentHandEdited
-                        : StmProfileRosterClient.EquipmentTemporary;
+                    // 왜 못 쓰는지가 묻힌다. 판정은 서버가 한다 - 여기서 다시 하지 않는다.
+                    if (string.Equals(row.GearKind, StmProfileRosterClient.GearKindReal, StringComparison.Ordinal))
+                        return StmProfileRosterClient.EquipmentReal;
+                    if (string.Equals(row.GearKind, StmProfileRosterClient.GearKindTemporary, StringComparison.Ordinal))
+                        return StmProfileRosterClient.EquipmentTemporary;
+                    return StmProfileRosterClient.EquipmentUndecided;
                 case RosterRowStatus.Empty:
                     return StmProfileRosterClient.ReasonEmpty;
                 case RosterRowStatus.Missing:

@@ -6,19 +6,27 @@ namespace pitTeam.Shared
 {
     public enum ProfileAvailability { Ready, Empty, Unreadable, CurrentSession }
 
-    // Plain-data boundary: the server fills it from SaveServer so this file never references SPT types.
-    public sealed record ProfileSnapshot(string ProfileId, int Aid, string? Nickname, int? Level, string? Side, bool ReadFailed);
+    // 장비 판정에 들어가는 두 사실만 담는 중립 그릇. SpawnGearPolicy.GearFacts 를 그대로 쓰지 않는 이유는
+    // 그 파일이 net472(클라이언트)에 없는 IReadOnlySet 을 쓰기 때문이다 - 명단 줄은 세 프로젝트가 모두
+    // 컴파일하므로 가장 낮은 쪽에 맞춘다. 판정은 여전히 SpawnGearPolicy 한 곳에서만 한다.
+    public sealed record ProfileGear(bool HasAnyEquipment, bool HasWeaponInRequiredSlot);
 
-    public sealed record ProfileCandidate(string ProfileId, int Aid, string Nickname, int Level, string Side, ProfileAvailability Availability);
+    // Plain-data boundary: the server fills it from SaveServer so this file never references SPT types.
+    public sealed record ProfileSnapshot(string ProfileId, int Aid, string? Nickname, int? Level, string? Side, bool ReadFailed, ProfileGear? Gear = null);
+
+    // Gear: 이 프로필이 입고 있는 것으로 SpawnGearPolicy 가 판정할 때 쓰는 두 사실. 읽지 못했으면 null 이다
+    // ("장비가 없다" 와 "모른다" 는 다르다). 판정 자체는 여기서 하지 않는다 - 그것은 SpawnGearPolicy 의 몫이고,
+    // 손으로 고쳤는지(HandEdited)는 등록 정보에만 있어 이 쪽에서 알 수 없다.
+    public sealed record ProfileCandidate(string ProfileId, int Aid, string Nickname, int Level, string Side, ProfileAvailability Availability, ProfileGear? Gear = null);
 
     // Roster-screen view of one REGISTERED profile: Missing = registered but no longer in the catalog.
     public enum RosterRowStatus { Ready, Empty, Unreadable, CurrentSession, Missing }
 
-    // HandEdited: 이 팀원의 장비를 STM 화면에서 손으로 맞춘 적이 있는가(StmProfileMember.HandEdited 와 같은 뜻).
-    // 한 방향이다 - true 가 되면 그 팀원은 레이드마다 만들어지는 임시 장비 대상에서 빠진다. 화면이 그 둘을
-    // 구분해 말하는 데에만 쓴다. 기본값 false: 이 값을 싣지 않는 경로(JoinRegistered)는 "모른다" 가 아니라
-    // "아직 손대지 않았다" 로 읽히는데, 등록 정보를 함께 보는 쪽이 채워 주는 것이 계약이다.
-    public sealed record RegisteredProfileRow(string ProfileId, int Aid, string Nickname, int Level, string Side, RosterRowStatus Status, bool HandEdited = false);
+    // GearKind: 이 팀원이 레이드에 **무엇을 입고** 나가는가 - SpawnGearPolicy.Decide 의 결과를 그대로 담는다
+    // ("Real" / "Temporary"). 비어 있으면 "아직 판정하지 않았다" 다(옛 서버가 안 싣는 경우).
+    // 판정은 서버에서 한 번만 한다: 손으로 고쳤는지는 등록 정보에, 입은 것이 있는지는 프로필에 있어
+    // 둘을 다 보는 자리가 거기뿐이고, 화면이 세 사실을 받아 다시 판정하면 집이 둘이 된다.
+    public sealed record RegisteredProfileRow(string ProfileId, int Aid, string Nickname, int Level, string Side, RosterRowStatus Status, string GearKind = "");
 
     // Decides which launcher profiles may be offered as teammates. Only Ready may join a team;
     // every other availability stays listed so the user can see why it is blocked.
@@ -135,7 +143,9 @@ namespace pitTeam.Shared
             if (s.Level == null || string.IsNullOrWhiteSpace(s.Side))
                 return Blocked(s, id, display, ProfileAvailability.Empty);
 
-            return new ProfileCandidate(id, s.Aid, display, s.Level.Value, s.Side!, ProfileAvailability.Ready);
+            // 막힌 줄에는 장비 사실을 싣지 않는다 - 쓸 수 없는 팀원에게 장비 이야기를 붙이면
+            // 왜 못 쓰는지가 묻힌다(Blocked 가 0·빈 문자열로 가는 것과 같은 이유다).
+            return new ProfileCandidate(id, s.Aid, display, s.Level.Value, s.Side!, ProfileAvailability.Ready, s.Gear);
         }
 
         // Unread values are not backfilled with plausible ones.

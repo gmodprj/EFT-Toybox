@@ -24,6 +24,10 @@ public record StmGearBuildRow
 {
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;
+    // 이 빌드를 이 팀원에게 입히는 데 드는 값. **용병 쪽 화면이 쓰는 PIT 의 값과 다르다** - 이미 입고 있는
+    // 칸은 사지 않으므로 팀원마다 달라진다. -1 은 "값을 매길 수 없다"(상인이 안 파는 물건이 끼어 있다)이고,
+    // 그 빌드는 사지지도 않는다. 0 이상이면 구매 창이 청구할 값과 같은 계산에서 나온 값이다.
+    [JsonPropertyName("price")] public int Price { get; set; } = -1;
     [JsonPropertyName("root")] public string Root { get; set; } = string.Empty;
     [JsonPropertyName("items")] public List<Item>? Items { get; set; }
 }

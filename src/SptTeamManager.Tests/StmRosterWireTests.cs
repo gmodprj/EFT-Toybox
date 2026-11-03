@@ -130,21 +130,21 @@ public class StmRosterWireTests
         Assert.Empty(s.Members);
     }
 
-    // 2026-11-03: 명단 타일이 "임시 장비" 와 "맞춰 둔 장비" 를 가르려면 이 값이 전선을 건너야 한다.
-    // 빠뜨리면 화면은 조용히 전부 "임시 장비" 라고 말한다 - 거짓이 기본값이 되는 쪽이라 테스트로 못 박는다.
+    // 2026-11-03: 명단 타일이 "실물 장비" 와 "임시 장비" 를 가르려면 서버의 판정이 전선을 건너야 한다.
+    // 빠뜨리면 화면은 조용히 "아직 판정하지 않음" 으로 돌아간다. 모른다고 말하는 쪽이 거짓말보다는 낫지만, 그래도 못 박는다.
     [Fact]
-    public void handEdited_가_true_면_그대로_읽는다()
+    public void gear_가_오면_그대로_읽는다()
     {
-        string row = $"{{\"profileId\":\"p1\",\"aid\":5,\"nickname\":\"N\",\"level\":3,\"side\":\"Usec\",\"status\":\"Ready\",\"handEdited\":true}}";
+        string row = $"{{\"profileId\":\"p1\",\"aid\":5,\"nickname\":\"N\",\"level\":3,\"side\":\"Usec\",\"status\":\"Ready\",\"gear\":\"Real\"}}";
         var s = StmRosterWire.Interpret(Env($"[{row}]"), Own);
         Assert.True(s.Ok);
-        Assert.True(Assert.Single(s.Members).HandEdited);
+        Assert.Equal("Real", Assert.Single(s.Members).GearKind);
     }
 
     [Fact]
-    public void handEdited_가_없거나_false_면_false_다()
+    public void gear_가_없으면_빈_문자열이다()
     {
         var s = StmRosterWire.Interpret(Env($"[{Row("p1", 5, "Ready")}]"), Own);
-        Assert.False(Assert.Single(s.Members).HandEdited);
+        Assert.Equal(string.Empty, Assert.Single(s.Members).GearKind);
     }
 }

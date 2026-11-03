@@ -355,7 +355,7 @@ public class StmSpawnProfileFactory(
     // Reads which equipment slots the profile has something in, and nothing more - the judgment is
     // the policy's. Read-only: never assigns Inventory.Equipment, unlike PIT's GetEquipmentRootId,
     // because the profile passed in may be the live object.
-    private static List<string> ReadOccupiedEquipmentSlots(BotBase? profile)
+    internal static List<string> ReadOccupiedEquipmentSlots(BotBase? profile)
     {
         var occupied = new List<string>();
         var items = profile?.Inventory?.Items;
