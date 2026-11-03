@@ -4710,3 +4710,32 @@ if (!Examined && !list.Contains(button)) return false;   // ← 여기
 
 **설치.** 바뀐 것은 클라이언트 DLL 하나뿐이라(서버 DLL 은 `fd71138f` 그대로) 그 파일만 덮었다:
 설치본 md5 `d12aa418` = 빌드 산출물. 서버는 켜진 채 두었다 - 서버 쪽은 바뀌지 않았다.
+
+### 스태시 칸의 메뉴가 짧았던 이유 — 아이템 문맥의 **종류** (2026-11-03)
+
+Task A 뒤 인게임: **리그·가방에서는 메뉴가 길어졌는데**(`탄약 꺼내기` 등) **스태시 칸에서는 그대로 넷**
+이었다. 탄박스를 리그로 옮기면 메뉴가 생긴다는 사용자 관찰이 결정적이었다 - 같은 아이템, 다른 자리.
+
+역컴파일로 갈라지는 자리를 찾았다. EFT 의 진짜 인벤토리 화면(`InventoryScreenController`)은 아이템 문맥으로
+**`new InventorySelectableItemContext(EItemViewType.Inventory)`** 를 쓰는데, PIT 의 편집기 스태시 패널은
+`AreaStashItemContext`(하이드아웃 구역 스태시용)를 넘긴다. 그리고 메뉴 판정이 **문맥의 종류를 직접 본다**:
+
+```csharp
+case EItemInfoButton.ApplyMagPreset:
+case EItemInfoButton.LoadAmmo:
+    if (!Gameplay && _itemContext is InventorySelectableItemContext) { ... }
+    return false;
+```
+
+- `TryBuildLoadoutEditorStashPanel` 에 **문맥 override** 인자를 더했다(기본값 null = PIT 가 쓰던 그대로).
+  PIT 용병 편집기는 건드리지 않는다 - 업스트림 파일의 동작을 바꾸지 않는다(불변식 4).
+- STM 편집기만 `InventorySelectableItemContext(EItemViewType.Inventory)` 를 준다.
+
+**같은 날 사용자가 본 나머지 넷의 상태.**
+- 탄창 분리·결합·탄 제거: **된다**(묶음 통째 이동이라 지금 저장 경로로 저장된다).
+- 800발 묶음에서 탄창 채우기: **안 된다**(묶음 나누기 - Task B).
+- **탄박스를 가방으로 옮겨 탄 추출 → `편집 중 사라진 아이템 …`**: 추출이 상자를 **없앤다**. 사라지는 id 를
+  적을 수 없는 것도 Task B 다.
+- `SpecialSlot1` 여전히 막힘: **고침이 서버에 설치되지 않았다.** `IsStructuralSlot` 변경은 서버 DLL 인데
+  그 뒤로 서버를 다시 설치하지 않았다(설치본 `fd71138f`, 산출물 `40c2420e`). 다음 설치에 함께 올라간다.
+- 보안 컨테이너: Task C(아직).
