@@ -185,7 +185,7 @@ public class StmGearKitPurchaseService(
                 target.ParentId = stashRootId;
                 target.SlotId = StashGridName;
                 target.Location = null;
-                if (!gearEdits.TryPlaceInStash(teammateDraft, target, stashRootId!, StashGridName, out var placeFailure))
+                if (!gearEdits.TryPlaceInContainer(teammateDraft, target, stashRootId!, StashGridName, out var placeFailure))
                 {
                     logger.Info($"[STM] 꾸러미 구매 거부: 헌 장비를 스태시에 둘 자리가 없다({slot.SlotId}). {placeFailure}");
                     refusalReason = "이 팀원의 스태시에 빈 자리가 없어 헌 장비를 둘 수 없습니다. 스태시를 정리한 뒤 다시 하세요.";
