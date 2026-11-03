@@ -192,7 +192,7 @@ namespace pitTeam.Shared
                 // 이고 EFT 가 그 프로필의 적재를 거부할 수 있다. 주머니 **안의 짐**은 걸리지 않는다
                 // (그 아이템들의 슬롯은 pocket1 등이다).
                 var source = FindItem(items, itemId);
-                if (WornGearLossPolicy.IsNeverRemovedSlot(source?.SlotId))
+                if (IsStructuralSlot(source?.SlotId))
                 {
                     return Reject($"'{source!.SlotId!.Trim()}' 은(는) 프로필에서 떼어낼 수 없는 자리라서 옮기지 않습니다.");
                 }
@@ -582,6 +582,14 @@ namespace pitTeam.Shared
 
             return null;
         }
+
+        // 편집으로 **떼어낼 수 없는 자리**인가. 출처는 사망 판정(WornGearLossPolicy)의 집합이고,
+        // 거기서 **특수 슬롯만 뺀다**: 사망이 가져가지 않는 것과 "손으로도 못 건드린다" 는 같은 판단이
+        // 아니다 - 플레이어는 자기 특수 슬롯의 열쇠고리·나침반을 넣고 뺀다(2026-11-03 사용자 지시:
+        // 플레이어 화면에서 되는 것은 팀원 화면에서도 돼야 한다). 주머니·보안 컨테이너·완장·칼집·
+        // 인식표를 떼는 것은 플레이어 화면에서도 안 되므로 그대로 막는다.
+        public static bool IsStructuralSlot(string? slotId)
+            => WornGearLossPolicy.IsNeverRemovedSlot(slotId) && !WornGearLossPolicy.IsSpecialSlot(slotId);
 
         // 이 자리가 용기의 **격자**인가. 서비스는 이 값으로 "SPT 에게 빈 자리를 찾게 할 것인가" 를
         // 가른다. 슬롯이면 false 이고, 그때는 좌표 없이 슬롯 이름만 쓴다.

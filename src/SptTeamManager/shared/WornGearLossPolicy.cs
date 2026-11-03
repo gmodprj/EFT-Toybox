@@ -66,6 +66,15 @@ namespace pitTeam.Shared
 
         internal static IReadOnlySet<string> NeverRemovedSlotNames => NeverRemovedSlots;
 
+        // 특수 슬롯(열쇠고리·나침반 등을 담는 자리)인가. 사망은 이것을 가져가지 않지만 **플레이어는
+        // 자기 특수 슬롯의 물건을 손으로 넣고 뺀다** - 그래서 편집 금지 판정만 이 조각을 빼고 본다
+        // (ProfileGearEditPolicy.IsStructuralSlot). 조각 이름의 집은 여기 하나다.
+        internal static bool IsSpecialSlot(string? slotId)
+        {
+            if (string.IsNullOrWhiteSpace(slotId)) return false;
+            return slotId!.Trim().IndexOf("SpecialSlot", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
         // 이 슬롯에 있는 아이템은 어떤 편집으로도 프로필에서 떼어낼 수 없다. 이름 집합과 영구 조각
         // (Dogtag·SpecialSlot) 둘 다 본다. 슬롯 이름을 모르면 false 다 - 이 함수는 "지우지 말라" 를
         // 답하는 자리가 아니라 "떼어낼 수 없다" 를 답하는 자리이고, 모르는 이름의 닫힌 쪽 처리는
