@@ -68,6 +68,7 @@ namespace pitTeam.Patches
         private const string StmEditorStashFailedToast = "이 팀원의 스태시를 읽지 못했습니다";
         private const string StmEditorSaveFailedToast = "장비를 저장하지 못했습니다";
         private const string StmEditorNoChangeToast = "바뀐 것이 없어 저장하지 않았습니다.";
+        private const string StmEditorSkippedFormat = "이 팀원의 아이템 {0}개를 편집기가 읽지 못해 보이지 않습니다. 저장해도 그 아이템은 건드리지 않습니다.";
         private const string StmEditorSavedToastFormat = "장비를 저장했습니다({0}건).";
         private const string StmEditorLayoutNoteFormat = " 칸 위치만 바꾼 {0}개는 저장되지 않습니다.";
         private const string StmEditorSavedButCleanupFailedToast = "장비는 저장되었습니다. 편집기를 정리하다 오류가 났으니 팀원 화면을 다시 열어 확인하세요.";
@@ -76,6 +77,11 @@ namespace pitTeam.Patches
         private const string StmEditorStashMismatchToast = "편집기의 스태시가 이 팀원의 것임을 확인하지 못해 편집기를 열지 않았습니다";
 
         // 편집기를 여는 중(스태시 요청)과 저장 중. 둘 다 한 번에 하나만 - 중복 요청이 같은 편집을 두 번 보내지 않게 한다.
+        // 편집기가 **읽지 못해 싣지 못한** 그 팀원 아이템의 수. EFT 가 역직렬화를 거부한 항목(과 그 자식)은
+        // 건너뛰고 열리는데, 그러면 화면에 없는 아이템이 생긴다. 저장은 그것들을 건드리지 않지만
+        // (서버가 loadedItemIds 밖의 손실을 거절한다) **플레이어는 그 사실을 알아야 한다**.
+        private static int StmGearEditSkippedCount;
+
         private static bool StmGearEditOpening;
         private static bool StmGearEditSaving;
         // 저장 버튼 곁에 서버의 거절 사유를 남겨 두는 줄. 토스트는 금방 사라지므로 읽을 시간이 필요한 사유는 여기에도 둔다.
@@ -593,6 +599,11 @@ namespace pitTeam.Patches
             try
             {
                 CaptureLoadoutEditorInitialState(editorProfile);
+                if (StmGearEditSkippedCount > 0)
+                {
+                    // 저장은 이것들을 건드리지 않는다(서버가 거절한다). 보이지 않는다는 사실만 말한다.
+                    SetStmGearEditStatus(string.Format(StmEditorSkippedFormat, StmGearEditSkippedCount));
+                }
             }
             catch (Exception ex)
             {
@@ -618,6 +629,7 @@ namespace pitTeam.Patches
 
             try
             {
+                StmGearEditSkippedCount = 0;
                 if (!TryBuildStmEditorStash(stash, out EFT.InventoryLogic.Stash teammateStash, out string stashFailure))
                 {
                     pitFireTeam.Log.LogWarning($"[STM] Teammate stash could not be built for the gear editor: {stashFailure}");
@@ -708,6 +720,11 @@ namespace pitTeam.Patches
                 }
 
                 items = SkipEftRejectedStashItems(items, errorTexts, rootId, out List<string> skippedIds);
+                StmGearEditSkippedCount += skippedIds?.Count ?? 0;
+                if (skippedIds != null && skippedIds.Count > 0)
+                {
+                    pitFireTeam.Log.LogWarning($"[STM] The gear editor could not load {skippedIds.Count} teammate stash item(s): {string.Join(", ", skippedIds)}");
+                }
                 tree = Singleton<EFT.ItemFactory>.Instance.FlatItemsToTree(items, false, null);
                 if (tree.DeserializationErrors != null && tree.DeserializationErrors.Count > 0)
                 {
