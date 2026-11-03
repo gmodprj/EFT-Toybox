@@ -618,16 +618,7 @@ public class StmGearEditService(
                 foreach (var slot in found.Value.Properties?.Slots ?? [])
                 {
                     if (slot?.Name == null) continue;
-                    var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var filter in slot.Properties?.Filters ?? [])
-                    {
-                        foreach (var tpl in filter?.Filter ?? [])
-                        {
-                            if (!tpl.IsEmpty) allowed.Add(tpl.ToString());
-                        }
-                    }
-
-                    definitions.Add(new GearSlotDefinition(slot.Name, allowed));
+                    definitions.Add(new GearSlotDefinition(slot.Name, AllowedTemplatesOf(slot)));
                 }
 
                 // 탄을 담는 자리는 **Slots 에 없다**(2026-11-03 실측: 바닐라 탄창
@@ -635,26 +626,27 @@ public class StmGearEditService(
                 // 하나를 둔다). 약실(patron_in_weapon)도 같은 이유로 Chambers 에 있다. 이 둘을 읽지
                 // 않으면 탄은 **어떤 탄창에도** 넣을 수 없다 - 인계 문서 열린 항목 4 가 그 결함이었다.
                 // 격자 좌표가 아니라 색인으로 담으므로 용량(_max_count)을 함께 싣는다.
-                foreach (var ammoSlot in Enumerable.Concat(
-                    found.Value.Properties?.Cartridges ?? [],
-                    found.Value.Properties?.Chambers ?? []))
+                // 탄창: 용량이 Cartridges 항목의 _max_count 에 있다(STANAG 30발 = 30, GP-5 = 33).
+                // 읽지 못하면 0 으로 싣는다 - 정책이 0 을 "몇 발인지 모른다" 로 읽어 거부한다. 자리를
+                // 빼 버리면 "그런 슬롯이 없다" 로 거부돼 사유가 사실과 달라진다.
+                foreach (var magazineSlot in found.Value.Properties?.Cartridges ?? [])
                 {
-                    if (ammoSlot?.Name == null) continue;
-                    var allowedAmmo = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var filter in ammoSlot.Properties?.Filters ?? [])
-                    {
-                        foreach (var tpl in filter?.Filter ?? [])
-                        {
-                            if (!tpl.IsEmpty) allowedAmmo.Add(tpl.ToString());
-                        }
-                    }
-
-                    // 용량을 읽지 못하면 0 으로 싣는다. 정책이 0 을 "몇 발인지 모른다" 로 읽어 거부한다 -
-                    // 자리를 빼 버리면 "그런 슬롯이 없다" 로 거부돼 사유가 사실과 달라진다.
+                    if (magazineSlot?.Name == null) continue;
                     definitions.Add(new GearSlotDefinition(
-                        ammoSlot.Name,
-                        allowedAmmo,
-                        (int?)ammoSlot.MaxCount ?? 0));
+                        magazineSlot.Name,
+                        AllowedTemplatesOf(magazineSlot),
+                        (int?)magazineSlot.MaxCount ?? 0));
+                }
+
+                // 약실: Chambers 항목에는 **개수 필드가 아예 없다**(2026-11-03 실측: M4A1 의
+                // patron_in_weapon 은 filters 하나만 들고 있다). 그래서 1 로 싣는다 - 이름에서 뜻을
+                // 지어낸 것이 아니라 (ㄱ) 데이터베이스가 개수를 말하지 않고 (ㄴ) 이 PC 의 프로필 여섯 개에
+                // 있는 약실 아이템 15개가 전부 수량 1 이고 (ㄷ) 1 이 닫힌 쪽이기 때문이다. 더 큰 더미를
+                // 약실에 넣으려는 편집은 이 값 때문에 거부된다.
+                foreach (var chamberSlot in found.Value.Properties?.Chambers ?? [])
+                {
+                    if (chamberSlot?.Name == null) continue;
+                    definitions.Add(new GearSlotDefinition(chamberSlot.Name, AllowedTemplatesOf(chamberSlot), 1));
                 }
 
                 slotsByTemplateId[templateId] = definitions;
@@ -672,6 +664,22 @@ public class StmGearEditService(
         }
 
         return new GearSlotFacts(templateIdByItemId, slotsByTemplateId, parentByTemplateId, stackCountByItemId);
+    }
+
+    // 자리 하나가 받는 템플릿 집합. Slots·Cartridges·Chambers 가 같은 모양(Props.Filters[].Filter)이다.
+    // 비어 있으면 "제한 없음" 이 아니라 "모름" 이고, 정책이 그것을 거부로 읽는다.
+    private static HashSet<string> AllowedTemplatesOf(Slot slot)
+    {
+        var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var filter in slot.Properties?.Filters ?? [])
+        {
+            foreach (var tpl in filter?.Filter ?? [])
+            {
+                if (!tpl.IsEmpty) allowed.Add(tpl.ToString());
+            }
+        }
+
+        return allowed;
     }
 
     // tpl → `_parent` 사슬을 위로 모은다. 이미 들어 있는 고리를 만나면 멈춘다(두 번 걷지 않는다).
