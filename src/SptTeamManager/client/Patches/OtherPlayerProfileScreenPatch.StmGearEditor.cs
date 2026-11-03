@@ -73,6 +73,8 @@ namespace pitTeam.Patches
         // 사라지는 경우처럼, 플레이어가 의도하지 않은 소실이 조용히 저장되는 것을 막는다
         // (2026-11-03: 탄박스 10종과 그 탄이 그렇게 사라졌다).
         private const string StmEditorLossWarningFormat = "저장하면 아이템 {0}개가 사라집니다. 저장을 한 번 더 누르면 그대로 저장합니다.";
+        private const string StmEditorAmmoBoxOpenedToast = "탄을 이 팀원의 스태시로 꺼냈습니다. 빈 상자는 남습니다.";
+        private const string StmEditorAmmoBoxNoRoomToast = "탄을 놓을 스태시 자리가 없어 상자를 열지 않았습니다.";
         private const string StmEditorSavedToastFormat = "장비를 저장했습니다({0}건).";
         private const string StmEditorLayoutNoteFormat = " 칸 위치만 바꾼 {0}개는 저장되지 않습니다.";
         private const string StmEditorSavedButCleanupFailedToast = "장비는 저장되었습니다. 편집기를 정리하다 오류가 났으니 팀원 화면을 다시 열어 확인하세요.";
@@ -1002,6 +1004,61 @@ namespace pitTeam.Patches
             }
 
             return changed;
+        }
+
+        // 탄박스 열기를 편집기가 직접 처리한다(StmEditorAmmoBoxUnloadPatch 가 부른다).
+        // true 를 돌려주면 EFT 의 원래 처리를 건너뛴다 - 그 처리는 빈 상자를 버리면서 이 편집기에서
+        // 탄까지 잃는다(2026-11-03 실측). 편집기가 아니거나 탄박스가 아니면 false 로 EFT 에 맡긴다.
+        internal static bool TryStmEditorUnloadAmmoBox(ItemContext itemContext, out Task handled)
+        {
+            handled = null;
+            InventoryController controller = LoadoutEditorInventoryController;
+            EFT.InventoryLogic.Stash stash = LoadoutEditorProfile?.Inventory?.Stash;
+            if (controller == null || stash == null) return false;
+            if (!(itemContext?.Item is AmmoBox box)) return false;
+
+            handled = StmUnloadAmmoBoxAsync(box, controller, stash);
+            return true;
+        }
+
+        // 탄을 한 더미씩 그 팀원 스태시로 옮긴다. 자리를 못 찾거나 적용이 실패하면 **거기서 멈춘다** -
+        // 이미 옮긴 것은 그대로 두고(그것도 그 팀원의 것이다), 상자는 버리지 않는다. 아이템이 조용히
+        // 사라지는 길을 만들지 않는 것이 이 함수의 전부다.
+        private static async Task StmUnloadAmmoBoxAsync(AmmoBox box, InventoryController controller, EFT.InventoryLogic.Stash stash)
+        {
+            int moved = 0;
+            try
+            {
+                CompoundItem[] targets = new CompoundItem[] { stash };
+                while (box.Cartridges?.Last is Ammo ammo)
+                {
+                    var placement = ItemManipulator.QuickFindAppropriatePlace(
+                        ammo, controller, targets, ItemManipulator.EMoveItemOrder.UnloadAmmo, simulate: true);
+                    if (placement.Failed)
+                    {
+                        AddTeammateCreationFlow.ShowToast(StmEditorAmmoBoxNoRoomToast);
+                        return;
+                    }
+
+                    var result = await controller.TryRunNetworkTransaction(placement);
+                    if (result.Failed)
+                    {
+                        pitFireTeam.Log.LogWarning($"[STM] Unloading an ammo box stopped after {moved} stack(s): {result.Error}");
+                        AddTeammateCreationFlow.ShowToast(StmEditorAmmoBoxNoRoomToast);
+                        return;
+                    }
+
+                    moved++;
+                }
+
+                if (moved > 0) AddTeammateCreationFlow.ShowToast(StmEditorAmmoBoxOpenedToast);
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] Unloading an ammo box in the gear editor threw.");
+                pitFireTeam.Log.LogError(ex);
+                AddTeammateCreationFlow.ShowToast(StmEditorAmmoBoxNoRoomToast);
+            }
         }
 
         // 편집기가 들고 있던 아이템 id 들(열릴 때의 상태 그대로).
