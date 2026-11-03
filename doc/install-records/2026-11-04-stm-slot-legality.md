@@ -1,0 +1,54 @@
+# STM 설치 기록 — 자리 적법성 검사 (2026-11-04)
+
+develop `af80389` 의 산출물을 설치했다. 열린 항목 10(최종 상태 저장이 자리의 적법성을 본다)이 들어간
+첫 설치본이다. 절차는 [PROCEDURE](../PROCEDURE.md), 코드 쪽 기록은 [WORKLOG](../WORKLOG.md) 의
+2026-11-04 두 항목.
+
+## 무엇이 설치됐나
+
+| | 전 | 후 | 크기 |
+|---|---|---|---|
+| 서버 `SptTeamManager.Server.dll` | `FD384B51` | **`A59BFE8B`** | 976,896 → 980,992 bytes |
+| 클라이언트 `SptTeamManager.dll` | `1F8E0CCE` | **`A71A7BFF`** | 3,333,120 (같다) |
+
+설치본의 두 DLL 은 빌드 산출물과 md5 가 **같다**(설치 직후 대조). 그 밖의 38개 파일(에셋·lang·
+avatars·팀원 DB·settings.json)은 제거 전 스냅샷과 md5 가 **한 줄도 다르지 않다**.
+
+## 클라이언트 md5 가 바뀐 이유 — 코드 변경이 아니다
+
+이 변경은 **서버·shared·테스트만** 건드렸다. 클라이언트가 바뀐 것처럼 보이는 것은 **같은 소스의
+재빌드**다(비결정적 빌드라 MVID 가 달라지고 md5 가 바뀐다). 근거 셋:
+
+- `git diff 91f99d3 HEAD -- src/SptTeamManager/client/` 가 **빈 출력**이다 - 클라이언트 소스는 한 글자도
+  안 바뀌었다.
+- 바뀐 shared 파일 둘(`ProfileGearEditPolicy`·`ProfileInventoryApplyPolicy`)을 **클라이언트 csproj 가
+  링크하지 않는다**(둘 다 grep 0건).
+- 크기가 바이트까지 같다.
+
+왜 다시 빌드됐나: 이 세션에서 클라이언트 빌드를 시도했고(애드온의 `MSB3644` 로 실패했지만) 그 전에
+클라이언트 프로젝트 자체는 컴파일돼 산출물을 덮었다.
+
+> **md5 는 "어느 코드인가" 를 가리는 도구이지 그 자체가 코드 신원이 아니다.** 같은 소스를 다시 빌드하면
+> 달라진다(이 세션에서 서버가 같은 소스로 `1FAE8FAA` → `BB51CE0B` → `A59BFE8B` 로 세 번 달라졌다).
+> 그래서 기록할 md5 는 **설치한 바로 그 파일**의 것이어야 하고, 두 값이 다를 때는 먼저
+> `git diff` 로 소스를 물어야 한다.
+
+## 절차와 확인
+
+1. 게임·서버 프로세스 없음 확인(`EscapeFromTarkov`·`SPT.Server`·`SPT.Launcher` 0건).
+2. 설치본 40개 파일의 md5·크기 스냅샷을 떴고, 설치본 전체를 복사해 되돌릴 지점을 만들었다.
+3. `pwsh -File tools/install-sptteammanager.ps1 -Remove` → 설치 스크립트가 넣은 것만 지워졌다.
+   **남은 것**: `Resources/settings.json`, `Resources/stm-teammates/*.db` 6개,
+   `Resources/stm-teammates-allegiance/*.db` 6개 (팀원 DB 12개 그대로).
+4. `pwsh -File tools/install-sptteammanager.ps1` → 40개 파일 설치.
+5. 위 표의 대조. 게임·서버는 **다시 켜지 않았다** - 이 설치본은 아직 한 번도 돌지 않았다.
+
+## 이 설치본으로 처음 돌아 볼 것
+
+- **자리 적법성 검사**(이번 변경). 거절 넷: 종류 필터·격자 `ExcludedFilter`·탄 자리 용량 합·슬롯 점유.
+  정상 조작이 거절되면 그것이 결함이다 - 사유 문장이 로그와 화면에 같이 간다.
+- **탄박스 열기.** `StackSlots` 를 읽게 된 첫 설치본이고, 2026-11-03 에 프로필 둘이 탄을 잃은 그 자리다.
+  클라이언트 로그의 `[Warning:SPT Team Manager]` 줄 수를 전후로 세어라(그 전에는 0건이었다).
+- 계획 5 Task E(인게임 관문 한 바퀴)의 나머지.
+
+**프로필 백업을 먼저 떠라.** 이 설치본은 프로필에 쓰는 경로를 바꿨다.
