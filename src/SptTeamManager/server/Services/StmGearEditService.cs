@@ -50,6 +50,7 @@ public class StmGearEditService(
     ICloner cloner,
     ItemHelper itemHelper,
     InventoryHelper inventoryHelper,
+    StmGearSlotFactsBuilder slotFactsBuilder,
     JsonUtil jsonUtil,
     FileUtil fileUtil,
     ISptLogger<StmGearEditService> logger)
@@ -174,11 +175,11 @@ public class StmGearEditService(
     // 계약 2 의 보존 검사를 만들게 한 그 구멍이다. 각 건은 자기 혼자 Validate 를 통과해야 하고, 하나라도
     // 거절되면 전체를 거절하며 **아무것도 쓰지 않는다**(ProfileGearEditPolicy.ValidateBatch).
     // **2026-11-03 이후 아무도 부르지 않는다.** 저장은 최종 상태 제출(StmInventoryApplyService)로 바뀌었고
-    // 이 경로의 라우트·콜백·와이어 모델은 지웠다. 메서드와 그 아래 헬퍼들(슬롯 어휘·격자 배치·디스크
-    // 재독)은 **아직 남겨 둔다**: 격자 배치는 꾸러미 구매가 쓰고(TryPlaceInContainer), 슬롯 어휘는 최종
-    // 상태의 **슬롯 적법성**을 서버가 보게 될 때 그대로 쓸 자리다(인계 문서의 열린 항목). 그때까지는
-    // 죽은 코드이므로, 다시 살릴 생각이 없다면 이 메서드와 BuildSlotFacts·VerifyFromDisk·TryRestore 를
-    // 함께 지워야 한다 - 하나만 지우면 컴파일은 되고 의미가 비어 버린다.
+    // 이 경로의 라우트·콜백·와이어 모델은 지웠다. 그래도 남겨 둔 이유는 둘이다: 격자 배치
+    // (TryPlaceInContainer)는 꾸러미 구매가 쓰고, 순서 규칙(ValidateBatch)이 다시 필요해질 수 있다.
+    // **슬롯 어휘는 더 이상 여기 살지 않는다** - 2026-11-03 저녁에 StmGearSlotFactsBuilder 로 옮겨
+    // 최종 상태 경로의 자리 검사와 집을 하나로 합쳤다(열린 항목 10 을 닫으면서). 이 메서드를 지울
+    // 생각이면 VerifyFromDisk·TryRestore 를 함께 지워라 - 하나만 지우면 컴파일은 되고 의미가 비어 버린다.
     public bool TryApply(MongoId sessionId, string? accountId, IReadOnlyList<GearEditRequest>? requests, out string? rejectionReason)
     {
         rejectionReason = null;
@@ -267,7 +268,7 @@ public class StmGearEditService(
 
             // 5. 판정 **전부 먼저**. 하나라도 거절되면 아무것도 쓰지 않는다. 순서대로 누적해 보므로
             //    "탄창을 총에 꽂고 그 탄창에 탄을 넣는" 연쇄가 통과한다(인계 문서 열린 항목 4).
-            var slotFacts = BuildSlotFacts(edited);
+            var slotFacts = slotFactsBuilder.Build(edited);
             var verdict = ProfileGearEditPolicy.ValidateBatch(
                 requests, ToWornGearItems(edited), stashRootId, equipmentRootId, slotFacts);
             if (!verdict.Allowed)
@@ -612,149 +613,6 @@ public class StmGearEditService(
         {
             failure = $"스태시 자리 찾기가 실패했다: {ex.Message}";
             return false;
-        }
-    }
-
-    // 아이템 데이터베이스의 사실을 정책이 쓰는 모양으로 옮긴다. 데이터베이스는 서버에서 닿는다 -
-    // ItemHelper.GetItem(tpl) 이 (찾았나, 템플릿) 을 주고, 템플릿의 Properties.Slots 가 그 아이템이
-    // **정의한** 슬롯과 각 슬롯의 필터(Props.Filters[].Filter = 허용 템플릿 id 집합)를 들고 있다.
-    // 하나라도 읽히지 않으면 그 항목을 넣지 않는다 - 정책이 "모름" 을 거부로 읽으므로 빈 칸이 곧 거부다.
-    // 던지지 않는다: 데이터베이스 읽기가 터지면 빈 사실을 돌려 정책이 전부 거부하게 한다(닫힌 쪽).
-    private GearSlotFacts BuildSlotFacts(IEnumerable<Item> items)
-    {
-        var templateIdByItemId = new Dictionary<string, string>(StringComparer.Ordinal);
-        var slotsByTemplateId = new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal);
-        var parentByTemplateId = new Dictionary<string, string>(StringComparer.Ordinal);
-        // 더미 수량. 탄을 담는 자리의 용량 검사에만 쓰인다(PIT 의 GetItemStackCount 와 같은 식이다).
-        var stackCountByItemId = new Dictionary<string, int>(StringComparer.Ordinal);
-        // 용기의 칸(가방·리그·주머니·보안 컨테이너). 슬롯과 같은 길로 싣는다 - 둘 다 그 템플릿이 정의한다.
-        var gridsByTemplateId = new Dictionary<string, IReadOnlyList<GearGridDefinition>>(StringComparer.Ordinal);
-        try
-        {
-            foreach (var item in items)
-            {
-                if (item?.Id == null || item.Template.IsEmpty) continue;
-                var itemId = item.Id.ToString();
-                var templateId = item.Template.ToString();
-                templateIdByItemId[itemId] = templateId;
-                stackCountByItemId[itemId] = Math.Max(1, (int)Math.Ceiling(item.Upd?.StackObjectsCount ?? 1d));
-                // 조상 사슬. 슬롯 필터가 아이템 tpl 대신 **범주 노드**를 담기 때문에 필요하다
-                // (ProfileGearEditPolicy.FilterAccepts 의 실측 주석). 노드도 items.json 의 항목이라
-                // 같은 GetItem 으로 읽힌다. 32칸으로 끊는다 - 손상된 사슬에서 돌지 않게.
-                CollectTemplateAncestry(item.Template, parentByTemplateId);
-                if (slotsByTemplateId.ContainsKey(templateId)) continue;
-
-                var found = itemHelper.GetItem(item.Template);
-                if (!found.Key || found.Value == null) continue;
-
-                var definitions = new List<GearSlotDefinition>();
-                foreach (var slot in found.Value.Properties?.Slots ?? [])
-                {
-                    if (slot?.Name == null) continue;
-                    definitions.Add(new GearSlotDefinition(slot.Name, AllowedTemplatesOf(slot)));
-                }
-
-                // 탄을 담는 자리는 **Slots 에 없다**(2026-11-03 실측: 바닐라 탄창
-                // mag_stanag_colt_ar15_std_556x45_30 은 Slots 가 비어 있고 Cartridges 에 'cartridges'
-                // 하나를 둔다). 약실(patron_in_weapon)도 같은 이유로 Chambers 에 있다. 이 둘을 읽지
-                // 않으면 탄은 **어떤 탄창에도** 넣을 수 없다 - 인계 문서 열린 항목 4 가 그 결함이었다.
-                // 격자 좌표가 아니라 색인으로 담으므로 용량(_max_count)을 함께 싣는다.
-                // 탄창: 용량이 Cartridges 항목의 _max_count 에 있다(STANAG 30발 = 30, GP-5 = 33).
-                // 읽지 못하면 0 으로 싣는다 - 정책이 0 을 "몇 발인지 모른다" 로 읽어 거부한다. 자리를
-                // 빼 버리면 "그런 슬롯이 없다" 로 거부돼 사유가 사실과 달라진다.
-                foreach (var magazineSlot in found.Value.Properties?.Cartridges ?? [])
-                {
-                    if (magazineSlot?.Name == null) continue;
-                    definitions.Add(new GearSlotDefinition(
-                        magazineSlot.Name,
-                        AllowedTemplatesOf(magazineSlot),
-                        (int?)magazineSlot.MaxCount ?? 0));
-                }
-
-                // 약실: Chambers 항목에는 **개수 필드가 아예 없다**(2026-11-03 실측: M4A1 의
-                // patron_in_weapon 은 filters 하나만 들고 있다). 그래서 1 로 싣는다 - 이름에서 뜻을
-                // 지어낸 것이 아니라 (ㄱ) 데이터베이스가 개수를 말하지 않고 (ㄴ) 이 PC 의 프로필 여섯 개에
-                // 있는 약실 아이템 15개가 전부 수량 1 이고 (ㄷ) 1 이 닫힌 쪽이기 때문이다. 더 큰 더미를
-                // 약실에 넣으려는 편집은 이 값 때문에 거부된다.
-                foreach (var chamberSlot in found.Value.Properties?.Chambers ?? [])
-                {
-                    if (chamberSlot?.Name == null) continue;
-                    definitions.Add(new GearSlotDefinition(chamberSlot.Name, AllowedTemplatesOf(chamberSlot), 1));
-                }
-
-                // 격자. 허용 쪽은 보통 뿌리 노드 하나이고(조상 사슬로 맞춘다), 제외 쪽이 종류를 걷어낸다
-                // (가방 안의 가방 등). 둘 다 그대로 옮긴다 - 뜻을 지어내지 않는다.
-                var gridDefinitions = new List<GearGridDefinition>();
-                foreach (var grid in found.Value.Properties?.Grids ?? [])
-                {
-                    if (grid?.Name == null) continue;
-                    var allowedInGrid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    var excludedFromGrid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var filter in grid.Properties?.Filters ?? [])
-                    {
-                        foreach (var tpl in filter?.Filter ?? [])
-                        {
-                            if (!tpl.IsEmpty) allowedInGrid.Add(tpl.ToString());
-                        }
-
-                        foreach (var tpl in filter?.ExcludedFilter ?? [])
-                        {
-                            if (!tpl.IsEmpty) excludedFromGrid.Add(tpl.ToString());
-                        }
-                    }
-
-                    gridDefinitions.Add(new GearGridDefinition(grid.Name, allowedInGrid, excludedFromGrid));
-                }
-
-                gridsByTemplateId[templateId] = gridDefinitions;
-                slotsByTemplateId[templateId] = definitions;
-            }
-        }
-        catch (Exception ex)
-        {
-            // 반쯤 채운 사실로 판정하면 어떤 것은 통과하고 어떤 것은 거부되는 설명할 수 없는 결과가 된다.
-            logger.Error($"[STM] 장비 편집: 아이템 데이터베이스를 읽지 못해 넣을 자리 검사를 할 수 없다(전부 거부된다): {ex}");
-            return new GearSlotFacts(
-                new Dictionary<string, string>(StringComparer.Ordinal),
-                new Dictionary<string, IReadOnlyList<GearSlotDefinition>>(StringComparer.Ordinal),
-                new Dictionary<string, string>(StringComparer.Ordinal),
-                new Dictionary<string, int>(StringComparer.Ordinal),
-                new Dictionary<string, IReadOnlyList<GearGridDefinition>>(StringComparer.Ordinal));
-        }
-
-        return new GearSlotFacts(templateIdByItemId, slotsByTemplateId, parentByTemplateId, stackCountByItemId, gridsByTemplateId);
-    }
-
-    // 자리 하나가 받는 템플릿 집합. Slots·Cartridges·Chambers 가 같은 모양(Props.Filters[].Filter)이다.
-    // 비어 있으면 "제한 없음" 이 아니라 "모름" 이고, 정책이 그것을 거부로 읽는다.
-    private static HashSet<string> AllowedTemplatesOf(Slot slot)
-    {
-        var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var filter in slot.Properties?.Filters ?? [])
-        {
-            foreach (var tpl in filter?.Filter ?? [])
-            {
-                if (!tpl.IsEmpty) allowed.Add(tpl.ToString());
-            }
-        }
-
-        return allowed;
-    }
-
-    // tpl → `_parent` 사슬을 위로 모은다. 이미 들어 있는 고리를 만나면 멈춘다(두 번 걷지 않는다).
-    private void CollectTemplateAncestry(MongoId templateId, Dictionary<string, string> parentByTemplateId)
-    {
-        var current = templateId;
-        for (var step = 0; step < 32; step++)
-        {
-            var key = current.ToString();
-            if (parentByTemplateId.ContainsKey(key)) return;
-
-            var found = itemHelper.GetItem(current);
-            if (!found.Key || found.Value == null || found.Value.Parent.IsEmpty) return;
-
-            parentByTemplateId[key] = found.Value.Parent.ToString();
-            current = found.Value.Parent;
         }
     }
 

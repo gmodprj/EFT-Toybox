@@ -600,39 +600,20 @@ namespace pitTeam.Shared
         // 가른다(값이 있으면 색인 0, 없으면 null). 슬롯 이름으로 "cartridges 면 탄 자리" 라고 다시
         // 판정하지 않는 것이 요점이다 - 어휘의 집은 데이터베이스 하나다(불변식 8).
         public static int? SlotAmmoCapacity(string? slot, string? parentId, GearSlotFacts? slotFacts)
-        {
-            if (string.IsNullOrWhiteSpace(slot) || string.IsNullOrWhiteSpace(parentId)) return null;
-            if (slotFacts?.TemplateIdByItemId == null || slotFacts.SlotsByTemplateId == null) return null;
-            if (!slotFacts.TemplateIdByItemId.TryGetValue(parentId!.Trim(), out var parentTemplateId)
-                || string.IsNullOrWhiteSpace(parentTemplateId))
-            {
-                return null;
-            }
-
-            if (!slotFacts.SlotsByTemplateId.TryGetValue(parentTemplateId!, out var slots) || slots == null) return null;
-
-            var wanted = slot!.Trim();
-            foreach (var definition in slots)
-            {
-                if (definition?.Name == null) continue;
-                if (string.Equals(definition.Name, wanted, StringComparison.OrdinalIgnoreCase)) return definition.AmmoCapacity;
-            }
-
-            return null;
-        }
+            => FindSlotDefinition(slotFacts, TemplateOf(slotFacts, parentId), slot)?.AmmoCapacity;
 
         // 이 부모의 이 이름이 격자인가. 아니면 null 이고, 호출자는 슬롯 쪽으로 간다.
         private static GearGridDefinition? FindGrid(GearSlotFacts? facts, string? parentId, string? name)
-        {
-            if (string.IsNullOrWhiteSpace(parentId) || string.IsNullOrWhiteSpace(name)) return null;
-            if (facts?.TemplateIdByItemId == null || facts.GridsByTemplateId == null) return null;
-            if (!facts.TemplateIdByItemId.TryGetValue(parentId!.Trim(), out var parentTemplateId)
-                || string.IsNullOrWhiteSpace(parentTemplateId))
-            {
-                return null;
-            }
+            => FindGridDefinition(facts, TemplateOf(facts, parentId), name);
 
-            if (!facts.GridsByTemplateId.TryGetValue(parentTemplateId!, out var grids) || grids == null) return null;
+        // 아래 셋은 **템플릿 id 로** 같은 어휘를 묻는다. 최종 상태 경로(ProfileInventoryApplyPolicy)는
+        // 아이템 id → 템플릿을 제출된 상태에서 이미 알고 있어서 그 한 단계를 건너뛴다. 어휘를 두 번
+        // 적지 않으려고 여기 둔다(불변식 8: 한 판단에 집은 하나).
+        internal static GearGridDefinition? FindGridDefinition(GearSlotFacts? facts, string? templateId, string? name)
+        {
+            if (string.IsNullOrWhiteSpace(templateId) || string.IsNullOrWhiteSpace(name)) return null;
+            if (facts?.GridsByTemplateId == null) return null;
+            if (!facts.GridsByTemplateId.TryGetValue(templateId!.Trim(), out var grids) || grids == null) return null;
 
             var wanted = name!.Trim();
             foreach (var grid in grids)
@@ -642,6 +623,40 @@ namespace pitTeam.Shared
             }
 
             return null;
+        }
+
+        internal static GearSlotDefinition? FindSlotDefinition(GearSlotFacts? facts, string? templateId, string? name)
+        {
+            if (string.IsNullOrWhiteSpace(templateId) || string.IsNullOrWhiteSpace(name)) return null;
+            if (facts?.SlotsByTemplateId == null) return null;
+            if (!facts.SlotsByTemplateId.TryGetValue(templateId!.Trim(), out var slots) || slots == null) return null;
+
+            var wanted = name!.Trim();
+            foreach (var definition in slots)
+            {
+                if (definition?.Name == null) continue;
+                if (string.Equals(definition.Name, wanted, StringComparison.OrdinalIgnoreCase)) return definition;
+            }
+
+            return null;
+        }
+
+        // 이 템플릿의 **자리 목록을 읽었는가**. BuildSlotFacts 는 템플릿 하나를 읽으면 슬롯과 격자를
+        // 함께 싣는다 - 그래서 둘 다 있는 것이 "읽었다" 의 신호이고, 하나도 없는 것은 "모른다" 다.
+        // 그 구별이 있어야 "그런 자리가 없다" 를 거절의 근거로 쓸 수 있다(읽지 못한 템플릿에는 쓸 수 없다).
+        internal static bool KnowsPlacesOf(GearSlotFacts? facts, string? templateId)
+            => !string.IsNullOrWhiteSpace(templateId)
+               && facts?.SlotsByTemplateId != null && facts.GridsByTemplateId != null
+               && facts.SlotsByTemplateId.ContainsKey(templateId!.Trim())
+               && facts.GridsByTemplateId.ContainsKey(templateId!.Trim());
+
+        private static string? TemplateOf(GearSlotFacts? facts, string? itemId)
+        {
+            if (string.IsNullOrWhiteSpace(itemId) || facts?.TemplateIdByItemId == null) return null;
+            return facts.TemplateIdByItemId.TryGetValue(itemId!.Trim(), out var templateId)
+                   && !string.IsNullOrWhiteSpace(templateId)
+                ? templateId
+                : null;
         }
 
         private static WornGearItem? FindItem(IReadOnlyCollection<WornGearItem> items, string itemId)
@@ -669,7 +684,7 @@ namespace pitTeam.Shared
         // 닫힌 쪽은 그대로다: 필터를 읽지 못했으면(비었으면) 애초에 여기 오지 않고 거부되고, 조상을
         // 끝까지 올라가도 못 만나면 거부다. 조상 사슬을 모르면(맵에 없으면) 그 자리에서 멈춘다 -
         // 없는 조상을 지어내지 않는다. 같은 id 를 두 번 밟지 않으므로 손상된 사슬(고리)도 끝난다.
-        private static bool FilterAccepts(GearSlotFacts facts, IReadOnlyCollection<string> allowedTemplateIds, string itemTemplateId)
+        internal static bool FilterAccepts(GearSlotFacts facts, IReadOnlyCollection<string> allowedTemplateIds, string itemTemplateId)
         {
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var templateId = itemTemplateId;
