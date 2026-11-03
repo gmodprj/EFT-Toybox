@@ -459,15 +459,30 @@ namespace pitTeam.Patches
 
             closeButton.onClick.AddListener(new UnityAction(CloseStmGearEditor));
 
-            CreateOverlayText(
+            // 앵커를 **직접** 준다. `CreateOverlayText` 는 앵커를 (0,0)-(1,1) 전체 늘이기로 고정하고
+            // (LoadoutUi.cs:773-774, PIT 업스트림 파일이라 건드리지 않는다) 그 상태에서 offsetMin.y 는
+            // "패널 **바닥**에서" 를 뜻한다. 여기 쓰던 -62/-98 은 "패널 위에서 아래로" 의 수였으므로
+            // 상자가 패널 거의 전체 높이로 늘어났고, MidlineLeft 가 그 안에서 세로 가운데에 글씨를 놓아
+            // **안내 문구가 격자 한가운데를 가로질러** 그려졌다(2026-11-04 인게임 실측).
+            // 같은 함정이 꾸러미 구매 창에서도 한 번 나왔다(WORKLOG "좌표계에서 한 번 틀렸다").
+            // 바로 아래 상태줄이 이미 같은 방식으로 앵커를 덮어쓴다 - 그 짝을 맞춘다.
+            CustomTextMeshProUGUI subtitle = CreateOverlayText(
                 "pitFireTeam_LoadoutEditorSubtitle",
                 panel.transform,
-                new Vector2(28f, -62f),
-                new Vector2(-28f, -98f),
+                Vector2.zero,
+                Vector2.zero,
                 TextAlignmentOptions.MidlineLeft,
                 StmEditorSubtitle,
                 17f,
                 new Color(0.67f, 0.67f, 0.64f, 1f));
+            if (subtitle.transform is RectTransform subtitleRect)
+            {
+                // 머리글(36px) 아래, 두 칸이 시작하는 -104 위. 40px 띠다.
+                subtitleRect.anchorMin = new Vector2(0f, 1f);
+                subtitleRect.anchorMax = new Vector2(1f, 1f);
+                subtitleRect.offsetMin = new Vector2(28f, -100f);
+                subtitleRect.offsetMax = new Vector2(-28f, -60f);
+            }
 
             RectTransform leftSection = CreateLoadoutEditorSection(
                 panel.transform,
