@@ -51,7 +51,10 @@ namespace pitTeam.Patches
     internal partial class OtherPlayerProfileScreenPatch
     {
         private const string StmGearStashRoute = "/stm/members/gear-stash";
-        private const string StmEditGearRoute = "/stm/members/edit-gear";
+        // 계획 5 Task B. 편집기의 **최종 트리 전체**를 보내는 길. 옛 길(edit-gear)은 "이 아이템을 이
+        // 부모의 이 슬롯으로" 의 목록이라 아이템이 생기고 사라지는 조작(나누기·합치기·탄박스 열기·
+        // 버리기)을 적을 수 없었다. 서버는 조작의 종류를 묻지 않고 보존만 본다.
+        private const string StmApplyInventoryRoute = "/stm/members/apply-inventory";
 
         // ---- 화면 문구 (StmDetail 과 같은 관례: 한 곳에 모은다) ----
         private const string StmEditEntryText = "팀원 장비 편집";
@@ -776,45 +779,41 @@ namespace pitTeam.Patches
                     return new StmSaveVerdict { Kind = StmSaveKind.NotSent, Message = StmEditorSaveFailedToast };
                 }
 
-                // 시작 상태와 끝 상태 -> 건 목록. 판정과 순서는 GearEditBatchPlanner 의 것이다.
+                // 편집기의 **최종 트리 전체**를 보낸다. 조작의 종류를 적지 않으므로 나누기·합치기·
+                // 탄박스 열기·버리기가 그대로 저장되고, 칸 위치도 함께 가므로 "저장되지 않는 변화" 가
+                // 없다. 정당한 변화인지는 서버가 본다(ProfileInventoryApplyPolicy): 늘어나는 것·바깥에서
+                // 들어온 종류·구조 손상·트리 손상을 거절하고, 줄어드는 것(버리기·탄박스 소비)은 허용한다.
                 JsonType.FlatItem[] endEquipment = Singleton<EFT.ItemFactory>.Instance.TreeToFlatItems(new Item[] { LoadoutEditorProfile.Inventory.Equipment });
                 JsonType.FlatItem[] endStash = Singleton<EFT.ItemFactory>.Instance.TreeToFlatItems(new Item[] { LoadoutEditorProfile.Inventory.Stash });
-                GearEditPlan plan = GearEditBatchPlanner.Plan(
-                    ToStmEditorStates(LoadoutEditorInitialEquipmentItems, LoadoutEditorInitialStashItems),
-                    ToStmEditorStates(endEquipment, endStash));
-
-                if (!plan.Ok)
+                if (endEquipment == null || endStash == null)
                 {
-                    return new StmSaveVerdict { Kind = StmSaveKind.NotSent, Message = plan.Reason };
+                    return new StmSaveVerdict { Kind = StmSaveKind.NotSent, Message = StmEditorSaveFailedToast };
                 }
 
-                string layoutNote = plan.LayoutOnlyCount > 0 ? string.Format(StmEditorLayoutNoteFormat, plan.LayoutOnlyCount) : string.Empty;
-                if (plan.Edits.Count == 0)
+                int changed = CountStmChangedItems(LoadoutEditorInitialEquipmentItems, LoadoutEditorInitialStashItems, endEquipment, endStash);
+                if (changed == 0)
                 {
-                    return new StmSaveVerdict { Kind = StmSaveKind.NoChange, LayoutNote = layoutNote };
+                    return new StmSaveVerdict { Kind = StmSaveKind.NoChange };
                 }
 
-                // 한 편집 세션 = 한 요청 = 서버의 쓰기 한 번. 아이템마다 따로 보내지 않는다.
+                string layoutNote = string.Empty;
+
+                // 한 편집 세션 = 한 요청 = 서버의 쓰기 한 번.
                 string body = JsonConvert.SerializeObject(new
                 {
                     aid = profile.AccountId,
                     profileId = detail.ProfileId,
-                    edits = plan.Edits.Select(edit => new
-                    {
-                        itemId = edit.ItemId,
-                        targetSlotId = edit.TargetSlotId,
-                        targetParentId = edit.TargetParentId,
-                    }).ToList(),
+                    items = endEquipment.Concat(endStash).Where(item => item != null).ToList(),
                 });
                 // 요청이 나간 뒤부터는 서버가 썼는지 우리가 모른다.
                 requestSent = true;
-                string json = await Task.Run(() => RequestHandler.PostJson(StmEditGearRoute, body));
+                string json = await Task.Run(() => RequestHandler.PostJson(StmApplyInventoryRoute, body));
 
                 SaveOutcome outcome = ClassifyStmSaveResponse(json);
                 switch (outcome.Kind)
                 {
                     case SaveOutcomeKind.Confirmed:
-                        return new StmSaveVerdict { Kind = StmSaveKind.Confirmed, Saved = plan.Edits.Count, LayoutNote = layoutNote };
+                        return new StmSaveVerdict { Kind = StmSaveKind.Confirmed, Saved = changed, LayoutNote = layoutNote };
                     case SaveOutcomeKind.Refused:
                         // 서버가 쓴 사유 그대로. 거절된 묶음은 아무것도 쓰지 않았으므로 편집기는 열어 둔다(고쳐서 다시 저장할 수 있다).
                         return new StmSaveVerdict { Kind = StmSaveKind.Refused, Message = outcome.Message };
@@ -926,6 +925,55 @@ namespace pitTeam.Patches
         // 편집기 아이템을 shared 판정이 읽는 모양으로 줄인다. 장비와 스태시는 별개 트리지만 id 는 한 프로필 안에서 겹치지 않는다.
         // LayoutKey: 칸 위치만. 부모·슬롯이 같은데 위치만 다르면 "저장되지 않는 변화" 로 센다. upd 는 넣지 않는다 - EFT 가
         // 무기 등을 초기화하며 플레이어가 만지지 않은 아이템의 upd 를 바꿀 수 있어, 넣으면 안내가 헛되이 뜬다.
+        // 저장할 것이 있는가, 몇 개나 달라졌는가. 아이템 **한 줄 전체**(자리·좌표·수량·내구도까지)를
+        // 직렬화해 비교한다 - 자리만 보면 수량만 바뀐 편집(탄창 채우기)을 "바뀐 것이 없다" 로 읽는다.
+        private static int CountStmChangedItems(
+            JsonType.FlatItem[] beforeEquipment,
+            JsonType.FlatItem[] beforeStash,
+            JsonType.FlatItem[] afterEquipment,
+            JsonType.FlatItem[] afterStash)
+        {
+            HashSet<string> before = StmItemFingerprints(beforeEquipment, beforeStash);
+            HashSet<string> after = StmItemFingerprints(afterEquipment, afterStash);
+            int changed = 0;
+            foreach (string fingerprint in after)
+            {
+                if (!before.Contains(fingerprint)) changed++;
+            }
+
+            foreach (string fingerprint in before)
+            {
+                if (!after.Contains(fingerprint)) changed++;
+            }
+
+            return changed;
+        }
+
+        private static HashSet<string> StmItemFingerprints(params JsonType.FlatItem[][] groups)
+        {
+            HashSet<string> fingerprints = new HashSet<string>(StringComparer.Ordinal);
+            foreach (JsonType.FlatItem[] group in groups)
+            {
+                if (group == null) continue;
+                foreach (JsonType.FlatItem item in group)
+                {
+                    if (item == null) continue;
+                    try
+                    {
+                        fingerprints.Add(JsonConvert.SerializeObject(item));
+                    }
+                    catch (Exception ex)
+                    {
+                        // 읽지 못한 아이템은 "달라진 것" 쪽으로 센다 - 조용히 같다고 하지 않는다.
+                        pitFireTeam.Log.LogWarning($"[STM] An editor item could not be fingerprinted: {ex.Message}");
+                        fingerprints.Add(Guid.NewGuid().ToString());
+                    }
+                }
+            }
+
+            return fingerprints;
+        }
+
         private static List<EditorItemState> ToStmEditorStates(JsonType.FlatItem[] equipment, JsonType.FlatItem[] stash)
         {
             if (equipment == null || stash == null) return null;
