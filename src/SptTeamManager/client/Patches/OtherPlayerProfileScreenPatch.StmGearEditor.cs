@@ -69,10 +69,6 @@ namespace pitTeam.Patches
         private const string StmEditorSaveFailedToast = "장비를 저장하지 못했습니다";
         private const string StmEditorNoChangeToast = "바뀐 것이 없어 저장하지 않았습니다.";
         private const string StmEditorSkippedFormat = "이 팀원의 아이템 {0}개를 편집기가 읽지 못해 보이지 않습니다. 저장해도 그 아이템은 건드리지 않습니다.";
-        // 사라지는 아이템이 있으면 **한 번 더 눌러야** 저장한다. 탄박스를 열었는데 탄이 놓이지 못하고
-        // 사라지는 경우처럼, 플레이어가 의도하지 않은 소실이 조용히 저장되는 것을 막는다
-        // (2026-11-03: 탄박스 10종과 그 탄이 그렇게 사라졌다).
-        private const string StmEditorLossWarningFormat = "저장하면 아이템 {0}개가 사라집니다. 저장을 한 번 더 누르면 그대로 저장합니다.";
         private const string StmEditorAmmoBoxOpenedToast = "탄을 이 팀원의 스태시로 꺼냈습니다.";
         private const string StmEditorAmmoBoxStuckToast = "상자를 비웠지만 치우지 못했습니다. 저장 전에 직접 버리세요.";
         private const string StmEditorAmmoBoxNoRoomToast = "탄을 놓을 스태시 자리가 없어 상자를 열지 않았습니다.";
@@ -90,11 +86,6 @@ namespace pitTeam.Patches
         private static int StmGearEditSkippedCount;
 
         // 방금 경고한 소실 묶음의 서명(사라질 id 들을 정렬해 이은 것). 같은 묶음으로 다시 누르면 진행한다.
-        private static string StmPendingLossSignature;
-
-        // 편집기가 **일부러 없앤** 아이템들(연 탄 팩). EFT 도 상자를 버리는 것까지가 한 조작이라
-        // 이것은 사고가 아니다 - 저장 때의 "사라집니다" 경고에서 뺀다. 편집기를 열 때 비운다.
-        private static readonly HashSet<string> StmConsumedItemIds = new HashSet<string>(StringComparer.Ordinal);
 
         private static bool StmGearEditOpening;
         private static bool StmGearEditSaving;
@@ -647,8 +638,6 @@ namespace pitTeam.Patches
             try
             {
                 StmGearEditSkippedCount = 0;
-                StmPendingLossSignature = null;
-                StmConsumedItemIds.Clear();
                 if (!TryBuildStmEditorStash(stash, out EFT.InventoryLogic.Stash teammateStash, out string stashFailure))
                 {
                     pitFireTeam.Log.LogWarning($"[STM] Teammate stash could not be built for the gear editor: {stashFailure}");
@@ -840,26 +829,14 @@ namespace pitTeam.Patches
                 // 지워지는 것을 막는다(2026-11-03 실측: 그렇게 68개가 지워졌다).
                 List<string> loadedItemIds = StmItemIds(LoadoutEditorInitialEquipmentItems, LoadoutEditorInitialStashItems);
 
-                // 들고 있던 것 중 **최종 트리에 없는** 것 = 이 저장으로 사라질 아이템. 서버는 이것을
-                // 허용하지만(플레이어는 버릴 수 있다), 조용히 보내지는 않는다 - 한 번 더 누르게 한다.
+                // 사라지는 아이템은 로그에만 남긴다. 한때 "한 번 더 누르세요" 로 막았는데, 탄 더미가
+                // **합쳐지면** id 가 없어지는 것이 정상이라 평범한 편집마다 경고가 떴다(2026-11-03 사용자
+                // 지적). 진짜 보호는 서버에 있다: 편집기가 들고 있지 않던 아이템은 애초에 지울 수 없다.
                 HashSet<string> finalIds = new HashSet<string>(StmItemIds(endEquipment, endStash), StringComparer.Ordinal);
-                // 편집기가 일부러 없앤 것(연 탄 팩)은 경고에서 뺀다 - 그것은 그 조작의 정상 결과다.
-                List<string> losing = loadedItemIds.Where(id => !finalIds.Contains(id) && !StmConsumedItemIds.Contains(id)).ToList();
+                List<string> losing = loadedItemIds.Where(id => !finalIds.Contains(id)).ToList();
                 if (losing.Count > 0)
                 {
-                    string signature = string.Join(",", losing.OrderBy(id => id, StringComparer.Ordinal));
-                    if (!string.Equals(StmPendingLossSignature, signature, StringComparison.Ordinal))
-                    {
-                        StmPendingLossSignature = signature;
-                        string warning = string.Format(StmEditorLossWarningFormat, losing.Count);
-                        pitFireTeam.Log.LogWarning($"[STM] The save would remove {losing.Count} item(s): {string.Join(", ", losing)}");
-                        AddTeammateCreationFlow.ShowToast(warning);
-                        return new StmSaveVerdict { Kind = StmSaveKind.NotSent, Message = warning };
-                    }
-                }
-                else
-                {
-                    StmPendingLossSignature = null;
+                    pitFireTeam.Log.LogWarning($"[STM] The save removes {losing.Count} item id(s) (merges and opened ammo packs look the same here): {string.Join(", ", losing)}");
                 }
                 string body = JsonConvert.SerializeObject(new
                 {
@@ -876,7 +853,6 @@ namespace pitTeam.Patches
                 switch (outcome.Kind)
                 {
                     case SaveOutcomeKind.Confirmed:
-                        StmPendingLossSignature = null;
                         return new StmSaveVerdict { Kind = StmSaveKind.Confirmed, Saved = changed, LayoutNote = layoutNote };
                     case SaveOutcomeKind.Refused:
                         // 서버가 쓴 사유 그대로. 거절된 묶음은 아무것도 쓰지 않았으므로 편집기는 열어 둔다(고쳐서 다시 저장할 수 있다).
@@ -1068,9 +1044,7 @@ namespace pitTeam.Patches
                     return;
                 }
 
-                string boxId = box.Id;
                 controller.ThrowItem(box, false, null);
-                StmConsumedItemIds.Add(boxId);
                 AddTeammateCreationFlow.ShowToast(StmEditorAmmoBoxOpenedToast);
             }
             catch (Exception ex)
