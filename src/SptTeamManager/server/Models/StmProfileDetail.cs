@@ -78,6 +78,16 @@ public record StmGearEditRequest : IRequestData
     [JsonPropertyName("edits")] public List<StmGearEditItem>? Edits { get; set; }
 }
 
+// 계획 5 Task B. 편집기가 끝난 뒤의 **그 팀원 인벤토리 전체**를 보낸다. 조작의 종류를 적지 않는다 -
+// 이동이든 나누기든 합치기든 탄박스 열기든, 결과만 보낸다. 서버는 before 와 대조해 정당성만 본다
+// (ProfileInventoryApplyPolicy). Aid 로 찾고 ProfileId 는 대조한다(다른 요청과 같은 약속).
+public record StmInventoryApplyRequest : IRequestData
+{
+    [JsonPropertyName("aid")] public string? Aid { get; set; }
+    [JsonPropertyName("profileId")] public string? ProfileId { get; set; }
+    [JsonPropertyName("items")] public List<Item>? Items { get; set; }
+}
+
 // 한 건: 이 아이템을 이 부모의 이 슬롯으로. TargetParentId 가 비면 장비 루트 아래를 뜻한다.
 // 방향 둘을 같은 모양으로 적는다: 부모가 장비 트리면 **입히기**, 부모가 그 팀원의 스태시 루트이고
 // 슬롯이 'hideout' 이면 **벗기기**다. 그 밖의 부모는 거부다(ProfileGearEditPolicy).

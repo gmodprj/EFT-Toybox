@@ -12,7 +12,8 @@ namespace pitTeam.Server.Callbacks;
 
 [Injectable]
 public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfileMemberStore store, StmProfileCatalog catalog,
-    StmTransferJournal journal, StmGearEditService gearEdits, StmGearBuildCatalog gearBuilds,
+    StmTransferJournal journal, StmGearEditService gearEdits, StmInventoryApplyService inventoryApply,
+    StmGearBuildCatalog gearBuilds,
     StmGearKitQuoteService kitQuotes, StmGearKitPurchaseService kitPurchases,
     ISptLogger<StmProfileMemberCallbacks> logger)
 {
@@ -131,6 +132,22 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
         // TryApply 는 false 일 때 사유를 비우지 않지만, 비면 성공으로 읽히지 않게 중립 문구를 쓴다.
         var message = string.IsNullOrWhiteSpace(rejectionReason)
             ? "장비를 고치지 못했습니다. 서버 로그를 확인하세요."
+            : rejectionReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 편집기가 끝난 뒤의 인벤토리 **전체**를 받아 한 번에 쓴다(계획 5 Task B). 이동 목록(EditGear)과
+    // 달리 아이템이 생기고 사라지는 조작(나누기·합치기·탄박스 열기·버리기)까지 적을 수 있다.
+    // 실패는 성공처럼 보이지 않는다(오류 본문 + 플레이어가 읽는 사유).
+    public ValueTask<string> ApplyInventory(string url, StmInventoryApplyRequest request, MongoId sessionId)
+    {
+        if (inventoryApply.TryApply(sessionId, request.Aid, request.ProfileId, request.Items, out var rejectionReason))
+        {
+            return new ValueTask<string>(httpResponse.NullResponse());
+        }
+
+        var message = string.IsNullOrWhiteSpace(rejectionReason)
+            ? "장비를 저장하지 못했습니다. 서버 로그를 확인하세요."
             : rejectionReason!;
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }
