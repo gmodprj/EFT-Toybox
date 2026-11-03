@@ -119,7 +119,8 @@ namespace pitTeam.Shared
                     item["level"]?.Value<int?>() ?? 0,
                     item["side"]?.ToString() ?? string.Empty,
                     ParseStatus(item["status"]?.ToString()),
-                    item["gear"]?.ToString() ?? string.Empty));
+                    item["gear"]?.ToString() ?? string.Empty,
+                    item["autoJoin"]?.Value<bool>() ?? false));
             }
 
             return rows;

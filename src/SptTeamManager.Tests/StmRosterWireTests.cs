@@ -147,4 +147,20 @@ public class StmRosterWireTests
         var s = StmRosterWire.Interpret(Env($"[{Row("p1", 5, "Ready")}]"), Own);
         Assert.Equal(string.Empty, Assert.Single(s.Members).GearKind);
     }
+    // 2026-11-03: 자동 합류 단추가 이 값으로 켜짐/꺼짐을 그린다. 빠지면 켜 둔 팀원도 꺼진 것으로 보이고,
+    // 사용자가 다시 누르면 **켜져 있던 것을 끄게** 된다. 조용히 반대로 도는 쪽이라 못 박는다.
+    [Fact]
+    public void autoJoin_이_오면_그대로_읽는다()
+    {
+        string row = $"{{\"profileId\":\"p1\",\"aid\":5,\"nickname\":\"N\",\"level\":3,\"side\":\"Usec\",\"status\":\"Ready\",\"autoJoin\":true}}";
+        var s = StmRosterWire.Interpret(Env($"[{row}]"), Own);
+        Assert.True(Assert.Single(s.Members).AutoJoin);
+    }
+
+    [Fact]
+    public void autoJoin_이_없으면_꺼진_것이다()
+    {
+        var s = StmRosterWire.Interpret(Env($"[{Row("p1", 5, "Ready")}]"), Own);
+        Assert.False(Assert.Single(s.Members).AutoJoin);
+    }
 }

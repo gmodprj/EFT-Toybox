@@ -242,7 +242,8 @@ namespace pitTeam.Components
                         StmStatusLine(row),
                         unavailable: !ready,
                         removeProfileId: row.ProfileId,
-                        openAccountId: StmTileAccountId(row, ready));
+                        openAccountId: StmTileAccountId(row, ready),
+                        autoJoin: row.AutoJoin);
                 }
 
                 // Rows stay visible; the user is told the client-side session filter did not run.
@@ -305,7 +306,8 @@ namespace pitTeam.Components
             string statusLine,
             bool unavailable,
             string removeProfileId,
-            string openAccountId)
+            string openAccountId,
+            bool autoJoin = false)
         {
             GameObject tileObject = new GameObject(
                 $"pitFireTeam_StmTile_{key}",
@@ -336,7 +338,8 @@ namespace pitTeam.Components
                 new Color(0.55f, 0.55f, 0.53f, 1f), new Vector2(16f, 176f), new Vector2(-44f, -10f));
             TextMeshProUGUI nameLabel = AddStmTileText(tileRect, "Name", title, 24f, nameColor, new Vector2(16f, 114f), new Vector2(-16f, -44f));
             AddStmTileText(tileRect, "Info", infoLine, 20f, infoColor, new Vector2(16f, 84f), new Vector2(-16f, -100f));
-            AddStmTileText(tileRect, "Status", statusLine, 18f, statusColor, new Vector2(16f, 14f), new Vector2(-16f, -134f));
+            // 아래쪽 띠(y 10~42)는 자동 합류 단추의 자리다. 상태 줄을 그만큼 올린다.
+            AddStmTileText(tileRect, "Status", statusLine, 18f, statusColor, new Vector2(16f, 48f), new Vector2(-16f, -134f));
 
             if (!string.IsNullOrWhiteSpace(removeProfileId))
             {
@@ -351,6 +354,16 @@ namespace pitTeam.Components
 
                 string profileId = removeProfileId;
                 removeButton.onClick.AddListener(() => RemoveStmProfile(profileId));
+            }
+
+            // 자동 합류를 켜고 끄는 자리. **이 화면에는 그런 자리가 없었다** - 서버는 저장·조회·출격 구성을
+            // 다 갖추고 있는데 누를 곳이 없어 계획 3 의 관문 15번(자동 합류 증명)을 돌릴 수 없었다(열린 항목 8).
+            // 쓸 수 있는 줄에만 둔다: 비어 있거나 읽지 못한 프로필은 출격에 끼울 수 없으므로 켤 이유도 없다.
+            if (!string.IsNullOrWhiteSpace(openAccountId))
+            {
+                string autoJoinAccountId = openAccountId;
+                bool nextState = !autoJoin;
+                CreateStmAutoJoinButton(tileRect, autoJoin, () => ToggleStmAutoJoin(autoJoinAccountId, nextState));
             }
 
             // The way in to the teammate detail screen (and from there the gear editor). Same construction as
@@ -374,6 +387,101 @@ namespace pitTeam.Components
             }
 
             return tileObject;
+        }
+
+        // 설정 화면의 CreateActionButton 과 같은 생김새(테두리 + 안쪽 채움 + 가운데 글자)를 타일 크기에 맞춘 것.
+        // 켜짐과 꺼짐을 **글자와 색 둘 다**로 가른다 - 색만으로 가르면 꺼진 것인지 쓸 수 없는 것인지 알 수 없다.
+        private Button CreateStmAutoJoinButton(RectTransform tileRect, bool on, UnityEngine.Events.UnityAction onClick)
+        {
+            GameObject buttonObject = new GameObject("pitFireTeam_StmAutoJoin", typeof(RectTransform), typeof(Image), typeof(Button));
+            buttonObject.transform.SetParent(tileRect, false);
+
+            RectTransform buttonRect = buttonObject.GetComponent<RectTransform>();
+            buttonRect.anchorMin = new Vector2(0f, 0f);
+            buttonRect.anchorMax = new Vector2(1f, 0f);
+            buttonRect.pivot = new Vector2(0.5f, 0f);
+            buttonRect.offsetMin = new Vector2(16f, 10f);
+            buttonRect.offsetMax = new Vector2(-16f, 42f);
+
+            Image border = buttonObject.GetComponent<Image>();
+            border.color = on
+                ? new Color(0.52f, 0.43f, 0.27f, 0.95f)
+                : new Color(0.28f, 0.28f, 0.27f, 0.9f);
+            border.raycastTarget = true;
+
+            GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            fillObject.transform.SetParent(buttonObject.transform, false);
+            RectTransform fillRect = fillObject.GetComponent<RectTransform>();
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = Vector2.one;
+            fillRect.offsetMin = new Vector2(1f, 1f);
+            fillRect.offsetMax = new Vector2(-1f, -1f);
+
+            Image fill = fillObject.GetComponent<Image>();
+            fill.color = new Color(0.1f, 0.1f, 0.1f, 0.96f);
+            fill.raycastTarget = true;
+
+            GameObject textObject = CreateText(
+                "pitFireTeam_StmAutoJoinLabel",
+                on ? StmProfileRosterClient.AutoJoinOn : StmProfileRosterClient.AutoJoinOff,
+                16f,
+                TextAlignmentOptions.Center);
+            RectTransform textRect = textObject.GetComponent<RectTransform>();
+            textRect.SetParent(buttonObject.transform, false);
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+
+            TextMeshProUGUI label = textObject.GetComponent<TextMeshProUGUI>();
+            label.color = on
+                ? new Color(0.92f, 0.84f, 0.62f, 1f)
+                : new Color(0.55f, 0.55f, 0.53f, 1f);
+            label.raycastTarget = false;
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.transition = Selectable.Transition.ColorTint;
+            button.targetGraphic = fill;
+            button.onClick.AddListener(onClick);
+            return button;
+        }
+
+        // 켜고 끄기. 성공하면 명단을 다시 그린다 - 서버가 돌려준 상태로 다시 읽는 것이지,
+        // 눌렀으니 바뀌었겠거니 하고 화면만 고치지 않는다(거절당하면 화면과 서버가 어긋난다).
+        private async void ToggleStmAutoJoin(string accountId, bool enabled)
+        {
+            if (string.IsNullOrWhiteSpace(accountId) || stmRequestBusy)
+            {
+                return;
+            }
+
+            stmRequestBusy = true;
+            try
+            {
+                string failure = await StmProfileRosterClient.SetAutoJoinAsync(accountId, enabled);
+                if (this == null)
+                {
+                    return;
+                }
+
+                if (failure != null)
+                {
+                    AddTeammateCreationFlow.ShowToast(failure);
+                    return;
+                }
+
+                RebuildRosterTiles();
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError($"[STM] 자동 합류를 바꾸지 못했다 (aid '{accountId}').");
+                pitFireTeam.Log.LogError(ex);
+                AddTeammateCreationFlow.ShowToast(StmProfileRosterClient.AutoJoinFailedToast);
+            }
+            finally
+            {
+                stmRequestBusy = false;
+            }
         }
 
         private TextMeshProUGUI AddStmTileText(

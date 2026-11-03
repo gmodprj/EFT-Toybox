@@ -23,6 +23,8 @@ namespace pitTeam.Modules
         internal const string RosterRoute = "/stm/members/roster";
         internal const string AddRoute = "/stm/members/add";
         internal const string RemoveRoute = "/stm/members/remove";
+        // PIT 의 라우트다. 서버가 그 안에서 STM 을 먼저 묻는다.
+        internal const string AutoJoinRoute = "/singleplayer/pitfireteam/teammate/autojoin";
 
         // ---- Display text, in one place --------------------------------------------------------
         internal const string TileCaption = "프로필 팀원";
@@ -33,9 +35,16 @@ namespace pitTeam.Modules
         // 레이드에 무엇을 입고 나가는가. 서버가 SpawnGearPolicy 로 판정해 "Real"/"Temporary" 를 싣는다.
         // **손으로 고쳤는지만 보면 틀린다**(2026-11-03 인게임): 손대지 않았어도 입은 장비와 무기가 다 있으면
         // 실물로 나간다. 임시 장비는 입은 것이 없거나 필수 무기 슬롯이 비었을 때의 이야기다.
-        internal const string EquipmentReal = "장비 구분: 실물 장비";
-        internal const string EquipmentTemporary = "장비 구분: 레이드마다 임시 장비";
-        internal const string EquipmentUndecided = "장비 구분: 아직 판정하지 않음";
+        // 타일은 좁다. "장비 구분:" 머리말은 프로필 팀원 타일에서 말하지 않아도 뜻이 통하고,
+        // 그 자리를 비워야 자동 합류 단추가 들어간다(2026-11-03).
+        internal const string EquipmentReal = "실물 장비로 출격";
+        internal const string EquipmentTemporary = "레이드마다 임시 장비";
+        internal const string EquipmentUndecided = "장비 구분 미정";
+
+        // 자동 합류. 켜면 출격할 때 이 팀원이 따라붙는다.
+        internal const string AutoJoinOn = "자동 합류 : 켬";
+        internal const string AutoJoinOff = "자동 합류 : 끔";
+        internal const string AutoJoinFailedToast = "자동 합류 설정을 바꾸지 못했습니다";
         internal const string GearKindReal = "Real";
         internal const string GearKindTemporary = "Temporary";
         internal const string LoadFailedTitle = "프로필 팀원을 읽지 못했습니다";
@@ -71,6 +80,44 @@ namespace pitTeam.Modules
         internal static async Task<string> AddAsync(string profileId)
         {
             return await PostAsync(AddRoute, profileId, AddFailedToast, mapNotAvailable: true);
+        }
+
+        // 자동 합류를 켜거나 끈다. 성공이면 null, 아니면 토스트 문구. 던지지 않는다.
+        // **PIT 의 라우트를 그대로 쓴다**(`/singleplayer/pitfireteam/teammate/autojoin`) - 서버는 이미
+        // STM 을 먼저 묻고(FriendlyTeammateCallbacks.SetAutoJoin → StmAutoJoinService) 프로필 팀원을
+        // 자기 등록 문서에 쓴다. 없던 것은 **누를 자리**뿐이었다.
+        internal static async Task<string> SetAutoJoinAsync(string accountId, bool enabled)
+        {
+            if (string.IsNullOrWhiteSpace(accountId))
+            {
+                return AutoJoinFailedToast;
+            }
+
+            try
+            {
+                string body = JsonConvert.SerializeObject(new { aid = accountId, enabled });
+                string json = await Task.Run(() => RequestHandler.PostJson(AutoJoinRoute, body));
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    return AutoJoinFailedToast;
+                }
+
+                JToken root = JToken.Parse(json);
+                int err = root["err"]?.Value<int>() ?? -1;
+                if (err == 0)
+                {
+                    return null;
+                }
+
+                string errmsg = root["errmsg"]?.ToString();
+                pitFireTeam.Log.LogWarning($"[STM] 자동 합류 변경이 거절됐다 (aid '{accountId}'): {errmsg}");
+                return string.IsNullOrWhiteSpace(errmsg) ? AutoJoinFailedToast : errmsg;
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning($"[STM] 자동 합류 변경에 실패했다 (aid '{accountId}'): {ex.Message}");
+                return AutoJoinFailedToast;
+            }
         }
 
         // Unregisters a profile. Returns null on success, otherwise the toast text. Never throws.
