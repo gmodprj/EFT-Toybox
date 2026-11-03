@@ -36,6 +36,8 @@ public class ProfileGearEditPolicyTests
         new WornGearItem("stash-ammo", Stash, "hideout"),
         new WornGearItem("stash-round", Stash, "hideout"),
         new WornGearItem("stash-bulk", Stash, "hideout"),
+        new WornGearItem("stash-bag", Stash, "hideout"),
+        new WornGearItem("bag-ammo", "stash-bag", "main"),
     };
 
     // 아이템 데이터베이스에서 올 사실을 손으로 적은 것. 서버는 ItemHelper.GetItem 으로 같은 모양을 만든다.
@@ -56,6 +58,8 @@ public class ProfileGearEditPolicyTests
             ["stash-ammo"] = "tpl-ammo",
             ["stash-round"] = "tpl-ammo",
             ["stash-bulk"] = "tpl-ammo",
+            ["stash-bag"] = "tpl-bag",
+            ["bag-ammo"] = "tpl-ammo",
             ["worn-pockets"] = "tpl-pockets",
             ["pocket-cash"] = "tpl-cash",
             ["worn-secure"] = "tpl-secure",
@@ -103,7 +107,20 @@ public class ProfileGearEditPolicyTests
         var parents = new Dictionary<string, string>
         {
             ["tpl-helmet"] = "node-headwear",
+            ["node-headwear"] = "node-item",
             ["tpl-rig"] = "node-vest",
+            ["node-vest"] = "node-item",
+            ["tpl-ammo"] = "node-item",
+            ["tpl-mag"] = "node-item",
+            ["tpl-bag"] = "node-bag",
+            ["node-bag"] = "node-item",
+        };
+
+        // 용기의 격자. 실제 데이터처럼 허용은 뿌리 노드 하나이고 제외 목록이 종류를 걷어낸다.
+        var grids = new Dictionary<string, IReadOnlyList<GearGridDefinition>>
+        {
+            ["tpl-bag"] = new[] { new GearGridDefinition("main", new[] { "node-item" }, new[] { "node-bag" }) },
+            ["tpl-rig"] = new[] { new GearGridDefinition("1", new[] { "node-item" }, new[] { "node-bag" }) },
         };
 
         // 더미의 수량. 용량이 있는 자리의 판정에만 쓰인다.
@@ -114,7 +131,7 @@ public class ProfileGearEditPolicyTests
             ["stash-bulk"] = 1080,
         };
 
-        return new GearSlotFacts(templates, slots, parents, counts);
+        return new GearSlotFacts(templates, slots, parents, counts, grids);
     }
 
     private static GearEditRequest Edit(string itemId, string slot, string? parent) =>
@@ -247,8 +264,9 @@ public class ProfileGearEditPolicyTests
         // 플레이어 스태시의 것도 이 목록에 없다 - 벗기기로도 들어올 길이 없다.
         Assert.False(Judge(Edit("player-stash-helmet", "hideout", Stash)).Allowed);
 
-        // 이미 스태시에 있는 것은 벗길 것이 없다(착용·장착한 것이 아니다).
-        Assert.False(Judge(Edit("stash-helmet", "hideout", Stash)).Allowed);
+        // 이미 스태시에 있는 것을 스태시 격자로 옮기는 것은 **막지 않는다**(계획 5: 플레이어도 자기
+        // 스태시 안에서 자리를 옮긴다). 부모와 슬롯이 그대로라 플래너가 애초에 건으로 만들지도 않는다.
+        Assert.True(Judge(Edit("stash-helmet", "hideout", Stash)).Allowed);
     }
 
     [Fact]
@@ -585,13 +603,15 @@ public class ProfileGearEditPolicyTests
     }
 
     [Fact]
-    public void 순서가_뒤집히면_거절한다()
+    public void 차_있는_슬롯을_먼저_채우려_하면_거절한다()
     {
-        // 탄을 먼저 넣으려 하면 그때 탄창은 아직 스태시에 있어 장비 트리의 부모가 아니다.
+        // 계획 5 전에는 "탄을 먼저 넣으면 탄창이 아직 스태시라서" 거절이었는데, 이제 스태시의 탄창에도
+        // 탄을 넣을 수 있다(플레이어 화면과 같다). 남아 있는 순서 제약은 **점유**다: 차 있는 슬롯을
+        // 비우기 전에 채우려 하면 거절이고, 그래서 플래너가 비우는 건을 먼저 보낸다.
         var batch = new[]
         {
-            Edit("stash-ammo", "cartridges", "stash-mag"),
-            Edit("stash-mag", "mod_magazine", "worn-pistol"),
+            Edit("stash-mag", "mod_magazine", "worn-rifle"),
+            Edit("worn-rifle-mag", "hideout", Stash),
         };
 
         var verdict = ProfileGearEditPolicy.ValidateBatch(batch, Profile(), Stash, Equip, Facts());
@@ -931,5 +951,43 @@ public class ProfileGearEditPolicyTests
         Assert.False(verdict.Allowed);
         Assert.Contains("이 팀원의 것이 아니", verdict.Reason);
         Assert.DoesNotContain("스태시에 없어", verdict.Reason);
+    }
+
+    [Fact]
+    public void 스태시_안_가방의_칸에_넣을_수_있다()
+    {
+        // 플레이어가 자기 스태시에서 하는 것과 같은 조작이다(계획 5 Task 1).
+        Assert.True(Judge(Edit("stash-helmet", "main", "stash-bag")).Allowed);
+    }
+
+    [Fact]
+    public void 리그의_칸에_넣을_수_있다()
+    {
+        Assert.True(Judge(Edit("stash-mag", "1", "worn-rig")).Allowed);
+    }
+
+    [Fact]
+    public void 격자가_제외하는_종류는_넣지_않는다()
+    {
+        // 가방 안에 가방을 넣을 수 없다 - 격자의 ExcludedFilter 가 말하는 것이고, 조상까지 본다.
+        var verdict = Judge(Edit("stash-bag", "1", "worn-rig"));
+
+        Assert.False(verdict.Allowed);
+        Assert.False(string.IsNullOrWhiteSpace(verdict.Reason));
+    }
+
+    [Fact]
+    public void 격자는_이미_든_것이_있어도_받는다()
+    {
+        // 슬롯은 하나만 받지만 격자는 여러 개를 담는다. 자리가 있는지는 서버가 SPT 로 센다.
+        Assert.True(Judge(Edit("stash-helmet", "main", "stash-bag")).Allowed);
+        Assert.True(Judge(Edit("stash-mag", "main", "stash-bag")).Allowed);
+    }
+
+    [Fact]
+    public void 스태시에_있는_탄창에도_탄을_넣을_수_있다()
+    {
+        // 목적지가 장비 트리가 아니어도 된다 - 플레이어는 스태시에 둔 탄창에도 탄을 채운다.
+        Assert.True(Judge(Edit("stash-ammo", "cartridges", "stash-mag")).Allowed);
     }
 }

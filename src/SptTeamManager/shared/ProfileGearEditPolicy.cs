@@ -29,6 +29,14 @@ namespace pitTeam.Shared
     //                  가르는 이유는 "탄 자리인가" 를 슬롯 이름으로 다시 추측하지 않으려는 것이다.
     public sealed record GearSlotDefinition(string Name, IReadOnlyCollection<string> AllowedTemplateIds, int? AmmoCapacity = null);
 
+    // 용기의 **격자**(가방·리그·주머니·보안 컨테이너의 칸). 슬롯과 다른 점 둘: 여러 개를 담으므로 점유를
+    // 묻지 않고, 데이터베이스가 **받지 않는 종류**(ExcludedFilter)를 따로 적어 둔다 - 가방 안에 가방을
+    // 넣지 못하는 것이 그것이다. 허용 쪽은 보통 뿌리 노드 하나라서 조상 사슬을 걷어야 맞는다.
+    public sealed record GearGridDefinition(
+        string Name,
+        IReadOnlyCollection<string> AllowedTemplateIds,
+        IReadOnlyCollection<string>? ExcludedTemplateIds = null);
+
     // 아이템 데이터베이스에서 옮겨 온 사실. 판정은 SPT 타입을 모르므로 서버가 이 모양으로 바꿔 넘긴다.
     //   TemplateIdByItemId : 이 프로필 아이템 id → 그 아이템의 템플릿 id
     //   SlotsByTemplateId  : 템플릿 id → 그 템플릿이 **정의한** 슬롯들(없는 템플릿은 슬롯이 없다는 뜻이 아니라,
@@ -42,7 +50,8 @@ namespace pitTeam.Shared
         IReadOnlyDictionary<string, string> TemplateIdByItemId,
         IReadOnlyDictionary<string, IReadOnlyList<GearSlotDefinition>> SlotsByTemplateId,
         IReadOnlyDictionary<string, string> ParentTemplateIdByTemplateId,
-        IReadOnlyDictionary<string, int>? StackCountByItemId = null);
+        IReadOnlyDictionary<string, int>? StackCountByItemId = null,
+        IReadOnlyDictionary<string, IReadOnlyList<GearGridDefinition>>? GridsByTemplateId = null);
 
     // 설계 §6-4 의 두 문장을 코드로 옮긴 곳이다.
     //   "편집하면 실물이 된다"  - 쓰기는 프로필에 박힌다(서비스 쪽), 그래서 이 판정은 쓰기 전에 거절할 유일한 관문이다.
@@ -132,14 +141,21 @@ namespace pitTeam.Shared
             // 이 경로로는 닿을 수 없다 - 애초에 이 목록에는 이 프로필의 아이템만 있다.
             var parentId = string.IsNullOrWhiteSpace(request.TargetParentId) ? equipmentRoot : request.TargetParentId!.Trim();
             var toStash = string.Equals(parentId, stashRoot, StringComparison.Ordinal);
-            var toEquipment = !toStash && equipmentIds.Contains(parentId);
-            if (!toStash && !toEquipment)
+            var parentInStash = stashIds.Contains(parentId);
+            var parentInEquipment = equipmentIds.Contains(parentId);
+            if (!parentInStash && !parentInEquipment)
             {
-                return Reject($"넣을 자리 '{parentId}' 이(가) 이 팀원의 장비 트리도 스태시 루트도 아니어서 편집하지 않습니다.");
+                return Reject($"넣을 자리 '{parentId}' 이(가) 이 팀원의 것이 아니어서 편집하지 않습니다.");
             }
 
-            // 출처 판정. 방향마다 "있어야 하는 트리" 와 "루트 자체" 가 뒤집힌다.
-            if (toEquipment)
+            if (parentInStash && parentInEquipment)
+            {
+                return Reject($"넣을 자리 '{parentId}' 이(가) 스태시와 장비 양쪽에 보여 어느 쪽이 맞는지 알 수 없습니다.");
+            }
+
+            var toEquipment = parentInEquipment;
+
+            // 출처 판정. 방향과 무관하게 **이 팀원의 것**이면 된다(계획 5: 플레이어 화면과 같게).
             {
                 // 출처는 **이 팀원의 것**이면 된다. 플레이어 스태시의 id 는 이 목록에 아예 없으므로
                 // 여기서 떨어진다. 2026-11-03 전에는 스태시 하위만 받았는데, 그러면 리그 안 탄창이나
@@ -149,7 +165,7 @@ namespace pitTeam.Shared
                 var fromEquipment = equipmentIds.Contains(itemId);
                 if (!fromStash && !fromEquipment)
                 {
-                    return Reject($"아이템 '{itemId}' 은(는) 이 팀원의 것이 아니어서 장비에 넣을 수 없습니다.");
+                    return Reject($"아이템 '{itemId}' 은(는) 이 팀원의 것이 아니어서 편집하지 않습니다.");
                 }
 
                 // 같은 id 가 두 트리에 다 보이는 프로필은 깨져 있다. 어느 쪽이 진짜인지 모르므로 쓰지 않는다.
@@ -169,60 +185,67 @@ namespace pitTeam.Shared
                     return Reject("장비 루트 자체는 다른 자리에 넣을 수 없습니다.");
                 }
 
-                if (fromEquipment)
+                // 떼어내선 안 되는 자리. 판정의 권위는 **WornGearLossPolicy** 다 - 사망이 가져가지 않는
+                // 슬롯(주머니·칼집·완장·보안 컨테이너)과 영구 조각(Dogtag·SpecialSlot)을 거기서 그대로
+                // 가져온다. 두 번째 목록을 만들지 않았다: 둘이 갈라지면 한쪽에서 지키는 것을 다른 쪽에서
+                // 떼어낸다(교차 계약 테스트가 못박는다). 주머니를 떼면 장비 손실이 아니라 **구조 손상**
+                // 이고 EFT 가 그 프로필의 적재를 거부할 수 있다. 주머니 **안의 짐**은 걸리지 않는다
+                // (그 아이템들의 슬롯은 pocket1 등이다).
+                var source = FindItem(items, itemId);
+                if (WornGearLossPolicy.IsNeverRemovedSlot(source?.SlotId))
                 {
-                    // 장비 안에서 꺼내는 것도 "떼어내는" 것이다. 벗기기와 **같은 권위**
-                    // (WornGearLossPolicy)를 쓴다 - 주머니·보안 컨테이너·완장·칼집을 다른 슬롯으로
-                    // 옮기는 것도 구조 손상이고, EFT 가 그 프로필의 적재를 거부할 수 있다.
-                    var source = FindItem(items, itemId);
-                    if (WornGearLossPolicy.IsNeverRemovedSlot(source?.SlotId))
-                    {
-                        return Reject($"'{source!.SlotId!.Trim()}' 은(는) 프로필에서 떼어낼 수 없는 자리라서 옮기지 않습니다.");
-                    }
-
-                    // 고리 방지. 출처가 스태시뿐이던 때는 일어날 수 없었다(스태시 아이템은 장비 트리에
-                    // 자손이 없다). 이제는 리그를 그 리그 안의 탄창에 넣으라는 요청이 성립하고, 그대로
-                    // 쓰면 트리가 끊겨 그 가지 전체가 프로필에서 사라진 것처럼 보인다.
-                    var ownSubtree = WornGearLossPolicy.CollectSubtreeIds(items, new[] { itemId });
-                    if (ownSubtree.Contains(parentId))
-                    {
-                        return Reject($"아이템 '{itemId}' 은(는) 자기 자신이나 자기 안의 아이템에 넣을 수 없습니다.");
-                    }
-                }
-            }
-            else
-            {
-                if (!equipmentIds.Contains(itemId))
-                {
-                    return Reject($"아이템 '{itemId}' 은(는) 이 팀원이 착용·장착한 것이 아니어서 벗길 수 없습니다.");
+                    return Reject($"'{source!.SlotId!.Trim()}' 은(는) 프로필에서 떼어낼 수 없는 자리라서 옮기지 않습니다.");
                 }
 
-                // 장비 루트를 스태시 안으로 옮기면 그 프로필의 장비 트리가 사라진다.
-                if (string.Equals(itemId, equipmentRoot, StringComparison.Ordinal))
+                // 고리 방지. 자기 자신이나 자기 안으로 옮기면 트리가 끊겨 그 가지 전체가 프로필에서
+                // 사라진 것처럼 보인다.
+                var ownSubtree = WornGearLossPolicy.CollectSubtreeIds(items, new[] { itemId });
+                if (ownSubtree.Contains(parentId))
                 {
-                    return Reject("장비 루트 자체는 스태시로 옮길 수 없습니다.");
-                }
-
-                if (stashIds.Contains(itemId))
-                {
-                    return Reject($"아이템 '{itemId}' 이(가) 스태시와 장비 양쪽에 보여 어느 쪽이 맞는지 알 수 없습니다.");
-                }
-
-                // 프로필에서 떼어내선 안 되는 슬롯. 판정의 권위는 **WornGearLossPolicy** 다 - 사망이
-                // 가져가지 않는 슬롯(주머니·칼집·완장·보안 컨테이너)과 영구 조각(Dogtag·SpecialSlot)을
-                // 거기서 그대로 가져온다. 두 번째 목록을 만들지 않았다: 둘이 갈라지면 한쪽에서 지키는
-                // 것을 다른 쪽에서 떼어낸다(교차 계약 테스트가 못박는다).
-                // 주머니를 떼면 장비 손실이 아니라 **구조 손상**이고, EFT 가 그 프로필의 적재를 거부할
-                // 수 있다 - 아이템은 사라지지 않지만 플레이어가 플레이하는 프로필이 망가진다.
-                // 주머니 **안의 짐**은 이 검사에 걸리지 않는다(그 아이템들의 슬롯은 pocket1 등이다).
-                var current = FindItem(items, itemId);
-                if (WornGearLossPolicy.IsNeverRemovedSlot(current?.SlotId))
-                {
-                    return Reject($"'{current!.SlotId!.Trim()}' 은(는) 프로필에서 떼어낼 수 없는 자리라서 벗기지 않습니다.");
+                    return Reject($"아이템 '{itemId}' 은(는) 자기 자신이나 자기 안의 아이템에 넣을 수 없습니다.");
                 }
             }
 
             var slot = request.TargetSlotId.Trim();
+
+            // 목적지가 **용기의 격자**인가(가방·리그·주머니·보안 컨테이너의 칸). 이름의 권위는 그 용기
+            // 템플릿의 Grids 이고, 스태시 루트는 StashSlots 가 못박은 자기 경로를 쓴다(아래).
+            // 격자는 슬롯과 둘이 다르다: 여러 개를 담으므로 **점유를 묻지 않고**, 자리가 있는지는 서버가
+            // SPT 의 PlaceItemInContainer 로 센다 - 거기서 못 찾으면 그 편집은 거부된다.
+            if (!toStash)
+            {
+                var grid = FindGrid(slotFacts, parentId, slot);
+                if (grid != null)
+                {
+                    if (slotFacts == null
+                        || !slotFacts.TemplateIdByItemId.TryGetValue(itemId, out var gridItemTemplateId)
+                        || string.IsNullOrWhiteSpace(gridItemTemplateId))
+                    {
+                        return Reject($"아이템 '{itemId}' 의 종류를 읽을 수 없어 편집하지 않습니다.");
+                    }
+
+                    // 비면 "제한 없음" 이 아니라 "모름" 이다(슬롯과 같은 규칙).
+                    if (grid.AllowedTemplateIds == null || grid.AllowedTemplateIds.Count == 0)
+                    {
+                        return Reject($"'{parentId}' 의 '{slot}' 칸이 무엇을 받는지 읽을 수 없어 넣지 않습니다.");
+                    }
+
+                    if (!FilterAccepts(slotFacts, grid.AllowedTemplateIds, gridItemTemplateId!))
+                    {
+                        return Reject($"아이템 '{itemId}' 은(는) '{parentId}' 의 '{slot}' 칸에 들어가지 않는 종류라서 넣지 않습니다.");
+                    }
+
+                    // 받지 않는 종류(ExcludedFilter). 가방 안에 가방을 넣지 못하는 것이 이것이다.
+                    if (grid.ExcludedTemplateIds != null && grid.ExcludedTemplateIds.Count > 0
+                        && FilterAccepts(slotFacts, grid.ExcludedTemplateIds, gridItemTemplateId!))
+                    {
+                        return Reject($"아이템 '{itemId}' 은(는) '{parentId}' 의 '{slot}' 칸이 받지 않는 종류라서 넣지 않습니다.");
+                    }
+
+                    return GearEditVerdict.Allow();
+                }
+            }
+
             var atEquipmentRoot = toEquipment && string.Equals(parentId, equipmentRoot, StringComparison.Ordinal);
             var known = toStash
                 ? StashSlots.Contains(slot)
@@ -303,7 +326,7 @@ namespace pitTeam.Shared
                 return Reject($"'{parentId}' 의 '{slot}' 슬롯이 무엇을 받는지 읽을 수 없어 넣지 않습니다.");
             }
 
-            if (!FilterAccepts(slotFacts, definition, itemTemplateId!))
+            if (!FilterAccepts(slotFacts, definition.AllowedTemplateIds, itemTemplateId!))
             {
                 return Reject($"아이템 '{itemId}' 은(는) '{parentId}' 의 '{slot}' 슬롯에 들어가지 않는 종류라서 넣지 않습니다.");
             }
@@ -560,6 +583,11 @@ namespace pitTeam.Shared
             return null;
         }
 
+        // 이 자리가 용기의 **격자**인가. 서비스는 이 값으로 "SPT 에게 빈 자리를 찾게 할 것인가" 를
+        // 가른다. 슬롯이면 false 이고, 그때는 좌표 없이 슬롯 이름만 쓴다.
+        public static bool IsGridDestination(string? slot, string? parentId, GearSlotFacts? slotFacts)
+            => FindGrid(slotFacts, parentId, slot) != null;
+
         // 이 자리가 탄을 색인으로 담는가, 담으면 몇 발까지인가. 서비스는 이 값으로 쓰는 Location 을
         // 가른다(값이 있으면 색인 0, 없으면 null). 슬롯 이름으로 "cartridges 면 탄 자리" 라고 다시
         // 판정하지 않는 것이 요점이다 - 어휘의 집은 데이터베이스 하나다(불변식 8).
@@ -580,6 +608,29 @@ namespace pitTeam.Shared
             {
                 if (definition?.Name == null) continue;
                 if (string.Equals(definition.Name, wanted, StringComparison.OrdinalIgnoreCase)) return definition.AmmoCapacity;
+            }
+
+            return null;
+        }
+
+        // 이 부모의 이 이름이 격자인가. 아니면 null 이고, 호출자는 슬롯 쪽으로 간다.
+        private static GearGridDefinition? FindGrid(GearSlotFacts? facts, string? parentId, string? name)
+        {
+            if (string.IsNullOrWhiteSpace(parentId) || string.IsNullOrWhiteSpace(name)) return null;
+            if (facts?.TemplateIdByItemId == null || facts.GridsByTemplateId == null) return null;
+            if (!facts.TemplateIdByItemId.TryGetValue(parentId!.Trim(), out var parentTemplateId)
+                || string.IsNullOrWhiteSpace(parentTemplateId))
+            {
+                return null;
+            }
+
+            if (!facts.GridsByTemplateId.TryGetValue(parentTemplateId!, out var grids) || grids == null) return null;
+
+            var wanted = name!.Trim();
+            foreach (var grid in grids)
+            {
+                if (grid?.Name == null) continue;
+                if (string.Equals(grid.Name, wanted, StringComparison.OrdinalIgnoreCase)) return grid;
             }
 
             return null;
@@ -610,13 +661,13 @@ namespace pitTeam.Shared
         // 닫힌 쪽은 그대로다: 필터를 읽지 못했으면(비었으면) 애초에 여기 오지 않고 거부되고, 조상을
         // 끝까지 올라가도 못 만나면 거부다. 조상 사슬을 모르면(맵에 없으면) 그 자리에서 멈춘다 -
         // 없는 조상을 지어내지 않는다. 같은 id 를 두 번 밟지 않으므로 손상된 사슬(고리)도 끝난다.
-        private static bool FilterAccepts(GearSlotFacts facts, GearSlotDefinition definition, string itemTemplateId)
+        private static bool FilterAccepts(GearSlotFacts facts, IReadOnlyCollection<string> allowedTemplateIds, string itemTemplateId)
         {
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var templateId = itemTemplateId;
             while (!string.IsNullOrWhiteSpace(templateId) && seen.Add(templateId!))
             {
-                if (definition.AllowedTemplateIds.Contains(templateId!, StringComparer.OrdinalIgnoreCase)) return true;
+                if (allowedTemplateIds.Contains(templateId!, StringComparer.OrdinalIgnoreCase)) return true;
                 if (facts.ParentTemplateIdByTemplateId == null) return false;
                 facts.ParentTemplateIdByTemplateId.TryGetValue(templateId!, out var parentTemplateId);
                 templateId = parentTemplateId;
