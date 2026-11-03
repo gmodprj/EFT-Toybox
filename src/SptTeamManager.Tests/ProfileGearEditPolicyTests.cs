@@ -18,6 +18,7 @@ public class ProfileGearEditPolicyTests
     {
         new WornGearItem(Equip, null, null),
         new WornGearItem("worn-rig", Equip, "TacticalVest"),
+        new WornGearItem("rig-mag", "worn-rig", "1"),
         new WornGearItem("worn-rifle", Equip, "FirstPrimaryWeapon"),
         new WornGearItem("worn-rifle-mag", "worn-rifle", "mod_magazine"),
         new WornGearItem("worn-pistol", Equip, "Holster"),
@@ -44,6 +45,7 @@ public class ProfileGearEditPolicyTests
         {
             [Equip] = "tpl-equip-root",
             ["worn-rig"] = "tpl-rig",
+            ["rig-mag"] = "tpl-mag",
             ["worn-rifle"] = "tpl-rifle",
             ["worn-rifle-mag"] = "tpl-mag",
             ["worn-pistol"] = "tpl-pistol",
@@ -82,7 +84,13 @@ public class ProfileGearEditPolicyTests
                 new GearSlotDefinition("mod_mount", Array.Empty<string>()),
             },
             ["tpl-pistol"] = new[] { new GearSlotDefinition("mod_magazine", new[] { "tpl-mag" }) },
-            ["tpl-mag"] = new[] { new GearSlotDefinition("cartridges", new[] { "tpl-ammo" }, AmmoCapacity: 30) },
+            ["tpl-mag"] = new[]
+            {
+                new GearSlotDefinition("cartridges", new[] { "tpl-ammo" }, AmmoCapacity: 30),
+                // 실제 탄창에는 없는 자리다. 고리 검사만 떼어 보려고 둔다 - 필터가 먼저 거부하면
+                // 고리 규칙이 도는지 알 수 없다.
+                new GearSlotDefinition("mod_vest_holder", new[] { "node-vest" }),
+            },
             // 리그는 격자만 있고 슬롯이 없다.
             ["tpl-rig"] = Array.Empty<GearSlotDefinition>(),
             ["tpl-stash"] = Array.Empty<GearSlotDefinition>(),
@@ -610,7 +618,8 @@ public class ProfileGearEditPolicyTests
     [Fact]
     public void 같은_아이템을_두_번_옮기려_하면_거절한다()
     {
-        // 두 번째 건의 시점에 그 아이템은 이미 스태시 밖이다(출처가 아니다).
+        // 한 아이템은 한 묶음에서 한 번만 옮긴다 - 두 번 적으면 최종 자리가 모호하다.
+        // (출처가 스태시뿐이던 때는 "두 번째 건의 시점에 이미 스태시 밖" 이라 저절로 걸렸다.)
         var batch = new[]
         {
             Edit("stash-helmet", "Headwear", Equip),
@@ -881,5 +890,46 @@ public class ProfileGearEditPolicyTests
         Assert.Equal(1, ProfileGearEditPolicy.SlotAmmoCapacity("Patron_In_Weapon", "worn-rifle", Facts()));
         Assert.Null(ProfileGearEditPolicy.SlotAmmoCapacity("mod_magazine", "worn-rifle", Facts()));
         Assert.Null(ProfileGearEditPolicy.SlotAmmoCapacity("cartridges", "worn-rifle-mag", null));
+    }
+
+    [Fact]
+    public void 장비_안의_아이템도_출처가_된다()
+    {
+        // 리그 격자 안의 탄창을 권총에 꽂는다. 같은 프로필 안의 이동이라 새로 생기는 것이 없다 -
+        // 인게임에서 "리그 안 탄창의 탄을 쓸 수 없다" 로 막혔던 자리다(2026-11-03).
+        Assert.True(Judge(Edit("rig-mag", "mod_magazine", "worn-pistol")).Allowed);
+    }
+
+    [Fact]
+    public void 떼어낼_수_없는_자리의_아이템은_장비_안에서도_못_옮긴다()
+    {
+        // 출처를 넓혀도 주머니·보안 컨테이너는 그대로 지킨다. 떼면 장비 손실이 아니라 구조 손상이다.
+        var verdict = Judge(Edit("worn-secure", "mod_magazine", "worn-pistol"));
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("떼어낼 수 없는", verdict.Reason);
+    }
+
+    [Fact]
+    public void 자기_자신이나_자기_안으로는_옮기지_않는다()
+    {
+        // 리그를 그 리그 안에 든 탄창에 넣으면 트리에 고리가 생긴다. 스태시만 출처이던 때는
+        // 일어날 수 없었던 모양이다.
+        var intoOwnChild = Judge(Edit("worn-rig", "mod_vest_holder", "rig-mag"));
+
+        Assert.False(intoOwnChild.Allowed);
+        Assert.Contains("자기", intoOwnChild.Reason);
+    }
+
+    [Fact]
+    public void 이_팀원의_것이_아닌_아이템은_사유가_스태시를_말하지_않는다()
+    {
+        // 옛 문구는 "이 팀원의 스태시에 없어" 였는데, 출처가 스태시뿐이 아니게 된 지금은 사실과
+        // 어긋난다(그 팀원의 것이지만 장비 안에 있는 경우가 생긴다).
+        var verdict = Judge(Edit("player-stash-helmet", "Headwear", Equip));
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("이 팀원의 것이 아니", verdict.Reason);
+        Assert.DoesNotContain("스태시에 없어", verdict.Reason);
     }
 }
