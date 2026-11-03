@@ -60,6 +60,8 @@
     <Compile Include="ProfileEditPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/ProfileGearEditPolicy.cs" Link="Shared/ProfileGearEditPolicy.cs" />
     <Compile Include="ProfileGearEditPolicyTests.cs" />
+    <Compile Include="../SptTeamManager/shared/ProfileInventoryApplyPolicy.cs" Link="Shared/ProfileInventoryApplyPolicy.cs" />
+    <Compile Include="ProfileInventoryApplyPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/GearEditBatchPlanner.cs" Link="Shared/GearEditBatchPlanner.cs" />
     <Compile Include="../SptTeamManager/shared/GearBuildListPolicy.cs" Link="Shared/GearBuildListPolicy.cs" />
     <Compile Include="GearBuildListPolicyTests.cs" />
