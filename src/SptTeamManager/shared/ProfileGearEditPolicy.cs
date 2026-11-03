@@ -641,14 +641,16 @@ namespace pitTeam.Shared
             return null;
         }
 
-        // 이 템플릿의 **자리 목록을 읽었는가**. BuildSlotFacts 는 템플릿 하나를 읽으면 슬롯과 격자를
-        // 함께 싣는다 - 그래서 둘 다 있는 것이 "읽었다" 의 신호이고, 하나도 없는 것은 "모른다" 다.
-        // 그 구별이 있어야 "그런 자리가 없다" 를 거절의 근거로 쓸 수 있다(읽지 못한 템플릿에는 쓸 수 없다).
-        internal static bool KnowsPlacesOf(GearSlotFacts? facts, string? templateId)
+        // 이 템플릿의 **분류(조상)를 아는가**. 슬롯 필터는 아이템 tpl 대신 범주 노드를 담으므로
+        // (FilterAccepts 의 실측 주석) 조상 사슬을 걷지 못하면 "이 슬롯이 받지 않는 종류" 와
+        // "분류를 모르는 종류" 가 구별되지 않는다. 그 둘을 섞으면 **모드가 더한 아이템이 전부
+        // 거부**된다 - 2026-11-04 실측: 이 PC 의 프로필에서 부모 템플릿 51종이 정적 데이터베이스에
+        // 없었고, 필터 거절 153쌍 중 122쌍이 이 "모르는 종류" 였다.
+        // 이동 목록 경로는 모름을 거부로 읽으므로(닫힌 쪽) 이 구별을 쓰지 않는다. 최종 상태 경로만 쓴다.
+        internal static bool KnowsCategoryOf(GearSlotFacts? facts, string? templateId)
             => !string.IsNullOrWhiteSpace(templateId)
-               && facts?.SlotsByTemplateId != null && facts.GridsByTemplateId != null
-               && facts.SlotsByTemplateId.ContainsKey(templateId!.Trim())
-               && facts.GridsByTemplateId.ContainsKey(templateId!.Trim());
+               && facts?.ParentTemplateIdByTemplateId != null
+               && facts.ParentTemplateIdByTemplateId.ContainsKey(templateId!.Trim());
 
         private static string? TemplateOf(GearSlotFacts? facts, string? itemId)
         {

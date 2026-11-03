@@ -351,13 +351,16 @@ public class ProfileInventoryApplyPolicyTests
     }
 
     [Fact]
-    public void 그런_자리가_없으면_거절한다()
+    public void 그런_자리가_없다는_것은_거절_근거가_아니다()
     {
-        // 주머니 템플릿은 읽혔고(슬롯 없음·칸 '1' 하나) 'cartridges' 라는 자리가 없다.
+        // 주머니 템플릿은 읽혔고(슬롯 없음·칸 '1' 하나) 'cartridges' 라는 자리가 없다. 그래도 거절하지
+        // 않는다 - 2026-11-04 에 실제 프로필 여섯 개로 재 보고 이 거절을 뺐다. 자리를 정의하는 곳을
+        // 전부 안다는 전제가 두 번 깨졌다: 탄박스는 StackSlots 에 자리를 두고(87쌍이 없는 자리로
+        // 읽혔다), 그 프로필들의 부모 템플릿 51종(1577쌍)은 정적 데이터베이스에 아예 없다(모드가
+        // 기동 때 주입한다). 틀린 거절의 값은 "그 팀원은 다시 저장할 수 없다" 다.
         var verdict = JudgePlace(MovedTo("ammo", "pockets", "cartridges", 860));
 
-        Assert.False(verdict.Allowed);
-        Assert.Contains("cartridges", verdict.Reason);
+        Assert.True(verdict.Allowed, verdict.Reason);
     }
 
     [Fact]
@@ -430,8 +433,29 @@ public class ProfileInventoryApplyPolicyTests
     [Fact]
     public void 부모_종류를_읽지_못하면_통과시킨다()
     {
-        // tpl-mag 를 Slots·Grids 양쪽에서 빼면 "이 템플릿을 읽지 못했다" 다. 모르는 것으로 거절하지 않는다.
+        // tpl-mag 를 Slots·Grids 양쪽에서 빼면 그 템플릿의 자리를 하나도 모른다. 모르는 것으로
+        // 거절하지 않는다 - 실제 프로필의 부모 템플릿 51종이 이 상태다(모드가 주입한 템플릿).
         var verdict = JudgePlace(MovedTo("bag", "mag", "cartridges"), PlaceFacts(dropMagTemplate: true));
+
+        Assert.True(verdict.Allowed, verdict.Reason);
+    }
+
+    [Fact]
+    public void 아이템의_분류를_모르면_종류를_판정하지_않는다()
+    {
+        // 슬롯 필터는 아이템 tpl 대신 **범주 노드**를 담으므로, 조상 사슬을 걷지 못하면 "받지 않는
+        // 종류" 와 "모르는 종류" 가 같은 모양이 된다. 그 둘을 섞으면 **모드가 더한 아이템이 전부
+        // 거부**된다 - 2026-11-04 실측: 이 PC 의 프로필에서 부모 템플릿 51종이 정적 데이터베이스에
+        // 없고, 필터 거절 153쌍 중 122쌍이 이 "모르는 종류" 였다.
+        var facts = PlaceFacts();
+        var noAncestry = new GearSlotFacts(
+            facts.TemplateIdByItemId,
+            facts.SlotsByTemplateId,
+            new Dictionary<string, string>(),   // 조상 사슬을 모른다
+            null,
+            facts.GridsByTemplateId);
+
+        var verdict = JudgePlace(MovedTo("bag", "mag", "cartridges"), noAncestry);
 
         Assert.True(verdict.Allowed, verdict.Reason);
     }

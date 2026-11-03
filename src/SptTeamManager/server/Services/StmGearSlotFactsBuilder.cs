@@ -75,6 +75,21 @@ public class StmGearSlotFactsBuilder(ItemHelper itemHelper, ISptLogger<StmGearSl
                         (int?)magazineSlot.MaxCount ?? 0));
                 }
 
+                // **탄박스**는 또 다른 자리에 둔다 - `StackSlots` 다(2026-11-04 실측:
+                // item_ammo_box_9x19_50_PBP 는 Slots·Cartridges·Grids 가 모두 비어 있고
+                // StackSlots 에 'cartridges'(_max_count 50) 하나를 둔다). Cartridges 와 모양이 같다.
+                // 이것을 읽지 않아 실제 프로필 여섯 개에서 탄박스의 탄 **87쌍**이 "그런 자리가 없다" 로
+                // 읽혔다 - 그 발견이 자리 없음을 거절 근거에서 뺀 이유의 절반이다
+                // (ProfileInventoryApplyPolicy.CheckPlacements 의 주석).
+                foreach (var stackSlot in found.Value.Properties?.StackSlots ?? [])
+                {
+                    if (stackSlot?.Name == null) continue;
+                    definitions.Add(new GearSlotDefinition(
+                        stackSlot.Name,
+                        AllowedTemplatesOf(stackSlot),
+                        (int?)stackSlot.MaxCount ?? 0));
+                }
+
                 // 약실: Chambers 항목에는 **개수 필드가 아예 없다**(2026-11-03 실측: M4A1 의
                 // patron_in_weapon 은 filters 하나만 들고 있다). 그래서 1 로 싣는다 - 이름에서 뜻을
                 // 지어낸 것이 아니라 (ㄱ) 데이터베이스가 개수를 말하지 않고 (ㄴ) 이 PC 의 프로필 여섯 개에
@@ -134,6 +149,24 @@ public class StmGearSlotFactsBuilder(ItemHelper itemHelper, ISptLogger<StmGearSl
     // 자리 하나가 받는 템플릿 집합. Slots·Cartridges·Chambers 가 같은 모양(Props.Filters[].Filter)이다.
     // 비어 있으면 "제한 없음" 이 아니라 "모름" 이다.
     private static HashSet<string> AllowedTemplatesOf(Slot slot)
+    {
+        var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var filter in slot.Properties?.Filters ?? [])
+        {
+            foreach (var tpl in filter?.Filter ?? [])
+            {
+                if (!tpl.IsEmpty) allowed.Add(tpl.ToString());
+            }
+        }
+
+        return allowed;
+    }
+
+    // 탄박스의 자리(`StackSlots`)는 **별 타입**이다 - `StackSlot` 은 `Slot` 이 아니고
+    // `StackSlotProperties.Filters` 는 `IEnumerable<SlotFilter>` 다(어셈블리에서 확인했다).
+    // 필터의 모양은 같으므로(`SlotFilter.Filter`) 읽는 법도 같고, 받지 않는 종류(`ExcludedFilter`)는
+    // 이 타입에 아예 없다.
+    private static HashSet<string> AllowedTemplatesOf(StackSlot slot)
     {
         var allowed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var filter in slot.Properties?.Filters ?? [])
