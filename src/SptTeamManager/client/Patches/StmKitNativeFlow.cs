@@ -47,6 +47,10 @@ namespace pitTeam.Patches
         // 팀원 빌드를 보고 있는 동안만 채워진다. 구매 요청의 owner 가 이 값으로 갈라진다.
         private static bool _teammateBuilds;
 
+        // 줄에 보여 줄 값. 서버가 목록과 함께 준다(구매 창이 청구할 값과 같은 계산이다).
+        // -1 은 "값을 매길 수 없다" 라서 담지 않는다 - 담으면 화면이 -1₩ 을 보여 준다.
+        private static readonly Dictionary<string, int> _rowPrices = new Dictionary<string, int>(StringComparer.Ordinal);
+
         // 화면의 빌드 보관소를 잠깐 바꿔 끼운 상태. 원래 사전을 그대로 들고 있다가 되돌린다.
         // **플레이어의 사전 객체 자체는 건드리지 않는다** - 참조만 바꿔 끼우므로 원본은 손상되지 않는다.
         private static EFT.UI.Builds.EquipmentBuildsStorage _swappedStorage;
@@ -58,6 +62,14 @@ namespace pitTeam.Patches
         // 서버가 찾는 것이 어긋나면 엉뚱한 빌드를 입힌다.
         private static string CurrentOwner => _teammateBuilds ? OwnerTeammate : OwnerPlayer;
 
+        // 줄 하나의 값. 모르면 false 를 주고, 그러면 화면은 그 자리에 **아무 숫자도 쓰지 않는다**
+        // (게임이 쓰는 무게가 그대로 남는다). 틀린 값을 보여 주느니 말하지 않는 쪽이다.
+        internal static bool TryGetRowPrice(string buildId, out int price)
+        {
+            price = 0;
+            return !string.IsNullOrWhiteSpace(buildId) && _rowPrices.TryGetValue(buildId, out price);
+        }
+
         // 기본 화면을 열기 직전에 부른다. PIT 의 Open 이 그 다음에 화면을 띄운다.
         //
         // teammateBuilds 가 있으면 **그 팀원의 빌드를 화면에 싣는다**: 화면은 session.EquipmentBuildsStorage 를
@@ -67,7 +79,8 @@ namespace pitTeam.Patches
             ResultProfile profile,
             StmProfileDetailWire detail,
             StmGearBuildRowWire[] teammateBuilds,
-            EFT.IEftSession session)
+            EFT.IEftSession session,
+            StmGearBuildRowWire[] pricedRows = null)
         {
             // 앞선 창이 제대로 닫히지 않았을 수 있다. 끼우기 전에 반드시 되돌린다(이중 안전장치).
             RestoreBuilds();
@@ -76,6 +89,13 @@ namespace pitTeam.Patches
             _detail = detail;
             _teammateBuilds = false;
             CloseOverlay();
+
+            _rowPrices.Clear();
+            foreach (var row in pricedRows ?? teammateBuilds ?? new StmGearBuildRowWire[0])
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || row.Price < 0) continue;
+                _rowPrices[row.Id] = row.Price;
+            }
 
             if (teammateBuilds == null || teammateBuilds.Length == 0) return;
             _teammateBuilds = TrySwapBuilds(session, teammateBuilds);
@@ -161,6 +181,7 @@ namespace pitTeam.Patches
             _profile = null;
             _detail = null;
             _teammateBuilds = false;
+            _rowPrices.Clear();
             CloseOverlay();
         }
 

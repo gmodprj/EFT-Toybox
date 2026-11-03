@@ -119,7 +119,7 @@ namespace pitTeam.Shared
                     item["level"]?.Value<int?>() ?? 0,
                     item["side"]?.ToString() ?? string.Empty,
                     ParseStatus(item["status"]?.ToString()),
-                    item["handEdited"]?.Value<bool>() ?? false));
+                    item["gear"]?.ToString() ?? string.Empty));
             }
 
             return rows;

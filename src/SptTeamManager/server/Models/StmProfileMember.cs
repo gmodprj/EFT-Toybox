@@ -51,6 +51,9 @@ public record StmRosterRow
     [JsonPropertyName("status")] public string Status { get; set; } = string.Empty;
     [JsonPropertyName("autoJoin")] public bool AutoJoin { get; set; }
     [JsonPropertyName("handEdited")] public bool HandEdited { get; set; }
+    // SpawnGearPolicy.Decide 의 결과("Real"/"Temporary"). 화면은 이 한 값만 보고 말한다 -
+    // 손으로 고쳤는지만으로는 가릴 수 없기 때문이다(손대지 않아도 장비와 무기가 다 있으면 실물로 나간다).
+    [JsonPropertyName("gear")] public string Gear { get; set; } = string.Empty;
 }
 
 public record StmRosterResponse

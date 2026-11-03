@@ -31,6 +31,21 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
             var autoJoinIds = registered.Where(m => m.AutoJoin).Select(m => m.ProfileId).ToHashSet(StringComparer.Ordinal);
             var handEditedIds = registered.Where(m => m.HandEdited).Select(m => m.ProfileId).ToHashSet(StringComparer.Ordinal);
             var candidates = catalog.GetCandidates(sessionId.ToString());
+            // 레이드에 무엇을 입고 나가는지의 판정. **두 조각이 서로 다른 곳에 있어** 여기서 합친다:
+            // 손으로 고쳤는지는 등록 정보에, 입은 장비와 무기는 프로필(카탈로그)에 있다.
+            // 손으로 고쳤는지만 보면 틀린다 - 손대지 않아도 장비와 무기가 다 있으면 실물로 나간다.
+            var gearByProfileId = candidates
+                .Where(c => c?.Gear != null)
+                .GroupBy(c => c.ProfileId, StringComparer.Ordinal)
+                .ToDictionary(g => g.Key, g => g.First().Gear!, StringComparer.Ordinal);
+
+            string GearKindOf(string profileId)
+            {
+                if (!gearByProfileId.TryGetValue(profileId, out var facts)) return string.Empty;
+                return SpawnGearPolicy
+                    .Decide(facts.HasAnyEquipment, facts.HasWeaponInRequiredSlot, handEditedIds.Contains(profileId))
+                    .Kind.ToString();
+            }
             return new StmRosterResponse
             {
                 Members = ProfileRosterPolicy.JoinRegistered(candidates, registeredIds)
@@ -39,6 +54,7 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
                         ProfileId = r.ProfileId, Aid = r.Aid, Nickname = r.Nickname, Level = r.Level,
                         Side = r.Side, Status = r.Status.ToString(), AutoJoin = autoJoinIds.Contains(r.ProfileId),
                         HandEdited = handEditedIds.Contains(r.ProfileId),
+                        Gear = GearKindOf(r.ProfileId),
                     }).ToList(),
                 Candidates = ProfileRosterPolicy.SelectUnregisteredReady(candidates, registeredIds)
                     .Select(c => new StmRosterRow
@@ -140,6 +156,10 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
     {
         if (gearBuilds.TryList(sessionId, request.Aid, request.ProfileId, out var builds, out var refusalReason) && builds != null)
         {
+            // 줄마다 값을 매겨 함께 보낸다. 화면이 값을 보여 주려면 목록을 받을 때 알아야 하고,
+            // **구매 창과 같은 계산**이어야 한다(다른 계산이면 보여 준 값과 청구가 어긋난다).
+            PriceRows(sessionId, request, builds.TeammateBuilds, StmGearKitQuoteService.OwnerTeammate);
+            PriceRows(sessionId, request, builds.PlayerBuilds, StmGearKitQuoteService.OwnerPlayer);
             return new ValueTask<string>(httpResponse.GetBody(builds));
         }
 
@@ -147,6 +167,36 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
             ? "빌드 목록을 읽지 못했습니다. 서버 로그를 확인하세요."
             : refusalReason!;
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 목록의 줄마다 값을 매긴다. 한 줄이 실패해도 그 줄만 -1 로 두고 나머지는 그대로 낸다 -
+    // 값을 못 매기는 빌드가 하나 있다고 목록 전체를 못 보여 줄 이유는 없다(사지 못할 뿐이다).
+    private void PriceRows(MongoId sessionId, StmGearBuildsRequest request, List<StmGearBuildRow>? rows, string owner)
+    {
+        if (rows == null || rows.Count == 0) return;
+
+        foreach (var row in rows)
+        {
+            if (row == null || string.IsNullOrWhiteSpace(row.Id)) continue;
+            try
+            {
+                var quoteRequest = new StmGearKitQuoteRequest
+                {
+                    Aid = request.Aid,
+                    ProfileId = request.ProfileId,
+                    BuildId = row.Id,
+                    Owner = owner,
+                };
+                row.Price = kitQuotes.TryQuote(sessionId, quoteRequest, out var quote, out _) && quote != null
+                    ? quote.Total
+                    : -1;
+            }
+            catch (Exception ex)
+            {
+                row.Price = -1;
+                logger.Warning($"[STM] 빌드 '{row.Id}' 의 값을 매기지 못해 목록에 값 없이 싣는다: {ex.Message}");
+            }
+        }
     }
 
     // 계획 4 Task 2. 읽기 전용 견적 - 돈도 물건도 건드리지 않는다.

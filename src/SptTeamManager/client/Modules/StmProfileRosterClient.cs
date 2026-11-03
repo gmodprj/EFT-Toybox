@@ -30,11 +30,14 @@ namespace pitTeam.Modules
         internal const string ReasonEmpty = "게임에 한 번 들어가야 합니다";
         internal const string ReasonUnreadable = "프로필을 읽을 수 없습니다";
         internal const string ReasonMissing = "프로필이 더 이상 없습니다";
-        // 임시 장비를 받는가, 맞춰 둔 장비를 그대로 입는가. 계획 2·3 이 끝나 서버가 명단 응답에 handEdited 를
-        // 싣는다(2026-11-03) - 그 전까지는 둘 중 어느 쪽도 주장하지 않으려고 "아직 판정하지 않음" 만 보였다.
-        // 한 방향이다: 한 번 손으로 맞추면(장비 편집·꾸러미 구매) 그 팀원은 임시 장비 대상에서 빠진다.
-        internal const string EquipmentHandEdited = "장비 구분: 맞춰 둔 장비";
+        // 레이드에 무엇을 입고 나가는가. 서버가 SpawnGearPolicy 로 판정해 "Real"/"Temporary" 를 싣는다.
+        // **손으로 고쳤는지만 보면 틀린다**(2026-11-03 인게임): 손대지 않았어도 입은 장비와 무기가 다 있으면
+        // 실물로 나간다. 임시 장비는 입은 것이 없거나 필수 무기 슬롯이 비었을 때의 이야기다.
+        internal const string EquipmentReal = "장비 구분: 실물 장비";
         internal const string EquipmentTemporary = "장비 구분: 레이드마다 임시 장비";
+        internal const string EquipmentUndecided = "장비 구분: 아직 판정하지 않음";
+        internal const string GearKindReal = "Real";
+        internal const string GearKindTemporary = "Temporary";
         internal const string LoadFailedTitle = "프로필 팀원을 읽지 못했습니다";
         internal const string LoadFailedLine = "서버 응답이 없거나 올바르지 않습니다";
         internal const string SessionUnverifiedTitle = "로그인 프로필 확인 불가";

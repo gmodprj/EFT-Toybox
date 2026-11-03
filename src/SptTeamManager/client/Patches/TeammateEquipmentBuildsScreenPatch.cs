@@ -1976,11 +1976,6 @@ namespace pitTeam.Patches
 
         private static void ApplySelectedBuildPrice(EquipmentBuildsScreen screen)
         {
-            // STM: 목록 줄과 같은 이유로 고른 빌드의 값도 쓰지 않는다. PIT 의 값은 용병용 규칙이 붙은 것이라
-            // 우리가 청구하는 값과 다르다 - 2026-11-03 에 이 자리만 분기가 빠져 있는 것을 로그에서 찾았다
-            // (STM 모드인데 [UI][KitPrice] 진단이 쏟아지고 있었다).
-            if (StmKitNativeFlow.IsActive) return;
-
             if (screen == null)
             {
                 return;
@@ -1993,15 +1988,22 @@ namespace pitTeam.Patches
                 return;
             }
 
+            // STM: 목록 줄과 같다 - 서버가 준 값만 쓰고, 모르면 아무것도 쓰지 않는다.
+            // PIT 의 값 계산을 타지 않으므로 [UI][KitPrice] 진단도 나지 않는다.
+            if (StmKitNativeFlow.IsActive)
+            {
+                if (StmKitNativeFlow.TryGetRowPrice(selectedBuild.Id.ToString(), out int stmPrice))
+                {
+                    WriteRoublePrice(weightPanel, stmPrice);
+                }
+
+                return;
+            }
+
             KitLoadoutPricingContext pricingContext = CreateKitLoadoutPricingContext(selectedBuild.Equipment);
             int price = CalculateBuildMarketRoublePrice(selectedBuild.Equipment, pricingContext);
             LogBuildPriceDiagnosticsOnce(selectedBuild, pricingContext, price, "selected");
-            weightPanel.SetParameterValue(new ValueStruct
-            {
-                Current = price,
-                Maximum = 0f
-            }, -1f, 0, false, true);
-            weightPanel.SetWarningColor(false, false);
+            WriteRoublePrice(weightPanel, price);
         }
 
         private static void ApplyBuildListPrice(EquipmentBuildListView view, EFT.UI.BuildWrapper<EFT.UI.Builds.EquipmentBuild> buildWrapper)
@@ -2011,18 +2013,31 @@ namespace pitTeam.Patches
 
         private static void ApplyBuildListPrice(EquipmentBuildListView view, EFT.UI.Builds.EquipmentBuild build)
         {
-            // STM: 보여 준 숫자와 청구가 다른 것이 가장 나쁘다. 고르기 전에는 값을 말하지 않는다.
-            if (StmKitNativeFlow.IsActive) return;
-
             HealthParameterPanel weightPanel = BuildListWeightField?.GetValue(view) as HealthParameterPanel;
             if (weightPanel == null || build == null)
             {
                 return;
             }
 
+            // STM: PIT 의 값은 용병용 규칙이 붙은 것이라 우리가 청구하는 값과 다르다. 대신 **서버가
+            // 목록과 함께 준 값**을 쓴다 - 구매 창이 청구할 값과 같은 계산이다. 값을 모르는 줄에는
+            // 아무 숫자도 쓰지 않는다(게임이 쓰는 무게가 그대로 남는다).
+            if (StmKitNativeFlow.IsActive)
+            {
+                if (!StmKitNativeFlow.TryGetRowPrice(build.Id.ToString(), out int stmPrice)) return;
+                ApplyRoublesIcon(view.transform, force: true);
+                WriteRoublePrice(weightPanel, stmPrice);
+                return;
+            }
+
             KitLoadoutPricingContext pricingContext = CreateKitLoadoutPricingContext(build.Equipment);
             int price = CalculateBuildMarketRoublePrice(build.Equipment, pricingContext);
             LogBuildPriceDiagnosticsOnce(build, pricingContext, price, "list");
+            WriteRoublePrice(weightPanel, price);
+        }
+
+        private static void WriteRoublePrice(HealthParameterPanel weightPanel, int price)
+        {
             weightPanel.SetParameterValue(new ValueStruct
             {
                 Current = price,
@@ -4066,11 +4081,12 @@ namespace pitTeam.Patches
             }
         }
 
-        private static void ApplyRoublesIcon(Transform row)
+        private static void ApplyRoublesIcon(Transform row, bool force = false)
         {
-            // STM: 값을 쓰지 않으니 루블 아이콘도 달지 않는다. 달아 두면 그 자리에 남는 **무게** 숫자가
+            // STM: 값을 쓰지 못하는 줄에는 아이콘도 달지 않는다. 달아 두면 그 자리에 남는 **무게** 숫자가
             // 값처럼 보인다(2026-11-02 인게임에서 44.3·25.2 를 값으로 읽을 뻔했다).
-            if (StmKitNativeFlow.IsActive) return;
+            // 값을 쓰는 줄은 force 로 부른다 - 그때는 용병 쪽과 똑같이 ₽ 가 붙는다.
+            if (StmKitNativeFlow.IsActive && !force) return;
 
             Transform iconTransform = FindChildRecursive(row, "WeightIcon");
             Image image = iconTransform?.GetComponent<Image>();
