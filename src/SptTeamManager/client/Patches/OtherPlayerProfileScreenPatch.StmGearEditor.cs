@@ -566,7 +566,14 @@ namespace pitTeam.Patches
                 editorProfile.Inventory.Equipment,
                 null);
 
-            TryBuildLoadoutEditorStashPanel(leftSection, editorProfile, editorInventoryController);
+            // 플레이어 인벤토리 화면과 같은 문맥을 준다(InventoryScreenController 가 쓰는 바로 그것).
+            // PIT 가 쓰던 AreaStashItemContext 로는 스태시 칸의 조작 메뉴가 짧았다 - 탄박스를 리그로 옮기면
+            // 메뉴가 길어지는데 스태시에서는 짧은 이유가 이 **문맥의 종류**였다(2026-11-03 인게임).
+            TryBuildLoadoutEditorStashPanel(
+                leftSection,
+                editorProfile,
+                editorInventoryController,
+                new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory));
             TryBuildLoadoutEditorFollowerPanel(profile, rightSection, itemUiContext, editorProfile, editorInventoryController);
 
             // PIT 의 두 패널 함수는 실패를 삼켜 대체 글자로 바꾸고 void 로 돌아온다 - 겉으로는 쓸 수 있는 편집기처럼 보인다.

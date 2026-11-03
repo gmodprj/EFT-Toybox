@@ -428,10 +428,15 @@ namespace pitTeam.Patches
             }
         }
 
+        // stashItemContextOverride: 스태시 칸의 **아이템 문맥**을 부르는 쪽이 정한다. null 이면 PIT 가 쓰던
+        // AreaStashItemContext 그대로다(용병 편집기는 이 길을 쓴다). STM 편집기는 플레이어 인벤토리 화면과
+        // 같은 InventorySelectableItemContext 를 준다 - EFT 의 조작 메뉴가 문맥의 **종류**로 갈리기 때문이다
+        // (ItemContextInteractionsSwitcher.IsActive 의 LoadAmmo·ApplyMagPreset 은 그 종류를 직접 본다).
         private static void TryBuildLoadoutEditorStashPanel(
             RectTransform leftSection,
             Profile editorProfile,
-            InventoryController editorInventoryController)
+            InventoryController editorInventoryController,
+            EFT.InventoryLogic.ItemContext stashItemContextOverride = null)
         {
             try
             {
@@ -442,11 +447,12 @@ namespace pitTeam.Patches
                     throw new InvalidOperationException($"stashTemplate={(stashTemplate != null)}, fakeStash={(fakeStash != null)}");
                 }
 
-                EFT.InventoryLogic.ItemContext stashContext = new EFT.InventoryLogic.AreaStashItemContext(
-                    fakeStash,
-                    EFT.InventoryLogic.AreaStashItemContext.EItemType.Inventory,
-                    editorInventoryController.Inventory.FavoriteItemsStorage,
-                    false);
+                EFT.InventoryLogic.ItemContext stashContext = stashItemContextOverride
+                    ?? new EFT.InventoryLogic.AreaStashItemContext(
+                        fakeStash,
+                        EFT.InventoryLogic.AreaStashItemContext.EItemType.Inventory,
+                        editorInventoryController.Inventory.FavoriteItemsStorage,
+                        false);
 
                 SimpleStashPanel stashPanel = GameObject.Instantiate(stashTemplate, leftSection, false);
                 stashPanel.name = "pitFireTeam_LoadoutEditorStashPanel";
