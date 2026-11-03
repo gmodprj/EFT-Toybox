@@ -4681,3 +4681,32 @@ SPT 의 `PlaceItemInContainer` 가 쓰는 모양이다).
   주머니·보안 컨테이너·완장·칼집·인식표는 그대로 막는다(플레이어 화면에서도 안 움직인다).
 - 조각 이름(`SpecialSlot`)의 집은 여전히 `WornGearLossPolicy` 하나다 - 거기에 `IsSpecialSlot` 을 열었다.
 - **교차 계약 테스트**를 "두 집합의 차이는 특수 슬롯뿐" 으로 적었다(592 → 595). 다른 차이가 생기면 실패한다.
+
+### 계획 5 Task A — 조작 메뉴가 넷뿐이던 진짜 이유 (2026-11-03)
+
+메뉴가 `상세정보·버리기·SEARCH IN STASH·ITEM INFO` 넷으로 얇아 **탄박스 열기·묶음 나누기·장전·비우기가
+아예 없었다.** 컨텍스트 타입(`TransferItemsScreen`) 때문이라고 짐작했는데, 역컴파일로 보니 **아니었다**.
+
+`ItemContextInteractionsSwitcher.IsActive` 의 첫 두 문장이다:
+
+```csharp
+if (!_item.ItemInteractionButtons.Contains(button)) return false;
+var list = new List<EItemInfoButton> { Inspect, Examine, Discard };
+if (!Examined && !list.Contains(button)) return false;   // ← 여기
+```
+
+`Examined` 는 `_itemController.Examined(_item)` 이고, `InventoryController.Examined` 는 **생성자의 두 번째
+인자**가 true 면 무조건 true, 아니면 플레이어 백과사전을 본다. 편집기는
+`new InventoryController(editorProfile, false)` 로 만들어져 있었다(PIT 에서 그대로 물려받은 값) -
+그래서 **모든 아이템이 "살펴보지 않은 것"** 이 되어 메뉴가 셋으로 잘린 것이다. 화면 좌표도, 컨텍스트
+타입도 아니었다.
+
+**고침은 그 인자 하나다**(`false` → `true`). 읽는 쪽 판정일 뿐 프로필에 아무것도 쓰지 않는다. 플레이어
+화면에서 그 물건들이 다 보이는 이유도 같다(자기 백과사전에 있다).
+
+**이것으로 열리는 것**: 탄박스 **열기**, 탄창 **비우기(Unload)**·**장전(Load)**, 그리고 **나누기** 메뉴.
+비우기와 열기는 **묶음을 통째로 옮기는** 조작이라 지금 저장 경로로도 그대로 저장된다. **나누기는 아직
+저장되지 않는다**(새 id 가 생긴다) - 그것이 Task B 의 몫이다.
+
+**설치.** 바뀐 것은 클라이언트 DLL 하나뿐이라(서버 DLL 은 `fd71138f` 그대로) 그 파일만 덮었다:
+설치본 md5 `d12aa418` = 빌드 산출물. 서버는 켜진 채 두었다 - 서버 쪽은 바뀌지 않았다.
