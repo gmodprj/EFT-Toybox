@@ -33,6 +33,8 @@ public class ProfileGearEditPolicyTests
         new WornGearItem("stash-helmet2", Stash, "hideout"),
         new WornGearItem("stash-mag", Stash, "hideout"),
         new WornGearItem("stash-ammo", Stash, "hideout"),
+        new WornGearItem("stash-round", Stash, "hideout"),
+        new WornGearItem("stash-bulk", Stash, "hideout"),
     };
 
     // 아이템 데이터베이스에서 올 사실을 손으로 적은 것. 서버는 ItemHelper.GetItem 으로 같은 모양을 만든다.
@@ -50,6 +52,8 @@ public class ProfileGearEditPolicyTests
             ["stash-helmet2"] = "tpl-helmet",
             ["stash-mag"] = "tpl-mag",
             ["stash-ammo"] = "tpl-ammo",
+            ["stash-round"] = "tpl-ammo",
+            ["stash-bulk"] = "tpl-ammo",
             ["worn-pockets"] = "tpl-pockets",
             ["pocket-cash"] = "tpl-cash",
             ["worn-secure"] = "tpl-secure",
@@ -72,12 +76,13 @@ public class ProfileGearEditPolicyTests
             ["tpl-rifle"] = new[]
             {
                 new GearSlotDefinition("mod_magazine", new[] { "tpl-mag" }),
-                new GearSlotDefinition("patron_in_weapon", new[] { "tpl-ammo" }),
+                // 탄을 담는 자리에는 용량이 있다 - 데이터베이스가 Chambers·Cartridges 의 _max_count 로 적어 둔 값이다.
+                new GearSlotDefinition("patron_in_weapon", new[] { "tpl-ammo" }, AmmoCapacity: 1),
                 // 필터를 읽지 못한 슬롯. "제한 없음" 이 아니라 "모름" 이다.
                 new GearSlotDefinition("mod_mount", Array.Empty<string>()),
             },
             ["tpl-pistol"] = new[] { new GearSlotDefinition("mod_magazine", new[] { "tpl-mag" }) },
-            ["tpl-mag"] = new[] { new GearSlotDefinition("cartridges", new[] { "tpl-ammo" }) },
+            ["tpl-mag"] = new[] { new GearSlotDefinition("cartridges", new[] { "tpl-ammo" }, AmmoCapacity: 30) },
             // 리그는 격자만 있고 슬롯이 없다.
             ["tpl-rig"] = Array.Empty<GearSlotDefinition>(),
             ["tpl-stash"] = Array.Empty<GearSlotDefinition>(),
@@ -93,7 +98,15 @@ public class ProfileGearEditPolicyTests
             ["tpl-rig"] = "node-vest",
         };
 
-        return new GearSlotFacts(templates, slots, parents);
+        // 더미의 수량. 용량이 있는 자리의 판정에만 쓰인다.
+        var counts = new Dictionary<string, int>
+        {
+            ["stash-round"] = 1,
+            ["stash-ammo"] = 30,
+            ["stash-bulk"] = 1080,
+        };
+
+        return new GearSlotFacts(templates, slots, parents, counts);
     }
 
     private static GearEditRequest Edit(string itemId, string slot, string? parent) =>
@@ -186,7 +199,7 @@ public class ProfileGearEditPolicyTests
         // 그 팀원은 빈 탄창으로 레이드에 나간다. 그래서 탄약은 특별 취급하지 않는다 - 그 프로필
         // 스태시에 있으면 장비 트리의 탄약 슬롯에 넣을 수 있다.
         Assert.True(Judge(Edit("stash-ammo", "cartridges", "worn-rifle-mag")).Allowed);
-        Assert.True(Judge(Edit("stash-ammo", "patron_in_weapon", "worn-rifle")).Allowed);
+        Assert.True(Judge(Edit("stash-round", "patron_in_weapon", "worn-rifle")).Allowed);
 
         // 탄창 자체도 같은 규칙이다(권총의 탄창 슬롯은 비어 있다).
         Assert.True(Judge(Edit("stash-mag", "mod_magazine", "worn-pistol")).Allowed);
@@ -399,7 +412,7 @@ public class ProfileGearEditPolicyTests
         Assert.False(string.IsNullOrWhiteSpace(verdict.Reason));
 
         // 같은 슬롯에 탄은 들어간다 - 필터를 "전부 거부" 로 읽은 것이 아니라는 반대쪽.
-        Assert.True(Judge(Edit("stash-ammo", "patron_in_weapon", "worn-rifle")).Allowed);
+        Assert.True(Judge(Edit("stash-round", "patron_in_weapon", "worn-rifle")).Allowed);
     }
 
     [Fact]
@@ -814,5 +827,59 @@ public class ProfileGearEditPolicyTests
 
         Assert.True(verdict.Conserved);
         Assert.Empty(verdict.MissingItemIds);
+    }
+
+    [Fact]
+    public void 용량보다_큰_탄_더미는_넣지_않는다()
+    {
+        // 이 편집은 수량을 바꾸지 않으므로(설계) 1080발 더미가 30발 탄창에 "일부만" 들어갈 수 없다.
+        // 넣으면 EFT 가 적재를 거부할 수 있는, 플레이어가 실제로 플레이하는 프로필이 된다.
+        var verdict = Judge(Edit("stash-bulk", "cartridges", "worn-rifle-mag"));
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("1080", verdict.Reason);
+        Assert.Contains("30", verdict.Reason);
+    }
+
+    [Fact]
+    public void 용량_안에_드는_탄_더미는_허용한다()
+    {
+        Assert.True(Judge(Edit("stash-ammo", "cartridges", "worn-rifle-mag")).Allowed);
+    }
+
+    [Fact]
+    public void 약실은_한_발만_받는다()
+    {
+        Assert.True(Judge(Edit("stash-round", "patron_in_weapon", "worn-rifle")).Allowed);
+        Assert.False(Judge(Edit("stash-ammo", "patron_in_weapon", "worn-rifle")).Allowed);
+    }
+
+    [Fact]
+    public void 수량을_모르면_용량_있는_자리에_넣지_않는다()
+    {
+        // 닫힌 쪽. 읽지 못한 수량을 "한 발이겠지" 로 치면 용량 검사가 그대로 뚫린다.
+        var factsWithoutCounts = new GearSlotFacts(
+            new Dictionary<string, string> { ["worn-rifle-mag"] = "tpl-mag", ["stash-ammo"] = "tpl-ammo" },
+            new Dictionary<string, IReadOnlyList<GearSlotDefinition>>
+            {
+                ["tpl-mag"] = new[] { new GearSlotDefinition("cartridges", new[] { "tpl-ammo" }, AmmoCapacity: 30) },
+            },
+            new Dictionary<string, string>());
+
+        var verdict = ProfileGearEditPolicy.Validate(
+            Edit("stash-ammo", "cartridges", "worn-rifle-mag"), Profile(), Stash, Equip, factsWithoutCounts);
+
+        Assert.False(verdict.Allowed);
+        Assert.False(string.IsNullOrWhiteSpace(verdict.Reason));
+    }
+
+    [Fact]
+    public void 탄을_담는_자리의_용량을_알려_준다()
+    {
+        // 서비스가 이것으로 "색인 좌표를 쓸 자리인가" 를 가른다. 일반 슬롯에는 용량이 없다.
+        Assert.Equal(30, ProfileGearEditPolicy.SlotAmmoCapacity("cartridges", "worn-rifle-mag", Facts()));
+        Assert.Equal(1, ProfileGearEditPolicy.SlotAmmoCapacity("Patron_In_Weapon", "worn-rifle", Facts()));
+        Assert.Null(ProfileGearEditPolicy.SlotAmmoCapacity("mod_magazine", "worn-rifle", Facts()));
+        Assert.Null(ProfileGearEditPolicy.SlotAmmoCapacity("cartridges", "worn-rifle-mag", null));
     }
 }
