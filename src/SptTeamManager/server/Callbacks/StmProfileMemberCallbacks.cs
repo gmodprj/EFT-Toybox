@@ -141,7 +141,7 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
     // 실패는 성공처럼 보이지 않는다(오류 본문 + 플레이어가 읽는 사유).
     public ValueTask<string> ApplyInventory(string url, StmInventoryApplyRequest request, MongoId sessionId)
     {
-        if (inventoryApply.TryApply(sessionId, request.Aid, request.ProfileId, request.Items, out var rejectionReason))
+        if (inventoryApply.TryApply(sessionId, request.Aid, request.ProfileId, request.Items, request.LoadedItemIds, out var rejectionReason))
         {
             return new ValueTask<string>(httpResponse.NullResponse());
         }

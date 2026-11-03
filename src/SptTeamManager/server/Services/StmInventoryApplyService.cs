@@ -41,6 +41,7 @@ public class StmInventoryApplyService(
         string? accountId,
         string? requestedProfileId,
         List<Item>? submitted,
+        IReadOnlyCollection<string>? loadedItemIds,
         out string? rejectionReason)
     {
         rejectionReason = null;
@@ -135,7 +136,7 @@ public class StmInventoryApplyService(
 
             var before = ToStates(twoTrees);
             var after = ToStates(submitted);
-            var verdict = ProfileInventoryApplyPolicy.Validate(before, after, stashRootId, equipmentRootId);
+            var verdict = ProfileInventoryApplyPolicy.Validate(before, after, stashRootId, equipmentRootId, loadedItemIds);
             if (!verdict.Allowed)
             {
                 rejectionReason = verdict.Reason;
@@ -198,7 +199,7 @@ public class StmInventoryApplyService(
             inventory.Items = finalItems;
             var elapsedMs = saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
 
-            if (!VerifyFromDisk(member.ProfileId, finalItems, stashRootId!, equipmentRootId!, before, out var mismatch))
+            if (!VerifyFromDisk(member.ProfileId, finalItems, stashRootId!, equipmentRootId!, before, loadedItemIds, out var mismatch))
             {
                 logger.Error($"[STM] 인벤토리 저장 확인 실패(프로필 '{member.ProfileId}'): {mismatch} 원래 상태로 되돌린다.");
                 var restored = TryRestore(profileId, inventory, original);
@@ -256,6 +257,7 @@ public class StmInventoryApplyService(
         string stashRootId,
         string equipmentRootId,
         IReadOnlyList<InventoryItemState> before,
+        IReadOnlyCollection<string>? loadedItemIds,
         out string mismatch)
     {
         mismatch = string.Empty;
@@ -321,7 +323,7 @@ public class StmInventoryApplyService(
             if (IsInTree(diskIndex, item, stashRootId) || IsInTree(diskIndex, item, equipmentRootId)) diskTwoTrees.Add(item);
         }
 
-        var diskVerdict = ProfileInventoryApplyPolicy.Validate(before, ToStates(diskTwoTrees), stashRootId, equipmentRootId);
+        var diskVerdict = ProfileInventoryApplyPolicy.Validate(before, ToStates(diskTwoTrees), stashRootId, equipmentRootId, loadedItemIds);
         if (!diskVerdict.Allowed)
         {
             mismatch = $"디스크의 상태가 보존 판정을 통과하지 못했다: {diskVerdict.Reason}";

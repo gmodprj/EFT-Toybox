@@ -1,3 +1,4 @@
+using System.Linq;
 using pitTeam.Shared;
 using Xunit;
 
@@ -31,8 +32,9 @@ public class ProfileInventoryApplyPolicyTests
         Item("box-ammo", "tpl-ammo", "box", "cartridges", 120),
     };
 
+    // 편집기가 before 의 아이템을 **전부** 들고 있었던 경우. 사라진 것은 플레이어가 버린 것이다.
     private static InventoryApplyVerdict Judge(List<InventoryItemState> after)
-        => ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip);
+        => ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, Before().Select(i => i.Id!).ToList());
 
     [Fact]
     public void 바뀐_것이_없으면_허용하고_잃은_것도_없다()
@@ -154,8 +156,49 @@ public class ProfileInventoryApplyPolicyTests
     [Fact]
     public void 빈_제출은_거절한다()
     {
-        Assert.False(ProfileInventoryApplyPolicy.Validate(Before(), new List<InventoryItemState>(), Stash, Equip).Allowed);
-        Assert.False(ProfileInventoryApplyPolicy.Validate(Before(), null, Stash, Equip).Allowed);
-        Assert.False(ProfileInventoryApplyPolicy.Validate(null, Before(), Stash, Equip).Allowed);
+        Assert.False(ProfileInventoryApplyPolicy.Validate(Before(), new List<InventoryItemState>(), Stash, Equip, null).Allowed);
+        Assert.False(ProfileInventoryApplyPolicy.Validate(Before(), null, Stash, Equip, null).Allowed);
+        Assert.False(ProfileInventoryApplyPolicy.Validate(null, Before(), Stash, Equip, null).Allowed);
+    }
+
+    [Fact]
+    public void 편집기가_들고_있지_않던_아이템은_사라질_수_없다()
+    {
+        // 2026-11-03 실측 사고: 편집기가 EFT 역직렬화에 걸린 아이템을 건너뛰고 열렸고, 최종 상태를
+        // 제출하자 **그 68개가 프로필에서 지워졌다**. 편집기가 보여 주지 않은 것은 플레이어가 버린
+        // 것일 수 없다 - 그래서 "들고 있던 목록" 밖의 손실은 거절한다.
+        var after = Before();
+        after.RemoveAll(i => i.Id == "box");
+
+        var loadedWithoutBox = Before().Select(i => i.Id!).Where(id => id != "box").ToList();
+        var verdict = ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, loadedWithoutBox);
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("box", verdict.Reason);
+    }
+
+    [Fact]
+    public void 들고_있던_목록을_모르면_아무것도_잃지_않는다()
+    {
+        // 닫힌 쪽. 목록이 없으면 "편집기가 뭘 들고 있었는지 모른다" 이고, 모르면 지우지 않는다.
+        var after = Before();
+        after.RemoveAll(i => i.Id == "box");
+
+        Assert.False(ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, null).Allowed);
+        Assert.False(ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, new List<string>()).Allowed);
+    }
+
+    [Fact]
+    public void 들고_있던_아이템을_버리는_것은_그대로_허용한다()
+    {
+        // 같은 조작이라도 편집기가 그 아이템을 들고 있었으면 플레이어의 선택이다.
+        var after = Before();
+        after.RemoveAll(i => i.Id == "box" || i.Id == "box-ammo");
+        after.Add(Item("box-ammo", "tpl-ammo", Stash, "hideout", 120));
+
+        var verdict = Judge(after);
+
+        Assert.True(verdict.Allowed, verdict.Reason);
+        Assert.Contains("box", verdict.LostItemIds);
     }
 }

@@ -799,11 +799,16 @@ namespace pitTeam.Patches
                 string layoutNote = string.Empty;
 
                 // 한 편집 세션 = 한 요청 = 서버의 쓰기 한 번.
+                // 편집기가 **열릴 때 들고 있던** id 들도 함께 보낸다. 서버는 이 목록 밖의 손실을
+                // 거절한다 - EFT 가 읽지 못해 편집기에 실리지 않은 아이템이 제출본에 없다는 이유로
+                // 지워지는 것을 막는다(2026-11-03 실측: 그렇게 68개가 지워졌다).
+                List<string> loadedItemIds = StmItemIds(LoadoutEditorInitialEquipmentItems, LoadoutEditorInitialStashItems);
                 string body = JsonConvert.SerializeObject(new
                 {
                     aid = profile.AccountId,
                     profileId = detail.ProfileId,
                     items = endEquipment.Concat(endStash).Where(item => item != null).ToList(),
+                    loadedItemIds,
                 });
                 // 요청이 나간 뒤부터는 서버가 썼는지 우리가 모른다.
                 requestSent = true;
@@ -947,6 +952,24 @@ namespace pitTeam.Patches
             }
 
             return changed;
+        }
+
+        // 편집기가 들고 있던 아이템 id 들(열릴 때의 상태 그대로).
+        private static List<string> StmItemIds(params JsonType.FlatItem[][] groups)
+        {
+            List<string> ids = new List<string>();
+            foreach (JsonType.FlatItem[] group in groups)
+            {
+                if (group == null) continue;
+                foreach (JsonType.FlatItem item in group)
+                {
+                    if (item == null) continue;
+                    string id = item._id.ToString();
+                    if (!string.IsNullOrWhiteSpace(id)) ids.Add(id);
+                }
+            }
+
+            return ids;
         }
 
         private static HashSet<string> StmItemFingerprints(params JsonType.FlatItem[][] groups)
