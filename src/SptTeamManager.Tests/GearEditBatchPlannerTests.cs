@@ -24,6 +24,10 @@ public class GearEditBatchPlannerTests
         Item("stash-mag", Stash, "hideout", "2,0"),
         Item("stash-bullet", "stash-mag", "cartridges"),
         Item("stash-vest", Stash, "hideout", "4,0"),
+        // 무기에 꽂혀 있는 탄창과, 리그 칸에 든 여분 탄창. 교환(하나를 빼고 그 자리에 다른 하나)을 본다.
+        Item("worn-rig", Equip, "TacticalVest"),
+        Item("rig-mag", "worn-rig", "1", "0,0"),
+        Item("worn-mag", "worn-rifle", "mod_magazine"),
     };
 
     private static List<EditorItemState> Moved(List<EditorItemState> items, string id, string? parent, string? slot, string? location = null)
@@ -300,5 +304,33 @@ public class GearEditBatchPlannerTests
         Assert.Equal(first, second);
         // 제약이 없는 건들은 끝 상태 목록의 순서를 따른다(결정적이다).
         Assert.Equal(new[] { "stash-helmet", "stash-vest" }, first);
+    }
+
+    [Fact]
+    public void 슬롯을_비우는_건이_그_자리를_채우는_건보다_먼저_온다()
+    {
+        // 무기의 탄창을 스태시로 빼고, 그 자리에 리그의 탄창을 꽂는다. 순서가 뒤집히면 서버가
+        // "그 슬롯에는 이미 아이템이 있어 넣지 않습니다" 로 **맞는 편집을 거절한다**(2026-11-03 인게임).
+        var after = Moved(Moved(Before(), "worn-mag", Stash, "hideout", "6,0"), "rig-mag", "worn-rifle", "mod_magazine");
+
+        var plan = GearEditBatchPlanner.Plan(Before(), after);
+
+        Assert.True(plan.Ok);
+        Assert.Equal(2, plan.Edits.Count);
+        Assert.Equal("worn-mag", plan.Edits[0].ItemId);
+        Assert.Equal("rig-mag", plan.Edits[1].ItemId);
+    }
+
+    [Fact]
+    public void 서로_자리를_맞바꾸면_순서를_정할_수_없다고_말한다()
+    {
+        // A 는 B 의 자리로, B 는 A 의 자리로. 한 번에 보낼 수 있는 순서가 없다(중간 자리가 필요하다).
+        // 조용히 하나를 떨어뜨리지 않고 거절한다.
+        var after = Moved(Moved(Before(), "worn-mag", "worn-rig", "1", "0,0"), "rig-mag", "worn-rifle", "mod_magazine");
+
+        var plan = GearEditBatchPlanner.Plan(Before(), after);
+
+        Assert.False(plan.Ok);
+        Assert.Contains("순서", plan.Reason);
     }
 }
