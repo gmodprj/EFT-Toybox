@@ -195,6 +195,10 @@
     "Name": "진영 적대 보정",
     "Description": "진영 간 적대가 늘 제대로 동작하지 않는 문제를 고치려는 패치를 켠다."
   },
+  "autoJoinMaxMembers": {
+    "Name": "자동 합류 최대 인원",
+    "Description": "레이드에 자동으로 따라붙는 팀원의 최대 수. 프로필 팀원을 먼저 무작위로 고르고, 자리가 남으면 용병에서 고른다. 0 이면 제한 없음."
+  },
   "pmcArmbands": {
     "Name": "PMC 진영 완장",
     "Description": "PMC 봇에게 완장을 달지 (BEAR 는 빨강, USEC 은 파랑)."

@@ -101,6 +101,7 @@ namespace pitTeam
         public Dictionary<string, string> pickup { get; set; }
         public Dictionary<string, string> tieredPickup { get; set; }
         public Dictionary<string, string> maximumPickup { get; set; }
+        public Dictionary<string, string> autoJoinMaxMembers { get; set; }
         public Dictionary<string, string> recruitPickup { get; set; }
         public Dictionary<string, string> teamEscape { get; set; }
         public Dictionary<string, string> teamEscapeUseAnyExtract { get; set; }
@@ -247,6 +248,8 @@ namespace pitTeam
         public static ConfigEntry<bool> pickupEnabled;
         public static ConfigEntry<bool> tieredPickup;
         public static ConfigEntry<int> maximumPickup;
+        // 출격할 때 자동으로 따라붙는 인원의 상한. 0 이면 무제한이다(2026-11-03 전까지의 동작).
+        public static ConfigEntry<int> autoJoinMaxMembers;
         public static ConfigEntry<bool> recruitPickup;
         public static ConfigEntry<bool> teamEscape;
         public static ConfigEntry<bool> teamEscapeUseAnyExtract;
@@ -1239,6 +1242,16 @@ namespace pitTeam
 
             pmcArmbands = Config.Bind("", "14 PmcArmbands", true, new ConfigDescription(optionsLang.pmcArmbands["Description"], null, CreateConfigAttributes(-1007, false, optionsLang.pmcArmbands)));
             pmcArmbands.SettingChanged += (_, _) => SyncServerSettings();
+
+            // 다른 언어 파일(ru·chs 등)에는 이 열쇠가 없다 - PIT 업스트림의 것이기 때문이다.
+            // 없으면 사전 조회가 터져 플러그인이 통째로 안 뜨므로, 그 자리를 영어로 메운다.
+            var autoJoinLang = optionsLang.autoJoinMaxMembers ?? new Dictionary<string, string>
+            {
+                ["Name"] = "Auto-Join Squad Limit",
+                ["Description"] = "How many teammates may follow you into a raid automatically. Profile teammates are picked first, at random, then mercenaries. 0 means no limit.",
+            };
+            autoJoinMaxMembers = Config.Bind("", "14 AutoJoinMaxMembers", 4, new ConfigDescription(autoJoinLang["Description"], new AcceptableValueRange<int>(0, 10), CreateConfigAttributes(-1008, false, autoJoinLang)));
+            autoJoinMaxMembers.SettingChanged += (_, _) => SyncServerSettings();
 
             loadoutManagementMode = Config.Bind("", "14 LoadoutManagement", DefaultLoadoutManagementMode, new ConfigDescription(optionsLang.loadoutManagement["Description"], null, CreateConfigAttributes(-1005, false, optionsLang.loadoutManagement)));
             if (!Enum.IsDefined(typeof(LoadoutManagementMode), loadoutManagementMode.Value))
