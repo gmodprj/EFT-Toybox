@@ -28,12 +28,19 @@ namespace pitTeam.Shared
     //     트리에 있어야 한다("탄창을 총에 꽂고 그 탄창에 탄을 넣는" 연쇄).
     //   - 옛 부모가 이번에 같이 옮겨지는 아이템이면 이 아이템을 꺼내는 건이 먼저다: 부모가 먼저 다른 트리로 가면
     //     자식은 이미 출처 트리 밖에 있다(벗길 때 "총과 그 탄창을 함께 스태시로").
+    //   - 어떤 자리를 **비우는** 건이 그 자리를 **채우는** 건보다 먼저다: 서버는 한 슬롯에 하나만 허용하므로
+    //     순서가 뒤집히면 "그 슬롯에는 이미 아이템이 있어 넣지 않습니다" 로 맞는 편집이 거절된다
+    //     (2026-11-03 인게임: 무기의 탄창을 스태시로 빼고 리그의 탄창을 그 자리에 꽂는 교환이 이것 때문에 막혔다).
     // 두 제약이 서로를 가리키면(순환) 순서를 지어내지 않고 거부한다.
     //
     // 서버가 표현하지 못하는 변화는 조용히 버리지 않고 거부하거나(새로 생기거나 사라진 아이템 - 묶음 쌓기를 나누고
     // 합치는 조작) 개수로 알린다(칸 위치만 바뀜). 의도적으로 catch 가 없다: 입력이 닿는 모든 경로는 아래 반환으로 끝난다.
     public static class GearEditBatchPlanner
     {
+        // 자리 하나를 (부모, 슬롯) 한 문자열로 적을 때 쓰는 구분자. 아이템 id 는 16진이고 슬롯 이름에도
+        // 이 모양은 없다 - 둘을 그냥 이으면 서로 다른 자리가 같은 열쇠가 될 수 있다.
+        private const string SlotKeySeparator = "::";
+
         private static GearEditPlan Refuse(string reason)
             => new GearEditPlan(false, reason, Array.Empty<PlannedGearEdit>(), 0);
 
@@ -153,6 +160,18 @@ namespace pitTeam.Shared
                 waitingFor[then]++;
             }
 
+            // 비우는 건을 찾기 위한 색인: (옛 부모, 옛 슬롯) → 그 자리를 떠나는 건. 슬롯 이름은
+            // 서버 판정과 같은 기준으로 맞춘다(대소문자 무시).
+            var vacating = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            for (var i = 0; i < edits.Count; i++)
+            {
+                var origin = beforeById[edits[i].ItemId];
+                if (string.IsNullOrWhiteSpace(origin.ParentId) || string.IsNullOrWhiteSpace(origin.SlotId)) continue;
+                var key = origin.ParentId + SlotKeySeparator + origin.SlotId;
+                // 같은 자리를 둘이 떠나는 프로필은 이미 깨져 있다(서버의 점유 검사가 잡는다). 먼저 것을 쓴다.
+                if (!vacating.ContainsKey(key)) vacating.Add(key, i);
+            }
+
             for (var i = 0; i < edits.Count; i++)
             {
                 // 새 부모의 건이 먼저.
@@ -166,6 +185,14 @@ namespace pitTeam.Shared
                 if (oldParentId != null && indexById.TryGetValue(oldParentId, out var oldParentEdit))
                 {
                     Require(i, oldParentEdit);
+                }
+
+                // 그 자리를 비우는 건이 먼저. 서로 자리를 맞바꾸면 고리가 되고, 그때는 순서를 지어내지
+                // 않고 거절한다(중간 자리가 필요한 조작이다).
+                var targetKey = edits[i].TargetParentId + SlotKeySeparator + edits[i].TargetSlotId;
+                if (vacating.TryGetValue(targetKey, out var vacatingEdit))
+                {
+                    Require(vacatingEdit, i);
                 }
             }
 
