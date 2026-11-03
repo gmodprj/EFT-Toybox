@@ -173,6 +173,12 @@ public class StmGearEditService(
     // 남는다. 최종 집합을 **서버가** 만드는 것이 핵심이다 - 클라이언트가 최종 인벤토리를 제출하는 모양은
     // 계약 2 의 보존 검사를 만들게 한 그 구멍이다. 각 건은 자기 혼자 Validate 를 통과해야 하고, 하나라도
     // 거절되면 전체를 거절하며 **아무것도 쓰지 않는다**(ProfileGearEditPolicy.ValidateBatch).
+    // **2026-11-03 이후 아무도 부르지 않는다.** 저장은 최종 상태 제출(StmInventoryApplyService)로 바뀌었고
+    // 이 경로의 라우트·콜백·와이어 모델은 지웠다. 메서드와 그 아래 헬퍼들(슬롯 어휘·격자 배치·디스크
+    // 재독)은 **아직 남겨 둔다**: 격자 배치는 꾸러미 구매가 쓰고(TryPlaceInContainer), 슬롯 어휘는 최종
+    // 상태의 **슬롯 적법성**을 서버가 보게 될 때 그대로 쓸 자리다(인계 문서의 열린 항목). 그때까지는
+    // 죽은 코드이므로, 다시 살릴 생각이 없다면 이 메서드와 BuildSlotFacts·VerifyFromDisk·TryRestore 를
+    // 함께 지워야 한다 - 하나만 지우면 컴파일은 되고 의미가 비어 버린다.
     public bool TryApply(MongoId sessionId, string? accountId, IReadOnlyList<GearEditRequest>? requests, out string? rejectionReason)
     {
         rejectionReason = null;

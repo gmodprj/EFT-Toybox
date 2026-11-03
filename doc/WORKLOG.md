@@ -4987,3 +4987,25 @@ if (!pitFireTeam.IsFollowerLoadoutRealisticMode())
   플레이어 화면에서도 보안 컨테이너는 장비 칸에서 떨어지지 않는다.
 
 **실측.** 클라이언트 빌드 경고 0, 설치본 md5 `a515c442`. 서버 `521a92f4` 그대로.
+
+### 계획 5 Task D — 옛 경로를 걷어냈다 (2026-11-03)
+
+클라이언트가 더 이상 쓰지 않는 **이동 목록 경로**의 바깥 면을 지웠다: 라우트 `/stm/members/edit-gear`,
+콜백 `StmProfileMemberCallbacks.EditGear`, 와이어 모델 `StmGearEditRequest`·`StmGearEditItem`.
+옛 경로를 가리키던 주석 둘도 고쳤다(편집기 머리 주석, `GearEditBatchPlanner`).
+
+**지우지 않은 것과 그 이유.** `StmGearEditService.TryApply` 와 그 아래 헬퍼는 남겼다 - 격자 배치
+(`TryPlaceInContainer`)는 **꾸러미 구매**가 쓰고, 슬롯 어휘(`BuildSlotFacts`·`ProfileGearEditPolicy`)는
+아래 열린 항목에서 **다시 쓸 자리**다. 메서드 머리에 "아무도 부르지 않는다. 되살릴 생각이 없다면
+BuildSlotFacts·VerifyFromDisk·TryRestore 와 함께 지워라" 를 적어 두었다 - 하나만 지우면 컴파일은 되고
+의미가 비는 자리다. `GearEditBatchPlanner` 와 그 테스트도 같은 이유로 남겼다(순서 규칙이 다시 필요해질 수 있다).
+
+**이 교체로 생긴 열린 항목 하나 — 서버가 슬롯 적법성을 보지 않는다.** 이동 목록 경로는 "이 아이템이 이
+슬롯에 들어가는 종류인가" 를 서버가 판정했다(`ProfileGearEditPolicy` + 아이템 DB). 최종 상태 경로는
+**보존만** 본다 - 무엇이 어디에 있는지는 보지 않는다. 지금은 EFT 의 편집기가 화면에서 막아 주지만,
+서버 혼자로는 "헬멧이 탄창에 들어간" 제출을 거절하지 못한다. 고칠 때는 이미 있는 어휘를 그대로 쓰면
+된다(그래서 남겼다). **거절은 확실할 때만** 해야 한다 - 격자·모드 아이템처럼 우리가 모델하지 못하는
+자리를 "모름" 으로 거절하면 정상 저장이 막힌다.
+
+**실측.** 서버·클라이언트 빌드 경고 0, 테스트 608개 통과. 산출물 md5 서버 `fd384b51`·클라이언트
+`1f8e0cce`. **게임이 켜져 있어 아직 설치하지 못했다** - 설치본은 서버 `521a92f4`·클라이언트 `a515c442` 그대로다.

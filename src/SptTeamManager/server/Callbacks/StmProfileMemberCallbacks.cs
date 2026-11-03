@@ -105,37 +105,6 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }
 
-    // 프로필 팀원의 장비를 한 아이템 옮긴다(§6-4). STM 자신의 길이고 EFT·PIT 의 기존 라우트를 가로채지 않는다 -
-    // PIT 의 default-equipment 는 플레이어 스태시를 출처로 쓰므로 프로필 팀원에게 쓸 수 없고, 그쪽은 사유와 함께
-    // 거부된다(FriendlyTeammateCallbacks.SaveDefaultEquipment). 3값 계약이 아니라 2값이다: 이 라우트는 프로필
-    // 팀원 전용이라 "PIT 경로로 흘려보낸다" 는 답이 없다 - 프로필 팀원이 아니면 사유와 함께 거부다.
-    // 실패는 성공처럼 보이지 않는다(오류 본문 + 플레이어가 읽는 사유).
-    public ValueTask<string> EditGear(string url, StmGearEditRequest request, MongoId sessionId)
-    {
-        // 와이어의 건들을 순수 레코드로 옮긴다. ProfileId 는 봉투에 하나뿐이므로 모든 건이 같은 프로필을
-        // 가리킨다(정책이 그 약속을 다시 확인한다). 순서는 클라이언트가 보낸 그대로 - 판정이 순서대로
-        // 누적해 보므로 "탄창을 꽂고 그 탄창에 탄을 넣는" 연쇄가 그 순서로 통과한다.
-        var edits = (request.Edits ?? [])
-            .Where(e => e != null)
-            .Select(e => new GearEditRequest(
-                request.ProfileId ?? string.Empty,
-                e.ItemId ?? string.Empty,
-                e.TargetSlotId ?? string.Empty,
-                e.TargetParentId))
-            .ToList();
-
-        if (gearEdits.TryApply(sessionId, request.Aid, edits, out var rejectionReason))
-        {
-            return new ValueTask<string>(httpResponse.NullResponse());
-        }
-
-        // TryApply 는 false 일 때 사유를 비우지 않지만, 비면 성공으로 읽히지 않게 중립 문구를 쓴다.
-        var message = string.IsNullOrWhiteSpace(rejectionReason)
-            ? "장비를 고치지 못했습니다. 서버 로그를 확인하세요."
-            : rejectionReason!;
-        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
-    }
-
     // 편집기가 끝난 뒤의 인벤토리 **전체**를 받아 한 번에 쓴다(계획 5 Task B). 이동 목록(EditGear)과
     // 달리 아이템이 생기고 사라지는 조작(나누기·합치기·탄박스 열기·버리기)까지 적을 수 있다.
     // 실패는 성공처럼 보이지 않는다(오류 본문 + 플레이어가 읽는 사유).

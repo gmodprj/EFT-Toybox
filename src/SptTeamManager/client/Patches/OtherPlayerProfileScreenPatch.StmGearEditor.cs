@@ -39,8 +39,12 @@ namespace pitTeam.Patches
     //      자신의 스태시를 EFT 아이템 트리로 세워(FlatItemsToTree) 같은 InventoryDescriptor 경로로 편집기 프로필에 넣는다.
     //      플레이어 스태시는 한 번도 읽지 않는다 - session.Profile 은 프로필 복제의 껍데기(외형·스킬)로만 쓰인다.
     //   2) 제출: PIT 는 플레이어 스태시와 팀원 장비를 통째로 default-equipment 에 보내 서버가 플레이어 스태시를 바꿔 쓴다.
-    //      여기서는 편집기의 시작 상태와 끝 상태를 비교해(GearEditBatchPlanner) "이 아이템을 이 부모의 이 슬롯으로" 건 목록을
-    //      만들고, /stm/members/edit-gear 에 **한 번에** 보낸다. 최종 집합은 서버가 자기 프로필에서 만든다.
+    //      여기서는 **그 팀원 두 트리의 최종 상태**를 /stm/members/apply-inventory 에 한 번에 보낸다(계획 5 Task B).
+    //      조작의 종류(이동·나누기·합치기·탄박스 열기·버리기)를 적지 않고 결과만 보내므로, 화면에서 되는 것은
+    //      그대로 저장된다. 정당한 변화인지는 서버가 본다(ProfileInventoryApplyPolicy: 늘어나는 것·바깥에서
+    //      들어온 종류·구조 손상·트리 손상 거절, 편집기가 들고 있지 않던 아이템의 손실 거절).
+    //      2026-11-03 이전의 "건 목록"(GearEditBatchPlanner → /stm/members/edit-gear)은 아이템이 생기고 사라지는
+    //      조작을 적을 수 없어 버렸다 - 그 라우트는 서버에서 지웠다.
     //   3) 용병 전용 부가 기능을 열지 않는다: 보험 조회(OpenLoadoutEditorInsurance)와 수리(CanRepairLoadoutEditorEquipmentItem 은
     //      ViewedProfile 이 있어야 열린다 - 여기서는 ViewedProfile 을 건드리지 않는다)는 PIT 의 용병 라우트에 묶여 있다.
     //

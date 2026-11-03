@@ -65,19 +65,6 @@ public record StmCloseTransferRequest : IRequestData
     [JsonPropertyName("acknowledged")] public bool Acknowledged { get; set; }
 }
 
-// 프로필 팀원의 장비 편집 요청. 한 번에 여러 건을 받아 **쓰기 한 번**으로 끝낸다(SaveProfile 한 번 +
-// 디스크 재독 한 번). 쪼개 부르면 중간에 하나가 실패했을 때 앞의 것은 이미 적용돼 '반쯤 입은' 상태가 남는다.
-// 각 건은 '아이템 하나를 어디로' 이고, 최종 집합은 **서버가** 만든다 - PIT 의 default-equipment 처럼
-// 클라이언트가 최종 인벤토리를 제출하는 모양은 제출된 것이 곧 새 상태가 되어 '빠진 아이템' 이 조용히
-// 사라진다(그 구멍을 메우려고 보존 검사를 따로 넣었다). 서버가 자기 프로필을 기준으로 옮기면 사라질 것이 없다.
-// Aid 가 함께 오는 것은 해석기가 Aid 로 찾기 때문이고(읽기 한 곳), ProfileId 는 믿지 않고 대조한다.
-public record StmGearEditRequest : IRequestData
-{
-    [JsonPropertyName("aid")] public string? Aid { get; set; }
-    [JsonPropertyName("profileId")] public string? ProfileId { get; set; }
-    [JsonPropertyName("edits")] public List<StmGearEditItem>? Edits { get; set; }
-}
-
 // 계획 5 Task B. 편집기가 끝난 뒤의 **그 팀원 인벤토리 전체**를 보낸다. 조작의 종류를 적지 않는다 -
 // 이동이든 나누기든 합치기든 탄박스 열기든, 결과만 보낸다. 서버는 before 와 대조해 정당성만 본다
 // (ProfileInventoryApplyPolicy). Aid 로 찾고 ProfileId 는 대조한다(다른 요청과 같은 약속).
@@ -90,16 +77,4 @@ public record StmInventoryApplyRequest : IRequestData
     // 편집기가 **열릴 때 실제로 들고 있던** 아이템 id 들. 서버는 이 목록 밖의 손실을 거절한다 -
     // 편집기가 보여 주지도 않은 아이템은 플레이어가 버린 것일 수 없다(2026-11-03 실측 사고).
     [JsonPropertyName("loadedItemIds")] public List<string>? LoadedItemIds { get; set; }
-}
-
-// 한 건: 이 아이템을 이 부모의 이 슬롯으로. TargetParentId 가 비면 장비 루트 아래를 뜻한다.
-// 방향 둘을 같은 모양으로 적는다: 부모가 장비 트리면 **입히기**, 부모가 그 팀원의 스태시 루트이고
-// 슬롯이 'hideout' 이면 **벗기기**다. 그 밖의 부모는 거부다(ProfileGearEditPolicy).
-// Location(격자 좌표)이 없는 것은 의도다 - 입힐 때는 슬롯이라 좌표가 없고, 벗길 때는 SPT 자신의
-// PlaceItemInContainer 가 빈 자리를 찾아 좌표를 쓴다. 어느 쪽도 클라이언트가 좌표를 정하지 않는다.
-public record StmGearEditItem
-{
-    [JsonPropertyName("itemId")] public string? ItemId { get; set; }
-    [JsonPropertyName("targetSlotId")] public string? TargetSlotId { get; set; }
-    [JsonPropertyName("targetParentId")] public string? TargetParentId { get; set; }
 }

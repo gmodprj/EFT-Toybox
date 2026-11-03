@@ -146,10 +146,6 @@ public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCal
                 "/stm/members/close-transfer",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.CloseTransfer(url, info, sessionId))
             ),
-            new RouteAction<StmGearEditRequest>(
-                "/stm/members/edit-gear",
-                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.EditGear(url, info, sessionId))
-            ),
             new RouteAction<StmInventoryApplyRequest>(
                 "/stm/members/apply-inventory",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.ApplyInventory(url, info, sessionId))
