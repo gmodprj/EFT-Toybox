@@ -217,6 +217,7 @@ namespace pitTeam.Patches
 
             _activeScreen = screen;
             CaptureScreenChrome(screen);
+            HideStandardBuildsTabForStm(screen);
             HideScreenBottomPanel(screen.transform);
             HideCurrentWeightValue(screen.transform);
             EnsureExcludeExistingItemsToggle(screen.transform);
@@ -582,6 +583,26 @@ namespace pitTeam.Patches
                     state.WeightIcon.preserveAspect = state.WeightIconPreserveAspect.Value;
                 }
             }
+        }
+
+        // STM: 이 화면은 **저장된 프로필 빌드**만 다룬다. 표준형 탭에 뜨는 것은 게임의 기본 프리셋이라
+        // 어느 프로필의 저장 목록에도 없고, 그래서 서버가 값을 매기지 못한다 - 골라 봐야 버튼이 죽은 채로
+        // "고른 빌드를 찾지 못했습니다" 가 돌아온다. 팀원 꾸러미에서는 아예 빈 목록으로 보인다(빌드 사전을
+        // 바꿔 끼우면서 표준형이 함께 빠지기 때문이다). 막다른 탭이므로 숨긴다.
+        // 되돌리기는 ScreenObjects 가 맡는다 - 원래 활성 상태를 적어 두면 RestoreScreenChrome 이 되살린다.
+        private static void HideStandardBuildsTabForStm(EquipmentBuildsScreen screen)
+        {
+            if (!StmKitNativeFlow.IsActive || screen == null) return;
+
+            var tab = screen._standardBuildsTab;
+            if (tab == null || tab.gameObject == null) return;
+
+            if (_screenChromeState?.ScreenObjects != null)
+            {
+                AddOriginalActive(_screenChromeState.ScreenObjects, tab.transform);
+            }
+
+            tab.gameObject.SetActive(false);
         }
 
         private static void HideScreenBottomPanel(Transform screen)
