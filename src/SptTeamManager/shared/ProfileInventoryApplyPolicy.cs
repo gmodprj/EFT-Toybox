@@ -41,7 +41,8 @@ namespace pitTeam.Shared
             IReadOnlyList<InventoryItemState>? after,
             string? stashRootId,
             string? equipmentRootId,
-            IReadOnlyCollection<string>? loadedItemIds)
+            IReadOnlyCollection<string>? loadedItemIds,
+            GearSlotFacts? slotFacts = null)
         {
             if (before == null || before.Count == 0) return Reject("편집 전 상태를 읽을 수 없어 저장하지 않습니다.");
             if (after == null || after.Count == 0) return Reject("편집기의 상태를 읽을 수 없어 저장하지 않습니다.");
@@ -157,6 +158,12 @@ namespace pitTeam.Shared
                 }
             }
 
+            // 자리의 적법성. 보존이 지키지 못하는 것이다 - id 집합과 종류별 총량이 그대로여도 헬멧이
+            // 탄창 안에 앉은 프로필은 EFT 가 적재를 거부할 수 있다(관문 17 의 '규칙을 어긴 스태시 항목'
+            // 과 같은 부류다).
+            var misplaced = CheckPlacements(before, after, afterById, slotFacts);
+            if (misplaced != null) return Reject(misplaced);
+
             // 사라지는 것: 편집기가 들고 있던 것만 허용한다. 무엇이 사라지는지는 돌려준다.
             var loaded = new HashSet<string>(StringComparer.Ordinal);
             if (loadedItemIds != null)
@@ -180,6 +187,141 @@ namespace pitTeam.Shared
             }
 
             return new InventoryApplyVerdict(true, string.Empty, lost);
+        }
+
+        // 제출된 자리가 적법한가. 어휘(슬롯·격자·필터·용량)의 집은 ProfileGearEditPolicy 하나이고
+        // 여기서는 그것을 읽는다(불변식 8).
+        //
+        // **이동 목록 경로와 극성이 반대다.** 거기서는 모르면 거부였다 - 요청 한 건을 거절하는 비용이었다.
+        // 여기서 같은 극성을 쓰면 제출본은 **두 트리 전체**라서, 우리가 모델하지 못하는 자리에 앉은 기존
+        // 아이템 하나가 그 프로필의 **모든 저장을 영구히** 막는다(열린 항목 10 이 경고한 자리다).
+        // 그래서 두 가지로 좁힌다:
+        //   1. **이번 제출이 옮긴 자리만** 본다. 자리가 그대로인 아이템은 EFT 가 이미 그 프로필을
+        //      적재하고 있다는 뜻이고, 우리가 만든 상태가 아니다.
+        //   2. **틀렸다고 증명된 것만** 거절한다. 부모의 종류를 읽지 못했거나, 그 템플릿의 자리 목록을
+        //      읽지 못했거나, 필터가 비었거나, 용량이 0 이면 아무것도 말하지 않고 통과시킨다.
+        //
+        // 그 대가로 이것은 **혼자 서는 관문이 아니다** - 데이터베이스를 읽지 못하면 자리는 보지 못하고
+        // 보존 검사만 남는다. 보존을 거드는 두 번째 그물로 읽어라.
+        private static string? CheckPlacements(
+            IReadOnlyList<InventoryItemState> before,
+            IReadOnlyList<InventoryItemState> after,
+            IReadOnlyDictionary<string, InventoryItemState> afterById,
+            GearSlotFacts? slotFacts)
+        {
+            if (slotFacts == null) return null;
+
+            var placeBefore = new Dictionary<string, (string? Parent, string? Slot)>(StringComparer.Ordinal);
+            foreach (var item in before)
+            {
+                if (item?.Id != null) placeBefore[item.Id] = (item.ParentId, item.SlotId);
+            }
+
+            // (부모, 자리) 별로 누가 앉아 있는가. 점유와 용량 합을 이것으로 센다.
+            var occupants = new Dictionary<(string Parent, string Slot), List<InventoryItemState>>();
+            foreach (var item in after)
+            {
+                if (string.IsNullOrWhiteSpace(item.ParentId) || string.IsNullOrWhiteSpace(item.SlotId)) continue;
+                var seat = (item.ParentId!.Trim(), item.SlotId!.Trim().ToLowerInvariant());
+                if (!occupants.TryGetValue(seat, out var sitting))
+                {
+                    occupants[seat] = sitting = new List<InventoryItemState>();
+                }
+
+                sitting.Add(item);
+            }
+
+            foreach (var item in after)
+            {
+                var id = item.Id!;
+                if (string.IsNullOrWhiteSpace(item.ParentId) || string.IsNullOrWhiteSpace(item.SlotId)) continue;
+
+                // 좁힘 1. 자리가 그대로면 보지 않는다.
+                if (placeBefore.TryGetValue(id, out var was)
+                    && string.Equals(was.Parent, item.ParentId, StringComparison.Ordinal)
+                    && string.Equals(was.Slot, item.SlotId, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                var parentId = item.ParentId!.Trim();
+                var slot = item.SlotId!.Trim();
+
+                // 부모가 제출본에 없으면 위의 트리 검사가 이미 거절했다.
+                if (!afterById.TryGetValue(parentId, out var parent)) continue;
+                var parentTemplateId = parent.TemplateId;
+                var itemTemplateId = item.TemplateId;
+                if (string.IsNullOrWhiteSpace(parentTemplateId) || string.IsNullOrWhiteSpace(itemTemplateId)) continue;
+
+                // 격자(가방·리그·주머니·스태시의 칸)가 먼저다. 여러 개를 담으므로 점유를 묻지 않고,
+                // 자리가 실제로 남아 있는지는 좌표의 문제라 여기서 셈하지 않는다(EFT 편집기가 센다).
+                var grid = ProfileGearEditPolicy.FindGridDefinition(slotFacts, parentTemplateId, slot);
+                if (grid != null)
+                {
+                    if (grid.AllowedTemplateIds != null && grid.AllowedTemplateIds.Count > 0
+                        && !ProfileGearEditPolicy.FilterAccepts(slotFacts, grid.AllowedTemplateIds, itemTemplateId!))
+                    {
+                        return $"아이템 '{id}' 은(는) '{parentId}' 의 '{slot}' 칸에 들어가지 않는 종류라서 저장하지 않습니다.";
+                    }
+
+                    // 받지 않는 종류(ExcludedFilter). 가방 안에 가방을 넣지 못하는 것이 이것이다.
+                    if (grid.ExcludedTemplateIds != null && grid.ExcludedTemplateIds.Count > 0
+                        && ProfileGearEditPolicy.FilterAccepts(slotFacts, grid.ExcludedTemplateIds, itemTemplateId!))
+                    {
+                        return $"아이템 '{id}' 은(는) '{parentId}' 의 '{slot}' 칸이 받지 않는 종류라서 저장하지 않습니다.";
+                    }
+
+                    continue;
+                }
+
+                var definition = ProfileGearEditPolicy.FindSlotDefinition(slotFacts, parentTemplateId, slot);
+                if (definition == null)
+                {
+                    // 그 템플릿의 자리 목록을 **읽었는데** 이 이름이 없으면 그런 자리가 없는 것이다.
+                    // 읽지 못했으면 아무것도 말할 수 없다(좁힘 2).
+                    if (ProfileGearEditPolicy.KnowsPlacesOf(slotFacts, parentTemplateId))
+                    {
+                        return $"'{parentId}' 에는 '{slot}' 자리가 없어 저장하지 않습니다.";
+                    }
+
+                    continue;
+                }
+
+                if (definition.AllowedTemplateIds != null && definition.AllowedTemplateIds.Count > 0
+                    && !ProfileGearEditPolicy.FilterAccepts(slotFacts, definition.AllowedTemplateIds, itemTemplateId!))
+                {
+                    return $"아이템 '{id}' 은(는) '{parentId}' 의 '{slot}' 슬롯에 들어가지 않는 종류라서 저장하지 않습니다.";
+                }
+
+                var seatKey = (parentId, slot.ToLowerInvariant());
+                var seated = occupants.TryGetValue(seatKey, out var list) ? list : null;
+
+                // 탄을 색인으로 담는 자리. 더미 여럿이 정상이므로(다른 구경을 섞는 것이 플레이어 화면의
+                // 동작이다) 점유를 묻지 않고 **합**을 용량과 견준다 - 하나씩 보면 20+20 이 30발 탄창을
+                // 지나간다.
+                if (definition.AmmoCapacity is int capacity)
+                {
+                    if (capacity > 0 && seated != null)
+                    {
+                        var total = 0;
+                        foreach (var occupant in seated) total += occupant.StackCount > 0 ? occupant.StackCount : 1;
+                        if (total > capacity)
+                        {
+                            return $"'{parentId}' 의 '{slot}' 자리는 {capacity}발까지인데 {total}발이 들어가 저장하지 않습니다.";
+                        }
+                    }
+
+                    continue;
+                }
+
+                // 일반 슬롯에는 하나만 앉는다.
+                if (seated != null && seated.Count > 1)
+                {
+                    return $"'{parentId}' 의 '{slot}' 슬롯에 아이템 {seated.Count}개가 함께 앉아 저장하지 않습니다.";
+                }
+            }
+
+            return null;
         }
 
         private static Dictionary<string, int> TotalsByTemplate(IReadOnlyList<InventoryItemState> items)

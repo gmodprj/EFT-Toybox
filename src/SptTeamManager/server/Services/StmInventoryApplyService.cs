@@ -28,6 +28,7 @@ public class StmInventoryApplyService(
     StmTransferJournal journal,
     SaveServer saveServer,
     ICloner cloner,
+    StmGearSlotFactsBuilder slotFactsBuilder,
     JsonUtil jsonUtil,
     ISptLogger<StmInventoryApplyService> logger)
 {
@@ -136,7 +137,13 @@ public class StmInventoryApplyService(
 
             var before = ToStates(twoTrees);
             var after = ToStates(submitted);
-            var verdict = ProfileInventoryApplyPolicy.Validate(before, after, stashRootId, equipmentRootId, loadedItemIds);
+
+            // 자리의 어휘(슬롯·탄 자리·격자·필터·용량). **원래 아이템과 제출본을 함께** 넣는다:
+            // 부모가 될 수 있는 것은 원래 아이템이고, 나누기로 생긴 더미의 종류는 제출본에만 있다.
+            // 읽히지 않으면 빈 사실이 오고, 그때 이 경로는 자리를 보지 않고 보존만 본다
+            // (ProfileInventoryApplyPolicy.CheckPlacements 의 극성 주석).
+            var slotFacts = slotFactsBuilder.Build(original.Concat(submitted));
+            var verdict = ProfileInventoryApplyPolicy.Validate(before, after, stashRootId, equipmentRootId, loadedItemIds, slotFacts);
             if (!verdict.Allowed)
             {
                 rejectionReason = verdict.Reason;
@@ -199,7 +206,7 @@ public class StmInventoryApplyService(
             inventory.Items = finalItems;
             var elapsedMs = saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
 
-            if (!VerifyFromDisk(member.ProfileId, finalItems, stashRootId!, equipmentRootId!, before, loadedItemIds, out var mismatch))
+            if (!VerifyFromDisk(member.ProfileId, finalItems, stashRootId!, equipmentRootId!, before, loadedItemIds, slotFacts, out var mismatch))
             {
                 logger.Error($"[STM] 인벤토리 저장 확인 실패(프로필 '{member.ProfileId}'): {mismatch} 원래 상태로 되돌린다.");
                 var restored = TryRestore(profileId, inventory, original);
@@ -258,6 +265,7 @@ public class StmInventoryApplyService(
         string equipmentRootId,
         IReadOnlyList<InventoryItemState> before,
         IReadOnlyCollection<string>? loadedItemIds,
+        GearSlotFacts? slotFacts,
         out string mismatch)
     {
         mismatch = string.Empty;
@@ -323,7 +331,9 @@ public class StmInventoryApplyService(
             if (IsInTree(diskIndex, item, stashRootId) || IsInTree(diskIndex, item, equipmentRootId)) diskTwoTrees.Add(item);
         }
 
-        var diskVerdict = ProfileInventoryApplyPolicy.Validate(before, ToStates(diskTwoTrees), stashRootId, equipmentRootId, loadedItemIds);
+        // 같은 사실로 본다. 새로 생긴 더미는 **서버가 매긴 id** 라 before 에 없으므로 자리 검사가
+        // 그것을 "이번에 옮긴 자리" 로 보고 그대로 판정한다 - 쓰는 쪽이 실수해도 여기서 걸린다.
+        var diskVerdict = ProfileInventoryApplyPolicy.Validate(before, ToStates(diskTwoTrees), stashRootId, equipmentRootId, loadedItemIds, slotFacts);
         if (!diskVerdict.Allowed)
         {
             mismatch = $"디스크의 상태가 보존 판정을 통과하지 못했다: {diskVerdict.Reason}";

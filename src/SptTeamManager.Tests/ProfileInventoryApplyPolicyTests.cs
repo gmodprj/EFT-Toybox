@@ -201,4 +201,262 @@ public class ProfileInventoryApplyPolicyTests
         Assert.True(verdict.Allowed, verdict.Reason);
         Assert.Contains("box", verdict.LostItemIds);
     }
+
+    // ───────────────────────────────────────────────────────────────────────────────────────────
+    // 자리의 적법성 (인계 문서 열린 항목 10). 보존만 보던 이 경로가 "이 아이템이 이 자리에 들어가는
+    // 종류인가" 도 본다. **이동 목록 경로와 극성이 반대다**: 거기서는 모르면 거부였지만(요청 한 건을
+    // 거절하는 비용), 여기서 같은 극성을 쓰면 모델하지 못하는 자리에 앉은 **기존** 아이템 하나가 그
+    // 프로필의 모든 저장을 영구히 막는다. 그래서 (ㄱ) 이번 제출이 **실제로 옮긴 자리만** 보고
+    // (ㄴ) **틀렸다고 증명된 것만** 거절한다. 아래 테스트가 그 두 좁힘을 못박는다.
+    // ───────────────────────────────────────────────────────────────────────────────────────────
+
+    // 자리 판정을 쓰는 팀원. 리그 칸에 탄창, 스태시에 헬멧 둘·가방·탄 860발, 그리고 **원래부터 틀린
+    // 자리**에 앉은 가방 하나(odd) - 기존 상태를 건드리지 않는다는 것을 그것으로 증명한다.
+    private static List<InventoryItemState> PlaceBefore() => new()
+    {
+        Item(Equip, "tpl-equip", null, null),
+        Item("pockets", "tpl-pockets", Equip, "Pockets"),
+        Item("secure", "tpl-secure", Equip, "SecuredContainer"),
+        Item("rig", "tpl-rig", Equip, "TacticalVest"),
+        Item("mag", "tpl-mag", "rig", "1"),
+        Item("odd", "tpl-bag", "mag", "cartridges"),
+        Item(Stash, "tpl-stash", null, null),
+        Item("helmet", "tpl-helmet", Stash, "hideout"),
+        Item("helmet2", "tpl-helmet", Stash, "hideout"),
+        Item("bag", "tpl-bag", Stash, "hideout"),
+        Item("ammo", "tpl-ammo", Stash, "hideout", 860),
+    };
+
+    // 실제 데이터베이스처럼 **범주 노드**를 담는다(ProfileGearEditPolicy.FilterAccepts 의 실측 주석).
+    // 모든 템플릿이 Slots·Grids 양쪽에 (비어 있더라도) 들어 있다 - 그것이 "이 템플릿을 읽었다" 는
+    // 신호이고, 읽지 못한 템플릿과 구별된다.
+    private static GearSlotFacts PlaceFacts(
+        IReadOnlyList<GearSlotDefinition>? magSlots = null,
+        bool dropMagTemplate = false)
+    {
+        var templates = new Dictionary<string, string>
+        {
+            [Equip] = "tpl-equip",
+            ["pockets"] = "tpl-pockets",
+            ["secure"] = "tpl-secure",
+            ["rig"] = "tpl-rig",
+            ["mag"] = "tpl-mag",
+            ["odd"] = "tpl-bag",
+            [Stash] = "tpl-stash",
+            ["helmet"] = "tpl-helmet",
+            ["helmet2"] = "tpl-helmet",
+            ["bag"] = "tpl-bag",
+            ["ammo"] = "tpl-ammo",
+        };
+
+        var slots = new Dictionary<string, IReadOnlyList<GearSlotDefinition>>
+        {
+            ["tpl-equip"] = new[]
+            {
+                new GearSlotDefinition("Headwear", new[] { "node-headwear" }),
+                new GearSlotDefinition("TacticalVest", new[] { "node-vest" }),
+                new GearSlotDefinition("Pockets", new[] { "node-pockets" }),
+                new GearSlotDefinition("SecuredContainer", new[] { "node-secure" }),
+            },
+            ["tpl-mag"] = magSlots ?? new[] { new GearSlotDefinition("cartridges", new[] { "tpl-ammo" }, 30) },
+            ["tpl-rig"] = Array.Empty<GearSlotDefinition>(),
+            ["tpl-stash"] = Array.Empty<GearSlotDefinition>(),
+            ["tpl-pockets"] = Array.Empty<GearSlotDefinition>(),
+            ["tpl-secure"] = Array.Empty<GearSlotDefinition>(),
+            ["tpl-helmet"] = Array.Empty<GearSlotDefinition>(),
+            ["tpl-bag"] = Array.Empty<GearSlotDefinition>(),
+        };
+
+        var grids = new Dictionary<string, IReadOnlyList<GearGridDefinition>>
+        {
+            ["tpl-stash"] = new[] { new GearGridDefinition("hideout", new[] { "node-item" }) },
+            // 가방 안에 가방을 넣지 못하는 것이 ExcludedFilter 다.
+            ["tpl-rig"] = new[] { new GearGridDefinition("1", new[] { "node-item" }, new[] { "node-bag" }) },
+            ["tpl-pockets"] = new[] { new GearGridDefinition("1", new[] { "node-item" }) },
+            ["tpl-secure"] = new[] { new GearGridDefinition("1", new[] { "node-item" }) },
+            ["tpl-bag"] = new[] { new GearGridDefinition("1", new[] { "node-item" }) },
+            ["tpl-equip"] = Array.Empty<GearGridDefinition>(),
+            ["tpl-mag"] = Array.Empty<GearGridDefinition>(),
+            ["tpl-helmet"] = Array.Empty<GearGridDefinition>(),
+        };
+
+        var parents = new Dictionary<string, string>
+        {
+            ["tpl-helmet"] = "node-headwear",
+            ["tpl-rig"] = "node-vest",
+            ["tpl-pockets"] = "node-pockets",
+            ["tpl-secure"] = "node-secure",
+            ["tpl-bag"] = "node-bag",
+            ["tpl-mag"] = "node-item",
+            ["tpl-ammo"] = "node-item",
+            ["node-headwear"] = "node-item",
+            ["node-vest"] = "node-item",
+            ["node-pockets"] = "node-item",
+            ["node-secure"] = "node-item",
+            ["node-bag"] = "node-item",
+        };
+
+        if (dropMagTemplate)
+        {
+            slots.Remove("tpl-mag");
+            grids.Remove("tpl-mag");
+        }
+
+        return new GearSlotFacts(templates, slots, parents, null, grids);
+    }
+
+    private static InventoryApplyVerdict JudgePlace(List<InventoryItemState> after, GearSlotFacts? facts = null)
+        => ProfileInventoryApplyPolicy.Validate(
+            PlaceBefore(), after, Stash, Equip, PlaceBefore().Select(i => i.Id!).ToList(), facts ?? PlaceFacts());
+
+    // 그 자리로 옮긴 after 를 만든다.
+    private static List<InventoryItemState> MovedTo(string id, string parent, string slot, int count = 1)
+    {
+        var after = PlaceBefore();
+        var tpl = after.First(i => i.Id == id).TemplateId!;
+        after.RemoveAll(i => i.Id == id);
+        after.Add(Item(id, tpl, parent, slot, count));
+        return after;
+    }
+
+    [Fact]
+    public void 자리가_맞으면_허용한다()
+    {
+        // 헬멧을 머리에(범주 노드를 거쳐 맞는다), 탄창을 스태시 칸으로.
+        Assert.True(JudgePlace(MovedTo("helmet", Equip, "Headwear")).Allowed);
+
+        var toStash = MovedTo("mag", Stash, "hideout");
+        var verdict = JudgePlace(toStash);
+        Assert.True(verdict.Allowed, verdict.Reason);
+    }
+
+    [Fact]
+    public void 종류가_맞지_않는_슬롯이면_거절한다()
+    {
+        // 가방을 탄창의 탄 자리에. 필터는 tpl-ammo 만 받고 가방의 조상 사슬에 그것이 없다.
+        var verdict = JudgePlace(MovedTo("bag", "mag", "cartridges"));
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("bag", verdict.Reason);
+    }
+
+    [Fact]
+    public void 격자가_받지_않는_종류면_거절한다()
+    {
+        // 리그 칸은 node-item 을 받지만 node-bag 을 받지 않는다(ExcludedFilter).
+        var verdict = JudgePlace(MovedTo("bag", "rig", "1"));
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("bag", verdict.Reason);
+    }
+
+    [Fact]
+    public void 그런_자리가_없으면_거절한다()
+    {
+        // 주머니 템플릿은 읽혔고(슬롯 없음·칸 '1' 하나) 'cartridges' 라는 자리가 없다.
+        var verdict = JudgePlace(MovedTo("ammo", "pockets", "cartridges", 860));
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("cartridges", verdict.Reason);
+    }
+
+    [Fact]
+    public void 일반_슬롯에_둘이_앉으면_거절한다()
+    {
+        var after = PlaceBefore();
+        after.RemoveAll(i => i.Id == "helmet" || i.Id == "helmet2");
+        after.Add(Item("helmet", "tpl-helmet", Equip, "Headwear"));
+        after.Add(Item("helmet2", "tpl-helmet", Equip, "Headwear"));
+
+        var verdict = JudgePlace(after);
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("Headwear", verdict.Reason);
+    }
+
+    [Fact]
+    public void 탄_자리에는_여러_더미가_앉을_수_있다()
+    {
+        // 탄 자리는 색인으로 담으므로 더미 여럿이 정상이다(다른 구경을 섞어 넣는 것이 플레이어 화면의
+        // 동작이다). 860발에서 10발씩 둘을 떼어 넣는다 - 합 20 에 원래 있던 odd 1 까지 30 안이다.
+        var after = PlaceBefore();
+        after.RemoveAll(i => i.Id == "ammo");
+        after.Add(Item("ammo", "tpl-ammo", Stash, "hideout", 840));
+        after.Add(Item("ammo-a", "tpl-ammo", "mag", "cartridges", 10));
+        after.Add(Item("ammo-b", "tpl-ammo", "mag", "cartridges", 10));
+
+        var verdict = JudgePlace(after);
+
+        Assert.True(verdict.Allowed, verdict.Reason);
+    }
+
+    [Fact]
+    public void 탄_자리의_합이_용량을_넘으면_거절한다()
+    {
+        // 더미 하나하나는 30 안이지만 합이 41 이다. 한 발씩 보면 뚫리는 자리다.
+        var after = PlaceBefore();
+        after.RemoveAll(i => i.Id == "ammo");
+        after.Add(Item("ammo", "tpl-ammo", Stash, "hideout", 820));
+        after.Add(Item("ammo-a", "tpl-ammo", "mag", "cartridges", 20));
+        after.Add(Item("ammo-b", "tpl-ammo", "mag", "cartridges", 20));
+
+        var verdict = JudgePlace(after);
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("30", verdict.Reason);
+    }
+
+    [Fact]
+    public void 자리가_그대로면_보지_않는다()
+    {
+        // odd 는 처음부터 탄 자리에 앉은 가방이다 - 우리가 만든 상태가 아니고, EFT 는 이미 그 프로필을
+        // 적재하고 있다. 이것을 거절하면 그 팀원은 **아무것도** 저장할 수 없다.
+        var verdict = JudgePlace(PlaceBefore());
+
+        Assert.True(verdict.Allowed, verdict.Reason);
+    }
+
+    [Fact]
+    public void 아이템_정보가_없으면_자리를_보지_않는다()
+    {
+        // 이 검사는 보존 검사를 **거드는** 두 번째 그물이지 혼자 서는 관문이 아니다. 데이터베이스를
+        // 읽지 못하면(서버가 빈 사실을 준다) 자리는 보지 못하고 보존만 남는다.
+        var after = MovedTo("bag", "mag", "cartridges");
+
+        Assert.True(ProfileInventoryApplyPolicy.Validate(
+            PlaceBefore(), after, Stash, Equip, PlaceBefore().Select(i => i.Id!).ToList(), null).Allowed);
+    }
+
+    [Fact]
+    public void 부모_종류를_읽지_못하면_통과시킨다()
+    {
+        // tpl-mag 를 Slots·Grids 양쪽에서 빼면 "이 템플릿을 읽지 못했다" 다. 모르는 것으로 거절하지 않는다.
+        var verdict = JudgePlace(MovedTo("bag", "mag", "cartridges"), PlaceFacts(dropMagTemplate: true));
+
+        Assert.True(verdict.Allowed, verdict.Reason);
+    }
+
+    [Fact]
+    public void 필터를_읽지_못한_자리는_거절하지_않는다()
+    {
+        // 필터가 비면 이동 목록 경로는 "모름" 으로 거부했다. 여기서는 통과시킨다 - 거절의 근거가 없다.
+        var emptyFilter = new[] { new GearSlotDefinition("cartridges", Array.Empty<string>(), 30) };
+        var verdict = JudgePlace(MovedTo("bag", "mag", "cartridges"), PlaceFacts(emptyFilter));
+
+        Assert.True(verdict.Allowed, verdict.Reason);
+    }
+
+    [Fact]
+    public void 용량을_읽지_못하면_수량을_보지_않는다()
+    {
+        // 0 은 "몇 발인지 모른다" 다(BuildSlotFacts 가 읽지 못하면 0 으로 싣는다).
+        var unknownCapacity = new[] { new GearSlotDefinition("cartridges", new[] { "tpl-ammo" }, 0) };
+        var after = PlaceBefore();
+        after.RemoveAll(i => i.Id == "ammo");
+        after.Add(Item("ammo", "tpl-ammo", "mag", "cartridges", 860));
+
+        var verdict = JudgePlace(after, PlaceFacts(unknownCapacity));
+
+        Assert.True(verdict.Allowed, verdict.Reason);
+    }
 }
