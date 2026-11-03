@@ -26,7 +26,9 @@ namespace pitTeam.Shared
     // ("Real" / "Temporary"). 비어 있으면 "아직 판정하지 않았다" 다(옛 서버가 안 싣는 경우).
     // 판정은 서버에서 한 번만 한다: 손으로 고쳤는지는 등록 정보에, 입은 것이 있는지는 프로필에 있어
     // 둘을 다 보는 자리가 거기뿐이고, 화면이 세 사실을 받아 다시 판정하면 집이 둘이 된다.
-    public sealed record RegisteredProfileRow(string ProfileId, int Aid, string Nickname, int Level, string Side, RosterRowStatus Status, string GearKind = "");
+    // AutoJoin: 출격할 때 이 팀원이 자동으로 따라붙는가. 등록 정보에만 있는 값이라 서버가 싣는다.
+    // 화면이 켜고 끌 수 있어야 하므로(그 전에는 누를 자리가 없었다) 줄에 함께 온다.
+    public sealed record RegisteredProfileRow(string ProfileId, int Aid, string Nickname, int Level, string Side, RosterRowStatus Status, string GearKind = "", bool AutoJoin = false);
 
     // Decides which launcher profiles may be offered as teammates. Only Ready may join a team;
     // every other availability stays listed so the user can see why it is blocked.
