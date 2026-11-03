@@ -17,6 +17,7 @@ public class StmAutoJoinService(
     StmProfileMemberResolver resolver,
     StmProfileMemberStore store,
     StmProfileCatalog catalog,
+    FriendlyServerSettingsService settingsService,
     ISptLogger<StmAutoJoinService> logger)
 {
     // true  = STM 이 처리했다(저장됨). 호출자는 PIT 를 부르지 않는다.
@@ -75,13 +76,14 @@ public class StmAutoJoinService(
 
             var fields = registered.Select(m => new StmProfileMemberFields(m.ProfileId, m.Tactic, m.AutoJoin, m.HandEdited));
             var selected = AutoJoinRosterPolicy.SelectAccountIds(fields, catalog.GetCandidates(sessionId.ToString()));
-            var result = new List<string>(pitAccountIds);
-            var seen = new HashSet<string>(pitAccountIds, StringComparer.Ordinal);
-            foreach (var id in selected)
-            {
-                if (seen.Add(id)) result.Add(id);
-            }
 
+            // 2026-11-03 전에는 PIT 목록 뒤에 그냥 붙였고, 그래서 **켠 만큼 전부** 나갔다
+            // (용병 넷 + 프로필 다섯 = 아홉). 이제 사용자가 정한 규칙으로 고른다:
+            // 프로필 팀원 먼저(그 안에서 무작위), 자리가 남으면 용병에서(역시 무작위).
+            // 상한은 설정값이고 0 이면 무제한이다.
+            int max = settingsService.LoadSettings().AutoJoinMaxMembers;
+            var result = AutoJoinRosterPolicy.Compose(selected, pitAccountIds, max);
+            logger.Info($"[STM] auto-join 목록: 프로필 {selected.Count}명 + 용병 {pitAccountIds.Count}명 중 {result.Count}명이 나간다(상한 {(max > 0 ? max.ToString() : "없음")}).");
             return result;
         }
         catch (Exception ex)

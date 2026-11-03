@@ -387,6 +387,7 @@ namespace pitTeam.Components
                 pitFireTeam.friendlyEncounterChance,
                 pitFireTeam.friendlyScavEncounters,
                 pitFireTeam.pmcArmbands,
+                pitFireTeam.autoJoinMaxMembers,
                 pitFireTeam.factionHostilities))
             {
                 yield return setting;

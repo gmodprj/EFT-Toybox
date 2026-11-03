@@ -122,4 +122,55 @@ public class AutoJoinRosterPolicyTests
 
         Assert.Equal(new[] { "1234" }, result);
     }
+    // 2026-11-03: 상한이 없어 용병 넷 + 프로필 다섯이면 아홉이 따라붙었다. 사용자가 정한 규칙은
+    // "프로필 먼저, 그 안에서 무작위. 남으면 용병에서 무작위" 다. 씨앗을 주면 결과가 정해지므로
+    // 기계가 확인할 수 있다.
+    [Fact]
+    public void 상한이_0이면_전부_나간다()
+    {
+        var result = AutoJoinRosterPolicy.Compose(new[] { "1", "2" }, new[] { "3", "4", "5" }, 0, new Random(1));
+        Assert.Equal(5, result.Count);
+    }
+
+    [Fact]
+    public void 상한만큼만_자른다()
+    {
+        var result = AutoJoinRosterPolicy.Compose(new[] { "1", "2" }, new[] { "3", "4", "5" }, 4, new Random(1));
+        Assert.Equal(4, result.Count);
+    }
+
+    [Fact]
+    public void 프로필이_먼저_나가고_용병은_남는_자리만_채운다()
+    {
+        var profiles = new[] { "11", "12", "13" };
+        var result = AutoJoinRosterPolicy.Compose(profiles, new[] { "21", "22" }, 3, new Random(7));
+        Assert.Equal(3, result.Count);
+        // 셋 다 프로필이다 - 차례는 섞이지만 용병이 끼어들지는 않는다.
+        Assert.All(result, id => Assert.Contains(id, profiles));
+    }
+
+    [Fact]
+    public void 프로필이_모자라면_용병이_채운다()
+    {
+        var result = AutoJoinRosterPolicy.Compose(new[] { "11" }, new[] { "21", "22", "23" }, 3, new Random(3));
+        Assert.Equal(3, result.Count);
+        Assert.Equal("11", result[0]);
+    }
+
+    [Fact]
+    public void 같은_id_는_한_번만_나가고_프로필_쪽이_이긴다()
+    {
+        var result = AutoJoinRosterPolicy.Compose(new[] { "11" }, new[] { "11", "21" }, 0, new Random(5));
+        Assert.Equal(2, result.Count);
+        Assert.Equal("11", result[0]);
+    }
+
+    [Fact]
+    public void 씨앗이_다르면_차례가_달라진다()
+    {
+        var ids = new[] { "1", "2", "3", "4", "5", "6", "7", "8" };
+        var a = AutoJoinRosterPolicy.Compose(ids, null, 0, new Random(1));
+        var b = AutoJoinRosterPolicy.Compose(ids, null, 0, new Random(2));
+        Assert.NotEqual(a, b);
+    }
 }

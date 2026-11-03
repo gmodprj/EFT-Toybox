@@ -51,6 +51,8 @@
   "pickup.Description": "레이드 중에 같은 진영 봇을 영입할 수 있게 할지.",
   "tieredPickup.Name": "등급별 영입",
   "tieredPickup.Description": "봇이 영입 요청을 받아들일지 정할 때 플레이어와 봇의 레벨 차 규칙을 쓴다.",
+  "autoJoinMaxMembers.Name": "자동 합류 최대 인원",
+  "autoJoinMaxMembers.Description": "레이드에 자동으로 따라붙는 팀원의 최대 수. 프로필 팀원을 먼저 무작위로 고르고, 자리가 남으면 용병에서 고른다. 0 이면 제한 없음.",
   "maximumPickup.Name": "최대 영입 수",
   "maximumPickup.Description": "레이드 중에 영입할 수 있는, 분대 밖 같은 진영 봇의 최대 수.",
   "recruitPickup.Name": "영입 팀원 모집",
