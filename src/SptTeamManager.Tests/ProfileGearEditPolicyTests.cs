@@ -29,6 +29,8 @@ public class ProfileGearEditPolicyTests
         new WornGearItem("worn-band", Equip, "ArmBand"),
         new WornGearItem("worn-knife", Equip, "Scabbard"),
         new WornGearItem("worn-tag", Equip, "Dogtag"),
+        // 특수 슬롯의 물건(열쇠고리·나침반 등). 플레이어는 이것을 넣고 뺀다.
+        new WornGearItem("special-tool", "worn-pockets", "SpecialSlot1"),
         new WornGearItem(Stash, null, null),
         new WornGearItem("stash-helmet", Stash, "hideout"),
         new WornGearItem("stash-helmet2", Stash, "hideout"),
@@ -66,6 +68,7 @@ public class ProfileGearEditPolicyTests
             ["worn-band"] = "tpl-band",
             ["worn-knife"] = "tpl-knife",
             ["worn-tag"] = "tpl-tag",
+            ["special-tool"] = "tpl-ammo",
         };
 
         var slots = new Dictionary<string, IReadOnlyList<GearSlotDefinition>>
@@ -989,5 +992,43 @@ public class ProfileGearEditPolicyTests
     {
         // 목적지가 장비 트리가 아니어도 된다 - 플레이어는 스태시에 둔 탄창에도 탄을 채운다.
         Assert.True(Judge(Edit("stash-ammo", "cartridges", "stash-mag")).Allowed);
+    }
+
+    [Fact]
+    public void 특수_슬롯의_물건은_옮길_수_있다()
+    {
+        // 사망이 가져가지 않는 것과 **편집으로 못 건드리는 것**은 다른 판단이다. 플레이어는 자기
+        // 특수 슬롯의 물건을 넣고 뺀다 - 팀원 화면에서도 같아야 한다(계획 5).
+        Assert.True(Judge(Edit("special-tool", "main", "stash-bag")).Allowed);
+    }
+
+    [Fact]
+    public void 구조를_이루는_자리는_여전히_못_옮긴다()
+    {
+        // 주머니·보안 컨테이너·완장·칼집·인식표를 떼면 장비 손실이 아니라 구조 손상이고, 플레이어
+        // 화면에서도 그것들은 움직이지 않는다.
+        foreach (var itemId in new[] { "worn-pockets", "worn-secure", "worn-band", "worn-knife", "worn-tag" })
+        {
+            var verdict = Judge(Edit(itemId, "main", "stash-bag"));
+            Assert.False(verdict.Allowed, $"'{itemId}' 이(가) 옮겨졌다 - 구조가 깨진다.");
+            Assert.Contains("떼어낼 수 없는", verdict.Reason);
+        }
+    }
+
+    [Fact]
+    public void 편집_금지_집합은_사망_불가_집합에서_특수_슬롯만_뺀_것이다()
+    {
+        // 두 판단이 갈라진 자리를 **기계가 알게** 적어 둔다. 여기 말고 다른 차이가 생기면 실패한다.
+        foreach (var slot in new[] { "Pockets", "Scabbard", "ArmBand", "SecuredContainer", "Dogtag" })
+        {
+            Assert.True(WornGearLossPolicy.IsNeverRemovedSlot(slot));
+            Assert.True(ProfileGearEditPolicy.IsStructuralSlot(slot), $"'{slot}' 은 편집으로도 못 떼어야 한다.");
+        }
+
+        foreach (var slot in new[] { "SpecialSlot1", "SpecialSlot2", "SpecialSlot3" })
+        {
+            Assert.True(WornGearLossPolicy.IsNeverRemovedSlot(slot), $"'{slot}' 은 사망이 가져가지 않는다.");
+            Assert.False(ProfileGearEditPolicy.IsStructuralSlot(slot), $"'{slot}' 의 물건은 손으로 옮길 수 있어야 한다.");
+        }
     }
 }
