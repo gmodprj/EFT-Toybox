@@ -198,8 +198,9 @@ namespace pitTeam.Shared
         // 그래서 두 가지로 좁힌다:
         //   1. **이번 제출이 옮긴 자리만** 본다. 자리가 그대로인 아이템은 EFT 가 이미 그 프로필을
         //      적재하고 있다는 뜻이고, 우리가 만든 상태가 아니다.
-        //   2. **틀렸다고 증명된 것만** 거절한다. 부모의 종류를 읽지 못했거나, 그 템플릿의 자리 목록을
-        //      읽지 못했거나, 필터가 비었거나, 용량이 0 이면 아무것도 말하지 않고 통과시킨다.
+        //   2. **틀렸다고 증명된 것만** 거절한다. 부모의 종류를 읽지 못했거나, 그 자리를 찾지 못했거나,
+        //      필터가 비었거나, 용량이 0 이면 아무것도 말하지 않고 통과시킨다. 특히 **"그런 자리가 없다"
+        //      는 거절 근거가 아니다** - 아래 definition == null 의 주석에 그 실측 근거가 있다.
         //
         // 그 대가로 이것은 **혼자 서는 관문이 아니다** - 데이터베이스를 읽지 못하면 자리는 보지 못하고
         // 보존 검사만 남는다. 보존을 거드는 두 번째 그물로 읽어라.
@@ -253,12 +254,17 @@ namespace pitTeam.Shared
                 var itemTemplateId = item.TemplateId;
                 if (string.IsNullOrWhiteSpace(parentTemplateId) || string.IsNullOrWhiteSpace(itemTemplateId)) continue;
 
+                // 종류 필터는 **그 아이템의 분류를 알 때만** 판정할 수 있다. 조상 사슬을 걷지 못하면
+                // "받지 않는 종류" 와 "모르는 종류" 가 같은 모양이 되고, 그러면 모드가 더한 아이템이
+                // 전부 거부된다(ProfileGearEditPolicy.KnowsCategoryOf 의 실측 근거).
+                var knowsKind = ProfileGearEditPolicy.KnowsCategoryOf(slotFacts, itemTemplateId);
+
                 // 격자(가방·리그·주머니·스태시의 칸)가 먼저다. 여러 개를 담으므로 점유를 묻지 않고,
                 // 자리가 실제로 남아 있는지는 좌표의 문제라 여기서 셈하지 않는다(EFT 편집기가 센다).
                 var grid = ProfileGearEditPolicy.FindGridDefinition(slotFacts, parentTemplateId, slot);
                 if (grid != null)
                 {
-                    if (grid.AllowedTemplateIds != null && grid.AllowedTemplateIds.Count > 0
+                    if (knowsKind && grid.AllowedTemplateIds != null && grid.AllowedTemplateIds.Count > 0
                         && !ProfileGearEditPolicy.FilterAccepts(slotFacts, grid.AllowedTemplateIds, itemTemplateId!))
                     {
                         return $"아이템 '{id}' 은(는) '{parentId}' 의 '{slot}' 칸에 들어가지 않는 종류라서 저장하지 않습니다.";
@@ -274,20 +280,20 @@ namespace pitTeam.Shared
                     continue;
                 }
 
+                // 자리를 찾지 못하면 아무것도 말하지 않는다. **"그런 자리가 없다" 를 거절 근거로 쓰지
+                // 않는다** - 2026-11-04 에 실제 프로필 여섯 개로 재 보고 뺐다. 그 거절은 "자리를 정의하는
+                // 곳을 우리가 전부 안다" 에 기대는데 그 전제가 두 번 깨졌다:
+                //   (ㄱ) 탄박스는 `StackSlots` 에 자리를 두고, 그것을 읽지 않아 **87쌍**이 없는 자리로
+                //        읽혔다(읽도록 고쳤다).
+                //   (ㄴ) 그 프로필들의 부모 템플릿 **51종(1577쌍)** 은 정적 데이터베이스에 아예 없다 -
+                //        설치된 모드가 기동 때 주입하는 템플릿이다. 런타임 데이터베이스가 무엇을
+                //        정의하는지는 파일만 보고 말할 수 없다.
+                // 틀린 거절의 값은 "그 팀원은 다시 저장할 수 없다" 이고, 얻는 것은 아래 네 검사가 대개
+                // 함께 잡는다. 그래서 하지 않는다(열린 항목 10 의 경고를 그대로 따른다).
                 var definition = ProfileGearEditPolicy.FindSlotDefinition(slotFacts, parentTemplateId, slot);
-                if (definition == null)
-                {
-                    // 그 템플릿의 자리 목록을 **읽었는데** 이 이름이 없으면 그런 자리가 없는 것이다.
-                    // 읽지 못했으면 아무것도 말할 수 없다(좁힘 2).
-                    if (ProfileGearEditPolicy.KnowsPlacesOf(slotFacts, parentTemplateId))
-                    {
-                        return $"'{parentId}' 에는 '{slot}' 자리가 없어 저장하지 않습니다.";
-                    }
+                if (definition == null) continue;
 
-                    continue;
-                }
-
-                if (definition.AllowedTemplateIds != null && definition.AllowedTemplateIds.Count > 0
+                if (knowsKind && definition.AllowedTemplateIds != null && definition.AllowedTemplateIds.Count > 0
                     && !ProfileGearEditPolicy.FilterAccepts(slotFacts, definition.AllowedTemplateIds, itemTemplateId!))
                 {
                     return $"아이템 '{id}' 은(는) '{parentId}' 의 '{slot}' 슬롯에 들어가지 않는 종류라서 저장하지 않습니다.";
