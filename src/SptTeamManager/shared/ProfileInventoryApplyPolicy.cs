@@ -22,8 +22,12 @@ namespace pitTeam.Shared
     //      그 프로필의 적재를 거부할 수 있다. 플레이어 화면에서도 그것들은 움직이지 않는다.
     // 그리고 트리가 멀쩡한지(두 루트에 다 닿는지, 고리가 없는지)를 본다.
     //
-    // **줄어드는 것은 막지 않는다.** 플레이어는 자기 화면에서 버리고 탄박스를 소비한다 - 팀원 화면도
-    // 같아야 한다는 것이 이 계획의 전제다. 대신 사라지는 id 를 전부 돌려주어 호출자가 로그에 남긴다.
+    // **줄어드는 것은 막지 않는다 - 단, 편집기가 들고 있던 것만.** 플레이어는 자기 화면에서 버리고
+    // 탄박스를 소비한다. 그러나 **편집기가 보여 주지도 않은 아이템**은 플레이어가 버린 것일 수 없다:
+    // 2026-11-03 실측 사고에서 편집기가 EFT 역직렬화에 걸린 아이템을 건너뛰고 열렸고, 최종 상태를
+    // 제출하자 그 68개가 프로필에서 지워졌다. 그래서 호출자는 **편집기가 열릴 때 실제로 들고 있던
+    // id 목록**(loadedItemIds)을 함께 준다: 그 목록 밖의 손실은 거절이고, 목록을 모르면(비면) 어떤
+    // 손실도 거절이다(닫힌 쪽). 허용된 손실의 id 는 전부 돌려주어 호출자가 로그에 남긴다.
     public static class ProfileInventoryApplyPolicy
     {
         // 부모를 따라 올라갈 때의 걸음 제한. 손상된 트리(고리)에서 돌지 않게 한다.
@@ -36,7 +40,8 @@ namespace pitTeam.Shared
             IReadOnlyList<InventoryItemState>? before,
             IReadOnlyList<InventoryItemState>? after,
             string? stashRootId,
-            string? equipmentRootId)
+            string? equipmentRootId,
+            IReadOnlyCollection<string>? loadedItemIds)
         {
             if (before == null || before.Count == 0) return Reject("편집 전 상태를 읽을 수 없어 저장하지 않습니다.");
             if (after == null || after.Count == 0) return Reject("편집기의 상태를 읽을 수 없어 저장하지 않습니다.");
@@ -152,11 +157,26 @@ namespace pitTeam.Shared
                 }
             }
 
-            // 사라지는 것은 막지 않는다(버리기·탄박스 소비). 무엇이 사라지는지는 돌려준다.
+            // 사라지는 것: 편집기가 들고 있던 것만 허용한다. 무엇이 사라지는지는 돌려준다.
+            var loaded = new HashSet<string>(StringComparer.Ordinal);
+            if (loadedItemIds != null)
+            {
+                foreach (var id in loadedItemIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(id)) loaded.Add(id!);
+                }
+            }
+
             var lost = new List<string>();
             foreach (var item in before)
             {
-                if (!afterById.ContainsKey(item.Id!)) lost.Add(item.Id!);
+                if (afterById.ContainsKey(item.Id!)) continue;
+                if (!loaded.Contains(item.Id!))
+                {
+                    return Reject($"아이템 '{item.Id}' 은(는) 편집기가 보여 주지 않은 것이라 지울 수 없습니다. 저장하지 않습니다.");
+                }
+
+                lost.Add(item.Id!);
             }
 
             return new InventoryApplyVerdict(true, string.Empty, lost);

@@ -86,6 +86,10 @@ public record StmInventoryApplyRequest : IRequestData
     [JsonPropertyName("aid")] public string? Aid { get; set; }
     [JsonPropertyName("profileId")] public string? ProfileId { get; set; }
     [JsonPropertyName("items")] public List<Item>? Items { get; set; }
+
+    // 편집기가 **열릴 때 실제로 들고 있던** 아이템 id 들. 서버는 이 목록 밖의 손실을 거절한다 -
+    // 편집기가 보여 주지도 않은 아이템은 플레이어가 버린 것일 수 없다(2026-11-03 실측 사고).
+    [JsonPropertyName("loadedItemIds")] public List<string>? LoadedItemIds { get; set; }
 }
 
 // 한 건: 이 아이템을 이 부모의 이 슬롯으로. TargetParentId 가 비면 장비 루트 아래를 뜻한다.
