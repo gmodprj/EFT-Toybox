@@ -4966,3 +4966,24 @@ if (ammoContainer is AmmoBox) { ThrowItem(ammoContainer, …); }   // ← 빈 �
 "편집기가 들고 있었는가" 는 합치기와 무관한 사실이기 때문이다.
 
 **실측.** 클라이언트 빌드 경고 0, 설치본 md5 `56b76337`. 서버 `521a92f4` 그대로.
+
+### 계획 5 Task C — 보안 컨테이너 칸을 그린다 (2026-11-03)
+
+안 보이던 이유는 EFT 가 아니라 **PIT 가 일부러 숨기고 있었기 때문**이다:
+
+```csharp
+if (!pitFireTeam.IsFollowerLoadoutRealisticMode())
+    HideLoadoutEditorContainerSlot(panelRoot, EquipmentSlot.SecuredContainer);
+```
+
+패널 자체는 **인벤토리 화면의 템플릿**(`ComplexStashPanel`)이라 칸은 원래 있다 - 용병 편집기가 현실
+모드가 아닐 때 가리는 것이 PIT 의 설계다. 프로필 팀원은 **플레이어 자신의 화면과 같아야 하므로**
+가리지 않는다.
+
+- `TryBuildLoadoutEditorFollowerPanel`·`ShowLoadoutEditorEquipmentPanel` 에 `keepSecuredContainer`
+  (기본값 false)를 더했다. **PIT 용병 경로는 한 글자도 달라지지 않는다**(불변식 4).
+- STM 편집기만 `keepSecuredContainer: true` 로 부른다.
+- 컨테이너 **자체**를 떼는 것은 서버가 계속 막는다(`IsStructuralSlot`) - 안에 넣고 빼는 것만 열린다.
+  플레이어 화면에서도 보안 컨테이너는 장비 칸에서 떨어지지 않는다.
+
+**실측.** 클라이언트 빌드 경고 0, 설치본 md5 `a515c442`. 서버 `521a92f4` 그대로.
