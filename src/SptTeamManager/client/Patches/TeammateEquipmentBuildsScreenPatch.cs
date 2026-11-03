@@ -4021,13 +4021,29 @@ namespace pitTeam.Patches
             DefaultUIButton button = buttonTransform?.GetComponent<DefaultUIButton>();
             if (button != null)
             {
-                button.SetRawText(label, 18);
                 // Stock SetCurrentBuild gates Equip on a simulated transfer into the player's gear.
                 // Buying for a teammate only needs a selected kit here; the confirmation owns resources.
                 EFT.UI.Builds.EquipmentBuild selectedBuild = _activeScreen == null
                     ? null
                     : ScreenSelectedBuildField?.GetValue(_activeScreen) as EFT.UI.Builds.EquipmentBuild;
-                button.Interactable = selectedBuild?.Equipment != null;
+                bool interactable = selectedBuild?.Equipment != null;
+
+                // STM: 값을 매길 수 없는 빌드는 **누를 수 없게** 한다. 누르면 거절당할 것을 알면서
+                // 누르게 두지 않는다. 글자를 같이 바꿔 눌러 보기 전에 알게 하고, 이유는 토스트로 말한다
+                // (죽은 버튼은 스스로 이유를 말하지 못한다).
+                if (StmKitNativeFlow.IsActive && selectedBuild != null)
+                {
+                    string selectedId = selectedBuild.Id.ToString();
+                    if (!StmKitNativeFlow.TryGetRowPrice(selectedId, out _))
+                    {
+                        label = StmKitNativeFlow.UnbuyableActionLabel;
+                        interactable = false;
+                        StmKitNativeFlow.ExplainUnbuyable(selectedId, selectedBuild.Name);
+                    }
+                }
+
+                button.SetRawText(label, 18);
+                button.Interactable = interactable;
             }
 
             TMP_Text text = buttonTransform?.GetComponentInChildren<TMP_Text>(true);

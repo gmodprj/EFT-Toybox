@@ -37,6 +37,9 @@ namespace pitTeam.Patches
         private const string OwnerTeammate = "teammate";
 
         private const string QuoteFailedToast = "값을 매기지 못했습니다";
+
+        // 값을 매길 수 없는 빌드를 고르면 구매 버튼의 글자가 이것으로 바뀐다(그리고 죽는다).
+        internal const string UnbuyableActionLabel = "살 수 없음";
         private const string BuyFailedToast = "장비를 사지 못했습니다";
 
         private static ResultProfile _profile;
@@ -50,6 +53,9 @@ namespace pitTeam.Patches
         // 줄에 보여 줄 값. 서버가 목록과 함께 준다(구매 창이 청구할 값과 같은 계산이다).
         // -1 은 "값을 매길 수 없다" 라서 담지 않는다 - 담으면 화면이 -1₩ 을 보여 준다.
         private static readonly Dictionary<string, int> _rowPrices = new Dictionary<string, int>(StringComparer.Ordinal);
+
+        // 값 없는 빌드를 고를 때 이유를 **한 번만** 말한다. 고를 때마다 다시 물으면 같은 토스트가 쌓인다.
+        private static readonly HashSet<string> _explainedBuilds = new HashSet<string>(StringComparer.Ordinal);
 
         // 화면의 빌드 보관소를 잠깐 바꿔 끼운 상태. 원래 사전을 그대로 들고 있다가 되돌린다.
         // **플레이어의 사전 객체 자체는 건드리지 않는다** - 참조만 바꿔 끼우므로 원본은 손상되지 않는다.
@@ -68,6 +74,38 @@ namespace pitTeam.Patches
         {
             price = 0;
             return !string.IsNullOrWhiteSpace(buildId) && _rowPrices.TryGetValue(buildId, out price);
+        }
+
+        // 값이 없는 빌드를 고르면 구매 버튼이 죽는다. 죽은 버튼은 **왜** 죽었는지 말해 주지 않으므로
+        // 여기서 서버에 한 번 물어 그 이유(어느 물건의 값을 못 매기는지)를 토스트로 말한다.
+        // 값을 다시 매기는 것이 아니라 거절 문구만 가져오는 길이다 - 돈도 물건도 건드리지 않는다.
+        internal static async void ExplainUnbuyable(string buildId, string buildName)
+        {
+            if (!IsActive || string.IsNullOrWhiteSpace(buildId)) return;
+            if (TryGetRowPrice(buildId, out _)) return;
+            if (!_explainedBuilds.Add(buildId)) return;
+
+            try
+            {
+                string body = JsonConvert.SerializeObject(new
+                {
+                    aid = _profile.AccountId,
+                    profileId = _detail.ProfileId,
+                    buildId,
+                    owner = CurrentOwner,
+                });
+                string json = await Task.Run(() => RequestHandler.PostJson(StmKitQuoteRoute, body));
+                string failure = ReadFailure(json, QuoteFailedToast);
+                if (failure != null)
+                {
+                    AddTeammateCreationFlow.ShowToast(failure);
+                }
+            }
+            catch (Exception ex)
+            {
+                // 이유를 못 가져온 것뿐이다. 버튼은 이미 죽어 있으므로 여기서 더 할 일은 없다.
+                pitFireTeam.Log.LogWarning($"[STM] 살 수 없는 빌드의 이유를 묻다 실패했다: {ex.Message}");
+            }
         }
 
         // 기본 화면을 열기 직전에 부른다. PIT 의 Open 이 그 다음에 화면을 띄운다.
@@ -91,6 +129,7 @@ namespace pitTeam.Patches
             CloseOverlay();
 
             _rowPrices.Clear();
+            _explainedBuilds.Clear();
             foreach (var row in pricedRows ?? teammateBuilds ?? new StmGearBuildRowWire[0])
             {
                 if (row == null || string.IsNullOrWhiteSpace(row.Id) || row.Price < 0) continue;
@@ -182,6 +221,7 @@ namespace pitTeam.Patches
             _detail = null;
             _teammateBuilds = false;
             _rowPrices.Clear();
+            _explainedBuilds.Clear();
             CloseOverlay();
         }
 
@@ -310,8 +350,11 @@ namespace pitTeam.Patches
             CreateButton(panel, new Vector2(40f, 20f), new Vector2(180f, 36f), "닫기", CloseOverlay);
 
             bool canBuy = quote.Affordable && quote.ItemsToBuy > 0;
+            // 살 것이 하나도 없는 것과 돈이 모자란 것은 다른 이야기다. 같은 "살 수 없음" 으로 뭉뚱그리면
+            // 이미 다 갖춘 팀원 앞에서 무엇이 문제인지 알 수 없다.
+            string buyLabel = canBuy ? "구매" : (quote.ItemsToBuy == 0 ? "살 것이 없음" : "살 수 없음");
             var buy = CreateButton(panel, new Vector2(260f, 20f), new Vector2(180f, 36f),
-                canBuy ? "구매" : "살 수 없음", canBuy ? (Action)(() => SubmitBuy(quote)) : null);
+                buyLabel, canBuy ? (Action)(() => SubmitBuy(quote)) : null);
             if (!canBuy) buy.interactable = false;
         }
 
