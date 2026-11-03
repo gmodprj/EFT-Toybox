@@ -588,7 +588,9 @@ namespace pitTeam.Patches
                 editorProfile,
                 editorInventoryController,
                 new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory));
-            TryBuildLoadoutEditorFollowerPanel(profile, rightSection, itemUiContext, editorProfile, editorInventoryController);
+            // 보안 컨테이너 칸을 그린다 - 플레이어 자신의 화면에는 늘 있고, 프로필 팀원도 같아야 한다.
+            // 컨테이너 **자체**를 떼는 것은 서버가 계속 막는다(IsStructuralSlot) - 여는 것만 열린다.
+            TryBuildLoadoutEditorFollowerPanel(profile, rightSection, itemUiContext, editorProfile, editorInventoryController, keepSecuredContainer: true);
 
             // PIT 의 두 패널 함수는 실패를 삼켜 대체 글자로 바꾸고 void 로 돌아온다 - 겉으로는 쓸 수 있는 편집기처럼 보인다.
             // 패널 필드는 성공했을 때만 채워진다(편집기를 열기 직전 CloseLoadoutEditorOverlay 가 비웠다). 비어 있으면 열지 않는다.

@@ -495,12 +495,16 @@ namespace pitTeam.Patches
             }
         }
 
+        // keepSecuredContainer: 보안 컨테이너 칸을 **그릴 것인가**. PIT 용병 편집기는 현실 모드가 아니면
+        // 숨긴다(그쪽의 설계다). STM 의 프로필 팀원은 플레이어 자신의 화면과 같아야 하므로 true 다 -
+        // 플레이어는 자기 보안 컨테이너 안을 늘 보고 넣고 뺀다(2026-11-03 사용자 요구).
         private static void TryBuildLoadoutEditorFollowerPanel(
             ResultProfile profile,
             RectTransform rightSection,
             ItemUiContext itemUiContext,
             Profile editorProfile,
-            InventoryController editorInventoryController)
+            InventoryController editorInventoryController,
+            bool keepSecuredContainer = false)
         {
             try
             {
@@ -529,7 +533,8 @@ namespace pitTeam.Patches
                     profile.Info?.Nickname ?? "teammate",
                     profile.Skills ?? ActiveProfileSession.Profile.Skills,
                     ActiveProfileSession.InsuranceCompany,
-                    itemUiContext);
+                    itemUiContext,
+                    keepSecuredContainer);
 
                 LoadoutEditorEquipmentPanel = equipmentPanelRoot;
             }
@@ -579,7 +584,8 @@ namespace pitTeam.Patches
             string followerName,
             SkillManager skills,
             EFT.UI.Insurance.InsuranceCompany insurance,
-            ItemUiContext itemUiContext)
+            ItemUiContext itemUiContext,
+            bool keepSecuredContainer = false)
         {
             if (panelRoot == null || equipmentView == null || followerInventoryController == null)
             {
@@ -596,7 +602,7 @@ namespace pitTeam.Patches
 
             string headerTitle = DefaultLoadoutName;
 
-            if (!pitFireTeam.IsFollowerLoadoutRealisticMode())
+            if (!keepSecuredContainer && !pitFireTeam.IsFollowerLoadoutRealisticMode())
             {
                 HideLoadoutEditorContainerSlot(panelRoot, EquipmentSlot.SecuredContainer);
             }
