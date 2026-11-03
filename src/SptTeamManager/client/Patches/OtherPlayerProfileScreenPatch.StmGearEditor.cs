@@ -73,7 +73,8 @@ namespace pitTeam.Patches
         // 사라지는 경우처럼, 플레이어가 의도하지 않은 소실이 조용히 저장되는 것을 막는다
         // (2026-11-03: 탄박스 10종과 그 탄이 그렇게 사라졌다).
         private const string StmEditorLossWarningFormat = "저장하면 아이템 {0}개가 사라집니다. 저장을 한 번 더 누르면 그대로 저장합니다.";
-        private const string StmEditorAmmoBoxOpenedToast = "탄을 이 팀원의 스태시로 꺼냈습니다. 빈 상자는 남습니다.";
+        private const string StmEditorAmmoBoxOpenedToast = "탄을 이 팀원의 스태시로 꺼냈습니다.";
+        private const string StmEditorAmmoBoxStuckToast = "상자를 비웠지만 치우지 못했습니다. 저장 전에 직접 버리세요.";
         private const string StmEditorAmmoBoxNoRoomToast = "탄을 놓을 스태시 자리가 없어 상자를 열지 않았습니다.";
         private const string StmEditorSavedToastFormat = "장비를 저장했습니다({0}건).";
         private const string StmEditorLayoutNoteFormat = " 칸 위치만 바꾼 {0}개는 저장되지 않습니다.";
@@ -90,6 +91,10 @@ namespace pitTeam.Patches
 
         // 방금 경고한 소실 묶음의 서명(사라질 id 들을 정렬해 이은 것). 같은 묶음으로 다시 누르면 진행한다.
         private static string StmPendingLossSignature;
+
+        // 편집기가 **일부러 없앤** 아이템들(연 탄 팩). EFT 도 상자를 버리는 것까지가 한 조작이라
+        // 이것은 사고가 아니다 - 저장 때의 "사라집니다" 경고에서 뺀다. 편집기를 열 때 비운다.
+        private static readonly HashSet<string> StmConsumedItemIds = new HashSet<string>(StringComparer.Ordinal);
 
         private static bool StmGearEditOpening;
         private static bool StmGearEditSaving;
@@ -643,6 +648,7 @@ namespace pitTeam.Patches
             {
                 StmGearEditSkippedCount = 0;
                 StmPendingLossSignature = null;
+                StmConsumedItemIds.Clear();
                 if (!TryBuildStmEditorStash(stash, out EFT.InventoryLogic.Stash teammateStash, out string stashFailure))
                 {
                     pitFireTeam.Log.LogWarning($"[STM] Teammate stash could not be built for the gear editor: {stashFailure}");
@@ -837,7 +843,8 @@ namespace pitTeam.Patches
                 // 들고 있던 것 중 **최종 트리에 없는** 것 = 이 저장으로 사라질 아이템. 서버는 이것을
                 // 허용하지만(플레이어는 버릴 수 있다), 조용히 보내지는 않는다 - 한 번 더 누르게 한다.
                 HashSet<string> finalIds = new HashSet<string>(StmItemIds(endEquipment, endStash), StringComparer.Ordinal);
-                List<string> losing = loadedItemIds.Where(id => !finalIds.Contains(id)).ToList();
+                // 편집기가 일부러 없앤 것(연 탄 팩)은 경고에서 뺀다 - 그것은 그 조작의 정상 결과다.
+                List<string> losing = loadedItemIds.Where(id => !finalIds.Contains(id) && !StmConsumedItemIds.Contains(id)).ToList();
                 if (losing.Count > 0)
                 {
                     string signature = string.Join(",", losing.OrderBy(id => id, StringComparer.Ordinal));
@@ -1051,7 +1058,20 @@ namespace pitTeam.Patches
                     moved++;
                 }
 
-                if (moved > 0) AddTeammateCreationFlow.ShowToast(StmEditorAmmoBoxOpenedToast);
+                if (moved == 0) return;
+
+                // 탄이 **정말로** 상자 밖으로 나갔는지 확인한 뒤에만 상자를 치운다. EFT 의 ThrowItem 은
+                // 남은 내용물까지 함께 지우는 Discard 라(역컴파일), 확인 없이 부르면 바로 그 사고가 된다.
+                if (box.Cartridges?.Last != null)
+                {
+                    AddTeammateCreationFlow.ShowToast(StmEditorAmmoBoxStuckToast);
+                    return;
+                }
+
+                string boxId = box.Id;
+                controller.ThrowItem(box, false, null);
+                StmConsumedItemIds.Add(boxId);
+                AddTeammateCreationFlow.ShowToast(StmEditorAmmoBoxOpenedToast);
             }
             catch (Exception ex)
             {
