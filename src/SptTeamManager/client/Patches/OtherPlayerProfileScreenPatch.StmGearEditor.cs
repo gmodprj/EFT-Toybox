@@ -618,6 +618,7 @@ namespace pitTeam.Patches
                 keepSecuredContainer: true,
                 equipmentItemContextOverride: new StmGearEditorEquipmentRootContext(EItemViewType.Inventory));
 
+            EnableStmStashSelectionButtons();
             LogStmStashSelectionDiagnostics();
 
             // PIT 의 두 패널 함수는 실패를 삼켜 대체 글자로 바꾸고 void 로 돌아온다 - 겉으로는 쓸 수 있는 편집기처럼 보인다.
@@ -1336,6 +1337,59 @@ namespace pitTeam.Patches
             {
                 // 진단이 편집기를 막아서는 안 된다.
                 pitFireTeam.Log.LogWarning("[STM] 선택 진단 실패: " + ex.Message);
+            }
+        }
+
+        // 스태시의 **복수 선택**(= EFT 의 핀/잠금 선택 모드)으로 들어가는 버튼을 켠다.
+        //
+        // 2026-11-04 진단이 원인을 못박았다: 버튼 자체는 `activeSelf=True` 인데
+        // `activeInHierarchy=False` 였고, 경로의 **`BottomLeftPanel` 이 꺼져 있었다**.
+        //
+        //   .../pitFireTeam_LoadoutEditorStashPanel/BottomLeftPanel(꺼짐)/Pin
+        //
+        // `SimpleStashPanel.Show` 는 그 패널을 끄지 않는다(거기서 `SetActive` 를 받는 것은
+        // `_containerNamePanel`·`_externalObtainIcon`·`_moneyCountPanel`·`_priorityButton` 넷이다).
+        // 즉 **복제한 템플릿에서 이미 꺼져 있었다** - 템플릿이 `TransferItemsScreen` 의 패널인데
+        // 그 화면에는 핀/잠금 UI 가 없으니 그럴 만하다(`ResolveLoadoutEditorStashTemplate`).
+        //
+        // 그래서 **템플릿을 갈아 끼우지 않고 그 하나만 켠다.** 왼쪽 패널 전체의 출처를 바꾸는 것보다
+        // 훨씬 좁은 변경이고, 되돌리기도 쉽다.
+        //
+        // **딸려 나오는 것이 있는지 함께 찍는다.** 그 패널에 핀·잠금 말고 다른 것이 들어 있으면
+        // 이전 화면용 단추가 같이 보일 수 있다 - 자식 이름을 남겨 다음 확인에서 눈으로 맞춘다.
+        private static void EnableStmStashSelectionButtons()
+        {
+            try
+            {
+                SimpleStashPanel panel = LoadoutEditorStashPanel;
+                if (panel == null) return;
+
+                var button = AccessTools.Field(typeof(SimpleStashPanel), "_pinModeButton")?.GetValue(panel) as UnityEngine.Component;
+                UnityEngine.Transform host = button?.transform?.parent;
+                if (host == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 선택 버튼: 담고 있는 패널을 찾지 못해 켜지 않았다.");
+                    return;
+                }
+
+                if (host.gameObject.activeSelf)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 선택 버튼: '" + host.name + "' 은(는) 이미 켜져 있다.");
+                    return;
+                }
+
+                var children = new List<string>();
+                for (var i = 0; i < host.childCount; i++) children.Add(host.GetChild(i).name);
+
+                host.gameObject.SetActive(true);
+                pitFireTeam.Log.LogWarning(
+                    "[STM] 선택 버튼: '" + host.name + "' 을(를) 켰다. 그 안의 것 "
+                    + children.Count + "개: " + string.Join(", ", children.ToArray()));
+            }
+            catch (Exception ex)
+            {
+                // 켜지 못해도 편집기는 열려야 한다.
+                pitFireTeam.Log.LogWarning("[STM] 선택 버튼 켜기 실패: " + ex.Message);
             }
         }
 
