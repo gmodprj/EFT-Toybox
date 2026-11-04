@@ -1,0 +1,2 @@
+1533__acidphantasm-moretagcolours	BepInEx\plugins\acidphantasm-moretagcolours\acidphantasm-moretagcolours.dll
+1533__acidphantasm-moretagcolours	BepInEx\plugins\acidphantasm-moretagcolours\LICENSE

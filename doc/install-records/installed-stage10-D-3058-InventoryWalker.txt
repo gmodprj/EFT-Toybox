@@ -1,0 +1,1 @@
+3058__InventoryWalker_V0.3.1	BepInEx\plugins\InventoryWalker.dll
