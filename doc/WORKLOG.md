@@ -5607,3 +5607,39 @@ tpl 변화:   줄어든 종류 0 / 늘어난 종류 0
 
 곁다리로 확인된 것: 명단 응답에 **자동 합류가 네 명 켜져 있다**(SPT02·Hawk·Buck·Mace).
 사용자가 플레이 중 켠 것이고, 열린 항목 8 이 닫힌 뒤의 정상 동작이다.
+
+### 복수 선택 — 2차 진단이 원인을 못박았고 고쳤다 (2026-11-04)
+
+편집기를 열자 진단이 답했다:
+
+```
+_pinModeButton activeSelf=True activeInHierarchy=False size=(0,0) 화면좌표=[259,174 ~ 259,174]
+경로=…/pitFireTeam_LoadoutEditorStashPanel/BottomLeftPanel(꺼짐)/Pin
+_lockModeButton  (같은 모양)
+패널 rect=(x:0, y:-692, w:691, h:692) 화면좌표=[259,174 ~ 950,866]
+```
+
+**버튼 자신은 켜져 있고(`activeSelf=True`) 부모 `BottomLeftPanel` 이 꺼져 있다.** 크기가 0 이고
+화면 좌표가 한 점인 것도 꺼진 부모 밑이라 레이아웃이 돌지 않은 결과다. 패널 자신은 691x692 로
+멀쩡하니 **잘린 것이 아니다.**
+
+**누가 껐나 — `Show` 가 아니다.** `SimpleStashPanel.Show` 안에서 `SetActive` 를 받는 것은
+`_containerNamePanel`·`_externalObtainIcon`·`_moneyCountPanel`·`_priorityButton` 넷뿐이고
+`BottomLeftPanel` 은 거기 없다(Cecil 로 IL 확인). 즉 **복제한 템플릿에서 이미 꺼져 있었다.**
+템플릿은 `TransferItemsScreen` 의 패널이고(`ResolveLoadoutEditorStashTemplate`) 그 화면에는
+핀/잠금 UI 가 없으니 그럴 만하다.
+
+**고침은 그 하나를 켜는 것이다**(`EnableStmStashSelectionButtons`). 템플릿을 갈아 끼우지 않았다 -
+왼쪽 패널 전체의 출처를 바꾸는 것보다 훨씬 좁고 되돌리기 쉽다. 이미 켜져 있으면 아무것도 하지 않고,
+켜지 못해도 편집기는 열린다.
+
+**딸려 나오는 것을 함께 찍는다.** 그 패널에 핀·잠금 말고 다른 것이 들어 있으면 이전 화면용 단추가
+같이 보일 수 있으므로, 켜면서 **자식 이름을 로그에 남긴다** - 다음 확인에서 눈으로 맞춘다.
+
+**가설이 두 번 깎였다는 것을 적어 둔다.** 처음엔 "템플릿에 버튼이 없다" 였고(1차 진단이 기각),
+다음엔 "잘렸다" 였다(패널 크기가 멀쩡해 기각). 실제 원인은 **꺼진 중간 부모**였고, 두 번 다
+**추측으로 고치지 않고 진단을 넣은 것**이 템플릿을 괜히 갈아엎는 일을 막았다.
+
+**실측.** 클라이언트 CS 오류 0·경고 0, 산출물 `A127DB8A`. 게임이 실행 중이라 설치하지 않았다.
+**인게임 미확인**: 버튼이 실제로 보이는지, 눌러서 선택 모드가 되는지, 그리고 그 패널에 딸려 나오는
+것이 없는지.
