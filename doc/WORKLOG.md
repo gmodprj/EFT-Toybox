@@ -6285,3 +6285,35 @@ UI Fixes 자신이 그 컴포넌트를 **화면마다 붙인다**(IL 실측): `M
 클라이언트 `43FD11D2` → **`BCD4BC1A`**, 서버 `A59BFE8B` 그대로. 설치본 md5 = 빌드 md5, 산출물 IL 에
 `EnableStmStashMultiSelect` 와 `AccessTools.TypeByName("UIFixes.DrawMultiSelect")` 가 들었다.
 테스트 621개 통과, 클라이언트 경고 0. 게임이 켜져 있어 **재기동 뒤 적용**된다.
+
+### 2-20 핀/잠금 — 둘을 갈랐다. 핀만 열었다 (2026-11-04)
+
+오전의 되돌림은 **복수 선택 오인**을 되돌린 것이지 핀/잠금을 하지 않기로 한 것이 아니었다. 막고 있던
+것은 **PIT 업스트림에서 물려받은 패치**였다(`IsActive`·`ExecuteInteractionInternal` 두 자리에서 스태시
+아이템의 핀/잠금 넷을 끈다). "무엇이 막았나" 를 다시 쟀고, 둘의 성질이 다르다.
+
+**핀은 끝까지 간다 → 열었다.** `IsActive` 의 마지막 조건 `IsPinLockStateAllowed(Pinned, 자리, 컨트롤러)`
+가 "자리가 격자이고 **그 컨트롤러의 스태시 밑**" 을 묻는데 우리 편집기에서는 그게 그 팀원의 스태시다.
+실행은 `ItemManipulator.SetPinLockState` + `TryRunNetworkTransaction` → 지역 `Execute`. 저장도 실린다:
+`Item.PinLockState` 가 **`[Diffable]`** 이라 `TreeToFlatItems` 의 `GetDiff` 가 `upd` 에 담아 보낸다.
+**정렬(4-2)을 연 뒤라 쓸모도 생겼다** - 핀은 자동 정렬에서 자리를 고정하는 기구다.
+
+**잠금은 계속 막는다.** 서버가 잠긴 것을 보호 대상으로 다룬다:
+`ValidateLockedPlayerStashItemsUnchanged` 가 잠긴 트리가 그대로가 아니면 저장을 거절하고, 끝에서
+`PreservePinLockState` 가 제출본의 상태를 **저장된 값으로 덮어쓴다.** 그래서 편집기에서 풀어도 조용히
+없던 일이 된다. 거는 것만 되고 푸는 것은 안 되는 버튼은 덫이고, "저장되지 않는 변화를 만들지 않는다" 와
+어긋난다. 열려면 서버에 명시적 해제 경로를 먼저 만들어야 하고 그만큼 보호가 약해진다.
+
+**PIT 쪽은 건드리지 않았다.** 두 편집기가 `LoadoutEditorOverlayRoot` 를 표지로 공유하므로 차단을 그냥
+풀면 용병 편집기까지 바뀐다(불변식 4). STM 표지(`StmGearEditStatusLabel`)로 갈라 **STM 편집기에서 핀일
+때만** 지나가게 했고, `IsActive` 와 실행 가드에 **같은 조건**을 걸었다(메뉴에 보이는데 안 눌리는 것이
+더 나쁘다).
+
+### 설치 — 핀 (2026-11-04)
+
+클라이언트 `BCD4BC1A` → **`7A605C1A`**, 서버 `A59BFE8B` 그대로. 설치본 md5 = 빌드 md5, 산출물 IL 에
+`IsStmPinInteractionAllowed` 가 들었다. 테스트 621개 통과, 클라이언트 경고 0. 게임이 켜져 있어
+**재기동 뒤 적용**된다.
+
+**이로써 대조표의 모든 칸에 판정이 있다.** 남은 X 는 설계상 닫는 것(2-14 `Unpack`, 2-17 `Use` 계열,
+2-20 잠금, 3부 전체)뿐이고, "보류" 는 없다.
