@@ -504,7 +504,10 @@ namespace pitTeam.Patches
             ItemUiContext itemUiContext,
             Profile editorProfile,
             InventoryController editorInventoryController,
-            bool keepSecuredContainer = false)
+            bool keepSecuredContainer = false,
+            // 장비 트리의 루트 문맥을 갈아 끼울 자리. 기본값 null 이면 PIT 가 쓰던 그대로다 -
+            // 용병 편집기의 동작을 바꾸지 않는다(불변식 4). STM 편집기만 값을 준다.
+            EFT.InventoryLogic.ItemContext equipmentItemContextOverride = null)
         {
             try
             {
@@ -515,7 +518,8 @@ namespace pitTeam.Patches
                     throw new InvalidOperationException($"equipmentTemplate={(equipmentTemplate != null)}, equipmentView={(equipmentView != null)}, followerController={(editorInventoryController != null)}");
                 }
 
-                EFT.InventoryLogic.ItemContext equipmentContext = new LoadoutEditorEquipmentRootContext(EItemViewType.InventoryDuringMatching);
+                EFT.InventoryLogic.ItemContext equipmentContext = equipmentItemContextOverride
+                    ?? new LoadoutEditorEquipmentRootContext(EItemViewType.InventoryDuringMatching);
                 LoadoutEditorEquipmentContext = equipmentContext;
 
                 ComplexStashPanel equipmentPanelRoot = GameObject.Instantiate(equipmentTemplate, rightSection, false);
