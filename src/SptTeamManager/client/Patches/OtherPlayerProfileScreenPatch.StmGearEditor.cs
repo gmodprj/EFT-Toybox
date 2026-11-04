@@ -606,7 +606,14 @@ namespace pitTeam.Patches
                 leftSection,
                 editorProfile,
                 editorInventoryController,
-                new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory));
+                new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory),
+                // 검색칸을 연다(대조표 2-19). PIT 는 `Unavailable` 로 닫아 두는데, 플레이어 자기
+                // 스태시에는 검색이 있으므로 팀원 화면에도 있어야 한다. `All` 이 아니라 **`StashOnly`**
+                // 다 - 더 좁고, 이 컨트롤러가 들고 있는 그 팀원 스태시만 본다.
+                // 검색은 **읽기**다: `Show` 는 이 값으로 검색 UI 를 보이고 숨길 뿐이고
+                // (`_simplePanel.ShowGameObject`), 거르는 `SearchHandler` 는 `get_Inventory()` 를
+                // 읽기만 한다(IL 확인). 프로필에 쓰지 않는다.
+                SimpleStashPanel.EStashSearchAvailability.StashOnly);
             // 보안 컨테이너 칸을 그린다 - 플레이어 자신의 화면에는 늘 있고, 프로필 팀원도 같아야 한다.
             // 컨테이너 **자체**를 떼는 것은 서버가 계속 막는다(IsStructuralSlot) - 여는 것만 열린다.
             // 장비 트리도 스태시와 **같은 계열의 문맥**을 준다. 그래야 리그·가방 안의 탄창에
