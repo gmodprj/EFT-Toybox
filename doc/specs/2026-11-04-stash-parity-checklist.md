@@ -170,7 +170,7 @@ _preloaderRaycaster = Singleton<PreloaderUI>.Instance … GetComponent<GraphicRa
 - ⒝ `DrawMultiSelect` 를 우리 캔버스에도 붙인다 - **UI Fixes 내부에 의존**하게 된다. 그 모드가
   바뀌면 같이 깨지고, 없는 사람에게는 의미도 없다.
 
-**판단: 하지 않는다(보류).** 복수 선택 자체는 **Shift+클릭과 Ctrl+A 로 이미 된다.** 얻는 것은
+**판단(뒤집혔다 - 이 절 아래 "길 ⒞" 를 보라): 하지 않는다(보류).** 복수 선택 자체는 **Shift+클릭과 Ctrl+A 로 이미 된다.** 얻는 것은
 입력 방식 하나이고, 두 길 모두 값이 그보다 크다. 다시 집는다면 ⒜ 쪽이고, 그때는 오버레이의 부모를
 바꾸는 것이 다른 것을 깨지 않는지부터 본다.
 
@@ -283,3 +283,29 @@ static Option<Item> TryFindPresetSource(Item item)   // static
 
 **이로써 대조표에 미측정 칸이 없다.** 남은 X 는 전부 "설계상 닫는다"(2-14 `Unpack`, 2-17 `Use` 계열,
 3부 전체) 이거나 "보류"(1-6 선택 상자, 2-20 핀/잠금) 다.
+
+---
+
+## 1-6 선택 상자 — 보류를 뒤집었다. 길 ⒞ 가 있었다 (2026-11-04, 같은 날)
+
+**⒝ 를 "모드 내부에 의존한다" 고 본 것이 틀렸다.** UI Fixes 자신이 그 컴포넌트를 **화면마다 붙인다**
+(IL 실측): `MultiSelectPatches` 의 `CommonUI.Awake`·`MenuUI.Awake` postfix 가
+`GetOrAddComponent<DrawMultiSelect>` 를 인벤토리의 `Items Panel`, 전송 화면 둘, 스캐브 인벤토리,
+상인 거래 화면, 은신처 화면 넷에 건다. **우리 편집기는 그 목록에 없는 또 하나의 화면일 뿐이다.**
+내부를 흉내 내는 것이 아니라 **같은 방식으로 하나 더 붙이는 것**이고, 캔버스를 옮길 필요가 없으니
+⒜ 의 회귀 위험도 사라진다.
+
+**쓰기 경로가 늘지 않는다 — 이 판단의 핵심이다.** `DrawMultiSelect.Update` 가 하는 일은 사각형을 그려
+`GridItemView` 를 고르는 것뿐이다(`MultiSelect.Toggle`·`Prune`·`CombineSecondary`). **고른 것을 옮기는
+일은 이미 되는 1-7·1-8·1-9 의 경로**(`ItemView.OnPointerDown` 패치)가 한다 - 우리 컨트롤러의 지역
+조작이다. 그래서 이 변경은 입력 방식 하나를 더할 뿐 저장·보존 검사에 새 길을 내지 않는다.
+
+**모드 의존은 반사로 없앴다.** `AccessTools.TypeByName("UIFixes.DrawMultiSelect")` 가 `null` 이면
+(모드가 없거나 이름이 바뀌었으면) 그냥 넘어간다 - 컴파일 의존도, 없을 때의 오류도 없다.
+
+**붙이기 전에 설 자리를 확인한다.** 그 컴포넌트의 `Start()` 는 레이캐스터 둘(`GetComponentInParent`,
+`PreloaderUI` 의 첫 자식) 중 하나라도 못 찾으면 **던지고**, 던지면 `Update` 가 매 프레임 null 을
+만진다. 그래서 붙이기 전에 둘을 확인하고 없으면 붙이지 않는다(불변식 2).
+
+**열었다(클라이언트 `BCD4BC1A`). 인게임 미확인** - 빈 칸에서 드래그해 사각형이 그려지고 걸린 아이템이
+선택되는지, 선택한 것을 한꺼번에 옮겨 저장이 통과하는지.

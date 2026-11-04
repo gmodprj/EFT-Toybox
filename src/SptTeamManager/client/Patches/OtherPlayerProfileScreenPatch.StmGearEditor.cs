@@ -695,6 +695,9 @@ namespace pitTeam.Patches
             // 플레이어 창고 화면과 같은 검색칸을 단다(대조표 2-19).
             EnableStmStashSearch(itemUiContext, editorProfile, stashContext);
 
+            // 빈 칸 드래그(선택 상자)를 연다(대조표 1-6).
+            EnableStmStashMultiSelect();
+
             // 패널을 세우는 동안 아이템 컴포넌트 상태(특히 무기 부착물)가 초기화될 수 있다. 플레이어가 만지기 전의 이 시점이
             // "바뀌었는가" 를 따질 첫 안정된 기준이다(PIT 편집기와 같은 이유).
             try
@@ -717,6 +720,70 @@ namespace pitTeam.Patches
             }
 
             return LoadoutEditorInitialEquipmentItems != null && LoadoutEditorInitialStashItems != null;
+        }
+
+        // 빈 칸 드래그로 여러 개를 고르는 선택 상자(대조표 1-6). UI Fixes 의 `DrawMultiSelect` 가 그린다.
+        //
+        // **이것은 그 모드의 내부를 파고드는 것이 아니라 그 모드 자신의 패턴이다**(2026-11-04 IL 실측):
+        // `MultiSelectPatches` 가 `CommonUI.Awake`·`MenuUI.Awake` 에서 **화면마다** 그 컴포넌트를
+        // `GetOrAddComponent` 로 붙인다(인벤토리의 Items Panel, 전송 화면 둘, 스캐브 인벤토리,
+        // 상인 거래, 은신처 넷). 우리 편집기는 그 목록에 없는 또 하나의 화면일 뿐이라, 같은 방식으로
+        // 하나 더 붙이면 된다. 2026-11-04 에 "보류" 로 적었던 판단을 이 근거로 뒤집는다 -
+        // 그때는 캔버스를 옮기거나(회귀 위험) 내부를 흉내 내는 두 길만 보았다.
+        //
+        // **쓰기 경로가 늘지 않는다.** 이 컴포넌트가 하는 일은 사각형을 그려 `GridItemView` 를 고르는
+        // 것뿐이고(`MultiSelect.Toggle`·`Prune`·`CombineSecondary`), 고른 것을 옮기는 일은 이미 되는
+        // 1-7·1-8·1-9 의 경로(`ItemView.OnPointerDown` 패치)가 한다 - 즉 우리 컨트롤러의 지역 조작이다.
+        //
+        // **타입을 반사로 찾는다.** UI Fixes 가 없는 사람에게는 `null` 이 나오고 그냥 넘어간다 -
+        // 컴파일 의존도, 없을 때의 오류도 없다. 그 모드가 이 타입의 이름을 바꾸면 조용히 꺼질 뿐이다.
+        private static void EnableStmStashMultiSelect()
+        {
+            try
+            {
+                GameObject overlayRoot = LoadoutEditorOverlayRoot;
+                if (overlayRoot == null)
+                {
+                    return;
+                }
+
+                Type drawMultiSelect = AccessTools.TypeByName("UIFixes.DrawMultiSelect");
+                if (drawMultiSelect == null)
+                {
+                    // UI Fixes 가 없거나 타입 이름이 바뀌었다. 선택 상자만 없고 나머지는 그대로다.
+                    return;
+                }
+
+                // **먼저 그 컴포넌트가 설 수 있는지 본다.** `Start()` 는 레이캐스터 둘 중 하나라도 못
+                // 찾으면 **던지고**, 그러면 `Update` 가 매 프레임 null 을 만진다. 못 설 자리면 붙이지 않는다.
+                if (overlayRoot.GetComponentInParent<GraphicRaycaster>() == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] No GraphicRaycaster above the editor overlay; the selection box is not enabled.");
+                    return;
+                }
+
+                PreloaderUI preloader = Singleton<PreloaderUI>.Instance;
+                if (preloader == null
+                    || preloader.transform.childCount == 0
+                    || preloader.transform.GetChild(0).GetComponent<GraphicRaycaster>() == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] PreloaderUI raycaster was not found; the selection box is not enabled.");
+                    return;
+                }
+
+                if (overlayRoot.GetComponent(drawMultiSelect) != null)
+                {
+                    return;
+                }
+
+                overlayRoot.AddComponent(drawMultiSelect);
+                pitFireTeam.Log.LogInfo("[STM] Selection box (UI Fixes DrawMultiSelect) enabled for the teammate gear editor.");
+            }
+            catch (Exception ex)
+            {
+                // 겉편의다. 실패해도 편집기는 열리고 Shift+클릭·Ctrl+A 는 그대로 된다.
+                pitFireTeam.Log.LogWarning($"[STM] Could not enable the selection box: {ex.GetType().Name}: {ex.Message}");
+            }
         }
 
         // 검색칸(`_searchTab`)을 직접 켜고 우리 손으로 창을 연다. `InitSearch` 가 켜 주지 않는 이유는
