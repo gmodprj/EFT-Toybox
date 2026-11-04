@@ -639,6 +639,14 @@ namespace pitTeam.Patches
                 return false;
             }
 
+            // 격자 오른쪽의 빈 띠를 걷는다. 왼쪽 칸은 패널 폭의 절반(여기서 707px)인데 스태시 격자는
+            // 10칸으로 **폭이 고정**이라(약 630px) 남는 폭이 격자와 스크롤바 사이에 빈 검은 띠로 남았다
+            // (2026-11-04 인게임 실측, 사용자 화면). 2026-11-04 에 검색칸(`StashOnly`) 탓으로 보고
+            // 되돌렸지만 띠는 그대로였다 - 설치본 IL 에 `EStashSearchAvailability 0` 이 든 것을 확인했으므로
+            // 검색칸과 무관하다. **상수를 박지 않고 런타임에 잰다**: 해상도·칸 수·스크롤바 폭이 달라도
+            // 같은 답이 나오고, 남는 폭이 없으면(격자가 칸보다 넓으면) 아무것도 하지 않는다.
+            ShrinkStmStashSectionToGrid(leftSection);
+
             // 패널을 세우는 동안 아이템 컴포넌트 상태(특히 무기 부착물)가 초기화될 수 있다. 플레이어가 만지기 전의 이 시점이
             // "바뀌었는가" 를 따질 첫 안정된 기준이다(PIT 편집기와 같은 이유).
             try
@@ -662,6 +670,97 @@ namespace pitTeam.Patches
 
             return LoadoutEditorInitialEquipmentItems != null && LoadoutEditorInitialStashItems != null;
         }
+
+        // 왼쪽 칸을 스태시 격자 폭에 맞춘다. 격자의 오른쪽 끝과 칸의 오른쪽 끝 사이에 남는 폭을 재서
+        // 그만큼 칸(배경 상자)을 줄인다 - 스크롤바가 격자에 붙고 빈 띠가 사라진다.
+        // 재는 자리를 격자의 **월드 모서리**로 잡는 이유: 스크롤 뷰포트·내용물의 앵커 설정을 모르고도
+        // (템플릿이 늘이기일 수도, 고정 폭일 수도 있다) 실제로 그려진 오른쪽 끝을 묻기 때문이다.
+        // 아무것도 재지 못하면 **그대로 둔다**(불변식 2: 의심스러우면 쓰지 않는다) - 폭이 틀리면
+        // 격자가 잘려 보이고, 빈 띠는 보기 싫을 뿐이다.
+        private static void ShrinkStmStashSectionToGrid(RectTransform sectionContent)
+        {
+            try
+            {
+                SimpleStashPanel stashPanel = LoadoutEditorStashPanel;
+                if (stashPanel == null || sectionContent == null)
+                {
+                    return;
+                }
+
+                // 줄일 것은 배경 상자(부모)다. 내용물 칸은 앵커가 늘이기라 부모를 줄이면 따라온다.
+                if (!(sectionContent.parent is RectTransform sectionRect))
+                {
+                    return;
+                }
+
+                // 격자가 최종 크기를 갖기 전에 재면 0 이 나온다.
+                Canvas.ForceUpdateCanvases();
+
+                EFT.UI.DragAndDrop.GridView[] grids = stashPanel.GetComponentsInChildren<EFT.UI.DragAndDrop.GridView>(false);
+                if (grids == null || grids.Length == 0)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] Stash grid view was not found; the editor keeps the section width as is.");
+                    return;
+                }
+
+                Vector3[] corners = new Vector3[4];
+                float gridRight = float.MinValue;
+                foreach (EFT.UI.DragAndDrop.GridView grid in grids)
+                {
+                    if (!(grid?.transform is RectTransform gridRect) || gridRect.rect.width <= 0f)
+                    {
+                        continue;
+                    }
+
+                    gridRect.GetWorldCorners(corners);
+                    // corners: 0=왼아래 1=왼위 2=오른위 3=오른아래. 칸의 좌표계로 옮겨 오른쪽 끝을 본다.
+                    float right = sectionRect.InverseTransformPoint(corners[2]).x;
+                    gridRight = Mathf.Max(gridRight, right);
+                }
+
+                if (gridRight <= float.MinValue + 1f)
+                {
+                    return;
+                }
+
+                // 스크롤바는 격자 오른쪽에 그대로 두어야 한다 - 그 폭만큼은 남긴다.
+                float scrollbarWidth = 0f;
+                ScrollRect scroll = stashPanel._stashScroll;
+                if (scroll?.verticalScrollbar?.transform is RectTransform scrollbarRect)
+                {
+                    scrollbarWidth = Mathf.Max(0f, scrollbarRect.rect.width);
+                }
+
+                float slack = sectionRect.rect.xMax - gridRight - scrollbarWidth;
+                if (slack <= StmStashSectionSlackEpsilon)
+                {
+                    // 남는 폭이 없다(또는 격자가 칸보다 넓다). 건드리지 않는다.
+                    return;
+                }
+
+                pitFireTeam.Log.LogInfo(
+                    $"[STM] Stash section trimmed: width={sectionRect.rect.width:F1}, gridRight={gridRight:F1}, scrollbar={scrollbarWidth:F1}, slack={slack:F1}.");
+
+                sectionRect.offsetMax = new Vector2(sectionRect.offsetMax.x - slack, sectionRect.offsetMax.y);
+
+                // 폭이 바뀌었으니 격자·스크롤이 다시 자리를 잡게 하고, 스크롤을 맨 위로 되돌린다
+                // (패널을 세울 때 한 것이 이 변경으로 흐트러질 수 있다 - LoadoutUi.cs 의 같은 처리).
+                Canvas.ForceUpdateCanvases();
+                if (scroll != null)
+                {
+                    scroll.StopMovement();
+                    scroll.normalizedPosition = Vector2.up;
+                }
+            }
+            catch (Exception ex)
+            {
+                // 겉모양 손질이다. 실패해도 편집기는 열린다.
+                pitFireTeam.Log.LogWarning($"[STM] Could not trim the stash section width: {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        // 1px 미만의 남는 폭은 반올림 오차다 - 건드리면 격자가 잘릴 수 있다.
+        private const float StmStashSectionSlackEpsilon = 2f;
 
         // 편집기 프로필: 플레이어 프로필의 복제(외형·스킬의 껍데기)에, 인벤토리만 그 팀원의 장비와 **그 팀원의 스태시**로 바꾼다.
         // PIT 와 같은 InventoryDescriptor 경로를 쓰므로 아이템 id 가 보존된다 - 저장이 "어느 아이템이 움직였나" 를 id 로 말한다.
