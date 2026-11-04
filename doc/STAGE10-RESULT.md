@@ -182,6 +182,62 @@ Hj's Improved Customization UI(3069)가 테스트 중에 만든 자기 설정인
 
 기준선에 `147 plugins to load` 인데 `Loading [` 줄이 108개뿐이라고 적었다. 이번 로그는 **151 = 151 로 정확히 일치한다.** 어제 그 파일에만 있던 현상이고(그 로그는 덮여 사라졌다) 지표 자체는 믿을 수 있다. 앞으로는 두 수를 **함께** 세서 어긋나면 그 로그를 의심한다.
 
+## 10-E — 퀘스트·하이드아웃·진행 12개 · 2026-11-05
+
+| 항목 | 결과 |
+| --- | --- |
+| 프로필 백업 | `backup/profiles-before-stage10-E/` 에 7개, **원본과 크기 전부 일치** 확인 |
+| 받기 | 12개 모두 바이트 수 **정확히 일치** (20.27 MB, Tarkin's Hideout Cat 혼자 19.9 MB) |
+| 출처 | Hideout Overhaul(2982)만 **codeberg.org** 경유였다(나머지는 GitHub 릴리스) |
+| 겹침 검사 | CLEAN (0/0/0), 설치 대상 53개 |
+| 설치 | 11개 `-SkipTest` + 마지막 2652 에서 테스트 한 번 |
+| 설치 기록 | 55줄 (= 53 + 생성된 파일 2) |
+| 서버 모드 | 127 → **136** (= 서버 쪽 9개) |
+| 시작 시간 | 159초 |
+| 로드 확인 | `(Added 9 mods: Cultist Circle Improvements, Simple Workout QTE, HideoutOverhaul, FairProgression, Expanded Task Text, Health Per Level, Hideout In Progress, All Quests Checkmarks, Skill Distribution)` |
+| 오류 | 새 오류 0. 기준 문구 48 · 1 그대로, `err.txt` 0바이트 |
+
+출력: `server-tests/server-test-stage10-E-2652-FairProgression.out.txt`
+
+### 프로필은 상한 데가 없다
+
+이 단계는 결속 표시가 없어도 프로필을 읽는 것들이라, 설치 전 백업과 설치·서버 시작 후를 비교했다.
+
+| 프로필 | 레벨 | 스킬 수 | 최대체력 합 | 아이템 수 |
+| --- | --- | --- | --- | --- |
+| Nomad · Banshee · Knox · Hawk · Buck · Mace · Raptor (7개) | 그대로 | 그대로 | 그대로 (995) | 그대로 |
+
+**다만 "효과가 보인다"는 뜻은 아니다.** Health Per Level(1706)을 넣었는데 레벨 69 캐릭터의 최대체력 합이 995 그대로이고, Skill Distribution(2144)을 넣었는데 스킬 수도 그대로다. 설정이 기본값이라 아무것도 안 하는 것일 수도, 레이드 진입 시점에 적용되는 것일 수도 있다 — **확인하지 않았다.** 이 단계가 통과한 것은 "프로필이 깨지지 않았다"까지다.
+
+### 생성 파일이 둘 나왔고 둘 다 기록에 넣었다
+
+```
+OTHERMOD SPT_Runtime\user\mods\acidphantasm-simpleworkoutqte\config.json
+OTHERMOD SPT_Runtime\user\mods\ExpandedTaskText\Resources\descriptionCache.json
+```
+
+Simple Workout QTE(1437)의 설정과 Expanded Task Text(2153)의 설명 캐시다. 각 기록에 한 줄씩 더했다(53 → 55줄). 캐시도 넣은 이유는 **기록만으로 지웠을 때 남지 않게** 하기 위해서다.
+
+### 그 밖에
+
+- **Skill Distribution 의 DLL 은 스스로를 1.2.2 로 알린다**(페이지·매니페스트는 1.3.0). MergeConsumables 와 같은 경우로, 제작자가 DLL 버전을 올리지 않은 것이다.
+- `[CCI] Added 25 Cultist Circle crafts utilizing WTT-Content Backport` — Cultist Circle Improvements 가 설치된 WTT Content Backport 를 알아보고 제작법 25개를 더했다.
+
+## 10-E2 — Broken Limbs Don't Heal (3121) 단독 · 2026-11-05
+
+선행 Effects Manager Framework(3123)가 **플러그인이 아니라 라이브러리**라 플러그인 수에 잡히지 않았다(10-B 참조). 그것이 참조로 제대로 끌려 올라가는지가 이 단계의 시험이라 단독으로 넣었다.
+
+| 항목 | 결과 |
+| --- | --- |
+| 받기 | 8775바이트, 매니페스트와 일치 |
+| 겹침 검사 | CLEAN (0/0/0), 설치 대상 2개 |
+| 설치 | 2파일, 게임 전용 |
+| 서버 모드 | **136 유지** (게임 전용이라 늘지 않는 것이 맞다) |
+| 시작 시간 | 129초 |
+| 오류 | 새 오류 0 |
+
+**아직 확인되지 않은 것** — 게임 전용이라 **서버 테스트로는 선행 참조가 풀렸는지 알 수 없다.** 다음 기동에서 `Loading [Broken Limbs ...]` 줄이 뜨는지, Effects Manager 관련 경고가 없는지를 봐야 한다. 골절이 레이드 종료 후 유지되는지는 레이드를 한 번 돌아야 안다.
+
 ## 게임·서버 기동 확인 (10-C·10-D 설치 후, 2026-11-05 08:17~08:22)
 
 사용자가 직접 서버와 게임을 띄웠다. 서버 로그는 사용자가 넘겨 주었고, 게임 로그는 `BepInEx/LogOutput.log`(08:21 기동, 10-D 설치 08:08 이후)를 읽었다.

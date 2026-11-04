@@ -1,0 +1,2 @@
+2076__Tyfon-HideoutInProgress-3.0.0	BepInEx\plugins\Tyfon.HideoutInProgress.dll
+2076__Tyfon-HideoutInProgress-3.0.0	SPT_Runtime\user\mods\Tyfon.HideoutInProgress.Server\Tyfon.HideoutInProgress.Server.dll

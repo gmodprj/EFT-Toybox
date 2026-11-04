@@ -1,0 +1,5 @@
+1437__acidphantasm-simpleworkoutqte	BepInEx\plugins\acidphantasm-simpleworkoutqte\acidphantasm-simpleworkoutqte.dll
+1437__acidphantasm-simpleworkoutqte	BepInEx\plugins\acidphantasm-simpleworkoutqte\LICENSE
+1437__acidphantasm-simpleworkoutqte	SPT_Runtime\user\mods\acidphantasm-simpleworkoutqte\acidphantasm-simpleworkoutqte.dll
+1437__acidphantasm-simpleworkoutqte	SPT_Runtime\user\mods\acidphantasm-simpleworkoutqte\LICENSE
+1437__acidphantasm-simpleworkoutqte	SPT_Runtime\user\mods\acidphantasm-simpleworkoutqte\config.json

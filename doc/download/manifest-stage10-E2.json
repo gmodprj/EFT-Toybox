@@ -1,0 +1,17 @@
+{
+  "stage": "stage10-E2",
+  "spt": "4.1.6",
+  "note": "10-E2 Broken Limbs Dont Heal 단독. 선행 Effects Manager Framework(3123)는 10-B 에서 들어갔고, 그것이 플러그인이 아니라 라이브러리라 플러그인 수에는 잡히지 않았다 — 이 모드가 로드될 때 참조로 끌려 올라가는지가 이 단계의 시험이다. 묶음에 섞으면 선행 실패와 구분이 안 되므로 단독으로 넣는다. 계획은 PLAN-STAGE10.md 10-E2.",
+  "totalSize": 8775,
+  "mods": [
+    {
+      "group": "10E2-1",
+      "id": 3121,
+      "name": "Broken Limbs Don't Heal",
+      "version": "1.1.0",
+      "size": 8775,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3121/broken-limbs-dont-heal/1.1.0"
+    }
+  ]
+}
