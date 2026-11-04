@@ -21,6 +21,23 @@
   // 범위 밖 항목까지 사라져 다른 모드와 부딪힐 수 있다. 기본은 꺼짐.
   "RemoveAllConflictsOnAttachments": false,
 
+  // 총기·총기 파츠끼리 서로를 막는 ConflictingItems 를 지운다.
+  // 칸 필터는 건드리지 않는다 — 넓히는 것은 SlotCategoryRelax 같은 다른 모드가 하고,
+  // 넓힌 뒤에도 남는 "★ MBUS 가늠쇠과 ★ TR-1 아이템은 동시에 장착할 수 없습니다" 를 푼다.
+  "RemoveWeaponAttachmentConflicts": true,
+
+  // 위보다 센 선택지. 총기·총기 파츠의 ConflictingItems 를 통째로 비운다.
+  // 탄약처럼 범위 밖 항목까지 사라진다. 기본은 꺼짐.
+  "RemoveAllConflictsOnWeaponAttachments": false,
+
+  // 총기 충돌 정리에서 건드리지 않을 분류(부모) id. 어느 쪽에 있든 그 항목은 남는다.
+  // 기본값은 탄창·장전 손잡이다. 그 둘이 거는 제한은 모양이 아니라 구경 이야기라서
+  // (AXMC .338 볼트에 7.62 총열을 끼우는 식) 지우면 총이 성립하지 않는다.
+  "WeaponConflictExcludedCategoryIds": ["5448bc234bdc2d3c308b4569", "55818a6f4bdc2db9688b456b"],
+
+  // 건드리지 않을 총기 아이템 id. 예: ["5447a9cd4bdc2dbd208b4567"]
+  "ExcludedWeaponIds": [],
+
   // 건드리지 않을 칸 이름. 대소문자는 가리지 않는다.
   // helmet_top·helmet_back 은 헬멧에 내장된 방탄판 자리다(36종). 여기를 합치면
   // 아무 헬멧에 아무 방탄판을 넣을 수 있어 방어력이 크게 달라진다. 그대로 두고 싶으면

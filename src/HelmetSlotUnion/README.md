@@ -1,6 +1,6 @@
 # HelmetSlotUnion — 헬멧 부착 칸 합집합
 
-헬멧의 부착 칸 필터를 **칸 이름별 합집합**으로 바꾸는 SPT 4.1.6 서버 모드. 이 저장소에서 직접 만든 것이다.
+헬멧의 부착 칸 필터를 **칸 이름별 합집합**으로 바꾸고, 부품끼리 서로를 막는 제한(`ConflictingItems`)을 푸는 SPT 4.1.6 서버 모드. 이 저장소에서 직접 만든 것이다. 충돌 제한 쪽은 **총기 부착물까지** 본다([아래](#총기-부착물의-충돌도-지운다)).
 
 ## 왜 필요한가
 
@@ -59,6 +59,33 @@
 
 `RemoveAllConflictsOnAttachments`(기본 꺼짐)는 범위 안 아이템의 목록을 통째로 비운다. 범위 밖 항목까지 사라지므로 다른 모드와 부딪힐 수 있다.
 
+### 총기 부착물의 충돌도 지운다
+
+총기도 같은 일이 생긴다. 칸 필터를 넓히는 모드([SlotCategoryRelax](../SlotCategoryRelax) · All In Weapon 등)를 쓰면 목록에는 올라오는데, 끼우려 하면 이렇게 막힌다:
+
+> ● MBUS 가늠쇠과 ● TR-1 아이템은 동시에 장착할 수 없습니다
+
+헬멧과 똑같이 `ConflictingItems` 다. `RemoveWeaponAttachmentConflicts`(기본 켜짐)가 **총기와 총기 파츠끼리** 서로를 막는 항목만 지운다. **총기 쪽은 칸 필터를 건드리지 않는다** — 넓히는 것은 다른 모드의 몫이고, 여기서는 넓힌 뒤에도 남는 제한만 푼다.
+
+범위는 `Weapon`(`5422acb9af1c889c16000029`) 밑에서 부착 칸이 있는 **총기 152종**과, 그 칸에 들어갈 수 있는 파츠를 따라 내려간 **2183개**다. 이 설치본에서 서버를 켜 재어 본 결과(2026-11-04) **아이템 273개에서 2020건**을 지우고 **157건은 남긴다**. 남는 것은 탄약처럼 범위 밖을 가리키는 70건과, 아래 구경 제한 87건이다.
+
+이 모드는 칸 필터를 넓히는 모드보다 **늦게** 돈다(`[Injectable(InjectionType.Singleton, 100000)]` — 숫자가 클수록 늦다). 그래야 SlotCategoryRelax 가 넓혀 놓은 필터까지 따라가 충돌을 지운다(대상 2178개 → 2183개). 다만 **서버 모드가 나중에 새로 만드는 아이템은 보지 못한다** — 실측으로 Amonya 의 커스텀 아이템 199개는 이 모드보다 뒤에 생긴다.
+
+| 분류 | 지우는 건수 |
+| --- | --- |
+| 마운트 | 405 |
+| 총열덮개 | 339 |
+| 망원 조준경 | 312 |
+| 총몸 | 178 |
+| 기계식 조준기 | 172 |
+| 총열 | 168 |
+| 개머리판 | 158 |
+| 나머지(유탄발사기·소염기·조준경·손잡이 등) | 288 |
+
+**탄창과 장전 손잡이(볼트)는 기본으로 건드리지 않는다.** 그쪽 충돌은 모양이 아니라 구경 이야기라서다 — AXMC `.338` 볼트는 `7.62x51` 총열 3종을, `.338` 탄창은 `7.62` 볼트·총열을 막는다. 지우면 구경이 섞인 총이 만들어진다. `WeaponConflictExcludedCategoryIds` 가 그 두 분류를 담고 있고, 어느 쪽에 있든(건 쪽이든 막힌 쪽이든) 그 항목은 남는다.
+
+`RemoveAllConflictsOnWeaponAttachments`(기본 꺼짐)는 범위 안 아이템의 목록을 통째로 비운다. 구경 제한도 탄약 제한도 함께 사라진다.
+
 ## 설정 — `config.jsonc` (DLL 옆)
 
 | 항목 | 기본값 | 내용 |
@@ -68,8 +95,14 @@
 | `MergeEquipmentSlots` | `false` | `mod_equipment` 와 `mod_equipment_000·001·002…` 를 한 묶음으로 본다 |
 | `RemoveAttachmentConflicts` | `true` | 헬멧·헬멧 파츠끼리 서로를 막는 `ConflictingItems` 를 지운다 |
 | `RemoveAllConflictsOnAttachments` | `false` | 범위 안 아이템의 `ConflictingItems` 를 통째로 비운다 |
+| `RemoveWeaponAttachmentConflicts` | `true` | 총기·총기 파츠끼리 서로를 막는 `ConflictingItems` 를 지운다 |
+| `RemoveAllConflictsOnWeaponAttachments` | `false` | 총기 범위 안 아이템의 `ConflictingItems` 를 통째로 비운다 |
+| `WeaponConflictExcludedCategoryIds` | 탄창·장전 손잡이 | 총기 충돌 정리에서 뺄 분류 id. 어느 쪽에 있든 그 항목은 남는다 |
+| `ExcludedWeaponIds` | `[]` | 건드리지 않을 총기 아이템 id |
 | `ExcludedSlotNames` | `[]` | 건드리지 않을 칸 이름(대소문자 무시) |
 | `ExcludedHelmetIds` | `[]` | 건드리지 않을 헬멧 아이템 id |
+
+이미 설치된 `config.jsonc` 에 새 항목이 없어도 된다. 없는 항목은 위 기본값으로 읽으므로, 그대로 두면 총기 충돌 정리가 켜진 상태로 동작한다.
 
 고친 뒤에는 **서버를 다시 켜야** 한다.
 
@@ -104,7 +137,7 @@ pwsh -File tools/install-helmetslotunion.ps1
 
 폴더(`SPT_Runtime\user\mods\HelmetSlotUnion`)를 지우고 서버를 다시 켜면 된다. DB 를 메모리에서만 고치므로 파일에 흔적이 남지 않고, 프로필 결속도 아니다.
 
-단, **이 모드로만 가능했던 조합을 끼운 채 모드를 빼면** 그 헬멧은 필터에 없는 자식을 가진 상태가 된다. 모드를 뺄 생각이라면 먼저 그런 조합을 풀어 둔다.
+단, **이 모드로만 가능했던 조합을 끼운 채 모드를 빼면** 그 헬멧은 필터에 없는 자식을 가진 상태가 된다. 총기도 마찬가지다 — 충돌이 되살아나면 그 조합으로 조립해 둔 총과 저장해 둔 조립도(프리셋)가 성립하지 않는다. 모드를 뺄 생각이라면 먼저 그런 조합을 풀어 둔다.
 
 ## 구조
 
