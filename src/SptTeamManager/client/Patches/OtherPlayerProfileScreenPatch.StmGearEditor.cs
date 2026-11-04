@@ -850,26 +850,65 @@ namespace pitTeam.Patches
                     scrollbarWidth = Mathf.Max(0f, scrollbarRect.rect.width);
                 }
 
-                float slack = sectionRect.rect.xMax - gridRight - scrollbarWidth;
+                // **기준은 칸이 아니라 뷰포트의 오른쪽 끝이다.** 칸과 뷰포트 사이에는 여백이 있고
+                // (내용물 칸이 좌우 8px 씩 들여쓴다) 그것은 남는 폭이 아니라 **디자인된 여백**이다.
+                // 2026-11-04 에 칸(`sectionRect.rect.xMax`)을 기준으로 재서 그 여백까지 걷었고,
+                // 그만큼 격자가 뷰포트보다 넓어져 **오른쪽 칸이 잘리고 가로 스크롤이 생겼다**
+                // (로그: width=707.0, gridRight=285.5, scrollbar=10.0, slack=58.0 → 8px 과하다).
+                RectTransform viewport = scroll?.viewport ?? scroll?.transform as RectTransform;
+                float viewportRight = sectionRect.rect.xMax;
+                if (viewport != null)
+                {
+                    viewport.GetWorldCorners(corners);
+                    viewportRight = sectionRect.InverseTransformPoint(corners[2]).x;
+                }
+
+                float slack = viewportRight - gridRight - scrollbarWidth;
+                pitFireTeam.Log.LogInfo(
+                    $"[STM] Stash section measure: section={sectionRect.rect.width:F1}, viewport={(viewport != null ? viewport.rect.width : -1f):F1}, viewportRight={viewportRight:F1}, gridRight={gridRight:F1}, scrollbar={scrollbarWidth:F1}, slack={slack:F1}.");
+
                 if (slack <= StmStashSectionSlackEpsilon)
                 {
-                    // 남는 폭이 없다(또는 격자가 칸보다 넓다). 건드리지 않는다.
+                    // 남는 폭이 없다(또는 격자가 뷰포트보다 넓다). 건드리지 않는다.
                     return;
                 }
 
-                pitFireTeam.Log.LogInfo(
-                    $"[STM] Stash section trimmed: width={sectionRect.rect.width:F1}, gridRight={gridRight:F1}, scrollbar={scrollbarWidth:F1}, slack={slack:F1}.");
-
                 sectionRect.offsetMax = new Vector2(sectionRect.offsetMax.x - slack, sectionRect.offsetMax.y);
-
-                // 폭이 바뀌었으니 격자·스크롤이 다시 자리를 잡게 하고, 스크롤을 맨 위로 되돌린다
-                // (패널을 세울 때 한 것이 이 변경으로 흐트러질 수 있다 - LoadoutUi.cs 의 같은 처리).
                 Canvas.ForceUpdateCanvases();
+
+                // **그래도 안 들어가면 되돌려 준다.** 위 셈이 보지 못하는 안쪽 여백이 또 있을 수 있다 -
+                // 모델이 아니라 **증상**(내용물이 뷰포트보다 넓다)을 재서 그 차이를 돌려준다.
+                // 격자가 잘리는 것이 빈 띠보다 나쁘므로 이쪽으로 넘어뜨린다(불변식 2).
+                for (int pass = 0; pass < 3; pass++)
+                {
+                    RectTransform content = scroll?.content;
+                    if (content == null || viewport == null)
+                    {
+                        break;
+                    }
+
+                    float overflow = content.rect.width - viewport.rect.width;
+                    if (overflow <= 0f)
+                    {
+                        break;
+                    }
+
+                    float giveBack = overflow + StmStashSectionSlackEpsilon;
+                    pitFireTeam.Log.LogWarning(
+                        $"[STM] Stash content overflows after the trim (pass {pass + 1}): content={content.rect.width:F1}, viewport={viewport.rect.width:F1}; giving back {giveBack:F1}.");
+                    sectionRect.offsetMax = new Vector2(sectionRect.offsetMax.x + giveBack, sectionRect.offsetMax.y);
+                    Canvas.ForceUpdateCanvases();
+                }
+
+                // 폭이 바뀌었으니 스크롤을 맨 위로 되돌린다
+                // (패널을 세울 때 한 것이 이 변경으로 흐트러질 수 있다 - LoadoutUi.cs 의 같은 처리).
                 if (scroll != null)
                 {
                     scroll.StopMovement();
                     scroll.normalizedPosition = Vector2.up;
                 }
+
+                pitFireTeam.Log.LogInfo($"[STM] Stash section trimmed to {sectionRect.rect.width:F1}.");
             }
             catch (Exception ex)
             {
