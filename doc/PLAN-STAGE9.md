@@ -40,15 +40,16 @@
 | 9-K | 결속 — 소형, 하나씩 | 6 | 900 KB | 프로필 백업 → 하나씩 설치·테스트 → 프로필 비교 |
 | 9-L | 결속 — 콘텐츠·대형, 하나씩 | 11 | 3.57 GB | 프로필 백업 → 하나씩 설치·테스트 → 프로필 비교 |
 | 9-M | 겹침·초대형 — 9-0 의 택일이 끝난 뒤 | 7 | 5.36 GB | 하나씩 설치·테스트 |
-| 9-N | 보류 — 이 계획에서는 넣지 않는다 | 4 | 5.25 GB | 넣지 않는다 |
+| 9-O | Manimal 맵 백포트 — 초대형, 의존 순서대로 | 3 | 5.25 GB | 하나씩 설치·테스트 |
+| 9-N | 보류 — 이 계획에서는 넣지 않는다 | 1 | 747 KB | 넣지 않는다 |
 
-9-N(보류)을 빼면 실제로 받는 양은 약 **9.5 GB** 다. 9-M 의 결정에서 겹침 모드를 빼기로 하면 더 줄어든다.
+9-N(보류 1개)을 빼면 실제로 받는 양은 **14.77 GB** 다. 9-0-1 에서 잰 `E:\` 여유 1008.2 GB 에 비하면 문제가 없다. 9-M 의 택일에서 겹침 모드를 빼기로 하면 더 줄어든다.
 
 ## 9-0 — 설치 전에 끝낼 결정 (설치 없음)
 
 설치본(`E:\Spt`)은 건드리지 않는다. 여기서 정하지 않으면 뒤 단계가 서로를 덮는다.
 
-진행 상황 — **9-0-1(기준선)·9-0-2(PIT 기록)는 2026-11-04 에 끝냈다.** 남은 것은 9-0-3(택일 4건)·9-0-4(확인만)·9-0-5(차단 재확인)이고, 9-0-3 은 사용자가 정해야 한다.
+진행 상황 — **9-0-1(기준선)·9-0-2(PIT 기록)는 2026-11-04, 9-0-4·9-0-5(차단 재확인)는 2026-11-05 에 끝냈다.** 남은 것은 **9-0-3(택일 4건)뿐이고, 그것은 사용자가 정해야 한다.** 9-0-5 에서 보류가 4개 → 1개로 줄었다.
 
 ### 9-0-1 기준선 — **재측정 완료 (2026-11-04)**
 
@@ -120,9 +121,24 @@ assets/content/items/mods/barrels/barrel_vpo215_600mm_366tkm.bundle
 
 Loot In Vicinity(2698)·Combat Log(3072)·Arena Mode(3175)에 Fika 비호환 표시가 있으나, 이 설치본은 Fika 를 쓰지 않는다 — 게임 로그의 `FixPluginTypesSerialization ... references Fika.Core which doesn't exist` 가 그 증거다(PROCEDURE 의 정상 메시지 표). 이 표시만으로 빼지 않는다.
 
-### 9-0-5 차단 4건 확인
+### 9-0-5 차단 확인 — **다시 보니 차단은 1건뿐이다 (2026-11-05)**
 
-`node tools/mod-detail.mjs 1426 2882` 로 선행 모드가 4.1.6 으로 올라왔는지 다시 본다. 아직이면 9-N 은 그대로 보류다.
+`node tools/mod-detail.mjs 1426 2882` 로 선행 둘을 다시 봤다. **둘 다 4.1.6 버전은 여전히 없다.** 그런데 그 다음이 갈린다.
+
+**UnityToolkit(1426)은 차단이 아니다 — 이미 설치돼 돌고 있다.**
+
+| 확인한 것 | 결과 |
+| --- | --- |
+| Forge 최신 | 2.0.2 `[4.1.5]` — **4.1.6 표기는 없다** |
+| 설치 기록 | `installed-stage6C-1426.txt`, 6차에 `1426__UnityToolkit-v2.0.2-SPT4.1.5` 로 들어갔다 (파일 17개) |
+| 설치본 | `BepInEx/patchers/UnityToolkit/`, `BepInEx/plugins/UnityToolkit/UnityToolkit.dll` 존재 |
+| **실제 로드** | `Loaded 1 patcher method from [UnityToolkit-Prepatcher 2.0.2.0]` → `Patching [System.Runtime.CompilerServices.Unsafe] with [UnityToolkit.Prepatcher.Patcher]` |
+
+4.1.5 빌드지만 **4.1.6 에서 프리패처가 실제로 돌고 있다.** 9-0-1 의 플러그인 147개 기준선에 이미 포함된 것이다. 그러므로 Manimal 백포트 셋(2866·3025·3022)은 UnityToolkit 때문에 막히지 않는다 → **보류에서 빼내 9-O 로 옮겼다.** 남은 선행도 확인했다: 3025·3022 가 요구하는 WTT CommonLib(2310)·WTT Content Backport(2512)는 둘 다 설치본에 있어 **지금 넣을 수 있다.** 2866 만 2511·2649·2864·3025 를 더 요구해 순서가 뒤로 간다.
+
+**Rook(3055)만 남는다.** Eco's Attachment Emporium(2882)은 3.0.0`[4.1.1]`·2.1.1`[4.0.13]` 뿐이고 **설치돼 있지도 않다**(id 로 `INSTALLED-MODS.md` 대조, 0건). 선행이 없으니 지금은 못 넣는다 — 9-N 에 혼자 남았다.
+
+여기서 얻은 판정 기준: **의존성 차단은 Forge 호환 표기가 아니라 설치본 실측으로 가린다.** 표기가 없어도 이미 설치돼 로드되고 있으면 막힌 것이 아니고, 반대로 표기만 맞고 설치본에 없으면 그 선행부터 넣어야 한다.
 
 ## 단계마다 되풀이하는 틀
 
@@ -181,7 +197,9 @@ Loot In Vicinity(2698)·Combat Log(3072)·Arena Mode(3175)에 Fika 비호환 표
 - **넓히기만 된다.** 필터에 `Add` 만 하고 제거가 없다 — 달리는 것을 **못 달게** 만들 수는 없다.
 - **한 무기에서 같은 부착물을 두 칸에 넣을 수 없다.** 설정이 `{부착물: 칸}` 이라 부착물 id 가 키다. 칸이 여러 개인 상부·레일에서 걸린다.
 - **무기 id 가 DB 에 없으면 조용히 넘어간다**(로그도 없다). 오타를 알아채기 어렵다 — 한 줄씩 넣는 이유가 이것이다.
-- 로드 순위가 `OnLoadOrder.TraderRegistration - 1` 로 **이르다.** 뒤에 오는 DB 수정 모드가 같은 칸을 덮으면 밀린다. 9-L 에서 아이템을 추가하는 모드를 넣은 **뒤에 9-A 의 조합이 아직 되는지 다시 본다.**
+- **로드 자리가 너무 이르다 — 2026-11-05 실측으로 이것이 가장 큰 결함으로 드러났다.** `TraderRegistration - 1` = 299,999 인데, 이 설치본에는 그보다 **뒤에 도는 선언이 400개 넘게** 있다(기본값 `int.MaxValue` 만 304개). [REVIEW-LOAD-ORDER.md](REVIEW-LOAD-ORDER.md) 의 표 그대로다. 그래서 ① 뒤에서 같은 필터를 통째로 쓰는 모드가 있으면 **덮이고**, ② 아이템을 늦게 추가하는 모드의 무기·부착물은 ESF 가 돌 때 **DB 에 아직 없어** 조용히 넘어간다. 결국 **ESF 로 다룰 수 있는 것은 사실상 바닐라 무기·부착물뿐이다.**
+  - 그러므로 9-A 를 먼저 하더라도 **9-L(아이템 추가 결속 모드) 뒤에 조합이 아직 되는지 반드시 다시 본다.**
+  - 모드가 넣은 총기에 모드 부착물을 달게 하려면 이 모드로는 안 된다 → "안 되면" 항목의 자작 쪽으로 간다. 자작 모드는 이미 `PostLoad`(1,000,000)로 짜 왔다.
 - `config.jsonc` 가 깨지면 서버가 예외를 던지며 선다. 그때는 파일을 지우고 재생성한다.
 
 ### 안 되면 — 직접 만드는 쪽
@@ -533,24 +551,41 @@ ORBIT 3.0(2706)은 SAIN·Waypoints·BigBrain 을 모두 요구하고 봇 행동�
 - Arena Map Port(3166, 3.6 GB)는 이 목록에서 가장 크고 버전이 0.4.0 이다. 디스크 여유를 먼저 재고, 단독으로 넣는다.
 - Labs Office Backport(2937)는 설치된 WTT Content Backport 와 같은 계열이다 — 파일 겹침 검사를 특히 꼼꼼히 본다.
 
-### 9-N — 보류 — 이 계획에서는 넣지 않는다 (4개, 5.25 GB, 결속 1)
+### 9-O — Manimal 맵 백포트 — 초대형, 의존 순서대로 (3개, 5.25 GB)
 
-**설치 방식** — 넣지 않는다.
+**설치 방식** — 하나씩 설치·테스트.
 
-선행 모드가 4.1.6 에 없어서 지금은 설치 자체가 안 된다. 선행이 올라오면 9-M 뒤에 붙인다.
+**표의 순서를 바꾸지 않는다.** 처음에는 UnityToolkit 때문에 막혔다고 보아 보류로 분류했으나, 9-0-5 에서 실측해 보니 UnityToolkit 2.0.2 가 **이미 설치돼 4.1.6 에서 로드되고 있다**(9-0-5 참조). 세 개 다 넣을 수 있다.
 
 | 모드 | id | 버전 | 크기 | 결속 | 의존성 |
 | --- | --- | --- | --- | --- | --- |
-| [MANIMAL'S ICEBREAKER BACKPORT](https://sp-mod.com/mod/2866) | 2866 | 1.1.3 | 1595 MB | - | BigBrain, WTT - CommonLib, MoreBotsAPI, WTT - Black Division [REDACTED] Home, WTT - Content Backport, Climbable Ladders, Manimal's CS Gas, Manimal's 1.0 Interchange Expansion Backport , UnityToolkit |
 | [Manimal's 1.0 Interchange Expansion Backport](https://sp-mod.com/mod/3025) | 3025 | 1.0.8 | 1440 MB | - | UnityToolkit, WTT - CommonLib, WTT - Content Backport |
 | [Manimal's 1.0 Lighthouse Rework Backport](https://sp-mod.com/mod/3022) | 3022 | 1.0.7 | 2342 MB | - | UnityToolkit, WTT - CommonLib, WTT - Content Backport |
+| [MANIMAL'S ICEBREAKER BACKPORT](https://sp-mod.com/mod/2866) | 2866 | 1.1.3 | 1595 MB | - | BigBrain, WTT - CommonLib, MoreBotsAPI, WTT - Black Division [REDACTED] Home, WTT - Content Backport, Climbable Ladders, Manimal's CS Gas, Manimal's 1.0 Interchange Expansion Backport , UnityToolkit |
+
+볼 것
+
+- **3025·3022 는 지금 넣을 수 있다** — 남은 선행(WTT CommonLib 2310, WTT Content Backport 2512)이 둘 다 설치본에 있다.
+- **2866 ICEBREAKER 는 맨 뒤다** — 2511(9-H)·2649(9-F)·2864(9-L)·3025(이 단계)를 모두 요구한다. 그 넷이 들어가 있지 않으면 넣지 않는다.
+- 하나에 1.4~2.3 GB 다. **하나 넣고 그 맵에 들어가 보는 것까지 끝낸 뒤** 다음으로 간다. 받아 놓고 몰아서 넣지 않는다.
+- 세 개 모두 WTT Content Backport 와 같은 계열이라 **파일 겹침이 가장 의심되는 단계**다. `check-conflicts.mjs` 결과를 그대로 신뢰하지 말고 덮어쓰기 경고가 하나라도 나오면 멈춘다.
+
+UnityToolkit 은 Forge 에 4.1.6 표기가 없다(최신 2.0.2 가 4.1.5). 그래도 설치본에서 프리패처가 실제로 돌고 있으므로 차단 사유가 아니다 — 9-0-5 에 증거를 적었다.
+
+### 9-N — 보류 — 이 계획에서는 넣지 않는다 (1개, 747 KB, 결속 1)
+
+**설치 방식** — 넣지 않는다.
+
+선행 모드가 4.1.6 에 없고 설치본에도 없다. 지금은 설치 자체가 안 된다.
+
+| 모드 | id | 버전 | 크기 | 결속 | 의존성 |
+| --- | --- | --- | --- | --- | --- |
 | [Rook](https://sp-mod.com/mod/3055) | 3055 | 1.2.2 | 747 KB | **결속** | Epic's All in One, ECOT - Eukyre's Consortium of Things, WTT- Armory, WTT - CommonLib, WTT - Content Backport, Eco's Attachment Emporium |
 
 볼 것
 
-- Manimal 백포트 셋(2866·3025·3022)은 **UnityToolkit(1426)** 을 요구하고, 그 모드는 4.1.5 까지만 있다.
-- Rook(3055)은 **Eco's Attachment Emporium(2882)** 을 요구하고, 그것도 4.1.6 버전이 없다.
-- 선행이 올라왔는지는 `node tools/mod-detail.mjs 1426 2882` 로 다시 확인한다.
+- Rook(3055)은 **Eco's Attachment Emporium(2882)** 을 요구한다. 2882 는 3.0.0[4.1.1]·2.1.1[4.0.13] 뿐이고 **설치돼 있지 않다**(2026-11-05 확인).
+- 2882 가 올라왔는지는 `node tools/mod-detail.mjs 2882` 로 다시 본다. 2882 자체가 결속 모드라는 점도 같이 본다.
 
 ## 보류 — SPT Essentials
 

@@ -93,8 +93,31 @@ README 에 쓸 수 있는 칸 이름 41개가 모두 적혀 있다 — `mod_barr
 
 "총기별 부착물 지정"은 SlotCategoryRelax 를 **무기 단위로 좁히는** 쪽이라 새로 만드는 비용이 크지 않고, Easy Slot Filters 의 세 한계(전역 DB 오염, 제거 불가, 한 부착물 ↔ 한 칸)를 모두 피할 수 있다. 더해서 [src/WebConfigBridge](../src/WebConfigBridge) 가 이미 서버 웹 페이지에서 `All In Weapon` 설정을 고치는 화면을 들고 있으니, 그 카드를 새 모드 쪽으로 돌리면 **총기를 골라 칸별 목록을 편집하는 UI** 까지 재사용된다.
 
-## 아직 안 본 것
+## 정정 — 로드 순위를 실측했다 (2026-11-05)
 
-- Easy Slot Filters 의 이른 로드 순위(`TraderRegistration - 1`)가 우리 설치본의 DB 수정 모드들보다 **앞인지 뒤인지** 실측하지 않았다. 앞이면 넓힌 칸이 뒤에 오는 모드에 덮일 수 있다.
+아래 "아직 안 본 것"의 첫 항목이었다. [REVIEW-LOAD-ORDER.md](REVIEW-LOAD-ORDER.md) 의 실측과 맞춰 보니 **이것이 Easy Slot Filters 의 가장 큰 결함이다.**
+
+`OnLoadOrder` 의 값은 `TraderRegistration` = 300,000, `PostLoad` = 1,000,000(마지막)이다. Easy Slot Filters 는 `TraderRegistration - 1` = **299,999** 로 돈다. 그런데 이 설치본의 서버 모드 선언을 세어 보면 그보다 **뒤에 도는 것이 압도적으로 많다.**
+
+| 우선순위 | 선언 수 | ESF(299,999) 대비 |
+| --- | --- | --- |
+| 0 ~ 299,998 | 약 200 (100000 대역에 몰려 있다) | 앞 |
+| 1,000,000 (`PostLoad`) | 18 | **뒤** |
+| 1,000,001 ~ 1,100,101 | 약 90 | **뒤** |
+| 거의 `int.MaxValue` | 7 | **뒤** |
+| **`int.MaxValue`** (인수 없이 `[Injectable]` 만 붙인 기본값) | **304** | **뒤** |
+
+즉 **400개가 넘는 선언이 Easy Slot Filters 뒤에 돈다.** 결과는 둘이다.
+
+- **덮인다.** 같은 `Slots[].Properties.Filters[].Filter` 를 뒤에서 통째로 바꿔 쓰는 모드가 있으면 ESF 가 넣은 id 는 사라진다.
+- **모드 아이템에는 아예 못 쓴다.** 아이템을 추가하는 모드는 대부분 기본값(`int.MaxValue`)으로 늦게 돈다. ESF 가 돌 때 그 무기·부착물은 **DB 에 아직 없다.** 그리고 ESF 는 무기 id 가 없으면 **로그도 없이 조용히 넘어간다** — 설정은 멀쩡해 보이는데 아무 일도 안 일어난다.
+
+이 설치본은 아이템을 추가하는 모드가 많다(WTT 계열, Epic's All in One, ISB 계열 등). 그러므로 **Easy Slot Filters 로 다룰 수 있는 범위는 사실상 바닐라 무기·부착물뿐이다.** 모드가 넣은 총기에 모드가 넣은 부착물을 달게 하는 것 — 애초에 하려던 일에 가까운 쪽 — 은 이 모드로 안 된다.
+
+이 결론은 `StackUnify` 에서 이미 겪은 것과 같은 문제다. DB 를 고치는 자리는 **굳기 전의 가장 늦은 곳**이어야 하고, 실측으로 확인된 것은 `PostLoad` 다.
+
+고칠 수 있는가 — 소스는 MIT 이고 100줄 남짓이다. `[Injectable(TypePriority = OnLoadOrder.TraderRegistration - 1)]` 한 줄을 `PostLoad` 로 바꾸면 되지만, 그러면 **포크를 들고 가는 것**이고 Forge 업데이트마다 다시 맞춰야 한다. 그 비용이면 아래 "세 번째 길"이 낫다 — 자작 모드는 이미 `PostLoad` 로 짜 왔다(`SlotCategoryRelax`·`HelmetSlotUnion`).
+
+## 아직 안 본 것
 - SPT Essentials `compatibility.jsonc` 의 실제 구조. 받아서 파일을 열어야 칸 단위 지정 여부가 확정된다.
 - 두 후보 모두 `ConflictingItems`(부품끼리 서로 막는 목록)는 건드리지 않는 것으로 보이나, 확인하지 않았다. `All In Weapon` 은 그것까지 지운다고 README 에 적혀 있어, 빼면 **서로 막는 조합이 되돌아온다**.
