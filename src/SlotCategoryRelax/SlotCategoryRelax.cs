@@ -57,6 +57,12 @@ public class SlotCategoryRelax(
         }
 
         // 켜진 분류의 노드 id 를 모은다.
+        // 약실은 칸(Slots)이 아니라 Chambers 라 분류 스위치와 상관없이 따로 본다.
+        if (config.RelaxChambers)
+        {
+            RelaxChamberFilters(items, config);
+        }
+
         var openIds = new HashSet<MongoId>();
         var openNames = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (id, name) in discovered)
@@ -157,6 +163,105 @@ public class SlotCategoryRelax(
             + $"({string.Join(", ", openNames)}). 칸 {touchedSlots}개에 항목 {addedEntries}개를 더했다.");
 
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 약실(<c>Chambers</c>)이 받는 탄을 넓힌다 — All In Weapon 의 <c>FckChambers</c> 자리다.
+    ///
+    /// 약실은 부품 칸(<c>Slots</c>)이 아니라 <c>Chambers</c> 에 들어 있어 분류 스위치가 닿지 않는다.
+    /// 그래서 따로 돈다. 규칙은 같다 — 그 약실이 이미 받고 있는 분류(거의 다 <c>Ammo</c>)의 아이템을
+    /// 전부 넣는다. 넓히기만 하고 좁히지 않는다.
+    ///
+    /// 약실이 받는 분류를 그대로 쓰므로 RPG 처럼 <c>Rocket</c> 만 받던 약실에는 로켓만 들어간다.
+    /// 반대로 유탄발사기·신호권총도 <c>Ammo</c> 를 받으므로 소총탄이 들어간다 — "모든 총기의 약실에
+    /// 모든 탄종" 이라는 뜻 그대로다. 빼고 싶으면 <c>ExcludedChamberWeaponIds</c> 에 적는다.
+    ///
+    /// 탄창은 건드리지 않는다. 다른 구경의 탄은 약실에 한 발씩 물리는 것까지다.
+    /// </summary>
+    private void RelaxChamberFilters(Dictionary<MongoId, TemplateItem> items, Config config)
+    {
+        var excluded = new HashSet<string>(config.ExcludedChamberWeaponIds, StringComparer.OrdinalIgnoreCase);
+
+        // 분류 → 그 분류의 아이템. 약실에 실제로 나타난 분류만 뒤늦게 채운다.
+        var byCategory = new Dictionary<MongoId, List<MongoId>>();
+
+        var touchedChambers = 0;
+        var addedEntries = 0;
+        var weapons = 0;
+
+        foreach (var (_, template) in items)
+        {
+            // Chambers 는 IEnumerable 이라 세려면 담아 둬야 한다.
+            var chambers = template.Properties?.Chambers is { } list ? list.ToList() : [];
+            if (chambers.Count == 0)
+            {
+                continue;
+            }
+
+            if (excluded.Contains(template.Id.ToString()))
+            {
+                continue;
+            }
+
+            weapons++;
+            foreach (var chamber in chambers)
+            {
+                var filter = chamber.Properties?.Filters?.FirstOrDefault()?.Filter;
+                if (filter is null || filter.Count == 0)
+                {
+                    continue;
+                }
+
+                var present = new HashSet<MongoId>();
+                foreach (var tpl in filter)
+                {
+                    if (items.TryGetValue(tpl, out var entry))
+                    {
+                        present.Add(entry.Parent);
+                    }
+                }
+
+                var before = filter.Count;
+                foreach (var category in present)
+                {
+                    if (!byCategory.TryGetValue(category, out var pool))
+                    {
+                        pool = [];
+                        foreach (var (id, candidate) in items)
+                        {
+                            if (candidate.Parent == category)
+                            {
+                                pool.Add(id);
+                            }
+                        }
+
+                        byCategory[category] = pool;
+                    }
+
+                    foreach (var candidate in pool)
+                    {
+                        filter.Add(candidate);
+                    }
+                }
+
+                if (filter.Count == before)
+                {
+                    continue;
+                }
+
+                touchedChambers++;
+                addedEntries += filter.Count - before;
+
+                if (config.Debug)
+                {
+                    logger.Info($"[SlotCategoryRelax] {template.Name}/약실 {chamber.Name}: {before} → {filter.Count}");
+                }
+            }
+        }
+
+        logger.Info(
+            $"[SlotCategoryRelax] 약실: 총기 {weapons}종의 약실 {touchedChambers}개에 탄 {addedEntries}개를 더했다"
+            + $"(분류 {byCategory.Count}종).");
     }
 
     /// <summary>
