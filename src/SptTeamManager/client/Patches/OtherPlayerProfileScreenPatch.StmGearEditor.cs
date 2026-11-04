@@ -618,6 +618,8 @@ namespace pitTeam.Patches
                 keepSecuredContainer: true,
                 equipmentItemContextOverride: new StmGearEditorEquipmentRootContext(EItemViewType.Inventory));
 
+            LogStmStashSelectionDiagnostics();
+
             // PIT 의 두 패널 함수는 실패를 삼켜 대체 글자로 바꾸고 void 로 돌아온다 - 겉으로는 쓸 수 있는 편집기처럼 보인다.
             // 패널 필드는 성공했을 때만 채워진다(편집기를 열기 직전 CloseLoadoutEditorOverlay 가 비웠다). 비어 있으면 열지 않는다.
             if (LoadoutEditorStashPanel == null || LoadoutEditorEquipmentPanel == null)
@@ -1291,6 +1293,47 @@ namespace pitTeam.Patches
             ActiveProfileSession = null;
             ActiveProfileInventoryController = null;
             StmGearEditStatusLabel = null;
+        }
+
+        // 복수 선택이 안 되는 이유를 **재기 위한** 진단이다(2026-11-04 인게임: 편집기 스태시에
+        // 핀·잠금 버튼이 보이지 않는다). 고치기 전에 사실을 먼저 찍는다.
+        //
+        // 알아낸 것: 스태시의 복수 선택은 EFT 의 **핀/잠금 선택 모드**이고, 그 모드는
+        // `SimpleStashPanel._pinLockSelectionMode` 로만 켜지며 그 값을 쓰는 곳은
+        // `TogglePinLockMode` 하나다. 그리로 들어가는 길이 패널의 `_pinModeButton`·`_lockModeButton`
+        // 인데, `Show` 는 그 둘을 **null 검사만** 하고 배선한다 - 즉 **버튼이 null 이면 조용히 없다.**
+        //
+        // 의심: 우리 스태시 템플릿은 `TransferItemsScreen` 의 패널에서 온다
+        // (`ResolveLoadoutEditorStashTemplate`). 바로 아래 장비 템플릿이 `InventoryScreen` 에서
+        // 오는 것과 다르다. 이전 화면의 패널에는 그 버튼이 배정돼 있지 않을 수 있다.
+        // **확인 전에는 템플릿을 바꾸지 않는다** - 왼쪽 패널 전체의 출처를 바꾸는 일이라
+        // 지금 잘 도는 편집기를 걸 수 없다.
+        private static void LogStmStashSelectionDiagnostics()
+        {
+            try
+            {
+                SimpleStashPanel panel = LoadoutEditorStashPanel;
+                if (panel == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 선택 진단: 스태시 패널이 없다.");
+                    return;
+                }
+
+                object pin = AccessTools.Field(typeof(SimpleStashPanel), "_pinModeButton")?.GetValue(panel);
+                object padlock = AccessTools.Field(typeof(SimpleStashPanel), "_lockModeButton")?.GetValue(panel);
+                object inventoryTemplate = AccessTools.Field(typeof(InventoryScreen), "_simpleStashPanel")
+                    ?.GetValue(CommonUI.Instance?.InventoryScreen);
+
+                pitFireTeam.Log.LogWarning(
+                    "[STM] 선택 진단: 우리 패널의 _pinModeButton=" + (pin == null ? "null" : pin.ToString())
+                    + ", _lockModeButton=" + (padlock == null ? "null" : padlock.ToString())
+                    + " / InventoryScreen 쪽 템플릿=" + (inventoryTemplate == null ? "못 읽음" : "있음"));
+            }
+            catch (Exception ex)
+            {
+                // 진단이 편집기를 막아서는 안 된다.
+                pitFireTeam.Log.LogWarning("[STM] 선택 진단 실패: " + ex.Message);
+            }
         }
     }
 }

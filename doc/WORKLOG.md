@@ -5483,3 +5483,42 @@ null 인** 문맥 override 인자를 더했고 - 2026-11-03 에 스태시 패널
 **복수 선택의 실마리 하나.** 위 생성자 목록에 `ctor(ItemContext, SelectionContextWrapper)` 와
 `ctor(Item, EItemViewType, SelectionContextWrapper)` 가 있다. 드래그 복수 선택이
 `SelectionContextWrapper` 를 요구할 가능성이 있다 - **아직 확인하지 않았다.** 그쪽을 집을 때 여기서 시작한다.
+
+### 복수 선택 — 기구를 찾았고 진단을 먼저 넣었다 (2026-11-04)
+
+"팀원 스태시에서 드래그 복수 선택이 안 된다" 를 Mono.Cecil 로 추적했다(리플렉션은 Unity 의존성 때문에
+UI 클래스를 못 읽는다 - `GetTypes()` 가 `ReflectionTypeLoadException` 으로 떨어진다. Cecil 은 메타데이터만
+읽어 8,642종을 다 본다).
+
+| 확인 | 결과 |
+|---|---|
+| 어셈블리에 `MultiSelect` 라는 이름 | **없다**(타입·필드·메서드 전부) |
+| 스태시의 선택 기구 | `SimpleStashPanel` 이 `SelectableItemContext.ISelectionContext` 를 **직접 구현**한다 |
+| `IsActive` 가 보는 것 | `_pinLockSelectionMode` (IL 확인) |
+| 그 필드에 쓰는 곳 | **`TogglePinLockMode` 하나뿐**(어셈블리 전체 stfld 검색) |
+| 그리로 들어가는 길 | 패널의 `_pinModeButton`·`_lockModeButton`(ToggleButton) |
+| `Show` 가 버튼을 다루는 법 | **null 검사만** 하고 배선한다 - 버튼이 null 이면 **조용히 없다** |
+| 진짜 인벤토리 화면의 패널 타입 | `SimpleStashPanel` - **우리와 같다** |
+
+즉 스태시의 복수 선택은 EFT 의 **핀/잠금 선택 모드**다. 사용자 확인: **플레이어 자기 스태시에서는
+되고**, 편집기에서는 **그 버튼이 보이지 않는다.**
+
+**의심되는 자리.** `ResolveLoadoutEditorStashTemplate` 은 스태시 템플릿을 **`TransferItemsScreen`** 의
+패널에서 가져온다. 바로 아래 `ResolveLoadoutEditorEquipmentTemplate` 이 `InventoryScreen` 에서 가져오는
+것과 다르다. 아이템 이전 화면의 패널에는 핀·잠금 버튼이 배정돼 있지 않을 수 있고, 그러면 `Show` 의
+null 검사에서 그냥 건너뛴다 - 증상과 맞는다.
+
+**그래도 템플릿을 바꾸지 않았다.** 왼쪽 패널 전체의 출처를 바꾸는 일이라, 추론만으로 지금 잘 도는
+편집기(관문 1~10 통과)를 걸 수 없다. 대신 **사실을 찍는 진단**을 STM 쪽에만 넣었다
+(`LogStmStashSelectionDiagnostics`): 우리 패널의 `_pinModeButton`·`_lockModeButton` 이 null 인지,
+`InventoryScreen` 쪽 템플릿은 읽히는지를 편집기를 열 때 한 번 남긴다. 어차피 삽탄 고침 때문에 설치할
+참이므로 **한 번의 설치로 답이 나온다.**
+
+- 둘 다 null 이면 → 템플릿 교체(또는 버튼만 이식)가 고침이다.
+- null 이 아니면 → 버튼은 있는데 잘렸거나 입력이 안 닿는 것이고, 배치 쪽을 본다.
+
+**주의를 하나 적어 둔다.** 이 모드는 이름 그대로 **핀/잠금**이고, 그것은 **그 프로필에 쓰는 상태**다.
+열어 주기로 하면 최종 상태 제출 경로가 그 필드를 나르는지도 함께 봐야 한다 - 아직 확인하지 않았다.
+
+**실측.** 클라이언트 CS 오류 0·경고 0, 산출물 `5320EBE5`(삽탄 고침 + 이 진단). 게임이 실행 중이라
+설치하지 않았다.
