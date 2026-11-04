@@ -46,23 +46,64 @@
 
 ## 9-0 — 설치 전에 끝낼 결정 (설치 없음)
 
-이 단계는 파일을 건드리지 않는다. 여기서 정하지 않으면 뒤 단계가 서로를 덮는다.
+설치본(`E:\Spt`)은 건드리지 않는다. 여기서 정하지 않으면 뒤 단계가 서로를 덮는다.
 
-### 9-0-1 기준선 다시 재기
+진행 상황 — **9-0-1(기준선)·9-0-2(PIT 기록)는 2026-11-04 에 끝냈다.** 남은 것은 9-0-3(택일 4건)·9-0-4(확인만)·9-0-5(차단 재확인)이고, 9-0-3 은 사용자가 정해야 한다.
 
-현재 로드 수를 **직접 세어** 적는다. `tools/gen-installed-mods.mjs` 머리글의 로드 수(145 / 116, 2026-10-29)는 손으로 적은 값이라 오늘 로그와 다르다 — 그 줄은 기준선으로 쓰지 않는다.
+### 9-0-1 기준선 — **재측정 완료 (2026-11-04)**
 
-- 게임: `E:\Spt\BepInEx\LogOutput.log` 의 `N plugins to load`, `[Error`/`[Fatal` 건수, 파일 수정 시각
-- 서버: `E:\Spt\SPT_Runtime\user\logs\spt\spt<날짜>.log` 의 `ModLoader: 총 N 개`
-- 디스크: `E:\` 여유 공간. 9-M·9-N 의 GB 단위 모드를 넣을 수 있는지 여기서 판정한다.
+`tools/gen-installed-mods.mjs` 머리글의 로드 수(145 / 116, 2026-10-29)는 손으로 적은 값이라 실측과 다르다 — **그 줄은 기준선으로 쓰지 않는다.** 아래가 기준선이다.
 
-### 9-0-2 PIT Fireteam(2676) 기록 고치기
+| 항목 | 실측값 | 근거 |
+| --- | --- | --- |
+| 게임 플러그인 | **147** (`147 plugins to load`) | `BepInEx/LogOutput.log`, 수정 시각 2026-11-04 13:44 KST |
+| 게임 `[Error` / `[Fatal` | **15줄 / 0줄** | 같은 파일. 내역은 아래 |
+| 서버 모드 | **115** (`ModLoader: 총 115 개`, `불러옴` 115줄 = 전부 로드) | `SPT_Runtime/user/logs/spt/spt20261104.log`, 마지막 기동 04:45:24 UTC(13:45 KST) |
+| 서버 `[Error]`/`[Critical]` | **49줄** (알려진 48 + 신규 1) | 같은 파일, 마지막 기동 구간만 |
+| 서버 시작 완료 | 웹서버 04:47:22, `Loaded self-signed certificate` — 약 **118초** | 같은 파일 |
+| 디스크 | `E:\` 여유 **1008.2 GB** (사용 854.8 GB) | 9-M·9-N 을 다 넣어도(14.8 GB) 여유는 충분하다 |
 
-설치 기록에 제거가 적히지 않아 자동 생성 문서가 PIT 를 아직 설치된 것으로 적고 있다(실제로는 STM 을 넣을 때 빼냈다, `backup/2026-11-01-before-stm/`). 9차에서 PIT 가 다시 후보로 올라오는 것을 막으려면 먼저 고친다.
+보조 수치 — 디스크의 플러그인 DLL 171개, 패처 7개, 서버 모드 폴더 **115개**(로그와 일치).
 
-1. 해당 `doc/install-records/installed-*.txt` 에서 PIT 항목을 정리한다(또는 제거 기록을 새로 남긴다).
-2. `node tools/gen-installed-mods.mjs` 로 `doc/INSTALLED-MODS.md` 를 다시 만든다.
-3. 설치본에 `BepInEx\plugins\pitFireTeam`·`SPT_Runtime\user\mods\pitFireTeam-ServerMod` 가 실제로 없는지 확인한다.
+문서의 옛 값과 다른 이유
+
+- 서버 **116 → 115**: PIT Fireteam 의 서버 모드를 빼낸 만큼이다(9-0-2). 폴더 수와 로그가 모두 115 로 맞는다.
+- 게임 **145 → 147**: 그 뒤 설치분이 들어왔다. 옛 값은 2026-10-29 것이다.
+
+게임 쪽 `[Error` 15줄 내역 — **전부 기존 것이고, 새로 생긴 것은 없다.** 단계마다 이 내역과 비교한다.
+
+| 건수 | 출처 | 비고 |
+| --- | --- | --- |
+| 6 | SAIN `[sectactPriestEvent] does not exist` | 프리셋에 없는 봇 종류. 기존 |
+| 6 | SPT Team Manager `[AimingFailure]` | 동료 조준 실패 로그. 기존 |
+| 1 | SPT Team Manager `[MedicalActivity]` | 동료 치료 로그. 기존 |
+| 1 | ECOTI `[COTI] Per-frame state update failed` | PROCEDURE 에 적힌 기존 건 |
+| 1 | `[DirectReload] Patch FAILED ... Fika ObservedFirearmController not found` | PROCEDURE 의 "알려진 정상 메시지" |
+
+이 기동은 **레이드까지 들어갔다**(`RaidStartPatch`, 프레임 55850 기록) — 메뉴까지만 돌았던 옛 기준선보다 확인 범위가 넓다.
+
+서버 `[Error]` 49줄 가운데 48줄은 `Could not add <id> to cache` 로 `MountOlympus.dll` 이 원인인 기존 건이다([REVIEW-LOAD-ORDER.md](REVIEW-LOAD-ORDER.md)). **남은 1줄은 기존 기록에 없던 것이다.**
+
+```
+[Error][SPTarkov.Server.Core.Loaders.BundleLoader] Unable to add bundle:
+assets/content/items/mods/barrels/barrel_vpo215_600mm_366tkm.bundle
+```
+
+번들 하나가 중복 등록으로 거부된 것으로 보인다(같은 번들 경로를 두 모드가 들고 있을 때 난다). VPO-215 600mm 총열 하나에 국한되고 시작은 정상 완료했으므로 9차를 막지는 않지만, **기준선에 포함시켜 둔다** — 9차 중에 이 줄이 늘어나면 새로 넣은 모드가 번들을 겹치게 가져온 것이다. 원인 모드를 가리는 일은 9차 범위가 아니다.
+
+아직 못 맞춘 것 — `147 plugins to load` 인데 `Loading [` 줄은 **108개**뿐이다. 차이 39개를 설명하지 못했다. 실패·건너뜀 로그는 없다. 단계별 판정에는 **`plugins to load` 숫자만** 쓰고(이 숫자는 설치 전후 비교에 쓸 수 있다), `Loading [` 줄 수는 보조로만 본다.
+
+### 9-0-2 PIT Fireteam(2676) 기록 — **고침 완료 (2026-11-04)**
+
+설치 기록에 제거가 적히지 않아 자동 생성 문서가 PIT 를 설치된 것으로 적고 있었다(실제로는 STM 을 넣을 때 빼냈다, `backup/2026-11-01-before-stm/`).
+
+한 것
+
+1. 설치본 확인 — `BepInEx\plugins\pitFireTeam` 과 `SPT_Runtime\user\mods\pitFireTeam-ServerMod` **둘 다 없다**. 제거는 끝난 상태였고 문서만 뒤처져 있었다.
+2. `doc/install-records/installed-stage8E-2676.txt` →
+   [`removed-2026-11-01-stage8E-2676-pitfireteam.md`](install-records/removed-2026-11-01-stage8E-2676-pitfireteam.md) 로 바꾸고, 왜 빼냈는지와 실측 결과를 머리말로 붙였다. 파일 목록 26줄은 그대로 남겼다 — 설치 당시 목록이 곧 지운 목록이다.
+   `gen-installed-mods.mjs` 가 `install-records/*.txt` 만 읽으므로 확장자를 `.md` 로 바꾸면 자동 생성 목록에서 빠진다. 기록을 지우지 않고 빼내는 방법이다.
+3. `node tools/gen-installed-mods.mjs` 재생성 → 모드 **185 → 184개**, 파일 **10627 → 10601개**(26개 = PIT 분), PIT 행은 `게임+서버 / 26` 에서 **미설치 / 0** 으로 바뀌었다. 매니페스트에는 남아 있어 표에서 사라지지 않고 "미설치"로 보인다 — 다시 후보로 올라오는 것을 막는 쪽으로는 이게 낫다.
 
 **PIT 는 어떤 단계에서도 다시 넣지 않는다** — STM 과 같은 `/singleplayer/pitfireteam/*` 라우트를 쓴다.
 
