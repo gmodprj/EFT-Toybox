@@ -33,43 +33,43 @@
 
 | | 조작 | 내 스태시 | 팀원 편집기 | 비고 |
 |---|---|---|---|---|
-| 1-1 | 드래그로 **옮기기**(칸 → 칸) | | | 관문에서 확인됨(편집기 O) |
-| 1-2 | 드래그로 **입히기/벗기기** | | | 관문에서 확인됨(편집기 O) |
-| 1-3 | **회전**(드래그 중 R 등) | | | UIFixes `RotateKeyBind` 가 관여 |
-| 1-4 | **분할**(Ctrl+드래그 등) | | | 편집기 O (SPT02 실측, 보존 확인) |
-| 1-5 | **합치기**(같은 더미에 겹치기) | | | 편집기 O (SPT02 실측, 보존 확인) |
-| 1-6 | **드래그 복수 선택**(빈 칸에서 끌기) | | | **현재 문제.** UIFixes 기능. `SelectionBoxKey` 설정 있음 — **키를 눌러야 하는지 확인 필요** |
-| 1-7 | **클릭 복수 선택**(Ctrl+클릭 등) | | | UIFixes `EnableMultiClick` |
-| 1-8 | **같은 종류 전부 선택** | | | UIFixes `SelectAllOfTypeKeyBind` |
-| 1-9 | 복수 선택 후 **한꺼번에 옮기기** | | | 1-6/1-7 이 돼야 의미 있다 |
-| 1-10 | **빠른 이동**(Ctrl+클릭 등으로 반대편으로) | | | UIFixes `HighlightQuickMove` |
-| 1-11 | **빠른 착용**(더블클릭 등) | | | UIFixes `HighlightQuickEquip` |
-| 1-12 | **스왑**(자리 맞바꾸기) | | | UIFixes `SwapItems`·`SwapMags`. 편집기는 서버 쪽 통과 확인됨 |
+| 1-1 | 드래그로 **옮기기**(칸 → 칸) |O  | x | 관문에서 확인됨(편집기 O) |
+| 1-2 | 드래그로 **입히기/벗기기** |O |O | 관문에서 확인됨(편집기 O) |
+| 1-3 | **회전**(드래그 중 R 등) |O |O | UIFixes `RotateKeyBind` 가 관여 |
+| 1-4 | **분할**(Ctrl+드래그 등) | O| O| 편집기 O (SPT02 실측, 보존 확인) |
+| 1-5 | **합치기**(같은 더미에 겹치기) |O |O | 편집기 O (SPT02 실측, 보존 확인) |
+| 1-6 | **드래그 복수 선택**(빈 칸에서 끌기) |O |x | **현재 문제.** UIFixes 기능. `SelectionBoxKey` 설정 있음 — **키를 눌러야 하는지 확인 필요** |
+| 1-7 | **클릭 복수 선택**(Ctrl+클릭 등) | O| O| UIFixes `EnableMultiClick` |
+| 1-8 | **같은 종류 전부 선택** | O| O| UIFixes `SelectAllOfTypeKeyBind` |
+| 1-9 | 복수 선택 후 **한꺼번에 옮기기** |O | O| 1-6/1-7 이 돼야 의미 있다 |
+| 1-10 | **빠른 이동**(Ctrl+클릭 등으로 반대편으로) |O | O| UIFixes `HighlightQuickMove` |
+| 1-11 | **빠른 착용**(더블클릭 등) | O| O| UIFixes `HighlightQuickEquip` |
+| 1-12 | **스왑**(자리 맞바꾸기) | O| O| UIFixes `SwapItems`·`SwapMags`. 편집기는 서버 쪽 통과 확인됨 |
 
 ## 2부 — 우클릭 메뉴 (자주 쓰는 것)
 
 | | 버튼 | 내 스태시 | 팀원 편집기 | 비고 |
 |---|---|---|---|---|
-| 2-1 | 살펴보기 `Inspect` / `Examine` | | | 편집기 O (관문) |
-| 2-2 | **열기** `Open`(탄박스·케이스) | | | 편집기 O (탄박스 관문 통과) |
-| 2-3 | **탄 빼기** `UnloadAmmo` | | | 편집기 O (관문) |
-| 2-4 | **삽탄** `LoadAmmo` | | | 편집기 O — **2026-11-04 고쳐 확인**. 문맥 게이트였다 |
-| 2-5 | **탄창 프리셋** `ApplyMagPreset` | | | `LoadAmmo` 와 **같은 게이트**라 함께 열렸을 것 — 확인 필요 |
-| 2-6 | `Unload`(탄창 분리) | | | 편집기 O (관문) |
-| 2-7 | `CheckMagazine`(탄창 확인) | | | `Magazine` 검사 있음 |
-| 2-8 | `Discard`(버리기) | | | |
-| 2-9 | `Fold`/`Unfold`(접기) | | | `ozen.Foldables` 모드 |
-| 2-10 | `TurnOn`/`TurnOff` | | | |
-| 2-11 | `Tag`/`ResetTag`(태그) | | | UIFixes `TagVests`·`TagBackpacks` |
-| 2-12 | `AddToFavorites` | | | |
-| 2-13 | `TopUp`(채우기) | | | UIFixes `TopUpKeyBind` |
-| 2-14 | `Unpack`(개봉) | | | UIFixes `UnpackKeyBind` |
-| 2-15 | `Install`/`Uninstall` | | | UIFixes 키바인드 있음 |
-| 2-16 | `Modding`(개조 화면) | | | |
-| 2-17 | `Use`/`UseAll`/`HealAll` | | | 팀원에게 쓰는 게 맞는지 **설계 판단 필요** |
-| 2-18 | `Disassemble` | | | UIFixes `FullyDisassemble` |
-| 2-19 | `FilterSearch`/`LinkedSearch` | | | UIFixes 키바인드. 편집기엔 검색이 `Unavailable` 로 꺼져 있다 |
-| 2-20 | `SetPin`/`SetLock` | | | **복수 선택과 무관**(핀=정렬 고정, 잠금=분실 방지). 편집기에선 버튼이 꺼져 있었다 |
+| 2-1 | 살펴보기 `Inspect` / `Examine` | O|O | 편집기 O (관문) |
+| 2-2 | **열기** `Open`(탄박스·케이스) |O |O | 편집기 O (탄박스 관문 통과) |
+| 2-3 | **탄 빼기** `UnloadAmmo` |O | O| 편집기 O (관문) |
+| 2-4 | **삽탄** `LoadAmmo` | O|O | 편집기 O — **2026-11-04 고쳐 확인**. 문맥 게이트였다 |
+| 2-5 | **탄창 프리셋** `ApplyMagPreset` |O |x | `LoadAmmo` 와 **같은 게이트**라 함께 열렸을 것 — 확인 필요 |
+| 2-6 | `Unload`(탄창 분리) |O |O | 편집기 O (관문) |
+| 2-7 | `CheckMagazine`(탄창 확인) |O |O | `Magazine` 검사 있음 |
+| 2-8 | `Discard`(버리기) | O|O | |
+| 2-9 | `Fold`/`Unfold`(접기) |O | O| `ozen.Foldables` 모드 |
+| 2-10 | `TurnOn`/`TurnOff` |O | O| |
+| 2-11 | `Tag`/`ResetTag`(태그) |O | O| UIFixes `TagVests`·`TagBackpacks` |
+| 2-12 | `AddToFavorites` |O |O | |
+| 2-13 | `TopUp`(채우기) | O| x| UIFixes `TopUpKeyBind` |
+| 2-14 | `Unpack`(개봉) |O |x | UIFixes `UnpackKeyBind` |
+| 2-15 | `Install`/`Uninstall` |O |x | UIFixes 키바인드 있음 |
+| 2-16 | `Modding`(개조 화면) |O |x | |
+| 2-17 | `Use`/`UseAll`/`HealAll` |O |x | 팀원에게 쓰는 게 맞는지 **설계 판단 필요** |
+| 2-18 | `Disassemble` | O| | UIFixes `FullyDisassemble` |
+| 2-19 | `FilterSearch`/`LinkedSearch` |O | x| UIFixes 키바인드. 편집기엔 검색이 `Unavailable` 로 꺼져 있다 |
+| 2-20 | `SetPin`/`SetLock` |O | x| **복수 선택과 무관**(핀=정렬 고정, 잠금=분실 방지). 편집기에선 버튼이 꺼져 있었다 |
 
 ## 3부 — 팀원 편집기에 **없어야** 맞는 것
 
@@ -114,3 +114,30 @@
 > **"설계" 라고 해서 영영 못 하는 것은 아니다.** 분할·합치기도 한때 그쪽이었고, **최종 상태 제출**
 > 이라는 우리 경로로 열었다. 꼭 필요한 조작이면 같은 방법을 따져 본다 - 화면에서는 받기만 하고,
 > 결과만 제출하는 것이다.
+
+---
+
+## 채운 결과 (2026-11-04, 사용자 실측)
+
+`내 스태시=O, 팀원 편집기=X` 인 칸 **열 개**다.
+
+| 칸 | 조작 | 1차 판정 | 왜 |
+|---|---|---|---|
+| **1-1** | 드래그로 칸→칸 **이동** | **모순 — 확인 필요** | 1-2·1-4·1-5·1-12 가 다 O 인데 단순 이동만 X 일 수는 없다. 관문에서도 O 였다 |
+| **1-6** | **선택 상자**(빈 칸 드래그) | **구멍** | 1-7·1-8·1-9 가 O 이므로 선택 기구도 복수 이동도 산다. 입력 방식 하나만 안 걸린다 |
+| 2-5 | `ApplyMagPreset` | **구멍(예상 빗나감)** | 삽탄과 같은 게이트일 것이라 적었는데 X 다. 별도 조건이 있다 |
+| 2-13 | `TopUp` | 설계 쪽 유력 | 실행이 필요한 조작 |
+| 2-14 | `Unpack` | 설계 쪽 유력 | 〃 |
+| 2-15 | `Install`/`Uninstall` | 설계 쪽 유력 | 〃 |
+| 2-16 | `Modding` | 설계 쪽 유력 | 개조 화면은 별도 화면을 연다 |
+| 2-17 | `Use`/`UseAll`/`HealAll` | **설계 판단 먼저** | 팀원에게 소모품을 쓰는 게 맞는 일인지부터 정해야 한다 |
+| 2-19 | `FilterSearch`/`LinkedSearch` | **구멍(우리가 껐다)** | 편집기를 `EStashSearchAvailability.Unavailable` 로 연다. 우리 선택이라 되돌리기 쉽다 |
+| 2-20 | `SetPin`/`SetLock` | 보류 | 핀/잠금 패널을 되돌려 껐다. 필요하면 다시 판단 |
+
+**가장 큰 소득: 경계가 내가 그은 자리에 없다.** 1-9(복수 선택 후 한꺼번에 옮기기)가 **O** 다.
+"컨트롤러의 실행이 필요한 조작은 안 된다" 가 사실이라면 복수 이동도 막혔어야 한다. 막히지 않았다.
+불변식 11 의 **원리는 맞지만**(컨트롤러를 바꾸면 서버로 나간다) **어떤 조작이 그 선 너머인지는 아직
+정확히 모른다** - 2-13~2-16 을 "설계 유력" 으로만 적어 둔 이유다. 확정 전에는 고치지도, 포기하지도
+않는다.
+
+**미확인:** 2-18 `Disassemble`, 4부 전체(스크롤·정렬·검색·컨테이너 창).
