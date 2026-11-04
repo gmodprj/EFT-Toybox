@@ -607,18 +607,28 @@ namespace pitTeam.Patches
             // 플레이어 인벤토리 화면과 같은 문맥을 준다(InventoryScreenController 가 쓰는 바로 그것).
             // PIT 가 쓰던 AreaStashItemContext 로는 스태시 칸의 조작 메뉴가 짧았다 - 탄박스를 리그로 옮기면
             // 메뉴가 길어지는데 스태시에서는 짧은 이유가 이 **문맥의 종류**였다(2026-11-03 인게임).
+            // 검색창이 **이 문맥 그대로** 를 받아야 한다(아래 EnableStmStashSearch) - 패널도 같은 객체를 쓴다
+            // (`SimpleStashPanel.Show` 가 `itemContext as InventorySelectableItemContext` 로 받는다).
+            EFT.InventoryLogic.InventorySelectableItemContext stashContext =
+                new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory);
+
             TryBuildLoadoutEditorStashPanel(
                 leftSection,
                 editorProfile,
                 editorInventoryController,
-                new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory));
-            // **검색칸은 열지 않는다(`Unavailable` 기본값).** 2026-11-04 에 `StashOnly` 로 바꿔
-            // 설치해 봤더니 **검색칸은 뜨지 않고 오른쪽에 빈 폭만 생겨 격자가 왼쪽으로 밀렸다.**
-            // `Show` 는 이 값으로 `_simplePanel`(SearchableItemView)을 `ShowGameObject` 할 뿐인데,
-            // 복제한 패널에서는 그 안의 입력칸이 그려지지 않으면서 자리만 차지한 것이다.
-            // 값(IL 의 `ldc.i4.1`)이 들어간 것은 확인했으므로 **값의 문제가 아니라 그 패널이 우리
-            // 배치에서 세워지지 않는 문제**다. 다시 열려면 `_simplePanel`·`_searchTab` 이 어떻게
-            // 초기화되는지(`InitSearch`)부터 봐야 한다 - 대조표 2-19.
+                stashContext);
+            // **`searchAvailability` 는 `Unavailable` 그대로 둔다(기본값) - 검색칸은 우리가 직접 단다.**
+            // `SimpleStashPanel.InitSearch` 의 관문이 그 값만 보는 것이 아니다(2026-11-04 IL 실측):
+            //   flag = 값 != Unavailable && _searchTab != null && tab == Gear
+            //          && bool_2 && ViewType ∈ {Inventory, TradingPlayer, TransferPlayer, ScavInventory}
+            // 이고 `bool_2` 가 **`_item.Parent.GetOwner() is BackEndInventoryController`** 다.
+            // 우리 편집기의 스태시 주인은 기본 `InventoryController` 이므로(불변식 11 - 그것이 안전장치다)
+            // 값을 `StashOnly` 로 바꿔도 flag 는 거짓이고 `_searchTab` 은 꺼진 채였다. 2026-11-04 에
+            // "값은 들어갔는데 패널이 안 세워진다" 고 적은 것의 정체가 이 관문이고, 그때 함께 본
+            // "오른쪽 빈 폭" 은 검색칸과 **무관한 별개**였다(격자가 고정 폭이라 남는 폭 - 아래 손질).
+            // 우회로는 `InitSearch` 를 건너뛰고 창을 **직접 여는 것**이다: `ItemUiContext.ShowStashSearchWindow`
+            // 와 `StashSearchWindow.Show` 에는 컨트롤러 종류 검사가 **없고**(바로 옆 `ShowSortingTable` 에는
+            // 있다) 우리 컨트롤러·문맥을 그대로 받는다. 불변식 11 의 길 ⒜ 다 - 안전장치를 깎지 않는다.
             // 보안 컨테이너 칸을 그린다 - 플레이어 자신의 화면에는 늘 있고, 프로필 팀원도 같아야 한다.
             // 컨테이너 **자체**를 떼는 것은 서버가 계속 막는다(IsStructuralSlot) - 여는 것만 열린다.
             // 장비 트리도 스태시와 **같은 계열의 문맥**을 준다. 그래야 리그·가방 안의 탄창에
@@ -647,6 +657,9 @@ namespace pitTeam.Patches
             // 같은 답이 나오고, 남는 폭이 없으면(격자가 칸보다 넓으면) 아무것도 하지 않는다.
             ShrinkStmStashSectionToGrid(leftSection);
 
+            // 플레이어 창고 화면과 같은 검색칸을 단다(대조표 2-19).
+            EnableStmStashSearch(itemUiContext, editorProfile, stashContext);
+
             // 패널을 세우는 동안 아이템 컴포넌트 상태(특히 무기 부착물)가 초기화될 수 있다. 플레이어가 만지기 전의 이 시점이
             // "바뀌었는가" 를 따질 첫 안정된 기준이다(PIT 편집기와 같은 이유).
             try
@@ -669,6 +682,112 @@ namespace pitTeam.Patches
             }
 
             return LoadoutEditorInitialEquipmentItems != null && LoadoutEditorInitialStashItems != null;
+        }
+
+        // 검색칸(`_searchTab`)을 직접 켜고 우리 손으로 창을 연다. `InitSearch` 가 켜 주지 않는 이유는
+        // 호출부의 주석(불변식 11 의 `bool_2` 관문)에 있다.
+        // 플레이어의 창고 화면(`LobbyInventoryScreenController`)을 그대로 따른다: 그쪽은
+        // `EStashSearchAvailability.All` + `InventorySelectableItemContext(Inventory)` 이고, 우리 편집기의
+        // 스태시 문맥이 **같은 종류**다. `All` 의 뜻은 창에 장비도 함께 검색하는 토글이 선다는 것이라
+        // 장비 트리를 같이 넘긴다(그 팀원의 장비다 - 플레이어의 것이 아니다).
+        private static void EnableStmStashSearch(
+            ItemUiContext itemUiContext,
+            Profile editorProfile,
+            EFT.InventoryLogic.ItemContext stashContext)
+        {
+            try
+            {
+                SimpleStashPanel stashPanel = LoadoutEditorStashPanel;
+                ToggleEFT searchTab = stashPanel?._searchTab;
+                EFT.InventoryLogic.Stash stashRoot = editorProfile?.Inventory?.Stash;
+                if (searchTab == null || stashRoot == null || stashContext == null || itemUiContext == null)
+                {
+                    // 템플릿에 검색칸이 없을 수 있다(패널 프리팹이 바뀌면). 없으면 편집기는 그대로 연다.
+                    pitFireTeam.Log.LogWarning(
+                        $"[STM] Stash search tab was not wired (tab={(searchTab != null)}, stash={(stashRoot != null)}, context={(stashContext != null)}, uiContext={(itemUiContext != null)}).");
+                    return;
+                }
+
+                // `InitSearch` 가 flag=false 로 꺼 두고 머리글을 켜 두었다. 그 둘을 플레이어 화면 쪽으로 뒤집는다
+                // - 플레이어의 창고에서도 검색칸이 "창고" 이름표 자리를 대신한다(`_header.SetActive(!flag)`).
+                searchTab.gameObject.SetActive(true);
+                if (stashPanel._header != null)
+                {
+                    stashPanel._header.SetActive(false);
+                }
+
+                StmStashSearchUnsubscribe = searchTab.OnStateChange.Subscribe(active =>
+                {
+                    if (!active)
+                    {
+                        return;
+                    }
+
+                    try
+                    {
+                        // 창이 받는 문맥은 **스태시 문맥의 자식**이다(바닐라 `SearchHandler` 와 같다).
+                        // 그래서 창에서 꺼낸 아이템도 우리 지역 트리로만 간다.
+                        WindowContext window = itemUiContext.ShowStashSearchWindow(
+                            stashContext.CreateChild(stashRoot),
+                            editorProfile.Inventory.Equipment);
+                        StmStashSearchWindow = window;
+                        if (window != null)
+                        {
+                            window.OnClose += () =>
+                            {
+                                StmStashSearchWindow = null;
+                                searchTab.Show(ToggleEFT.EToggleState.Off);
+                            };
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        pitFireTeam.Log.LogError($"[STM] Could not open the stash search window: {ex.GetType().Name}: {ex.Message}");
+                        searchTab.Show(ToggleEFT.EToggleState.Off);
+                    }
+                });
+
+                searchTab.Show(ToggleEFT.EToggleState.Off);
+                pitFireTeam.Log.LogInfo("[STM] Stash search tab wired for the teammate gear editor.");
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning($"[STM] Could not wire the stash search tab: {ex.GetType().Name}: {ex.Message}");
+            }
+        }
+
+        // 검색칸 구독을 끊는 손잡이와 열려 있는 창. 편집기를 닫을 때 둘 다 정리한다 - 창이 편집기보다
+        // 오래 남으면 **사라진 지역 트리**를 가리키게 된다.
+        private static Action StmStashSearchUnsubscribe;
+        private static WindowContext StmStashSearchWindow;
+
+        private static void CloseStmStashSearch()
+        {
+            try
+            {
+                StmStashSearchWindow?.Close();
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning($"[STM] Could not close the stash search window: {ex.GetType().Name}: {ex.Message}");
+            }
+            finally
+            {
+                StmStashSearchWindow = null;
+            }
+
+            try
+            {
+                StmStashSearchUnsubscribe?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning($"[STM] Could not unsubscribe the stash search tab: {ex.GetType().Name}: {ex.Message}");
+            }
+            finally
+            {
+                StmStashSearchUnsubscribe = null;
+            }
         }
 
         // 왼쪽 칸을 스태시 격자 폭에 맞춘다. 격자의 오른쪽 끝과 칸의 오른쪽 끝 사이에 남는 폭을 재서
@@ -1398,6 +1517,8 @@ namespace pitTeam.Patches
 
         private static void TeardownStmGearEditor()
         {
+            // 검색창이 편집기보다 오래 살아 사라진 지역 트리를 가리키지 않게 먼저 닫는다.
+            CloseStmStashSearch();
             CloseLoadoutEditorOverlay();
             ActiveProfileSession = null;
             ActiveProfileInventoryController = null;
