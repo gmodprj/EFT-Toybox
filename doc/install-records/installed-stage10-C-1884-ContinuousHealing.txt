@@ -1,0 +1,2 @@
+1884__ContinuousHealing	BepInEx\plugins\ContinuousHealing\ContinuousHealing.dll
+1884__ContinuousHealing	BepInEx\plugins\ContinuousHealing\LICENSE.md

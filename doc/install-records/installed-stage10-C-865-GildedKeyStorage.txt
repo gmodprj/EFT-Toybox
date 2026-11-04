@@ -1,0 +1,12 @@
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	BepInEx\plugins\DrakiaXYZ-GildedKeyStorage-Client.dll
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\bundles.json
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\DrakiaXYZ-GildedKeyStorage-Server.dll
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\bundles\CaseBundles\golden_key_pouch.bundle
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\bundles\CaseBundles\golden_keycard_case.bundle
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\bundles\CaseBundles\golden_keychain1.bundle
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\bundles\CaseBundles\golden_keychain2.bundle
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\bundles\CaseBundles\golden_keychain3.bundle
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\config\barters.json
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\config\cases.json
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\config\config.default.json
+865__DrakiaXYZ-GildedKeyStorage-2.1.1	SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\config\config.json

@@ -1,0 +1,4 @@
+2698__Softwyx-LootInVicinity-3.0.6	BepInEx\plugins\Softwyx-LootInVicinity\README.md
+2698__Softwyx-LootInVicinity-3.0.6	BepInEx\plugins\Softwyx-LootInVicinity\Softwyx-LootInVicinity.dll
+2698__Softwyx-LootInVicinity-3.0.6	BepInEx\plugins\Softwyx-LootInVicinity\TEMPLATE-ATTRIBUTION.md
+2698__Softwyx-LootInVicinity-3.0.6	BepInEx\plugins\Softwyx-LootInVicinity\locales\en.json

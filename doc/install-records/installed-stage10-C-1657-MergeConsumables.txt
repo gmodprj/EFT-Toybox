@@ -1,0 +1,4 @@
+1657__MergeConsumables	BepInEx\plugins\MergeConsumables\LICENSE.md
+1657__MergeConsumables	BepInEx\plugins\MergeConsumables\MergeConsumables.dll
+1657__MergeConsumables	SPT_Runtime\user\mods\MergeConsumablesServer\LICENSE.md
+1657__MergeConsumables	SPT_Runtime\user\mods\MergeConsumablesServer\MergeConsumablesServer.dll
