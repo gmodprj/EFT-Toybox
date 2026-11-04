@@ -54,6 +54,43 @@
 - 계획은 MapVariants·Quest Codex 가 설정 파일을 만든다고 적었으나 **서버 시작 때 아무것도 만들지 않았다.** QuestCodex 는 `Data/` 와 웹 화면에, MapVariants 는 게임 쪽에 설정이 있다. 대신 Item Property Backport 와 Hj 의 Mod Source 는 `config.json` 을 압축에 담아 온다.
 - Quest Codex 는 **별도 포트를 열지 않는다** — 서버 포트 안에 `/questcodex` 를 붙인다(`Mod QuestCodex has a wwwroot, mapping to /questcodex/`). WebConfigBridge 와 겹칠 일이 없다.
 
+## 10-C — 편의·인벤토리 11개 · 2026-11-05
+
+| 항목 | 결과 |
+| --- | --- |
+| 받기 | 11개 모두 바이트 수 **정확히 일치** (6.62 MB). `.7z` 4개도 bsdtar 로 풀렸다 |
+| 버전 차이 | Cabinet Looter 는 계획의 1.0.3 이 아니라 **1.0.4** 가 최신이었다 |
+| 구성 | 전부 비결속·의존성 없음. **서버 쪽 2개**(MergeConsumables·Gilded Key Storage), 게임 전용 9개 |
+| 겹침 검사 | CLEAN (0/0/0), 설치 대상 29개 |
+| 설치 | 10개 `-SkipTest` + 마지막 2344 에서 테스트 한 번 |
+| 서버 모드 | 120 → **122** (= 서버 쪽 2개) |
+| 시작 시간 | 150초 |
+| 로드 확인 | `(Added 2 mods: MergeConsumablesServer (1.6.2), Gilded Key Storage (2.1.1))` |
+| 오류 | 새 오류 0. 기준 문구 48 · 1 그대로, `err.txt` 0바이트 |
+
+출력: `server-tests/server-test-stage10-C-2344-DynamicItemWeights.out.txt`
+
+### 설치 기록에 구멍이 있었다 — 메우고 간다
+
+테스트 중에 Gilded Key Storage 가 자기 설정 `config\config.json` 을 만들었는데, 그때 돌던 태그가 **2344 것**이어서 스크립트가 "다른 모드가 만든 파일"로 분류하고 **어느 기록에도 넣지 않았다.**
+
+```
+OTHERMOD SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\config\config.json (다른 모드가 만든 파일 — 기록하지 않음)
+```
+
+기록으로만 지우면 이 파일이 남는다. `installed-stage10-C-865-GildedKeyStorage.txt` 에 한 줄 더해 메웠다(11줄 → 12줄).
+
+**묶음 설치(`-SkipTest` 여러 개 + 마지막 하나 테스트)의 구조적 약점이다.** 테스트가 마지막 태그로 돌기 때문에, 그 사이 **다른 모드**가 만든 설정 파일은 기록에서 빠진다. 10-A 처럼 하나씩 넣을 때는 생기지 않는다(ESF 의 `config.jsonc` 는 제대로 기록됐다).
+
+다음 묶음 단계에서는 테스트 출력의 `OTHERMOD` 줄을 **반드시 읽고**, 이번 단계에서 넣은 모드의 것이면 해당 기록에 더한다.
+
+검산 — 10차 기록 전체(10-A·10-B·10-C) **153줄이고 적힌 파일이 전부 실재한다**(누락 0). 2 + 121 + 30 으로 맞는다. 즉 지금 기록만으로 10차 설치분을 전부 되돌릴 수 있다.
+
+### 그 밖에 적어 둘 것
+
+- MergeConsumables 서버 DLL 은 스스로를 **1.6.2** 로 알린다(모드 페이지·매니페스트는 1.6.3). 제작자가 DLL 버전을 올리지 않은 경우로, [PROCEDURE.md](PROCEDURE.md) 의 "알려진 정상 메시지" 에 같은 사례가 있다.
+- **아직 확인되지 않은 것** — 게임 전용 9개는 이번 설치 뒤로 게임을 띄운 적이 없어 로드된 적이 없다. 다음 기동에서 플러그인 수가 **151 → 160** 이 되어야 맞다. 인벤토리·치료 화면을 함께 건드리므로 인벤토리를 한 번 열어 보는 것이 이 단계의 본 시험이고, Dynamic Item Weights(2344)는 SVM 의 무게 옵션과 겹치니 아이템 무게도 한 번 본다.
+
 ## 게임 기동 확인 (10-A·10-B 설치 후, 2026-11-05 07:35)
 
 `BepInEx/LogOutput.log` 수정 시각 07:35 > 설치 06:52 — **설치 이후 기동이 맞다.**
