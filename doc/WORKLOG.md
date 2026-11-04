@@ -6191,3 +6191,32 @@ scrollbar=10.0, slack=40.0` → `trimmed to 667.0`, 되돌림 0회. 격자 폭�
 클라이언트 `A5A8BD9C` → **`027836BA`**, 서버 `A59BFE8B` 그대로. 설치본 md5 = 빌드 md5, 산출물 IL 에
 여섯 단계의 로그 문자열 다섯 종이 전부 들었다. 테스트 621개 통과, 클라이언트 경고 0.
 **이번에는 게임이 꺼진 채 복사했다**(프로세스 0) - 다음에 켜면 바로 이 코드다.
+
+### 2-13~2-17 을 확정했다 — 관문은 컨트롤러가 아니라 뷰 타입이었다 (2026-11-04)
+
+"설계 유력, 미확정" 넷(2-13~2-16)과 "설계 판단 먼저"(2-17)를 **실행 경로까지 IL 로 따라가** 확정했다.
+게임을 켜지 않고 끝났다. 자세한 표는 [대조표](specs/2026-11-04-stash-parity-checklist.md) 마지막 절.
+
+**관문의 정체**: 조작 목록은 `ItemUiContext.CreateInteractions` 가 **`EItemViewType`** 으로 고른다.
+`Inventory` → `InventoryItemContextInteractions`(전부 있다), `InventoryDuringMatching` →
+`MatchingInventoryItemContextInteractions`(**`Modding`·`Use`·검색이 없다**). 그리고
+`ItemContextInteractionsSwitcher.IsActive` 의 조건은 전부 구조적이다(`InGameStatus.InRaid`,
+부모가 컨테이너인가, `StackMaxSize > 1`). **컨트롤러 종류를 보는 자리는 `WatchProfile` 하나뿐이다.**
+
+그래서 **2-16 의 X 는 장비 트리가 `InventoryDuringMatching` 이던 때의 값**이다. 2026-11-04 삽탄 고침이
+문맥을 `Inventory` 로 바꾸면서 2-5 가 열린 것과 같은 자리인데, 그때 2-16 을 다시 재지 않았다.
+
+**`PlayerCollections` 는 이름이 거짓말이다.** `_equipment.GetCollections(…).Concat(_rightPanelItem)`
+이고 둘 다 `Configure` 가 받은 것이다. 우리는 거기에 **그 팀원의 장비와 스태시**를 넣었으므로
+`InstallMod`·`ModWeapon` 의 부품 출처도 그 팀원의 것이다 - 플레이어 아이템이 섞일 자리가 아니다.
+
+| 칸 | 확정 | 근거 |
+|---|---|---|
+| 2-13 `TopUp` | **우리 경로** (코드 작업 없음) | `_itemController` 로 합치고 출처가 그 팀원의 스태시·장비다 |
+| 2-14 `Unpack` | **설계상 닫는다** | `Session.Unpack(id, **플레이어 프로필 id**)` - 서버로, 남의 프로필로 나간다 |
+| 2-15 `Install`/`Uninstall` | **우리 경로** (코드 작업 없음) | `QuickFindAppropriatePlace` + `RunWithSound` 둘 다 우리 컨트롤러 |
+| 2-16 `Modding` | **문맥이었다. 지금은 목록에 있다** | `ModWeapon` 이 우리 컨트롤러와 그 팀원의 부품을 받는다. 별도 화면의 수명만 확인 |
+| 2-17 `Use` 계열 | **설계상 닫는다 — 판단 끝** | 전부 `_healthController.ApplyItem` - 그 체력은 **플레이어의 것**이다. 팀원 물건을 소모해 내가 낫는다. 편집기는 `healthController: null` 로 세우므로 눌리면 터진다. 설계 §4 와도 어긋난다 |
+
+**남은 인게임 확인은 "눌러 보는 것" 셋뿐이고 코드 작업이 아니다**: 채우기·장착/분리·개조.
+개조만 저장까지 가 봐야 한다(별도 화면이 우리 지역 트리를 고치는지, 편집기를 닫을 때 남지 않는지).
