@@ -1319,20 +1319,79 @@ namespace pitTeam.Patches
                     return;
                 }
 
-                object pin = AccessTools.Field(typeof(SimpleStashPanel), "_pinModeButton")?.GetValue(panel);
-                object padlock = AccessTools.Field(typeof(SimpleStashPanel), "_lockModeButton")?.GetValue(panel);
-                object inventoryTemplate = AccessTools.Field(typeof(InventoryScreen), "_simpleStashPanel")
-                    ?.GetValue(CommonUI.Instance?.InventoryScreen);
+                // 2026-11-04 1차 진단 결과: 버튼은 **null 이 아니다**(Pin·Lock, EFT.UI.ToggleButton).
+                // 즉 템플릿 출처 때문이 아니다. 남은 질문은 "있는데 왜 안 보이는가" 이고, 그 답은
+                // 활성 상태·위치·크기에 있다. 아래가 그것을 찍는다.
+                DescribeSelectionButton("_pinModeButton", panel);
+                DescribeSelectionButton("_lockModeButton", panel);
 
-                pitFireTeam.Log.LogWarning(
-                    "[STM] 선택 진단: 우리 패널의 _pinModeButton=" + (pin == null ? "null" : pin.ToString())
-                    + ", _lockModeButton=" + (padlock == null ? "null" : padlock.ToString())
-                    + " / InventoryScreen 쪽 템플릿=" + (inventoryTemplate == null ? "못 읽음" : "있음"));
+                if (panel.transform is RectTransform panelRect)
+                {
+                    pitFireTeam.Log.LogWarning(
+                        "[STM] 선택 진단: 패널 rect=" + panelRect.rect
+                        + " 화면좌표=" + CornersOf(panelRect));
+                }
             }
             catch (Exception ex)
             {
                 // 진단이 편집기를 막아서는 안 된다.
                 pitFireTeam.Log.LogWarning("[STM] 선택 진단 실패: " + ex.Message);
+            }
+        }
+
+        // 버튼 하나의 "왜 안 보이는가" 에 답할 사실만 찍는다: 켜져 있나, 어디에 있나, 크기는 얼마인가.
+        // 부모 사슬도 함께 남긴다 - 꺼져 있다면 **어느 조상이** 껐는지가 고칠 자리다.
+        private static void DescribeSelectionButton(string fieldName, SimpleStashPanel panel)
+        {
+            object value = AccessTools.Field(typeof(SimpleStashPanel), fieldName)?.GetValue(panel);
+            if (value == null)
+            {
+                pitFireTeam.Log.LogWarning("[STM] 선택 진단: " + fieldName + "=null");
+                return;
+            }
+
+            var button = value as UnityEngine.Component;
+            if (button == null)
+            {
+                pitFireTeam.Log.LogWarning("[STM] 선택 진단: " + fieldName + "=" + value + " (Component 가 아니다)");
+                return;
+            }
+
+            string path = button.name;
+            UnityEngine.Transform walk = button.transform.parent;
+            for (var depth = 0; walk != null && depth < 8; depth++)
+            {
+                path = walk.name + (walk.gameObject.activeSelf ? "" : "(꺼짐)") + "/" + path;
+                walk = walk.parent;
+            }
+
+            string where = "rect 없음";
+            if (button.transform is RectTransform r)
+            {
+                where = "size=" + r.rect.size + " anchored=" + r.anchoredPosition + " 화면좌표=" + CornersOf(r);
+            }
+
+            pitFireTeam.Log.LogWarning(
+                "[STM] 선택 진단: " + fieldName
+                + " activeSelf=" + button.gameObject.activeSelf
+                + " activeInHierarchy=" + button.gameObject.activeInHierarchy
+                + " " + where
+                + " 경로=" + path);
+        }
+
+        // RectTransform 이 화면의 어디를 차지하는지. 왼쪽아래와 오른쪽위만 적는다.
+        private static string CornersOf(RectTransform rect)
+        {
+            try
+            {
+                var corners = new UnityEngine.Vector3[4];
+                rect.GetWorldCorners(corners);
+                return "[" + corners[0].x.ToString("0") + "," + corners[0].y.ToString("0")
+                    + " ~ " + corners[2].x.ToString("0") + "," + corners[2].y.ToString("0") + "]";
+            }
+            catch (Exception ex)
+            {
+                return "좌표 못 읽음(" + ex.GetType().Name + ")";
             }
         }
     }
