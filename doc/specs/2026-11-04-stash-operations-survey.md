@@ -118,3 +118,66 @@ Enabled => Settings.EnableMultiSelect.Value
 
 **되돌릴 것.** 버튼을 켜는 코드와 그 진단은 소스에서 걷어냈다(빌드 `9F955305`). **설치본
 `A127DB8A` 에는 아직 들어 있으므로 다음 설치에서 사라진다.**
+
+---
+
+## 6. "플레이어 스태시를 통째로 옮기면 되지 않나" — 실험과 결론 (2026-11-04)
+
+사용자 제안: 조작을 하나씩 따라 열지 말고 **진짜 인벤토리 화면을 그대로 쓰라.** 방향은 옳다 -
+지금 구조가 패널을 **복제**한 것이라 모드가 붙은 배선이 떨어져 나가고, 삽탄·복수 선택은 그 한
+원인의 증상이다. 그래서 코드를 고치기 전에 **가능한지부터** 쟀다.
+
+### 가능해 보였던 근거
+
+```csharp
+InventoryScreen.Show(IHealthController, InventoryController controller, …)
+ScavengerInventoryScreenController(OfflineInventoryController scav,
+                                   OfflineInventoryController main, …)
+```
+
+진짜 화면이 **컨트롤러를 인자로 받고**, EFT 자신도 스캐브 이전에서 **다른 프로필**을 그 화면으로 연다.
+전례가 있는 셈이다.
+
+### 막는 것 — 컨트롤러의 종류가 곧 안전장치다
+
+| | 우리 편집기 | EFT 의 진짜 화면들 |
+|---|---|---|
+| 컨트롤러 | `InventoryController`(기본) | `OfflineInventoryController : BackEndInventoryController` |
+| 조작이 가는 곳 | **로컬 트리뿐** | `Execute` → `ToBaseInventoryCommand(_mainProfileId)` → **백엔드 세션** |
+| 저장 | 우리가 **최종 상태 한 번** 제출(보존 검사) | 조작마다 서버 |
+
+**`BackEndInventoryController.Execute` 가 조작을 서버로 보낸다**(IL 확인). 우리 편집기를 그 컨트롤러로
+바꾸면 드래그마다 **플레이어 인벤토리 조작이 서버로 나가** 엉뚱한 프로필에 쓰인다. 지금 기본
+`InventoryController` 를 쓰는 것은 게으름이 아니라 **그 안전장치**다.
+
+### 그래서 빠진 조작의 정체가 설명된다
+
+`ItemContextInteractionsSwitcher.IsActive` 는 곳곳에서 컨트롤러의 **종류**를 본다
+(`isinst OfflineInventoryController`, `isinst Player/PlayerInventoryController`). 한 자리는 아예
+`controller is OfflineInventoryController` 를 그대로 돌려준다(IL_0497). 우리 컨트롤러는 **둘 다 아니다.**
+
+즉 빠진 것은 무작위 구멍 37개가 아니라 **한 줄로 갈린다**:
+
+- **자리만 바꾸는 조작** — 드래그 이동·입히기·벗기기·분할·합치기·탄박스 열기 → **된다**
+  (실행이 필요 없고, 우리가 최종 상태로 제출한다)
+- **컨트롤러의 실행이 필요한 조작** — 그리고 그 실행 가능 여부를 타입으로 검사하는 것들 → **안 된다**
+  (설계가 그 실행을 일부러 막았으므로)
+
+복수 선택으로 **여러 개를 한꺼번에 옮기는 것**도 이 둘째 줄에 있을 가능성이 높다 - UI Fixes 의 선택
+자체는 컴포넌트 패치라 걸리지만, 옮기는 동작은 컨트롤러를 통한다.
+
+### 건널 수 있는 길과 값
+
+1. **그 줄을 받아들인다.** 실행이 필요한 조작은 **설계상 범위 밖**임을 문서에 못박고, 필요한 것만
+   우리 저장 경로로 따로 구현한다(분할·합치기를 그렇게 열었다). **값이 가장 싸다.**
+2. **세션 스텁을 만든다.** `OfflineInventoryController(IClientSession, Profile, string)` 의 세션을
+   **우리가 넘긴다** - 요청을 삼키는 가짜 세션을 주면 타입 검사는 통과하고 서버로는 안 나간다.
+   비용: `IClientSession` 은 **메서드 69개·속성 16개**이고, 어느 하나라도 실제로 필요하면 그 자리에서
+   깨진다. **위험도 가장 높다**(프로필에 쓰는 경로를 흉내 내는 일이다).
+3. **진짜 화면을 쓰되 컨트롤러는 우리 것으로.** `InventoryScreen.Show` 는 `InventoryController` 를
+   받으므로 타입상 가능하다. 다만 그러면 **지금과 같은 제약**이 그대로 남는다(실행이 필요한 조작은
+   여전히 안 된다). 얻는 것은 화면 쪽 모드 지원뿐이고, 퀘스트·업적 컨트롤러를 무엇으로 넘길지라는
+   새 위험이 생긴다(팀원 물건으로 플레이어 퀘스트를 넘기는 복제 경로).
+
+**권고: 1번.** 2번은 안전장치를 흉내 내는 일이라 이 모드의 설계 원칙(의심스러우면 쓰지 않는다)과
+어긋나고, 3번은 값에 비해 얻는 것이 적다.
