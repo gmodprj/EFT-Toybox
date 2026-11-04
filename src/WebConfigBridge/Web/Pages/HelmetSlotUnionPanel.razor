@@ -38,6 +38,8 @@ else
                    Label="총기 파츠끼리의 충돌 지우기 — 총기와 총기 파츠끼리 서로를 막는 항목만" />
         <MudSwitch T="bool" @bind-Value="_config.RemoveAllConflictsOnWeaponAttachments" Color="Color.Warning"
                    Label="총기 충돌 통째로 비우기 — 탄약·구경 제한까지 사라진다" />
+        <MudSwitch T="bool" @bind-Value="_config.RemoveRemainingConflicts" Color="Color.Warning"
+                   Label="남은 충돌까지 전부 — 안면 보호구·헤드셋처럼 두 범위에 걸친 것들(탄창·장전 손잡이의 구경 제한은 남는다)" />
 
         <MudTextField T="string" @bind-Value="_weaponExcludedCategoryIds" Lines="3" Variant="Variant.Outlined"
                       Class="mt-4" Label="총기 충돌 정리에서 뺄 분류 id"
