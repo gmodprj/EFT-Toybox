@@ -46,4 +46,12 @@ public class Config
     /// </summary>
     [JsonPropertyName("ExcludedChamberWeaponIds")]
     public List<string> ExcludedChamberWeaponIds { get; set; } = [];
+
+    /// <summary>
+    /// 약실을 넓히지 않을 구경(<c>ammoCaliber</c>). 아이템 id 보다 오래 간다 — 모드가 더한 총도 걸린다.
+    /// 기본값은 유탄발사기 셋(40x46·40mmRU·30x29)과 신호권총(26x75)이다. 소총탄이 들어갈 자리가 아니다.
+    /// </summary>
+    [JsonPropertyName("ExcludedChamberCalibers")]
+    public List<string> ExcludedChamberCalibers { get; set; } =
+        ["Caliber40x46", "Caliber40mmRU", "Caliber30x29", "Caliber26x75"];
 }
