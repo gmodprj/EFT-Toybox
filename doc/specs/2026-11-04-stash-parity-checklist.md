@@ -144,3 +144,32 @@
 않는다.
 
 **미확인:** 2-18 `Disassemble`, 4부 전체(스크롤·정렬·검색·컨테이너 창).
+
+---
+
+## 1-6 선택 상자 — 원인과 판단 (2026-11-04)
+
+**왜 이것만 안 되나.** UI Fixes 의 선택 상자는 `DrawMultiSelect`(MonoBehaviour)가 그린다. 그런데
+마우스 대상을 EventSystem 전체가 아니라 **자기가 들고 있는 레이캐스터 둘**에서만 찾는다:
+
+```csharp
+_localRaycaster     = GetComponentInParent<GraphicRaycaster>();   // 자기가 붙은 캔버스
+_preloaderRaycaster = Singleton<PreloaderUI>.Instance … GetComponent<GraphicRaycaster>();
+```
+
+그 컴포넌트는 `CommonUI.Awake`·`MenuUI.Awake` 에서 붙는다. 우리 편집기 오버레이는
+`UI/InventoryOtherPlayerProfile/pitFireTeam_LoadoutEditorOverlay` 에 있고, 저 두 레이캐스터가
+덮지 않으면 **빈 칸 드래그는 애초에 잡히지 않는다.**
+
+**다른 칸이 되는 것과 앞뒤가 맞는다.** Shift+클릭(1-7)·Ctrl+A(1-8)·복수 이동(1-9)은
+`ItemView.OnPointerDown`·`GridItemView.OnClick` **컴포넌트 패치**라 캔버스와 무관하다. 그래서
+**선택 기구는 살아 있고 입력 경로 하나만 빠졌다.**
+
+**고치려면 드는 값.**
+- ⒜ 오버레이를 그 캔버스 아래로 옮긴다 - 지금 잘 도는 화면의 부모를 바꾸는 일이라 회귀 위험이 크다.
+- ⒝ `DrawMultiSelect` 를 우리 캔버스에도 붙인다 - **UI Fixes 내부에 의존**하게 된다. 그 모드가
+  바뀌면 같이 깨지고, 없는 사람에게는 의미도 없다.
+
+**판단: 하지 않는다(보류).** 복수 선택 자체는 **Shift+클릭과 Ctrl+A 로 이미 된다.** 얻는 것은
+입력 방식 하나이고, 두 길 모두 값이 그보다 크다. 다시 집는다면 ⒜ 쪽이고, 그때는 오버레이의 부모를
+바꾸는 것이 다른 것을 깨지 않는지부터 본다.
