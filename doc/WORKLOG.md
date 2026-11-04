@@ -5435,3 +5435,51 @@ case EItemInfoButton.LoadAmmo:
 **2. 팀원 스태시에서 드래그로 복수 선택이 안 된다 — 아직 원인 미확인.** 같은 문맥 문제일 가능성이
 있으나 **확인하지 않았다.** EFT 의 복수 선택은 별도 컴포넌트(`MultiSelect` 계열)가 다루므로, 먼저
 그것이 무엇을 보고 켜지는지 역컴파일로 확인한 뒤에 판정한다. 추측으로 고치지 않는다.
+
+### 리그의 탄창에 `삽탄` 이 없던 것을 고친다 (2026-11-04)
+
+2026-11-03 에 스태시 쪽만 고치고 **장비 쪽을 남겨 둔 것**이 드러났다. 메뉴 판정이 문맥의 종류를
+직접 본다:
+
+```csharp
+case EItemInfoButton.ApplyMagPreset:
+case EItemInfoButton.LoadAmmo:
+    if (!Gameplay && _itemContext is InventorySelectableItemContext) { ... }
+    return false;
+```
+
+장비 패널은 `LoadoutEditorEquipmentRootContext`(= `EmptyItemContext` 상속)를 쓰고 그 `CreateChild` 가
+**`DefaultItemContext`** 를 돌려준다. 그래서 장비 트리 안의 모든 아이템이 종류 판정에서 떨어지고
+`삽탄`·`탄창 프리셋` 이 걸러졌다. **리그 안 탄창이 정확히 그 경우**다.
+
+**생성자 목록을 어셈블리에서 확인하고 고쳤다**(이름에서 지어내지 않았다):
+
+```
+InventorySelectableItemContext
+   ctor(EItemViewType)
+   ctor(Item, EItemViewType)
+   ctor(Item, EItemViewType, SelectionContextWrapper)
+   ctor(Item, InventorySelectableItemContext)      ← 자식은 부모가 같은 계열이어야 한다
+   ctor(ItemContext, SelectionContextWrapper)
+```
+
+자식 생성자가 **부모를 같은 계열로 요구**하므로 루트가 `EmptyItemContext` 계열이면 고리를 이을 수
+없다. 그래서 **루트부터 그 계열로** 두었다 - 새 STM 전용 클래스
+`StmGearEditorEquipmentRootContext : InventorySelectableItemContext` 가 `CreateChild` 에서
+`new InventorySelectableItemContext(item, this)` 를 돌려준다. 시야 종류는 `Inventory` 다
+(PIT 은 `InventoryDuringMatching`; STM 의 요구는 "플레이어 자신의 화면과 같게" 이고 그 화면과 스태시
+패널이 쓰는 값이 `Inventory` 다).
+
+**PIT 용병 편집기는 건드리지 않았다**(불변식 4). `TryBuildLoadoutEditorFollowerPanel` 에 **기본값
+null 인** 문맥 override 인자를 더했고 - 2026-11-03 에 스태시 패널에 한 것과 **같은 모양**이다 -
+값을 주는 곳은 STM 편집기 하나뿐이다.
+
+**실측.** 클라이언트 **CS 오류 0·경고 0**, 산출물 `9683F1F7`. 애드온의 `MSB3644` 는 그대로다
+(환경 문제, 클라이언트 어셈블리는 생성된다). **게임이 실행 중이라 설치하지 않았다** - 설치본은
+`47AB78D7` 그대로이고 이 고침이 **없다**. **인게임 미확인**: 리그의 탄창에서 `삽탄` 이 실제로 뜨는지,
+그리고 **장비 패널의 다른 조작이 깨지지 않았는지**(문맥과 시야 종류를 둘 다 바꿨다) 설치 뒤 첫 확인에서
+함께 봐야 한다.
+
+**복수 선택의 실마리 하나.** 위 생성자 목록에 `ctor(ItemContext, SelectionContextWrapper)` 와
+`ctor(Item, EItemViewType, SelectionContextWrapper)` 가 있다. 드래그 복수 선택이
+`SelectionContextWrapper` 를 요구할 가능성이 있다 - **아직 확인하지 않았다.** 그쪽을 집을 때 여기서 시작한다.
