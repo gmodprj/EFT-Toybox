@@ -182,6 +182,53 @@ Hj's Improved Customization UI(3069)가 테스트 중에 만든 자기 설정인
 
 기준선에 `147 plugins to load` 인데 `Loading [` 줄이 108개뿐이라고 적었다. 이번 로그는 **151 = 151 로 정확히 일치한다.** 어제 그 파일에만 있던 현상이고(그 로그는 덮여 사라졌다) 지표 자체는 믿을 수 있다. 앞으로는 두 수를 **함께** 세서 어긋나면 그 로그를 의심한다.
 
+## 게임·서버 기동 확인 (10-C·10-D 설치 후, 2026-11-05 08:17~08:22)
+
+사용자가 직접 서버와 게임을 띄웠다. 서버 로그는 사용자가 넘겨 주었고, 게임 로그는 `BepInEx/LogOutput.log`(08:21 기동, 10-D 설치 08:08 이후)를 읽었다.
+
+### 게임 — 플러그인 셈이 또 정확히 맞는다
+
+| 항목 | 값 |
+| --- | --- |
+| `plugins to load` | **173** |
+| `Loading [` 줄 | **173** — 두 수가 일치하고 `Chainloader startup complete` 까지 떴다 |
+| `[Error` / `[Fatal` | **1줄 / 0줄** |
+| `exception`·`nullreference` | **0건** |
+
+10-C·10-D 가 `BepInEx\plugins` 에 넣은 DLL 은 23개인데 151 + 23 = 174 가 아니라 **173** 이다. 하나를 집어냈다 — **`BepInEx\plugins\Briefing\Briefing.Core.dll` 은 플러그인이 아니라 라이브러리다**(`BepInPlugin`·`BaseUnityPlugin` 문자열 없음). 그래서 23개 = 플러그인 22 + 라이브러리 1 이고 **151 + 22 = 173** 으로 맞는다. 10-B 의 Effects Manager Framework 와 같은 경우다.
+
+**22개 전부 이름으로 확인했다** — MergeConsumables·ContinuousHealing·HealingAutoCancel·HandsAreNotBusy·GildedKeyStorage·UseLooseLoot·Loot In Vicinity·Cabinet Looter·RaidSettingsSkipper·Auto Keycard·Dynamic Item Weights(10-C 11개) + MenuOverhaul·ImpactCue-UI-MOD·Hj's Improved Customization UI·Task Item Indicator·Task Turn in Indicator·Name Plate·Briefing·Breakout Outlines·WishlistExtended·Inventory Walker·MoreTagColours(10-D 11개). Easy Ammo Names(1262)는 서버 전용이라 플러그인이 없다.
+
+남은 오류 1줄은 알려진 것뿐이다.
+
+```
+[Error  :Direct Reload & Painless Meds] [DirectReload] Patch FAILED to enable:
+FikaHostReloadMirror — Fika ObservedFirearmController not found
+```
+
+기준선의 15줄 가운데 나머지 14줄(SAIN·STM·ECOTI)은 **레이드를 깊게 돌아야 나온다**. 이 기동은 메뉴 단계라 안 나온 것이고, 다음에 다시 보여도 새 오류가 아니다.
+
+### 서버 — 127개 전부 정상 시작
+
+사용자 서버 로그 기준.
+
+- `ModLoader: 총 127 개` 로 10-D 뒤 숫자와 같다. 10차에 넣은 서버 모드가 전부 `불러옴` 으로 찍혔다 — Easy Slot Filters, Item Property Backport, MapVariants, QuestCodex, Hj 의 Mod Source, MergeConsumablesServer, Gilded Key Storage, ImpactCue Web Config, Hj 의 Improved Customization UI, Name Plate, Wishlist Extended, Easy Ammo Names.
+- `Loaded bundles from 23 mods (ok: 4325, missing: 0, invalid: 0)` — 번들 누락·불량 0.
+- `Could not add` 48건 + `Unable to add bundle` 1건으로 **기준선과 같다.** 새 오류는 없다.
+- `시작된 웹서버 https://127.0.0.1:6969` → `Loaded self-signed certificate` 까지 정상.
+- 웹 화면을 붙이는 모드가 넷이고 경로가 서로 다르다 — `/coti-assets/`, `/TheBlacklist/`, `/questcodex/`, `/SAIN/`. 포트 충돌은 없다.
+
+함께 드러난 것
+
+- **`[MV] no backported location found; nothing to switch`** — MapVariants 는 지금 **할 일이 없다.** 바꿔 끼울 백포트 맵(Manimal Interchange·Lighthouse)이 10-O 라서다. 10-M 의 DynamicMaps Extended 선행으로 미리 넣은 것이니 정상이다.
+- **`[ItemInfo] Completed processing 9489 items in 99874 ms`** — 시작 144~150초 가운데 **100초가 이 모드 하나**다. 앞으로 시작 시간이 길다고 새 모드를 의심하기 전에 이 줄을 먼저 본다.
+- `pitFireTeam PMC armband enforcement: enabled` 와 `PitFireTeam loaded` 는 **SPT Team Manager** 가 찍는 것이다(업스트림 문자열을 그대로 쓴다). PIT 가 돌아온 것이 아니다.
+- 자작 모드도 모두 정상이다 — SlotCategoryRelax 가 총기 915종의 약실을 열고, HelmetSlotUnion 이 늦은 쓸기까지, StackUnify·ScavRaidWaves·AirdropCaller 모두 찍혔다.
+
+### 아직 눈으로 봐야 하는 것
+
+로그로는 여기까지다. **한국어 표기**, 개조·메뉴 화면 겹침(Hj 의 개조 화면 ↔ 기존 개조 화면 모드, Menu Overhaul ↔ 기존 메뉴 계열), 인벤토리·치료 화면, 아이템 무게(Dynamic Item Weights ↔ SVM)는 화면을 봐야 안다.
+
 ## 다음 단계의 판정 기준에 더할 것
 
 1. **플러그인 수 증가분은 DLL 개수가 아니다.** 라이브러리 DLL(플러그인 속성 없음)은 0 으로 세고, DLL 하나가 플러그인 여러 개를 등록할 수 있다. 어긋나면 `Loading [` 목록을 직접 비교한다.
