@@ -11,11 +11,14 @@ public class GearBuildPlanPolicyTests
 
     private static GearItemRow Item(string id, string tpl, string parent, string slot) => new(id, tpl, parent, slot);
 
-    // 부착물 칸을 가진 tpl 만 아래로 내려간다. 테스트가 템플릿 데이터 없이 모양을 정한다.
+    // 아래로 따라 내려갈 자리의 어휘. 서버의 ChildSlotNamesOf 가 템플릿에서 읽어 주는 것을
+    // 테스트가 손으로 적는다 - 부착물 칸(Slots)만이 아니라 탄 자리(Cartridges)와 격자(Grids)도
+    // 포함한다는 것이 2026-11-04 의 판단이다(산 탄창이 비고 조끼가 텅 비던 결함).
     private static IEnumerable<string> Slots(string tpl) => tpl switch
     {
         "gun" => ["mod_scope", "mod_magazine"],
-        "vest" => ["mod_plate_front"],
+        "mag" => ["cartridges"],
+        "vest" => ["mod_plate_front", "main"],
         _ => [],
     };
 
@@ -97,16 +100,33 @@ public class GearBuildPlanPolicyTests
         Assert.Equal(GearSlotOutcome.Unchanged, Assert.Single(plan.Slots).Outcome);
     }
 
-    // 가방·조끼 안의 짐은 장비가 아니다. 부착물 칸 이름이 아니므로 하위 묶음에 들어오지 않는다.
+    // 조끼 안의 짐도 산다. 2026-11-04 이전에는 일부러 뺐는데, 사용자가 고른 꾸러미 화면에 그 짐이
+    // 들어 있으므로 "보여 준 것과 산 것이 다른" 결함이었다(실측: 조끼 안이 텅 빈 채로 들어왔다).
     [Fact]
-    public void 격자_안의_짐은_세지_않는다()
+    public void 격자_안의_짐도_산다()
     {
         var plan = GearBuildPlanPolicy.Plan(
             [Item("b1", "vest", BuildRoot, "TacticalVest"), Item("b2", "cargo", "b1", "main")], BuildRoot,
             [], CurrentRoot, Slots);
 
         var slot = Assert.Single(plan.Slots);
-        Assert.Equal(["vest"], slot.ItemsToBuy.Select(i => i.Tpl));
+        Assert.Equal(["vest", "cargo"], slot.ItemsToBuy.Select(i => i.Tpl));
+    }
+
+    // 탄창 안의 탄도 산다. 탄 자리는 Slots 가 아니라 Cartridges 에 있어서, 어휘가 좁던 동안
+    // 산 탄창이 0/50 으로 들어왔다(2026-11-04 사용자 실측).
+    [Fact]
+    public void 탄창_안의_탄도_산다()
+    {
+        var plan = GearBuildPlanPolicy.Plan(
+            [
+                Item("b1", "gun", BuildRoot, "FirstPrimaryWeapon"),
+                Item("b2", "mag", "b1", "mod_magazine"),
+                Item("b3", "ammo", "b2", "cartridges"),
+            ], BuildRoot,
+            [], CurrentRoot, Slots);
+
+        Assert.Equal(["gun", "mag", "ammo"], Assert.Single(plan.Slots).ItemsToBuy.Select(i => i.Tpl));
     }
 
     [Fact]

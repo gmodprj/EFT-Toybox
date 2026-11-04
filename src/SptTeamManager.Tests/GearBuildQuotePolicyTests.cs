@@ -97,6 +97,34 @@ public class GearBuildQuotePolicyTests
         Assert.NotEmpty(missing);
     }
 
+    // 탄 묶음은 한 점이 아니라 묶음 수량만큼 값을 낸다. 이것이 빠져 있던 동안 탄창 가득한 꾸러미를
+    // 탄 한 발 값에 살 수 있었다(2026-11-04, 격자·탄을 사기 시작하면서 드러난 자리).
+    [Fact]
+    public void 묶음_수량만큼_값을_매긴다()
+    {
+        var ammo = new GearItemRow("id-ammo", "ammo", "parent", "cartridges", 60);
+
+        var ok = GearBuildQuotePolicy.TryQuote([ammo], _ => 100, out var quote, out var missing);
+
+        Assert.True(ok);
+        Assert.Equal(6000, quote!.Total);
+        Assert.Empty(missing);
+    }
+
+    // 수량이 틀어져 있으면(0·음수) 한 점으로 친다 - 값을 깎는 쪽으로 넘어뜨리지 않는다.
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-5)]
+    public void 수량이_틀어지면_한_점으로_친다(int count)
+    {
+        var row = new GearItemRow("id-x", "x", "parent", "slot", count);
+
+        var ok = GearBuildQuotePolicy.TryQuote([row], _ => 100, out var quote, out _);
+
+        Assert.True(ok);
+        Assert.Equal(100, quote!.Total);
+    }
+
     [Fact]
     public void 널_입력도_던지지_않는다()
     {
