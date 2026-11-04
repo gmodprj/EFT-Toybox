@@ -436,7 +436,10 @@ namespace pitTeam.Patches
             RectTransform leftSection,
             Profile editorProfile,
             InventoryController editorInventoryController,
-            EFT.InventoryLogic.ItemContext stashItemContextOverride = null)
+            EFT.InventoryLogic.ItemContext stashItemContextOverride = null,
+            // 검색칸을 보일 것인가. 기본값은 PIT 가 쓰던 그대로(`Unavailable`) - 용병 편집기의 동작을
+            // 바꾸지 않는다(불변식 4). STM 편집기만 값을 준다.
+            SimpleStashPanel.EStashSearchAvailability searchAvailability = SimpleStashPanel.EStashSearchAvailability.Unavailable)
         {
             try
             {
@@ -467,7 +470,7 @@ namespace pitTeam.Patches
                     stashContext,
                     false,
                     null,
-                    SimpleStashPanel.EStashSearchAvailability.Unavailable,
+                    searchAvailability,
                     null,
                     ItemsPanel.EItemsTab.Gear);
 
