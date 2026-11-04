@@ -611,14 +611,14 @@ namespace pitTeam.Patches
                 leftSection,
                 editorProfile,
                 editorInventoryController,
-                new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory),
-                // 검색칸을 연다(대조표 2-19). PIT 는 `Unavailable` 로 닫아 두는데, 플레이어 자기
-                // 스태시에는 검색이 있으므로 팀원 화면에도 있어야 한다. `All` 이 아니라 **`StashOnly`**
-                // 다 - 더 좁고, 이 컨트롤러가 들고 있는 그 팀원 스태시만 본다.
-                // 검색은 **읽기**다: `Show` 는 이 값으로 검색 UI 를 보이고 숨길 뿐이고
-                // (`_simplePanel.ShowGameObject`), 거르는 `SearchHandler` 는 `get_Inventory()` 를
-                // 읽기만 한다(IL 확인). 프로필에 쓰지 않는다.
-                SimpleStashPanel.EStashSearchAvailability.StashOnly);
+                new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory));
+            // **검색칸은 열지 않는다(`Unavailable` 기본값).** 2026-11-04 에 `StashOnly` 로 바꿔
+            // 설치해 봤더니 **검색칸은 뜨지 않고 오른쪽에 빈 폭만 생겨 격자가 왼쪽으로 밀렸다.**
+            // `Show` 는 이 값으로 `_simplePanel`(SearchableItemView)을 `ShowGameObject` 할 뿐인데,
+            // 복제한 패널에서는 그 안의 입력칸이 그려지지 않으면서 자리만 차지한 것이다.
+            // 값(IL 의 `ldc.i4.1`)이 들어간 것은 확인했으므로 **값의 문제가 아니라 그 패널이 우리
+            // 배치에서 세워지지 않는 문제**다. 다시 열려면 `_simplePanel`·`_searchTab` 이 어떻게
+            // 초기화되는지(`InitSearch`)부터 봐야 한다 - 대조표 2-19.
             // 보안 컨테이너 칸을 그린다 - 플레이어 자신의 화면에는 늘 있고, 프로필 팀원도 같아야 한다.
             // 컨테이너 **자체**를 떼는 것은 서버가 계속 막는다(IsStructuralSlot) - 여는 것만 열린다.
             // 장비 트리도 스태시와 **같은 계열의 문맥**을 준다. 그래야 리그·가방 안의 탄창에

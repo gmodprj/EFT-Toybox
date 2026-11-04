@@ -134,7 +134,7 @@
 | 2-15 | `Install`/`Uninstall` | 설계 쪽 유력 | 〃 |
 | 2-16 | `Modding` | 설계 쪽 유력 | 개조 화면은 별도 화면을 연다 |
 | 2-17 | `Use`/`UseAll`/`HealAll` | **설계 판단 먼저** | 팀원에게 소모품을 쓰는 게 맞는 일인지부터 정해야 한다 |
-| 2-19 | `FilterSearch`/`LinkedSearch` | **구멍(우리가 껐다)** | 편집기를 `EStashSearchAvailability.Unavailable` 로 연다. 우리 선택이라 되돌리기 쉽다 |
+| 2-19 | `FilterSearch`/`LinkedSearch` | **시도했다 실패 — 되돌림** | `StashOnly` 로 바꿔 설치했으나 **검색칸은 안 뜨고 오른쪽에 빈 폭만 생겨 격자가 밀렸다.** 값은 IL 로 들어간 것을 확인했으니 **그 패널이 우리 배치에서 세워지지 않는 문제**다. 다시 열려면 `InitSearch`·`_searchTab` 부터 본다 |
 | 2-20 | `SetPin`/`SetLock` | 보류 | 핀/잠금 패널을 되돌려 껐다. 필요하면 다시 판단 |
 
 **가장 큰 소득: 경계가 내가 그은 자리에 없다.** 1-9(복수 선택 후 한꺼번에 옮기기)가 **O** 다.
