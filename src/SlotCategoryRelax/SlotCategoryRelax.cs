@@ -23,7 +23,10 @@ namespace SlotCategoryRelax;
 /// 어떤 분류가 있는지는 설치본마다 다르다(모드가 분류를 더하기도 한다). 그래서 매번 DB 에서
 /// 찾아 <c>discovered-categories.json</c> 로 내놓는다. 설정 화면은 그 목록을 보고 스위치를 만든다.
 /// </summary>
-[Injectable(InjectionType.Singleton, 0)]
+// 순서는 TypePriority 오름차순. 모드가 만드는 아이템(WTT-Armory 부착물·AmmoGen 탄약 등)보다
+// 뒤에 서려면 PostLoad(1000000) 여야 한다 — 0 이면 같은 PreSptLoad 묶음이라 뒤에 생긴 것을
+// 놓친다(클라이언트가 받은 목록 실측: 모드 탄약 756종 중 258종이 약실 필터에 없었다).
+[Injectable(InjectionType.Singleton, OnLoadOrder.PostLoad)]
 public class SlotCategoryRelax(
     ISptLogger<SlotCategoryRelax> logger,
     TemplateTable templateTable,

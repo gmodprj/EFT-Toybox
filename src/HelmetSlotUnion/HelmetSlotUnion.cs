@@ -23,10 +23,13 @@ namespace HelmetSlotUnion;
 /// 모드(SlotCategoryRelax·All In Weapon 등)를 쓸 때 같은 메시지가 남는 것을 푸는 것이다.
 /// 총기는 칸 필터를 건드리지 않는다 — 충돌 목록만 본다.
 /// </summary>
-// 두 번째 값은 IOnLoad 실행 순서다. 숫자가 클수록 늦게 돈다(실측: 0 이면 SlotCategoryRelax 보다
-// 먼저, 1000 이상이면 나중에 돈다). 칸 필터를 넓히는 모드보다 늦게 돌아야 넓어진 필터까지 따라가
-// 충돌을 지울 수 있어서(대상 2178개 → 2183개) 일부러 큰 값을 쓴다.
-[Injectable(InjectionType.Singleton, 100000)]
+// 순서는 TypePriority 로 정해진다(오름차순). 200000 미만은 PreSptLoad 콜백 안에서 돌고,
+// 그 이상은 SPTStartupHostedService 에서 돈다 — 설치된 서버 모드는 전부 0 이라 PostLoad(1000000)
+// 하나면 모든 모드 뒤에 선다. 그래야 모드가 만든 아이템(WTT-Armory 의 부착물 등)까지 범위에 든다.
+// 100000 으로 두었을 때는 같은 PreSptLoad 묶음이라 모드가 뒤에 만든 아이템을 놓쳤다 —
+// 클라이언트가 받은 목록으로 실측했다(모드 아이템의 ConflictingItems 3032건이 그대로 남아 있었다).
+// 더 늦게(int.MaxValue) 가면 클라이언트에 보낼 목록이 이미 굳어 닿지 못한다(StackUnify 실측).
+[Injectable(InjectionType.Singleton, OnLoadOrder.PostLoad)]
 public class HelmetSlotUnion(
     ISptLogger<HelmetSlotUnion> logger,
     TemplateTable templateTable,
