@@ -1,0 +1,79 @@
+[
+  {
+    "id": 3095,
+    "name": "Integrated Configuration Manager",
+    "version": "1.0.0",
+    "file": "3095__IntegratedConfigurationManager-1.0.0.zip",
+    "bytes": 19827,
+    "expected": 19827,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 3123,
+    "name": "Effects Manager Framework",
+    "version": "1.1.0",
+    "file": "3123__EFT_Effect_Manager_v1.1.0.7z",
+    "bytes": 30593,
+    "expected": 30593,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3083,
+    "name": "Hj's Mod Source",
+    "version": "1.1.0",
+    "file": "3083__ModSource.zip",
+    "bytes": 40294,
+    "expected": 40294,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2689,
+    "name": "Item Property Backport",
+    "version": "1.5.2",
+    "file": "2689__ItemPropertyBackport-1.5.2.zip",
+    "bytes": 130656,
+    "expected": 130656,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2879,
+    "name": "WebOverlay",
+    "version": "1.11.0",
+    "file": "2879__Anvil-WebOverlay-v1.11.0.zip",
+    "bytes": 174334,
+    "expected": 174334,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3054,
+    "name": "Quest Codex",
+    "version": "1.11.1",
+    "file": "3054__QuestCodex-1.11.1.zip",
+    "bytes": 3034545,
+    "expected": 3034545,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3040,
+    "name": "Map Variants",
+    "version": "1.1.0",
+    "file": "3040__SPT-MapVariants-1.1.0-SPT4.1.7z",
+    "bytes": 4055810,
+    "expected": 4055810,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

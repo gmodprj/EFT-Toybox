@@ -1,0 +1,6 @@
+2689__ItemPropertyBackport-1.5.2	SPT_Runtime\user\mods\ItemPropertyBackport\config.json
+2689__ItemPropertyBackport-1.5.2	SPT_Runtime\user\mods\ItemPropertyBackport\ItemPropertyBackport.dll
+2689__ItemPropertyBackport-1.5.2	SPT_Runtime\user\mods\ItemPropertyBackport\properties.md
+2689__ItemPropertyBackport-1.5.2	SPT_Runtime\user\mods\ItemPropertyBackport\db\items.json
+2689__ItemPropertyBackport-1.5.2	SPT_Runtime\user\mods\ItemPropertyBackport\db\prices.json
+2689__ItemPropertyBackport-1.5.2	SPT_Runtime\user\mods\ItemPropertyBackport\db\quests.json

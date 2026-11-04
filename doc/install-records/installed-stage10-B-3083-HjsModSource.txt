@@ -1,0 +1,3 @@
+3083__ModSource	BepInEx\plugins\ModSource\ModSource.dll
+3083__ModSource	SPT_Runtime\user\mods\ModSource\config.json
+3083__ModSource	SPT_Runtime\user\mods\ModSource\ModSource.Server.dll
