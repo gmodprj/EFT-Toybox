@@ -6220,3 +6220,37 @@ scrollbar=10.0, slack=40.0` → `trimmed to 667.0`, 되돌림 0회. 격자 폭�
 
 **남은 인게임 확인은 "눌러 보는 것" 셋뿐이고 코드 작업이 아니다**: 채우기·장착/분리·개조.
 개조만 저장까지 가 봐야 한다(별도 화면이 우리 지역 트리를 고치는지, 편집기를 닫을 때 남지 않는지).
+
+### 2-18·4부를 채웠고 정렬을 열었다 (2026-11-04)
+
+대조표의 마지막 빈 칸들이다. **4부에서 진짜 컨트롤러 관문은 정렬 하나였다.**
+
+| 칸 | 확정 | 근거(IL) |
+|---|---|---|
+| 2-18 `Disassemble` | **우리 경로** | `IsActive` = `Owner == _itemController`, 실행은 `TryRunNetworkTransaction` → `RunNetworkTransaction` → 우리 `Execute`(지역) |
+| 4-1 스크롤 기억 | **일부러 안 쓴다** | UIFixes 가 `SimpleStashPanel.Show` 에 붙어 우리 복제본에도 걸리지만, 기억값이 플레이어 스태시와 **공유하는 static 하나**다. 우리가 맨 위로 되돌린다 |
+| 4-2 정렬 | **열었다** | `IsAllowedToSort` 가 기본 컨트롤러에서 무조건 false 이고 `ItemManipulator.Sort` 가 **안에서** 그것을 본다 |
+| 4-3 검색 | **열었다** | 2-19 와 같은 자리 |
+| 4-4 컨테이너 창 | **열린다. 기억은 없다** | UIFixes 의 복원은 `InventoryScreen.ShowWithTab` 에만 걸린다 - 편집기에서는 돌지 않으므로 플레이어의 기억을 지우지도 않는다 |
+| 4-5 문구 겹침 | **고쳤다** | 앵커 + `FitStmStashSection` |
+
+**정렬을 연 방법 — 컨트롤러의 종류는 바꾸지 않았다.** `StmGearEditInventoryController` 가 기본
+`InventoryController` 를 상속해 **`IsAllowedToSort` 하나만** 재정의한다(`BackEndInventoryController` 와
+같은 규칙 + 스태시 루트 허용 - 편집기 스태시는 `InventoryDescriptor` 로 세워 루트의 `CurrentAddress` 가
+빌 수 있다). 불변식 11 이 금지하는 것은 **`OfflineInventoryController` 로 갈아끼워 `Execute` 가 백엔드
+세션으로 나가게 하는 것**이고, 이 파생은 `Execute` 를 건드리지 않는다. `isinst OfflineInventoryController`·
+`isinst Player/PlayerInventoryController` 검사에도 여전히 둘 다 아니다.
+
+정렬이 하는 일은 **자리 바꾸기뿐**이다(묶음을 빼서 다시 놓는다, 핀 걸린 것은 건너뛴다). 아이템 id 가
+그대로이므로 보존 검사를 통과하고, 같은 격자 안이라 자리 검사도 통과한다.
+
+**대조표에 미측정 칸이 없어졌다.** 남은 X 는 설계상 닫는 것(2-14·2-17·3부)과 보류(1-6·2-20)뿐이다.
+
+### 설치 — 정렬 (2026-11-04)
+
+클라이언트 `027836BA` → **`43FD11D2`**, 서버 `A59BFE8B` 그대로. 설치본 md5 = 빌드 md5, 산출물 IL 에
+`StmGearEditInventoryController` 와 그 재정의가 들었다. 테스트 621개 통과, 클라이언트 경고 0.
+게임이 켜져 있어 **재기동 뒤 적용**된다.
+
+**인게임 미확인(한 번에 묶어 볼 것)**: 가장자리(`Stash fit (after)` 로그), 정렬 버튼, 채우기(2-13),
+장착/분리(2-15), 개조(2-16 - 저장까지), 분해(2-18), 검색창에서 꺼낸 것이 저장에 실리는지.

@@ -22,6 +22,44 @@ using ResultProfile = EFT.OtherPlayerProfile;
 
 namespace pitTeam.Patches
 {
+    // 편집기 전용 인벤토리 컨트롤러. **종류를 바꾸는 것이 아니다**(불변식 11) - 기본
+    // `InventoryController` 그대로이고, 실행 경로(`Execute`)도 그대로 지역 트리에서 끝난다.
+    // 바꾸는 것은 `IsAllowedToSort` 라는 **읽기 전용 판정 하나**다.
+    //
+    // 왜 필요한가(2026-11-04 IL 실측): 정렬은 `ItemManipulator.Sort(item, controller, simulate)` 가
+    // 하는데, 그 함수가 **안에서** `controller.IsAllowedToSort(item)` 를 보고 아니면
+    // `CannotSortItemError` 를 돌려준다. 그 판정은 기본 `InventoryController` 에서 **무조건 false** 이고
+    // `BackEndInventoryController` 만 재정의한다(`item.CurrentAddress?.GetOwner() == this`).
+    // 그래서 편집기에서 정렬 버튼이 아무 일도 하지 않았다(대조표 4-2). 버튼을 눌러 일어나는 일은
+    // **자리 바꾸기뿐**이라(묶음을 빼서 다시 놓는다) 우리 저장 경로가 그대로 받는다 - 아이템 id 가
+    // 그대로이므로 보존 검사를 통과하고, 같은 격자 안이라 자리 검사도 통과한다.
+    //
+    // 규칙은 `BackEndInventoryController` 의 것을 따르되 **스태시 루트를 함께 허용**한다: 편집기의
+    // 스태시는 `InventoryDescriptor` 로 세운 것이라 루트의 `CurrentAddress` 가 비어 있을 수 있고,
+    // 그러면 주인 비교만으로는 정렬이 계속 거부된다.
+    internal sealed class StmGearEditInventoryController : InventoryController
+    {
+        public StmGearEditInventoryController(EFT.InventoryLogic.IInventoryProfileInfo profile, bool examined)
+            : base(profile, examined)
+        {
+        }
+
+        public override bool IsAllowedToSort(CompoundItem item)
+        {
+            if (item == null)
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(item, Inventory?.Stash))
+            {
+                return true;
+            }
+
+            return item.CurrentAddress?.GetOwner() == this;
+        }
+    }
+
     // 서버가 /stm/members/gear-stash 로 주는 그 팀원 자신의 스태시. 아이템은 PIT 가 플레이어 스태시를 받는 것과 같은 평면 목록이고
     // 루트가 맨 앞이다. 장비 트리는 없다(상세 화면의 프로필이 이미 갖고 있다).
     internal class StmGearStashWire
@@ -1078,7 +1116,7 @@ namespace pitTeam.Patches
                 // 열기·장전·비우기·나누기가 메뉴에 없던 이유가 이것이다 - 플레이어 화면에서는 자기 백과사전에
                 // 있는 것이라 다 보인다. 팀원의 물건도 플레이어가 보고 있는 것이므로 true 로 연다.
                 // 이 값은 **읽는 쪽 판정**일 뿐 프로필에 아무것도 쓰지 않는다.
-                editorInventoryController = new InventoryController(editorProfile, true);
+                editorInventoryController = new StmGearEditInventoryController(editorProfile, true);
 
                 // 편집기의 스태시가 서버가 말한 그 팀원 스태시 루트인가 - 아니면 출처 칸을 믿을 수 없다.
                 if (editorProfile.Inventory?.Equipment == null || editorProfile.Inventory.Stash == null

@@ -67,8 +67,8 @@
 | 2-15 | `Install`/`Uninstall` |O |x→**우리 경로**| `QuickFindAppropriatePlace`·`RunWithSound` 둘 다 우리 컨트롤러다 |
 | 2-16 | `Modding`(개조 화면) |O |x→**문맥이었다**| 짧은 목록(`InventoryDuringMatching`)에 없던 것이다. 지금 문맥(`Inventory`)에는 있다. 별도 화면의 수명만 확인 |
 | 2-17 | `Use`/`UseAll`/`HealAll` |O |x **설계상 닫는다**| `_healthController.ApplyItem` 으로 간다 - **플레이어의 체력**이다. 팀원 물건을 써서 내가 낫는다 |
-| 2-18 | `Disassemble` | O| | UIFixes `FullyDisassemble` |
-| 2-19 | `FilterSearch`/`LinkedSearch` |O | x| UIFixes 키바인드. 편집기엔 검색이 `Unavailable` 로 꺼져 있다 |
+| 2-18 | `Disassemble` | O| **우리 경로**| `IsActive` 는 `Owner == _itemController`(우리 것이다), 실행은 `DisassembleOperationsList` + 우리 컨트롤러의 `Execute` 로 끝난다 |
+| 2-19 | `FilterSearch`/`LinkedSearch` |O | **열었다(2026-11-04)**| `InitSearch` 의 `bool_2` 관문을 건너뛰고 창을 직접 연다. 메뉴의 두 항목은 `RagFairAvailable` 을 따로 보므로 별개다 |
 | 2-20 | `SetPin`/`SetLock` |O | x| **복수 선택과 무관**(핀=정렬 고정, 잠금=분실 방지). 편집기에선 버튼이 꺼져 있었다 |
 
 ## 3부 — 팀원 편집기에 **없어야** 맞는 것
@@ -87,11 +87,11 @@
 
 | | 항목 | 내 스태시 | 팀원 편집기 | 비고 |
 |---|---|---|---|---|
-| 4-1 | 스크롤 위치 기억 | | | UIFixes `SynchronizeStashScrolling` |
-| 4-2 | 정렬 버튼 | | | 편집기에선 **동작 안 함**(실측) |
-| 4-3 | 검색 | | | 편집기는 `EStashSearchAvailability.Unavailable` 로 연다 |
-| 4-4 | 컨테이너 창 따로 열기 | | | UIFixes `SaveOpenContainerWindows` |
-| 4-5 | 안내 문구가 머리글과 **겹친다** | - | **X** | 2026-11-04 실측. 고칠 거리 |
+| 4-1 | 스크롤 위치 기억 | O | **일부러 안 쓴다** | UIFixes 가 `SimpleStashPanel.Show` 를 패치하므로 우리 복제본에도 걸리지만, 기억하는 값이 **플레이어 스태시와 공유하는 static 하나**다. 남의 스태시 위치를 물려받는 것은 틀렸으므로 우리가 맨 위로 되돌린다 |
+| 4-2 | 정렬 버튼 | O | **열었다(2026-11-04)** | 진짜 컨트롤러 관문이었다 - `IsAllowedToSort` 가 기본 컨트롤러에서 무조건 false 이고 `ItemManipulator.Sort` 가 **안에서** 그것을 본다. 그 판정 하나만 재정의해 열었다(실행 경로는 그대로 지역이다) |
+| 4-3 | 검색 | O | **열었다(2026-11-04)** | 값은 `Unavailable` 그대로 두고 `_searchTab` 을 직접 켠다. 2-19 와 같은 자리 |
+| 4-4 | 컨테이너 창 따로 열기 | O | **열린다. 기억은 안 된다** | 여는 것은 `ItemUiContext.OpenItem` 으로 된다(보안 컨테이너만 우리가 막는다). UIFixes 의 저장·복원은 `InventoryScreen.ShowWithTab` 에만 걸려 있어 편집기에는 오지 않는다 - 대신 플레이어가 기억해 둔 창을 **지우지도 않는다** |
+| 4-5 | 안내 문구가 머리글과 **겹친다** | - | **고쳤다(2026-11-04)** | 앵커를 직접 주고 칸 여유 36px. 그 뒤 격자 오른쪽 띠·왼쪽 창 밖 튀어나옴까지 `FitStmStashSection` 하나로 합쳤다 |
 
 ---
 
@@ -264,3 +264,22 @@ static Option<Item> TryFindPresetSource(Item item)   // static
 **인게임에서 볼 것은 셋뿐이고, 전부 "눌러 보는 것" 이다**(코드 작업 아님): 2-13 은 겹치는 더미가 있는
 탄약에 `채우기`, 2-15 는 무기에 꽂힌 부착물에 `분리`/스태시의 부착물에 `장착`, 2-16 은 무기에 `개조`.
 2-16 만 눌러 본 뒤 **저장까지** 가 봐야 한다(별도 화면의 수명).
+
+---
+
+## 2-18·4부 확정 (2026-11-04, IL 실측 — 게임 없이 끝났다)
+
+비어 있던 2-18 과 4부 다섯 칸을 채웠다. **4부에서 진짜 컨트롤러 관문은 정렬(4-2) 하나였고, 그것도
+열었다.** 나머지는 "이미 된다" 이거나 "일부러 안 쓴다" 이거나 "플레이어 화면에만 있는 기능" 이다.
+
+| 칸 | 실측 | 확정 |
+|---|---|---|
+| **2-18 `Disassemble`** | `IsActive`: `Owner == _itemController`(편집기 아이템의 주인은 우리 컨트롤러다). 실행: `DisassembleOperationsList` → `_itemController.TryRunNetworkTransaction` → `RunNetworkTransaction` → **우리 컨트롤러의 `Execute`** | **우리 경로.** 부착물을 스태시로 옮기는 자리 바꾸기라 저장 경로가 받는다. 눌러 보기만 하면 된다 |
+| **4-1 스크롤 기억** | UIFixes `SyncScrollPositionPatches` 가 `SimpleStashPanel.Show` 에 postfix 로 붙는다 → **우리 복제본에도 걸린다.** 다만 기억하는 값이 `StashScrollPosition` **static 하나**로 플레이어 스태시와 공유다 | **일부러 안 쓴다.** 우리가 `Show` 뒤에 맨 위로 되돌린다(PIT 의 원래 주석 "template may retain a previous screen's offset" 이 가리키던 것이 이것이다). 남의 스태시의 스크롤 위치를 물려받는 것은 틀렸다 |
+| **4-2 정렬** | `InitSorting` 이 `_inventoryController.IsAllowedToSort(_item)` 를 보고, **`ItemManipulator.Sort` 가 안에서 또 본다**(아니면 `CannotSortItemError`). 그 판정은 기본 `InventoryController` 에서 `return false` 이고 `BackEndInventoryController` 만 재정의한다 | **열었다.** `StmGearEditInventoryController` 가 그 판정 **하나만** 재정의한다. 컨트롤러의 **종류는 그대로**이므로(불변식 11) `Execute` 는 지역 트리에서 끝난다. 정렬이 하는 일은 자리 바꾸기뿐이라 id 가 보존돼 저장 경로를 통과한다 |
+| **4-3 검색** | 2-19 와 같은 자리 | **열었다(같은 날).** 값은 `Unavailable` 그대로, `_searchTab` 을 직접 켠다 |
+| **4-4 컨테이너 창** | 여는 것은 `ItemUiContext.OpenItem`(된다). UIFixes 의 저장·복원은 `WindowPatches.InventoryShowPatch` → **`InventoryScreen.ShowWithTab` 에만** 걸린다 | **열린다. 기억은 편집기에 없다.** 그 복원은 `ItemUiContext.Instance.Inventory` 로 아이템을 찾는데 우리 문맥에서는 그게 팀원 것이다 - 다행히 그 경로가 편집기에서는 **아예 돌지 않으므로** 플레이어가 기억해 둔 창 목록을 지우지도 않는다 |
+| **4-5 문구 겹침** | - | **고쳤다(같은 날).** 앵커 + 칸 여유, 그 뒤 가장자리 전체를 `FitStmStashSection` 으로 합쳤다 |
+
+**이로써 대조표에 미측정 칸이 없다.** 남은 X 는 전부 "설계상 닫는다"(2-14 `Unpack`, 2-17 `Use` 계열,
+3부 전체) 이거나 "보류"(1-6 선택 상자, 2-20 핀/잠금) 다.
