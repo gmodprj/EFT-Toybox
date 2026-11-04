@@ -722,6 +722,30 @@ namespace pitTeam.Patches
             return LoadoutEditorInitialEquipmentItems != null && LoadoutEditorInitialStashItems != null;
         }
 
+        // 핀(고정)만, 그리고 **STM 편집기에서만** 푼다(대조표 2-20). 2026-11-04 IL 실측으로 갈랐다.
+        //
+        // **핀은 끝까지 간다**: `IsActive` 의 조건은 `!InRaid`, `_itemController is InventoryController`
+        // (우리 것이 맞다), `ItemManipulator.IsPinLockStateAllowed(Pinned, _item.Parent, controller)` -
+        // 마지막 것은 자리가 격자이고 **그 컨트롤러의 스태시 밑**일 것을 묻는데, 우리 편집기에서는 그게
+        // 그 팀원의 스태시다. 실행은 `ItemManipulator.SetPinLockState` + `TryRunNetworkTransaction` →
+        // 우리 컨트롤러의 지역 `Execute` 다. 저장도 실린다: `Item.PinLockState` 는 `[Diffable]` 이라
+        // `TreeToFlatItems` 가 `upd` 에 담아 보내고 서버가 그대로 쓴다.
+        // 정렬(4-2)을 연 뒤라 **쓸모도 생겼다** - 핀은 자동 정렬에서 자리를 고정하는 기구다.
+        //
+        // **잠금은 계속 막는다.** 서버가 잠긴 아이템을 보호 대상으로 다룬다:
+        // `ValidateLockedPlayerStashItemsUnchanged` 가 잠긴 것의 트리가 그대로가 아니면 저장을 거절하고,
+        // `PreservePinLockState` 가 제출본의 상태를 **저장된 값으로 덮어쓴다**. 그래서 편집기에서 잠금을
+        // 풀어도 **조용히 없던 일이 된다** - "저장되지 않는 변화" 를 만들지 않는다는 설계와 어긋나므로
+        // 버튼을 주지 않는다. 열려면 서버에서 "명시적 해제" 를 받는 길을 먼저 만들어야 한다(보호가 약해진다).
+        //
+        // **PIT 용병 편집기는 그대로 막힌다**(불변식 4). 그쪽과 우리는 `LoadoutEditorOverlayRoot` 를
+        // 표지로 공유하므로, STM 쪽 표지(`StmGearEditStatusLabel`)로 가른다.
+        internal static bool IsStmPinInteractionAllowed(EItemInfoButton button)
+        {
+            return StmGearEditStatusLabel != null
+                && (button == EItemInfoButton.SetPin || button == EItemInfoButton.SetUnPin);
+        }
+
         // 빈 칸 드래그로 여러 개를 고르는 선택 상자(대조표 1-6). UI Fixes 의 `DrawMultiSelect` 가 그린다.
         //
         // **이것은 그 모드의 내부를 파고드는 것이 아니라 그 모드 자신의 패턴이다**(2026-11-04 IL 실측):

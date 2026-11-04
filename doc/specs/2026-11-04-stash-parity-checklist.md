@@ -69,7 +69,7 @@
 | 2-17 | `Use`/`UseAll`/`HealAll` |O |x **설계상 닫는다**| `_healthController.ApplyItem` 으로 간다 - **플레이어의 체력**이다. 팀원 물건을 써서 내가 낫는다 |
 | 2-18 | `Disassemble` | O| **우리 경로**| `IsActive` 는 `Owner == _itemController`(우리 것이다), 실행은 `DisassembleOperationsList` + 우리 컨트롤러의 `Execute` 로 끝난다 |
 | 2-19 | `FilterSearch`/`LinkedSearch` |O | **열었다(2026-11-04)**| `InitSearch` 의 `bool_2` 관문을 건너뛰고 창을 직접 연다. 메뉴의 두 항목은 `RagFairAvailable` 을 따로 보므로 별개다 |
-| 2-20 | `SetPin`/`SetLock` |O | x| **복수 선택과 무관**(핀=정렬 고정, 잠금=분실 방지). 편집기에선 버튼이 꺼져 있었다 |
+| 2-20 | `SetPin`/`SetLock` |O | **핀은 열었다 / 잠금은 닫는다(2026-11-04)**| 핀은 끝까지 간다(지역 실행 + upd 로 저장). 잠금 해제는 서버가 덮어쓰므로 조용히 없던 일이 된다 - 이 절 아래 참조 |
 
 ## 3부 — 팀원 편집기에 **없어야** 맞는 것
 
@@ -309,3 +309,42 @@ static Option<Item> TryFindPresetSource(Item item)   // static
 
 **열었다(클라이언트 `BCD4BC1A`). 인게임 미확인** - 빈 칸에서 드래그해 사각형이 그려지고 걸린 아이템이
 선택되는지, 선택한 것을 한꺼번에 옮겨 저장이 통과하는지.
+
+---
+
+## 2-20 핀/잠금 — 둘을 갈랐다 (2026-11-04, IL 실측)
+
+오늘 오전의 되돌림은 **복수 선택 오인**을 되돌린 것이지 "핀/잠금을 하지 않기로" 한 것이 아니었다.
+막고 있던 것은 **PIT 업스트림에서 물려받은 패치**다(`IsActive`·`ExecuteInteractionInternal` 두 자리에서
+스태시 아이템의 `SetPin`/`SetLock`/`SetUnPin`/`SetUnLock` 을 끈다). 그래서 "무엇이 막았나" 를 다시 쟀다.
+
+### 핀 — 끝까지 간다. 열었다
+
+| 단계 | 실측 |
+|---|---|
+| 메뉴에 서는가 | `IsActive`: `!InRaid` ✓, `_itemController is InventoryController` ✓(우리 것이다), `ItemManipulator.IsPinLockStateAllowed(Pinned, _item.Parent, controller)` → **자리가 격자이고 그 컨트롤러의 스태시 밑**일 것 ✓(그 팀원의 스태시다) |
+| 실행 | `ItemUiContext.SetPinLockState` → `ItemManipulator.SetPinLockState(_inventoryController, …)` + `TryRunNetworkTransaction` → **우리 컨트롤러의 지역 `Execute`** |
+| 저장에 실리는가 | `Item.PinLockState` 는 **`[Diffable]`** 이고 `[DefaultValue(Free)]` 다 → `TreeToFlatItems` 의 `GetDiff` 가 `upd` 에 담는다 → 제출본에 실려 서버가 쓴다 |
+
+**정렬(4-2)을 연 뒤라 쓸모도 생겼다** - 핀은 자동 정렬에서 자리를 고정하는 기구다. 그 둘은 짝이다.
+
+### 잠금 — 계속 막는다. 서버가 해제를 덮어쓴다
+
+서버는 잠긴 아이템을 **보호 대상**으로 다룬다(`FriendlyTeammateService`):
+`ValidateLockedPlayerStashItemsUnchanged` 가 잠긴 것의 트리(템플릿·부모·슬롯·자리·수량)가 그대로가
+아니면 저장을 **거절**하고, 그 끝에서 `PreservePinLockState` 가 제출본의 상태를 **저장된 값으로
+덮어쓴다.** 그래서 편집기에서 잠금을 풀어도 **조용히 없던 일이 된다.**
+
+새로 **거는** 것은 실려 간다(덮어쓰기 루프가 "지금 잠긴 것" 만 돈다). 하지만 걸 수만 있고 풀 수 없는
+버튼은 덫이고, 이 프로젝트의 "저장되지 않는 변화를 만들지 않는다" 와도 어긋난다. **그래서 주지 않는다.**
+열려면 서버에서 "명시적 해제" 를 받는 길을 먼저 만들어야 하고, 그만큼 보호가 약해진다.
+
+### PIT 용병 편집기는 그대로다
+
+두 편집기가 `LoadoutEditorOverlayRoot` 를 "편집기가 열렸다" 의 표지로 **공유**하므로, 차단을 그냥 풀면
+용병 편집기의 동작까지 바뀐다(불변식 4). STM 쪽 표지(`StmGearEditStatusLabel`)로 갈라
+**STM 편집기에서 핀일 때만** 지나가게 했다. `IsActive` 와 실행 가드에 **같은 조건**을 건다 - 메뉴에
+보이는데 눌리지 않는 것이 더 나쁘다.
+
+**열었다(클라이언트 `7A605C1A`). 인게임 미확인** - 스태시 아이템 우클릭에 `고정` 이 뜨는지, 고정한 뒤
+정렬해도 자리가 그대로인지, 저장하고 다시 열어도 고정이 남는지.

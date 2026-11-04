@@ -180,8 +180,11 @@ namespace pitTeam.Patches
                 return;
             }
 
+            // 핀은 STM 편집기에서만 지나간다(대조표 2-20 - 근거는 IsStmPinInteractionAllowed 의 주석).
+            // 잠금은 양쪽 다 막힌다: 서버가 해제를 덮어써 조용히 없던 일이 된다.
             if (OtherPlayerProfileScreenPatch.IsLoadoutEditorPinLockInteraction(button)
-                && OtherPlayerProfileScreenPatch.IsLoadoutEditorStashItem(item))
+                && OtherPlayerProfileScreenPatch.IsLoadoutEditorStashItem(item)
+                && !OtherPlayerProfileScreenPatch.IsStmPinInteractionAllowed(button))
             {
                 __result = false;
             }
@@ -224,8 +227,10 @@ namespace pitTeam.Patches
                 return false;
             }
 
+            // IsActive 와 **같은 조건이어야 한다** - 메뉴에 보이는데 눌리지 않으면 그것이 더 나쁘다.
             if (OtherPlayerProfileScreenPatch.IsLoadoutEditorPinLockInteraction(interaction)
-                && OtherPlayerProfileScreenPatch.IsLoadoutEditorStashItem(item))
+                && OtherPlayerProfileScreenPatch.IsLoadoutEditorStashItem(item)
+                && !OtherPlayerProfileScreenPatch.IsStmPinInteractionAllowed(interaction))
             {
                 __instance._onCloseAction?.Invoke();
                 return false;
