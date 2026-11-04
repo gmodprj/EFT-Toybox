@@ -5383,3 +5383,55 @@ All In Weapon 제거로 **런타임 필터가 좁아졌다.** 계획 5 의 자�
 
 **다음은 화면 절반이다**(2026-11-04 "Task E 화면 절반" 의 11항목). 설치본은 이제
 클라이언트 `47AB78D7`(안내 문구 고침 포함)·서버 `A59BFE8B` 이고, 게임을 켜면 그 둘로 처음 돈다.
+
+### 계획 5 Task E — 화면 절반 1~10 통과 (2026-11-04, 인게임)
+
+설치본 클라이언트 `47AB78D7`·서버 `A59BFE8B` 로 사용자가 11항목 목록을 돌렸다. **1~10 전부 통과**
+(11 레이드 투입은 아직). 안내 문구도 머리글 아래로 돌아왔다.
+
+**9번의 결과가 특히 중요하다.** 일부러 틀린 자리에 놓으면 **게임 자체의 호환 툴팁**이 먼저 막는다 -
+저장까지 가지 않는다. 즉 이번에 넣은 서버 자리 검사는 **정상 조작에서 틀린 거절을 할 자리까지
+가지도 않는다.** 그 검사는 설계대로 "라우트를 직접 부르는 호출자" 에 대한 그물로만 남는다.
+
+**4번(탄박스 열기)을 두 프로필에서 보존까지 확인했다.** 2026-11-03 에 상자와 탄이 **함께** 사라졌던
+그 조작이다.
+
+| 프로필 | 두 트리 | 사라진 것 | tpl 수량 합 |
+|---|---|---|---|
+| Knox | 302 → 273 (새 더미 3개, 사라진 id 32개) | 탄박스 **용기 18개**뿐 | 총합 −18, 탄 종류 변화 **0** |
+| Hawk | 313 → 288 | 탄박스 **용기 15개**뿐 | 총합 −15, 탄 종류 변화 **0** |
+
+사라진 id 32개를 백업에서 되짚어 보니 상자 18개 + 낱알 더미 14개였고, 그 14개는 **없어진 것이 아니라
+3개로 합쳐진 것**이다(로그의 "새로 생긴 더미 3개"). `patron_9x21_sp13`·`patron_9x39_bp` 등 탄의 tpl
+합은 **하나도 줄지 않았다**. Hawk 의 `313 → 288` 은 2026-11-03 사고와 숫자가 같아 한 번 의심했으나
+**우연**이고, 같은 결함이 아니다.
+
+### 같은 날 사용자가 찾은 결함 둘
+
+**1. 리그의 탄창에 `삽탄` 메뉴가 없다 — 자리를 찾았다.** Task A 때 역컴파일로 확인한 판정이 그대로
+설명한다:
+
+```csharp
+case EItemInfoButton.ApplyMagPreset:
+case EItemInfoButton.LoadAmmo:
+    if (!Gameplay && _itemContext is InventorySelectableItemContext) { ... }
+    return false;
+```
+
+`삽탄`은 문맥이 **`InventorySelectableItemContext` 일 때만** 뜬다. 그런데 2026-11-03 에 그 문맥을
+**스태시 패널에만** 줬다(`TryBuildLoadoutEditorStashPanel` 의 override 인자). 장비 패널은 그대로다:
+
+- `TryBuildLoadoutEditorFollowerPanel` 에는 **override 인자가 아예 없다.**
+- 그 패널은 `LoadoutEditorEquipmentRootContext(EItemViewType.InventoryDuringMatching)` 를 쓰고,
+  그 클래스는 `EmptyItemContext` 를 상속하며 `CreateChild` 가 **`DefaultItemContext`** 를 돌려준다.
+- 그래서 장비 트리 안의 모든 아이템이 `InventorySelectableItemContext` 가 아니고, `삽탄`·
+  `ApplyMagPreset` 이 걸러진다. **리그 안 탄창이 정확히 그 경우다.**
+
+고칠 방향: Task A 가 스태시에 한 것과 **같은 모양**으로, `TryBuildLoadoutEditorFollowerPanel` 에
+기본값 null 인 문맥 override 인자를 더하고 STM 편집기만 `InventorySelectableItemContext` 계열을 준다
+(PIT 용병 편집기는 건드리지 않는다 - 불변식 4). 장비 루트 문맥이 그냥 교체되면 장비 격자가 그려지지
+않을 수 있으므로, **STM 전용 하위 클래스**로 `CreateChild` 만 바꾸는 쪽이 안전하다.
+
+**2. 팀원 스태시에서 드래그로 복수 선택이 안 된다 — 아직 원인 미확인.** 같은 문맥 문제일 가능성이
+있으나 **확인하지 않았다.** EFT 의 복수 선택은 별도 컴포넌트(`MultiSelect` 계열)가 다루므로, 먼저
+그것이 무엇을 보고 켜지는지 역컴파일로 확인한 뒤에 판정한다. 추측으로 고치지 않는다.
