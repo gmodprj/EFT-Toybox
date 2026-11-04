@@ -101,6 +101,12 @@ PIT Fireteam 1.0.0 의 **포크**다. PIT 는 모드가 소유한 **용병**을 
    **정적 `items.json` 은 런타임 DB 가 아니다** - 서버 모드가 `IOnLoad` 에서 `templateTable.Items` 를 고친다(`SlotCategoryRelax` 가 슬롯 필터를 넓히는 것이 그것이다). 파일로 한 판정은 "런타임은 이것보다 넓다" 까지만 말할 수 있다.
 10. **프로필 조회 응답의 `Hideout`·`CustomizationStash`·`HideoutAreaStashes` 는 일부러 막지 않았다.** PIT 의 `ToOtherProfileResponse`(`FriendlyTeammateService.cs:4481-4483`)가 프로필에서 그대로 싣는 이 셋은 **구역 id 와 컨테이너 id 이지 스태시의 내용물이 아니다.** 아이템이 아니므로 복제·소실 경로가 아니고, 스태시 노출(다섯 번째 경로)은 `Equipment.Items` 에서 일어났다. 프로필 조회의 유출을 다시 추적하는 사람은 이 셋을 처음부터 다시 판정하지 말 것 - 다시 열 근거는 `Hideout` 안에서 아이템 목록이 발견되는 경우뿐이다.
 
+11. **편집기의 컨트롤러는 `InventoryController`(기본)다 — 바꾸지 마라. 그것이 안전장치다.** EFT 의 진짜 인벤토리 화면들은 `OfflineInventoryController : BackEndInventoryController` 위에 서고, 그 `Execute` 는 조작을 `ToBaseInventoryCommand(_mainProfileId)` 로 바꿔 **백엔드 세션으로 보낸다**(2026-11-04 IL 실측). 편집기를 그 컨트롤러로 바꾸면 드래그 한 번마다 **플레이어 인벤토리 조작이 서버로 나간다**. 우리 설계는 반대다 - 로컬 트리에서만 고치고 **최종 상태를 한 번** 제출해 보존 검사를 통과시킨다.
+    **이 선택에는 대가가 있고, 그 대가가 "빠진 기능" 의 정체다.** `ItemContextInteractionsSwitcher.IsActive` 는 곳곳에서 컨트롤러의 **종류**를 본다(`isinst OfflineInventoryController`·`isinst Player/PlayerInventoryController`; 한 자리는 `controller is OfflineInventoryController` 를 그대로 돌려준다). 우리 컨트롤러는 **둘 다 아니다.** 그래서 조작이 한 줄로 갈린다:
+    - **자리만 바꾸는 것**(드래그 이동·입히기·벗기기·분할·합치기·탄박스 열기) → **된다.** 실행이 필요 없고 우리가 최종 상태로 제출한다.
+    - **컨트롤러의 실행이 필요한 것** → **안 된다. 설계상 그렇다.** 이것을 "구멍" 으로 보고 고치러 들어가면 안전장치를 깎게 된다.
+    열고 싶다면 길은 둘뿐이다: ⒜ 그 조작을 **우리 저장 경로로** 따로 구현한다(분할·합치기를 그렇게 열었다) ⒝ `IClientSession`(메서드 69개·속성 16개)을 삼키는 가짜 세션을 만들어 `OfflineInventoryController` 를 쓴다 - **프로필에 쓰는 경로를 흉내 내는 일**이라 불변식 2 와 어긋난다. 근거와 셈은 [specs/2026-11-04-stash-operations-survey.md](specs/2026-11-04-stash-operations-survey.md) §6.
+
 그리고 두 가지 사실은 불변식은 아니지만 알고 시작해야 한다:
 - **전송 저널(`StmTransferJournal`)은 프로필 두 개를 고치는 조작의 것이다.** 한 프로필 안의 이동(장비 편집)에는 쓰지 않는다 — 같은 프로필의 `Prepare` 는 던지고, 억지로 쓰면 성공한 편집마다 다음 기동에서 그 팀원이 영구히 막힌다.
   설계 §6-8 의 저널은 **장비 편집에 일부러 쓰지 않았다.** 세 번째 단계(저장 뒤 디스크 재독 대조)만 지킨다. 이유와 읽는 법은 WORKLOG 첫 항목. **그 결과로 저널은 지금 도달할 수 없다**(위 "알고 있는 한계" 의 저널 항목).
