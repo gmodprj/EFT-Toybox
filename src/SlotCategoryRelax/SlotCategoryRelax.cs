@@ -181,6 +181,8 @@ public class SlotCategoryRelax(
     private void RelaxChamberFilters(Dictionary<MongoId, TemplateItem> items, Config config)
     {
         var excluded = new HashSet<string>(config.ExcludedChamberWeaponIds, StringComparer.OrdinalIgnoreCase);
+        var excludedCalibers = new HashSet<string>(config.ExcludedChamberCalibers, StringComparer.OrdinalIgnoreCase);
+        var skipped = 0;
 
         // 분류 → 그 분류의 아이템. 약실에 실제로 나타난 분류만 뒤늦게 채운다.
         var byCategory = new Dictionary<MongoId, List<MongoId>>();
@@ -200,6 +202,19 @@ public class SlotCategoryRelax(
 
             if (excluded.Contains(template.Id.ToString()))
             {
+                skipped++;
+                continue;
+            }
+
+            // 유탄발사기·신호권총처럼 소총탄이 들어갈 자리가 아닌 것은 구경으로 거른다.
+            if (template.Properties?.AmmoCaliber is { } caliber && excludedCalibers.Contains(caliber))
+            {
+                skipped++;
+                if (config.Debug)
+                {
+                    logger.Info($"[SlotCategoryRelax] 약실 건너뜀 {template.Name} — 구경 {caliber}");
+                }
+
                 continue;
             }
 
@@ -261,7 +276,7 @@ public class SlotCategoryRelax(
 
         logger.Info(
             $"[SlotCategoryRelax] 약실: 총기 {weapons}종의 약실 {touchedChambers}개에 탄 {addedEntries}개를 더했다"
-            + $"(분류 {byCategory.Count}종).");
+            + $"(분류 {byCategory.Count}종). 설정으로 건너뛴 총기 {skipped}종.");
     }
 
     /// <summary>
