@@ -6337,3 +6337,44 @@ UI Fixes 자신이 그 컴포넌트를 **화면마다 붙인다**(IL 실측): `M
 **게임에서 해야 하는 것은 네 단계뿐이다**: 초대 → 로그에서 `Real 장비로 내보낸다` 확인 → 레이드에서
 Banshee 를 쏴 죽인다 → 플레이어는 탈출. "탈출 실패" 는 **그 팀원 자신의 사망 보고**로 정해지지
 플레이어의 생사로 정해지지 않는다(`FriendlyPostRaidCallbacks.ApplyProfileTeammateOutcomes`).
+
+### 팀원 사망 시 장비 삭제 — 처음 돌았고 통과다 (2026-11-04, 인게임)
+
+계획 2부터 한 번도 돌지 않았던 경로다(관문 11 은 전원 탈출이었다). 사용자가 **Banshee** 를 데리고
+Sandbox 에 나가 그 팀원을 잃었다. 설치본 로그와 **프로필 JSON 실측**이 둘 다 정책과 맞는다.
+
+**로그(레이드 `Sandbox.Pmc 1793792112`)**
+
+```
+레이드 결과 접수: 'Banshee'(aid 1741641, 프로필 '6ae5870eeb15d61bf003fd1f') escaped=False.
+레이드 결과: … 착용 장비 17개(하위 포함 142개)를 지우고 저장했다(7ms) - 실물 장비로 나갔다가 돌아오지 못해 착용 장비를 지운다.
+Unregistered 142 protected teammate raid item id(s). context='profile teammate death release …'
+레이드 결과 확인: … 아이템 142개가 모두 사라진 것을 메모리에서 다시 확인했다.
+```
+
+`escaped=False` → `StripWornGear` 한 줄만 탔고, 디스크 저장과 **재확인**까지 돌았다. 그 레이드 id 로
+찍힌 줄은 여섯이고 **오류·경고·중복 적용이 없다**(이 날 로그 전체에 `[STM]` 오류 0).
+
+**프로필 실측** (`6ae5870eeb15d61bf003fd1f`, 아이템 91개)
+
+| | 결과 |
+|---|---|
+| 장비 루트 직계 | **`ArmBand`, `Dogtag`, `Pockets`, `SecuredContainer` 넷뿐** |
+| 가져간 열 자리 | `Headwear`·`Earpiece`·`FaceCover`·`ArmorVest`·`Eyewear`·`TacticalVest`·`Backpack`·`FirstPrimaryWeapon`·`SecondPrimaryWeapon`·`Holster` **전부 없다** |
+| 주머니 | 컨테이너는 **남았고**, 그 안에 남은 것은 `SpecialSlot1~3` **셋뿐**(평범한 화물은 갔다) |
+| 보안 컨테이너 | 내용물 **8개 그대로** |
+| 스태시 | 최상위 **56개 그대로** |
+
+`WornGearLossPolicy` 의 두 규칙이 그대로 보인다: 허용 목록의 열 자리와 **주머니 화물**은 가져가고,
+`Pockets`·`ArmBand`·`SecuredContainer`·`Dogtag`·특수 슬롯은 남긴다. 뿌리 17개 = 착용 열 자리 +
+주머니 화물 일곱이고, 하위까지 142개다. **사용자가 눈으로 본 것(특수 슬롯·완장·보안 컨테이너 유지)과
+셈이 일치한다.**
+
+**아직 아닌 것**
+- **스태시 "건드리지 않았다" 는 전후 대조가 아니다.** 지금 56개가 있다는 사실뿐이고, 레이드 전 백업이
+  없어 양방향 대조를 하지 못했다. 다음에 같은 실험을 하면 `tools/stm-profile-diff.mjs` 로 본다.
+- **`Scabbard` 는 시험되지 않았다.** 이 프로필에 애초에 없었다(삭제 목록에도 없으므로 코드가 가져간
+  것은 아니다). 오늘 All In Weapon 정리로 빠졌을 수 있다.
+- **멱등(영수증)은 한 번만 들어와서 행사되지 않았다.** 같은 레이드 id 가 두 번 보고되는 경우는 아직
+  본 적이 없다.
+- 플레이어가 시체에서 턴 것을 실제로 가졌는지는 보지 않았다(보호 해제 142건은 로그로 확인).
