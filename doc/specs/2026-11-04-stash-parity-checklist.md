@@ -62,11 +62,11 @@
 | 2-10 | `TurnOn`/`TurnOff` |O | O| |
 | 2-11 | `Tag`/`ResetTag`(태그) |O | O| UIFixes `TagVests`·`TagBackpacks` |
 | 2-12 | `AddToFavorites` |O |O | |
-| 2-13 | `TopUp`(채우기) | O| x| UIFixes `TopUpKeyBind` |
-| 2-14 | `Unpack`(개봉) |O |x | UIFixes `UnpackKeyBind` |
-| 2-15 | `Install`/`Uninstall` |O |x | UIFixes 키바인드 있음 |
-| 2-16 | `Modding`(개조 화면) |O |x | |
-| 2-17 | `Use`/`UseAll`/`HealAll` |O |x | 팀원에게 쓰는 게 맞는지 **설계 판단 필요** |
+| 2-13 | `TopUp`(채우기) | O| x→**우리 경로**| 실행이 `_itemController`·그 팀원의 스태시/장비로만 간다(판정 §2-13~2-17) |
+| 2-14 | `Unpack`(개봉) |O |x **설계상 닫는다**| `Session.Unpack(id, **플레이어** 프로필 id)` - 서버로, 그것도 남의 프로필로 나간다 |
+| 2-15 | `Install`/`Uninstall` |O |x→**우리 경로**| `QuickFindAppropriatePlace`·`RunWithSound` 둘 다 우리 컨트롤러다 |
+| 2-16 | `Modding`(개조 화면) |O |x→**문맥이었다**| 짧은 목록(`InventoryDuringMatching`)에 없던 것이다. 지금 문맥(`Inventory`)에는 있다. 별도 화면의 수명만 확인 |
+| 2-17 | `Use`/`UseAll`/`HealAll` |O |x **설계상 닫는다**| `_healthController.ApplyItem` 으로 간다 - **플레이어의 체력**이다. 팀원 물건을 써서 내가 낫는다 |
 | 2-18 | `Disassemble` | O| | UIFixes `FullyDisassemble` |
 | 2-19 | `FilterSearch`/`LinkedSearch` |O | x| UIFixes 키바인드. 편집기엔 검색이 `Unavailable` 로 꺼져 있다 |
 | 2-20 | `SetPin`/`SetLock` |O | x| **복수 선택과 무관**(핀=정렬 고정, 잠금=분실 방지). 편집기에선 버튼이 꺼져 있었다 |
@@ -217,3 +217,50 @@ static Option<Item> TryFindPresetSource(Item item)   // static
 
 **다시 재는 법:** 팀원 스태시 칸에 **그냥 놓인 탄창**(무기에 꽂히지 않은 것, 실린더 아닌 것)에
 우클릭한다. 거기서도 안 뜨면 그때는 진짜 구멍이고, 뜨면 이 칸은 `O` 다.
+
+---
+
+## 2-13~2-17 확정 (2026-11-04, IL 실측 — 게임 없이 끝났다)
+
+"설계 유력, 미확정" 으로 남겨 둔 넷과 "설계 판단 먼저" 인 2-17 을 **실행 경로까지 따라가** 확정했다.
+결론부터: **넷 중 셋은 불변식 11 의 선 너머가 아니다.** 진짜로 프로필 경계를 넘는 것은 `Unpack` 하나다.
+
+### 왜 X 였나 — 관문은 컨트롤러가 아니라 **뷰 타입**이다
+
+조작 목록은 `ItemUiContext.CreateInteractions` 가 **`EItemViewType` 으로** 고른다(컨트롤러 종류가
+아니다):
+
+| 뷰 타입 | 조작 목록 | TopUp·Install·Unpack | Modding·Use·검색 |
+|---|---|---|---|
+| `Inventory` 등 | `InventoryItemContextInteractions` | **있다** | **있다** |
+| `InventoryDuringMatching` | `MatchingInventoryItemContextInteractions` | **있다** | **없다** |
+
+그리고 `ItemContextInteractionsSwitcher.IsActive` 의 관문은 전부 **구조적**이다 - `Gameplay`
+(= `InGameStatus.InRaid`), `ModInstalled`(= 부모가 컨테이너가 아님), `StackMaxSize > 1`. **컨트롤러
+종류를 보는 자리가 없다**(그것을 보는 것은 `WatchProfile` 하나뿐: `_item.Owner is OfflineInventoryController`).
+
+**2-16 Modding 의 X 는 뷰 타입이었다.** 장비 트리가 `InventoryDuringMatching` 이던 때 잰 값이고,
+그 목록에 `Modding` 이 **아예 없다**. 2026-11-04 삽탄 고침이 문맥을 `Inventory` 로 바꾸면서
+2-5(`ApplyMagPreset`)가 열린 것과 **같은 자리**다 - 그때 2-16 을 다시 재지 않았다.
+
+### `PlayerCollections` 는 이름이 거짓말이다
+
+`InstallMod`·`ModWeapon` 이 부품 출처로 받는 `ItemUiContext.PlayerCollections` 는
+`_equipment.GetCollections(...).Concat(PlayerStash)` 이고 `PlayerStash => _rightPanelItem` 이다.
+둘 다 `Configure` 가 받은 것을 그대로 돌려준다. 우리 편집기는 거기에 **그 팀원의 장비와 그 팀원의
+스태시**를 넣었다(`StmGearEditor` 의 `Configure` 호출: 7번째 `rightPanelItems`, 11번째 `equipment`).
+그래서 이 경로의 "플레이어" 는 **그 팀원**이다 - 플레이어 아이템이 섞일 자리가 아니다.
+
+### 항목별 확정
+
+| 칸 | 실행 경로(실측) | 확정 |
+|---|---|---|
+| **2-13 `TopUp`** | `ItemUiContext.TopUpItem` → `_itemController` 로 합치기, 출처는 `_inventory.Stash`·`_equipment`(그 팀원의 것) | **우리 경로다. 열려 있을 것이다** - 코드 작업 없음. `StackMaxSize>1`·`!InRaid`·`HasSourcesForTopUp` 이 서면 메뉴에 선다 |
+| **2-14 `Unpack`** | `Session?.Unpack(targetItem.Id, **ClientSession.Profile.Id**)` | **설계상 닫는다.** 서버로 나가고 그것도 **플레이어 프로필 id** 를 싣는다. 열려면 STM 서버 라우트를 따로 만들어 그 팀원 프로필 안에서 풀어야 한다(불변식 11 의 길 ⒜) - 작은 일이 아니다 |
+| **2-15 `Install`/`Uninstall`** | `InstallMod` → 적합한 슬롯 찾기 + `QuickFindAppropriatePlace(_itemController)`; `Uninstall` → 같은 함수 + `RunWithSound(_itemController, …)` | **우리 경로다. 열려 있을 것이다** - 코드 작업 없음 |
+| **2-16 `Modding`** | `ModWeapon` → `!InRaid` 일 때 `WeaponModdingScreen...(item, **_inventoryController**, PlayerCollections)` | **문맥 문제였고 지금 문맥에는 있다.** 남은 위험은 **별도 화면의 수명**이다: 우리 오버레이 위에 `EScreenState.Queued` 로 떠서, 그 화면이 고친 것이 우리가 제출하는 **같은 지역 트리**인지, 편집기를 닫을 때 그 화면이 남지 않는지 확인해야 한다 |
+| **2-17 `Use`/`UseAll`/`HealAll`** | `UseItem`·`UseAll`·`HealAll` → **전부 `_healthController.ApplyItem(...)`** | **설계상 닫는다 — 판단 끝.** 그 체력은 **플레이어의 것**이다. 팀원 물건을 소모해 내가 낫는 길이고, 애초에 편집기는 `healthController: null` 로 문맥을 세우므로 눌리면 그대로 터진다. 설계 §4(프로필에 더하지 않는다)와도 어긋난다 |
+
+**인게임에서 볼 것은 셋뿐이고, 전부 "눌러 보는 것" 이다**(코드 작업 아님): 2-13 은 겹치는 더미가 있는
+탄약에 `채우기`, 2-15 는 무기에 꽂힌 부착물에 `분리`/스태시의 부착물에 `장착`, 2-16 은 무기에 `개조`.
+2-16 만 눌러 본 뒤 **저장까지** 가 봐야 한다(별도 화면의 수명).
