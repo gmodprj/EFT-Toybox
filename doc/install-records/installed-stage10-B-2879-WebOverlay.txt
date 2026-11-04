@@ -1,0 +1,7 @@
+2879__Anvil-WebOverlay-v1.11.0	BepInEx\plugins\Anvil-WebOverlay\Anvil-WebOverlay.dll
+2879__Anvil-WebOverlay-v1.11.0	BepInEx\plugins\Anvil-WebOverlay\Anvil-WebOverlay.xml
+2879__Anvil-WebOverlay-v1.11.0	BepInEx\plugins\Anvil-WebOverlay\LICENSE
+2879__Anvil-WebOverlay-v1.11.0	BepInEx\plugins\Anvil-WebOverlay\README.md
+2879__Anvil-WebOverlay-v1.11.0	BepInEx\plugins\Anvil-WebOverlay\WebView2-LICENSE.txt
+2879__Anvil-WebOverlay-v1.11.0	BepInEx\plugins\Anvil-WebOverlay\WebView2-NOTICE.txt
+2879__Anvil-WebOverlay-v1.11.0	BepInEx\plugins\Anvil-WebOverlay\WebView2Loader.dll

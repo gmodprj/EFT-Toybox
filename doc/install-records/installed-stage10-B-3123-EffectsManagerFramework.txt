@@ -1,0 +1,1 @@
+3123__EFT_Effect_Manager_v1.1.0	BepInEx\plugins\EFTEffectManager.dll

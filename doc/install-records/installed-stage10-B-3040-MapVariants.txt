@@ -1,0 +1,8 @@
+3040__SPT-MapVariants-1.1.0-SPT4.1	BepInEx\plugins\LennoxP90-MapVariants\maps.json
+3040__SPT-MapVariants-1.1.0-SPT4.1	BepInEx\plugins\LennoxP90-MapVariants\MapVariants.Client.dll
+3040__SPT-MapVariants-1.1.0-SPT4.1	BepInEx\plugins\LennoxP90-MapVariants\tiles\interchange-backport.png
+3040__SPT-MapVariants-1.1.0-SPT4.1	BepInEx\plugins\LennoxP90-MapVariants\tiles\interchange-original.png
+3040__SPT-MapVariants-1.1.0-SPT4.1	BepInEx\plugins\LennoxP90-MapVariants\tiles\lighthouse-backport.png
+3040__SPT-MapVariants-1.1.0-SPT4.1	BepInEx\plugins\LennoxP90-MapVariants\tiles\lighthouse-original.png
+3040__SPT-MapVariants-1.1.0-SPT4.1	SPT_Runtime\user\mods\LennoxP90-MapVariants\MapVariants.Server.deps.json
+3040__SPT-MapVariants-1.1.0-SPT4.1	SPT_Runtime\user\mods\LennoxP90-MapVariants\MapVariants.Server.dll
