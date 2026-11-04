@@ -326,8 +326,16 @@ public class StmGearKitPurchaseService(
                 var newId = new MongoId();
                 newIdByOldId[row.Id] = newId.ToString();
                 copy.Id = newId;
-                // 격자 좌표는 장비 칸에 뜻이 없다. 남겨 두면 SPT 가 자리 계산을 엉뚱하게 한다.
-                copy.Location = null;
+
+                // 격자 좌표는 **격자에 놓인 짐에만** 뜻이 있다. 장비 칸·부착물 칸에 남겨 두면 SPT 가
+                // 자리 계산을 엉뚱하게 하고, 거꾸로 짐에서 지우면 조끼 안이 겹치거나 빈 채로 들어간다
+                // (2026-11-04: 격자 짐을 사기 시작하면서 생긴 자리다). 부모 템플릿에 그 이름의
+                // 격자가 있는지로 가른다.
+                string? parentTpl = source.ParentId != null && byId.TryGetValue(source.ParentId.ToString(), out var parentSource)
+                    ? parentSource.Template.ToString()
+                    : null;
+                bool inGrid = parentTpl != null && IsGridSlot(parentTpl, source.SlotId);
+                copy.Location = inGrid ? source.Location : null;
                 created.Add(copy);
             }
         }
@@ -438,19 +446,71 @@ public class StmGearKitPurchaseService(
     }
 
     private static GearItemRow ToRow(Item item) =>
-        new(item.Id.ToString(), item.Template.ToString(), item.ParentId?.ToString(), item.SlotId);
+        new(item.Id.ToString(), item.Template.ToString(), item.ParentId?.ToString(), item.SlotId,
+            // 묶음 수량. 없으면 한 점이다 - 탄 묶음만 이 값이 1 보다 크다.
+            (int?)item.Upd?.StackObjectsCount ?? 1);
+
+    // 하위로 따라 내려갈 자리 **전부**의 이름. 어휘가 좁으면 그만큼이 빌드에서 조용히 빠진다
+    // (2026-11-04 사용자 실측: 산 탄창이 비어 있고 조끼 안이 텅 비었다).
+    //
+    // `Slots` 만 읽던 것이 그 결함이었다. 자리는 템플릿에서 **네 군데**에 나뉘어 있다 -
+    // `Slots`(부착물·방탄판), `Cartridges`(탄창의 탄), `StackSlots`(탄박스), `Chambers`(약실),
+    // 그리고 `Grids`(가방·조끼 안의 짐). 같은 함정을 2026-11-03 에 삽탄에서 한 번 겪었고
+    // (`StmGearSlotFactsBuilder` 가 그때 넷을 다 읽게 됐다) **이 경로만 옛 어휘로 남아 있었다.**
+    //
+    // 격자(`Grids`)를 넣는 것은 판단이 바뀐 것이다. 옛 주석은 "짐은 장비가 아니고 사 주는 대상도
+    // 아니다" 였는데, 사용자가 고른 꾸러미에 **그 짐까지 들어 있다** - 화면이 보여 준 것과 산 것이
+    // 다르면 그것이 결함이다. 값은 같은 목록(`plan.AllItemsToBuy`)으로 매기므로 산 만큼 낸다.
+    internal static IEnumerable<string> ChildSlotNamesOf(TemplateItem? template)
+    {
+        var props = template?.Properties;
+        if (props == null)
+        {
+            return [];
+        }
+
+        var names = new List<string>();
+        void Add(string? name)
+        {
+            if (!string.IsNullOrEmpty(name)) names.Add(name!);
+        }
+
+        foreach (var slot in props.Slots ?? []) Add(slot?.Name);
+        foreach (var slot in props.Cartridges ?? []) Add(slot?.Name);
+        foreach (var slot in props.StackSlots ?? []) Add(slot?.Name);
+        foreach (var slot in props.Chambers ?? []) Add(slot?.Name);
+        foreach (var grid in props.Grids ?? []) Add(grid?.Name);
+        return names;
+    }
 
     private IEnumerable<string> AttachmentSlotsOf(string tpl)
     {
         try
         {
-            return itemHelper.GetItem(new MongoId(tpl)).Value?.Properties?.Slots?
-                .Where(slot => !string.IsNullOrEmpty(slot.Name))
-                .Select(slot => slot.Name!) ?? [];
+            return ChildSlotNamesOf(itemHelper.GetItem(new MongoId(tpl)).Value);
         }
         catch
         {
             return [];
         }
+    }
+
+    // 그 자리가 **격자**인가. 격자에 놓인 짐은 좌표(`Location`)가 뜻을 가지므로 지우면 안 된다.
+    private bool IsGridSlot(string tpl, string? slotId)
+    {
+        if (string.IsNullOrWhiteSpace(slotId)) return false;
+        try
+        {
+            foreach (var grid in itemHelper.GetItem(new MongoId(tpl)).Value?.Properties?.Grids ?? [])
+            {
+                if (string.Equals(grid?.Name, slotId, StringComparison.OrdinalIgnoreCase)) return true;
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        return false;
     }
 }

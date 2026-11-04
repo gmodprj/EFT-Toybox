@@ -65,7 +65,11 @@ namespace pitTeam.Shared
                     continue;
                 }
 
-                var rounded = (int)Math.Ceiling(price);
+                // **묶음 수량을 곱한다.** 탄 60발은 한 점이 아니라 60점 값이다 - 수량을 세지 않으면
+                // 탄창 가득한 꾸러미를 탄 한 발 값에 판다(2026-11-04, 격자·탄을 사기 시작하면서 생긴 자리).
+                // 수량이 틀어져 있어도(0·음수) 한 점으로 친다 - 값을 깎는 쪽으로 넘어뜨리지 않는다.
+                var count = item.StackCount > 0 ? item.StackCount : 1;
+                var rounded = (int)Math.Ceiling(price) * count;
                 lines.Add(new GearPriceLine(item.Tpl, rounded));
                 total += rounded;
             }

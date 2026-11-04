@@ -5,7 +5,11 @@ using System.Linq;
 namespace pitTeam.Shared
 {
     // 아이템 한 점을 SPT 타입 없이 옮긴 것. 판정이 서버 프로젝트 밖(테스트)에서 검증되어야 한다.
-    public sealed record GearItemRow(string Id, string Tpl, string? ParentId, string? SlotId);
+    //
+    // `StackCount` 는 2026-11-04 에 더했다. 그전까지 사는 것이 슬롯에 걸리는 장비뿐이라 전부 1 이었고,
+    // 그래서 값도 한 점 값이면 맞았다. 탄창의 탄과 조끼 안의 짐을 사기 시작하면서 **60발 한 묶음을
+    // 1발 값에 사는** 자리가 생겼다. 기본값 1 이라 수량을 모르는 호출부는 그대로 맞는다.
+    public sealed record GearItemRow(string Id, string Tpl, string? ParentId, string? SlotId, int StackCount = 1);
 
     public enum GearSlotOutcome
     {
@@ -118,8 +122,17 @@ namespace pitTeam.Shared
                 string.Equals(i.SlotId, slot, StringComparison.OrdinalIgnoreCase));
         }
 
-        // 그 아이템과, 부착물 칸에 달린 것 전부. 가방·조끼 안의 짐(격자 내용물)은 칸 이름이 부착물 칸이
-        // 아니므로 자연히 빠진다 - 짐은 장비가 아니고, 사 주는 대상도 아니다.
+        // 그 아이템과, **그 아래 달린 것 전부**. 어디까지가 "아래" 인지는 밖에서 준 어휘가 정한다
+        // (`attachmentSlotsOfTpl` - 서버의 `ChildSlotNamesOf`).
+        //
+        // **2026-11-04 에 그 어휘가 넓어졌다.** 전에는 부착물 칸(`Slots`)만 주면서 주석에
+        // "가방·조끼 안의 짐은 장비가 아니고 사 주는 대상도 아니다" 라고 적어 두었는데, 그 판단이
+        // 틀렸다: 사용자가 고른 꾸러미 화면에는 **탄창의 탄도 조끼 안의 짐도 들어 있다.** 화면이
+        // 보여 준 것과 산 것이 다르면 그것이 결함이다(실측: 산 탄창이 0/50, 조끼 안이 텅 빔).
+        // 지금은 탄 자리(`Cartridges`·`StackSlots`·`Chambers`)와 격자(`Grids`)까지 따라 내려간다.
+        //
+        // 이 함수 자체는 어휘를 묻지 않는다 - 준 이름의 자리는 따라가고 아닌 것은 두고 간다.
+        // 그래서 무엇을 사는지는 **어휘 한 곳**에서만 정해진다.
         private static List<GearItemRow> Subtree(List<GearItemRow> items, GearItemRow? top, Func<string, IEnumerable<string>> slotsOf)
         {
             var result = new List<GearItemRow>();
@@ -171,7 +184,9 @@ namespace pitTeam.Shared
                     }
 
                     parts.Reverse();
-                    return string.Join("/", parts) + "=" + item.Tpl;
+                    // 수량도 모양의 일부다: 탄 30발이 든 탄창과 60발이 든 탄창은 사용자가 고른 것이
+                    // 다르다. 칸 하나는 통째로 같거나 통째로 바뀐다는 이 정책의 규칙 그대로다.
+                    return string.Join("/", parts) + "=" + item.Tpl + "x" + item.StackCount;
                 }
 
                 return items.Select(Path).OrderBy(p => p, StringComparer.Ordinal).ToList();

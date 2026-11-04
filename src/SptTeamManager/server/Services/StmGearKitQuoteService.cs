@@ -148,7 +148,9 @@ public class StmGearKitQuoteService(
     private static Item PriceProbe(string tpl) => new() { Id = new MongoId(), Template = new MongoId(tpl) };
 
     private static GearItemRow ToRow(Item item) =>
-        new(item.Id.ToString(), item.Template.ToString(), item.ParentId?.ToString(), item.SlotId);
+        new(item.Id.ToString(), item.Template.ToString(), item.ParentId?.ToString(), item.SlotId,
+            // 묶음 수량. 없으면 한 점이다 - 탄 묶음만 이 값이 1 보다 크다.
+            (int?)item.Upd?.StackObjectsCount ?? 1);
 
     // 부착물 칸 이름. PIT 의 고용가 계산이 쓰는 것과 같은 읽기다 - 격자(가방 안 짐)는 칸 이름이 다르므로
     // 자연히 빠진다.
@@ -156,9 +158,9 @@ public class StmGearKitQuoteService(
     {
         try
         {
-            return itemHelper.GetItem(new MongoId(tpl)).Value?.Properties?.Slots?
-                .Where(slot => !string.IsNullOrEmpty(slot.Name))
-                .Select(slot => slot.Name!) ?? [];
+            // 값과 구매는 **같은 목록**을 봐야 한다 - 어휘가 갈리면 값을 매기지 않은 것을 사거나
+            // 산 것에 값을 매기지 않는다. 그래서 구매 쪽의 어휘를 그대로 부른다(집은 하나다).
+            return StmGearKitPurchaseService.ChildSlotNamesOf(itemHelper.GetItem(new MongoId(tpl)).Value);
         }
         catch
         {
