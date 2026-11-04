@@ -1,0 +1,130 @@
+2540	Content Backport - Prestiges	1.1.0	~4.1	66178	결속	22214789	compatible	2310:WTT - CommonLib / 2512:WTT - Content Backport	
+1775	WTT - Menu Overhaul	1.3.0	~4.1	131671	-	779102	compatible		
+2937	Manimal's 1.0 Labs Office Backport	2.0.0	~4.1.3	32364	-	94285352	unknown	2310:WTT - CommonLib / 2512:WTT - Content Backport	
+2416	Enable Labyrinth	1.1.0	~4.1	64946	-	161000	compatible		
+3026	Quest Backport	1.0.9	4.1.6	11137	결속	711565	unknown	2310:WTT - CommonLib / 2512:WTT - Content Backport	
+1594	APBS - Acid's Progressive Bot System	2.4.1	~4.1.0	265922	-	1036711	compatible		
+2097	ABPS - Acid's Bot Placement System	2.1.0	~4.1	199700	-	1182402	compatible		
+2511	WTT - Black Division [REDACTED] Home	1.3.1	~4.1.5	130916	-	1298330	compatible	791:SAIN - Solarint's AI Modifications - Full AI Combat System Replacement / 902:BigBrain / 2310:WTT - CommonLib / 2426:MoreBotsAPI / 2512:WTT - Content Backport	
+2342	UNTAR Go Home!	3.2.1	~4.1.5	45160	-	177784	compatible	791:SAIN - Solarint's AI Modifications - Full AI Combat System Replacement / 902:BigBrain / 2310:WTT - CommonLib / 2426:MoreBotsAPI	
+1657	MergeConsumables	1.6.3	>=4.1.3	91900	-	20653	compatible		
+1884	Continuous Healing	1.6.3	>=4.1.3	148181	-	6539	compatible		
+1298	HandsAreNotBusy	1.7.1	>=4.1.3	171318	-	4984	compatible		
+2383	Skills Extended	3.1.4	~4.1	62725	결속	114966637	compatible		
+1479	Raid Review	1.10.0	~4.1.6	59710	-	5762581	compatible		
+592	Amands's Graphics	1.8.0	~4.1	880343	-	33117	compatible		
+2003	HollywoodFX	3.0.0	~4	228777	-	270826931	compatible		
+954	Borkel's Realistic Night Vision Goggles (NVGs and T-7)	3.0.4	~4.1	272412	결속	33232679	unknown		
+1621	Shadow Flicker Fix	1.5.3	~4.1	79922	-	6747	compatible		
+3076	Performance Scope	0.2.0	~4.1.0	1888	-	10797	unknown		
+3035	Russian Special Forces Pack	2.0.1	4.1.6	10480	결속	587162450	compatible	2310:WTT - CommonLib	
+2427	RUAF Come Home!	1.2.1	~4.1.5	42190	-	10232686	compatible	902:BigBrain / 2246:WTT- Armory / 2310:WTT - CommonLib / 2426:MoreBotsAPI / 2512:WTT - Content Backport / 791:SAIN - Solarint's AI Modifications - Full AI Combat System Replacement	
+1873	Bot Callsigns - Reloaded	2.0.6	~4.1	72653	-	20231	compatible		
+2635	Smooth Talker	1.3.0	~4.1	16177	-	11683	compatible		
+820	Door Randomizer	1.8.0	~4.1.0	50681	-	5112	compatible		
+2649	Climbable Ladders	1.0.4	~4.1.0	91481	-	942291	compatible		
+1575	Increase Climb Height	2.1.1	~4.1	128248	-	7884	compatible		
+1265	Rai's Hidden Caches	1.4.0	~4.1.0	110802	-	8305	compatible		
+3059	Strange Curios	1.1.0	~4.1.5	2040	결속	26917083	compatible	2310:WTT - CommonLib	
+3062	Tushonka Rare Collectibles	1.2.2	~4.1.5	3996	결속	76407974	compatible		
+1619	Lots of Loot Redux	4.2.2	~4.1	260296	-	112671	compatible		
+1706	Health Per Level	2.2.0	4.1.*	48726	-	37929	unknown		
+2144	Skill Distribution	1.3.0	~4.1	42779	-	27990	compatible		
+865	Gilded Key Storage	2.1.1	~4.1.0	178150	-	6814359	compatible		
+3077	PityLoot	1.0.0	~4.1.6	1635	결속	45874	unknown		
+2893	TraumaCore	1.7.0	~4.1.0 	6322	결속	108790	unknown		
+1437	Simple Workout QTE	2.2.2	~4.1.3	71969	-	13031	compatible		
+1860	Classic Movement	1.1.3	~4.1.0	145141	-	63094	compatible		
+2076	Hideout In Progress	3.0.0	~4.1	59783	-	22388	compatible		
+2530	Vertical Hideout	1.1.1	~4.1.0	39681	-	8326	unknown		
+2932	Target Dummies	0.3.1	~4.1.5	2065	-	15292	compatible		
+2908	Tarkin's Hideout Cat	1.1.1	~4.1.0	7642	-	20818452	compatible		
+2982	Hideout Overhaul	0.2.0	~4.1.3	4100	-	68536	unknown		
+2500	Wishlist Extended	1.2.0	~4.1	8544	-	54402	compatible		
+2879	WebOverlay	1.11.0	^4.0.0	12054	-	174334	compatible		
+3072	Combat Log	1.0.0	~4.1.0	710	-	125604	incompatible	2879:WebOverlay	
+3067	Deadzone	1.2.0	~4.1.6	1061	-	7461	unknown		
+933	Use Loose Loot	1.6.0	~4.1.0	114049	-	2783	unknown		
+3029	ImpactCue-UI-MOD	2.0.3	4.1.x	13229	-	42398489	compatible		
+3082	Hj's Task Item Indicator	1.0.1	~4.1	4280	-	9251	compatible		
+3071	Hj's Task Turn in Indicator	1.0.0	~4.1	2501	-	21804	compatible		
+3069	Hj's Improved Customization UI	1.1.2	~4.1	6021	-	188872	compatible		
+3047	Deploy Screen Overhaul	1.1.0	~4.1.0	2953	결속	64773384	compatible		
+2207	Fast Sell In Flea	1.3.1	~4.1	81758	-	12181	compatible		
+2866	MANIMAL'S ICEBREAKER BACKPORT	1.1.3	~4.1.5	80400	-	1672250789	compatible	902:BigBrain / 2310:WTT - CommonLib / 2426:MoreBotsAPI / 2511:WTT - Black Division [REDACTED] Home / 2512:WTT - Content Backport / 2649:Climbable Ladders / 2864:Manimal's CS Gas / 3025:Manimal's 1.0 Interchange Expansion Backport  / 1426:UnityToolkit	
+2864	Manimal's CS Gas	2.0.0	~4.1.5	44315	결속	12682671	compatible	2310:WTT - CommonLib / 2512:WTT - Content Backport	
+3025	Manimal's 1.0 Interchange Expansion Backport 	1.0.8	~4.1.6	41797	-	1509917405	unknown	1426:UnityToolkit / 2310:WTT - CommonLib / 2512:WTT - Content Backport	
+3058	Inventory Walker	0.3.1	~4.1	1292	-	13007	unknown		
+3040	Map Variants	1.1.0	~4.1.3	14578	-	4055810	compatible		
+3095	Integrated Configuration Manager	1.0.0	4.1.*	923	-	19827	compatible		
+3103	Cabinet Looter	1.0.3	~4.1.0	14644	-	19304	compatible		
+3022	Manimal's 1.0 Lighthouse Rework Backport 	1.0.7	~4.1.6	24305	-	2455455438	unknown	1426:UnityToolkit / 2310:WTT - CommonLib / 2512:WTT - Content Backport	
+2843	Blackout	4.1.1	~4.1.1	30153	-	6086149	compatible	2512:WTT - Content Backport	
+1539	Bosses Have Lega Medals	2.1.0	~4.1	222311	-	8333	compatible		
+1263	Epic's All in One	5.0.2	~4.1.6	287004	결속	1582469482	compatible	2310:WTT - CommonLib	
+2523	Bosses Have Gp Coins	1.1.0	~4.1	48886	-	8290	compatible		
+3007	Breakout Outlines	1.2.0	~4.1	6442	-	40435	compatible		
+2745	Manimal's Watch Animations	2.0.0	~4.1.5	8076	-	87964	unknown		
+2395	Lacy's PvE Tweaks	1.3.2	>=4.1.3	43630	결속	18008	compatible		
+2195	ECOT - Eukyre's Consortium of Things	2.0.1	~4.1.3	34116	결속	1217404252	unknown	1263:Epic's All in One / 2310:WTT - CommonLib	
+2121	Increase Look Direction	1.3.0	~4.1	27598	-	5098	compatible		
+2200	Dynamic External Resolution Patch (DERP)	1.1.2	4.1.x	28137	-	6868	unknown		
+2689	Item Property Backport	1.5.2	~4.1.0	13160	-	130656	compatible		
+2882	Eco's Attachment Emporium	3.0.0	4.1.1	21015	결속				X
+2639	Auto Shoulder Swap	1.1.1	~4.1	11993	-	4949	unknown		
+2206	Item Preview QoL + screenshots	1.2.0	4.1.6	18870	결속	12067	unknown		
+2025	All Quests Checkmarks	1.4.0	~4.1	67056	-	45724	compatible		
+2791	Tylevo's Tactical Service Control	1.3.13	4.1.5	11231	결속				X
+2264	Battle Ambience	2.4.0	~4.1	31639	-	12050875	compatible		
+1274	Healing Autocancel	5.0.1	4.1.6	93034	-	3654	compatible		
+1117	Deminvincibility	2.2.0	~4.1.3	62693	-	8562	compatible		
+3083	Hj's Mod Source	1.1.0	~4.1	2691	-	40294	compatible		
+2550	Bring Back Concussion	1.2.1	~4.1	13358	-	12407	compatible		
+2905	Ragdoll Kinetics	1.2.0	~4.1.0 	8119	-	45393	unknown		
+2567	CloudSix - Volumetric Clouds	4.0.2	4.1.6	22761	-	7794836	compatible		
+2329	BushWhacker - Standalone	1.7.0	~4.1	22267	-	6510	unknown		
+1262	Easy Ammo Names	2.1.0	~4.1.1	31531	-	16428	unknown		
+2951	CookingGrenades 4.1	1.4.4	~4.1.2	3537	-	1801946	compatible		
+2698	Loot In Vicinity	3.0.6	>=4.1 <4.2.0	17076	-	46233	incompatible		
+2153	Expanded Task Text (ETT)	2.1.0	~4.1	20162	-	51118	compatible		
+1533	More Tag Colours	1.5.0	~4.1	26011	-	5126	compatible		
+3100	POMSix	1.0.2	4.1.6	3120	-	16786184	compatible		
+2962	Music Extender	1.2.0	~4.1	3228	-	127452361	compatible		
+2931	ASBP - Acid's Scalable BepinEx Panel	1.0.1	~4.0	2083	-	8258	compatible		
+3084	Better Flashlights	1.0.1	~4.1.1	3339	-	7516	unknown		GONE
+2992	Inspectionless Malfunctions Reborn	1.0.0	~4.1.	3374	-	4977	unknown		
+2881	AutoKeycard for Labs	1.0.1	~4.1	9445	-	5902	compatible		
+3110	FogSix	1.0.1	4.1.6	2306	-	110917	compatible		
+3109	Knight Mask Fix	1.0.0	~4.1.3	3481	-	2078639	compatible		
+3099	ReflectSix	1.0.1	4.1.6	2694	-	301847	compatible		
+2706	ORBIT 3.0	3.1.0	~4.1.6	68772	-	826706	compatible	791:SAIN - Solarint's AI Modifications - Full AI Combat System Replacement / 827:Waypoints - Expanded Navmesh / 902:BigBrain	
+3097	DynamicMaps Extended	2.5.2	>=4.1.6	15965	-	1823357646	compatible	1431:Dynamic Maps / 3040:Map Variants	
+2784	Auto IFF	2.1.1	~4.1.0	6147	-	15176	compatible		
+2652	Fair Progression	1.1.0	~4.1.6	2908	-	28645	compatible		
+3054	Quest Codex	1.11.0	4.1.6	5656	-	3030536	unknown		
+1582	Headshot Darkness	1.2.5	~4.1	54735	-	9993	compatible		
+3121	Broken Limbs Don't Heal	1.1.0	~4.1	415	-	8775	unknown	3123:Effects Manager Framework	
+2445	Natalya Trader	1.0.1	4.1.3	35911	결속				X
+3055	Rook 	1.2.2	4.1.6	6605	결속	765149	compatible	1263:Epic's All in One / 2195:ECOT - Eukyre's Consortium of Things / 2246:WTT- Armory / 2310:WTT - CommonLib / 2512:WTT - Content Backport / 2882:Eco's Attachment Emporium	
+2401	WTT Halloween Masks	2.0.0	~4.1.6	1135	결속	91586232	compatible	2310:WTT - CommonLib	
+2657	Cultist Circle Improvements	1.1.0	~4.1	14052	-	122337	compatible		
+2344	Dynamic Item Weights	1.2.1	~4.1.0	16605	-	7126	compatible		
+2481	Crates In Airdrop	2.0.0	~4.1.0	19685	-	8162	compatible		
+2734	Better Night Skies	2.0.0	~4.1	10800	-	70980819	compatible		
+2857	Raid Settings Skipper	1.3.1	4.1.x	4037	-	4955	compatible		
+2960	IOF: Inventory Organizing Feature	1.10.1	~4.1.0	2794	결속	24908	compatible		
+2240	LET ME OUT	1.1.0	~4.1	11715	-	5810	compatible		
+2608	Smajlec's Stamina	1.4.0	~4.1	10141	-	5012	compatible		
+3064	Realistic PMC Names	1.1.0	~4.1.0	3009	-	61727	unknown		
+2569	AOSix	2.0.1	4.1.6	10919	-	29004	compatible		
+2719	No Aim Swing	1.2.0	4.1.6	4563	-	3715	compatible		
+3131	Name Plate	1.1.0	~4.1.0	871	-	2615427	compatible		
+3123	Effects Manager Framework	1.1.0	~4.1	1530	-	30593	compatible		
+2679	LootNET	1.2.0	4.1.6	33321	-	968223	compatible		
+3158	Briefing	1.0.2	4.1.6	2565	-	394532	unknown	3054:Quest Codex	
+2543	BossNotifier 	1.2.1	4.1.3	59991	-				X
+3207	Better BepInEx	1.0.3	~4.1.0	4445	-	61965	compatible		
+3166	Arena Map Port	0.4.0	~4.1.0	1288	-	3836857033	unknown		
+3175	Arena Mode	0.4.1	~4.1.0	1848	-	3859686	incompatible	791:SAIN - Solarint's AI Modifications - Full AI Combat System Replacement / 1594:APBS - Acid's Progressive Bot System / 2097:ABPS - Acid's Bot Placement System	
+3212	Rippers Casino	1.0.1	4.1.6	657	-	5288070	unknown		
+3221	TraceSix - Full Raytracing and Voxel GI	1.0.1	4.1.6	1865	-	706181	compatible		
