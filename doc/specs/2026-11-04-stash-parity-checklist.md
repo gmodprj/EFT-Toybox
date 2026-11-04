@@ -173,3 +173,47 @@ _preloaderRaycaster = Singleton<PreloaderUI>.Instance … GetComponent<GraphicRa
 **판단: 하지 않는다(보류).** 복수 선택 자체는 **Shift+클릭과 Ctrl+A 로 이미 된다.** 얻는 것은
 입력 방식 하나이고, 두 길 모두 값이 그보다 크다. 다시 집는다면 ⒜ 쪽이고, 그때는 오버레이의 부모를
 바꾸는 것이 다른 것을 깨지 않는지부터 본다.
+
+## 2-5 `ApplyMagPreset` — 조건을 해독했다. 우리 결함이 아닐 수 있다 (2026-11-04)
+
+`ItemContextInteractionsSwitcher.IsActive` 의 그 자리는 이렇다(IL 실측):
+
+```csharp
+if (Gameplay) return false;
+if (!(_itemContext is InventorySelectableItemContext)) return false;   // 삽탄과 같은 게이트
+return MagBuildsStorage.TryFindPresetSource(_item).Succeeded;          // ← 추가 조건
+```
+
+**문맥 게이트는 삽탄과 같다** - 2026-11-04 고침으로 이미 통과한다. 내 예상이 빗나간 것은 **조건이
+하나 더** 있었기 때문이다.
+
+```csharp
+static Option<Item> TryFindPresetSource(Item item)   // static
+{
+    if (item is Ammo a) return a;
+    Magazine mag = (item is Weapon w) ? w.GetCurrentMagazine() : item as Magazine;
+    if (mag != null && !(mag is CylinderMagazine)
+        && mag.GetRootMergedItem().Parent.Container is Grid)    // ← 핵심
+        return mag;
+    return Error;
+}
+```
+
+**조건은 "그 탄창의 뿌리 아이템이 `Grid` 에 들어 있는가" 다.** 격자(스태시 칸·리그 칸·가방 칸)면
+되고 **슬롯이면 안 된다.** 실린더 탄창은 아예 제외다.
+
+따라서:
+
+| 탄창이 어디 있나 | 뿌리의 부모 | 뜨는가 |
+|---|---|---|
+| 스태시 칸에 그냥 놓여 있다 | Grid | **뜬다** |
+| 리그·가방 칸에 있다 | Grid | **뜬다** |
+| **무기에 꽂혀 있고 그 무기가 장비 슬롯에 있다** | Slot | **안 뜬다** |
+| 실린더 탄창 | - | 안 뜬다 |
+
+**이 조건은 프로필·문맥과 무관하고 오직 아이템의 자리에 달렸다.** 즉 본인 스태시에서도 같은 자리면
+같은 결과다. 2-5 가 `X` 로 적힌 것은 **우리 편집기의 구멍이 아니라 시험한 탄창의 자리 차이**일 수
+있다.
+
+**다시 재는 법:** 팀원 스태시 칸에 **그냥 놓인 탄창**(무기에 꽂히지 않은 것, 실린더 아닌 것)에
+우클릭한다. 거기서도 안 뜨면 그때는 진짜 구멍이고, 뜨면 이 칸은 `O` 다.
