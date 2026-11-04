@@ -491,7 +491,11 @@ namespace pitTeam.Patches
                 new Vector2(0f, 0f),
                 new Vector2(0.5f, 1f),
                 new Vector2(16f, 64f),
-                new Vector2(-2f, -104f));
+                // -104 → -136. 안내 문구 띠는 위에서 60~100 인데 칸이 104 에서 시작해 **여유가 4px
+                // 뿐**이었고, 그래서 스태시 패널이 자기 머리글(창고·통화 줄)을 그리면 문구와 겹쳐
+                // 보였다(2026-11-04 인게임). 36px 를 비워 둔다 - 검색칸까지 켜면 그 줄이 더
+                // 빠듯해지므로(대조표 2-19) 넉넉한 쪽으로 잡는다. 격자에서 32px 를 내주는 값이다.
+                new Vector2(-2f, -136f));
 
             RectTransform rightSection = CreateLoadoutEditorSection(
                 panel.transform,
@@ -500,7 +504,8 @@ namespace pitTeam.Patches
                 new Vector2(0.5f, 0f),
                 new Vector2(1f, 1f),
                 new Vector2(0f, 64f),
-                new Vector2(-10f, -104f));
+                // 왼쪽 칸과 같은 높이로 맞춘다 - 둘이 어긋나면 머리글 줄이 삐뚤어 보인다.
+                new Vector2(-10f, -136f));
 
             if (!TryBuildStmGearEditorPanels(profile, stash, leftSection, rightSection, session))
             {
