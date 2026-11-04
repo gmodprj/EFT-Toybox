@@ -4,7 +4,8 @@
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 설치된 모드: **184개**, 설치 파일 **10601개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: 145개 (2026-10-29, AirdropCaller.Plugin 추가 후. 마지막 기동은 메뉴까지만 돌아 오류 2건: ①Fika 미설치 관련 DirectReload 패치 ②Show Me The Money 툴팁 NullReference. 레이드에 들어가면 COTI per-frame 과 PIT `LootPatrolLayer.GetDecision` NullReference 가, UTAE 편집 화면을 열면 기준선 로드 실패가 더 날 수 있다) / 서버 모드 로드: 116개 (2026-10-30 ScavRaidWaves 추가 후 테스트, 정상 시작 136초 — `server-tests/server-test-scavraidwaves.out.txt`. **오류 0건**, `Could not add` 48건 그대로 — 원인은 `MountOlympus.dll` 로, 모드가 만들지 않는 아이템 id 48개를 들고 있다(`REVIEW-LOAD-ORDER.md`))
+- 게임 쪽 플러그인 로드: **147개** (2026-11-04 실측, `BepInEx/LogOutput.log` 의 `147 plugins to load`. 그 기동은 **레이드까지 들어갔다**. `[Error` 15줄 / `[Fatal` 0줄이고 전부 기존 건이다 — SAIN `sectactPriestEvent` 6, STM `AimingFailure` 6·`MedicalActivity` 1, ECOTI per-frame 1, Fika 미설치 관련 DirectReload 패치 1. `Loading [` 줄은 108개뿐이라 147 과의 차이 39개는 아직 설명하지 못했다 — 비교에는 `plugins to load` 숫자를 쓴다) / 서버 모드 로드: **115개** (2026-11-04 실측, `user/logs/spt/spt20261104.log` 의 `ModLoader: 총 115 개`, 115줄 모두 `불러옴`. 정상 시작 약 118초. `[Error]` 49줄 = 알려진 `Could not add` 48건(원인 `MountOlympus.dll`, 모드가 만들지 않는 아이템 id 48개 — `REVIEW-LOAD-ORDER.md`) + 신규 1건 `BundleLoader Unable to add bundle: ...barrel_vpo215_600mm_366tkm.bundle`(번들 중복으로 보이며 시작은 정상. 기준선에 포함 — `PLAN-STAGE9.md` §9-0-1))
+- 옛 값(게임 145 / 서버 116, 2026-10-29~30)과 다른 이유: 서버 116→115 는 PIT Fireteam 서버 모드 제거분, 게임 145→147 은 그 뒤 설치분이다
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
 ## 1차 — UI·탄약 정보·개조 화면 편의
