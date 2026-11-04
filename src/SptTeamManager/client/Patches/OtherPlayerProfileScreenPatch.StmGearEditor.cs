@@ -649,13 +649,10 @@ namespace pitTeam.Patches
                 return false;
             }
 
-            // 격자 오른쪽의 빈 띠를 걷는다. 왼쪽 칸은 패널 폭의 절반(여기서 707px)인데 스태시 격자는
-            // 10칸으로 **폭이 고정**이라(약 630px) 남는 폭이 격자와 스크롤바 사이에 빈 검은 띠로 남았다
-            // (2026-11-04 인게임 실측, 사용자 화면). 2026-11-04 에 검색칸(`StashOnly`) 탓으로 보고
-            // 되돌렸지만 띠는 그대로였다 - 설치본 IL 에 `EStashSearchAvailability 0` 이 든 것을 확인했으므로
-            // 검색칸과 무관하다. **상수를 박지 않고 런타임에 잰다**: 해상도·칸 수·스크롤바 폭이 달라도
-            // 같은 답이 나오고, 남는 폭이 없으면(격자가 칸보다 넓으면) 아무것도 하지 않는다.
-            ShrinkStmStashSectionToGrid(leftSection);
+            // 왼쪽 칸의 **네 가장자리를 한 번에 맞춘다**(빈 띠·창 밖으로 나간 자식·잘림). 상수를 박지
+            // 않고 그려진 월드 모서리를 재며, 고친 자리와 남은 여백을 전부 로그에 남긴다 - 셈과 근거는
+            // 그 함수의 주석에 있다. 검색칸과는 무관한 자리다(그쪽은 아래 EnableStmStashSearch).
+            FitStmStashSection(leftSection);
 
             // 플레이어 창고 화면과 같은 검색칸을 단다(대조표 2-19).
             EnableStmStashSearch(itemUiContext, editorProfile, stashContext);
@@ -790,13 +787,20 @@ namespace pitTeam.Patches
             }
         }
 
-        // 왼쪽 칸을 스태시 격자 폭에 맞춘다. 격자의 오른쪽 끝과 칸의 오른쪽 끝 사이에 남는 폭을 재서
-        // 그만큼 칸(배경 상자)을 줄인다 - 스크롤바가 격자에 붙고 빈 띠가 사라진다.
-        // 재는 자리를 격자의 **월드 모서리**로 잡는 이유: 스크롤 뷰포트·내용물의 앵커 설정을 모르고도
-        // (템플릿이 늘이기일 수도, 고정 폭일 수도 있다) 실제로 그려진 오른쪽 끝을 묻기 때문이다.
-        // 아무것도 재지 못하면 **그대로 둔다**(불변식 2: 의심스러우면 쓰지 않는다) - 폭이 틀리면
-        // 격자가 잘려 보이고, 빈 띠는 보기 싫을 뿐이다.
-        private static void ShrinkStmStashSectionToGrid(RectTransform sectionContent)
+        // 왼쪽 칸(스태시)의 **네 가장자리를 한 번에 맞춘다.** 2026-11-04 에 오른쪽 띠만 보고 고쳤다가
+        // 기준을 잘못 잡아 격자를 잘랐고, 그 다음엔 왼쪽으로 튀어나온 필터 아이콘 띠를 못 봐서 또 돌았다.
+        // 그래서 이 함수는 **한 자리만 고치지 않는다**: 재고 → 왼쪽을 들이고 → 오른쪽 띠를 걷고 →
+        // 안 들어가면 돌려주고 → 오른쪽으로 나간 것을 들인 다음, 최종 수치를 전부 로그에 남긴다.
+        //
+        // 왜 상수를 박지 않는가: 격자 폭은 칸 수에 따라 고정이고(`ItemViewFactory.GetCellPixelSize` =
+        // 칸수 × 63 + 1), 복제한 패널에는 자기 rect **바깥**에 붙는 자식이 있으며(범주 필터 띠는 왼쪽
+        // 바깥이다 - 플레이어 화면에는 그 자리가 있지만 우리 창에는 없다), 안쪽 여백은 프리팹의 것이다.
+        // 셋 다 해상도·칸 수·프리팹에 따라 달라지므로 **그려진 월드 모서리를 재는 것**만이 답을 준다.
+        //
+        // 어느 쪽으로 넘어뜨리는가(불변식 2): **격자가 잘리는 것이 빈 띠보다 나쁘다.** 그래서 의심스러우면
+        // 덜 줄이고, 한계(`StmStashSectionMaxAdjust`)를 넘는 값이 나오면 엉뚱한 자식을 잰 것으로 보고
+        // 아무것도 하지 않는다.
+        private static void FitStmStashSection(RectTransform sectionContent)
         {
             try
             {
@@ -807,78 +811,104 @@ namespace pitTeam.Patches
                 }
 
                 // 줄일 것은 배경 상자(부모)다. 내용물 칸은 앵커가 늘이기라 부모를 줄이면 따라온다.
-                if (!(sectionContent.parent is RectTransform sectionRect))
+                // 그 배경 상자의 부모가 편집기 창이고, "창 밖" 의 기준이 그것이다.
+                if (!(sectionContent.parent is RectTransform sectionRect) || !(sectionRect.parent is RectTransform windowRect))
                 {
                     return;
                 }
 
-                // 격자가 최종 크기를 갖기 전에 재면 0 이 나온다.
+                // 격자·자식이 최종 크기를 갖기 전에 재면 0 이 나온다.
                 Canvas.ForceUpdateCanvases();
 
-                EFT.UI.DragAndDrop.GridView[] grids = stashPanel.GetComponentsInChildren<EFT.UI.DragAndDrop.GridView>(false);
-                if (grids == null || grids.Length == 0)
-                {
-                    pitFireTeam.Log.LogWarning("[STM] Stash grid view was not found; the editor keeps the section width as is.");
-                    return;
-                }
-
-                Vector3[] corners = new Vector3[4];
-                float gridRight = float.MinValue;
-                foreach (EFT.UI.DragAndDrop.GridView grid in grids)
-                {
-                    if (!(grid?.transform is RectTransform gridRect) || gridRect.rect.width <= 0f)
-                    {
-                        continue;
-                    }
-
-                    gridRect.GetWorldCorners(corners);
-                    // corners: 0=왼아래 1=왼위 2=오른위 3=오른아래. 칸의 좌표계로 옮겨 오른쪽 끝을 본다.
-                    float right = sectionRect.InverseTransformPoint(corners[2]).x;
-                    gridRight = Mathf.Max(gridRight, right);
-                }
-
-                if (gridRight <= float.MinValue + 1f)
-                {
-                    return;
-                }
+                ScrollRect scroll = stashPanel._stashScroll;
+                RectTransform viewport = scroll?.viewport ?? scroll?.transform as RectTransform;
 
                 // 스크롤바는 격자 오른쪽에 그대로 두어야 한다 - 그 폭만큼은 남긴다.
                 float scrollbarWidth = 0f;
-                ScrollRect scroll = stashPanel._stashScroll;
                 if (scroll?.verticalScrollbar?.transform is RectTransform scrollbarRect)
                 {
                     scrollbarWidth = Mathf.Max(0f, scrollbarRect.rect.width);
                 }
 
-                // **기준은 칸이 아니라 뷰포트의 오른쪽 끝이다.** 칸과 뷰포트 사이에는 여백이 있고
-                // (내용물 칸이 좌우 8px 씩 들여쓴다) 그것은 남는 폭이 아니라 **디자인된 여백**이다.
-                // 2026-11-04 에 칸(`sectionRect.rect.xMax`)을 기준으로 재서 그 여백까지 걷었고,
-                // 그만큼 격자가 뷰포트보다 넓어져 **오른쪽 칸이 잘리고 가로 스크롤이 생겼다**
-                // (로그: width=707.0, gridRight=285.5, scrollbar=10.0, slack=58.0 → 8px 과하다).
-                RectTransform viewport = scroll?.viewport ?? scroll?.transform as RectTransform;
-                float viewportRight = sectionRect.rect.xMax;
-                if (viewport != null)
-                {
-                    viewport.GetWorldCorners(corners);
-                    viewportRight = sectionRect.InverseTransformPoint(corners[2]).x;
-                }
+                // ── 1. 잰다 ───────────────────────────────────────────────────────────────
+                MeasureStmStashPanelEdges(stashPanel, windowRect, out float childLeft, out float childRight, out string leftName, out string rightName);
+                float gridRight = MeasureStmStashGridRight(stashPanel, sectionRect);
 
-                float slack = viewportRight - gridRight - scrollbarWidth;
                 pitFireTeam.Log.LogInfo(
-                    $"[STM] Stash section measure: section={sectionRect.rect.width:F1}, viewport={(viewport != null ? viewport.rect.width : -1f):F1}, viewportRight={viewportRight:F1}, gridRight={gridRight:F1}, scrollbar={scrollbarWidth:F1}, slack={slack:F1}.");
+                    $"[STM] Stash fit (before): window=[{windowRect.rect.xMin:F1},{windowRect.rect.xMax:F1}], section={sectionRect.rect.width:F1}, "
+                    + $"viewport={(viewport != null ? viewport.rect.width : -1f):F1}, gridRight={gridRight:F1}, scrollbar={scrollbarWidth:F1}, "
+                    + $"childLeft={childLeft:F1} ({leftName ?? "-"}), childRight={childRight:F1} ({rightName ?? "-"}).");
 
-                if (slack <= StmStashSectionSlackEpsilon)
+                // ── 2. 왼쪽으로 창 밖에 나간 것을 들인다 ──────────────────────────────────
+                if (leftName != null)
                 {
-                    // 남는 폭이 없다(또는 격자가 뷰포트보다 넓다). 건드리지 않는다.
-                    return;
+                    float shift = (windowRect.rect.xMin + StmStashWindowEdgeMargin) - childLeft;
+                    if (shift > StmStashSectionSlackEpsilon)
+                    {
+                        if (shift > StmStashSectionMaxAdjust)
+                        {
+                            pitFireTeam.Log.LogWarning($"[STM] Stash left shift {shift:F1} exceeds the {StmStashSectionMaxAdjust:F0} limit; left edge left as is.");
+                        }
+                        else
+                        {
+                            sectionRect.offsetMin = new Vector2(sectionRect.offsetMin.x + shift, sectionRect.offsetMin.y);
+                            Canvas.ForceUpdateCanvases();
+                            pitFireTeam.Log.LogInfo($"[STM] Stash left edge shifted in by {shift:F1} ({leftName}).");
+                        }
+                    }
                 }
 
-                sectionRect.offsetMax = new Vector2(sectionRect.offsetMax.x - slack, sectionRect.offsetMax.y);
-                Canvas.ForceUpdateCanvases();
+                // ── 3. 격자 오른쪽의 빈 띠를 걷는다 ───────────────────────────────────────
+                // **기준은 칸이 아니라 뷰포트의 오른쪽 끝이다.** 칸과 뷰포트 사이의 여백은 남는 폭이
+                // 아니라 프리팹이 둔 여백인데, 2026-11-04 1차 고침이 그것까지 걷어 격자를 8px 잘랐다.
+                gridRight = MeasureStmStashGridRight(stashPanel, sectionRect);
+                if (gridRight > float.MinValue + 1f)
+                {
+                    float viewportRight = sectionRect.rect.xMax;
+                    if (viewport != null)
+                    {
+                        Vector3[] viewportCorners = new Vector3[4];
+                        viewport.GetWorldCorners(viewportCorners);
+                        viewportRight = sectionRect.InverseTransformPoint(viewportCorners[2]).x;
+                    }
 
-                // **그래도 안 들어가면 되돌려 준다.** 위 셈이 보지 못하는 안쪽 여백이 또 있을 수 있다 -
-                // 모델이 아니라 **증상**(내용물이 뷰포트보다 넓다)을 재서 그 차이를 돌려준다.
-                // 격자가 잘리는 것이 빈 띠보다 나쁘므로 이쪽으로 넘어뜨린다(불변식 2).
+                    float slack = viewportRight - gridRight - scrollbarWidth;
+                    if (slack > StmStashSectionSlackEpsilon && slack <= StmStashSectionMaxAdjust)
+                    {
+                        sectionRect.offsetMax = new Vector2(sectionRect.offsetMax.x - slack, sectionRect.offsetMax.y);
+                        Canvas.ForceUpdateCanvases();
+                        pitFireTeam.Log.LogInfo($"[STM] Stash right slack trimmed by {slack:F1} (viewportRight={viewportRight:F1}, gridRight={gridRight:F1}).");
+                    }
+                    else if (slack > StmStashSectionMaxAdjust)
+                    {
+                        pitFireTeam.Log.LogWarning($"[STM] Stash right slack {slack:F1} exceeds the {StmStashSectionMaxAdjust:F0} limit; right edge left as is.");
+                    }
+                }
+                else
+                {
+                    pitFireTeam.Log.LogWarning("[STM] Stash grid view was not found; the right slack is left as is.");
+                }
+
+                // ── 4. 오른쪽으로 창 밖에 나간 것을 들인다 ────────────────────────────────
+                MeasureStmStashPanelEdges(stashPanel, windowRect, out _, out childRight, out _, out rightName);
+                if (rightName != null)
+                {
+                    float pullIn = childRight - (windowRect.rect.xMax - StmStashWindowEdgeMargin);
+                    if (pullIn > StmStashSectionSlackEpsilon && pullIn <= StmStashSectionMaxAdjust)
+                    {
+                        sectionRect.offsetMax = new Vector2(sectionRect.offsetMax.x - pullIn, sectionRect.offsetMax.y);
+                        Canvas.ForceUpdateCanvases();
+                        pitFireTeam.Log.LogInfo($"[STM] Stash right edge pulled in by {pullIn:F1} ({rightName}).");
+                    }
+                    else if (pullIn > StmStashSectionMaxAdjust)
+                    {
+                        pitFireTeam.Log.LogWarning($"[STM] Stash right pull-in {pullIn:F1} exceeds the {StmStashSectionMaxAdjust:F0} limit; right edge left as is.");
+                    }
+                }
+
+                // ── 5. 그래도 안 들어가면 돌려준다 ────────────────────────────────────────
+                // 위 셈이 보지 못하는 안쪽 여백이 또 있을 수 있다. 모델이 아니라 **증상**(내용물이
+                // 뷰포트보다 넓다 = 가로 스크롤이 생긴다)을 재서 그 차이를 돌려준다.
                 for (int pass = 0; pass < 3; pass++)
                 {
                     RectTransform content = scroll?.content;
@@ -895,30 +925,110 @@ namespace pitTeam.Patches
 
                     float giveBack = overflow + StmStashSectionSlackEpsilon;
                     pitFireTeam.Log.LogWarning(
-                        $"[STM] Stash content overflows after the trim (pass {pass + 1}): content={content.rect.width:F1}, viewport={viewport.rect.width:F1}; giving back {giveBack:F1}.");
+                        $"[STM] Stash content overflows (pass {pass + 1}): content={content.rect.width:F1}, viewport={viewport.rect.width:F1}; giving back {giveBack:F1}.");
                     sectionRect.offsetMax = new Vector2(sectionRect.offsetMax.x + giveBack, sectionRect.offsetMax.y);
                     Canvas.ForceUpdateCanvases();
                 }
 
-                // 폭이 바뀌었으니 스크롤을 맨 위로 되돌린다
-                // (패널을 세울 때 한 것이 이 변경으로 흐트러질 수 있다 - LoadoutUi.cs 의 같은 처리).
+                // 폭이 바뀌었으니 스크롤을 맨 위로 되돌린다(패널을 세울 때 한 것이 흐트러질 수 있다).
                 if (scroll != null)
                 {
                     scroll.StopMovement();
                     scroll.normalizedPosition = Vector2.up;
                 }
 
-                pitFireTeam.Log.LogInfo($"[STM] Stash section trimmed to {sectionRect.rect.width:F1}.");
+                // ── 6. 최종 상태를 남긴다 ─────────────────────────────────────────────────
+                // 다음 사람이 **이 한 줄만 보고** 어디가 몇 px 남았는지 알 수 있어야 한다.
+                MeasureStmStashPanelEdges(stashPanel, windowRect, out childLeft, out childRight, out leftName, out rightName);
+                gridRight = MeasureStmStashGridRight(stashPanel, sectionRect);
+                pitFireTeam.Log.LogInfo(
+                    $"[STM] Stash fit (after): section={sectionRect.rect.width:F1}, viewport={(viewport != null ? viewport.rect.width : -1f):F1}, "
+                    + $"content={(scroll?.content != null ? scroll.content.rect.width : -1f):F1}, gridRight={gridRight:F1}, "
+                    + $"childLeft={childLeft:F1} ({leftName ?? "-"}), childRight={childRight:F1} ({rightName ?? "-"}), "
+                    + $"windowInset=[{childLeft - windowRect.rect.xMin:F1},{windowRect.rect.xMax - childRight:F1}].");
             }
             catch (Exception ex)
             {
                 // 겉모양 손질이다. 실패해도 편집기는 열린다.
-                pitFireTeam.Log.LogWarning($"[STM] Could not trim the stash section width: {ex.GetType().Name}: {ex.Message}");
+                pitFireTeam.Log.LogWarning($"[STM] Could not fit the stash section: {ex.GetType().Name}: {ex.Message}");
             }
+        }
+
+        // 스태시 패널의 **직계 자식들**이 창 좌표계에서 어디까지 뻗는가. 직계만 보는 이유는 손자까지
+        // 훑으면 격자 안의 아이템 뷰 수백 개와 드래그용 임시 객체까지 잡혀 엉뚱한 값이 나오기 때문이다.
+        private static void MeasureStmStashPanelEdges(
+            SimpleStashPanel stashPanel,
+            RectTransform windowRect,
+            out float childLeft,
+            out float childRight,
+            out string leftName,
+            out string rightName)
+        {
+            childLeft = float.MaxValue;
+            childRight = float.MinValue;
+            leftName = null;
+            rightName = null;
+
+            Vector3[] corners = new Vector3[4];
+            foreach (Transform child in stashPanel.transform)
+            {
+                if (!(child is RectTransform childRect) || !child.gameObject.activeInHierarchy || childRect.rect.width <= 0f)
+                {
+                    continue;
+                }
+
+                childRect.GetWorldCorners(corners);
+                // corners: 0=왼아래 1=왼위 2=오른위 3=오른아래.
+                float left = windowRect.InverseTransformPoint(corners[0]).x;
+                float right = windowRect.InverseTransformPoint(corners[2]).x;
+                if (left < childLeft)
+                {
+                    childLeft = left;
+                    leftName = child.name;
+                }
+
+                if (right > childRight)
+                {
+                    childRight = right;
+                    rightName = child.name;
+                }
+            }
+        }
+
+        // 그려진 격자의 오른쪽 끝(칸 좌표계). 아무것도 못 재면 float.MinValue 다.
+        private static float MeasureStmStashGridRight(SimpleStashPanel stashPanel, RectTransform sectionRect)
+        {
+            float gridRight = float.MinValue;
+            EFT.UI.DragAndDrop.GridView[] grids = stashPanel.GetComponentsInChildren<EFT.UI.DragAndDrop.GridView>(false);
+            if (grids == null)
+            {
+                return gridRight;
+            }
+
+            Vector3[] corners = new Vector3[4];
+            foreach (EFT.UI.DragAndDrop.GridView grid in grids)
+            {
+                if (!(grid?.transform is RectTransform gridRect) || gridRect.rect.width <= 0f)
+                {
+                    continue;
+                }
+
+                gridRect.GetWorldCorners(corners);
+                gridRight = Mathf.Max(gridRight, sectionRect.InverseTransformPoint(corners[2]).x);
+            }
+
+            return gridRight;
         }
 
         // 1px 미만의 남는 폭은 반올림 오차다 - 건드리면 격자가 잘릴 수 있다.
         private const float StmStashSectionSlackEpsilon = 2f;
+
+        // 창 테두리와 패널 내용 사이에 둘 최소 여백. 칸의 원래 들여쓰기(16px)의 절반이다.
+        private const float StmStashWindowEdgeMargin = 8f;
+
+        // 한 번에 옮길 수 있는 한계. 이보다 큰 값이 나오면 재는 것이 틀린 것이므로(엉뚱한 자식을 잡았다)
+        // 옮기지 않고 로그만 남긴다 - 편집기를 망가뜨리는 것보다 어긋난 채 두는 것이 낫다(불변식 2).
+        private const float StmStashSectionMaxAdjust = 160f;
 
         // 편집기 프로필: 플레이어 프로필의 복제(외형·스킬의 껍데기)에, 인벤토리만 그 팀원의 장비와 **그 팀원의 스태시**로 바꾼다.
         // PIT 와 같은 InventoryDescriptor 경로를 쓰므로 아이템 id 가 보존된다 - 저장이 "어느 아이템이 움직였나" 를 id 로 말한다.
