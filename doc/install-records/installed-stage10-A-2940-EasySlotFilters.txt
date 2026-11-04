@@ -1,0 +1,2 @@
+2940__bushtail-Easy.Slot.Filters_v1.0.0	SPT_Runtime\user\mods\bushtail-Easy Slot Filters\EasySlotFilters.dll
+2940__bushtail-Easy.Slot.Filters_v1.0.0	SPT_Runtime\user\mods\bushtail-Easy Slot Filters\config.jsonc

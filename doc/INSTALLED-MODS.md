@@ -3,8 +3,9 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **184개**, 설치 파일 **10601개** (자동 생성 설정 파일 포함)
-- 게임 쪽 플러그인 로드: **147개** (2026-11-04 실측, `BepInEx/LogOutput.log` 의 `147 plugins to load`. 그 기동은 **레이드까지 들어갔다**. `[Error` 15줄 / `[Fatal` 0줄이고 전부 기존 건이다 — SAIN `sectactPriestEvent` 6, STM `AimingFailure` 6·`MedicalActivity` 1, ECOTI per-frame 1, Fika 미설치 관련 DirectReload 패치 1. `Loading [` 줄은 108개뿐이라 147 과의 차이 39개는 아직 설명하지 못했다 — 비교에는 `plugins to load` 숫자를 쓴다) / 서버 모드 로드: **115개** (2026-11-04 실측, `user/logs/spt/spt20261104.log` 의 `ModLoader: 총 115 개`, 115줄 모두 `불러옴`. 정상 시작 약 118초. `[Error]` 49줄 = 알려진 `Could not add` 48건(원인 `MountOlympus.dll`, 모드가 만들지 않는 아이템 id 48개 — `REVIEW-LOAD-ORDER.md`) + 신규 1건 `BundleLoader Unable to add bundle: ...barrel_vpo215_600mm_366tkm.bundle`(번들 중복으로 보이며 시작은 정상. 기준선에 포함 — `PLAN-STAGE9.md` §9-0-1))
+- 설치된 모드: **185개**, 설치 파일 **10603개** (자동 생성 설정 파일 포함)
+- 게임 쪽 플러그인 로드: **147개** (2026-11-04 실측, `BepInEx/LogOutput.log` 의 `147 plugins to load`. 그 기동은 **레이드까지 들어갔다**. `[Error` 15줄 / `[Fatal` 0줄이고 전부 기존 건이다 — SAIN `sectactPriestEvent` 6, STM `AimingFailure` 6·`MedicalActivity` 1, ECOTI per-frame 1, Fika 미설치 관련 DirectReload 패치 1. `Loading [` 줄은 108개뿐이라 147 과의 차이 39개는 아직 설명하지 못했다 — 비교에는 `plugins to load` 숫자를 쓴다) / 서버 모드 로드: **115개** (2026-11-04 실측, `user/logs/spt/spt20261104.log` 의 `ModLoader: 총 115 개`, 115줄 모두 `불러옴`. 정상 시작 약 118초. `[Error]` 49줄 = 알려진 `Could not add` 48건(원인 `MountOlympus.dll`, 모드가 만들지 않는 아이템 id 48개 — `REVIEW-LOAD-ORDER.md`) + 신규 1건 `BundleLoader Unable to add bundle: ...barrel_vpo215_600mm_366tkm.bundle`(번들 중복으로 보이며 시작은 정상. 기준선에 포함 — `PLAN-STAGE10.md` §10-0-1))
+- 그 뒤 10-A: 서버 모드 **116개** (2026-11-05, Easy Slot Filters 설치 후 테스트, 정상 시작 135초 — `server-tests/server-test-stage10-A-2940-EasySlotFilters.out.txt`. 새 오류 0건, `Could not add` 48건·`Unable to add bundle` 1건 모두 기준선과 같다. 게임 쪽은 서버 전용 모드라 147개 그대로이고, 이 설치 뒤로 **게임을 띄운 적이 없다**). 테스트 콘솔 출력에는 `[Error]` 등급 표기가 없어 로그 파일의 오류 줄 수와 직접 비교되지 않는다 — 비교는 `Could not add`·`Unable to add bundle` 같은 문구 수로 한다
 - 옛 값(게임 145 / 서버 116, 2026-10-29~30)과 다른 이유: 서버 116→115 는 PIT Fireteam 서버 모드 제거분, 게임 145→147 은 그 뒤 설치분이다
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
@@ -246,6 +247,12 @@
 | [ISB Special Forces](https://sp-mod.com/mod/2485) | 2.0.1 | 게임+서버 | - | 1584 | `stage9-2485` |
 | [GF2 Skin Pack](https://sp-mod.com/mod/3156) | 1.0.0 | 서버 | - | 58 | `stage9-3156` |
 | [WTT - Head and Voice Selector](https://sp-mod.com/mod/1277) | 1.1.0 | 게임+서버 | - | 4 | `stage9-1277` |
+
+## 10차 — 공개 목록 125개와 부착물 호환 (계획은 `PLAN-STAGE10.md`)
+
+| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
+| --- | --- | --- | --- | --- | --- |
+| [Easy Slot Filters](https://sp-mod.com/mod/2940) | 1.0.0 | 서버 | - | 2 | `stage10-A-2940-EasySlotFilters` |
 
 ## 다른 경로로 설치된 것
 
