@@ -6055,3 +6055,59 @@ STM 경로에만 건다 - PIT 용병 편집기의 칸은 그대로다(불변식 
 다음부터 프로세스 확인은 `tasklist | grep` 으로 한다(`//FI` 는 이 셸에서 믿지 않는다).
 
 **인게임 미확인**: 띠가 사라졌는지, 격자가 잘리지 않았는지, 로그의 `slack` 값이 얼마인지.
+
+### 2-19 검색칸 — 관문의 정체를 찾아 우회했다 (2026-11-04)
+
+사용자가 **플레이어 스태시의 search 를 참조하라**고 지시했다. 그 경로를 IL 로 끝까지 따라가
+2026-11-04 오전의 실패 원인을 못박았다.
+
+**`SimpleStashPanel.InitSearch` 의 관문은 값 하나가 아니다:**
+
+```
+flag = _searchAvailability != Unavailable && _searchTab != null && tab == Gear
+       && bool_2 && ViewType ∈ {Inventory, TradingPlayer, TransferPlayer, ScavInventory}
+```
+
+`bool_2` 는 `Show` 에서 **`_item.Parent.GetOwner() is BackEndInventoryController`** 로 정해진다.
+우리 편집기의 스태시 주인은 기본 `InventoryController` 다 - **불변식 11 이 지키는 바로 그 자리**다.
+그래서 `StashOnly` 를 넣어도 flag 는 거짓이었고 `_searchTab.gameObject.SetActive(false)` 가 그대로
+걸렸다. "값은 들어갔는데 패널이 안 세워진다" 의 정체가 이것이다. **같은 날 본 "오른쪽 빈 폭" 은
+이것과 무관한 별개**였다(바로 앞 항목).
+
+`flag` 가 참일 때 `InitSearch` 가 하는 일은 둘뿐이다: `_searchTab` 을 켜고 `_header`(창고 이름표)를
+끈다. 그리고 토글이 켜지면 `SearchHandler` 가 `ItemUiContext.ShowStashSearchWindow(
+_itemContext.CreateChild(_item), equipment)` 를 부른다.
+
+**우회로가 있다. 창 쪽에는 컨트롤러 종류 검사가 없다:**
+
+| 함수 | 컨트롤러 종류 검사 |
+|---|---|
+| `SimpleStashPanel.InitSearch` | **있다** (`bool_2`) |
+| `ItemUiContext.ShowStashSearchWindow` | **없다** - `_inventory.Stash`·`_itemController`·문맥을 그대로 쓴다 |
+| `StashSearchWindow.Show` | **없다** - `itemController`·`itemContext` 를 인자로 받는다 |
+| (대조) `ItemUiContext.ShowSortingTable` | **있다** - `is BackEndInventoryController` 아니면 빈 컨텍스트 |
+
+그래서 `InitSearch` 를 건너뛰고 **우리가 직접** `_searchTab` 을 켜고 `_header` 를 끈 뒤
+`OnStateChange` 를 구독해 창을 연다(`EnableStmStashSearch`). 불변식 11 이 적어 둔 **길 ⒜**(그 조작을
+우리 경로로 따로 구현한다)이고, 안전장치인 컨트롤러는 그대로다.
+
+**플레이어 화면을 그대로 따랐다.** 창고 화면은 `LobbyInventoryScreenController` 이고
+`SearchAvailability = All`, 문맥은 `InventorySelectableItemContext(Inventory)` 로 **우리 편집기의
+스태시 문맥과 같은 종류**다. `All` 의 뜻은 창에 "장비도 검색" 토글이 선다는 것이라 장비 트리를 함께
+넘긴다 - 그 팀원의 장비다. 창이 받는 문맥은 바닐라와 같이 **스태시 문맥의 자식**(`CreateChild`)이라
+창에서 꺼낸 아이템도 우리 지역 트리로만 간다.
+
+편집기를 닫을 때 창을 **먼저 닫고** 구독을 끊는다(`CloseStmStashSearch` → `TeardownStmGearEditor`).
+창이 편집기보다 오래 남으면 사라진 지역 트리를 가리킨다.
+
+빌드: 클라이언트 경고 0·오류 0, 테스트 **621개** 통과(판정이 전부 클라이언트 쪽이라 새 테스트는 없다).
+
+### 설치 — 검색칸 (2026-11-04)
+
+클라이언트 `D2588D5E` → **`416530D1`**, 서버 `A59BFE8B` 그대로. 설치본 md5 = 빌드 md5.
+산출물 IL 에 `EnableStmStashSearch`·`ShowStashSearchWindow` 호출·`CloseStmStashSearch` 가 들었다.
+**게임이 켜진 채 복사했으므로 재기동 뒤에 적용된다** - 빈 폭 고침(`D2588D5E`)도 아직 한 번도 돌지
+않았으므로, 다음 재기동 한 번이 **둘을 함께** 처음 돌린다.
+
+**인게임 미확인**: ⑴ 격자 오른쪽 띠, ⑵ 검색칸이 "창고" 자리에 서는지, ⑶ 창이 그 팀원의 스태시·장비만
+보여 주는지, ⑷ 창에서 꺼낸 아이템이 저장에 실리는지(보존 검사가 받는지).
