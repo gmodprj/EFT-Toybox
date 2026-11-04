@@ -8,8 +8,8 @@ const DOC = path.join(ROOT, 'doc');
 
 // 1) 매니페스트: 모드 id → 이름·버전·단계
 const mods = new Map();
-for (const f of fs.readdirSync(path.join(DOC, 'download')).filter(f => /^manifest-stage\d(?:-[A-Za-z])?\.json$/.test(f)).sort()) {
-  const stage = f.match(/stage(\d)/)[1];
+for (const f of fs.readdirSync(path.join(DOC, 'download')).filter(f => /^manifest-stage\d+(?:-[A-Za-z0-9]+)?\.json$/.test(f)).sort()) {
+  const stage = f.match(/stage(\d+)/)[1];
   for (const m of JSON.parse(fs.readFileSync(path.join(DOC, 'download', f), 'utf8')).mods)
     mods.set(String(m.id), { id: m.id, link: m.homepage ?? `https://sp-mod.com/mod/${m.id}`, name: m.name, version: m.version, stage, group: m.group ?? '', files: [], records: new Set() });
 }
@@ -40,9 +40,9 @@ const side = (files) => {
   const d = files.some(f => /^EscapeFromTarkov_Data\\/i.test(f)), o = files.some(f => !/^(BepInEx|SPT_Runtime|EscapeFromTarkov_Data)\\/i.test(f));
   return [c && '게임', d && '게임 데이터', s && '서버', o && '루트'].filter(Boolean).join('+');
 };
-const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)', 8: '8차 — OP·AI 동료·HUD 포팅본 (8-A 5 + 8-B 3 + 8-C 3 + 8-D 치트 2 + 8-E AI 동료 3 + 8-F 대형 1)', 9: '절차 밖에서 들어온 것 (설치 기록을 뒤늦게 복원 — 당시 기록이 아니다)' };
+const stageTitle = { 1: '1차 — UI·탄약 정보·개조 화면 편의', 2: '2차 — 편의·WTT 콘텐츠·SVM', 3: '3차 — 도구·커스텀 상인', 4: '4차 — 상인 목록 넘침 대응', 5: '5차 — UI·편의(5-A)·총기(5-B)·탄약(5-C)·상인(5-D)·치트·도구(5-E)', 6: '6차 — 상인·파츠 (6-A 10 + 6-B 결속 2 + 6-C 부착물 UI 3 + 6-D 초상화 1)', 7: '7차 — 방어구·탄환·파츠·상인 (7-A 13 + 7-B 3 + 7-C 26 + 7-D 12 + 7-E 대형 3)', 8: '8차 — OP·AI 동료·HUD 포팅본 (8-A 5 + 8-B 3 + 8-C 3 + 8-D 치트 2 + 8-E AI 동료 3 + 8-F 대형 1)', 9: '절차 밖에서 들어온 것 (설치 기록을 뒤늦게 복원 — 당시 기록이 아니다)', 10: '10차 — 공개 목록 125개와 부착물 호환 (계획은 `PLAN-STAGE10.md`)' };
 // 로드 확인 현황: 확인할 때마다 여기만 고친다
-const loadStatus = '- 게임 쪽 플러그인 로드: **147개** (2026-11-04 실측, `BepInEx/LogOutput.log` 의 `147 plugins to load`. 그 기동은 **레이드까지 들어갔다**. `[Error` 15줄 / `[Fatal` 0줄이고 전부 기존 건이다 — SAIN `sectactPriestEvent` 6, STM `AimingFailure` 6·`MedicalActivity` 1, ECOTI per-frame 1, Fika 미설치 관련 DirectReload 패치 1. `Loading [` 줄은 108개뿐이라 147 과의 차이 39개는 아직 설명하지 못했다 — 비교에는 `plugins to load` 숫자를 쓴다) / 서버 모드 로드: **115개** (2026-11-04 실측, `user/logs/spt/spt20261104.log` 의 `ModLoader: 총 115 개`, 115줄 모두 `불러옴`. 정상 시작 약 118초. `[Error]` 49줄 = 알려진 `Could not add` 48건(원인 `MountOlympus.dll`, 모드가 만들지 않는 아이템 id 48개 — `REVIEW-LOAD-ORDER.md`) + 신규 1건 `BundleLoader Unable to add bundle: ...barrel_vpo215_600mm_366tkm.bundle`(번들 중복으로 보이며 시작은 정상. 기준선에 포함 — `PLAN-STAGE9.md` §9-0-1))\n- 옛 값(게임 145 / 서버 116, 2026-10-29~30)과 다른 이유: 서버 116→115 는 PIT Fireteam 서버 모드 제거분, 게임 145→147 은 그 뒤 설치분이다';
+const loadStatus = '- 게임 쪽 플러그인 로드: **147개** (2026-11-04 실측, `BepInEx/LogOutput.log` 의 `147 plugins to load`. 그 기동은 **레이드까지 들어갔다**. `[Error` 15줄 / `[Fatal` 0줄이고 전부 기존 건이다 — SAIN `sectactPriestEvent` 6, STM `AimingFailure` 6·`MedicalActivity` 1, ECOTI per-frame 1, Fika 미설치 관련 DirectReload 패치 1. `Loading [` 줄은 108개뿐이라 147 과의 차이 39개는 아직 설명하지 못했다 — 비교에는 `plugins to load` 숫자를 쓴다) / 서버 모드 로드: **115개** (2026-11-04 실측, `user/logs/spt/spt20261104.log` 의 `ModLoader: 총 115 개`, 115줄 모두 `불러옴`. 정상 시작 약 118초. `[Error]` 49줄 = 알려진 `Could not add` 48건(원인 `MountOlympus.dll`, 모드가 만들지 않는 아이템 id 48개 — `REVIEW-LOAD-ORDER.md`) + 신규 1건 `BundleLoader Unable to add bundle: ...barrel_vpo215_600mm_366tkm.bundle`(번들 중복으로 보이며 시작은 정상. 기준선에 포함 — `PLAN-STAGE10.md` §10-0-1))\n- 그 뒤 10-A: 서버 모드 **116개** (2026-11-05, Easy Slot Filters 설치 후 테스트, 정상 시작 135초 — `server-tests/server-test-stage10-A-2940-EasySlotFilters.out.txt`. 새 오류 0건, `Could not add` 48건·`Unable to add bundle` 1건 모두 기준선과 같다. 게임 쪽은 서버 전용 모드라 147개 그대로이고, 이 설치 뒤로 **게임을 띄운 적이 없다**). 테스트 콘솔 출력에는 `[Error]` 등급 표기가 없어 로그 파일의 오류 줄 수와 직접 비교되지 않는다 — 비교는 `Could not add`·`Unable to add bundle` 같은 문구 수로 한다\n- 옛 값(게임 145 / 서버 116, 2026-10-29~30)과 다른 이유: 서버 116→115 는 PIT Fireteam 서버 모드 제거분, 게임 145→147 은 그 뒤 설치분이다';
 
 let md = `# 설치된 모드 목록\n\n> 자동 생성: \`node tools/gen-installed-mods.mjs\` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.\n\n`;
 const all = [...mods.values()];
@@ -52,7 +52,7 @@ md += `- 설치된 모드: **${total.length}개**, 설치 파일 **${total.reduc
 md += `${loadStatus}\n`;
 md += `- **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음\n\n`;
 
-for (const st of ['1', '2', '3', '4', '5', '6', '7', '8', '9']) {
+for (const st of ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']) {
   const list = all.filter(m => m.stage === st);
   if (!list.length) continue;
   md += `## ${stageTitle[st]}\n\n| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |\n| --- | --- | --- | --- | --- | --- |\n`;
