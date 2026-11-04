@@ -39,17 +39,18 @@
 | 9-J | 도구·성능 — 하나씩 | 7 | 7.7 MB | 하나씩 설치·테스트 |
 | 9-K | 결속 — 소형, 하나씩 | 6 | 900 KB | 프로필 백업 → 하나씩 설치·테스트 → 프로필 비교 |
 | 9-L | 결속 — 콘텐츠·대형, 하나씩 | 11 | 3.57 GB | 프로필 백업 → 하나씩 설치·테스트 → 프로필 비교 |
-| 9-M | 겹침·초대형 — 9-0 의 택일이 끝난 뒤 | 7 | 5.36 GB | 하나씩 설치·테스트 |
+| 9-M | 대형 — 겹침 확인하며 하나씩 | 3 | 5.36 GB | 하나씩 설치·테스트 |
 | 9-O | Manimal 맵 백포트 — 초대형, 의존 순서대로 | 3 | 5.25 GB | 하나씩 설치·테스트 |
+| 9-X | 제외 — 9-0-3 택일에서 뺀 것 | 4 | 5.8 MB | 넣지 않는다 |
 | 9-N | 보류 — 이 계획에서는 넣지 않는다 | 1 | 747 KB | 넣지 않는다 |
 
-9-N(보류 1개)을 빼면 실제로 받는 양은 **14.77 GB** 다. 9-0-1 에서 잰 `E:\` 여유 1008.2 GB 에 비하면 문제가 없다. 9-M 의 택일에서 겹침 모드를 빼기로 하면 더 줄어든다.
+9-X(제외 4개)와 9-N(보류 1개)을 빼면 실제로 받는 양은 **14.76 GB**, 넣는 모드는 **121개**다. 9-0-1 에서 잰 `E:\` 여유 1008.2 GB 에 비하면 문제가 없다. 9-M·9-O 가 그중 10.6 GB 를 차지한다 — 이 둘은 맨 뒤이므로, 앞 단계에서 멈추면 받지 않아도 된다.
 
 ## 9-0 — 설치 전에 끝낼 결정 (설치 없음)
 
 설치본(`E:\Spt`)은 건드리지 않는다. 여기서 정하지 않으면 뒤 단계가 서로를 덮는다.
 
-진행 상황 — **9-0-1(기준선)·9-0-2(PIT 기록)는 2026-11-04, 9-0-4·9-0-5(차단 재확인)는 2026-11-05 에 끝냈다.** 남은 것은 **9-0-3(택일 4건)뿐이고, 그것은 사용자가 정해야 한다.** 9-0-5 에서 보류가 4개 → 1개로 줄었다.
+진행 상황 — **9-0 은 전부 끝났다.** 9-0-1(기준선)·9-0-2(PIT 기록)는 2026-11-04, 9-0-3(택일)·9-0-4·9-0-5(차단 재확인)는 2026-11-05 에 정했다. 9-0-5 에서 보류가 4개 → 1개로 줄고, 9-0-3 에서 4개가 제외로 빠졌다. **다음은 9-A(또는 All In Weapon 을 아직 빼지 않았으면 9-B)부터 설치 단계다.**
 
 ### 9-0-1 기준선 — **재측정 완료 (2026-11-04)**
 
@@ -108,14 +109,17 @@ assets/content/items/mods/barrels/barrel_vpo215_600mm_366tkm.bundle
 
 **PIT 는 어떤 단계에서도 다시 넣지 않는다** — STM 과 같은 `/singleplayer/pitfireteam/*` 라우트를 쓴다.
 
-### 9-0-3 택일 4건
+### 9-0-3 택일 4건 — **정해졌다 (2026-11-05)**
 
-| 넣으려는 것 | 설치본의 상대 | 정해야 할 것 |
-| --- | --- | --- |
-| Amands's Graphics (592) | Amands' Sense | 같은 제작자의 다른 모드다. 함께 둘 수 있는지, 아니면 하나만 쓸지 |
-| DynamicMaps Extended (3097, 1.7 GB) | Dynamic Maps | 확장인지 교체인지. 선행에 Dynamic Maps 가 적혀 있어 덧붙이는 쪽으로 보이나 파일을 받아야 확정된다 |
-| APBS (1594) · ABPS (2097) | SAIN · MoreBotsAPI | 봇 생성·배치 주체가 둘이 되면 스폰이 겹친다. **빼기로 하면 Arena Mode(3175)도 함께 빠진다** |
-| Hideout Overhaul (2982) · Vertical Hideout (2530) | 서로 | 둘 다 하이드아웃 배치를 건드린다. 9-E 에서 함께 넣고 겹치면 하나만 남긴다 |
+| 넣으려는 것 | 설치본의 상대 | 결정 | 어디로 |
+| --- | --- | --- | --- |
+| Amands's Graphics (592) | Amands' Sense | **넣지 않는다.** 같은 제작자의 다른 모드이고 화면 효과가 겹친다 — Sense 를 남긴다 | 9-X |
+| APBS (1594) · ABPS (2097) | SAIN · MoreBotsAPI | **넣지 않는다.** 봇 생성·배치 주체가 둘이 되면 스폰이 이중으로 돈다 — SAIN 쪽을 남긴다 | 9-X |
+| Arena Mode (3175) | (위의 결과) | **자동으로 빠진다.** 1594·2097 을 의존성으로 요구한다 | 9-X |
+| DynamicMaps Extended (3097, 1.7 GB) | Dynamic Maps | **넣는다.** 선행이 설치된 Dynamic Maps 와 Map Variants(3040)라 교체가 아니라 확장으로 읽힌다. 단 **받아서 파일 구조를 먼저 보고**, 설치된 Dynamic Maps 를 덮으려 하면 거기서 멈춘다 | 9-M |
+| Hideout Overhaul (2982) · Vertical Hideout (2530) | 서로 | **함께 넣고, 겹치면 하나만 남긴다.** 배치가 충돌하는지는 화면을 봐야 안다 | 9-E 그대로 |
+
+제외분은 약 6 MB 라 분량에는 거의 영향이 없다. 바뀐 것은 **봇과 화면의 주체를 설치본 쪽으로 못박았다**는 점이다. 뒤 단계에서 봇·그래픽 모드를 볼 때 이 결정을 기준으로 삼는다.
 
 ### 9-0-4 Fika 비호환 표시 3건은 해당 없다
 
@@ -452,7 +456,7 @@ ORBIT 3.0(2706)은 SAIN·Waypoints·BigBrain 을 모두 요구하고 봇 행동�
 - `LogOutput.log` 수정 시각이 **설치 이후**인지 먼저 본다. 이전이면 그 모드는 아직 한 번도 로드되지 않았다.
 - `N plugins to load` 가 하나씩 늘어나는지, `[Error`/`[Fatal` 이 새로 생기는지.
 - TraceSix(3221)·POMSix(3100)·CloudSix(2567)는 무거운 효과다. 프레임을 함께 본다 — 돌아가는 것과 쓸 수 있는 것은 다르다.
-- 설치된 Amands' Sense 와 화면이 겹치는지. Amands's Graphics(592)는 9-M 에서 택일한 뒤에 넣는다.
+- 설치된 Amands' Sense 와 화면이 겹치는지. **Amands's Graphics(592)는 9-0-3 에서 넣지 않기로 했다**(9-X) — 이 단계의 그래픽 모드가 Sense 와 부딪히면 그 모드를 뺀다.
 
 ### 9-J — 도구·성능 — 하나씩 (7개, 7.7 MB)
 
@@ -527,29 +531,24 @@ ORBIT 3.0(2706)은 SAIN·Waypoints·BigBrain 을 모두 요구하고 봇 행동�
 - Skills Extended(2383)는 스킬 트리를 바꾼다. 기존 스킬 수치가 남는지 프로필 비교로 본다.
 - 상인 줄이 넘치면 설치된 Kaeno-TraderScrolling 으로 해결한다(PROCEDURE 의 문제 표).
 
-### 9-M — 겹침·초대형 — 9-0 의 택일이 끝난 뒤 (7개, 5.36 GB)
+### 9-M — 대형 — 겹침 확인하며 하나씩 (3개, 5.36 GB)
 
 **설치 방식** — 하나씩 설치·테스트.
 
-설치본의 모드와 역할이 겹치거나 혼자 GB 를 먹는 것들. **결정 없이 넣지 않는다.** 합쳐 5.36 GB.
+9-0-3 의 택일을 거쳐 남은 것들. 혼자 GB 를 먹거나 설치본과 파일이 겹칠 수 있다. **표의 순서대로** 작은 것부터.
 
 | 모드 | id | 버전 | 크기 | 결속 | 의존성 |
 | --- | --- | --- | --- | --- | --- |
-| [Amands's Graphics](https://sp-mod.com/mod/592) | 592 | 1.8.0 | 32 KB | - | - |
-| [APBS - Acid's Progressive Bot System](https://sp-mod.com/mod/1594) | 1594 | 2.4.1 | 1012 KB | - | - |
-| [ABPS - Acid's Bot Placement System](https://sp-mod.com/mod/2097) | 2097 | 2.1.0 | 1 MB | - | - |
-| [Arena Mode](https://sp-mod.com/mod/3175) | 3175 | 0.4.1 | 4 MB | - | SAIN - Solarint's AI Modifications - Full AI Combat System Replacement, APBS - Acid's Progressive Bot System, ABPS - Acid's Bot Placement System |
-| [Manimal's 1.0 Labs Office Backport](https://sp-mod.com/mod/2937) | 2937 | 2.0.0 | 90 MB | - | WTT - CommonLib, WTT - Content Backport |
 | [DynamicMaps Extended](https://sp-mod.com/mod/3097) | 3097 | 2.5.2 | 1739 MB | - | Dynamic Maps, Map Variants |
+| [Manimal's 1.0 Labs Office Backport](https://sp-mod.com/mod/2937) | 2937 | 2.0.0 | 90 MB | - | WTT - CommonLib, WTT - Content Backport |
 | [Arena Map Port](https://sp-mod.com/mod/3166) | 3166 | 0.4.0 | 3659 MB | - | - |
 
 볼 것
 
-- Amands's Graphics(592) ↔ 설치된 Amands' Sense — 같은 제작자의 다른 모드다. 함께 둘 수 있는지부터 확인한다.
-- APBS(1594)·ABPS(2097) ↔ 설치된 SAIN·MoreBotsAPI — 봇 생성 주체가 둘이 되면 스폰이 겹친다. Arena Mode(3175)는 이 둘을 요구하므로 **1594·2097 을 넣지 않기로 하면 3175 도 빠진다**.
-- DynamicMaps Extended(3097, 1.7 GB) ↔ 설치된 Dynamic Maps — 선행이 Dynamic Maps 와 Map Variants(3040, 9-B)다. 확장이므로 교체가 아니라 덧붙이는 쪽일 수 있다. 받아서 파일 구조를 봐야 확정된다.
-- Arena Map Port(3166, 3.6 GB)는 이 목록에서 가장 크고 버전이 0.4.0 이다. 디스크 여유를 먼저 재고, 단독으로 넣는다.
-- Labs Office Backport(2937)는 설치된 WTT Content Backport 와 같은 계열이다 — 파일 겹침 검사를 특히 꼼꼼히 본다.
+- DynamicMaps Extended(3097, 1.7 GB) — **넣기로 정했다.** 선행이 설치된 Dynamic Maps 와 Map Variants(3040, 9-B)라 교체가 아니라 확장으로 읽힌다. 다만 받아서 **파일 구조를 먼저 보고** 설치한다. 설치된 Dynamic Maps 의 파일을 덮으려 하면 거기서 멈춘다 — 그때는 확장이 아니라 교체다.
+- Labs Office Backport(2937, 90 MB)는 설치된 WTT Content Backport 와 같은 계열이다 — 파일 겹침 검사를 특히 꼼꼼히 본다.
+- Arena Map Port(3166, 3.6 GB)는 이 목록에서 가장 크고 버전이 0.4.0 이다. 단독으로 넣고, 그 맵에 들어가 보는 것까지 끝낸다.
+- 셋 다 맵 자료라 레이드 진입이 본 시험이다. 서버 테스트만으로 통과로 치지 않는다.
 
 ### 9-O — Manimal 맵 백포트 — 초대형, 의존 순서대로 (3개, 5.25 GB)
 
@@ -571,6 +570,25 @@ ORBIT 3.0(2706)은 SAIN·Waypoints·BigBrain 을 모두 요구하고 봇 행동�
 - 세 개 모두 WTT Content Backport 와 같은 계열이라 **파일 겹침이 가장 의심되는 단계**다. `check-conflicts.mjs` 결과를 그대로 신뢰하지 말고 덮어쓰기 경고가 하나라도 나오면 멈춘다.
 
 UnityToolkit 은 Forge 에 4.1.6 표기가 없다(최신 2.0.2 가 4.1.5). 그래도 설치본에서 프리패처가 실제로 돌고 있으므로 차단 사유가 아니다 — 9-0-5 에 증거를 적었다.
+
+### 9-X — 제외 — 9-0-3 택일에서 뺀 것 (4개, 5.8 MB)
+
+**설치 방식** — 넣지 않는다.
+
+설치본에 이미 같은 일을 하는 모드가 있어 **넣지 않기로 정했다**(9-0-3). 다시 꺼내려면 상대 모드를 먼저 빼는 결정이 필요하다.
+
+| 모드 | id | 버전 | 크기 | 결속 | 의존성 |
+| --- | --- | --- | --- | --- | --- |
+| [Amands's Graphics](https://sp-mod.com/mod/592) | 592 | 1.8.0 | 32 KB | - | - |
+| [APBS - Acid's Progressive Bot System](https://sp-mod.com/mod/1594) | 1594 | 2.4.1 | 1012 KB | - | - |
+| [ABPS - Acid's Bot Placement System](https://sp-mod.com/mod/2097) | 2097 | 2.1.0 | 1 MB | - | - |
+| [Arena Mode](https://sp-mod.com/mod/3175) | 3175 | 0.4.1 | 4 MB | - | SAIN - Solarint's AI Modifications - Full AI Combat System Replacement, APBS - Acid's Progressive Bot System, ABPS - Acid's Bot Placement System |
+
+볼 것
+
+- Amands's Graphics(592) — 설치된 **Amands' Sense** 와 같은 제작자의 다른 모드다. 화면 효과가 겹쳐 둘 다 둘 이유가 없다. Sense 를 남긴다.
+- APBS(1594)·ABPS(2097) — 설치된 **SAIN·MoreBotsAPI** 와 봇 생성·배치 주체가 겹친다. 둘을 함께 두면 스폰이 이중으로 돈다. SAIN 쪽을 남긴다.
+- Arena Mode(3175) — 1594·2097 을 **의존성으로 요구**한다. 그 둘을 빼기로 했으므로 자동으로 빠진다. Arena 자체를 보고 싶으면 9-M 의 Arena Map Port(3166)가 맵만 따로 가져온다.
 
 ### 9-N — 보류 — 이 계획에서는 넣지 않는다 (1개, 747 KB, 결속 1)
 
