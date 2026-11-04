@@ -97,7 +97,7 @@
 | [Tylevo's Field Attachments](https://sp-mod.com/mod/3125) | 1.2.0 | 6차 | 게임 | **결속** 인벤토리를 열지 않고 레이드 중에 부품을 바꾼다. Left Alt를 누르면 무기 주변에 카드가 뜨고, 들고 있는 부품 중에서 광학·소음기·손잡이를 고른다. 개머리판·핸드가드·권총 손잡이까지 바꾸려면 Leatherman 멀티툴을 지녀야 한다. UnityToolkit 2.0.2 이상 필요. |
 | [Scrollable Attachments](https://sp-mod.com/mod/2677) | 2.0.0 | 6차 | 게임 | 개조 화면의 부착물 목록을 휠로 넘긴다. UnityToolkit 필요. |
 | [BETTER ATTACHMENTS](https://sp-mod.com/mod/1939) | 4.1.5 | 7차 | 게임+서버 | **결속** 모든 부착물의 인간공학·반동을 좋게 만든다. 설치 때 **부착물 1,092개**가 바뀌었다. DLL 표기는 2.0.0이다. |
-| [All In Weapon: Unslotted](https://sp-mod.com/mod/2576) | 1.2.0 | 7차 | 서버 | 슬롯·호환 제한을 없애 아무 부품·탄창·탄약이나 끼울 수 있다. 봇 무기 생성은 바닐라 그대로. 설치된 Compatibility Highlighter의 강조가 "전부 호환"처럼 보일 수 있다. |
+| [All In Weapon: Unslotted](https://sp-mod.com/mod/2576) | 1.2.0 | 7차 | 서버 | 슬롯·호환 제한을 없애 아무 부품·탄창·탄약이나 끼울 수 있다. 봇 무기 생성은 바닐라 그대로. 설치된 Compatibility Highlighter의 강조가 "전부 호환"처럼 보일 수 있다. **제거 영향 실측**은 [specs/2026-11-04-allinweapon-removal-survey.md](specs/2026-11-04-allinweapon-removal-survey.md) — 프로필 파일은 안 바뀌고, 이 모드만의 영향은 "부품 위의 부품" 23건이다(헬멧·방어구는 다른 모드 소관). |
 
 ## 조준·사격·전투 (19개)
 
