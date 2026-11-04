@@ -1,0 +1,1 @@
+2530__tarkin.hideoutuirevamp-v1.1.1	BepInEx\plugins\tarkin.hideoutuirevamp.dll

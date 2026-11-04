@@ -1,0 +1,3 @@
+2144__skilldistribution-1.3.0-spt-4.1	BepInEx\plugins\SkillDistribution-Client.dll
+2144__skilldistribution-1.3.0-spt-4.1	SPT_Runtime\user\mods\SkillDistribution\SkillDistribution-Server.dll
+2144__skilldistribution-1.3.0-spt-4.1	SPT_Runtime\user\mods\SkillDistribution\config\config.jsonc

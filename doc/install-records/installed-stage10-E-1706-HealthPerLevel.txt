@@ -1,0 +1,4 @@
+1706__fryciarz7-HealthPerLevel	SPT_Runtime\user\mods\fryciarz7-HealthPerLevel-cs\HealthPerLevel-cs.deps.json
+1706__fryciarz7-HealthPerLevel	SPT_Runtime\user\mods\fryciarz7-HealthPerLevel-cs\HealthPerLevel-cs.dll
+1706__fryciarz7-HealthPerLevel	SPT_Runtime\user\mods\fryciarz7-HealthPerLevel-cs\HealthPerLevel-cs.pdb
+1706__fryciarz7-HealthPerLevel	SPT_Runtime\user\mods\fryciarz7-HealthPerLevel-cs\config\config.json
