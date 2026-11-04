@@ -52,6 +52,10 @@ public class HelmetSlotUnionConfig : TargetConfig
     [JsonPropertyName("ExcludedWeaponIds")]
     public List<string> ExcludedWeaponIds { get; set; } = [];
 
+    /// <summary>두 범위에 걸쳐 남은 ConflictingItems 를 전부 지운다. 탄창·장전 손잡이는 남는다.</summary>
+    [JsonPropertyName("RemoveRemainingConflicts")]
+    public bool RemoveRemainingConflicts { get; set; } = true;
+
     /// <summary>건드리지 않을 칸 이름. 대소문자는 가리지 않는다.</summary>
     [JsonPropertyName("ExcludedSlotNames")]
     public List<string> ExcludedSlotNames { get; set; } = [];

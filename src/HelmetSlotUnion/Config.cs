@@ -63,6 +63,15 @@ public class Config
     [JsonPropertyName("ExcludedWeaponIds")]
     public List<string> ExcludedWeaponIds { get; set; } = [];
 
+    /// <summary>
+    /// 헬멧·총기 범위에서 걸러지지 않고 남은 ConflictingItems 를 전부 지운다.
+    /// 안면 보호구↔헬멧, 헤드셋↔헬멧, 헬멧 쪽에서만 닿는 마운트↔기계식 조준기처럼
+    /// 두 범위에 걸쳐 있는 것들이 여기서 풀린다.
+    /// WeaponConflictExcludedCategoryIds(탄창·장전 손잡이)는 여기서도 그대로 남는다 — 구경 제한이다.
+    /// </summary>
+    [JsonPropertyName("RemoveRemainingConflicts")]
+    public bool RemoveRemainingConflicts { get; set; } = true;
+
     /// <summary>건드리지 않을 칸 이름. 대소문자는 가리지 않는다.</summary>
     [JsonPropertyName("ExcludedSlotNames")]
     public List<string> ExcludedSlotNames { get; set; } = [];

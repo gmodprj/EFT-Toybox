@@ -95,6 +95,11 @@ public class HelmetSlotUnion(
             RemoveWeaponConflicts(items, config);
         }
 
+        if (config.RemoveRemainingConflicts)
+        {
+            RemoveRemainingConflicts(items, config);
+        }
+
         return Task.CompletedTask;
     }
 
@@ -188,6 +193,52 @@ public class HelmetSlotUnion(
             excludedCategories: excludedCategories,
             label: "총기",
             debug: config.Debug
+        );
+    }
+
+    /// <summary>
+    /// 헬멧·총기 범위에서 걸러지지 않고 남은 ConflictingItems 를 전부 지운다.
+    ///
+    /// 앞의 두 패스는 "같은 범위 안끼리" 만 지운다. 그래서 범위에 걸친 것들이 남는다 —
+    /// 안면 보호구↔헬멧, 헤드셋↔헬멧, 헬멧 쪽에서만 닿는 마운트↔기계식 조준기 같은 것들이다.
+    /// 여기서는 남은 것을 통째로 비운다.
+    ///
+    /// 다만 <c>WeaponConflictExcludedCategoryIds</c>(탄창·장전 손잡이)는 여기서도 남긴다.
+    /// 그쪽은 모양이 아니라 구경 이야기라(.338 볼트에 7.62 총열) 지우면 총이 성립하지 않는다.
+    /// 반대쪽(탄약이 탄창을 막는 식)이 지워져도 그 분류가 건 항목이 남아 제한은 유지된다.
+    /// </summary>
+    private void RemoveRemainingConflicts(Dictionary<MongoId, TemplateItem> items, Config config)
+    {
+        var keepCategories = new HashSet<MongoId>(
+            config.WeaponConflictExcludedCategoryIds.Select(id => new MongoId(id))
+        );
+
+        var touched = 0;
+        var removed = 0;
+        var kept = 0;
+        foreach (var (id, item) in items)
+        {
+            if (item.Properties?.ConflictingItems is not { Count: > 0 } conflicts) continue;
+
+            if (keepCategories.Contains(item.Parent))
+            {
+                kept += conflicts.Count;
+                continue;
+            }
+
+            var before = conflicts.Count;
+            conflicts.Clear();
+            touched++;
+            removed += before;
+            if (config.Debug)
+            {
+                logger.Debug($"[HelmetSlotUnion] 남은 충돌 정리 {id}: {before} → 0");
+            }
+        }
+
+        logger.Success(
+            $"[HelmetSlotUnion] 남은 충돌 정리: 아이템 {touched}개에서 {removed}건을 지웠다. "
+                + $"구경 제한으로 남긴 항목 {kept}건."
         );
     }
 

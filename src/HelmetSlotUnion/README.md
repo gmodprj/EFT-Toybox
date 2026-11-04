@@ -98,6 +98,16 @@
 
 `RemoveAllConflictsOnWeaponAttachments`(기본 꺼짐)는 범위 안 아이템의 목록을 통째로 비운다. 구경 제한도 탄약 제한도 함께 사라진다.
 
+### 남은 것까지 — `RemoveRemainingConflicts`
+
+앞의 두 패스는 **같은 범위 안끼리만** 지운다. 그래서 범위에 걸친 것이 남는다 — 안면 보호구↔헬멧, 헤드셋↔헬멧, 헬멧 쪽에서만 닿는 마운트↔기계식 조준기 같은 것들이다. `RemoveRemainingConflicts`(기본 켜짐)가 남은 것을 통째로 비운다. 단 `WeaponConflictExcludedCategoryIds`(탄창·장전 손잡이)는 여기서도 남긴다.
+
+이 쓸기는 **두 번** 돈다. `PostLoad` 에서 한 번(아이템 376개 / 10186건), 그리고 `int.MaxValue` 자리에서 한 번 더다(`LateConflictSweep`). 뒤의 것이 필요한 이유는 실측했다 — `PostLoad` 에서 다 비웠는데도 클라이언트가 받은 목록에는 **884건이 남아 있었다**(ECOTI 서멀 라이저 390, 안면 보호구 369 …). 우선순위를 적지 않은 `Injectable` 은 기본값이 `int.MaxValue` 라 `PostLoad` 보다 늦게 돌고, 그 자리에서 다시 쓰는 모드가 있다. 맨 끝 쓸기가 아이템 3개에서 759건을 더 지우자 클라이언트 쪽은 **125건**만 남았다 — 그 125건이 일부러 남긴 구경 제한(탄창 74 · 장전 손잡이 51)이다.
+
+> `int.MaxValue` 자리의 쓰기가 클라이언트에 닿는지는 StackUnify 때 스택 크기로는 "닿지 않는다" 였는데, `ConflictingItems` 는 **닿는다**. 목록이 굳는 지점이 값마다 다르다는 뜻이다.
+
+구경 제한까지 열고 싶으면 `WeaponConflictExcludedCategoryIds` 를 비운다. 그러면 `.338` 볼트에 `7.62` 총열이 끼워진다.
+
 ## 설정 — `config.jsonc` (DLL 옆)
 
 | 항목 | 기본값 | 내용 |
@@ -111,6 +121,7 @@
 | `RemoveAllConflictsOnWeaponAttachments` | `false` | 총기 범위 안 아이템의 `ConflictingItems` 를 통째로 비운다 |
 | `WeaponConflictExcludedCategoryIds` | 탄창·장전 손잡이 | 총기 충돌 정리에서 뺄 분류 id. 어느 쪽에 있든 그 항목은 남는다 |
 | `ExcludedWeaponIds` | `[]` | 건드리지 않을 총기 아이템 id |
+| `RemoveRemainingConflicts` | `true` | 두 범위에 걸쳐 남은 `ConflictingItems` 를 전부 비운다(탄창·장전 손잡이는 남는다) |
 | `ExcludedSlotNames` | `[]` | 건드리지 않을 칸 이름(대소문자 무시) |
 | `ExcludedHelmetIds` | `[]` | 건드리지 않을 헬멧 아이템 id |
 
