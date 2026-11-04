@@ -3,7 +3,7 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **185개**, 설치 파일 **10627개** (자동 생성 설정 파일 포함)
+- 설치된 모드: **184개**, 설치 파일 **10601개** (자동 생성 설정 파일 포함)
 - 게임 쪽 플러그인 로드: 145개 (2026-10-29, AirdropCaller.Plugin 추가 후. 마지막 기동은 메뉴까지만 돌아 오류 2건: ①Fika 미설치 관련 DirectReload 패치 ②Show Me The Money 툴팁 NullReference. 레이드에 들어가면 COTI per-frame 과 PIT `LootPatrolLayer.GetDecision` NullReference 가, UTAE 편집 화면을 열면 기준선 로드 실패가 더 날 수 있다) / 서버 모드 로드: 116개 (2026-10-30 ScavRaidWaves 추가 후 테스트, 정상 시작 136초 — `server-tests/server-test-scavraidwaves.out.txt`. **오류 0건**, `Could not add` 48건 그대로 — 원인은 `MountOlympus.dll` 로, 모드가 만들지 않는 아이템 id 48개를 들고 있다(`REVIEW-LOAD-ORDER.md`))
 - **결속** = Forge "프로필 결속" 표시. 플레이 후 제거하면 프로필이 깨질 수 있음
 
@@ -229,7 +229,7 @@
 | [Tushonka-800: Combat Augmentation System](https://sp-mod.com/mod/3169) | 1.0.1 | 게임 | - (치트 표시) | 1 | `stage8D-3169` |
 | [Waypoints - Expanded Navmesh](https://sp-mod.com/mod/827) | 1.9.0 | 게임 | - | 13 | `stage8E-827` |
 | [Miyako Carry Service](https://sp-mod.com/mod/2709) | 1.1.4 | - | - | 0 | **미설치** |
-| [PIT Fireteam](https://sp-mod.com/mod/2676) | 1.0.0 | 게임+서버 | - | 26 | `stage8E-2676` |
+| [PIT Fireteam](https://sp-mod.com/mod/2676) | 1.0.0 | - | - | 0 | **미설치** |
 | [Make Shotguns Great Again!](https://sp-mod.com/mod/1453) | 1.19.1 | 게임+서버 | **결속** | 195 | `stage8F-1453` |
 | [Game Panel HUD (SPT 4.1.6 포팅본, KmyTarkovApi 2.0.0 포함)](https://arca.live/b/tarkovspt/185302366) | 4.1.6-port | 게임 | - | 30 | `stage8G-gamepanelhud` |
 
