@@ -91,6 +91,55 @@ OTHERMOD SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\config\config.json (�
 - MergeConsumables 서버 DLL 은 스스로를 **1.6.2** 로 알린다(모드 페이지·매니페스트는 1.6.3). 제작자가 DLL 버전을 올리지 않은 경우로, [PROCEDURE.md](PROCEDURE.md) 의 "알려진 정상 메시지" 에 같은 사례가 있다.
 - **아직 확인되지 않은 것** — 게임 전용 9개는 이번 설치 뒤로 게임을 띄운 적이 없어 로드된 적이 없다. 다음 기동에서 플러그인 수가 **151 → 160** 이 되어야 맞다. 인벤토리·치료 화면을 함께 건드리므로 인벤토리를 한 번 열어 보는 것이 이 단계의 본 시험이고, Dynamic Item Weights(2344)는 SVM 의 무게 옵션과 겹치니 아이템 무게도 한 번 본다.
 
+## 10-D — UI·표시 12개 · 2026-11-05
+
+| 항목 | 결과 |
+| --- | --- |
+| 받기 | 12개 모두 바이트 수 **정확히 일치** (44.38 MB, ImpactCue 혼자 40.4 MB) |
+| 버전 차이 | Briefing 은 계획의 1.0.2 가 아니라 **1.1.0** 이 최신이었다 |
+| 선행 | Briefing(3158)이 요구하는 Quest Codex(3054)는 10-B 에서 들어가 있다 |
+| 겹침 검사 | 처음 **ATTENTION(4)** → 섞여 온 파일을 빼내고 CLEAN. 설치 대상 312개 |
+| 설치 | 11개 `-SkipTest` + 마지막 1533 에서 테스트 한 번 |
+| 설치 기록 | 313줄 (= 312 + 생성된 설정 1) |
+| 서버 모드 | 122 → **127** (= 서버 쪽 5개) |
+| 시작 시간 | 144초 |
+| 로드 확인 | `(Added 5 mods: ImpactCue Web Config (2.0.3), Hj's Improved Customization UI (1.1.2), Name Plate (1.1.0), Wishlist Extended (1.2.0), Easy Ammo Names (2.1.0))` |
+| 오류 | 새 오류 0. 기준 문구 48 · 1 그대로, `err.txt` 0바이트 |
+
+출력: `server-tests/server-test-stage10-D-1533-MoreTagColours.out.txt`
+
+### 압축에 섞여 온 파일 4개를 설치에서 뺐다
+
+`check-conflicts.mjs` 가 CLEAN 이 아니라 **ATTENTION(4)** 를 냈다. 겹침은 0이지만 설치 경로(`BepInEx/`·`SPT_Runtime/`…) 밖의 파일이 4개 있었다. `install-and-test.ps1` 은 **해제본의 모든 파일을 재귀 복사**하므로 그대로 두면 이것들이 `E:\Spt` 루트에 들어간다.
+
+| 파일 | 출처 | 왜 뺐나 |
+| --- | --- | --- |
+| `LICENSE`, `README.md` | Wishlist Extended (2500) | 문서다. 설치본에 둘 자리가 없다 |
+| `README.md` | Inventory Walker (3058) | 같다 |
+| `Name Plate.exe` (1.3 MB) | Name Plate (3131) | **실행 파일**이다. 아이콘·플레이트를 편집하는 동반 프로그램으로 보인다(`NamePlate`·`config`·`json` 문자열 확인). 모드 동작은 플러그인·서버 모드가 하므로 **일단 넣지 않았다** |
+
+빼낸 것은 `extracted/stage10-D/_excluded/` 에 그대로 두었다 — `check-conflicts.mjs` 와 설치 스크립트가 `_` 로 시작하는 폴더를 건너뛴다. 되살리려면 그 자리에서 꺼내면 된다.
+
+`Name Plate.exe` 는 **받은 파일 중 유일한 실행 파일**이라 보고 넘긴다. 이 저장소의 `AirdropCaller.exe` 처럼 설치본 루트에 두는 동반 도구가 선례로 있지만, 그것은 우리가 만든 것이다. 플레이트 편집에 이 프로그램이 꼭 필요한지는 확인하지 않았다 — 필요하면 그때 따로 넣는 것이 낫다.
+
+### 설치 기록 구멍을 이번에는 미리 잡았다
+
+10-C 에서 배운 대로 `OTHERMOD` 줄을 읽었고, 또 하나 나왔다.
+
+```
+OTHERMOD SPT_Runtime\user\mods\ImprovedCustomizationUI\config.json (다른 모드가 만든 파일 — 기록하지 않음)
+```
+
+Hj's Improved Customization UI(3069)가 테스트 중에 만든 자기 설정인데 마지막 태그(1533)로 돌던 중이라 빠졌다. 3069 기록에 한 줄 더해 메웠다(2줄 → 3줄).
+
+검산 — 10차 기록 전체 **466줄이고 적힌 파일이 전부 실재한다**(2 + 121 + 30 + 313, 누락 0).
+
+### 다음 게임 기동에서 볼 것
+
+10-C·10-D 가 `BepInEx\plugins` 에 넣은 DLL 은 **23개**(10-C 11 + 10-D 12, Briefing 이 2개)다. 그러니 플러그인 수는 **151 → 174 근처**가 되어야 한다. 다만 DLL 수와 플러그인 수는 같지 않다(라이브러리는 0, 하나가 여러 개를 등록, GUID 충돌은 조용히 버려짐 — 위 10-B 참조). 어긋나면 실패로 단정하기 전에 `Loading [` 목록을 비교한다.
+
+함께 볼 것 — 10-D 는 문자열을 많이 바꾸므로 **한국어 표기**가 깨진 곳이 없는지, 그리고 같은 화면을 건드리는 겹침(Hj 의 개조 화면 ↔ 설치된 개조 화면 모드, Menu Overhaul ↔ 설치된 메뉴 계열)을 본다. 10-C 쪽은 인벤토리·치료 화면과 아이템 무게다.
+
 ## 게임 기동 확인 (10-A·10-B 설치 후, 2026-11-05 07:35)
 
 `BepInEx/LogOutput.log` 수정 시각 07:35 > 설치 06:52 — **설치 이후 기동이 맞다.**

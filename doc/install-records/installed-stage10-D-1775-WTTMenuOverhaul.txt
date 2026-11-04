@@ -1,0 +1,9 @@
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\MoxoPixel.MenuOverhaul.dll
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\Resources\background\background_ultrawide.jpg
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\Resources\background\background.jpg
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\Resources\icons\exit_status_runner.png
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\Resources\icons\hideout_icon_black.png
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\Resources\icons\icon_mainmenu_character.png
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\Resources\icons\icon_play.png
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\Resources\icons\icon_trade.png
+1775__MoxoPixel-MenuOverhaul	BepInEx\plugins\MoxoPixel.MenuOverhaul\Resources\icons\menu_active.png

@@ -1,0 +1,2 @@
+1262__EasyAmmoNames-2.1.0	SPT_Runtime\user\mods\EasyAmmoNames\EasyAmmoNames.dll
+1262__EasyAmmoNames-2.1.0	SPT_Runtime\user\mods\EasyAmmoNames\config\config.json

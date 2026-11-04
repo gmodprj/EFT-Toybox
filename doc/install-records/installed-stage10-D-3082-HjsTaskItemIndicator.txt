@@ -1,0 +1,1 @@
+3082__TaskItemIndicator	BepInEx\plugins\TaskItemIndicator\TaskItemIndicator.dll
