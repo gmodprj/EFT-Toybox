@@ -5703,3 +5703,48 @@ Nomad 의 변화는 **플레이어 자신의 레이드 활동**이다 - 사라�
 `activeInHierarchy=True` 로 바뀌었는지 확인해 준다.
 
 **볼 것 셋**: 버튼이 보이는가 / 눌러서 선택 모드가 되는가(드래그 복수 선택) / 딸려 나온 것이 없는가.
+
+### 핀/잠금을 복수 선택으로 오인했다 — 되돌리고 조사부터 다시 (2026-11-04)
+
+**사고.** "팀원 스태시에서 드래그 복수 선택이 안 된다" 를 고치면서 **그 기능이 무엇인지 확인하지 않고**
+들어갔다. `SimpleStashPanel` 이 `ISelectionContext` 를 구현하고 `_pinLockSelectionMode` 로 켜지는 것을
+보고 "스태시의 복수 선택 = 핀/잠금 선택 모드" 라고 단정했고, 그 위에 진단을 두 번 쌓고
+`BottomLeftPanel` 을 켜는 코드를 **설치까지** 했다. 결과는 **동작하지 않는 버튼 넷**
+(Priority·Pin·Lock·SortButton)이고 고치기 전보다 나쁜 상태다.
+
+핀/잠금의 실제 뜻은 다르다 - **핀(P)은 자동 정렬 때 위치 고정, 잠금(L)은 버리기·판매·제작 사용 차단**
+이다. 둘 다 복수 선택과 무관하다(사용자 제공 자료로 확인).
+
+**진짜 출처는 모드였다.** 설치본의 플러그인을 뒤지니 바로 나왔다:
+
+```
+Tyfon.UIFixes.dll → MultiSelect, MultiSelectPatches, DrawMultiSelect,
+                    EnableMultiSelect, SelectionBoxKey, EnableMultiClick …
+```
+
+바닐라 어셈블리에는 `MultiSelect` 라는 이름이 **타입·필드·메서드 어디에도 없다.**
+
+**그리고 내 설명도 틀렸다.** "우리 화면이라 UI Fixes 가 모른다" 고 적으려 했는데,
+`MultiSelect.Enabled` 의 IL 에는 **화면·문맥 검사가 없다**:
+
+```csharp
+Enabled => Settings.EnableMultiSelect.Value && (!InRaid() || EnableMultiSelectInRaid.Value)
+```
+
+패치도 컴포넌트 단위다(`ItemView.OnPointerDown` 등 40개). 즉 **우리 편집기에도 걸려야 정상**이고,
+원인은 아직 **모른다**.
+
+**무엇을 했어야 했나.** 설치된 플러그인을 한 번 뒤지는 것 - 명령 한 줄 - 이 첫 단계여야 했다.
+2026-11-04 오전에 아이템 **데이터**에 대해 "정적 파일은 런타임이 아니다, 모드가 고친다" 를 조사
+문서로 써 놓고 **UI 동작에는 같은 질문을 하지 않았다.**
+
+**되돌렸다.** 버튼을 켜는 코드(`EnableStmStashSelectionButtons`)와 진단 둘
+(`LogStmStashSelectionDiagnostics`·`DescribeSelectionButton`·`CornersOf`)을 걷어냈다. 삽탄 고침
+(`StmGearEditorEquipmentRootContext`)은 그대로 남는다. 클라이언트 CS 오류 0·경고 0, 산출물
+`9F955305`. **설치본 `A127DB8A` 에는 아직 죽은 버튼이 들어 있다** - 다음 설치에서 사라진다.
+
+**조사를 먼저 했다.** 사용자 지시대로 증상이 아니라 목록에서 출발하도록
+[specs/2026-11-04-stash-operations-survey.md](specs/2026-11-04-stash-operations-survey.md) 를 썼다:
+아이템 조작의 전체 어휘 48개(`EItemInfoButton`), 스태시 UI 를 건드리는 **설치 플러그인 32개**,
+UI Fixes 의 설정 **139개**, 그리고 **무엇이 우리 편집기에 적용되는지 가르는 규칙**(컴포넌트 패치는
+적용되고 문맥 게이트는 안 된다 - `삽탄` 이 후자였고 그래서 고쳐졌다).
