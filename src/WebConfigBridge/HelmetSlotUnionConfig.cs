@@ -33,6 +33,25 @@ public class HelmetSlotUnionConfig : TargetConfig
     [JsonPropertyName("RemoveAllConflictsOnAttachments")]
     public bool RemoveAllConflictsOnAttachments { get; set; }
 
+    /// <summary>총기·총기 파츠끼리 서로를 막는 ConflictingItems 항목을 지운다. 칸 필터는 건드리지 않는다.</summary>
+    [JsonPropertyName("RemoveWeaponAttachmentConflicts")]
+    public bool RemoveWeaponAttachmentConflicts { get; set; } = true;
+
+    /// <summary>총기·총기 파츠의 ConflictingItems 를 통째로 비운다. 탄약 제한까지 사라진다.</summary>
+    [JsonPropertyName("RemoveAllConflictsOnWeaponAttachments")]
+    public bool RemoveAllConflictsOnWeaponAttachments { get; set; }
+
+    /// <summary>
+    /// 총기 충돌 정리에서 뺄 분류(부모) id. 기본값은 탄창·장전 손잡이 — 구경 제한이 거기 들어 있다.
+    /// </summary>
+    [JsonPropertyName("WeaponConflictExcludedCategoryIds")]
+    public List<string> WeaponConflictExcludedCategoryIds { get; set; } =
+        ["5448bc234bdc2d3c308b4569", "55818a6f4bdc2db9688b456b"];
+
+    /// <summary>건드리지 않을 총기 아이템 id.</summary>
+    [JsonPropertyName("ExcludedWeaponIds")]
+    public List<string> ExcludedWeaponIds { get; set; } = [];
+
     /// <summary>건드리지 않을 칸 이름. 대소문자는 가리지 않는다.</summary>
     [JsonPropertyName("ExcludedSlotNames")]
     public List<string> ExcludedSlotNames { get; set; } = [];
