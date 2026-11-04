@@ -5277,3 +5277,41 @@ tpl 별 수량 합도 함께 센다(위 항목에 세는 방법이 있다). **�
 
 **설치하지 않았다 - 게임·런처·서버가 실행 중이다.** 클라이언트 DLL 이 잠겨 있고 설치는 제거를 먼저
 하므로, 게임을 닫은 뒤에 올린다. 그때까지 설치본은 클라이언트 `A71A7BFF`(이 고침이 **없는** 것)다.
+
+### All In Weapon 을 빼면 무엇이 깨지나 — 실측 (2026-11-04)
+
+"제거 시 각 프로필과 상점에 끼치는 영향" 을 물어 프로필 여섯 개와 아이템 DB 로 쟀다. 전문은
+[specs/2026-11-04-allinweapon-removal-survey.md](specs/2026-11-04-allinweapon-removal-survey.md).
+
+**프로필 파일은 바뀌지 않는다.** 이 모드는 기동 때 **메모리 DB 의 칸 필터만** 넓히고 프로필에 쓰지
+않는다. `RemoveConflictingItems` 도 아이템이 아니라 **충돌 아이템 "목록"** 을 지우는 것이다(원본 설정
+주석: *"Removes Conflicting Items filter from mods"*). 서버 로그의
+`Removed conflicting items in mod slots` 가 아이템을 지운 것처럼 읽혀 한 번 오해했다.
+
+**이 모드만의 영향은 "부품 위의 부품" 23건**이고 전부 Nomad 다(마운트 위 조준경, 총열·소염기 위
+소음기, 버퍼튜브 위 개머리판). `SlotCategoryRelax` 는 `IncludeAttachmentSlots: false` 라 무기 **본체**
+칸만 보므로 이 자리들을 덮지 못한다 - `FckMods` 가 유일한 지지대다. **팀원 다섯은 0건.**
+
+**상점은 영향 없다.** 어소트·플리는 기동마다 DB 에서 다시 만들고, 프로필의 상인 데이터는 평판·
+구매한도뿐이며, 보험은 여섯 프로필 모두 0건이다.
+
+**사용자가 귀속 오류를 짚었다.** 첫 답에서 헬멧 부착 칸 2건과 충돌 14건을 이 모드 몫으로 적었는데,
+"방어구 쪽은 다른 모드 아닌가" 가 맞았다:
+
+| | 책임 모드 |
+|---|---|
+| 헬멧 부착 칸(`mod_equipment_*`·`Helmet_top/back`) 4건 | **HelmetSlotUnion** (Headwear 밑, 같은 이름 칸 합집합) |
+| 방어판(`Left/Right_side_plate`) 2건 | **FiveF-UnrestrictedArmorPlate** |
+| 충돌 조합 14건 (**무기 부품 충돌은 0건**) | **HelmetSlotUnion**(헬멧 범위 안) · **LessRestrictingHeadwear**(범위 밖) |
+
+틀린 이유는 **검증 없이 이름으로 추론**한 것이다 - `FckMods` 가 "모드 슬롯" 이니 헬멧 부착 칸도
+포함하겠거니 했다. 실제로는 같은 일을 하는 `HelmetSlotUnion` 의 소스가 **이 저장소 안에 있었고**,
+그 주석에 `mod_equipment_000` 이 그대로 적혀 있었다. 인계 문서 §6 "이름에서 뜻을 지어내지 마라" 가
+그대로 적용되는 사례다. DLL 메타데이터에도 `RelaxWeaponFilters`·`RelaxAttachmentFilters`·
+`RelaxMagazineFilters` 셋뿐이고 방어구 쪽 이름은 없다.
+
+**조사의 한계 둘**(문서 §5): 정적 `items.json` 은 런타임 DB 가 아니고(서버 모드가 `IOnLoad` 에서
+고친다), 모드가 주입한 템플릿 51종(1577쌍)은 판정할 수 없다 - 그래서 숫자는 **최소값**이다.
+
+**제거 전 리허설**을 권했다: 파일을 지우지 말고 `FckMods`·`FckChambers` 를 꺼서 재시작해 보는 것이
+되돌리기 쉬운 같은 실험이다.
