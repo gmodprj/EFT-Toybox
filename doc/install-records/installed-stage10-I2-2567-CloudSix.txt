@@ -1,0 +1,2 @@
+2567__CloudSix_4.0.2	BepInEx\plugins\CloudSix\CloudSix.dll
+2567__CloudSix_4.0.2	BepInEx\plugins\CloudSix\Assets\volumetricclouds

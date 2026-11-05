@@ -1,0 +1,3 @@
+3221__TraceSix-1.0.1	BepInEx\plugins\TraceSix\TraceSix.dll
+3221__TraceSix-1.0.1	BepInEx\plugins\TraceSix\Assets\tracesix
+3221__TraceSix-1.0.1	BepInEx\plugins\TraceSix\native\TraceSixRT.dll

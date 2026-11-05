@@ -1,0 +1,1 @@
+2962__MusicExtender_v1.2.0	BepInEx\plugins\MusicExtender\Resources\Custom

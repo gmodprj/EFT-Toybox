@@ -1,0 +1,2 @@
+2569__AOSix-2.0.1	BepInEx\plugins\AOSix\AOSix.dll
+2569__AOSix-2.0.1	BepInEx\plugins\AOSix\Assets\aosix
