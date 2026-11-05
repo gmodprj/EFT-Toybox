@@ -1,0 +1,13 @@
+[
+  {
+    "id": 2706,
+    "name": "ORBIT 3.0",
+    "version": "3.1.0",
+    "file": "2706__ORBIT-3.1.0.zip",
+    "bytes": 826706,
+    "expected": 826706,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  }
+]
