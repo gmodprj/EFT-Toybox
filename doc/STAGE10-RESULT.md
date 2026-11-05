@@ -386,6 +386,92 @@ A 쪽 `mod_barrel` 이 4 → **220** 이다. 적은 줄은 하나인데 **216개
 { "Filters": { "5a0abb6e1526d8000a025282": { "dd6b29946db0932ea75e09c4": "mod_muzzle" } } }
 ```
 
+## 게임 기동 확인 (10-O 전부 설치 후, 2026-11-06 07:14~)
+
+| 판정 기준 | 예상 | 실측 | 결과 |
+| --- | --- | --- | --- |
+| 플러그인 수 | 243 → **245** | `245 plugins to load` = `Loading [` **245줄** | **맞음** |
+| 3022 플러그인 | 올라옴 | `Loading [Manimal-LighthouseRework 1.0.7]` | 맞음 |
+| 2866 플러그인 | 올라옴 | `Loading [Manimal-Icebreaker 1.1.3]` | 맞음 |
+| Map Variants | `lighthouse` 가 바뀜 | **`lighthouse=Manimal (backport seen), interchange=Manimal (backport seen)`** | **바뀜** |
+| 서버 모드 | 172 | `ModLoader: 총 172 개` (22:14 UTC 기동) | 맞음 |
+
+`PerfectCullingRuntime.dll` 을 0 으로 센 것이 맞았다 — 2866 이 DLL 2개를 넣었는데 플러그인 수는 1 만 늘었다.
+
+라이트하우스에 들어갈 때 판을 묻는 창이 떴고 사용자가 골랐다.
+
+```
+[MV] player chose Lighthouse - Manimal
+```
+
+### ICEBREAKER 가 맵 목록에 없는 것은 **잠겨 있어서다** (버그가 아니다)
+
+사용자 보고: **"맵 선택 목록에 ICEBREAKER 안보임"**. 쫓아가 보니 모드가 의도한 상태다.
+
+클라이언트·서버 양쪽에서 멀쩡히 올라와 있다.
+
+```
+Loading [Manimal-Icebreaker 1.1.3]
+PerfectCullingRuntime.dll preloaded (icebreaker occlusion culling)
+[CrewLayer] bigbrain layers registered (ExUsec/PmcBear/PmcUsec/PMC, crew 68 / hold 105 / rush 110)
+[Manimal-Icebreaker] Icebreaker registered as an independent location   ← 서버
+```
+
+그런데 모드가 **맵 잠금 파일**을 들고 있다.
+
+```
+E:\Spt\SPT_Runtime\user\mods\ManimalIcebreaker\db\maplock.json
+{ "finalQuestId": "9d5e3f7d6320a7fd139a2772" }
+```
+
+그 퀘스트 ID 를 모드의 퀘스트 파일에서 찾으면 **Mechanic 의 Boreas 3부작 마지막 편**이다.
+
+| 순서 | 퀘스트 | ID | 상인 | 종류 | 장소 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Boreas - Part 1 | `ff56532d9100ce03006493e9` | Mechanic | PickUp | **우즈** |
+| 2 | Boreas - Part 2 | `07c1ecde2c4652876fc769b1` | Mechanic | PickUp | **라이트하우스** |
+| 3 | Boreas - Part 3 | `9d5e3f7d6320a7fd139a2772` | Mechanic | Completion | 아무 곳 |
+
+**Part 3 을 끝내야 맵이 열린다.** 퀘스트 글이 그대로 말해 준다.
+
+> 이제 그 배가 무엇인지는 알았으니 남은 문제는 어떻게 올라타고, 더 중요하게는 어떻게 내려오느냐다. "Boreas" 의 정확한 위치는 찾아줄 수 있지만 물을 건네줄 수도, 만 한가운데 갑판에서 빼내 줄 수도 없다. 그건 네 몫이다. **아직 멀쩡한 차량을 가진 쪽이 누구인지 생각해 봐라.**
+
+마지막 문장이 BTR 을 가리킨다 — 실제로 이 퀘스트 묶음이 `db/CustomQuests/656f0f98d80a697f855d34b1/`(= PortableTraders 로그가 **BTR Driver (APC)** 로 적는 상인) 아래에도 들어 있다.
+
+모드가 우즈·라이트하우스·리저브에 퀘스트용 강제 전리품 스폰을 심어 둔 것도 이것과 맞아떨어진다(`db/CustomLootspawns/CustomSpawnpointsForced/lighthouse_forced.json`, `rezervbase_forced.json`).
+
+**그래서 설치는 성공이고 할 일은 퀘스트다.** 프로필에는 세 퀘스트 ID 가 아직 없는데, SPT 프로필은 **받은 퀘스트만** 적으므로 이것은 "없다" 가 아니라 "아직 안 받았다" 는 뜻이다 — Mechanic 에게서 Boreas - Part 1 을 받는 것이 시작이다.
+
+### DynamicMaps Extended 는 이미 준비돼 있었다
+
+10-M 때 "이 모드 DLL 이 `com.manimal.icebreaker` 를 참조하니 2866 이 들어오면 지도에 할 일이 생길 수 있다" 고 적어 뒀는데, 그대로였다. 이번 기동에서 **ICEBREAKER 지도를 층별로 15장 미리 굽는다.**
+
+```
+Precaching sprite: ...\DynamicMaps-Extended\Maps\Icebreaker\Layers\00-Control-Room.png
+                                                              01-Engine-Room.png
+                                                              02-Engine-Room-Upper.png
+                                                              03-Fuel-Pumps-Lower.png
+                                                              04-Fuel-Pumps.png
+                                                              05-Storage-Security.png
+                                                              06-Infirmary.png
+                                                              07-Helipad.png
+                                                              08-Gym-Canteen.png
+                                                              09-Accommodation-Lower.png
+                                                              10-Accommodation-Mid.png
+                                                              11-Accommodation-Upper.png
+                                                              12-Officers-Deck.png
+                                                              13-Stairs-Blocked.png
+                                                              14-Bridge.png
+```
+
+지도 쪽은 **2866 이 들어오기를 기다리고 있었던 것**이고, 이제 맞물렸다. 맵을 열면 그 지도가 그대로 쓰인다.
+
+### 아직 실측하지 않은 것
+
+- **ICEBREAKER 안을 눈으로** 보는 것 — Boreas 3부작을 끝내야 들어갈 수 있다.
+- 리저브의 `boreas_amg` 와 나이트 T1 변경이 실제 레이드에서 어떻게 보이는지.
+- `operation=kiba` 는 이번 기동에 **0건**인데, 인터체인지에 들어가지 않았으므로 **비교가 아니다**(그 경고는 인터체인지에서만 날 수 있다).
+
 ### 10-O-3 — 2866 ICEBREAKER 설치 (2026-11-06 07:0x) · **10차의 마지막**
 
 | 항목 | 결과 |
