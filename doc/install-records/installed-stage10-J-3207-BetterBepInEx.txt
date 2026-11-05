@@ -1,0 +1,1 @@
+3207__BetterBepInEx_V1.0.3	BepInEx\plugins\BetterBepInEx.dll
