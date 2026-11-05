@@ -122,6 +122,31 @@ OTHERMOD SPT_Runtime\user\mods\DrakiaXYZ-GildedKeyStorage\config\config.json (�
 
 `Name Plate.exe` 는 **받은 파일 중 유일한 실행 파일**이라 보고 넘긴다. 이 저장소의 `AirdropCaller.exe` 처럼 설치본 루트에 두는 동반 도구가 선례로 있지만, 그것은 우리가 만든 것이다. 플레이트 편집에 이 프로그램이 꼭 필요한지는 확인하지 않았다 — 필요하면 그때 따로 넣는 것이 낫다.
 
+### ImpactCue 는 F12 에 없다 — F10 이다 (2026-11-05 확인)
+
+화면의 HUD 가 어느 모드인지 묻는 질문에 처음엔 "F12 의 ImpactCue" 라고 답했는데 **틀렸다.** 설정 파일이 직접 못박아 둔다.
+
+```
+## Open or close the built-in ImpactCue settings window.
+## This does not require ConfigurationManager/F12.
+Standalone Settings Hotkey = F10
+```
+
+제작자 설명도 같다 — *"Most features can be configured directly through the **F10 settings menu**"*, 그 메뉴에 두 칸 배치·분류·검색·**HUD Edit Mode**(위치·크기·색·모양)·소리 미리듣기·다국어가 들어 있다. `Language = Auto` 에 `ko` 가 있어 한국어로도 나온다.
+
+**웹 설정도 있다** — 서버가 돌 때 `https://127.0.0.1:6969/impactcue`. 다만 제작자가 *"still partially unfinished ... mainly a temporary workaround for users who are unable to open the F10 menu"* 라고 적었으므로 **평소에는 F10 을 쓴다.** 서버 모드 `ImpactCue-WebConfig` 가 그 페이지를 띄우는데, `wwwroot` 매핑이 아니라 자체 리스너라서 서버 기동 로그의 `has a wwwroot` 목록에는 안 나온다.
+
+이 설치본의 화면 요소가 어디 있는지 (설정 파일 기준, F10 메뉴의 분류도 같다)
+
+| 화면 | 섹션 |
+| --- | --- |
+| 상단 나침반 띠 | `[15. Raid Compass]` |
+| 좌하단 체력·에너지·수분·무게, 탄약·발사모드·수류탄 | `[13. Compact HUD]`, 투명도는 `[13.4 Default HUD]` |
+| 우측 `MAGS` | `[13.9 Magazine HUD]` |
+| 위치 옮기기 | `[09. HUD Position]`(드래그) 또는 각 섹션의 X/Y 슬라이더 |
+
+**교훈** — 모드 설정이 BepInEx cfg 파일로 있다고 해서 F12 목록에 나오는 것은 아니다. 자체 창을 띄우는 모드가 있다. cfg 의 주석(`## ... does not require ConfigurationManager/F12`)과 `Hotkey` 항목을 먼저 본다.
+
 ### 설치 기록 구멍을 이번에는 미리 잡았다
 
 10-C 에서 배운 대로 `OTHERMOD` 줄을 읽었고, 또 하나 나왔다.
