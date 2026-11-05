@@ -1,0 +1,2 @@
+2893__TraumaCore-1.7.0	BepInEx\plugins\Hysocs-TraumaCore\LICENSE
+2893__TraumaCore-1.7.0	BepInEx\plugins\Hysocs-TraumaCore\TraumaCore.dll
