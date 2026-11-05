@@ -1,0 +1,71 @@
+{
+  "stage": "stage10-J",
+  "spt": "4.1.6",
+  "note": "10-J 도구·성능 7개. 로더·설정 화면·오버레이를 건드려 다른 모드 전체에 영향이 가므로 하나씩 넣고 그때마다 전체 로드 수를 다시 센다. Better BepInEx(3207)는 BepInEx 자체를 건드리니 넣은 뒤 플러그인 로드 수가 줄지 않았는지 반드시 다시 세고 줄면 되돌린다. Combat Log(3072)는 WebOverlay(2879, 10-B) 뒤에만 들어간다. Raid Review(1479)는 자체 웹 화면과 DB 를 만드니 기존 경로(WebConfigBridge·ORBIT·QuestCodex·LotsofLoot 등)와 겹치지 않는지 본다. 계획은 PLAN-STAGE10.md 10-J.",
+  "totalSize": 8054712,
+  "mods": [
+    {
+      "group": "10J-1",
+      "id": 1479,
+      "name": "Raid Review",
+      "version": "1.10.0",
+      "size": 5762581,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1479/raid-review/1.10.0"
+    },
+    {
+      "group": "10J-2",
+      "id": 3072,
+      "name": "Combat Log",
+      "version": "1.0.0",
+      "size": 125604,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3072/combat-log/1.0.0"
+    },
+    {
+      "group": "10J-3",
+      "id": 2931,
+      "name": "ASBP - Acid's Scalable BepinEx Panel",
+      "version": "1.0.1",
+      "size": 8258,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2931/asbp-acids-scalable-bepinex-panel/1.0.1"
+    },
+    {
+      "group": "10J-4",
+      "id": 3207,
+      "name": "Better BepInEx",
+      "version": "1.0.3",
+      "size": 61965,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3207/better-bepinex/1.0.3"
+    },
+    {
+      "group": "10J-5",
+      "id": 3076,
+      "name": "Performance Scope",
+      "version": "0.2.0",
+      "size": 10797,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3076/performance-scope/0.2.0"
+    },
+    {
+      "group": "10J-6",
+      "id": 2200,
+      "name": "Dynamic External Resolution Patch (DERP)",
+      "version": "1.1.2",
+      "size": 6868,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2200/dynamic-external-resolution-patch-derp/1.1.2"
+    },
+    {
+      "group": "10J-7",
+      "id": 3109,
+      "name": "Knight Mask Fix",
+      "version": "1.0.0",
+      "size": 2078639,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3109/knight-mask-fix/1.0.0"
+    }
+  ]
+}
