@@ -326,6 +326,47 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 레이드 흔적 16건으로 **얕다.** 기준선의 SAIN·STM 줄이 안 나왔고, 10-H 의 본 시험인 **맵별 진입과 프레임**도 로그로는 알 수 없다(위 10-H 절의 네 가지).
 
+## 10-M — 대형 3개, 하나씩 · 2026-11-05
+
+| 항목 | 결과 |
+| --- | --- |
+| 받기 | 3개 모두 바이트 수 **정확히 일치** (합 5,754,500,031 = 5.36 GiB). 링크·버전·용량이 Forge API 와 전부 일치하는지도 대조했다 |
+| 겹침 검사 | **CLEAN (0/0/0)**, 설치 대상 468개 |
+| 기록 | **468줄** = 겹침 검사 468 경로와 정확히 일치. 없는 파일 0건 / 기록에 없는 파일 0건 |
+| 오류 | 3회 전부 `Could not add` 48 · `Unable to add bundle` 1 · `cannot import quest` 1 — **기존과 같다.** 새 오류 0 |
+| 프로필 | 아이템·키 양쪽 **변화 없음** (이 셋은 결속이 아니다) |
+
+### DynamicMaps Extended 는 확장이다 — 교체가 아니다
+
+계획 §10-M 이 "설치된 Dynamic Maps 의 파일을 덮으려 하면 거기서 멈춘다 — 그때는 확장이 아니라 교체다"로 둔 관문이다. **근거 셋으로 넘었다.**
+
+1. `E:\Spt` 에 이미 있는 경로와 겹치는 것이 **0건**이다.
+2. DLL 을 **하나만** 자기 폴더에 넣는다 — `BepInEx/plugins/DynamicMaps-Extended/DynamicMaps.Extended.dll`. 기존 `BepInEx/plugins/mpstark-dynamicmaps/DynamicMaps.dll` 은 손대지 않는다. 기반 모드의 사본을 들고 오지 않았다.
+3. GUID 가 **`com.blackhawk.dynamicmapsextended`** 로 기존 **`com.mpstark.dynamicmaps`** 와 다르다 — 조용히 버려지는 쪽이 생기지 않는다.
+
+덧붙여 이 DLL 은 `com.lennoxp90.mapvariants`(설치됨, 10-B)와 **`com.manimal.icebreaker`** 를 참조한다. 뒤의 것은 **10-O** 의 Manimal 맵이다 — 10-O 를 넣으면 이쪽이 더 할 일이 생긴다는 뜻이다.
+
+### 하나씩 넣은 결과
+
+| 순서 | 모드 | 분류 | 서버 모드 | 기록 줄 | 설치 용량 | 로드 확인 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | DynamicMaps Extended (3097) | 게임 | **167 유지** | 201 | 1743 MB | 서버 로그에 안 찍힌다(정상 — 게임 전용) |
+| 2 | Manimal 의 1.0 Labs Office Backport (2937) | 게임+서버 | 167 → **168** | 7 | 97 MB | `(Added 1 mods: ManimalLabsBoiler (2.0.0))` |
+| 3 | Arena Map Port (3166) | 게임+서버 | **169** | 260 | 3676 MB | `(Added 1 mods: ArenaMapPort (0.4.0))` |
+
+서버 167 → **169.** DynamicMaps Extended 가 게임 전용이라 수가 그대로인 것이 맞다.
+
+**Labs Office Backport 의 겹침 걱정은 없었다.** 계획이 "설치된 WTT Content Backport 와 같은 계열이라 파일 겹침을 특히 꼼꼼히 본다"고 했는데, 파일이 **7개뿐**이고 겹치는 경로가 0 이다. 같은 계열이라도 자기 폴더(`Manimal-LabsBoiler`)만 쓴다.
+
+### 다음 게임 기동에서 볼 것 — 여기서는 서버 테스트가 아무것도 말해 주지 않는다
+
+**셋 다 맵 자료다. 서버 시작은 통과 근거가 되지 못한다** — 계획이 "레이드 진입이 본 시험"이라고 못 박은 자리다.
+
+- 플러그인 **239 → 242 예상.** 클라이언트 DLL 이 셋이다 — `DynamicMaps.Extended.dll`, `ManimalLabsBoiler.dll`, `maschine-ArenaMapPort.Client.dll`. 242 가 아니면 `Loading [` 목록을 직접 대조한다.
+- `[Error` 가 기존 건(SAIN 6 · DirectReload 1 · STM 2)뿐인지.
+- **맵에 들어가 보는 것**이 관문이다. ① DynamicMaps Extended — 지도 화면이 기존 Dynamic Maps 를 밀어내지 않고 함께 뜨는지, ② Labs Office Backport — Labs 의 그 구역이 실제로 바뀌었는지, ③ **Arena Map Port — 그 맵에 들어가 보는 것까지가 통과 조건이다**(버전이 0.4.0 이다).
+- `[MV] no backported location found` 가 아직 나오는지도 본다 — 10-B 의 Map Variants 는 백포트 맵이 들어오는 **10-O** 까지 할 일이 없었다.
+
 ## 게임 기동 확인 (10-L 설치 후, 2026-11-05 19:03~19:05 KST)
 
 | 항목 | 예상 | 실측 | 판정 |
