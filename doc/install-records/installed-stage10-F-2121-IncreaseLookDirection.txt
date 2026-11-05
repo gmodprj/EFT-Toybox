@@ -1,0 +1,2 @@
+2121__flir.IncreaseLookDirection-v1.3.0	BepInEx\plugins\flir.IncreaseLookDirection\flir.IncreaseLookDirection.dll
+2121__flir.IncreaseLookDirection-v1.3.0	BepInEx\plugins\flir.IncreaseLookDirection\LICENSE.txt

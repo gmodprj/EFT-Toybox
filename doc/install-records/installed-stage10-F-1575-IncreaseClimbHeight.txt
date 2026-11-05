@@ -1,0 +1,4 @@
+1575__Increase.Climb.Height.2.1.1	SPT_Runtime\user\mods\Increase Climb Height\Config Readme.txt
+1575__Increase.Climb.Height.2.1.1	SPT_Runtime\user\mods\Increase Climb Height\config.json
+1575__Increase.Climb.Height.2.1.1	SPT_Runtime\user\mods\Increase Climb Height\default globals.json
+1575__Increase.Climb.Height.2.1.1	SPT_Runtime\user\mods\Increase Climb Height\IncreaseClimbHeight.dll

@@ -1,0 +1,1 @@
+2719__NoAimSwing_v1.2.0	BepInEx\plugins\NoAimSwing.dll
