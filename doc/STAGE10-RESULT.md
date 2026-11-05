@@ -373,9 +373,23 @@ FogSix 의 서버 쪽(`user/mods/DynamicFog/`)이 들어갔으므로 수는 **15
 
 그래서 **205 + 17 = 222** 다.
 
+### 게임 기동 확인 (2026-11-05 14:26) — 222 로 맞았다
+
+| 항목 | 값 | 예상 |
+| --- | --- | --- |
+| `plugins to load` | **222** | **222** — 맞다 |
+| `Loading [` 줄 | **222** | 일치, `Chainloader startup complete` |
+| `[Error` / `[Fatal` | **1줄 / 0줄** | 알려진 `DirectReload` + Fika 건뿐 |
+
+**17개 전부 로드됐다.** 예상의 핵심이던 HollywoodFX 의 두 플러그인도 확인된다 — `Janky-HollywoodFX 3.0.0` 과 `Janky-HollywoodGraphics 3.0.0`.
+
+나머지 — `CloudSix 4.0.2` · `FogSix 1.0.1` · `ReflectSix 1.0.1` · `AOSix 2.0.1` · `POMSix 1.0.2` · `TraceSix 1.0.1` · `Better Night Skies 2.0.0` · `Blackout 4.1.1` · `Shadow Flicker Fix 1.5.3` · `HeadshotDarkness 1.2.5` · `Ragdoll Kinetics 1.2.0` · `Manimal-WatchAnims 2.0.0` · `BushWhackerStandalone 1.7.0` · `SPTBattleAmbience 2.4.0` · `MusicExtender 1.2.0`.
+
+**이름으로 훑다가 또 두 번 걸렸다** — `Better Night Skies` 는 띄어쓰기가 있어 `nightsk` 로 안 잡혔고, `headshot` 으로 훑자 **8-A 의 Headshot Damage Redirection** 이 10-I 것인 양 섞여 들어왔다. 짧은 조각으로 훑으면 양쪽으로 틀린다 — **수가 맞는지로 먼저 보고, 이름 대조는 걸린 줄을 열어 확인한다.**
+
 ### 아직 확인되지 않은 것
 
-이 단계는 **로그로 거의 검증되지 않는다.** 게임을 띄워 봐야 한다.
+레이드 흔적 16건으로 얕다. 그리고 이 단계는 **로그로 거의 검증되지 않는다.** 눈으로 봐야 한다.
 
 - 플러그인 수 222 와 새 오류 유무
 - **설치된 Amands' Sense 와 화면이 겹치는지** — 이 단계 내내 보기로 한 것이다
