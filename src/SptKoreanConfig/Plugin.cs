@@ -147,13 +147,8 @@ namespace SptKoreanConfig
             {
                 if (_lastAppliedKorean) RestorePluginNames();
                 _lastAppliedKorean = false;
+                Done.Clear();
                 return;
-            }
-
-            if (KoreanConfigPlugin.Store.ReloadIfChanged())
-            {
-                KoreanConfigPlugin.Log.LogInfo(
-                    $"번역 사전 다시 읽음 — 모드 {KoreanConfigPlugin.Store.PluginCount} / 섹션 {KoreanConfigPlugin.Store.SectionCount} / 항목 {KoreanConfigPlugin.Store.SettingCount}");
             }
 
             if (!(AllSettingsField.GetValue(cm) is List<SettingEntryBase> all)) return;
@@ -168,11 +163,27 @@ namespace SptKoreanConfig
         /// 설정 목록 하나를 한글로 덮어쓴다. CM 이 만든 것이든 다른 메뉴가 만든 것이든
         /// <see cref="SettingEntryBase"/> 목록이기만 하면 된다.
         /// </summary>
+        /// <summary>
+        /// 이미 한글로 바꾼 항목. 새 메뉴 쪽은 같은 객체를 여러 번 넘겨 주므로
+        /// 두 번째부터는 건너뛴다 — 안 그러면 열어 둔 동안 같은 일을 되풀이한다.
+        /// </summary>
+        private static readonly HashSet<SettingEntryBase> Done = new HashSet<SettingEntryBase>();
+
         internal static void ApplyToEntries(IEnumerable<SettingEntryBase> entries, string where)
         {
             if (entries == null) return;
-            var all = entries.Where(e => e != null).ToList();
+
+            if (KoreanConfigPlugin.Store.ReloadIfChanged())
+            {
+                Done.Clear();
+                KoreanConfigPlugin.Log.LogInfo(
+                    $"번역 사전 다시 읽음 — 모드 {KoreanConfigPlugin.Store.PluginCount} / 섹션 {KoreanConfigPlugin.Store.SectionCount} / 항목 {KoreanConfigPlugin.Store.SettingCount}");
+            }
+
+            // 아직 손대지 않은 것만 추린다. 전부 끝났으면 조용히 돌아간다(로그도 남기지 않는다).
+            var all = entries.Where(e => e != null && !Done.Contains(e)).ToList();
             if (all.Count == 0) return;
+            foreach (var e in all) Done.Add(e);
 
             var mark = KoreanConfigPlugin.MarkUntranslated.Value;
             var sectionsDone = new HashSet<string>();
