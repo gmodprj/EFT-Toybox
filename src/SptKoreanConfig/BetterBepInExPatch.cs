@@ -43,7 +43,10 @@ namespace SptKoreanConfig
             try { types = asm.GetTypes(); }
             catch (ReflectionTypeLoadException e) { types = e.Types.Where(t => t != null).ToArray(); }
 
-            var postfix = new HarmonyMethod(AccessTools.Method(typeof(BetterBepInExPatch), nameof(AfterCollect)));
+            // void 메서드에 __result 를 요구하면 Harmony 가 "Cannot get result from void method" 로 거절한다.
+            // 반환형을 보고 둘 중 맞는 것을 쓴다.
+            var withResult = new HarmonyMethod(AccessTools.Method(typeof(BetterBepInExPatch), nameof(AfterCollect)));
+            var voidSafe = new HarmonyMethod(AccessTools.Method(typeof(BetterBepInExPatch), nameof(AfterCollectVoid)));
             var hooked = 0;
 
             foreach (var type in types)
@@ -60,7 +63,7 @@ namespace SptKoreanConfig
 
                     try
                     {
-                        harmony.Patch(m, postfix: postfix);
+                        harmony.Patch(m, postfix: m.ReturnType == typeof(void) ? voidSafe : withResult);
                         hooked++;
                         KoreanConfigPlugin.Log.LogInfo($"  새 메뉴 후처리 결함: {type.FullName}.{m.Name}");
                     }
@@ -101,8 +104,16 @@ namespace SptKoreanConfig
                 });
         }
 
-        /// <summary>어느 메서드든 끝난 뒤, 그 타입이 들고 있는 설정 목록을 찾아 번역한다.</summary>
+        /// <summary>void 메서드용. 반환값이 없으니 인스턴스 쪽만 훑는다.</summary>
+        private static void AfterCollectVoid(object __instance, MethodBase __originalMethod)
+            => Run(__instance, __originalMethod, null);
+
+        /// <summary>값을 돌려주는 메서드용. 반환값부터 본다.</summary>
         private static void AfterCollect(object __instance, MethodBase __originalMethod, object __result)
+            => Run(__instance, __originalMethod, __result);
+
+        /// <summary>어느 메서드든 끝난 뒤, 그 타입이 들고 있는 설정 목록을 찾아 번역한다.</summary>
+        private static void Run(object __instance, MethodBase __originalMethod, object __result)
         {
             try
             {
