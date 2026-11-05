@@ -1,0 +1,79 @@
+[
+  {
+    "id": 2200,
+    "name": "Dynamic External Resolution Patch (DERP)",
+    "version": "1.1.2",
+    "file": "2200__Dynamic-External-Resolution-1.1.2.zip",
+    "bytes": 6868,
+    "expected": 6868,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2931,
+    "name": "ASBP - Acid's Scalable BepinEx Panel",
+    "version": "1.0.1",
+    "file": "2931__acidphantasm-bepinexconfigurationmanager.zip",
+    "bytes": 8258,
+    "expected": 8258,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3076,
+    "name": "Performance Scope",
+    "version": "0.2.0",
+    "file": "3076__PerformanceScope-v0.2.0.zip",
+    "bytes": 10797,
+    "expected": 10797,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3207,
+    "name": "Better BepInEx",
+    "version": "1.0.3",
+    "file": "3207__BetterBepInEx_V1.0.3.zip",
+    "bytes": 61965,
+    "expected": 61965,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3072,
+    "name": "Combat Log",
+    "version": "1.0.0",
+    "file": "3072__maschine-CombatLog-1.0.0.zip",
+    "bytes": 125604,
+    "expected": 125604,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3109,
+    "name": "Knight Mask Fix",
+    "version": "1.0.0",
+    "file": "3109__KnightMaskFix-1.0.0.zip",
+    "bytes": 2078639,
+    "expected": 2078639,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 1479,
+    "name": "Raid Review",
+    "version": "1.10.0",
+    "file": "1479__raid_review__1.10.0.zip",
+    "bytes": 5762581,
+    "expected": 5762581,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]
