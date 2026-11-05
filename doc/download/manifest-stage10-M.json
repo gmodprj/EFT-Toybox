@@ -1,0 +1,35 @@
+{
+  "stage": "stage10-M",
+  "spt": "4.1.6",
+  "note": "10-M 대형 3개. 혼자 GB 를 먹거나 설치본과 파일이 겹칠 수 있어 하나씩 넣고 그때마다 전체 수를 다시 센다. 계획의 표 순서를 쓴다. DynamicMaps Extended(3097)는 받아서 파일 구조를 먼저 보고 설치한다 — 설치된 Dynamic Maps 1.2.1 의 파일을 덮으려 하면 거기서 멈춘다(확장이 아니라 교체라는 뜻). Labs Office Backport(2937)는 설치된 WTT Content Backport 2.0.5 와 같은 계열이라 파일 겹침을 특히 꼼꼼히 본다. Arena Map Port(3166)는 이 목록에서 가장 크고 버전이 0.4.0 이라 단독으로 넣고 그 맵에 들어가 보는 것까지 끝낸다. 셋 다 맵 자료이므로 서버 테스트만으로 통과로 치지 않는다 — 레이드 진입이 본 시험이다. 의존성 Dynamic Maps 1.2.1 · Map Variants 1.1.0 · WTT CommonLib 3.0.6 · WTT Content Backport 2.0.5 는 모두 설치돼 있다. 계획은 PLAN-STAGE10.md 10-M.",
+  "totalSize": 5754500031,
+  "mods": [
+    {
+      "group": "10M-1",
+      "id": 3097,
+      "name": "DynamicMaps Extended",
+      "version": "2.5.2",
+      "size": 1823357646,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3097/dynamicmaps-extended/2.5.2"
+    },
+    {
+      "group": "10M-2",
+      "id": 2937,
+      "name": "Manimal's 1.0 Labs Office Backport",
+      "version": "2.0.0",
+      "size": 94285352,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2937/manimals-10-labs-office-backport/2.0.0"
+    },
+    {
+      "group": "10M-3",
+      "id": 3166,
+      "name": "Arena Map Port",
+      "version": "0.4.0",
+      "size": 3836857033,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3166/arena-map-port/0.4.0"
+    }
+  ]
+}

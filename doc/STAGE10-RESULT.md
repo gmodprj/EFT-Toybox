@@ -326,6 +326,58 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 레이드 흔적 16건으로 **얕다.** 기준선의 SAIN·STM 줄이 안 나왔고, 10-H 의 본 시험인 **맵별 진입과 프레임**도 로그로는 알 수 없다(위 10-H 절의 네 가지).
 
+## 게임 기동 확인 (10-L 설치 후, 2026-11-05 19:03~19:05 KST)
+
+| 항목 | 예상 | 실측 | 판정 |
+| --- | --- | --- | --- |
+| 플러그인 수 | 239 | **239** (`239 plugins to load` = `Loading [` 239줄) | **정확히 맞는다** |
+| `Chainloader startup complete` | 있어야 | 1 | 통과 |
+| 게임 `[Error` | 기존 건만 | **1줄** — 알려진 DirectReload+Fika 건뿐 | 통과 |
+| 게임 `[Fatal` | 0 | 0 | 통과 |
+| 서버 `[Error]` | 49(기존) | **51** = `Could not add` 48 + `Unable to add bundle` 1 + **기존 상인 건 2** | 통과 (아래) |
+| 플리마켓 생성 | 터지지 않아야 | **통과** (아래) | 통과 |
+
+10-L 의 클라이언트 7개가 모두 올라왔다 — `Manimal-CSGas 2.0.0`, `Content Backport - Prestiges 1.1.0`, `Strange Curios 1.1.0`, `Borkel's Realistic NVGs 3.0.3`, `Deploy Screen Overhaul 1.1.0`, `WTT Halloween Client 2.0.0`, `Skills Extended 3.1.4`.
+
+**Skills Extended 의 예측이 맞았다.** DLL 3개를 싣지만 `Loading [Skills` 는 **1줄**이다 — `.Client.API` 와 `.Common` 은 플러그인 속성이 없는 라이브러리라 0 으로 센 것이 옳았다. 그래서 DLL 9개가 플러그인 7개가 되고 232 + 7 = 239 다.
+
+### 플리마켓은 터지지 않았다 — 10-L 의 가장 큰 관문
+
+아이템을 넣는 모드가 7개였으므로 계획이 "플리마켓 생성 단계에서 터진다"고 경고한 자리다. 사용자 서버 로그에 증거가 남았다.
+
+```
+[QuickSell] Built flea price table: 9730 items from 100547 live offers
+            (6382 live averages, 1029 weapon bases, 2319 fallbacks) in 49ms.
+[ModSource] Detected 5756 items, 938 quests, 99 achievements, 1411 clothing
+            and 26047 trader offers from 57 mods.
+```
+
+**`ragfair`·`flea` 가 들어간 오류 0건, `exception` 0건** 이고 `/client/handbook/templates` 도 두 번 정상 응답했다. 10만 개 넘는 매물로 가격표가 49 ms 에 만들어졌다.
+
+### 서버 오류가 49 → 51 이 된 이유 — 10-L 과 무관하다
+
+새로 늘어난 2줄은 같은 내용이다.
+
+```
+[Error] SPT에 존재하지않는 상인 6952ced4bcc1dd1e3c80dfcb가 프로필에서 발견되었습니다.
+```
+
+Nomad 프로필(`6adc2669`)에만 남아 있는 **지워진 상인 참조**다. 로그를 날짜별로 세어 보면 **11-03 에 32회, 11-04 에 30회, 11-05 에 16회** — 10-L 보다 이틀 앞선다. 예전에 상인을 넣는 모드를 뺄 때 그 상인이 보낸 쪽지를 지우지 않아 남은 것이고, 이번 설치가 낸 것이 아니다.
+
+서버 테스트 11회에서 이 줄이 안 보였던 것은 **테스트 서버가 프로필을 불러오지 않기 때문**이다 — 프로필을 읽는 시점에만 찍힌다. 그래서 `install-and-test` 의 출력과 사용자 서버 로그의 오류 수는 **직접 비교되지 않는다.**
+
+### 함정 하나 — 서버 로그는 UTC 다
+
+이 확인 중에 `ModLoader: 총 167 개` 가 **09:57** 로 찍혀 있어 낡은 파일로 의심했다. 실제로는 **09:57 UTC = 18:57 KST** 로 바로 그 세션이었다. `logs/spt/spt<날짜>.log` 는 **UTC** 이고 파일 수정 시각·셸·BepInEx 로그는 **KST** 다. 하루치가 한 파일에 쌓이므로, 지금 세션을 자를 때는 시각이 아니라 **파일 끝에서 거꾸로 올라가 마지막 `ModLoader: 총 N 개` 줄**을 기준점으로 쓴다.
+
+### 버전 표기가 세 군데서 다른 모드
+
+Borkel 의 RNVG 는 **Forge 3.0.4 · 서버 로그 2.2.0 · 플러그인 3.0.3** 이다. Halloween Masks 는 Forge 2.0.0 인데 서버가 `5.0.1`, 플러그인이 `2.0.0` 으로 찍는다. **버전 대조는 Forge 쪽 숫자로 한다** — 로그 숫자로 "다른 판이 깔렸다"고 읽지 않는다.
+
+### 아직 눈으로 봐야 하는 것
+
+로그로는 여기까지다. 상인 줄이 넘치지 않는지(넘치면 설치된 Kaeno-TraderScrolling), Epic·ECOT 의 아이템이 제대로 보이는지, 새 스킬 둘(`SignalsIntelligence`·`Hacking`)이 스킬 화면에 뜨는지, Deploy Screen Overhaul 의 출발 화면, BRNVG 의 야시경, Halloween 가면은 화면을 봐야 안다.
+
 ## 10-L — 결속 콘텐츠·대형 11개, 하나씩 · 2026-11-05
 
 | 항목 | 결과 |
