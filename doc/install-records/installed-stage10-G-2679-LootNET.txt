@@ -1,0 +1,4 @@
+2679__LootNet	BepInEx\plugins\LootNet\LootNet.dll
+2679__LootNet	BepInEx\plugins\LootNet\LootNetFika.dll
+2679__LootNet	BepInEx\plugins\LootNet\weii weii.mp4
+2679__LootNet	SPT_Runtime\user\mods\LootNetServer\LootNetServer.dll

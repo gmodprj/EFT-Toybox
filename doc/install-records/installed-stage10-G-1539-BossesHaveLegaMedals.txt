@@ -1,0 +1,3 @@
+1539__acidphantasm-bosseshavelegamedals	SPT_Runtime\user\mods\acidphantasm-bosseshavelegamedals\acidphantasm-bosseshavelegamedals.dll
+1539__acidphantasm-bosseshavelegamedals	SPT_Runtime\user\mods\acidphantasm-bosseshavelegamedals\config.json
+1539__acidphantasm-bosseshavelegamedals	SPT_Runtime\user\mods\acidphantasm-bosseshavelegamedals\LICENSE

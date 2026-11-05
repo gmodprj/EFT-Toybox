@@ -1,0 +1,2 @@
+2481__bushtail-CratesInAirdrop_v2.0.0	SPT_Runtime\user\mods\bushtail-CratesInAirdrop\CratesInAirdrop.dll
+2481__bushtail-CratesInAirdrop_v2.0.0	SPT_Runtime\user\mods\bushtail-CratesInAirdrop\config.json

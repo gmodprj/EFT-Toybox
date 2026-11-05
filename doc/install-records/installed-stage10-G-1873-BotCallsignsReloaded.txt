@@ -1,0 +1,6 @@
+1873__BotCallsigns_v2.0.6	SPT_Runtime\user\mods\BotCallsigns\BotCallsigns.dll
+1873__BotCallsigns_v2.0.6	SPT_Runtime\user\mods\BotCallsigns\nameData\bear_new.json
+1873__BotCallsigns_v2.0.6	SPT_Runtime\user\mods\BotCallsigns\nameData\usec_new.json
+1873__BotCallsigns_v2.0.6	SPT_Runtime\user\mods\BotCallsigns\config.json
+1873__BotCallsigns_v2.0.6	SPT_Runtime\user\mods\BotCallsigns\nameData\allNames.json
+1873__BotCallsigns_v2.0.6	SPT_Runtime\user\mods\BotCallsigns\nameData\userDefinedNames.json

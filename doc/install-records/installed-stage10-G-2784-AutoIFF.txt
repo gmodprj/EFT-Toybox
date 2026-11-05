@@ -1,0 +1,1 @@
+2784__maschine-AutoIFF-2.1.1	BepInEx\plugins\maschine-AutoIFF.dll

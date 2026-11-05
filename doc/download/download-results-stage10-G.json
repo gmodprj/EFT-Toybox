@@ -1,0 +1,123 @@
+[
+  {
+    "id": 2481,
+    "name": "Crates In Airdrop",
+    "version": "2.0.0",
+    "file": "2481__bushtail-CratesInAirdrop_v2.0.0.zip",
+    "bytes": 8162,
+    "expected": 8162,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2523,
+    "name": "Bosses Have Gp Coins",
+    "version": "1.1.0",
+    "file": "2523__acidphantasm-bosseshavegpcoins.7z",
+    "bytes": 8290,
+    "expected": 8290,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1265,
+    "name": "Rai's Hidden Caches",
+    "version": "1.4.0",
+    "file": "1265__RaiRai-HiddenCaches.zip",
+    "bytes": 8305,
+    "expected": 8305,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1539,
+    "name": "Bosses Have Lega Medals",
+    "version": "2.1.0",
+    "file": "1539__acidphantasm-bosseshavelegamedals.7z",
+    "bytes": 8333,
+    "expected": 8333,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2635,
+    "name": "Smooth Talker",
+    "version": "1.3.0",
+    "file": "2635__SmoothTalker-1.3.0.zip",
+    "bytes": 11683,
+    "expected": 11683,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2207,
+    "name": "Fast Sell In Flea",
+    "version": "1.3.1",
+    "file": "2207__Kat-FastSellInFlea-1.3.1.7z",
+    "bytes": 12181,
+    "expected": 12181,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2784,
+    "name": "Auto IFF",
+    "version": "2.1.1",
+    "file": "2784__maschine-AutoIFF-2.1.1.zip",
+    "bytes": 15176,
+    "expected": 15176,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1873,
+    "name": "Bot Callsigns - Reloaded",
+    "version": "2.0.6",
+    "file": "1873__BotCallsigns_v2.0.6.7z",
+    "bytes": 20231,
+    "expected": 20231,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3064,
+    "name": "Realistic PMC Names",
+    "version": "1.1.0",
+    "file": "3064__RealisticPMCNames-v1.1.0.zip",
+    "bytes": 61727,
+    "expected": 61727,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1619,
+    "name": "Lots of Loot Redux",
+    "version": "4.2.2",
+    "file": "1619__LotsofLootRedux-4.2.2.zip",
+    "bytes": 112671,
+    "expected": 112671,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2679,
+    "name": "LootNET",
+    "version": "1.2.0",
+    "file": "2679__LootNet.zip",
+    "bytes": 968223,
+    "expected": 968223,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]
