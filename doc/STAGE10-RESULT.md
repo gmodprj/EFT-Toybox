@@ -386,6 +386,97 @@ A 쪽 `mod_barrel` 이 4 → **220** 이다. 적은 줄은 하나인데 **216개
 { "Filters": { "5a0abb6e1526d8000a025282": { "dd6b29946db0932ea75e09c4": "mod_muzzle" } } }
 ```
 
+## 게임 기동 확인 (10-O 의 3025 설치 후, 2026-11-06 04:18~04:44)
+
+로그 시각이 설치보다 뒤다 — `BepInEx/LogOutput.log` 가 **04:44:09**(KST), 기동 머리가 한 번뿐이라 세션을 자를 필요도 없었다.
+
+| 판정 기준 | 예상 | 실측 | 결과 |
+| --- | --- | --- | --- |
+| 플러그인 수 | 242 → **243** | `243 plugins to load` = `Loading [` **243줄** | **맞음** |
+| 서버 모드 | 170 | `ModLoader: 총 170 개` | 맞음 |
+| 리워크 플러그인 | 올라옴 | `Loading [Manimal-InterchangeRework 1.0.8]` | 맞음 |
+| Map Variants | `interchange` 가 바뀜 | `interchange=Manimal (backport seen)` | **바뀜** |
+| 클라이언트 오류 | 알려진 것만 | `[Error` **1줄**, `[Fatal` **0줄** | 맞음 |
+| 서버 오류 | 48 + 1 + 1 | `Could not add` 48 / `Unable to add bundle` 1 / `cannot import quest` 1 | 맞음 |
+
+`Chainloader startup complete` 는 2711줄에 있다.
+
+### 백포트가 실제로 떴다
+
+Map Variants 가 묻는 창이 돌았고 사용자가 골랐다.
+
+```
+[MV] player chose Interchange - Manimal
+[MV] interchange: suspend set = 1 patch(es) from ManimalInterchange: Prefix LoadPresetPatch:Prefix p400
+[MV] raid on 'interchange': BACKPORT; 1 of ManimalInterchange's patch(es) live, suspended 0
+[REQUEST SUCCESSFUL] /manimal/interchange/capability
+Loading Interchange content interchange-expanded-navmesh-test-77ad637b9a245771 with 18 replacement scenes
+Interchange native shaders: captured 512 game shader(s) for rebinding.
+```
+
+**`lighthouse` 는 아직 `(backport NOT seen yet)`** 이다 — 3022 를 넣지 않았으니 맞는 상태다. 이 줄 하나로 Map Variants 가 **맵마다 따로** 판정한다는 것이 확인됐다.
+
+교체 장면 18개가 셰이더를 게임 것으로 다시 묶었다(`Shopping_Mall_2_MI` 580개, `Shopping_Mall_indoor_MI` 164개, `Shopping_Mall_Shops_MI` 144개 등 합쳐 1,650개쯤). 게임에 같은 셰이더가 없어 원본을 그대로 쓴 것은 **2건**(`Custom/MountainDeferred`, `Particles/Explosion`)이고, 둘 다 안내 줄이다.
+
+### 레이드가 실제로 돌았다
+
+서버 로그는 UTC 이므로 KST 로 바꿔 적는다.
+
+| 항목 | 값 |
+| --- | --- |
+| 레이드 | `Interchange.Pmc 1793906320` |
+| 시작 ~ 끝 | 04:18:38 ~ 04:34:20 (**15분 42초**) |
+| 기록된 위치 | **54,951개** (Raid Review) |
+| 결과 | 사망 (`EquipmentIsEternal: Death detected, queued restoration of 386 items`) |
+
+종료도 깨끗하다 — TraumaCore 31개·tarkin.ladders 7개 패치가 해제되고 `FixPluginTypesSerialization: Restored original AssemblyNames list` 로 끝났다. 마지막의 `WebSocketSharp ... header part of a frame could not be read` 는 게임을 닫아 서버 연결이 끊긴 자리에서 나는 것이다.
+
+### 어제 쏟아진 예외가 사라졌다
+
+| 문구 | 2026-11-05 | 이번 |
+| --- | --- | --- |
+| `AICoreAgent` | 4,524줄 | **0** |
+| `InvalidCast` | 다수 | **0** |
+
+STM 을 Release 로 다시 깐 뒤 처음 돌린 레이드이고, **예외가 한 줄도 없다.** [2026-11-05-aicoreagent-invalidcast.md](fixes/2026-11-05-aicoreagent-invalidcast.md) 에 "Debug 빌드가 유력하나 미확정" 으로 닫아 두었는데, 이번 실측이 그쪽을 받쳐 준다. 다만 그때 변수를 둘(빌드 구성 + 남아 있던 `pitFireTeam` 폴더 이동) 바꿨으므로 **어느 쪽이 원인이었는지는 여전히 가리지 못했다.**
+
+### 남은 Error 줄 세 개 — 전부 10-O 와 무관하다
+
+클라이언트 1줄:
+
+```
+[DirectReload] Patch FAILED to enable: FikaHostReloadMirror — Fika ObservedFirearmController not found
+```
+
+Fika 를 쓰지 않으므로 맞는 상태다.
+
+서버 쪽 `[Error]` 51줄은 `Could not add` 48 + `Unable to add bundle` 1 + **`ProfileFixerService` 2** 다. 그 2줄이 처음 눈에 띄어 좇아 봤다.
+
+> SPT에 존재하지않는 상인 `6952ced4bcc1dd1e3c80dfcb` 가 프로필에서 발견되었습니다.
+
+- **새 것이 아니다** — `spt20261101.log` 부터 매일 나온다(11/01 14줄, 11/02 18, 11/03 32, 11/04 30, 11/05 22).
+- 그 ID 는 **설치된 모드 어디에도 없다**(`user/mods/` 전체 검색). 프로필 쪽에만 있다 — 상인을 넣는 모드를 썼다가 지운 흔적이다.
+- 프로필에 남은 것은 `TradersInfo` 한 줄(`loyaltyLevel 1 / salesSum 0 / standing 0.2`)뿐이고 **그 상인의 물건이나 메시지는 없다.**
+- 메시지가 켜라고 하는 `removeModItemsFromProfile` 은 `SPT_Runtime/SPT_Data/configs/core.json` 에 **이미 `true`** 다. 지울 물건이 없어 서버가 할 일이 없는 것이고, 그래서 매 기동 경고만 남는다.
+
+**해롭지 않다.** 손대려면 프로필의 그 한 줄을 지우는 것인데 프로필을 건드리는 일이므로 하지 않았다.
+
+### 한 가지 지켜볼 것 — ORBIT 의 kiba
+
+```
+[Warning: ORBIT] F19754: MULTISTEP: unavailable operation=kiba: required scene object missing
+```
+
+ORBIT 이 KIBA 매장 문을 여는 다단계 행동을 쓰려다 **장면 물체를 찾지 못했다.** KIBA 는 인터체인지에만 있으므로 이 경고는 이 맵에서만 날 수 있고, 리워크가 그 물체 이름이나 구조를 바꿨을 가능성이 있다.
+
+**바닐라 인터체인지에서도 났는지는 가리지 못했다** — BepInEx 는 기동마다 `LogOutput.log` 를 덮어쓰고 이전 로그가 남아 있지 않다. 다음에 인터체인지를 돌 때(바닐라 쪽을 골라서) 한 번 보면 가려진다. 한 줄뿐이고 레이드는 끝까지 돌았다.
+
+그 밖의 경고 121줄은 HarmonyX 39 · MenuOverhaul 31 · FixPluginTypesSerialization 15 · CloudSix 10 등 다른 모드 것이고, **`Manimal-InterchangeRework` 가 낸 경고·오류는 0줄**이다(안내 26줄만 남겼다).
+
+### 눈으로 봐야 남은 것
+
+- **확장 구역** — 로그는 교체 장면 18개가 떴다고 말하지만, 그 구역이 어떻게 보이는지는 로그로 알 수 없다.
+
 ## F12 한글화 — 2차, 사전 없는 모드 58개를 다 메웠다 · 2026-11-06
 
 1차(17개 / 82항목, `336de45`)를 끝낸 뒤 사전이 없는 모드가 **58개 / 2,878항목** 남아 있었다. 그것을 전부 메웠다.
@@ -456,7 +547,7 @@ A 쪽 `mod_barrel` 이 4 → **220** 이다. 적은 줄은 하나인데 **216개
 
 | 모드 | 버전 | 크기 | 받기 | 해제·검사 | 설치 |
 | --- | --- | --- | --- | --- | --- |
-| 3025 Interchange Expansion | 1.0.8 | 1,509,917,405 | **바이트 일치** | **CLEAN (0/0/0)**, 148개 | **들어갔다** (아래) |
+| 3025 Interchange Expansion | 1.0.8 | 1,509,917,405 | **바이트 일치** | **CLEAN (0/0/0)**, 148개 | **들어갔고 레이드까지 돌았다** (아래) |
 | 3022 Lighthouse Rework | 1.0.7 | 2,455,455,438 | 받기 OK (2026-11-06) | 해제 50파일 / 2.4 GB | 설치 전 |
 | 2866 ICEBREAKER | 1.1.3 | 1,672,250,789 | **바이트 일치** | - | - |
 
@@ -497,6 +588,8 @@ node tools/redownload-mod.mjs stage10-O 3022
 
 **여기서 멈춘다.** 계획이 "하나 넣고 그 맵에 들어가 보는 것까지 끝낸 뒤 다음으로 간다"고 못 박았으므로, **Interchange 에 들어가 보기 전에는 3022·2866 을 넣지 않는다.**
 
+**이 문이 열렸다 (2026-11-06 04:44).** 인터체인지 레이드를 15분 42초 돌았고, 플러그인이 예상대로 243, Map Variants 가 `interchange=Manimal (backport seen)` 으로 바뀌었다. 자세한 것은 아래 **게임 기동 확인 (10-O 의 3025 설치 후, 2026-11-06 04:18~04:44)** 절에 적었다. 남은 것은 확장 구역을 눈으로 보는 것뿐이고 로그로 가릴 수 있는 것은 다 가렸으므로, **3022 설치로 넘어갈 수 있다.**
+
 다음 기동에서 볼 것:
 
 - 플러그인 **242 → 243 예상** (3025 의 클라이언트 DLL 1개).
@@ -505,9 +598,9 @@ node tools/redownload-mod.mjs stage10-O 3022
 
 ### 그다음에 할 일
 
-1. 3022 를 다시 받아 같은 방식으로(`node tools/redownload-mod.mjs stage10-O 3022`).
+1. ~~3022 를 다시 받는다~~ — **끝났다 (2026-11-06).** 받기·해제·충돌 검사까지 마쳤다. 다음은 설치다.
 3. 마지막에 2866 ICEBREAKER. **10-M 의 DynamicMaps Extended DLL 이 `com.manimal.icebreaker` 를 참조하므로**, 이것이 들어가면 그쪽 지도에 할 일이 생긴다 — 넣은 뒤 지도 화면을 다시 본다.
-4. 이 단계 뒤에 **10-B 의 Map Variants 가 찍던 `[MV] no backported location found` 가 사라지는지** 본다. 지금은 `lighthouse=Manimal (backport NOT seen yet), interchange=Manimal (backport NOT seen yet)` 로 찍힌다 — 3025·3022 가 바로 그 백포트다.
+4. 이 단계 뒤에 **10-B 의 Map Variants 가 찍던 `[MV] no backported location found` 가 사라지는지** 본다. 3025 를 넣은 뒤 `interchange` 쪽은 이미 `(backport seen)` 으로 바뀌었고, `lighthouse=Manimal (backport NOT seen yet)` 만 남아 있다 — 3022 가 들어가면 그쪽도 바뀌어야 한다.
 
 ## 10-M — 대형 3개, 하나씩 · 2026-11-05
 
