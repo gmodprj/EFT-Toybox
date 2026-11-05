@@ -1,0 +1,96 @@
+{
+  "guid": "com.mybutthasarash.betterbepinex",
+  "name": "새 설정 메뉴 (Better BepInEx)",
+  "sections": {
+    "General": "일반",
+    "Look": "모양",
+    "Mods list": "모드 목록",
+    "Window": "창"
+  },
+  "settings": {
+    "General/Use the new menu": {
+      "name": "새 메뉴 쓰기",
+      "desc": "F12 를 누르면 이 메뉴를 띄운다. 끄면 기존 설정 창이 바로 돌아온다."
+    },
+    "General/Hold the player still while open": {
+      "name": "열려 있는 동안 캐릭터 멈추기",
+      "desc": "레이드 중 메뉴가 열려 있으면 인벤토리처럼 이동과 시야 회전을 막는다. 기존 창은 둘 다 통과시킨다."
+    },
+    "General/Click outside to keep playing": {
+      "name": "바깥을 눌러 조작 되돌리기",
+      "desc": "메뉴 밖을 누르면 메뉴가 흐려지고 마우스·키가 게임으로 돌아가, 열어 둔 채로 움직일 수 있다. 다시 쓰려면 메뉴를 누른다. F12 로 닫는 것은 그대로다. 끄면 닫을 때까지 메뉴가 앞에 남는다."
+    },
+    "General/Dim the game behind the menu": {
+      "name": "메뉴 뒤 화면 어둡게",
+      "desc": "메뉴 뒤의 화면을 어둡게 한다."
+    },
+    "General/Show descriptions under settings": {
+      "name": "설명을 항목 아래에 보이기",
+      "desc": "각 항목의 설명을 이름 아래에 적는다. 끄면 이름에 마우스를 올렸을 때만 보인다."
+    },
+    "General/Show hidden and advanced": {
+      "name": "숨김·고급 항목 보이기",
+      "desc": "모드가 고급으로 표시한 항목까지 보인다. 검색은 끈 상태에서도 찾아 준다."
+    },
+    "Look/Opacity in the background": {
+      "name": "뒤로 물러났을 때 불투명도",
+      "desc": "메뉴 밖을 누른 뒤 메뉴가 얼마나 투명해지는지. 1 이면 그대로 불투명하다."
+    },
+    "Look/Theme": {
+      "name": "테마",
+      "desc": "메뉴 색. Black 은 OLED 화면에 어울리고, High contrast 가 가장 읽기 쉽다."
+    },
+    "Look/Accent color": {
+      "name": "강조색",
+      "desc": "스위치·슬라이더·배지와 고른 모드의 색. 기본값은 타르코프의 황갈색이다."
+    },
+    "Look/Category header color": {
+      "name": "분류 제목 색",
+      "desc": "한 모드의 설정을 분류로 나누는 제목의 색. 지금 어느 분류에 있는지 한눈에 알 수 있다."
+    },
+    "Look/Text size": {
+      "name": "글자 크기",
+      "desc": "메뉴 배율과 별도로 글자 크기만 조절한다. 같은 창에 글자만 크게·작게."
+    },
+    "Look/Compact rows": {
+      "name": "촘촘한 줄",
+      "desc": "항목 사이 여백을 줄여 화면에 더 많이 담는다."
+    },
+    "Look/Menu scale": {
+      "name": "메뉴 배율",
+      "desc": "메뉴의 글자와 조작부 크기. 1 이 이 화면의 보통 크기다."
+    },
+    "Look/Scale with screen resolution": {
+      "name": "해상도에 맞춰 키우기",
+      "desc": "해상도에 맞춰 메뉴 크기를 잡아 1080p·1440p·울트라와이드·4K 에서 같게 읽힌다. 끄면 어느 화면에서도 1080p 크기로 그린다."
+    },
+    "Look/Font": {
+      "name": "글꼴",
+      "desc": "메뉴 글꼴. Tarkov 는 게임이 불러와 두었을 때 쓰는 EFT 자체 글꼴이고, 나머지는 Windows 에 딸린 것이다. 없는 글꼴은 Default 로 되돌아간다. 메뉴 글자가 사라지면 `BepInEx\\config\\com.mybutthasarash.betterbepinex.cfg` 에서 Default 로 되돌린다."
+    },
+    "Look/Reset window position": {
+      "name": "창 위치 되돌리기",
+      "desc": "메뉴를 화면 가운데 기본 크기로 되돌린다."
+    },
+    "Mods list/Sort mods by": {
+      "name": "모드 목록 정렬",
+      "desc": "모드 목록의 순서. 최근 열어 본 순서로 두면 다음에 메뉴를 열 때 마지막에 본 모드가 위로 온다. 작성자로 두면 작성자별로 묶인다."
+    },
+    "Window/Position": {
+      "name": "창 위치·크기",
+      "desc": "창의 위치와 크기를 화면에 대한 비율로 적어 둔 값이다. 직접 고치지 않아도 된다."
+    },
+    "Window/Favorites": {
+      "name": "즐겨찾기",
+      "desc": "즐겨찾기한 모드의 GUID 목록. 메뉴에서 별을 누르면 여기에 쌓인다."
+    },
+    "Window/Last page": {
+      "name": "마지막으로 본 쪽",
+      "desc": "메뉴를 닫을 때 열려 있던 쪽. 다음에 열면 여기서 시작한다."
+    },
+    "Window/Recent mods": {
+      "name": "최근 열어 본 모드",
+      "desc": "최근에 열어 본 모드의 GUID 를 새것부터 적어 둔 값이다."
+    }
+  }
+}

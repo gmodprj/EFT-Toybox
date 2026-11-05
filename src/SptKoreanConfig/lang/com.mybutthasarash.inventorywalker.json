@@ -1,0 +1,17 @@
+{
+  "guid": "com.mybutthasarash.inventorywalker",
+  "name": "인벤토리 열고 걷기 (Inventory Walker)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Move while the inventory is open": {
+      "name": "인벤토리 열고 이동",
+      "desc": "레이드 중 인벤토리를 열어 둔 채로 WASD 로 걸을 수 있다. 시야 회전·기울이기·달리기는 원래대로 막힌다. 끄면 다시 켜지 않아도 바로 원래 동작으로 돌아간다."
+    },
+    "General/Loot range in metres": {
+      "name": "전리품 창 유지 거리(m)",
+      "desc": "가방·시체·보관함을 뒤지는 중 이보다 멀어지면 창이 닫힌다. 0 이면 제한 없음. Tab 으로 연 자기 인벤토리는 제한받지 않는다."
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "guid": "flir.iof",
+  "name": "인벤토리 정리 (IOF)",
+  "sections": {
+    "1. Main Settings": "1. 기본 설정",
+    "2. Tags": "2. 태그",
+    "3. Debug": "3. 진단"
+  },
+  "settings": {
+    "1. Main Settings/Enable mod": {
+      "name": "모드 켜기",
+      "desc": "모드를 지우지 않고 모든 기능(@sl·@ml·@o 과 추가 버튼)을 끈다. 이미 열려 있는 화면에 붙은 버튼은 그 화면을 다시 열 때까지 남는다."
+    },
+    "1. Main Settings/Organize stash button": {
+      "name": "스태시 정리 버튼",
+      "desc": "보관함 창에 ALL 버튼을 보인다. 누르면 스태시 전체를 정리한다. 보관함 창을 다시 열 때 적용된다."
+    },
+    "2. Tags/Tag character limit": {
+      "name": "태그 글자 수 제한",
+      "desc": "보관함 태그 입력칸의 최대 길이. 게임 자체 제한은 16자인데 @o 규칙을 적기에는 너무 짧다. 태그 창을 다시 열 때 적용된다."
+    },
+    "2. Tags/Notification duration": {
+      "name": "알림 표시 시간",
+      "desc": "태그를 저장할 때 알림이 얼마나 오래 보이는지."
+    },
+    "3. Debug/Verbose logging": {
+      "name": "자세한 로그",
+      "desc": "개발용 진단 로그를 남긴다."
+    }
+  }
+}

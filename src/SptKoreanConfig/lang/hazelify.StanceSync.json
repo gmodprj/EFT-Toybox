@@ -1,0 +1,25 @@
+{
+  "guid": "hazelify.StanceSync",
+  "name": "기울이기·어깨 전환 연동 (Stance Sync)",
+  "sections": {
+    "Core": "기본"
+  },
+  "settings": {
+    "Core/Sync leaning with shoulder swapping?": {
+      "name": "기울이면 어깨도 바꾸기",
+      "desc": "왼쪽으로 기울일 때 어깨를 자동으로 바꿀지."
+    },
+    "Core/Sync leaning reset?": {
+      "name": "기울이기를 풀면 어깨도 되돌리기",
+      "desc": "왼쪽 기울이기를 그만둘 때 어깨를 자동으로 되돌릴지."
+    },
+    "Core/Disable synced lean while aiming?": {
+      "name": "조준 중에는 연동 끄기",
+      "desc": "조준 중에는 연동을 아예 끈다."
+    },
+    "Core/Disable synced lean during optic ADS?": {
+      "name": "배율 조준경으로 조준할 때만 끄기",
+      "desc": "**배율** 조준경으로 조준하는 동안에만 연동을 끈다. 도트·조준기·기계식 조준기로는 연동이 그대로 돌아간다. 이 항목이 위의 \"조준 중에는 연동 끄기\"보다 우선한다. 어떤 조준경이든 조준 중에 끄고 싶으면 위 항목을 켜고 이것을 끈다. 이것만 켜고 위를 끄면 연동은 늘 돌아가는 쪽으로 간다."
+    }
+  }
+}

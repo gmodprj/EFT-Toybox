@@ -1,0 +1,13 @@
+{
+  "guid": "hazelify.BushWhackerStandalone",
+  "name": "수풀 감속 없애기 (BushWhacker)",
+  "sections": {
+    "BushWhacker": "수풀"
+  },
+  "settings": {
+    "BushWhacker/BushWhacker - On/Off": {
+      "name": "켜기",
+      "desc": "수풀을 지날 때 걸리는 감속을 없앤다."
+    }
+  }
+}

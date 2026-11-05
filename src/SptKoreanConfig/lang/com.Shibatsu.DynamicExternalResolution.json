@@ -1,0 +1,29 @@
+{
+  "guid": "com.Shibatsu.DynamicExternalResolution",
+  "name": "조준경 밖 해상도 조절 (DERP)",
+  "sections": {
+    "Settings": "설정"
+  },
+  "settings": {
+    "Settings/Enable Mod": {
+      "name": "모드 켜기",
+      "desc": "배율 조준경으로 조준하는 동안 조준경 **밖** 화면의 해상도를 낮춘다."
+    },
+    "Settings/Sampling Downgrade": {
+      "name": "해상도 낮추는 비율",
+      "desc": "FSR 1.0·FSR 2.2·DLSS 를 쓰지 않을 때만 적용된다. 배율 조준경으로 조준할 때 조준경 밖 화면을 얼마나 낮출지. 기본 50%."
+    },
+    "Settings/DLSS Scaling Mode": {
+      "name": "DLSS 배율 단계",
+      "desc": "DLSS 를 켠 경우에만 적용된다. 배율 조준경으로 조준할 때 조준경 밖 화면을 이 단계로 바꾼다. 기본값은 Ultra Performance(해상도 65% 감소)."
+    },
+    "Settings/FSR2 Scaling Mode": {
+      "name": "FSR 2.2 배율 단계",
+      "desc": "FSR 2.2 를 켠 경우에만 적용된다. 기본값은 Ultra Performance(해상도 67% 감소)."
+    },
+    "Settings/FSR3 Scaling Mode": {
+      "name": "FSR 3.0 배율 단계",
+      "desc": "FSR 3.0 을 켠 경우에만 적용된다. 기본값은 Ultra Performance(해상도 67% 감소)."
+    }
+  }
+}

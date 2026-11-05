@@ -1,0 +1,21 @@
+{
+  "guid": "com.manimal.watchanims",
+  "name": "시계 보기 동작 (Watch Animations)",
+  "sections": {
+    "Blending": "전환"
+  },
+  "settings": {
+    "Blending/Blend in time": {
+      "name": "들어오는 시간",
+      "desc": "시계 보는 동작이 나타나기까지의 시간(초)."
+    },
+    "Blending/Blend out time": {
+      "name": "나가는 시간",
+      "desc": "기본 자세로 돌아가는 데 걸리는 시간(초)."
+    },
+    "Blending/Blend out lead": {
+      "name": "나가기 시작 시점",
+      "desc": "동작이 끝나기 몇 초 전부터 빠져나가기 시작하는지."
+    }
+  }
+}

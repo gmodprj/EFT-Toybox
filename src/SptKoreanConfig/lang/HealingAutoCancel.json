@@ -1,0 +1,13 @@
+{
+  "guid": "HealingAutoCancel",
+  "name": "치료 자동 취소 (Healing Autocancel)",
+  "sections": {
+    "Heal": "치료"
+  },
+  "settings": {
+    "Heal/Enable automatic heal canceling": {
+      "name": "치료 자동 취소 켜기",
+      "desc": "더 치료할 필요가 없어지면 남은 치료 동작을 스스로 끊는다."
+    }
+  }
+}

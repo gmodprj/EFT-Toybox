@@ -1,0 +1,38 @@
+{
+  "guid": "com.manimal.labsboiler",
+  "name": "연구소 사무실 백포트 (Labs Office)",
+  "sections": {
+    "Keycard": "카드키",
+    "Lights": "조명"
+  },
+  "settings": {
+    "Keycard/SwipeAnchorX": {
+      "name": "카드 긋는 위치 X",
+      "desc": "카드키를 긋는 지점의 X 좌표(판독기 기준). 0 이면 판독기 바로 앞이고, 정식 서비스판은 0.81 로 옆으로 비껴 있었다. 즉시 적용된다."
+    },
+    "Keycard/SwipeAnchorY": {
+      "name": "카드 긋는 위치 Y",
+      "desc": "카드키를 긋는 지점의 Y 좌표(판독기 기준). 즉시 적용된다."
+    },
+    "Keycard/SwipeAnchorZ": {
+      "name": "카드 긋는 위치 Z",
+      "desc": "카드키를 긋는 지점의 Z 좌표(판독기 기준). 즉시 적용된다."
+    },
+    "Lights/LampIntensityScale": {
+      "name": "사무실 등 밝기 배수",
+      "desc": "되살린 사무실 등의 밝기에 곱하는 값. 즉시 적용된다."
+    },
+    "Lights/LampBrightnessCap": {
+      "name": "밝기 상한",
+      "desc": "밝기의 천장. 8 이면 제한 없음이고 정식 서비스판과 똑같다. 낮추면 가장 밝은 등만 눌린다. 즉시 적용된다."
+    },
+    "Lights/ForceAllLampsOn": {
+      "name": "모든 등 켜기",
+      "desc": "정식 서비스판이 꺼 둔 36개쯤까지 포함해 사무실의 **모든** 등을 켠다 — 원본보다 밝아진다. 레이드 시작 때 적용된다."
+    },
+    "Lights/EmissiveBoost": {
+      "name": "발광 재질 배수",
+      "desc": "사무실의 발광 재질(로고·모니터·LED)의 발광 세기에 곱하는 값. 1 이 원본 설정이다. 레이드 중에 바로 끌어 보면 된다 — 2~4 에서 빛이 보이면 원본 조명이 이 보정을 필요로 하는 것이고, **아무것도 바뀌지 않으면 발광 경로 자체가 그려지지 않는 것**이다."
+    }
+  }
+}
