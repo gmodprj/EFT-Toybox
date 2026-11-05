@@ -394,7 +394,7 @@ A 쪽 `mod_barrel` 이 4 → **220** 이다. 적은 줄은 하나인데 **216개
 
 | 모드 | 버전 | 크기 | 받기 | 해제·검사 | 설치 |
 | --- | --- | --- | --- | --- | --- |
-| 3025 Interchange Expansion | 1.0.8 | 1,509,917,405 | **바이트 일치** | **CLEAN (0/0/0)**, 148개 | 대기 |
+| 3025 Interchange Expansion | 1.0.8 | 1,509,917,405 | **바이트 일치** | **CLEAN (0/0/0)**, 148개 | **들어갔다** (아래) |
 | 3022 Lighthouse Rework | 1.0.7 | 2,455,455,438 | **미완** (아래) | - | - |
 | 2866 ICEBREAKER | 1.1.3 | 1,672,250,789 | **바이트 일치** | - | - |
 
@@ -417,10 +417,27 @@ node tools/redownload-mod.mjs stage10-O 3022
 
 남은 `.part` 를 지우고 네 번까지 다시 걸며, 바이트 수가 매니페스트와 어긋나면 받은 파일을 지우고 실패로 끝낸다.
 
-### 다음에 할 일
+### 3025 는 들어갔다 (2026-11-05)
 
-1. 게임·서버를 닫고 **3025 설치 → 서버 테스트 → 그 맵(Interchange)에 들어가 보기.** 서버 모드는 169 → 170 이 될 것이고, 클라이언트 DLL 수는 설치 뒤 센다.
-2. 3022 를 다시 받아 같은 방식으로.
+| 항목 | 결과 |
+| --- | --- |
+| 설치 | 148파일 / 1,514.5 MB / 12초 |
+| 서버 모드 | 169 → **170** (예상치와 같다) |
+| 시작 | `SERVER STARTED in 201s`, `(Added 1 mods: ManimalInterchangeRework (1.0.8))` |
+| 기록 | **150줄** = 설치 148 + 서버가 만든 배너 2장(`ManimalInterchange/banners/*.jpg`). 설치 스크립트가 `NEWFILE` 로 알아서 기록에 더했다 |
+| 오류 | `Could not add` 48 · `Unable to add bundle` 1 · `cannot import quest` 1 — **기존과 같다.** 새 오류 0 |
+
+**여기서 멈춘다.** 계획이 "하나 넣고 그 맵에 들어가 보는 것까지 끝낸 뒤 다음으로 간다"고 못 박았으므로, **Interchange 에 들어가 보기 전에는 3022·2866 을 넣지 않는다.**
+
+다음 기동에서 볼 것:
+
+- 플러그인 **242 → 243 예상** (3025 의 클라이언트 DLL 1개).
+- **Interchange 에 들어가 확장된 구역이 실제로 바뀌었는지.**
+- Map Variants 의 줄이 `interchange=Manimal (backport NOT seen yet)` 에서 바뀌는지 — 이 백포트가 바로 그것이다. `lighthouse` 쪽은 3022 가 들어가야 바뀐다.
+
+### 그다음에 할 일
+
+1. 3022 를 다시 받아 같은 방식으로(`node tools/redownload-mod.mjs stage10-O 3022`).
 3. 마지막에 2866 ICEBREAKER. **10-M 의 DynamicMaps Extended DLL 이 `com.manimal.icebreaker` 를 참조하므로**, 이것이 들어가면 그쪽 지도에 할 일이 생긴다 — 넣은 뒤 지도 화면을 다시 본다.
 4. 이 단계 뒤에 **10-B 의 Map Variants 가 찍던 `[MV] no backported location found` 가 사라지는지** 본다. 지금은 `lighthouse=Manimal (backport NOT seen yet), interchange=Manimal (backport NOT seen yet)` 로 찍힌다 — 3025·3022 가 바로 그 백포트다.
 
