@@ -1,0 +1,42 @@
+{
+  "guid": "com.chazut.orbit",
+  "name": "ORBIT 봇 두뇌 (ORBIT)",
+  "sections": {
+    "01. Essentials": "01. 기본",
+    "02. Authoring tools": "02. 편집 도구"
+  },
+  "settings": {
+    "01. Essentials/Server config": {
+      "name": "서버 설정",
+      "desc": "행동에 관한 모든 설정(소속·전리품·탈출·유령 모드 등)은 ORBIT 서버 웹 화면에 있다."
+    },
+    "01. Essentials/Quiet logging": {
+      "name": "조용한 기록",
+      "desc": "켜면(기본) 아래의 기록 단계와 상관없이 경고와 오류만 남겨 기록이 깔끔하다. 아래의 단계를 쓰려면 끈다(예컨대 문제를 알리기 전에 Debug 를 켠다)."
+    },
+    "01. Essentials/Log levels": {
+      "name": "기록 단계",
+      "desc": "조용한 기록을 껐을 때 ORBIT 이 남길 메시지 단계다. Info 와 Debug 는 뒤에서 모아 적고, 경고와 오류는 바로 적는다. Debug 는 Release 빌드에서도 돌아간다. 다 남기면 CPU 를 쓰고, 너무 밀리면 자세한 메시지를 버린다고 알린다."
+    },
+    "01. Essentials/Performance logging": {
+      "name": "성능 기록",
+      "desc": "켜면 60FPS 기준(16.67ms)을 넘긴 프레임, 느린 봇 판단, 유령 전환을 조용한 기록과 상관없이 남긴다. 레이드 중에는 BepInEx/ORBIT/diagnostics 에 성능 일지를, 끝날 때 정리를 저절로 저장한다. 크게 멈춘 것은 자세한 JSON 으로도 저장한다."
+    },
+    "01. Essentials/Debug report": {
+      "name": "진단 보고 모으기",
+      "desc": "이 클라이언트의 기록과 고른 레이드의 진단·재생을 ZIP 으로 만든다. Fika 클라이언트에서는 누를 때만 SPT 서버를 통해 호스트·헤드리스 파일을 요청한다. 처음 모을 때는 호스트를 켜 둔다. 만든 것은 서버에 24시간 남는다. 전송은 뒤에서 방향마다 1MiB/s 로 제한해 돌아간다. BepInEx/ORBIT/debug 에 저장된다."
+    },
+    "02. Authoring tools/Capture Marked Rush doors": {
+      "name": "문 잡기 켜기",
+      "desc": "레이드 중 문을 잡는 단축키를 켠다. 문을 바라보면 그 장면 ID 를 복사해 지금 서버 설정에 Marked Rush 지점을 미리 채워 저장한다. 보호된 설정은 개인 사본이 된다. 방 위치가 확실하지 않으면 확인용으로 꺼진 상태로 저장된다. 다음 레이드부터 적용된다."
+    },
+    "02. Authoring tools/Capture door shortcut": {
+      "name": "문 잡기 단축키",
+      "desc": "메뉴를 닫고 문을 바라보아 상호작용 안내가 뜨면 이 단축키를 누른다. 짝이 되는 ORBIT 서버 모드가 필요하다. 이미 있는 문은 설정이 그대로 남으니, 웹 편집기에서 바꾼 것을 저장하거나 버린 뒤에 잡는다."
+    },
+    "02. Authoring tools/Last door capture": {
+      "name": "마지막 문 잡기 결과",
+      "desc": "마지막으로 문을 잡은 결과다."
+    }
+  }
+}

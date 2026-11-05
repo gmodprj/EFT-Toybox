@@ -1,0 +1,68 @@
+{
+  "guid": "com.maschine.AutoIFF",
+  "name": "피아 식별 (AutoIFF)",
+  "sections": {
+    "Display": "표시",
+    "General": "일반",
+    "Identification": "식별",
+    "Skills": "기술"
+  },
+  "settings": {
+    "Display/ShowBotRole": {
+      "name": "대상 종류 보이기",
+      "desc": "대상이 무엇인지(PMC·스캐브·보스, 협동 플레이어는 Player) 이름표 아래에 보인다."
+    },
+    "Display/ShowBotName": {
+      "name": "대상 이름 보이기",
+      "desc": "대상의 이름을 이름표 아래 줄에 보인다. Teammates 면 팀 모드(예: PitFireTeam)가 등록한 분대원과 협동 플레이어만 보이고, 그런 모드가 없으면 달라지지 않는다. All 이면 식별한 모든 대상을 보인다."
+    },
+    "Display/ShowTargetHealth": {
+      "name": "대상 체력 보이기",
+      "desc": "대상의 지금 체력과 최대 체력(모든 부위 합계)을 아군·적군 표시 옆에 보인다."
+    },
+    "Display/ShowDistance": {
+      "name": "거리 보이기",
+      "desc": "식별한 대상까지의 거리를 보인다."
+    },
+    "Display/ShowTraitorWarning": {
+      "name": "배신자 경고 보이기",
+      "desc": "내가 스캐브 배신자로 찍혔을 때 오른쪽 아래에 경고를 보인다."
+    },
+    "Display/TraitorAlertDuration": {
+      "name": "배신자 경고 시간",
+      "desc": "경고가 화면에 남는 시간(초)이다. 새 스캐브 무리가 알아챌 때마다 시간이 다시 시작된다."
+    },
+    "General/ActivationMode": {
+      "name": "작동 방식",
+      "desc": "Automatic 이면 스캐브로 할 때만 돌고, AlwaysOn 이면 모든 레이드에서 돌고, AlwaysOff 면 끄고, Hotkey 면 키로 켜고 끈다."
+    },
+    "General/ActivationHotkey": {
+      "name": "작동 키",
+      "desc": "위의 작동 방식을 Hotkey 로 둘 때 모드를 켜고 끄는 키다. 기본으로는 지정되어 있지 않다."
+    },
+    "General/FriendlyOnly": {
+      "name": "아군만 보이기",
+      "desc": "아군만 즉시 식별해 보인다. 적군에는 이름표가 붙지 않고 식별 시간 설정도 쓰이지 않는다. 어떤 레이드에서든 아군 사격을 막는 데 쓸모가 있다."
+    },
+    "Identification/BaseIdentificationTime": {
+      "name": "기본 식별 시간",
+      "desc": "대상을 식별하는 데 걸리는 기본 시간(초)이다."
+    },
+    "Identification/DistanceMultiplier": {
+      "name": "거리 영향",
+      "desc": "거리가 식별 시간을 얼마나 늘릴지다. 0 이면 거리가 영향을 주지 않는다."
+    },
+    "Identification/IdentificationRange": {
+      "name": "식별 거리",
+      "desc": "식별할 수 있는 최대 거리(미터)다. 그보다 멀면 너무 멀다고 보인다."
+    },
+    "Identification/MemoryDuration": {
+      "name": "기억 시간",
+      "desc": "식별한 대상을 얼마나 오래(초) 기억할지다."
+    },
+    "Skills/UseSkillScaling": {
+      "name": "기술 반영",
+      "desc": "주의력·지각·탐색 기술에 따라 식별 시간과 거리를 조절한다."
+    }
+  }
+}

@@ -490,6 +490,190 @@
     "3. Intensity Multipliers/LWRCI — Intensity": {
       "name": "LWRCI — 밝기",
       "desc": "LWRCI 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/★ WMLX — Range": {
+      "name": "★ WMLX — 도달 거리",
+      "desc": "★ WMLX 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/<color#FFFFFF>○ M600U</color> — Range": {
+      "name": "<color#FFFFFF>○ M600U</color> — 도달 거리",
+      "desc": "<color#FFFFFF>○ M600U</color> 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/<color#FFFFFF>○ PP-2000 Flash</color> — Range": {
+      "name": "<color#FFFFFF>○ PP-2000 Flash</color> — 도달 거리",
+      "desc": "<color#FFFFFF>○ PP-2000 Flash</color> 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Wilcox RAID Xe Tactical Device (Black)) — Range": {
+      "name": "EpicsAIO (Wilcox RAID Xe Tactical Device (Black)) — 도달 거리",
+      "desc": "EpicsAIO (Wilcox RAID Xe Tactical Device (Black)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Wilcox RAID Xe Tactical Device (FDE)) — Range": {
+      "name": "EpicsAIO (Wilcox RAID Xe Tactical Device (FDE)) — 도달 거리",
+      "desc": "EpicsAIO (Wilcox RAID Xe Tactical Device (FDE)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/<color#FFFFFF>● CTF-2</color> — Range": {
+      "name": "<color#FFFFFF>● CTF-2</color> — 도달 거리",
+      "desc": "<color#FFFFFF>● CTF-2</color> 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Steiner OTAL C Tactical Device (Black Vis)) — Range": {
+      "name": "EpicsAIO (Steiner OTAL C Tactical Device (Black Vis)) — 도달 거리",
+      "desc": "EpicsAIO (Steiner OTAL C Tactical Device (Black Vis)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Steiner OTAL C Tactical Device (FDE Vis)) — Range": {
+      "name": "EpicsAIO (Steiner OTAL C Tactical Device (FDE Vis)) — 도달 거리",
+      "desc": "EpicsAIO (Steiner OTAL C Tactical Device (FDE Vis)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Steiner OTAL C Tactical Device (FDE IR)) — Range": {
+      "name": "EpicsAIO (Steiner OTAL C Tactical Device (FDE IR)) — 도달 거리",
+      "desc": "EpicsAIO (Steiner OTAL C Tactical Device (FDE IR)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Steiner OTAL C Tactical Device (Black IR)) — Range": {
+      "name": "EpicsAIO (Steiner OTAL C Tactical Device (Black IR)) — 도달 거리",
+      "desc": "EpicsAIO (Steiner OTAL C Tactical Device (Black IR)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Steiner CQBL 1 Tactical Device (Black)) — Range": {
+      "name": "EpicsAIO (Steiner CQBL 1 Tactical Device (Black)) — 도달 거리",
+      "desc": "EpicsAIO (Steiner CQBL 1 Tactical Device (Black)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Steiner CQBL 1 Tactical Device (FDE)) — Range": {
+      "name": "EpicsAIO (Steiner CQBL 1 Tactical Device (FDE)) — 도달 거리",
+      "desc": "EpicsAIO (Steiner CQBL 1 Tactical Device (FDE)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (L3Harris LA 23/PEQ Tactical Device) — Range": {
+      "name": "EpicsAIO (L3Harris LA 23/PEQ Tactical Device) — 도달 거리",
+      "desc": "EpicsAIO (L3Harris LA 23/PEQ Tactical Device) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Eotech OGL Tactical Device (Black)) — Range": {
+      "name": "EpicsAIO (Eotech OGL Tactical Device (Black)) — 도달 거리",
+      "desc": "EpicsAIO (Eotech OGL Tactical Device (Black)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Eotech OGL Tactical Device (FDE)) — Range": {
+      "name": "EpicsAIO (Eotech OGL Tactical Device (FDE)) — 도달 거리",
+      "desc": "EpicsAIO (Eotech OGL Tactical Device (FDE)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Insight M3X Tactical Flashlight (Black)) — Range": {
+      "name": "EpicsAIO (Insight M3X Tactical Flashlight (Black)) — 도달 거리",
+      "desc": "EpicsAIO (Insight M3X Tactical Flashlight (Black)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Insight M3X Tactical Flashlight (Tan)) — Range": {
+      "name": "EpicsAIO (Insight M3X Tactical Flashlight (Tan)) — 도달 거리",
+      "desc": "EpicsAIO (Insight M3X Tactical Flashlight (Tan)) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/<color#FFFFFF>○ CTF-3</color> — Range": {
+      "name": "<color#FFFFFF>○ CTF-3</color> — 도달 거리",
+      "desc": "<color#FFFFFF>○ CTF-3</color> 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/☆ X400U — Range": {
+      "name": "☆ X400U — 도달 거리",
+      "desc": "☆ X400U 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/☆ WMLX (841933) — Range": {
+      "name": "☆ WMLX (841933) — 도달 거리",
+      "desc": "☆ WMLX (841933) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/Russian SF Pack (PP 2000 Flashlight) — Range": {
+      "name": "Russian SF Pack (PP 2000 Flashlight) — 도달 거리",
+      "desc": "Russian SF Pack (PP 2000 Flashlight) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EpicsAIO (Phantom Hill CTF 2 Tactical Device) — Range": {
+      "name": "EpicsAIO (Phantom Hill CTF 2 Tactical Device) — 도달 거리",
+      "desc": "EpicsAIO (Phantom Hill CTF 2 Tactical Device) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/EukyreECOT (CTF Photonics CTF 3 Tactical Device) — Range": {
+      "name": "EukyreECOT (CTF Photonics CTF 3 Tactical Device) — 도달 거리",
+      "desc": "EukyreECOT (CTF Photonics CTF 3 Tactical Device) 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/★ WMLX — Intensity": {
+      "name": "★ WMLX — 밝기",
+      "desc": "★ WMLX 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/<color#FFFFFF>○ M600U</color> — Intensity": {
+      "name": "<color#FFFFFF>○ M600U</color> — 밝기",
+      "desc": "<color#FFFFFF>○ M600U</color> 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/<color#FFFFFF>○ PP-2000 Flash</color> — Intensity": {
+      "name": "<color#FFFFFF>○ PP-2000 Flash</color> — 밝기",
+      "desc": "<color#FFFFFF>○ PP-2000 Flash</color> 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Wilcox RAID Xe Tactical Device (Black)) — Intensity": {
+      "name": "EpicsAIO (Wilcox RAID Xe Tactical Device (Black)) — 밝기",
+      "desc": "EpicsAIO (Wilcox RAID Xe Tactical Device (Black)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Wilcox RAID Xe Tactical Device (FDE)) — Intensity": {
+      "name": "EpicsAIO (Wilcox RAID Xe Tactical Device (FDE)) — 밝기",
+      "desc": "EpicsAIO (Wilcox RAID Xe Tactical Device (FDE)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/<color#FFFFFF>● CTF-2</color> — Intensity": {
+      "name": "<color#FFFFFF>● CTF-2</color> — 밝기",
+      "desc": "<color#FFFFFF>● CTF-2</color> 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Steiner OTAL C Tactical Device (Black Vis)) — Intensity": {
+      "name": "EpicsAIO (Steiner OTAL C Tactical Device (Black Vis)) — 밝기",
+      "desc": "EpicsAIO (Steiner OTAL C Tactical Device (Black Vis)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Steiner OTAL C Tactical Device (FDE Vis)) — Intensity": {
+      "name": "EpicsAIO (Steiner OTAL C Tactical Device (FDE Vis)) — 밝기",
+      "desc": "EpicsAIO (Steiner OTAL C Tactical Device (FDE Vis)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Steiner OTAL C Tactical Device (FDE IR)) — Intensity": {
+      "name": "EpicsAIO (Steiner OTAL C Tactical Device (FDE IR)) — 밝기",
+      "desc": "EpicsAIO (Steiner OTAL C Tactical Device (FDE IR)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Steiner OTAL C Tactical Device (Black IR)) — Intensity": {
+      "name": "EpicsAIO (Steiner OTAL C Tactical Device (Black IR)) — 밝기",
+      "desc": "EpicsAIO (Steiner OTAL C Tactical Device (Black IR)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Steiner CQBL 1 Tactical Device (Black)) — Intensity": {
+      "name": "EpicsAIO (Steiner CQBL 1 Tactical Device (Black)) — 밝기",
+      "desc": "EpicsAIO (Steiner CQBL 1 Tactical Device (Black)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Steiner CQBL 1 Tactical Device (FDE)) — Intensity": {
+      "name": "EpicsAIO (Steiner CQBL 1 Tactical Device (FDE)) — 밝기",
+      "desc": "EpicsAIO (Steiner CQBL 1 Tactical Device (FDE)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (L3Harris LA 23/PEQ Tactical Device) — Intensity": {
+      "name": "EpicsAIO (L3Harris LA 23/PEQ Tactical Device) — 밝기",
+      "desc": "EpicsAIO (L3Harris LA 23/PEQ Tactical Device) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Eotech OGL Tactical Device (Black)) — Intensity": {
+      "name": "EpicsAIO (Eotech OGL Tactical Device (Black)) — 밝기",
+      "desc": "EpicsAIO (Eotech OGL Tactical Device (Black)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Eotech OGL Tactical Device (FDE)) — Intensity": {
+      "name": "EpicsAIO (Eotech OGL Tactical Device (FDE)) — 밝기",
+      "desc": "EpicsAIO (Eotech OGL Tactical Device (FDE)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Insight M3X Tactical Flashlight (Black)) — Intensity": {
+      "name": "EpicsAIO (Insight M3X Tactical Flashlight (Black)) — 밝기",
+      "desc": "EpicsAIO (Insight M3X Tactical Flashlight (Black)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Insight M3X Tactical Flashlight (Tan)) — Intensity": {
+      "name": "EpicsAIO (Insight M3X Tactical Flashlight (Tan)) — 밝기",
+      "desc": "EpicsAIO (Insight M3X Tactical Flashlight (Tan)) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/<color#FFFFFF>○ CTF-3</color> — Intensity": {
+      "name": "<color#FFFFFF>○ CTF-3</color> — 밝기",
+      "desc": "<color#FFFFFF>○ CTF-3</color> 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/☆ X400U — Intensity": {
+      "name": "☆ X400U — 밝기",
+      "desc": "☆ X400U 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/☆ WMLX (841933) — Intensity": {
+      "name": "☆ WMLX (841933) — 밝기",
+      "desc": "☆ WMLX (841933) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/Russian SF Pack (PP 2000 Flashlight) — Intensity": {
+      "name": "Russian SF Pack (PP 2000 Flashlight) — 밝기",
+      "desc": "Russian SF Pack (PP 2000 Flashlight) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EpicsAIO (Phantom Hill CTF 2 Tactical Device) — Intensity": {
+      "name": "EpicsAIO (Phantom Hill CTF 2 Tactical Device) — 밝기",
+      "desc": "EpicsAIO (Phantom Hill CTF 2 Tactical Device) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/EukyreECOT (CTF Photonics CTF 3 Tactical Device) — Intensity": {
+      "name": "EukyreECOT (CTF Photonics CTF 3 Tactical Device) — 밝기",
+      "desc": "EukyreECOT (CTF Photonics CTF 3 Tactical Device) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
     }
   }
 }

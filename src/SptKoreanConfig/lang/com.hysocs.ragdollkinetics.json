@@ -1,0 +1,231 @@
+{
+  "guid": "com.hysocs.ragdollkinetics",
+  "name": "시체 물리 (Ragdoll Kinetics)",
+  "sections": {
+    "AI Hit Response": "봇 피격 반응",
+    "Death Profile - Crouching": "죽는 자세 - 앉은 채",
+    "Death Profile - Running": "죽는 자세 - 달리던 중",
+    "Death Profile - Standing": "죽는 자세 - 선 채",
+    "Death Profile - Walking": "죽는 자세 - 걷던 중",
+    "Ragdoll Preview (Debug)": "미리보기 (진단)",
+    "Ragdolls": "시체 물리"
+  },
+  "settings": {
+    "AI Hit Response/StabilizeAimWhenHit": {
+      "name": "맞아도 조준 흔들리지 않게",
+      "desc": "이미 보고 있던 대상에게 맞았을 때 봇의 조준 방향이 엉뚱하게 튀는 것을 막는다."
+    },
+    "Death Profile - Crouching/MomentumScale": {
+      "name": "관성 비율",
+      "desc": "죽는 순간 잡아 둔 수평 속도 가운데 시체로 넘기는 비율이다."
+    },
+    "Death Profile - Crouching/MomentumDecay": {
+      "name": "관성 감쇠(초)",
+      "desc": "넘겨받은 수평 관성이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Crouching/WorldFollowStrength": {
+      "name": "위치 따라가는 세기",
+      "desc": "물리 조각마다 원래 동작의 월드 위치로 끌어당기는 세기다."
+    },
+    "Death Profile - Crouching/WorldFollowDecay": {
+      "name": "위치 따라가기 감쇠(초)",
+      "desc": "월드 위치로 끌어당기는 힘이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Crouching/BoneReplayStrength": {
+      "name": "동작 재현 세기",
+      "desc": "걷거나 뛰던 자세를 다시 만들 때 쓰는 관절 세기다."
+    },
+    "Death Profile - Crouching/BoneReplayDecay": {
+      "name": "동작 재현 감쇠(초)",
+      "desc": "뼈 동작 재현이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Crouching/BoneReplayMaximumTorque": {
+      "name": "동작 재현 최대 토크",
+      "desc": "관절마다 동작을 만드는 최대 토크다. 낮추면 부딪힐 때 자세가 더 쉽게 꺾인다."
+    },
+    "Death Profile - Crouching/JointLimitRange": {
+      "name": "관절 꺾임 범위",
+      "desc": "해부학적으로 관절이 꺾일 수 있는 범위에 곱한다."
+    },
+    "Death Profile - Crouching/JointLimitStiffness": {
+      "name": "관절 한계 저항",
+      "desc": "관절이 꺾임 한계에 닿았을 때만 걸리는 저항이다."
+    },
+    "Death Profile - Running/MomentumScale": {
+      "name": "관성 비율",
+      "desc": "죽는 순간 잡아 둔 수평 속도 가운데 시체로 넘기는 비율이다."
+    },
+    "Death Profile - Running/MomentumDecay": {
+      "name": "관성 감쇠(초)",
+      "desc": "넘겨받은 수평 관성이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Running/WorldFollowStrength": {
+      "name": "위치 따라가는 세기",
+      "desc": "물리 조각마다 원래 동작의 월드 위치로 끌어당기는 세기다."
+    },
+    "Death Profile - Running/WorldFollowDecay": {
+      "name": "위치 따라가기 감쇠(초)",
+      "desc": "월드 위치로 끌어당기는 힘이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Running/BoneReplayStrength": {
+      "name": "동작 재현 세기",
+      "desc": "걷거나 뛰던 자세를 다시 만들 때 쓰는 관절 세기다."
+    },
+    "Death Profile - Running/BoneReplayDecay": {
+      "name": "동작 재현 감쇠(초)",
+      "desc": "뼈 동작 재현이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Running/BoneReplayMaximumTorque": {
+      "name": "동작 재현 최대 토크",
+      "desc": "관절마다 동작을 만드는 최대 토크다. 낮추면 부딪힐 때 자세가 더 쉽게 꺾인다."
+    },
+    "Death Profile - Running/JointLimitRange": {
+      "name": "관절 꺾임 범위",
+      "desc": "해부학적으로 관절이 꺾일 수 있는 범위에 곱한다."
+    },
+    "Death Profile - Running/JointLimitStiffness": {
+      "name": "관절 한계 저항",
+      "desc": "관절이 꺾임 한계에 닿았을 때만 걸리는 저항이다."
+    },
+    "Death Profile - Standing/MomentumScale": {
+      "name": "관성 비율",
+      "desc": "죽는 순간 잡아 둔 수평 속도 가운데 시체로 넘기는 비율이다."
+    },
+    "Death Profile - Standing/MomentumDecay": {
+      "name": "관성 감쇠(초)",
+      "desc": "넘겨받은 수평 관성이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Standing/WorldFollowStrength": {
+      "name": "위치 따라가는 세기",
+      "desc": "물리 조각마다 원래 동작의 월드 위치로 끌어당기는 세기다."
+    },
+    "Death Profile - Standing/WorldFollowDecay": {
+      "name": "위치 따라가기 감쇠(초)",
+      "desc": "월드 위치로 끌어당기는 힘이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Standing/BoneReplayStrength": {
+      "name": "동작 재현 세기",
+      "desc": "걷거나 뛰던 자세를 다시 만들 때 쓰는 관절 세기다."
+    },
+    "Death Profile - Standing/BoneReplayDecay": {
+      "name": "동작 재현 감쇠(초)",
+      "desc": "뼈 동작 재현이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Standing/BoneReplayMaximumTorque": {
+      "name": "동작 재현 최대 토크",
+      "desc": "관절마다 동작을 만드는 최대 토크다. 낮추면 부딪힐 때 자세가 더 쉽게 꺾인다."
+    },
+    "Death Profile - Standing/JointLimitRange": {
+      "name": "관절 꺾임 범위",
+      "desc": "해부학적으로 관절이 꺾일 수 있는 범위에 곱한다."
+    },
+    "Death Profile - Standing/JointLimitStiffness": {
+      "name": "관절 한계 저항",
+      "desc": "관절이 꺾임 한계에 닿았을 때만 걸리는 저항이다."
+    },
+    "Death Profile - Walking/MomentumScale": {
+      "name": "관성 비율",
+      "desc": "죽는 순간 잡아 둔 수평 속도 가운데 시체로 넘기는 비율이다."
+    },
+    "Death Profile - Walking/MomentumDecay": {
+      "name": "관성 감쇠(초)",
+      "desc": "넘겨받은 수평 관성이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Walking/WorldFollowStrength": {
+      "name": "위치 따라가는 세기",
+      "desc": "물리 조각마다 원래 동작의 월드 위치로 끌어당기는 세기다."
+    },
+    "Death Profile - Walking/WorldFollowDecay": {
+      "name": "위치 따라가기 감쇠(초)",
+      "desc": "월드 위치로 끌어당기는 힘이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Walking/BoneReplayStrength": {
+      "name": "동작 재현 세기",
+      "desc": "걷거나 뛰던 자세를 다시 만들 때 쓰는 관절 세기다."
+    },
+    "Death Profile - Walking/BoneReplayDecay": {
+      "name": "동작 재현 감쇠(초)",
+      "desc": "뼈 동작 재현이 0 이 되기까지 걸리는 시간이다."
+    },
+    "Death Profile - Walking/BoneReplayMaximumTorque": {
+      "name": "동작 재현 최대 토크",
+      "desc": "관절마다 동작을 만드는 최대 토크다. 낮추면 부딪힐 때 자세가 더 쉽게 꺾인다."
+    },
+    "Death Profile - Walking/JointLimitRange": {
+      "name": "관절 꺾임 범위",
+      "desc": "해부학적으로 관절이 꺾일 수 있는 범위에 곱한다."
+    },
+    "Death Profile - Walking/JointLimitStiffness": {
+      "name": "관절 한계 저항",
+      "desc": "관절이 꺾임 한계에 닿았을 때만 걸리는 저항이다."
+    },
+    "Ragdoll Preview (Debug)/Enabled": {
+      "name": "미리보기 켜기",
+      "desc": "시험용 스캐브 하나를 계속 띄우고 움직이고 죽이고 치운다. 위의 시체 물리 켜기와 상관없이 돌아간다."
+    },
+    "Ragdoll Preview (Debug)/Motion": {
+      "name": "죽기 전 동작",
+      "desc": "죽기 바로 전에 재생할 동작이다."
+    },
+    "Ragdoll Preview (Debug)/RouteLength": {
+      "name": "미리보기 경로 길이",
+      "desc": "미리보기용 경로의 길이(미터)다."
+    },
+    "Ragdoll Preview (Debug)/CorpseTime": {
+      "name": "시체 유지 시간",
+      "desc": "미리보기 시체를 치우고 다시 띄우기까지 몇 초 보여 줄지다."
+    },
+    "Ragdoll Preview (Debug)/PathTime": {
+      "name": "경로 이동 제한 시간",
+      "desc": "봇이 보여 준 경로를 지나는 데 허용하는 최대 시간(초)이다."
+    },
+    "Ragdoll Preview (Debug)/KillTime": {
+      "name": "죽이는 시점",
+      "desc": "움직이기 시작한 뒤 몇 초 만에 미리보기 봇을 죽일지다."
+    },
+    "Ragdoll Preview (Debug)/Diagnostics": {
+      "name": "진단",
+      "desc": "미리보기 봇에 내린 경로와 지금 이동 상태를 0.5초마다 기록에 적고, 경로에서 벗어난 만큼을 빨갛게 그린다."
+    },
+    "Ragdoll Preview (Debug)/NativeDeathDiagnostics": {
+      "name": "네이티브 진단",
+      "desc": "봇이 죽는 프레임 주변 몇 프레임에 유니티 네이티브 프로파일러 표시를 기록에 적는다. 죽는 순간의 멈춤을 알아볼 때만 쓴다."
+    },
+    "Ragdolls/FutureAnimationDriver": {
+      "name": "보이지 않는 뼈대로 이어가기",
+      "desc": "죽은 뒤에도 EFT 의 이동 동작을 보이지 않는 뼈대에서 계속 돌리고, 시체가 따라갈 동작을 그것만으로 삼는다."
+    },
+    "Ragdolls/Enabled": {
+      "name": "켜기",
+      "desc": "시체 물리를 켠다."
+    },
+    "Ragdolls/CorpsePhysicsSeparator": {
+      "name": "시체 물리 구분",
+      "desc": "아래 항목들이 시체 물리에 관한 것임을 알리는 구분선이다."
+    },
+    "Ragdolls/FreezeDelay": {
+      "name": "물리 멈추기까지(초)",
+      "desc": "EFT 가 시체 물리를 멈추기까지의 시간이다."
+    },
+    "Ragdolls/ImpulseScale": {
+      "name": "충격 비율",
+      "desc": "EFT 의 치명타 충격과 저장해 둔 밀기에 곱하는 비율이다."
+    },
+    "Ragdolls/FatalPushDecay": {
+      "name": "치명타 밀기 감쇠(초)",
+      "desc": "저장해 둔 치명타 밀기가 속도를 잃기까지 걸리는 시간이다."
+    },
+    "Ragdolls/RagdollMassScale": {
+      "name": "시체 질량 배율",
+      "desc": "시체의 물리 조각마다 질량에 곱하는 배율이다. EFT 가 뼈마다 정해 둔 질량 비율은 그대로 지킨다."
+    },
+    "Ragdolls/TeleportRagdollOnGlitch": {
+      "name": "튀면 제자리로",
+      "desc": "뼈 하나라도 35미터 넘게 날아가면 시체 전체를 저장해 둔 사망 위치로 되돌린다."
+    },
+    "Ragdolls/DebugLogging": {
+      "name": "진단 기록",
+      "desc": "관절 진단값을 자세히 BepInEx 기록에 적는다."
+    }
+  }
+}

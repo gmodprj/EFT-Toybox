@@ -1,0 +1,26 @@
+{
+  "guid": "com.manimal.interchange",
+  "name": "인터체인지 확장 (Interchange Expansion)",
+  "sections": {
+    "Development": "개발",
+    "Rendering": "그리기"
+  },
+  "settings": {
+    "Development/AllowFullMapTest": {
+      "name": "맵 전체 시험 허용",
+      "desc": "개발용 값이다. 확장한 구역을 맵 전체에서 시험할 수 있게 한다."
+    },
+    "Development/AllowLoaderProbe": {
+      "name": "불러오기 시험 허용",
+      "desc": "AI Bridge 를 거쳐 메뉴에서만 장면을 불러오는 시험을 허용한다."
+    },
+    "Rendering/RebindNativeShaders": {
+      "name": "게임 셰이더로 바꿔 쓰기",
+      "desc": "맵의 화면 공간 보조 셰이더(주변광·젖음·톤매퍼)를 함께 온 리테일 프로그램 대신 게임 자체의 것으로 가리킨다."
+    },
+    "Rendering/RebindMaterialShaders": {
+      "name": "재질 셰이더도 게임 것으로",
+      "desc": "같은 이름의 게임 셰이더가 있으면 맵 재질이 그것을 가리키게 한다."
+    }
+  }
+}

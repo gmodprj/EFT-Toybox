@@ -1,0 +1,21 @@
+{
+  "guid": "com.harmonyzt.MusicExtender",
+  "name": "음악 넣기 (Music Extender)",
+  "sections": {
+    "Music": "음악"
+  },
+  "settings": {
+    "Music/Custom Music Only": {
+      "name": "넣은 음악만 틀기",
+      "desc": "다시 켜야 적용된다. 켜면 넣은 음악만 틀고, 끄면 바닐라 음악과 섞어 튼다."
+    },
+    "Music/Play in Hideout": {
+      "name": "은신처에서도 틀기",
+      "desc": "은신처에 들어가도 음악을 계속 튼다."
+    },
+    "Music/Play Custom Music Packs": {
+      "name": "음악 묶음 틀기",
+      "desc": "다시 켜야 적용된다. Resources 안 Custom 폴더에 애드온이 넣은 음악 묶음을 튼다. 끄면 이 모드가 함께 온 곡만 쓴다."
+    }
+  }
+}

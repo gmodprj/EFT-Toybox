@@ -386,6 +386,68 @@ A 쪽 `mod_barrel` 이 4 → **220** 이다. 적은 줄은 하나인데 **216개
 { "Filters": { "5a0abb6e1526d8000a025282": { "dd6b29946db0932ea75e09c4": "mod_muzzle" } } }
 ```
 
+## F12 한글화 — 2차, 사전 없는 모드 58개를 다 메웠다 · 2026-11-06
+
+1차(17개 / 82항목, `336de45`)를 끝낸 뒤 사전이 없는 모드가 **58개 / 2,878항목** 남아 있었다. 그것을 전부 메웠다.
+
+| 항목 | 값 |
+| --- | --- |
+| 새 사전 | **58개** (사전 122 → **180개**. `lang/` 파일은 `_` 로 시작하는 3개를 더해 183개) |
+| 새 항목 | **2,963개** (2,127 → **5,090**) |
+| 커버리지 | `node tools/check-lang-coverage.mjs` → **5082/5082**, 경고(`！`) **0건** |
+| 설치 | `tools/install-koreanconfig.ps1` → 설치본 사전 125 → **183개** |
+
+### 항목 수가 큰 것부터
+
+| 모드 | 항목 | 어떻게 메웠나 |
+| --- | --- | --- |
+| `com.borkel.nvgmasks` 야시경 마스크 | 916 | 기기 16종이 같은 키 묶음을 되풀이한다 — **고유 키 110개만 번역**하고 섹션마다 펴서 만들었다 |
+| `com.dizzlow.impactcue` 타격 표시 | 615 | **모드가 제 `locales/ko.json` 을 들고 있었다**(아래) — 번역하지 않고 옮겼다 |
+| `com.matsix.cloudsix` 구름·하늘 | 132 | 손으로 |
+| `com.janky.hollywoodgraphics` 화면 효과 | 87 | 맵 13곳 × 키 4개 = 52개를 규칙으로, 나머지 35개를 손으로 |
+| `com.pein.battleambience` 먼 교전 소리 | 88 | 맵 10곳이 같은 키 16개를 되풀이한다 — 규칙으로 |
+| `com.matsix.tracesix` 되튄 빛 조명 | 84 | 손으로 |
+| `com.matsix.fogsix` 부피 안개 | 68 | 손으로 |
+| `com.hysocs.traumacore` 해부학 피해 | 62 | 손으로(사람·봇 같은 이름 키는 섹션별로 따로) |
+| `com.janky.hollywoodfx` 총격·폭발 효과 | 60 | 손으로 |
+| `com.zgfuedkx.skilldistribution` 숙련도 나눠 주기 | 58 | 기술 47개 배율을 규칙으로 |
+| `com.mybutthasarash.deployscreen` 출격 화면 | 56 | 손으로 |
+| `com.blackhawk.dynamicmapsextended` 지도 확장 | 54 | 역할 33개 묶기를 규칙으로 |
+| `com.hysocs.ragdollkinetics` 시체 물리 | 54 | 죽는 자세 4종이 같은 키 9개를 되풀이한다 — 규칙으로 |
+
+나머지 45개는 35항목 이하이고 손으로 적었다.
+
+### ImpactCue 는 번역할 것이 없었다 — 이미 한글이 있다
+
+`E:\Spt\BepInEx\plugins\ImpactCue-UI-MOD\locales\ko.json` 에 **1,302개 키**가 들어 있고, 키 모양이 `섹션|키|name` / `|description` 이라 우리 사전의 `섹션/키` 와 **1:1 로 맞는다.** 그대로 옮겨 479항목을 채웠다.
+
+남은 136항목은 그 `ko.json`(2.0.3)이 설치본보다 뒤쳐져 비어 있던 것인데, 전부 `99. Internal/Status <요소> X·Y·Scale` 꼴이어서 **요소 이름 20개 + 꼬리 규칙 7개**로 만들었다.
+
+`locales` 폴더를 가진 모드를 모두 훑었다 — **한글이 든 것은 ImpactCue 뿐이다**(AdvancedStashSorting `ch/en/ru`, WishlistExtended `en/pl`, Softwyx-LootInVicinity `en`).
+
+### 사전이 있었는데도 비어 있던 네 모드
+
+사전을 만든 뒤 모드가 항목을 더 넣어 빈 자리가 생긴 것들이다. 같은 꼴이 되풀이되어 규칙으로 메웠다.
+
+| 모드 | 메운 수 | 무엇이 늘었나 |
+| --- | --- | --- |
+| `com.vultify.nobarrelshadow` | 46 | Epic's AIO·ECOT·Russian SF Pack 이 넣은 조명 23종의 사거리·밝기 |
+| `com.slpf.caliberundername` | 2 | 새 탄 구경 2종 |
+| `com.manimal.interchange` | 3 | 10-O 로 들어온 모드가 `Rendering` 섹션을 새로 썼다 |
+| `com.blackhawk.dynamicmapsextended` | 1 | `Interchange (Manimal)` — 10-O 의 백포트를 지도 그림 목록이 알아봤다 |
+| `xyz.stm.teammanager` | 1 | `14 AutoJoinMaxMembers` |
+
+**교훈** — 사전은 한 번 만들면 끝나는 것이 아니다. 모드가 들어올 때마다 **다른 모드의 사전에도 구멍이 난다**(조명 하나가 늘면 No Barrel Shadow 에 두 줄이 생긴다). 단계마다 `check-lang-coverage.mjs` 를 돌려 보는 것이 맞다.
+
+### 이름 없는 섹션
+
+`com.tarkin.huir` 와 `com.rairai.hiddencaches.eft` 는 `[]` 로 이름 없는 섹션을 쓴다. 사전의 `sections` 에 빈 문자열 키로 `일반` 을 적어 두었다. 게임에서 그 머리글이 어떻게 보이는지는 **확인하지 않았다.**
+
+### 아직 원문인 것
+
+- `xyz.drakia.Sense.json` 의 색 항목 58개는 **설명이 없다**. 원문 `.cfg` 에도 설명이 없어 커버리지는 통과한다(이름은 다 한글이다).
+- Better BepInEx 창 자체의 글(`_ui.json` 쪽)은 이 묶음에 넣지 않았다 — 설정 항목이 아니라 창 틀의 글이다.
+
 ## 10-O — Manimal 맵 백포트 3개 (진행 중) · 2026-11-05
 
 **계획이 이 단계에만 둔 제약 둘을 그대로 지킨다.** ① 표 순서를 바꾸지 않는다 — ICEBREAKER(2866)가 Interchange Expansion(3025)을 요구하므로 맨 뒤다. ② **하나 넣고 그 맵에 들어가 보는 것까지 끝낸 뒤** 다음으로 간다. 그래서 앞 단계들처럼 몰아서 넣지 않고 모드마다 멈춘다(사용자와 확인).

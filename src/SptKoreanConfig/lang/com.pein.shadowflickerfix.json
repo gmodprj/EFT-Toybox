@@ -1,0 +1,76 @@
+{
+  "guid": "com.pein.shadowflickerfix",
+  "name": "그림자 깜빡임 고치기 (Shadow Flicker Fix)",
+  "sections": {
+    "1. Distant Shadows": "1. 먼 그림자",
+    "2. Shadows": "2. 그림자",
+    "3. Shadows (Advanced)": "3. 그림자 (고급)",
+    "4. Anti-Aliasing": "4. 계단 다듬기"
+  },
+  "settings": {
+    "1. Distant Shadows/Distant Shadow Resolution": {
+      "name": "먼 그림자 해상도",
+      "desc": "먼 그림자의 해상도를 바꾼다. 올리면 깜빡임이 줄지만 성능에 조금(거의 느끼지 못할 만큼) 영향이 있다."
+    },
+    "2. Shadows/Enable Shadow Changes": {
+      "name": "그림자 설정 바꾸기",
+      "desc": "아래 설정 가운데 일부는 프레임을 눈에 띄게 떨어뜨린다. 그림자 설정을 바꾸는 기능을 켠다. 그림자가 아주 좋아지거나 아주 나빠질 수 있다. 끈 뒤에는 맵을 바꿔야 한다."
+    },
+    "2. Shadows/Shadow Cascades": {
+      "name": "그림자 단계 수",
+      "desc": "그림자 단계 수를 바꾼다. 성능 차이는 눈에 띄지 않았다."
+    },
+    "2. Shadows/Shadow Quality": {
+      "name": "그림자 품질",
+      "desc": "그림자 맵 해상도를 바꾼다. 프레임이 떨어진다."
+    },
+    "3. Shadows (Advanced)/Enable Advanced Shadow Changes": {
+      "name": "고급 그림자 설정 켜기",
+      "desc": "고급 그림자 설정을 켠다. 위의 그림자 설정 바꾸기가 켜져 있어야 돌아간다."
+    },
+    "3. Shadows (Advanced)/Shadow Decrease Factor": {
+      "name": "그림자 감쇠 계수",
+      "desc": "그림자 감쇠 계수를 바꾼다. 낮추면 그림자가 크게 또렷해지지만 프레임도 떨어진다."
+    },
+    "3. Shadows (Advanced)/Minimum Shadow Distance": {
+      "name": "최소 그림자 거리",
+      "desc": "최소 그림자 거리를 바꾼다. 제작자도 정확히 무엇을 하는지는 모른다고 적어 두었으니, 만져 보고 싶으면 쓴다."
+    },
+    "3. Shadows (Advanced)/Shadow Interval 1": {
+      "name": "그림자 구간 1",
+      "desc": "그림자가 한 품질에서 다른 품질로 넘어가기 시작하는 거리다."
+    },
+    "3. Shadows (Advanced)/Shadow Interval 2": {
+      "name": "그림자 구간 2",
+      "desc": "그림자가 한 품질에서 다른 품질로 넘어가기 시작하는 거리다."
+    },
+    "4. Anti-Aliasing/SMAA": {
+      "name": "SMAA 켜기",
+      "desc": "SMAA 를 켠다. 업스케일링과 함께 쓰면 화면이 아주 흐려지므로 함께 쓰지 않는다."
+    },
+    "4. Anti-Aliasing/SMAA Quality": {
+      "name": "SMAA 품질",
+      "desc": "SMAA 품질을 바꾼다."
+    },
+    "4. Anti-Aliasing/Enable TAA Changes": {
+      "name": "TAA 설정 바꾸기",
+      "desc": "TAA 설정을 바꾸는 기능을 켠다. 1080p 화면에서 TAA 흐림이 줄지만 그만큼 계단이 늘어난다. 게임을 다시 켜야 한다."
+    },
+    "4. Anti-Aliasing/TAA Jitter Spread": {
+      "name": "TAA 흔들림 폭",
+      "desc": "TAA 의 흔들림 폭을 바꾼다."
+    },
+    "4. Anti-Aliasing/TAA Motion Blending": {
+      "name": "TAA 움직일 때 섞기",
+      "desc": "움직일 때 TAA 가 프레임을 섞는 정도를 바꾼다."
+    },
+    "4. Anti-Aliasing/TAA Stationary Blending": {
+      "name": "TAA 멈출 때 섞기",
+      "desc": "가만히 있을 때 TAA 가 프레임을 섞는 정도를 바꾼다."
+    },
+    "4. Anti-Aliasing/TAA Sharpness": {
+      "name": "TAA 선명도",
+      "desc": "TAA 선명도를 바꾼다. 움직이는 동안 화면을 또렷하게 하므로 올리면 아주 불안정해진다."
+    }
+  }
+}

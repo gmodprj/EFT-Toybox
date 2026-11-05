@@ -1,0 +1,271 @@
+{
+  "guid": "com.hysocs.traumacore",
+  "name": "해부학 피해 (TraumaCore)",
+  "sections": {
+    "Bleeding": "출혈",
+    "Damage": "피해",
+    "Damage Linkage": "피해 전달",
+    "Debug": "진단",
+    "Default Preset": "기본값",
+    "Effect Testing": "효과 시험",
+    "Feature Toggles": "기능 스위치",
+    "General": "일반",
+    "Player Hitboxes": "사람 피격 부위",
+    "Player Systems": "사람 적용",
+    "Scav Hitboxes": "봇 피격 부위",
+    "Scav Systems": "봇 적용",
+    "Target Balance": "대상별 균형",
+    "Visuals": "보기",
+    "Wound Inspection": "상처 살펴보기"
+  },
+  "settings": {
+    "Bleeding/NaturalClotDurationV2": {
+      "name": "저절로 멎는 시간(초)",
+      "desc": "심장이 아닌 곳에 마지막으로 맞은 뒤 출혈이 완전히 멎기까지의 시간이다."
+    },
+    "Bleeding/LightBleedDamageMultiplier": {
+      "name": "경상 출혈 배율",
+      "desc": "모든 경상 출혈 피해에 곱한다."
+    },
+    "Bleeding/HeavyBleedDamageMultiplier": {
+      "name": "중상 출혈 배율",
+      "desc": "심장 출혈을 포함한 모든 중상 출혈 피해에 곱한다."
+    },
+    "Damage/DirectDamagePercentV2": {
+      "name": "즉시 피해 비율",
+      "desc": "상처가 생기기 전에 바로 들어가는 탄 피해의 비율이다."
+    },
+    "Damage/FullWoundTotalDamageMultiplier": {
+      "name": "관통상 총 피해 배율",
+      "desc": "깊이 관통한 총상이 저절로 멎을 때까지 주는 총 피해의 목표치다. EFT 의 방어구 통과 뒤 피해를 기준으로 한다."
+    },
+    "Damage/EntireHeadFatal": {
+      "name": "머리 관통은 모두 치명",
+      "desc": "머리를 관통한 모든 타격을 치명적인 뇌 피격으로 본다."
+    },
+    "Damage/HeadFullDamageDepth": {
+      "name": "머리 완전 피해 깊이",
+      "desc": "머리 두께 가운데 얼마나 들어가야 온전한 상처 피해를 줄지의 비율이다."
+    },
+    "Damage/HeadDamageFloor": {
+      "name": "머리 최소 피해",
+      "desc": "머리를 스친 상처의 최소 즉시 피해 비율이다."
+    },
+    "Damage/ChestFullDamageDepth": {
+      "name": "가슴 완전 피해 깊이",
+      "desc": "가슴 두께 가운데 얼마나 들어가야 온전한 상처 피해를 줄지의 비율이다."
+    },
+    "Damage/ChestDamageFloor": {
+      "name": "가슴 최소 피해",
+      "desc": "가슴을 스친 상처의 최소 즉시 피해 비율이다."
+    },
+    "Damage Linkage/OneBlackedRetention": {
+      "name": "불구 하나 통과 시 남는 피해",
+      "desc": "불구가 된 부위 하나를 지나간 뒤 남는 피해 비율이다."
+    },
+    "Damage Linkage/TwoBlackedRetention": {
+      "name": "불구 둘 통과 시 남는 피해",
+      "desc": "불구가 된 부위 둘을 지나간 뒤 남는 피해 비율이다."
+    },
+    "Damage Linkage/ThreePlusBlackedRetention": {
+      "name": "불구 셋 이상 통과 시 남는 피해",
+      "desc": "불구가 된 부위 셋 이상을 지나간 뒤 남는 피해 비율이다."
+    },
+    "Damage Linkage/ArmLinkageMultiplierV2": {
+      "name": "팔 전달 배율",
+      "desc": "팔에서 밖으로 나눠지거나 지나가는 피해에 곱한다."
+    },
+    "Damage Linkage/LegLinkageMultiplier": {
+      "name": "다리 전달 배율",
+      "desc": "다리에서 밖으로 나눠지거나 지나가는 피해에 곱한다."
+    },
+    "Damage Linkage/StomachLinkageMultiplier": {
+      "name": "배 전달 배율",
+      "desc": "배에서 밖으로 나눠지거나 지나가는 피해에 곱한다."
+    },
+    "Debug/ForceFragmentation": {
+      "name": "파편화 강제",
+      "desc": "시험용으로 조건에 맞는 모든 총상을 파편화시킨다."
+    },
+    "Debug/OrganESP": {
+      "name": "장기 윤곽 보기",
+      "desc": "진단용 장기 윤곽을 그린다."
+    },
+    "Debug/ShowCalibrationMannequin": {
+      "name": "보정용 인형 띄우기",
+      "desc": "가장 가까운 대상의 실제 스킨 렌더러와 뼈대로 진단용 인형을 만든다."
+    },
+    "Debug/OrganESPRange": {
+      "name": "장기 윤곽 거리",
+      "desc": "진단용 윤곽을 그릴 최대 거리(미터)다."
+    },
+    "Debug/HitLogging": {
+      "name": "타격 기록",
+      "desc": "TraumaCore 의 진단·경고·오류 메시지를 기록에 적는다."
+    },
+    "Debug/CalibrationPoseMode": {
+      "name": "보정 인형 자세",
+      "desc": "띄워 둔 보정용 인형을 잡아 온 원래 자세와 EFT 의 T 자세 가운데로 바꾼다."
+    },
+    "Default Preset/Restore Recommended Defaults": {
+      "name": "권장값으로 되돌리기",
+      "desc": "지금 쓰는 TraumaCore 설정을 모두 제작자가 고른 기본값으로 되돌린다."
+    },
+    "Effect Testing/Apply Chest Bleed": {
+      "name": "가슴 경상 넣기",
+      "desc": "가슴에 경상 하나를 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Heavy Chest Bleed": {
+      "name": "가슴 중상 넣기",
+      "desc": "중상 치료를 시험하려고 가슴에 중상 하나를 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Heart Bleed": {
+      "name": "심장 상처 넣기",
+      "desc": "낫지 않는 심장 중상 하나를 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Face Bleed": {
+      "name": "얼굴 경상 넣기",
+      "desc": "치료할 수 있는 얼굴 경상 하나를 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Stomach Bleed": {
+      "name": "배 경상 넣기",
+      "desc": "배에 경상 하나를 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Arm Bleed": {
+      "name": "팔 경상 넣기",
+      "desc": "왼팔에 경상 하나를 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Leg Bleed": {
+      "name": "다리 경상 넣기",
+      "desc": "왼다리에 경상 하나를 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Bruised": {
+      "name": "멍 넣기",
+      "desc": "15초 동안 피해 50에 해당하는 방어구 멍을 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Spine Fracture": {
+      "name": "척추 골절 넣기",
+      "desc": "가슴에 게임 자체의 골절 효과를 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Effect Testing/Apply Hit Pressure": {
+      "name": "충격 누적 넣기",
+      "desc": "보기를 시험하려고 충격 누적을 하나 넣는다. 레이드 중 살아 있을 때만 쓸 수 있다."
+    },
+    "Feature Toggles/CustomFragmentation": {
+      "name": "자체 파편화",
+      "desc": "EFT 의 탄 파편화를 TraumaCore 의 상처 경로로 바꾼다."
+    },
+    "Feature Toggles/HitPressure": {
+      "name": "충격 효과",
+      "desc": "TraumaCore 의 충격에 따른 체력·카메라 효과를 적용한다."
+    },
+    "Feature Toggles/DeathScreenReport": {
+      "name": "사망 화면 보고",
+      "desc": "총상과 출혈을 모아 사망 화면에 보인다."
+    },
+    "Feature Toggles/CorpseDragging": {
+      "name": "시체 끌기",
+      "desc": "시체 상호작용 목록에 DRAG BODY 를 넣는다."
+    },
+    "Feature Toggles/PersistentBloodDecals": {
+      "name": "핏자국 더 남기기",
+      "desc": "EFT 가 남길 수 있는 핏자국 수를 늘린다."
+    },
+    "Feature Toggles/TraumaPresentation": {
+      "name": "외상 연출",
+      "desc": "되풀이되는 외상 소리·화면의 피·사망 음성을 다룬다."
+    },
+    "General/Enabled": {
+      "name": "켜기",
+      "desc": "해부학 기반 피해·상처·출혈·전달·골절을 켠다."
+    },
+    "Player Hitboxes/Brain": {
+      "name": "사람 - 뇌",
+      "desc": "사람 플레이어에게 치명적인 뇌 피격을 켠다."
+    },
+    "Player Hitboxes/Heart": {
+      "name": "사람 - 심장",
+      "desc": "사람 플레이어에게 심장 상처를 켠다."
+    },
+    "Player Hitboxes/CervicalSpine": {
+      "name": "사람 - 목척추",
+      "desc": "사람 플레이어에게 치명적인 목척추 피격을 켠다."
+    },
+    "Player Hitboxes/ThoracicSpine": {
+      "name": "사람 - 등척추",
+      "desc": "사람 플레이어에게 가슴 골절을 일으키는 등척추 피격을 켠다."
+    },
+    "Player Systems/CustomBodyTrauma": {
+      "name": "사람에게 적용",
+      "desc": "사람 플레이어에게 자체 상처·장기·전달·골절을 쓴다."
+    },
+    "Scav Hitboxes/Brain": {
+      "name": "봇 - 뇌",
+      "desc": "봇·스캐브에게 치명적인 뇌 피격을 켠다."
+    },
+    "Scav Hitboxes/Heart": {
+      "name": "봇 - 심장",
+      "desc": "봇·스캐브에게 심장 상처를 켠다."
+    },
+    "Scav Hitboxes/CervicalSpine": {
+      "name": "봇 - 목척추",
+      "desc": "봇·스캐브에게 치명적인 목척추 피격을 켠다."
+    },
+    "Scav Hitboxes/ThoracicSpine": {
+      "name": "봇 - 등척추",
+      "desc": "봇·스캐브에게 가슴 골절을 일으키는 등척추 피격을 켠다."
+    },
+    "Scav Systems/CustomBodyTrauma": {
+      "name": "봇에게 적용",
+      "desc": "봇·스캐브에게 자체 상처·장기·전달·골절을 쓴다."
+    },
+    "Target Balance/PlayerDamageMultiplier": {
+      "name": "사람 피해 배율",
+      "desc": "사람 플레이어가 받는 모든 외상 피해에 곱한다."
+    },
+    "Target Balance/ScavDamageMultiplier": {
+      "name": "봇 피해 배율",
+      "desc": "봇·스캐브가 받는 모든 외상 피해에 곱한다."
+    },
+    "Visuals/WorldBloodEffects": {
+      "name": "세상에 피 뿌리기",
+      "desc": "외상 상처에서 계산으로 만든 피 입자를 세상에 그린다."
+    },
+    "Visuals/HeartOpacity": {
+      "name": "심장 불투명도",
+      "desc": "장기 윤곽에 쓰는 불투명도다."
+    },
+    "Visuals/BrainOpacity": {
+      "name": "뇌 불투명도",
+      "desc": "장기 윤곽에 쓰는 불투명도다."
+    },
+    "Visuals/BoneOpacity": {
+      "name": "뼈 불투명도",
+      "desc": "장기 윤곽에 쓰는 불투명도다."
+    },
+    "Visuals/RibcageOpacity": {
+      "name": "흉곽 불투명도",
+      "desc": "장기 윤곽에 쓰는 불투명도다."
+    },
+    "Wound Inspection/Enable Corpse Wound Inspection": {
+      "name": "시체 상처 살펴보기",
+      "desc": "시체 상호작용 목록에 INSPECT WOUNDS 를 넣는다."
+    },
+    "Wound Inspection/Show Trajectories": {
+      "name": "탄도 보이기",
+      "desc": "상처를 살펴볼 때 탄도를 보인다."
+    },
+    "Wound Inspection/Show Anatomy": {
+      "name": "해부 구조 보이기",
+      "desc": "상처를 살펴볼 때 해부 구조를 보인다."
+    },
+    "Wound Inspection/Show Anchors": {
+      "name": "뼈대 기준점 보이기",
+      "desc": "상처를 살펴볼 때 시체 뼈대의 기준점을 보인다."
+    },
+    "Wound Inspection/Hide Back Hits": {
+      "name": "뒤쪽 상처 감추기",
+      "desc": "살펴보는 몸의 반대쪽 상처 표시를 감춘다."
+    }
+  }
+}

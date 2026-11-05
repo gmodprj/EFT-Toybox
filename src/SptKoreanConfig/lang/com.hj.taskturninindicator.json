@@ -1,0 +1,21 @@
+{
+  "guid": "com.hj.taskturninindicator",
+  "name": "퀘스트 제출 표시 (Task Turn-In Indicator)",
+  "sections": {
+    "1. General": "1. 일반"
+  },
+  "settings": {
+    "1. General/Enabled": {
+      "name": "켜기",
+      "desc": "전체 스위치다. 다시 켠 뒤에 적용되며, 꺼 두면 게임을 전혀 건드리지 않는다."
+    },
+    "1. General/Show on Trader Task Rows": {
+      "name": "퀘스트 줄에 표시",
+      "desc": "거래 > 상인 > 퀘스트 목록의 줄에 제출 아이콘을 보인다."
+    },
+    "1. General/Show on Trader Portraits": {
+      "name": "상인 초상에 표시",
+      "desc": "상인 초상의 새 퀘스트 체크 표시 아래에 제출 아이콘을 보인다."
+    }
+  }
+}

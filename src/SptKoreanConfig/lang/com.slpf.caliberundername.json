@@ -10,82 +10,301 @@
     "4. Caliber Names": "4. 구경 표기"
   },
   "settings": {
-    "0. Toggles/Enable caliber on ammo": { "name": "탄약에 구경 표시", "desc": "탄약의 짧은 이름에 구경을 함께 적는다." },
-    "0. Toggles/Enable caliber on ammo boxes": { "name": "탄약 상자에 구경 표시", "desc": "탄약 상자의 짧은 이름에 구경을 함께 적는다." },
-    "0. Toggles/Enable caliber on magazines": { "name": "탄창에 구경 표시", "desc": "탄창의 짧은 이름에 구경을 함께 적는다." },
-    "0. Toggles/Enable caliber on weapons": { "name": "총기에 구경 표시", "desc": "총기의 기본 구경 표기를 이 모드의 표기로 바꾼다." },
-    "0. Toggles/Enable caliber on in-raid loot": { "name": "레이드 전리품에 구경 표시", "desc": "레이드 중 아이템 위에 마우스를 올렸을 때도 구경을 보여 준다." },
-    "0. Toggles/Enable ammo & ammo boxes sorting": { "name": "탄약·탄약 상자 정렬 사용", "desc": "탄약을 정렬할 때 이 모드의 기준을 쓴다." },
-    "0. Toggles/Enable names in trading": { "name": "거래 화면 이름 표시 사용", "desc": "거래 화면에서 키를 누르고 있는 동안 가격 대신 아이템 이름을 보여 준다." },
-    "0. Toggles/Enable caliber with AmandsSense": { "name": "감각(Sense)에도 구경 표시", "desc": "Amands' Sense 표시에도 탄약 구경을 함께 적는다." },
-
-    "1. General/Remove value marks": { "name": "등급 기호 제거", "desc": "탄약 짧은 이름 앞의 등급 기호(★☆●○)를 지운다." },
-    "1. General/Remove value marks in raid": { "name": "레이드 중 등급 기호 제거", "desc": "레이드 중 탄약 이름에서도 등급 기호를 지운다." },
-    "1. General/Value marks": { "name": "지울 기호 목록", "desc": "탄약 이름 앞에서 잘라 낼 문자들." },
-    "1. General/Caliber color": { "name": "구경 글자 색", "desc": "탄약에 덧붙는 구경 글자의 색." },
-    "1. General/Swap name": { "name": "이름과 구경 자리 바꾸기", "desc": "이름과 구경이 나오는 순서를 맞바꾼다." },
-
-    "2. Item Names In Trading/Show names keybind": { "name": "이름 표시 키", "desc": "거래 화면에서 이름을 보기 위해 누르고 있을 키." },
-
-    "3. Ammo Sorting/Primary Sort": { "name": "1차 정렬 기준", "desc": "탄약을 먼저 어떤 기준으로 줄 세울지 정한다." },
-    "3. Ammo Sorting/Primary sort direction": { "name": "1차 정렬 방향", "desc": "1차 기준을 오름차순으로 볼지 내림차순으로 볼지 정한다." },
-    "3. Ammo Sorting/Secondary Sort": { "name": "2차 정렬 기준", "desc": "1차 기준이 같을 때 쓸 기준." },
-    "3. Ammo Sorting/Secondary sort direction": { "name": "2차 정렬 방향", "desc": "2차 기준의 정렬 방향." },
-
-    "3. Ammo Sorting - Rarity Colors/0. Rarity color - rank 1": { "name": "등급 1 배경색", "desc": "희귀도 1등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/1. Rarity color - rank 2": { "name": "등급 2 배경색", "desc": "희귀도 2등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/2. Rarity color - rank 3": { "name": "등급 3 배경색", "desc": "희귀도 3등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/3. Rarity color - rank 4": { "name": "등급 4 배경색", "desc": "희귀도 4등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/4. Rarity color - rank 5": { "name": "등급 5 배경색", "desc": "희귀도 5등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/5. Rarity color - rank 6": { "name": "등급 6 배경색", "desc": "희귀도 6등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/6. Rarity color - rank 7": { "name": "등급 7 배경색", "desc": "희귀도 7등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/7. Rarity color - rank 8": { "name": "등급 8 배경색", "desc": "희귀도 8등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/8. Rarity color - rank 9": { "name": "등급 9 배경색", "desc": "희귀도 9등급 탄약의 바탕색." },
-    "3. Ammo Sorting - Rarity Colors/9. Rarity color - rank 10": { "name": "등급 10 배경색", "desc": "희귀도 10등급 탄약의 바탕색." },
-
-    "4. Caliber Names/Caliber556x45NATO": { "name": "5.56×45 NATO", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber9x18PM": { "name": "9×18 PM", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber12g": { "name": "12게이지", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber762x54R": { "name": "7.62×54R", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber762x39": { "name": "7.62×39", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber40mmRU": { "name": "40mm RU (VOG)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber9x19PARA": { "name": "9×19 파라벨룸", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber545x39": { "name": "5.45×39", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber762x25TT": { "name": "7.62×25 TT", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber9x39": { "name": "9×39", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber762x51": { "name": "7.62×51 NATO", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber366TKM": { "name": ".366 TKM", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber9x21": { "name": "9×21", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber20g": { "name": "20게이지", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber46x30": { "name": "4.6×30", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber127x55": { "name": "12.7×55", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber57x28": { "name": "5.7×28", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber127x108": { "name": "12.7×108", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber30x29": { "name": "30×29", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber1143x23ACP": { "name": ".45 ACP (11.43×23)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber23x75": { "name": "23×75mm", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber40x46": { "name": "40×46", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber762x35": { "name": ".300 BLK (7.62×35)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber86x70": { "name": ".338 라푸아 (8.6×70)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber9x33R": { "name": ".357 매그넘 (9×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber26x75": { "name": "26×75 (신호탄)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber68x51": { "name": "6.8×51", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber20x1mm": { "name": "20×1mm", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber127x33": { "name": "12.7×33", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber725": { "name": ".725 (대구경 산탄)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber127x99": { "name": ".50 BMG (12.7×99)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber792x57": { "name": "7.92×57 마우저", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber762x67B": { "name": ".300 윈매그 (7.62×67B)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber86x63": { "name": ".338 노르마 (8.6×63)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber1036x77": { "name": ".408 셰이택 (10.36×77)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber25x59": { "name": "25×59", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber11x33R": { "name": ".44 매그넘 (11×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber22LR": { "name": ".22 LR (5.6×15R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber1143x33mmR": { "name": ".45 롱 콜트 (11.43×33R)", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber58x42": { "name": "5.8×42", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber784x49": { "name": "7.84×49", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber93x64": { "name": "9.3×64", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber178x89": { "name": "17.8×89", "desc": "이 구경을 화면에 어떻게 적을지 정한다." },
-    "4. Caliber Names/Caliber410g": { "name": ".410 게이지", "desc": "이 구경을 화면에 어떻게 적을지 정한다." }
+    "0. Toggles/Enable caliber on ammo": {
+      "name": "탄약에 구경 표시",
+      "desc": "탄약의 짧은 이름에 구경을 함께 적는다."
+    },
+    "0. Toggles/Enable caliber on ammo boxes": {
+      "name": "탄약 상자에 구경 표시",
+      "desc": "탄약 상자의 짧은 이름에 구경을 함께 적는다."
+    },
+    "0. Toggles/Enable caliber on magazines": {
+      "name": "탄창에 구경 표시",
+      "desc": "탄창의 짧은 이름에 구경을 함께 적는다."
+    },
+    "0. Toggles/Enable caliber on weapons": {
+      "name": "총기에 구경 표시",
+      "desc": "총기의 기본 구경 표기를 이 모드의 표기로 바꾼다."
+    },
+    "0. Toggles/Enable caliber on in-raid loot": {
+      "name": "레이드 전리품에 구경 표시",
+      "desc": "레이드 중 아이템 위에 마우스를 올렸을 때도 구경을 보여 준다."
+    },
+    "0. Toggles/Enable ammo & ammo boxes sorting": {
+      "name": "탄약·탄약 상자 정렬 사용",
+      "desc": "탄약을 정렬할 때 이 모드의 기준을 쓴다."
+    },
+    "0. Toggles/Enable names in trading": {
+      "name": "거래 화면 이름 표시 사용",
+      "desc": "거래 화면에서 키를 누르고 있는 동안 가격 대신 아이템 이름을 보여 준다."
+    },
+    "0. Toggles/Enable caliber with AmandsSense": {
+      "name": "감각(Sense)에도 구경 표시",
+      "desc": "Amands' Sense 표시에도 탄약 구경을 함께 적는다."
+    },
+    "1. General/Remove value marks": {
+      "name": "등급 기호 제거",
+      "desc": "탄약 짧은 이름 앞의 등급 기호(★☆●○)를 지운다."
+    },
+    "1. General/Remove value marks in raid": {
+      "name": "레이드 중 등급 기호 제거",
+      "desc": "레이드 중 탄약 이름에서도 등급 기호를 지운다."
+    },
+    "1. General/Value marks": {
+      "name": "지울 기호 목록",
+      "desc": "탄약 이름 앞에서 잘라 낼 문자들."
+    },
+    "1. General/Caliber color": {
+      "name": "구경 글자 색",
+      "desc": "탄약에 덧붙는 구경 글자의 색."
+    },
+    "1. General/Swap name": {
+      "name": "이름과 구경 자리 바꾸기",
+      "desc": "이름과 구경이 나오는 순서를 맞바꾼다."
+    },
+    "2. Item Names In Trading/Show names keybind": {
+      "name": "이름 표시 키",
+      "desc": "거래 화면에서 이름을 보기 위해 누르고 있을 키."
+    },
+    "3. Ammo Sorting/Primary Sort": {
+      "name": "1차 정렬 기준",
+      "desc": "탄약을 먼저 어떤 기준으로 줄 세울지 정한다."
+    },
+    "3. Ammo Sorting/Primary sort direction": {
+      "name": "1차 정렬 방향",
+      "desc": "1차 기준을 오름차순으로 볼지 내림차순으로 볼지 정한다."
+    },
+    "3. Ammo Sorting/Secondary Sort": {
+      "name": "2차 정렬 기준",
+      "desc": "1차 기준이 같을 때 쓸 기준."
+    },
+    "3. Ammo Sorting/Secondary sort direction": {
+      "name": "2차 정렬 방향",
+      "desc": "2차 기준의 정렬 방향."
+    },
+    "3. Ammo Sorting - Rarity Colors/0. Rarity color - rank 1": {
+      "name": "등급 1 배경색",
+      "desc": "희귀도 1등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/1. Rarity color - rank 2": {
+      "name": "등급 2 배경색",
+      "desc": "희귀도 2등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/2. Rarity color - rank 3": {
+      "name": "등급 3 배경색",
+      "desc": "희귀도 3등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/3. Rarity color - rank 4": {
+      "name": "등급 4 배경색",
+      "desc": "희귀도 4등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/4. Rarity color - rank 5": {
+      "name": "등급 5 배경색",
+      "desc": "희귀도 5등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/5. Rarity color - rank 6": {
+      "name": "등급 6 배경색",
+      "desc": "희귀도 6등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/6. Rarity color - rank 7": {
+      "name": "등급 7 배경색",
+      "desc": "희귀도 7등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/7. Rarity color - rank 8": {
+      "name": "등급 8 배경색",
+      "desc": "희귀도 8등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/8. Rarity color - rank 9": {
+      "name": "등급 9 배경색",
+      "desc": "희귀도 9등급 탄약의 바탕색."
+    },
+    "3. Ammo Sorting - Rarity Colors/9. Rarity color - rank 10": {
+      "name": "등급 10 배경색",
+      "desc": "희귀도 10등급 탄약의 바탕색."
+    },
+    "4. Caliber Names/Caliber556x45NATO": {
+      "name": "5.56×45 NATO",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber9x18PM": {
+      "name": "9×18 PM",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber12g": {
+      "name": "12게이지",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber762x54R": {
+      "name": "7.62×54R",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber762x39": {
+      "name": "7.62×39",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber40mmRU": {
+      "name": "40mm RU (VOG)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber9x19PARA": {
+      "name": "9×19 파라벨룸",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber545x39": {
+      "name": "5.45×39",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber762x25TT": {
+      "name": "7.62×25 TT",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber9x39": {
+      "name": "9×39",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber762x51": {
+      "name": "7.62×51 NATO",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber366TKM": {
+      "name": ".366 TKM",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber9x21": {
+      "name": "9×21",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber20g": {
+      "name": "20게이지",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber46x30": {
+      "name": "4.6×30",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber127x55": {
+      "name": "12.7×55",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber57x28": {
+      "name": "5.7×28",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber127x108": {
+      "name": "12.7×108",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber30x29": {
+      "name": "30×29",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber1143x23ACP": {
+      "name": ".45 ACP (11.43×23)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber23x75": {
+      "name": "23×75mm",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber40x46": {
+      "name": "40×46",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber762x35": {
+      "name": ".300 BLK (7.62×35)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber86x70": {
+      "name": ".338 라푸아 (8.6×70)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber9x33R": {
+      "name": ".357 매그넘 (9×33R)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber26x75": {
+      "name": "26×75 (신호탄)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber68x51": {
+      "name": "6.8×51",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber20x1mm": {
+      "name": "20×1mm",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber127x33": {
+      "name": "12.7×33",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber725": {
+      "name": ".725 (대구경 산탄)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber127x99": {
+      "name": ".50 BMG (12.7×99)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber792x57": {
+      "name": "7.92×57 마우저",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber762x67B": {
+      "name": ".300 윈매그 (7.62×67B)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber86x63": {
+      "name": ".338 노르마 (8.6×63)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber1036x77": {
+      "name": ".408 셰이택 (10.36×77)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber25x59": {
+      "name": "25×59",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber11x33R": {
+      "name": ".44 매그넘 (11×33R)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber22LR": {
+      "name": ".22 LR (5.6×15R)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber1143x33mmR": {
+      "name": ".45 롱 콜트 (11.43×33R)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber58x42": {
+      "name": "5.8×42",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber784x49": {
+      "name": "7.84×49",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber93x64": {
+      "name": "9.3×64",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber178x89": {
+      "name": "17.8×89",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber410g": {
+      "name": ".410 게이지",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다."
+    },
+    "4. Caliber Names/Caliber127x55ST130": {
+      "name": "127x55ST130 표시 이름",
+      "desc": "127x55ST130 탄의 이름을 어떻게 적을지 정한다. 비워 두면 기본 이름을 쓴다."
+    },
+    "4. Caliber Names/Caliber102x22": {
+      "name": "102x22 표시 이름",
+      "desc": "102x22 탄의 이름을 어떻게 적을지 정한다. 비워 두면 기본 이름을 쓴다."
+    }
   }
 }

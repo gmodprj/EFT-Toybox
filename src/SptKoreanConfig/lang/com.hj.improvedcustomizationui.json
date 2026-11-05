@@ -1,0 +1,64 @@
+{
+  "guid": "com.hj.improvedcustomizationui",
+  "name": "꾸미기 화면 개선 (Improved Customization UI)",
+  "sections": {
+    "1. Customization tab": "1. 꾸미기 탭",
+    "2. Ragman clothing": "2. 래그맨 의류",
+    "3. Preview lighting": "3. 미리보기 조명",
+    "4. Photo mode": "4. 사진 모드"
+  },
+  "settings": {
+    "1. Customization tab/Enable Customization tab": {
+      "name": "꾸미기 탭 넣기",
+      "desc": "캐릭터 화면에 5.0 의 CUSTOMIZATION 탭(머리·목소리·의류)을 넣는다. 서버 모드가 필요하다. 게임을 다시 켠 뒤에 적용된다."
+    },
+    "1. Customization tab/Weapon sounds in preview": {
+      "name": "미리보기에 무기 소리",
+      "desc": "미리보기 모델이 살펴보거나 확인하거나 장전할 때 그 무기 자신의 소리(탄창 빼기·넣기·노리쇠 등)를 낸다. 4.1 의 조용한 메뉴 모델처럼 기본으로 꺼져 있다. 바로 적용되며 다시 켤 필요가 없다."
+    },
+    "1. Customization tab/Weapon sounds volume": {
+      "name": "무기 소리 크기",
+      "desc": "게임 소리 설정 위에 미리보기 무기 소리를 얼마나 크게 낼지다."
+    },
+    "2. Ragman clothing/Enable faction toggles and filter": {
+      "name": "소속 전환과 가르기 넣기",
+      "desc": "래그맨 > 서비스 > 전술 의류에 5.0 의 BEAR·USEC 전환과 전체·보유·구매 가능·구매 불가 가르기를 넣는다. 게임을 다시 켠 뒤에 적용된다."
+    },
+    "2. Ragman clothing/Other faction clothing": {
+      "name": "다른 소속 의류",
+      "desc": "다른 소속의 의류를 누가 보고 사고 입을 수 있는지다(래그맨과 꾸미기 탭 모두). UnheardOnly 면 5.0 처럼 Unheard 계정만 된다. 게임이 서버에 알리고 서버가 강제한다. 서버는 user\\mods\\ImprovedCustomizationUI\\config.json 의 MaxOtherFactionClothing 으로 모두에게 한계를 둘 수 있다."
+    },
+    "3. Preview lighting/Extra light": {
+      "name": "조명 더하기",
+      "desc": "게임 자체 미리보기 조명 위에 꾸미기 미리보기 조명을 하나 더한다. 그 화면의 전원 아이콘과 같다."
+    },
+    "3. Preview lighting/Extra light brightness": {
+      "name": "더한 조명 밝기",
+      "desc": "더한 조명이 얼마나 밝은지다."
+    },
+    "3. Preview lighting/Extra light rotation X": {
+      "name": "더한 조명 X 각도",
+      "desc": "더한 조명을 위아래로 기울인다(도). 0 이면 수평이고 양수면 위에서 비춘다."
+    },
+    "3. Preview lighting/Extra light rotation Y": {
+      "name": "더한 조명 Y 각도",
+      "desc": "더한 조명을 모델 주위로 돌린다(도). 0 이면 앞에서, 180 이면 뒤에서(테두리 빛) 비춘다. 자유 시선으로 돌려 봐도 조명은 제자리에 있어 밝은 쪽과 그늘진 쪽을 함께 볼 수 있다."
+    },
+    "3. Preview lighting/Game lights brightness": {
+      "name": "게임 조명 밝기",
+      "desc": "게임 자체 미리보기 조명(주광·채움·머리카락·아래·테두리)의 밝기다. 1 이면 게임 그대로다."
+    },
+    "3. Preview lighting/Rim light strength": {
+      "name": "테두리 빛 세기",
+      "desc": "게임의 테두리 조명 두 개(윤곽에 걸리는 빛)만을 위의 밝기 위에 조절한다. 1 이면 게임 그대로다."
+    },
+    "3. Preview lighting/Game light shadows": {
+      "name": "게임 조명 그림자",
+      "desc": "끄면 게임 미리보기 조명이 그림자를 드리우지 않아 더 평평하고 밝아진다. 켜면 게임 그대로다."
+    },
+    "4. Photo mode/Photo folder": {
+      "name": "사진 폴더",
+      "desc": "사진 모드가 PNG 를 저장할 곳이다. 비워 두면 SPT_Runtime\\user\\mods\\ImprovedCustomizationUI\\Photos 에 저장한다."
+    }
+  }
+}

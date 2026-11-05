@@ -1,0 +1,81 @@
+{
+  "guid": "com.acidphantasm.moretagcolours",
+  "name": "태그 색 늘리기 (More Tag Colours)",
+  "sections": {
+    "Config": "색 목록"
+  },
+  "settings": {
+    "Config/Colour 01": {
+      "name": "1번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 1번째 색이다."
+    },
+    "Config/Colour 02": {
+      "name": "2번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 2번째 색이다."
+    },
+    "Config/Colour 03": {
+      "name": "3번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 3번째 색이다."
+    },
+    "Config/Colour 04": {
+      "name": "4번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 4번째 색이다."
+    },
+    "Config/Colour 05": {
+      "name": "5번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 5번째 색이다."
+    },
+    "Config/Colour 06": {
+      "name": "6번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 6번째 색이다."
+    },
+    "Config/Colour 07": {
+      "name": "7번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 7번째 색이다."
+    },
+    "Config/Colour 08": {
+      "name": "8번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 8번째 색이다."
+    },
+    "Config/Colour 09": {
+      "name": "9번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 9번째 색이다."
+    },
+    "Config/Colour 10": {
+      "name": "10번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 10번째 색이다."
+    },
+    "Config/Colour 11": {
+      "name": "11번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 11번째 색이다."
+    },
+    "Config/Colour 12": {
+      "name": "12번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 12번째 색이다."
+    },
+    "Config/Colour 13": {
+      "name": "13번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 13번째 색이다."
+    },
+    "Config/Colour 14": {
+      "name": "14번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 14번째 색이다."
+    },
+    "Config/Colour 15": {
+      "name": "15번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 15번째 색이다."
+    },
+    "Config/Colour 16": {
+      "name": "16번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 16번째 색이다."
+    },
+    "Config/Colour 17": {
+      "name": "17번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 17번째 색이다."
+    },
+    "Config/Colour 18": {
+      "name": "18번 색",
+      "desc": "물건에 태그를 달 때 고를 수 있는 18번째 색이다."
+    }
+  }
+}

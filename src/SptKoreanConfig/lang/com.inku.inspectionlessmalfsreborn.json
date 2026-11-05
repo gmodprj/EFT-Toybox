@@ -1,0 +1,22 @@
+{
+  "guid": "com.inku.inspectionlessmalfsreborn",
+  "name": "점검 없이 고장 처리 (Inspectionless Malfunctions)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Debug": "2. 진단"
+  },
+  "settings": {
+    "1. General/Mod Enabled": {
+      "name": "켜기",
+      "desc": "점검 없이 고장을 알아보는 기능을 켜거나 끈다. 켜면 무기를 살펴보지 않고 고장을 처리하고, 끄면 바닐라대로 움직인다."
+    },
+    "2. Debug/Debug Enabled": {
+      "name": "진단 켜기",
+      "desc": "진단 기능을 켜거나 끈다."
+    },
+    "2. Debug/Force Overheat": {
+      "name": "강제 과열 키",
+      "desc": "지금 든 무기를 즉시 과열시키는 키다."
+    }
+  }
+}

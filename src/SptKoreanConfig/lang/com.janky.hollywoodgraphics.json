@@ -1,0 +1,376 @@
+{
+  "guid": "com.janky.hollywoodgraphics",
+  "name": "화면 효과 (HollywoodGraphics)",
+  "sections": {
+    "00. General": "00. 일반",
+    "01. Ambient Occlusion": "01. 접촉 음영",
+    "02. Lights": "02. 조명",
+    "03. Bloom v1": "03. 빛 번짐",
+    "04. General": "04. 일반",
+    "04. Map: Customs": "04. 맵: 커스텀",
+    "04. Map: Default": "04. 맵: 기본값",
+    "04. Map: FactoryDay": "04. 맵: 팩토리 낮",
+    "04. Map: FactoryNight": "04. 맵: 팩토리 밤",
+    "04. Map: GroundZero": "04. 맵: 그라운드 제로",
+    "04. Map: Interchange": "04. 맵: 인터체인지",
+    "04. Map: Laboratory": "04. 맵: 연구소",
+    "04. Map: Labyrinth": "04. 맵: 래버린스",
+    "04. Map: Lighthouse": "04. 맵: 라이트하우스",
+    "04. Map: Reserve": "04. 맵: 리저브",
+    "04. Map: Shoreline": "04. 맵: 쇼어라인",
+    "04. Map: Streets": "04. 맵: 스트리트",
+    "04. Map: Woods": "04. 맵: 우즈",
+    "98. Debug": "98. 진단",
+    "99. Internal": "99. 내부"
+  },
+  "settings": {
+    "00. General/Load Template (RESTART)": {
+      "name": "설정 묶음 불러오기 (다시 켜야 함)",
+      "desc": "설정을 미리 만들어 둔 묶음으로 바꾼다. 모든 설정이 적용되려면 게임을 다시 켜야 한다."
+    },
+    "01. Ambient Occlusion/AO Override": {
+      "name": "접촉 음영 덮어쓰기",
+      "desc": "게임의 기본 접촉 음영 설정을 덮어쓴다."
+    },
+    "01. Ambient Occlusion/AO Intensity": {
+      "name": "음영 세기",
+      "desc": "접촉 음영의 전체 세기다."
+    },
+    "01. Ambient Occlusion/AO Radius": {
+      "name": "음영 반지름",
+      "desc": "이 거리 밖의 가림은 무시한다."
+    },
+    "01. Ambient Occlusion/AO Bias": {
+      "name": "음영 보정",
+      "desc": "접촉 음영 값을 전체로 키우는 보정값이다."
+    },
+    "01. Ambient Occlusion/AO Offscreen Enabled": {
+      "name": "화면 밖 표본 쓰기",
+      "desc": "화면 밖 표본도 음영에 반영할지 정한다."
+    },
+    "01. Ambient Occlusion/AO Offscreen Influence": {
+      "name": "화면 밖 표본 비중",
+      "desc": "화면 밖 표본이 음영에 얼마나 반영될지다."
+    },
+    "01. Ambient Occlusion/AO Color Bleed Enabled": {
+      "name": "색 번짐 켜기",
+      "desc": "주변 색이 번지는 효과를 켜거나 끈다."
+    },
+    "01. Ambient Occlusion/AO Color Bleed Saturation": {
+      "name": "색 번짐 채도",
+      "desc": "색 번짐 표본이 반영되는 정도다."
+    },
+    "01. Ambient Occlusion/AO Color Bleed Albedo Mult": {
+      "name": "색 번짐 반사율 배율",
+      "desc": "스스로 빛나는 픽셀을 가려 내는 데 쓴다."
+    },
+    "02. Lights/Env. Light Flares Changes (RESTART)": {
+      "name": "환경 조명 빛갈라짐 손보기 (다시 켜야 함)",
+      "desc": "환경 조명의 빛갈라짐을 더 또렷하고 알맞게 만든다."
+    },
+    "02. Lights/Env. Light Flare Intensity (RESTART)": {
+      "name": "환경 빛갈라짐 세기 (다시 켜야 함)",
+      "desc": "환경 조명 빛갈라짐의 세기를 조절한다."
+    },
+    "02. Lights/Env. Light Flare Size (RESTART)": {
+      "name": "환경 빛갈라짐 크기 (다시 켜야 함)",
+      "desc": "환경 조명 빛갈라짐의 크기를 조절한다."
+    },
+    "03. Bloom v1/Master Bloom Intensity": {
+      "name": "빛 번짐 전체 세기",
+      "desc": "빛 번짐 효과의 전체 세기다."
+    },
+    "03. Bloom v1/Bloom Curve Dark": {
+      "name": "번짐 곡선 - 어두운 쪽",
+      "desc": "어두운 색 범위의 번짐 세기다."
+    },
+    "03. Bloom v1/Bloom Curve Mid": {
+      "name": "번짐 곡선 - 중간",
+      "desc": "중간 색 범위의 번짐 세기다."
+    },
+    "03. Bloom v1/Bloom Curve Bright": {
+      "name": "번짐 곡선 - 밝은 쪽",
+      "desc": "밝은 색 범위의 번짐 세기다."
+    },
+    "03. Bloom v1/Bloom Curve Highlight": {
+      "name": "번짐 곡선 - 가장 밝은 쪽",
+      "desc": "가장 밝은 색 범위의 번짐 세기다."
+    },
+    "03. Bloom v1/Use Lens Dust": {
+      "name": "렌즈 먼지 쓰기",
+      "desc": "렌즈 먼지 효과를 켠다."
+    },
+    "03. Bloom v1/Lens Dust Amount": {
+      "name": "렌즈 먼지 양",
+      "desc": "렌즈 먼지 효과의 세기다."
+    },
+    "03. Bloom v1/Lens Dust Texture": {
+      "name": "렌즈 먼지 그림",
+      "desc": "렌즈 먼지 효과에 쓸 그림 파일이다."
+    },
+    "03. Bloom v1/Lens Bloom Scale": {
+      "name": "렌즈 번짐 세기",
+      "desc": "렌즈 번짐의 세기다."
+    },
+    "03. Bloom v1/Use Anamorphic Flare": {
+      "name": "아나모픽 빛갈라짐 쓰기",
+      "desc": "아나모픽 렌즈 빛갈라짐 효과를 켠다."
+    },
+    "03. Bloom v1/Anamorphic Flare Intensity": {
+      "name": "아나모픽 세기",
+      "desc": "아나모픽 빛갈라짐의 세기다."
+    },
+    "03. Bloom v1/Anamorphic Flare Size": {
+      "name": "아나모픽 크기",
+      "desc": "아나모픽 빛갈라짐의 크기 배율이다."
+    },
+    "03. Bloom v1/Anamorphic Flare Blur Passes": {
+      "name": "아나모픽 흐림 횟수",
+      "desc": "아나모픽 빛갈라짐을 흐리게 하는 횟수다."
+    },
+    "03. Bloom v1/Use Star Flare": {
+      "name": "별 모양 빛갈라짐 쓰기",
+      "desc": "별 모양 렌즈 빛갈라짐 효과를 켠다."
+    },
+    "03. Bloom v1/Star Flare Intensity": {
+      "name": "별 모양 세기",
+      "desc": "별 모양 빛갈라짐의 세기다."
+    },
+    "03. Bloom v1/Star Flare Size": {
+      "name": "별 모양 크기",
+      "desc": "별 모양 빛갈라짐의 크기 배율이다."
+    },
+    "03. Bloom v1/Star Flare Blur Passes": {
+      "name": "별 모양 흐림 횟수",
+      "desc": "별 모양 빛갈라짐을 흐리게 하는 횟수다."
+    },
+    "04. General/Motion Blur Enabled": {
+      "name": "움직임 흐림 켜기",
+      "desc": "움직임 흐림을 켠다. 셔터가 느린 옛 사진기 같은 느낌이 된다."
+    },
+    "04. General/Motion Blur Intensity": {
+      "name": "움직임 흐림 세기",
+      "desc": "움직임 흐림의 양(셔터 각도)을 조절한다."
+    },
+    "04. General/Motion Blur Quality": {
+      "name": "움직임 흐림 품질",
+      "desc": "움직임 흐림의 품질(표본 수)을 조절한다."
+    },
+    "04. Map: Customs/Customs Enable LOD": {
+      "name": "커스텀 - 거리 설정 덮어쓰기",
+      "desc": "커스텀 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Customs/Customs Detail Cull": {
+      "name": "커스텀 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Customs/Customs Detail Density": {
+      "name": "커스텀 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Customs/Customs Bloom Mult": {
+      "name": "커스텀 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Default/Default Enable LOD": {
+      "name": "기본값 - 거리 설정 덮어쓰기",
+      "desc": "기본값 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Default/Default Detail Cull": {
+      "name": "기본값 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Default/Default Detail Density": {
+      "name": "기본값 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Default/Default Bloom Mult": {
+      "name": "기본값 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: FactoryDay/FactoryDay Enable LOD": {
+      "name": "팩토리 낮 - 거리 설정 덮어쓰기",
+      "desc": "팩토리 낮 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: FactoryDay/FactoryDay Detail Cull": {
+      "name": "팩토리 낮 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: FactoryDay/FactoryDay Detail Density": {
+      "name": "팩토리 낮 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: FactoryDay/FactoryDay Bloom Mult": {
+      "name": "팩토리 낮 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: FactoryNight/FactoryNight Enable LOD": {
+      "name": "팩토리 밤 - 거리 설정 덮어쓰기",
+      "desc": "팩토리 밤 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: FactoryNight/FactoryNight Detail Cull": {
+      "name": "팩토리 밤 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: FactoryNight/FactoryNight Detail Density": {
+      "name": "팩토리 밤 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: FactoryNight/FactoryNight Bloom Mult": {
+      "name": "팩토리 밤 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: GroundZero/GroundZero Enable LOD": {
+      "name": "그라운드 제로 - 거리 설정 덮어쓰기",
+      "desc": "그라운드 제로 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: GroundZero/GroundZero Detail Cull": {
+      "name": "그라운드 제로 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: GroundZero/GroundZero Detail Density": {
+      "name": "그라운드 제로 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: GroundZero/GroundZero Bloom Mult": {
+      "name": "그라운드 제로 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Interchange/Interchange Enable LOD": {
+      "name": "인터체인지 - 거리 설정 덮어쓰기",
+      "desc": "인터체인지 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Interchange/Interchange Detail Cull": {
+      "name": "인터체인지 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Interchange/Interchange Detail Density": {
+      "name": "인터체인지 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Interchange/Interchange Bloom Mult": {
+      "name": "인터체인지 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Laboratory/Laboratory Enable LOD": {
+      "name": "연구소 - 거리 설정 덮어쓰기",
+      "desc": "연구소 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Laboratory/Laboratory Detail Cull": {
+      "name": "연구소 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Laboratory/Laboratory Detail Density": {
+      "name": "연구소 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Laboratory/Laboratory Bloom Mult": {
+      "name": "연구소 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Labyrinth/Labyrinth Enable LOD": {
+      "name": "래버린스 - 거리 설정 덮어쓰기",
+      "desc": "래버린스 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Labyrinth/Labyrinth Detail Cull": {
+      "name": "래버린스 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Labyrinth/Labyrinth Detail Density": {
+      "name": "래버린스 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Labyrinth/Labyrinth Bloom Mult": {
+      "name": "래버린스 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Lighthouse/Lighthouse Enable LOD": {
+      "name": "라이트하우스 - 거리 설정 덮어쓰기",
+      "desc": "라이트하우스 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Lighthouse/Lighthouse Detail Cull": {
+      "name": "라이트하우스 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Lighthouse/Lighthouse Detail Density": {
+      "name": "라이트하우스 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Lighthouse/Lighthouse Bloom Mult": {
+      "name": "라이트하우스 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Reserve/Reserve Enable LOD": {
+      "name": "리저브 - 거리 설정 덮어쓰기",
+      "desc": "리저브 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Reserve/Reserve Detail Cull": {
+      "name": "리저브 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Reserve/Reserve Detail Density": {
+      "name": "리저브 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Reserve/Reserve Bloom Mult": {
+      "name": "리저브 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Shoreline/Shoreline Enable LOD": {
+      "name": "쇼어라인 - 거리 설정 덮어쓰기",
+      "desc": "쇼어라인 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Shoreline/Shoreline Detail Cull": {
+      "name": "쇼어라인 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Shoreline/Shoreline Detail Density": {
+      "name": "쇼어라인 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Shoreline/Shoreline Bloom Mult": {
+      "name": "쇼어라인 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Streets/Streets Enable LOD": {
+      "name": "스트리트 - 거리 설정 덮어쓰기",
+      "desc": "스트리트 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Streets/Streets Detail Cull": {
+      "name": "스트리트 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Streets/Streets Detail Density": {
+      "name": "스트리트 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Streets/Streets Bloom Mult": {
+      "name": "스트리트 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "04. Map: Woods/Woods Enable LOD": {
+      "name": "우즈 - 거리 설정 덮어쓰기",
+      "desc": "우즈 에서 아래의 거리·밀도 설정을 덮어쓸지 정한다."
+    },
+    "04. Map: Woods/Woods Detail Cull": {
+      "name": "우즈 - 잔 물체 보이는 거리",
+      "desc": "돌·잔해·풀 같은 잔 물체가 보이는 최대 거리에 곱한다."
+    },
+    "04. Map: Woods/Woods Detail Density": {
+      "name": "우즈 - 잔 물체 밀도",
+      "desc": "돌·잔해·풀 같은 잔 물체의 밀도에 곱한다."
+    },
+    "04. Map: Woods/Woods Bloom Mult": {
+      "name": "우즈 - 빛 번짐 배율",
+      "desc": "이 맵의 기본 빛 번짐 세기에 곱한다."
+    },
+    "98. Debug/Enable Debug Logging (RESTART)": {
+      "name": "진단 기록 (다시 켜야 함)",
+      "desc": "진단 기록을 남긴다. 게임을 다시 켜야 적용된다."
+    },
+    "99. Internal/ConfigVersion": {
+      "name": "설정 판",
+      "desc": "건드리지 않는다."
+    }
+  }
+}

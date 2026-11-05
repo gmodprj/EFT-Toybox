@@ -1,0 +1,34 @@
+{
+  "guid": "com.manimal.deadzone",
+  "name": "무기 관성 (Deadzone)",
+  "sections": {
+    "Defaults": "기본값",
+    "Values": "적용"
+  },
+  "settings": {
+    "Defaults/Default deadzone enabled": {
+      "name": "기본으로 켜기",
+      "desc": "관성을 켤지 정한다."
+    },
+    "Defaults/Default deadzone pivot": {
+      "name": "회전 중심",
+      "desc": "관성의 회전 중심을 얼마나 뒤로 둘지다."
+    },
+    "Defaults/Default deadzone sensitivity": {
+      "name": "따라오는 속도",
+      "desc": "총이 얼마나 빨리 따라올지다(작을수록 느리다)."
+    },
+    "Defaults/Default max deadzone angle": {
+      "name": "최대 각도",
+      "desc": "총이 움직일 수 있는 범위(도)다."
+    },
+    "Defaults/Default aiming deadzone multiplier": {
+      "name": "조준 중 배율",
+      "desc": "조준하는 동안 관성을 얼마나 줄지다(0 이면 없다)."
+    },
+    "Values/Global deadzone enabled": {
+      "name": "모든 대상에 켜기",
+      "desc": "어느 집단에나 관성을 켤지 정한다."
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "guid": "com.jbobyh.itempreviewqol",
+  "name": "물건 미리보기 개선 (Item Preview QoL)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Enable Plugin": {
+      "name": "켜기",
+      "desc": "이 플러그인의 모든 기능을 켜거나 끈다."
+    },
+    "General/Show Screenshot Button": {
+      "name": "스크린샷 버튼 보이기",
+      "desc": "물건 미리보기 창의 스크린샷 버튼을 보이거나 감춘다."
+    }
+  }
+}

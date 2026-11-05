@@ -1,0 +1,13 @@
+{
+  "guid": "com.awnova.raidsettingsskipper",
+  "name": "레이드 설정 화면 건너뛰기 (Raid Settings Skipper)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Skip raid settings screen": {
+      "name": "레이드 설정 화면 건너뛰기",
+      "desc": "레이드 전 설정 화면을 건너뛴다. 꺼 두어도 Fika 서버가 레이드 설정을 꺼 두었으면 그 화면은 건너뛴다."
+    }
+  }
+}

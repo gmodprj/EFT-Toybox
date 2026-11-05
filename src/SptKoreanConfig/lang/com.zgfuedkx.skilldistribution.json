@@ -1,0 +1,243 @@
+{
+  "guid": "com.zgfuedkx.skilldistribution",
+  "name": "숙련도 나눠 주기 (Skill Distribution)",
+  "sections": {
+    "1. General config": "1. 일반 설정",
+    "2. Skill Multipliers": "2. 기술별 배율",
+    "9. Debug": "9. 진단"
+  },
+  "settings": {
+    "1. General config/Experience distribution mode": {
+      "name": "나누는 방식",
+      "desc": "숙련도를 어떻게 나눌지 정한다. Equal 은 모든 기술에 똑같이 나누고(모자라면 무작위로 바꾼다), RoundRobin 은 기술을 돌아가며 하나씩 주고, Random 은 아무 기술에나 주고, WeightedRandomMin 은 수준이 낮은 기술에 더 높은 확률로, WeightedRandomMax 는 수준이 높은 기술에 더 높은 확률로 주고, Min 은 가장 낮은 기술에, Max 는 가장 높은 기술에 준다."
+    },
+    "1. General config/Skills count": {
+      "name": "나눠 줄 기술 수",
+      "desc": "숙련도를 나눠 줄 기술의 개수다."
+    },
+    "1. General config/Allow gym": {
+      "name": "운동도 나누기",
+      "desc": "근력·지구력이 최대일 때 운동으로 얻은 숙련도도 나눠 줄지 정한다."
+    },
+    "1. General config/Use bonuses": {
+      "name": "받는 기술 보너스 쓰기",
+      "desc": "나눠 준 숙련도에 받는 기술의 보너스를 적용할지 정한다."
+    },
+    "1. General config/Use effectiveness": {
+      "name": "효율·피로 쓰기",
+      "desc": "나눠 준 숙련도에 받는 기술의 효율을 반영하고 피로를 쌓을지 정한다."
+    },
+    "1. General config/Cause fatigue": {
+      "name": "피로만 쌓기",
+      "desc": "위의 효율·피로 쓰기를 껐을 때, 나눠 준 숙련도가 받는 기술에 피로를 쌓을지 정한다. 효율·피로 쓰기를 켜 두면 이 값은 아무 일도 하지 않는다."
+    },
+    "1. General config/Experience multiplier": {
+      "name": "숙련도 배율",
+      "desc": "나눠 주는 숙련도에 곱한다. 아래의 기술별 배율과 함께 곱해진다."
+    },
+    "1. General config/Experience multiplier (gym)": {
+      "name": "운동 숙련도 배율",
+      "desc": "운동으로 얻어 나눠 주는 숙련도에 곱한다."
+    },
+    "1. General config/Reset to server values": {
+      "name": "서버 값 가져오기",
+      "desc": "서버에서 설정을 받아 적용한다."
+    },
+    "2. Skill Multipliers/Enable multipliers": {
+      "name": "기술별 배율 쓰기",
+      "desc": "아래의 배율을 적용할지 정한다. 운동에는 적용되지 않으니 그쪽은 위의 운동 숙련도 배율을 쓴다."
+    },
+    "2. Skill Multipliers/Endurance multiplier": {
+      "name": "지구력 배율",
+      "desc": "엘리트 지구력(Endurance)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Strength multiplier": {
+      "name": "근력 배율",
+      "desc": "엘리트 근력(Strength)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Vitality multiplier": {
+      "name": "활력 배율",
+      "desc": "엘리트 활력(Vitality)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Health multiplier": {
+      "name": "체력 배율",
+      "desc": "엘리트 체력(Health)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/StressResistance multiplier": {
+      "name": "스트레스 저항 배율",
+      "desc": "엘리트 스트레스 저항(StressResistance)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Metabolism multiplier": {
+      "name": "물질대사 배율",
+      "desc": "엘리트 물질대사(Metabolism)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Immunity multiplier": {
+      "name": "면역 배율",
+      "desc": "엘리트 면역(Immunity)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Perception multiplier": {
+      "name": "지각 배율",
+      "desc": "엘리트 지각(Perception)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Intellect multiplier": {
+      "name": "지능 배율",
+      "desc": "엘리트 지능(Intellect)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Attention multiplier": {
+      "name": "주의력 배율",
+      "desc": "엘리트 주의력(Attention)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Charisma multiplier": {
+      "name": "매력 배율",
+      "desc": "엘리트 매력(Charisma)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Pistol multiplier": {
+      "name": "권총 배율",
+      "desc": "엘리트 권총(Pistol)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/UsecArsystems multiplier": {
+      "name": "USEC AR 계열 배율",
+      "desc": "엘리트 USEC AR 계열(UsecArsystems)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/BearAksystems multiplier": {
+      "name": "BEAR AK 계열 배율",
+      "desc": "엘리트 BEAR AK 계열(BearAksystems)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Lockpicking multiplier": {
+      "name": "자물쇠 따기 배율",
+      "desc": "엘리트 자물쇠 따기(Lockpicking)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/ProneMovement multiplier": {
+      "name": "엎드려 이동 배율",
+      "desc": "엘리트 엎드려 이동(ProneMovement)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/SilentOps multiplier": {
+      "name": "은밀 작전 배율",
+      "desc": "엘리트 은밀 작전(SilentOps)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/UsecNegotiations multiplier": {
+      "name": "USEC 교섭 배율",
+      "desc": "엘리트 USEC 교섭(UsecNegotiations)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/BearRawpower multiplier": {
+      "name": "BEAR 완력 배율",
+      "desc": "엘리트 BEAR 완력(BearRawpower)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Revolver multiplier": {
+      "name": "리볼버 배율",
+      "desc": "엘리트 리볼버(Revolver)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/SMG multiplier": {
+      "name": "기관단총 배율",
+      "desc": "엘리트 기관단총(SMG)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Assault multiplier": {
+      "name": "돌격소총 배율",
+      "desc": "엘리트 돌격소총(Assault)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Shotgun multiplier": {
+      "name": "산탄총 배율",
+      "desc": "엘리트 산탄총(Shotgun)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Sniper multiplier": {
+      "name": "저격총 배율",
+      "desc": "엘리트 저격총(Sniper)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/LMG multiplier": {
+      "name": "경기관총 배율",
+      "desc": "엘리트 경기관총(LMG)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/HMG multiplier": {
+      "name": "중기관총 배율",
+      "desc": "엘리트 중기관총(HMG)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Launcher multiplier": {
+      "name": "유탄발사기 배율",
+      "desc": "엘리트 유탄발사기(Launcher)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/AttachedLauncher multiplier": {
+      "name": "부착 유탄발사기 배율",
+      "desc": "엘리트 부착 유탄발사기(AttachedLauncher)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Throwing multiplier": {
+      "name": "투척 배율",
+      "desc": "엘리트 투척(Throwing)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Melee multiplier": {
+      "name": "근접 배율",
+      "desc": "엘리트 근접(Melee)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/DMR multiplier": {
+      "name": "지정사수소총 배율",
+      "desc": "엘리트 지정사수소총(DMR)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/AimDrills multiplier": {
+      "name": "조준 훈련 배율",
+      "desc": "엘리트 조준 훈련(AimDrills)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/TroubleShooting multiplier": {
+      "name": "고장 처리 배율",
+      "desc": "엘리트 고장 처리(TroubleShooting)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Surgery multiplier": {
+      "name": "수술 배율",
+      "desc": "엘리트 수술(Surgery)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/CovertMovement multiplier": {
+      "name": "은밀 이동 배율",
+      "desc": "엘리트 은밀 이동(CovertMovement)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Search multiplier": {
+      "name": "탐색 배율",
+      "desc": "엘리트 탐색(Search)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/MagDrills multiplier": {
+      "name": "탄창 다루기 배율",
+      "desc": "엘리트 탄창 다루기(MagDrills)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/FieldMedicine multiplier": {
+      "name": "야전 의료 배율",
+      "desc": "엘리트 야전 의료(FieldMedicine)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/FirstAid multiplier": {
+      "name": "응급 처치 배율",
+      "desc": "엘리트 응급 처치(FirstAid)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/LightVests multiplier": {
+      "name": "경방어구 배율",
+      "desc": "엘리트 경방어구(LightVests)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/HeavyVests multiplier": {
+      "name": "중방어구 배율",
+      "desc": "엘리트 중방어구(HeavyVests)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/WeaponTreatment multiplier": {
+      "name": "무기 정비 배율",
+      "desc": "엘리트 무기 정비(WeaponTreatment)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Shadowconnections multiplier": {
+      "name": "암거래선 배율",
+      "desc": "엘리트 암거래선(Shadowconnections)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Crafting multiplier": {
+      "name": "제작 배율",
+      "desc": "엘리트 제작(Crafting)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/HideoutManagement multiplier": {
+      "name": "은신처 운영 배율",
+      "desc": "엘리트 은신처 운영(HideoutManagement)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/Hacking multiplier": {
+      "name": "해킹 배율",
+      "desc": "엘리트 해킹(Hacking)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "2. Skill Multipliers/SignalsIntelligence multiplier": {
+      "name": "신호 정보 배율",
+      "desc": "엘리트 신호 정보(SignalsIntelligence)에서 나온 숙련도를 나눠 줄 때 쓰는 배율이다. 위의 전체 숙련도 배율과 함께 곱해진다."
+    },
+    "9. Debug/Debug logs": {
+      "name": "진단 기록",
+      "desc": "Player.log 에 진단 정보를 적는다."
+    }
+  }
+}

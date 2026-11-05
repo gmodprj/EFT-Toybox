@@ -1,0 +1,26 @@
+{
+  "guid": "com.rairai.hiddencaches.eft",
+  "name": "숨은 보관함 (Hidden Caches)",
+  "sections": {
+    "Color": "색",
+    "": "일반"
+  },
+  "settings": {
+    "/Audio": {
+      "name": "소리",
+      "desc": "숨은 보관함을 찾을 때 소리를 낸다."
+    },
+    "/Light": {
+      "name": "빛",
+      "desc": "숨은 보관함을 찾을 때 빛을 낸다."
+    },
+    "/Smoke": {
+      "name": "연기",
+      "desc": "숨은 보관함을 찾을 때 연기를 낸다."
+    },
+    "Color/Apply": {
+      "name": "색 적용",
+      "desc": "숨은 보관함 표시에 쓸 색이다."
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "guid": "com.itsripper.ripperscasino",
+  "name": "은신처 카지노 (Ripper's Casino)",
+  "sections": {
+    "Audio": "소리",
+    "Diagnostics": "진단"
+  },
+  "settings": {
+    "Audio/Volume": {
+      "name": "카지노 소리 크기",
+      "desc": "카지노만의 소리 크기다."
+    },
+    "Audio/EffectsVolume": {
+      "name": "효과음 크기",
+      "desc": "버튼·당첨·출납원 소리의 크기다."
+    },
+    "Audio/ReelsVolume": {
+      "name": "릴 소리 크기",
+      "desc": "돌아가는 릴 소리의 크기다."
+    },
+    "Audio/HideoutAttenuationDb": {
+      "name": "은신처 소리 줄이기(dB)",
+      "desc": "카지노를 열어 둔 동안 은신처 주변 소리를 줄인다."
+    },
+    "Audio/Muted": {
+      "name": "소리 끄기",
+      "desc": "크기 설정을 잃지 않고 카지노 소리만 끈다."
+    },
+    "Diagnostics/Presentation": {
+      "name": "표시 진단",
+      "desc": "문제를 알아보려고 프레임 간격과 기기 진단값을 모은다."
+    },
+    "Diagnostics/AudioOutput": {
+      "name": "소리 출력 진단",
+      "desc": "문제를 알아보려고 들어갈 때와 돌릴 때의 재생 출력 상태를 기록에 적는다."
+    },
+    "Diagnostics/SlowReels": {
+      "name": "느리게 돌리기",
+      "desc": "슬롯과 경주를 5분의 1 속도로 보여 중간에 끼어드는 것을 시험한다. 결과나 거래는 바뀌지 않는다."
+    }
+  }
+}

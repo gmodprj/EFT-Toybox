@@ -1,0 +1,25 @@
+{
+  "guid": "com.acidphantasm.bepinexconfigurationmanager",
+  "name": "설정 창 (ASBP Configuration Manager)",
+  "sections": {
+    "UI": "창"
+  },
+  "settings": {
+    "UI/Scale": {
+      "name": "창 배율",
+      "desc": "설정 창에 적용할 크기 배율이다."
+    },
+    "UI/Reset Window Size": {
+      "name": "창 크기 되돌리기",
+      "desc": "창 크기를 기본값으로 되돌린다. 이 값은 늘 꺼진 상태로 남는 버튼이다."
+    },
+    "UI/Window Width": {
+      "name": "창 너비",
+      "desc": "보이지 않는 내부 값이다."
+    },
+    "UI/Window Height": {
+      "name": "창 높이",
+      "desc": "보이지 않는 내부 값이다."
+    }
+  }
+}
