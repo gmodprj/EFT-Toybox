@@ -1,0 +1,1 @@
+2639__hazelify.StanceSync	BepInEx\plugins\hazelify.StanceSync.dll

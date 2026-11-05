@@ -1,0 +1,7 @@
+1860__ClassicMovement113	BepInEx\plugins\ClassicMovement\ClassicMovement.dll
+1860__ClassicMovement113	BepInEx\plugins\ClassicMovement\ClassicMovement.pdb
+1860__ClassicMovement113	SPT_Runtime\user\mods\ClassicMovementServer\ClassicMovementServer.deps.json
+1860__ClassicMovement113	SPT_Runtime\user\mods\ClassicMovementServer\ClassicMovementServer.dll
+1860__ClassicMovement113	SPT_Runtime\user\mods\ClassicMovementServer\ClassicMovementServer.pdb
+1860__ClassicMovement113	SPT_Runtime\user\mods\ClassicMovementServer\ClassicMovementServer.staticwebassets.endpoints.json
+1860__ClassicMovement113	SPT_Runtime\user\mods\ClassicMovementServer\Config\settings.jsonc

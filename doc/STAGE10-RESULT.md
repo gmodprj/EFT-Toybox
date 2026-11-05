@@ -238,6 +238,43 @@ Simple Workout QTE(1437)의 설정과 Expanded Task Text(2153)의 설명 캐시�
 
 **아직 확인되지 않은 것** — 게임 전용이라 **서버 테스트로는 선행 참조가 풀렸는지 알 수 없다.** 다음 기동에서 `Loading [Broken Limbs ...]` 줄이 뜨는지, Effects Manager 관련 경고가 없는지를 봐야 한다. 골절이 레이드 종료 후 유지되는지는 레이드를 한 번 돌아야 안다.
 
+## 10-F — 전투·조작·이동 12개 · 2026-11-05
+
+| 항목 | 결과 |
+| --- | --- |
+| 받기 | 11개 바이트 일치. **CookingGrenades 만 7바이트 차이**(1801939 / 1801946) — 압축은 정상 해제되고 안에 DLL 1개뿐이라 10-A 와 같은 메타데이터 차이로 본다 |
+| 출처 | Increase Look Direction(2121)만 **gitlab.com** 경유 |
+| 겹침 검사 | CLEAN (0/0/0), 설치 대상 32개 |
+| 설치 | 11개 `-SkipTest` + 마지막 3067 에서 테스트 한 번 |
+| 설치 기록 | 32줄, 적힌 파일 전부 실재 |
+| 서버 모드 | 135 → **137** (= 서버 쪽 2개: ClassicMovement · Increase Climb Height) |
+| 시작 시간 | 135초 |
+| 오류 | 새 오류 0. 기준 문구 48 · 1 그대로, `err.txt` 0바이트 |
+
+출력: `server-tests/server-test-stage10-F-3067-Deadzone.out.txt`
+
+### 2025 제거가 서버 쪽에서 확인됐다
+
+이 테스트 출력이 직접 찍었다.
+
+```
+(Added 2 mods: ClassicMovement (1.1.3), Increase Climb Height (2.1.1);
+ Removed 1 mods: All Quests Checkmarks (1.4.0))
+```
+
+`ModLoader: 총 137 개` 도 135 + 2 로 맞는다(2025 가 아직 로드되면 138 이었을 것이다). 출력 전체에 `AllQuestsCheckmarks` 언급이 **0건**이다. 앞 절의 "제거 후 서버를 시작해 보지 않았다" 는 이로써 해결됐다.
+
+### 다음 게임 기동에서 볼 것
+
+10-F 가 `BepInEx\plugins` 에 넣은 DLL 은 12개인데 그중 `tarkin-ladders\tarkin.ladders.shared.dll` 은 **라이브러리**다(플러그인 속성 없음). 그래서 플러그인은 11개이고, 예상치는 **181 − 1(2025 제거) + 11 = 191** 이다.
+
+이 단계는 **서버 테스트로 검증되지 않는다** — 전부 조작감이다. 레이드를 한 번 돌아야 하고, 이상하면 먼저 의심할 여섯이 정해져 있다.
+
+- 이동 넷 — Classic Movement(1860) · Smajlec's Stamina(2608) · Increase Climb Height(1575) · Climbable Ladders(2649)
+- 조준 둘 — Deadzone(3067) · No Aim Swing(2719). **둘 다 조준 처리를 겹쳐 바꾼다** — 하나만 쓰는 쪽이 안전하다
+
+Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 여기서 빼기로 하면 그쪽도 함께 막힌다.
+
 ## 게임 기동 확인 (10-E·10-E2 설치 후, 2026-11-05 09:49)
 
 `LogOutput.log` 09:49 > 설치 08:50 — 설치 이후 기동이 맞다.
