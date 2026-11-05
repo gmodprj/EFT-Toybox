@@ -1,0 +1,2 @@
+2240__acidphantasm-letmeout	BepInEx\plugins\acidphantasm-letmeout\acidphantasm-letmeout.dll
+2240__acidphantasm-letmeout	BepInEx\plugins\acidphantasm-letmeout\LICENSE

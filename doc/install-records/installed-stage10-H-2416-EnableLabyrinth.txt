@@ -1,0 +1,7 @@
+2416__acidphantasm-enablelabyrinth	BepInEx\plugins\acidphantasm-enablelabyrinth\acidphantasm-enablelabyrinth.dll
+2416__acidphantasm-enablelabyrinth	BepInEx\plugins\acidphantasm-enablelabyrinth\LICENSE
+2416__acidphantasm-enablelabyrinth	SPT_Runtime\user\mods\acidphantasm-enablelabyrinth\acidphantasm-enablelabyrinth.dll
+2416__acidphantasm-enablelabyrinth	SPT_Runtime\user\mods\acidphantasm-enablelabyrinth\config.json
+2416__acidphantasm-enablelabyrinth	SPT_Runtime\user\mods\acidphantasm-enablelabyrinth\LICENSE
+2416__acidphantasm-enablelabyrinth	SPT_Runtime\user\mods\acidphantasm-enablelabyrinth\wwwroot\files\ReleaseNotes.json
+2416__acidphantasm-enablelabyrinth	SPT_Runtime\user\mods\acidphantasm-enablelabyrinth\wwwroot\images\background.jpg
