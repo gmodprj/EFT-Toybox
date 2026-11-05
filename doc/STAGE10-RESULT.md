@@ -380,6 +380,57 @@ ASBP 테스트만 `error` 가 4줄이고 나머지는 3줄이었다. 열어 보�
 
 SVM 은 기동마다 문구를 바꾸고, 그중에 `ERROR` 라는 낱말이 든 것이 있다([PROCEDURE.md](PROCEDURE.md) 의 "실행마다 바뀌는 농담 문구"). **문구 수가 하나 늘었다고 오류가 는 것이 아니다** — 늘면 그 줄을 열어 본다.
 
+### 게임 기동 확인 (2026-11-05) — 228 이고 줄지도 않았다. 그러나 문제가 하나 있다
+
+| 항목 | 값 | 판정 |
+| --- | --- | --- |
+| `plugins to load` | **228** | 222 + 6, 예상대로 |
+| `Loading [` 줄 | **228** | 일치 |
+| `[Error` / `[Fatal` | **1줄 / 0줄** | 알려진 `DirectReload` + Fika 건뿐 |
+
+**Better BepInEx 가 다른 플러그인을 밀어내지는 않았다** — 수가 줄지 않았다. 6개 모두 로드됐다(`Raid Review 1.10.0` · `maschine-CombatLog 1.0.0` · `acidphantasm-bepinexconfigurationmanager 1.0.1` · `BetterBepInEx 1.0.3` · `PerformanceScope 0.2.0` · `Shibatsu-DynamicExternalResolution 1.1.2`).
+
+**대신 패치를 벗겨냈다.** 로그가 그대로 적고 있다.
+
+```
+[BetterBepInEx] Took SptKoreanConfig.UiStringPatch.Transpiler (spt.koreanconfig)
+                off the stock window's OnGUI; this menu replaces that window.
+                Restart with the new menu off to get it back.
+[BetterBepInEx] Took SptKoreanConfig.UiStringPatch.Transpiler ... off the stock window's SettingsWindow; ...
+[BetterBepInEx] Took ABCM.Patches.OnGuiPatch.Prefix / .Postfix (OnGuiPatch) off ...
+[BetterBepInEx] Took ABCM.Patches.SettingsWindowExceptionPatch.Finalizer ... off ...
+```
+
+즉 **F12 창을 통째로 자기 메뉴로 갈아끼우면서, 그 창에 붙어 있던 패치를 떼어 냈다.**
+
+| 떨어져 나간 것 | 무엇이었나 |
+| --- | --- |
+| `SptKoreanConfig.UiStringPatch` ×2 | **이 저장소에서 만든 F12 설정 창 한글화.** 이 모드의 기능이 그것뿐이므로 사실상 무력화됐다 |
+| `ABCM.Patches.*` ×3 | **ASBP(2931)** — 같은 10-J 에서 바로 앞에 넣은 모드다. 패널을 키우는 일이 안 먹는다 |
+
+플러그인 수로는 전혀 드러나지 않는다(셋 다 여전히 228 에 들어 있다). **로드됐다는 것과 일하고 있다는 것은 다르다.**
+
+### 그래서 정해야 한다 — 새 메뉴냐, 한글 F12 냐
+
+Better BepInEx 의 설정에 스위치가 있다.
+
+```
+[General]
+Use the new menu = true
+```
+
+`false` 로 두고 다시 켜면 기존 창과 함께 한글화·ASBP 가 돌아온다(로그가 그렇게 안내한다).
+
+| 고르는 길 | 얻는 것 | 잃는 것 |
+| --- | --- | --- |
+| **그대로 둔다** | Better BepInEx 의 새 메뉴 — 검색·즐겨찾기·테마, 설정 3,476개를 228개 모드에서 색인. 글자 크기·메뉴 배율도 자체로 있다 | **F12 한글화**, ASBP |
+| **`Use the new menu = false`** | 한글 F12 + ASBP | 새 메뉴(설치는 남지만 하는 일이 없다) |
+| **3207 을 뺀다** | 한글 F12 + ASBP, 설치도 깔끔 | 새 메뉴 |
+
+**참고 — ASBP 와 Better BepInEx 는 역할이 겹친다.** ASBP 는 기존 CM 패널을 키우는 모드이고, Better BepInEx 의 새 메뉴에는 `Menu scale`·`Text size`·`Scale with screen resolution` 이 들어 있다. 새 메뉴를 쓰기로 하면 ASBP 는 필요 없다.
+
+지금은 **아무것도 바꾸지 않았다.** 결정은 사용자 몫이다.
+
 ### 다음 게임 기동에서 볼 것 — 228, 그리고 Better BepInEx
 
 7개가 넣은 플러그인 DLL 6개가 전부 플러그인이다(Knight Mask Fix 는 서버 전용). **222 + 6 = 228.**
