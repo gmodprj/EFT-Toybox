@@ -21,10 +21,15 @@ namespace SptKoreanConfig
     {
         internal const string Guid = "com.mybutthasarash.betterbepinex";
 
-        /// <summary>이 이름을 가진 메서드 뒤에 번역을 건다.</summary>
+        /// <summary>
+        /// 이 이름을 가진 메서드 뒤에 번역을 건다.
+        /// **그리는 메서드에는 걸지 않는다** — 2026-11-05 에 <c>MenuWindow.BuildingList</c> 에도 걸었다가
+        /// 메뉴가 열려 있는 동안 매 프레임 돌아(321회) 프레임이 뚝 떨어졌다.
+        /// 설정을 모으는 지점에만 건다.
+        /// </summary>
         private static readonly string[] HookNames =
         {
-            "CollectSettings", "BuildSettingList", "BuildingList", "RefreshIfDirty", "BuildSidebar",
+            "CollectSettings", "BuildSettingList",
         };
 
         private static bool _reportedMiss;
@@ -65,7 +70,7 @@ namespace SptKoreanConfig
                     {
                         harmony.Patch(m, postfix: m.ReturnType == typeof(void) ? voidSafe : withResult);
                         hooked++;
-                        KoreanConfigPlugin.Log.LogInfo($"  새 메뉴 후처리 결함: {type.FullName}.{m.Name}");
+                        KoreanConfigPlugin.Log.LogInfo($"  새 메뉴 후처리 걸었다: {type.FullName}.{m.Name}");
                     }
                     catch (Exception e)
                     {
@@ -119,8 +124,11 @@ namespace SptKoreanConfig
             {
                 if (!KoreanConfigPlugin.UseKorean.Value) return;
 
-                var entries = Harvest(__result) ?? HarvestFrom(__instance, __originalMethod?.DeclaringType);
-                if (entries == null)
+                var entries = new HashSet<SettingEntryBase>();
+                Harvest(__result, entries);
+                if (entries.Count == 0) HarvestFields(__instance, __originalMethod?.DeclaringType, entries);
+
+                if (entries.Count == 0)
                 {
                     ReportMiss(__originalMethod);
                     return;
@@ -135,51 +143,38 @@ namespace SptKoreanConfig
             }
         }
 
-        /// <summary>값 하나에서 SettingEntryBase 묶음을 꺼내 본다.</summary>
-        private static IEnumerable<SettingEntryBase> Harvest(object value)
+        /// <summary>
+        /// 값 하나에서 SettingEntryBase 묶음을 꺼내 본다.
+        /// (아래 주석의 수치는 2026-11-05 측정분이다)
+        /// 같은 항목이 여러 필드에 걸쳐 있어 **중복으로 모이므로** 참조로 한 번씩만 담는다
+        /// (2026-11-05: 3,350개가 7,594개로 불어나 있었다).
+        /// </summary>
+        private static void Harvest(object value, HashSet<SettingEntryBase> into, int depth = 0)
         {
-            if (value == null) return null;
-            if (value is SettingEntryBase one) return new[] { one };
-            if (!(value is IEnumerable seq) || value is string) return null;
+            if (value == null || depth > 2) return;
+            if (value is SettingEntryBase one) { into.Add(one); return; }
+            if (!(value is IEnumerable seq) || value is string) return;
 
-            List<SettingEntryBase> found = null;
             foreach (var item in seq)
             {
-                if (item is SettingEntryBase e)
-                {
-                    (found ?? (found = new List<SettingEntryBase>())).Add(e);
-                    continue;
-                }
+                if (item is SettingEntryBase e) { into.Add(e); continue; }
                 // 모드별로 묶여 있는 경우(모드 → 설정 목록)도 한 겹 더 들어가 본다.
-                var inner = item == null ? null : HarvestFields(item, item.GetType());
-                if (inner != null) (found ?? (found = new List<SettingEntryBase>())).AddRange(inner);
+                if (item != null) HarvestFields(item, item.GetType(), into, depth + 1);
             }
-            return found;
         }
 
-        private static IEnumerable<SettingEntryBase> HarvestFrom(object instance, Type type)
+        private static void HarvestFields(object instance, Type type, HashSet<SettingEntryBase> into, int depth = 0)
         {
-            if (type == null) return null;
-            return HarvestFields(instance, type);
-        }
-
-        private static IEnumerable<SettingEntryBase> HarvestFields(object instance, Type type)
-        {
-            List<SettingEntryBase> found = null;
+            if (type == null || depth > 2) return;
 
             foreach (var f in type.GetFields(AccessTools.all))
             {
-                if (f.IsStatic == false && instance == null) continue;
+                if (!f.IsStatic && instance == null) continue;
                 object value;
                 try { value = f.GetValue(f.IsStatic ? null : instance); }
                 catch { continue; }
-
-                var got = Harvest(value);
-                if (got == null) continue;
-                (found ?? (found = new List<SettingEntryBase>())).AddRange(got);
+                Harvest(value, into, depth);
             }
-
-            return found;
         }
 
         private static void ReportMiss(MethodBase origin)
