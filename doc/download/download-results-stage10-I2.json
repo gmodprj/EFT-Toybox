@@ -1,0 +1,68 @@
+[
+  {
+    "id": 2569,
+    "name": "AOSix",
+    "version": "2.0.1",
+    "file": "2569__AOSix-2.0.1.zip",
+    "bytes": 29004,
+    "expected": 29004,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 3110,
+    "name": "FogSix",
+    "version": "1.0.1",
+    "file": "3110__FogSix-1.0.1.zip",
+    "bytes": 110917,
+    "expected": 110917,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3099,
+    "name": "ReflectSix",
+    "version": "1.0.1",
+    "file": "3099__ReflectSix-1.0.1.zip",
+    "bytes": 301847,
+    "expected": 301847,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3221,
+    "name": "TraceSix - Full Raytracing and Voxel GI",
+    "version": "1.0.1",
+    "file": "3221__TraceSix-1.0.1.zip",
+    "bytes": 706181,
+    "expected": 706181,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 3
+  },
+  {
+    "id": 2567,
+    "name": "CloudSix - Volumetric Clouds",
+    "version": "4.0.2",
+    "file": "2567__CloudSix_4.0.2.zip",
+    "bytes": 7794836,
+    "expected": 7794836,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3100,
+    "name": "POMSix",
+    "version": "1.0.2",
+    "file": "3100__POMSix_1.0.2.zip",
+    "bytes": 16786184,
+    "expected": 16786184,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

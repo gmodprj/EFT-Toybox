@@ -1,0 +1,62 @@
+{
+  "stage": "stage10-I2",
+  "spt": "4.1.6",
+  "note": "10-I 의 뒤 묶음. Six 계열 6개는 같은 제작자 묶음이라 서로 전제가 있을 수 있어 하나씩 넣고 기록을 따로 남긴다. TraceSix·POMSix·CloudSix 는 무거우므로 프레임을 함께 본다. 설치된 Amands Sense 와 화면이 겹치는지도 이 단계 내내 본다. 계획은 PLAN-STAGE10.md 10-I.",
+  "totalSize": 25728969,
+  "mods": [
+    {
+      "group": "10I2-1",
+      "id": 2567,
+      "name": "CloudSix - Volumetric Clouds",
+      "version": "4.0.2",
+      "size": 7794836,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2567/cloudsix-volumetric-clouds/4.0.2"
+    },
+    {
+      "group": "10I2-2",
+      "id": 3110,
+      "name": "FogSix",
+      "version": "1.0.1",
+      "size": 110917,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3110/fogsix/1.0.1"
+    },
+    {
+      "group": "10I2-3",
+      "id": 3099,
+      "name": "ReflectSix",
+      "version": "1.0.1",
+      "size": 301847,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3099/reflectsix/1.0.1"
+    },
+    {
+      "group": "10I2-4",
+      "id": 2569,
+      "name": "AOSix",
+      "version": "2.0.1",
+      "size": 29004,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2569/aosix/2.0.1"
+    },
+    {
+      "group": "10I2-5",
+      "id": 3100,
+      "name": "POMSix",
+      "version": "1.0.2",
+      "size": 16786184,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3100/pomsix/1.0.2"
+    },
+    {
+      "group": "10I2-6",
+      "id": 3221,
+      "name": "TraceSix - Full Raytracing and Voxel GI",
+      "version": "1.0.1",
+      "size": 706181,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3221/tracesix-full-raytracing-and-voxel-gi/1.0.1"
+    }
+  ]
+}
