@@ -275,6 +275,54 @@ Simple Workout QTE(1437)의 설정과 Expanded Task Text(2153)의 설명 캐시�
 
 Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 여기서 빼기로 하면 그쪽도 함께 막힌다.
 
+## 10-F2 — ORBIT 3.0 (2706) 단독 · 2026-11-05
+
+| 항목 | 결과 |
+| --- | --- |
+| 선행 | SAIN 4.5.1 · Waypoints 1.9.0 · BigBrain 1.5.0 **셋 다 설치본에 있다** |
+| 받기 | 826,706바이트 일치. Forge 최신은 **3.1.0** 이다(모드 이름은 "ORBIT 3.0") |
+| 겹침 검사 | CLEAN (0/0/0), 설치 대상 2개 |
+| 설치 | 2파일 + 서버가 만든 **17개**(`config.json`, `presets/library.json`, 구역 14개) → 기록 **19줄** |
+| 서버 모드 | 137 → **138** |
+| 시작 시간 | 144초 |
+| 로드 확인 | `모드 ORBIT Server 버전 3.1.0 (GUID: com.chazut.orbit.server) 불러옴`, `(Added 1 mods: ORBIT Server (3.1.0))` |
+| SAIN 쪽 | **새 경고 없음** — 이 단계를 단독으로 떼어 둔 이유가 이 확인이었다 |
+| 오류 | 새 오류 0. 기준 문구 48 · 1 그대로, `err.txt` 0바이트 |
+
+출력: `server-tests/server-test-stage10-F2-2706-ORBIT.out.txt`
+
+- `[ORBIT] Server mod loaded - config UI at /orbit` — 서버 포트 안에 `/orbit` 을 붙인다. 기존 `/coti-assets/`·`/TheBlacklist/`·`/questcodex/`·`/SAIN/`·`/modsource/`·`/nameplate/` 와 경로가 겹치지 않는다.
+- 만든 구역 파일에 **`Interchange@rework.json`·`Lighthouse@rework.json`** 이 들어 있다 — 10-O 의 Manimal 백포트 맵을 미리 알고 있는 것이다. 그 단계에 가면 이 파일들이 쓰인다.
+- `[ORBIT] PRESETS: migration complete; active=Default; legacy files backed up` — 새로 깐 것이라 옮길 옛 파일은 없었다. 프리셋은 `Default` 로 시작한다.
+
+**아직 확인되지 않은 것** — 게임 쪽 `ORBIT.dll` 은 플러그인 표식이 있어 다음 기동에서 **192** 가 되어야 한다. 그리고 이 단계의 본 시험은 **레이드에서 봇이 멈추거나 떼로 몰리지 않는지**다. 서버 테스트로는 SAIN 쪽 경고가 없다는 것까지만 확인했다.
+
+## 레이드 확인 (10-F 설치 후, 2026-11-05 11:06까지)
+
+10:26 기동이 11:06 까지 이어졌다. 앞 절의 10:40 판독과 **같은 기동이고 레이드가 더 깊어진 것**이다(`GameWorld`·`RaidStartPatch` 흔적 15 → 18, 로그 214KB → 270KB).
+
+| 항목 | 10:40 | 11:06 |
+| --- | --- | --- |
+| `plugins to load` | 191 | **191** (같은 기동) |
+| `[Error` | 1줄 | **9줄** |
+| `[Fatal` | 0 | **0** |
+
+### 9줄 전부 기존 건이다 — 10-F 가 낸 오류는 없다
+
+| 건수 | 내용 | 판정 |
+| --- | --- | --- |
+| 6 | SAIN `sectactPriestEvent does not exist` | 기준선 그대로(기준선도 6) |
+| 2 | `[ModulePatch] LootPatrol GetDecision exception suppressed to keep AI update alive` + 바로 다음 줄의 `System.NullReferenceException` | **한 사건이 두 줄로 찍힌 것.** 옛 기준선 메모가 "레이드에 들어가면 PIT `LootPatrolLayer.GetDecision` NullReference 가 더 날 수 있다"고 적어 둔 그 건이다. PIT 는 빠졌지만 **SPT Team Manager 가 그 포크**라 같은 코드를 들고 있다. 메시지가 말하듯 **의도적으로 억제**돼 AI 는 계속 돈다 |
+| 1 | `DirectReload` + Fika | 알려진 정상 건 |
+
+기준선 15줄 중 STM `AimingFailure`·`MedicalActivity` 와 ECOTI per-frame 은 이번에 안 나왔다 — 동료가 교전하거나 COTI 를 써야 나오는 것이라 레이드 내용에 따라 달라진다.
+
+### 내 검색이 한 번 오탐을 냈다
+
+10-F 모드 이름이 오류에 끼어 있는지 보려고 `movement|stamina|ladder|climb|deadzone|swing|stance|...` 로 훑었더니 1건이 걸렸다. 열어 보니 `System.NullReferenceException: Object reference not set to an instance of an object` 였다 — **`instance` 안의 `stance`** 가 걸린 것이다. 모드 이름으로 로그를 훑을 때는 **짧은 단어가 다른 낱말에 박혀 걸린다**. 걸린 줄은 반드시 열어 본다.
+
+**결론 — 10-F 의 조작·이동 12개가 낸 오류는 0건이다.** 다만 조작감 자체(걷기·스태미나·사다리·조준 흔들림·수류탄)는 여전히 로그로 알 수 없다.
+
 ## 게임 기동 확인 (10-F 설치 후, 2026-11-05 10:40)
 
 로그가 설치(10:10)보다 뒤인지 기다렸다가 플러그인 로드가 끝난 뒤 읽었다.
