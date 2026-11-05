@@ -1,0 +1,233 @@
+{
+  "guid": "com.blackhawk.dynamicmapsextended",
+  "name": "지도 확장 (DynamicMaps Extended)",
+  "sections": {
+    "Debug": "진단",
+    "Faction Colours": "소속 색",
+    "Faction Grouping (Optional)": "소속 묶기 (선택)",
+    "Map Artwork": "지도 그림",
+    "Map Artwork Overrides": "맵별 지도 그림"
+  },
+  "settings": {
+    "Debug/EnableDebugLogging": {
+      "name": "진단 기록",
+      "desc": "DynamicMaps Extended 의 자세한 진단값을 남긴다. 문제를 재현하기 전에 F12 에서 켜고 LogOutput.log 를 보낸다. 게임이나 네트워크에는 아무 것도 걸지 않는다."
+    },
+    "Faction Colours/Enable faction colours": {
+      "name": "소속 색 켜기",
+      "desc": "알아본 애드온 소속에 색을 입힌다. 추적과 보이기 자체는 DynamicMaps 가 그대로 맡는다."
+    },
+    "Faction Colours/Black Division": {
+      "name": "블랙 디비전 색",
+      "desc": "이 소속의 병사·보스·추종자에게 쓸 한 가지 색이다. RGB 만 쓰고 층에 따른 불투명도는 DynamicMaps 가 정한다."
+    },
+    "Faction Colours/UNTAR": {
+      "name": "UNTAR 색",
+      "desc": "이 소속의 병사·보스·추종자에게 쓸 한 가지 색이다. RGB 만 쓰고 층에 따른 불투명도는 DynamicMaps 가 정한다."
+    },
+    "Faction Colours/RUAF": {
+      "name": "러시아군 색",
+      "desc": "이 소속의 병사·보스·추종자에게 쓸 한 가지 색이다. RGB 만 쓰고 층에 따른 불투명도는 DynamicMaps 가 정한다."
+    },
+    "Faction Colours/Remnant": {
+      "name": "잔존병 색",
+      "desc": "이 소속의 병사·보스·추종자에게 쓸 한 가지 색이다. RGB 만 쓰고 층에 따른 불투명도는 DynamicMaps 가 정한다."
+    },
+    "Faction Colours/ISB": {
+      "name": "ISB 색",
+      "desc": "이 소속의 병사·보스·추종자에게 쓸 한 가지 색이다. RGB 만 쓰고 층에 따른 불투명도는 DynamicMaps 가 정한다."
+    },
+    "Faction Colours/White Tusks": {
+      "name": "화이트 터스크 색",
+      "desc": "이 소속의 병사·보스·추종자에게 쓸 한 가지 색이다. RGB 만 쓰고 층에 따른 불투명도는 DynamicMaps 가 정한다."
+    },
+    "Faction Colours/Palette version": {
+      "name": "색 묶음 판",
+      "desc": "색 묶음을 옮긴 내부 판 번호다. 직접 바꾼 색은 그대로 남는다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBAssassin": {
+      "name": "ISBAssassin 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBBossCommander": {
+      "name": "ISBBossCommander 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBBossFirefly": {
+      "name": "ISBBossFirefly 묶기",
+      "desc": "Automatic 이면 화이트 터스크 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBFollowerCommander": {
+      "name": "ISBFollowerCommander 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBFollowerEvernight": {
+      "name": "ISBFollowerEvernight 묶기",
+      "desc": "Automatic 이면 화이트 터스크 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBFollowerLoghan": {
+      "name": "ISBFollowerLoghan 묶기",
+      "desc": "Automatic 이면 화이트 터스크 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBFollowerNemesis": {
+      "name": "ISBFollowerNemesis 묶기",
+      "desc": "Automatic 이면 화이트 터스크 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBFollowerSpearthrower": {
+      "name": "ISBFollowerSpearthrower 묶기",
+      "desc": "Automatic 이면 화이트 터스크 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBFollowerVipper": {
+      "name": "ISBFollowerVipper 묶기",
+      "desc": "Automatic 이면 화이트 터스크 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBFollowerZofia": {
+      "name": "ISBFollowerZofia 묶기",
+      "desc": "Automatic 이면 화이트 터스크 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBHeavy": {
+      "name": "ISBHeavy 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBMarksman": {
+      "name": "ISBMarksman 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBScout": {
+      "name": "ISBScout 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBSecondLeader": {
+      "name": "ISBSecondLeader 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBSpecialForces": {
+      "name": "ISBSpecialForces 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ISBTeamLeader": {
+      "name": "ISBTeamLeader 묶기",
+      "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - blackDivAssault": {
+      "name": "blackDivAssault 묶기",
+      "desc": "Automatic 이면 블랙 디비전 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - blackDivBreacher": {
+      "name": "blackDivBreacher 묶기",
+      "desc": "Automatic 이면 블랙 디비전 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - blackDivIb": {
+      "name": "blackDivIb 묶기",
+      "desc": "Automatic 이면 블랙 디비전 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - blackDivLead": {
+      "name": "blackDivLead 묶기",
+      "desc": "Automatic 이면 블랙 디비전 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - blackDivSupport": {
+      "name": "blackDivSupport 묶기",
+      "desc": "Automatic 이면 블랙 디비전 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - bossWedge": {
+      "name": "bossWedge 묶기",
+      "desc": "Automatic 이면 블랙 디비전 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - bossuntarlead": {
+      "name": "bossuntarlead 묶기",
+      "desc": "Automatic 이면 UNTAR 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - bossuntarofficer": {
+      "name": "bossuntarofficer 묶기",
+      "desc": "Automatic 이면 UNTAR 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - followeruntar": {
+      "name": "followeruntar 묶기",
+      "desc": "Automatic 이면 UNTAR 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - followeruntarmarksman": {
+      "name": "followeruntarmarksman 묶기",
+      "desc": "Automatic 이면 UNTAR 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - remnantRifleman": {
+      "name": "remnantRifleman 묶기",
+      "desc": "Automatic 이면 잔존병 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ruafAutorifleman": {
+      "name": "ruafAutorifleman 묶기",
+      "desc": "Automatic 이면 러시아군 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ruafGrenadier": {
+      "name": "ruafGrenadier 묶기",
+      "desc": "Automatic 이면 러시아군 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ruafMachinegunner": {
+      "name": "ruafMachinegunner 묶기",
+      "desc": "Automatic 이면 러시아군 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ruafMarksman": {
+      "name": "ruafMarksman 묶기",
+      "desc": "Automatic 이면 러시아군 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ruafRifleman": {
+      "name": "ruafRifleman 묶기",
+      "desc": "Automatic 이면 러시아군 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - ruafRiflemanSenior": {
+      "name": "ruafRiflemanSenior 묶기",
+      "desc": "Automatic 이면 러시아군 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Map Artwork/Artwork Mode": {
+      "name": "지도 그림 방식",
+      "desc": "Recommended 는 확인된 위성 그림을 먼저 쓰고, 없으면 Tarkov.dev 의 추상 그림, 그다음 DynamicMaps 바닐라 그림을 쓴다. Satellite 는 층마다 없을 때 추상·바닐라로 내려가고, Abstract 는 층마다 없을 때 바닐라로 내려간다."
+    },
+    "Map Artwork Overrides/Ground Zero": {
+      "name": "그라운드 제로",
+      "desc": "그라운드 제로 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Customs": {
+      "name": "커스텀",
+      "desc": "커스텀 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Factory": {
+      "name": "팩토리",
+      "desc": "팩토리 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Woods": {
+      "name": "우즈",
+      "desc": "우즈 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Interchange": {
+      "name": "인터체인지",
+      "desc": "인터체인지 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/The Lab": {
+      "name": "연구소",
+      "desc": "연구소 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Reserve": {
+      "name": "리저브",
+      "desc": "리저브 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Shoreline": {
+      "name": "쇼어라인",
+      "desc": "쇼어라인 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Streets": {
+      "name": "스트리트",
+      "desc": "스트리트 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Lighthouse": {
+      "name": "라이트하우스",
+      "desc": "이 빌드에서 라이트하우스는 쓸 만한 그림이 하나뿐이다."
+    },
+    "Map Artwork Overrides/Labyrinth": {
+      "name": "래버린스",
+      "desc": "래버린스 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Interchange (Manimal)": {
+      "name": "인터체인지 (Manimal)",
+      "desc": "Manimal 백포트 인터체인지의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    }
+  }
+}

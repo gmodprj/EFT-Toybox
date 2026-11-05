@@ -1,0 +1,137 @@
+{
+  "guid": "com.zgfuedkx.wishlistextended",
+  "name": "위시리스트 확장 (Wishlist Extended)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Tooltip": "2. 설명 풍선",
+    "3. Colors": "3. 색",
+    "4. Loose Loot": "4. 바닥 전리품",
+    "9. Debug": "9. 진단"
+  },
+  "settings": {
+    "1. General/Hideout crafting wishlist mode": {
+      "name": "은신처 제작 담기",
+      "desc": "어떤 제작을 위시리스트에 담을지 정한다. Disabled 는 담지 않고, Favorite 는 즐겨찾는 것만, Current 는 지금 할 수 있는 것 전부, All 은 앞으로 할 것까지 모두 담는다."
+    },
+    "1. General/Hideout upgrades wishlist mode": {
+      "name": "은신처 증축 담기",
+      "desc": "어떤 증축을 위시리스트에 담을지 정한다. Disabled 는 담지 않고, Current 는 지금 할 수 있는 것 전부, All 은 모든 증축을 담는다."
+    },
+    "1. General/Include barters": {
+      "name": "교환도 담기",
+      "desc": "교환을 담을지 정한다. 교환 위시리스트를 쓰려면 서버에도 이 모드가 깔려 있어야 한다."
+    },
+    "1. General/Include quests": {
+      "name": "퀘스트도 담기",
+      "desc": "지금 퀘스트를 담을지 정한다."
+    },
+    "1. General/Crafts priority": {
+      "name": "제작 우선순위",
+      "desc": "제작 아이콘의 우선순위다. 값이 클수록 중요하다."
+    },
+    "1. General/Hideout priority": {
+      "name": "증축 우선순위",
+      "desc": "은신처 증축 아이콘의 우선순위다. 값이 클수록 중요하다."
+    },
+    "1. General/Barters priority": {
+      "name": "교환 우선순위",
+      "desc": "교환 아이콘의 우선순위다. 값이 클수록 중요하다."
+    },
+    "1. General/Quests priority": {
+      "name": "퀘스트 우선순위",
+      "desc": "퀘스트 아이콘의 우선순위다. 값이 클수록 중요하다."
+    },
+    "1. General/Show locked as future": {
+      "name": "잠긴 것은 앞으로 할 것으로",
+      "desc": "잠긴 증축·제작을 지금 할 수 있는 것이 아니라 앞으로 할 것으로 적을지 정한다."
+    },
+    "1. General/Show amount of items in stash": {
+      "name": "창고 개수 보이기",
+      "desc": "설명 풍선에 창고에 있는 전체 개수를 보일지 정한다."
+    },
+    "1. General/Include in-raid items": {
+      "name": "레이드 중 가방도 세기",
+      "desc": "가방에 있는 물건도 창고 개수에 넣을지 정한다."
+    },
+    "1. General/Remove from wishlist if have enough": {
+      "name": "다 모으면 빼기",
+      "desc": "충분히 모으면 위시리스트에서 뺄지 정한다. 제작이나 교환을 켜 두었으면 그 어느 쪽에 남아 있는 물건은 빠지지 않는다."
+    },
+    "1. General/Show in checkmark tooltip": {
+      "name": "체크 풍선에도 보이기",
+      "desc": "위시리스트 내용을 체크 표시 풍선에도 보일지 정한다."
+    },
+    "1. General/In-Raid only": {
+      "name": "레이드 중에만",
+      "desc": "저절로 만든 위시리스트를 레이드 중에만 쓸지 정한다. 직접 담은 위시리스트는 어디서나 돌아간다."
+    },
+    "2. Tooltip/Tooltip mode": {
+      "name": "풍선 방식",
+      "desc": "설명 풍선의 동작을 정한다. Disabled 는 아무것도 보이지 않고, Always 는 전부 보이고, Hide 는 감춘 뒤 전체 보기 키로 보이고, Cycle 은 한 분류만 보이며 전환 키로 바꾸고, HideFuture 는 앞으로 할 제작·증축을 감춘 뒤 전체 보기 키로 보인다."
+    },
+    "2. Tooltip/Tooltip text size": {
+      "name": "풍선 글자 크기",
+      "desc": "설명 풍선 글자의 크기다. 30 이 보통이고 0 이면 아주 작다."
+    },
+    "2. Tooltip/Show all bind": {
+      "name": "전체 보기 키",
+      "desc": "위의 풍선 방식이 감춘 내용을 보이는 키다."
+    },
+    "2. Tooltip/Cycle tooltip bind": {
+      "name": "분류 전환 키",
+      "desc": "누르면 풍선에 보이는 분류가 바뀐다(Cycle 방식에서만)."
+    },
+    "3. Colors/Current crafts color": {
+      "name": "지금 제작 색",
+      "desc": "풍선에서 지금 할 수 있는 제작의 색이다."
+    },
+    "3. Colors/Favorite crafts color": {
+      "name": "즐겨찾는 제작 색",
+      "desc": "풍선에서 즐겨찾는 제작의 색이다."
+    },
+    "3. Colors/Future crafts color": {
+      "name": "앞으로 할 제작 색",
+      "desc": "풍선에서 앞으로 할 제작의 색이다."
+    },
+    "3. Colors/Current hideout upgrades color": {
+      "name": "지금 증축 색",
+      "desc": "풍선에서 지금 할 수 있는 은신처 증축의 색이다."
+    },
+    "3. Colors/Future hideout upgrades color": {
+      "name": "앞으로 할 증축 색",
+      "desc": "풍선에서 앞으로 할 은신처 증축의 색이다."
+    },
+    "3. Colors/Barters color": {
+      "name": "교환 색",
+      "desc": "풍선에서 교환의 색이다."
+    },
+    "3. Colors/Current quests color": {
+      "name": "지금 퀘스트 색",
+      "desc": "풍선에서 지금 퀘스트의 색이다."
+    },
+    "4. Loose Loot/Loose loot affix mode": {
+      "name": "바닥 전리품 표시 자리",
+      "desc": "바닥 전리품 이름에 표시를 어디에 붙일지 정한다. Disabled 는 붙이지 않고, Prefix 는 이름 앞에, Suffix 는 이름 뒤에 붙인다."
+    },
+    "4. Loose Loot/Loose loot color mode": {
+      "name": "바닥 전리품 색 입히는 곳",
+      "desc": "바닥 전리품 이름에 색을 어떻게 입힐지 정한다. Disabled 는 입히지 않고, Name 은 이름에, Affix 는 붙인 표시에, Both 는 둘 다에 입힌다."
+    },
+    "4. Loose Loot/Loose loot color": {
+      "name": "바닥 전리품 색",
+      "desc": "이름에 쓸 색이다(색 입히는 곳에 따라 쓰인다)."
+    },
+    "4. Loose Loot/Loose loot affix": {
+      "name": "붙일 표시",
+      "desc": "켜 두었을 때 이름 옆에 붙일 표시다."
+    },
+    "9. Debug/Debug logs": {
+      "name": "진단 기록",
+      "desc": "Player.log 에 진단 기록을 남긴다."
+    },
+    "9. Debug/Rebuild caches": {
+      "name": "캐시 다시 만들기",
+      "desc": "모든 캐시를 강제로 다시 만든다."
+    }
+  }
+}

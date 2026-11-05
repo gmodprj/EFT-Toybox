@@ -1,0 +1,40 @@
+{
+  "guid": "com.harmonyzt.BrokenLimbsDontHeal",
+  "name": "붙은 뼈도 아프다 (Broken Limbs Don't Heal)",
+  "sections": {
+    "Arms": "팔",
+    "General": "일반",
+    "Legs": "다리",
+    "Misc": "그 밖"
+  },
+  "settings": {
+    "Arms/Arm Fracture Penalty": {
+      "name": "팔 골절 불이익",
+      "desc": "붙인 팔 골절이 남아 있는 동안 조작성 불이익을 준다."
+    },
+    "Arms/Arm Fracture Ergonomics Penalty": {
+      "name": "팔 골절 불이익(%)",
+      "desc": "붙인 팔 골절마다 주는 불이익 비율이다. 두 팔이면 더해진다(10% 가 20% 가 된다)."
+    },
+    "General/Fraction Duration": {
+      "name": "불이익 지속(분)",
+      "desc": "붙인 골절이 뼈가 완전히 나을 때까지 불이익을 주는 시간(분)이다."
+    },
+    "Legs/Leg Fracture Penalty": {
+      "name": "다리 골절 불이익",
+      "desc": "붙인 다리 골절이 남아 있는 동안 이동 속도 불이익을 준다."
+    },
+    "Legs/Leg Fracture Speed Penalty": {
+      "name": "다리 골절 불이익(%)",
+      "desc": "붙인 다리 골절마다 주는 이동 속도 감소 비율이다. 두 다리면 더해진다(18% 가 36% 가 된다)."
+    },
+    "Misc/Enabled": {
+      "name": "다시 부러지게 하기",
+      "desc": "켜면 붙인 골절이 있는 부위에 총을 맞을 때 뼈가 다시 부러질 수 있다."
+    },
+    "Misc/Chance to break the limb again": {
+      "name": "다시 부러질 확률(%)",
+      "desc": "붙인 골절이 있는 부위에 총을 맞았을 때 다시 부러질 확률이다."
+    }
+  }
+}

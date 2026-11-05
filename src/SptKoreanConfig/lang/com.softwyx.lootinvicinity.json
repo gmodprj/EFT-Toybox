@@ -1,0 +1,57 @@
+{
+  "guid": "com.softwyx.lootinvicinity",
+  "name": "주변 전리품 목록 (Loot In Vicinity)",
+  "sections": {
+    "0. Support": "0. 후원",
+    "1. General": "1. 일반",
+    "2. Inventory panel": "2. 가방 화면 판",
+    "3. Scanning": "3. 훑기",
+    "4. Quest items": "4. 퀘스트 물건"
+  },
+  "settings": {
+    "0. Support/Donate": {
+      "name": "후원",
+      "desc": "GitHub Sponsors 로 후원할 수 있다."
+    },
+    "1. General/Enabled": {
+      "name": "켜기",
+      "desc": "모드 전체 스위치다."
+    },
+    "2. Inventory panel/Panel title": {
+      "name": "판 제목",
+      "desc": "가방(Tab) 화면 오른쪽 주변 판의 제목이다."
+    },
+    "2. Inventory panel/Hide panel when empty": {
+      "name": "비면 감추기",
+      "desc": "주변에 전리품이 없으면 오른쪽 칸을 비워 둔다."
+    },
+    "2. Inventory panel/Append item count to title": {
+      "name": "제목에 개수 붙이기",
+      "desc": "훑을 때마다 \"Nearby Items (7)\" 처럼 개수를 붙인다."
+    },
+    "2. Inventory panel/Allow staging in vicinity panel": {
+      "name": "판에 올려 두기 허용",
+      "desc": "가방에서 주변 판으로 물건을 끌어 정리할 수 있다. 올려 둔 물건은 가방을 닫을 때 발밑에 떨어진다."
+    },
+    "3. Scanning/Scan radius (m)": {
+      "name": "훑는 반지름(m)",
+      "desc": "주된 훑기 반지름이다(최소 1m)."
+    },
+    "3. Scanning/Main scan requires line of sight": {
+      "name": "보이는 것만 훑기",
+      "desc": "켜면 주된 훑기 범위 안에서도 눈에 보이는 전리품만 목록에 올린다(벽이나 장애물 뒤는 빼고)."
+    },
+    "3. Scanning/Max items in panel": {
+      "name": "판 최대 줄 수",
+      "desc": "Tab 을 한 번 열 때 보일 전리품 줄의 최대 수다."
+    },
+    "4. Quest items/Route quest items to task stash": {
+      "name": "퀘스트 물건은 퀘스트 보관함으로",
+      "desc": "주변 판에서 퀘스트 전리품을 가방으로 끌면 퀘스트 레이드 보관함으로 보낸다."
+    },
+    "4. Quest items/Show quest items in vicinity": {
+      "name": "퀘스트 물건 보이기",
+      "desc": "끄면 퀘스트 물건을 주변 훑기와 판에서 뺀다."
+    }
+  }
+}

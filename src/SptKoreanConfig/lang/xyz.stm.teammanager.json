@@ -258,6 +258,10 @@
     "Miscellaneous/28 BattleRecorderSnapshotIntervalMs": {
       "name": "28 교전 기록 간격(ms)",
       "desc": "교전 기록이 동료 위치를 찍는 주기(밀리초)."
+    },
+    "/14 AutoJoinMaxMembers": {
+      "name": "14 자동 합류 최대 인원",
+      "desc": "레이드에 저절로 따라올 수 있는 동료 수다. 프로필 동료를 먼저 무작위로 뽑고 그다음 용병을 뽑는다. 0 이면 제한이 없다."
     }
   }
 }

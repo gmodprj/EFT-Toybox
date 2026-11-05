@@ -1,0 +1,60 @@
+{
+  "guid": "7Bpencil.TargetDummies",
+  "name": "사격 표적 (Target Dummies)",
+  "sections": {
+    "Close": "가까운 표적",
+    "Custom Mannequin Types": "표적 종류 직접 지정",
+    "Far": "먼 표적",
+    "Mannequin Settings": "표적 설정"
+  },
+  "settings": {
+    "Close/Left Mannequin Type": {
+      "name": "왼쪽 표적 종류",
+      "desc": "왼쪽 표적을 어떤 종류로 세울지다."
+    },
+    "Close/Middle Mannequin Type": {
+      "name": "가운데 표적 종류",
+      "desc": "가운데 표적을 어떤 종류로 세울지다."
+    },
+    "Close/Right Mannequin Type": {
+      "name": "오른쪽 표적 종류",
+      "desc": "오른쪽 표적을 어떤 종류로 세울지다."
+    },
+    "Custom Mannequin Types/Custom1": {
+      "name": "직접 지정 1",
+      "desc": "목록에 없는 종류를 쓰려면 그 이름을 여기에 적는다."
+    },
+    "Far/Left Mannequin Type": {
+      "name": "왼쪽 표적 종류",
+      "desc": "왼쪽 표적을 어떤 종류로 세울지다."
+    },
+    "Far/Middle Mannequin Type": {
+      "name": "가운데 표적 종류",
+      "desc": "가운데 표적을 어떤 종류로 세울지다."
+    },
+    "Far/Right Mannequin Type": {
+      "name": "오른쪽 표적 종류",
+      "desc": "오른쪽 표적을 어떤 종류로 세울지다."
+    },
+    "Mannequin Settings/Health Head": {
+      "name": "머리 체력",
+      "desc": "표적의 머리 체력이다."
+    },
+    "Mannequin Settings/Health Chest": {
+      "name": "가슴 체력",
+      "desc": "표적의 가슴 체력이다."
+    },
+    "Mannequin Settings/Health Stomach": {
+      "name": "배 체력",
+      "desc": "표적의 배 체력이다."
+    },
+    "Mannequin Settings/Health Arm": {
+      "name": "팔 체력",
+      "desc": "표적의 팔 체력이다."
+    },
+    "Mannequin Settings/Health Leg": {
+      "name": "다리 체력",
+      "desc": "표적의 다리 체력이다."
+    }
+  }
+}

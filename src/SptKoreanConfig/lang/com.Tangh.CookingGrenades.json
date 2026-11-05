@@ -1,0 +1,168 @@
+{
+  "guid": "com.Tangh.CookingGrenades",
+  "name": "수류탄 쿠킹 (Cooking Grenades)",
+  "sections": {
+    "0. Cooking Grenades": "0. 수류탄 쿠킹",
+    "1. Realistic Fuse Time": "1. 실제 같은 신관 시간",
+    "2. Realistic Fuse Iime Tester": "2. 신관 시간 시험",
+    "3. Debug": "3. 진단",
+    "4. Trajectory Prediction": "4. 궤적 예측",
+    "5. Cook Indicator": "5. 쿠킹 표시",
+    "6. Grenade Wheel": "6. 수류탄 휠",
+    "7. Medicine Wheel": "7. 의약품 휠"
+  },
+  "settings": {
+    "0. Cooking Grenades/Enable Cooking Notification": {
+      "name": "쿠킹 알림",
+      "desc": "수류탄 쿠킹이 시작될 때 알린다."
+    },
+    "0. Cooking Grenades/Auto Throw Lead Time": {
+      "name": "자동 투척 여유 시간",
+      "desc": "손에서 터지지 않도록 쿠킹하던 수류탄을 강제로 던지는 시점이다(남은 신관 시간, 초). 올리면 더 일찍 던져 안전하다."
+    },
+    "0. Cooking Grenades/Show Default Fuse Time In Inventory UI": {
+      "name": "가방에 기본 신관 시간 보이기",
+      "desc": "켜면 가방 화면에 무작위로 흔든 값이 아니라 기본 신관 시간을 보인다."
+    },
+    "0. Cooking Grenades/Use Alternative Pin Sound": {
+      "name": "다른 핀 소리 쓰기",
+      "desc": "켜면 일부 수류탄에서 신관 소리 대신 다른 핀 소리(TripwirePin)를 낸다. M67·V40·M18·M7290·RDG-2B 에 걸린다."
+    },
+    "1. Realistic Fuse Time/Realistic Fuse Time Enable": {
+      "name": "실제 같은 신관 시간 켜기",
+      "desc": "신관 시간을 수류탄마다 조금씩 흔든다."
+    },
+    "1. Realistic Fuse Time/Fuse Time Spread Factor": {
+      "name": "신관 시간 흔들림",
+      "desc": "신관 시간이 얼마나 흔들릴지다(0.001 이면 거의 고정, 0.6 이면 넓게 흔들린다)."
+    },
+    "2. Realistic Fuse Iime Tester/Simulation Target Value": {
+      "name": "시험 기준값",
+      "desc": "시험해 볼 값이다."
+    },
+    "2. Realistic Fuse Iime Tester/Fuse Time Test Count": {
+      "name": "시험 횟수",
+      "desc": "신관 시간 분포를 시험할 횟수다."
+    },
+    "2. Realistic Fuse Iime Tester/Time Simulation To Output": {
+      "name": "시험 돌리기",
+      "desc": "켜면 시험이 한 번 돌아간다. 결과는 BepInEx/LogOutput.log 에서 볼 수 있다."
+    },
+    "3. Debug/Enable Cooking Time GUI": {
+      "name": "쿠킹 시간 창 보이기",
+      "desc": "쿠킹 시간을 보여 주는 진단용 창을 띄운다."
+    },
+    "3. Debug/User Warning Confirmed": {
+      "name": "경고 확인함",
+      "desc": "제작자의 경고를 읽었음을 기억하는 값이다."
+    },
+    "4. Trajectory Prediction/Enable Trajectory": {
+      "name": "궤적 선 켜기",
+      "desc": "수류탄 궤적 예측 선을 켠다."
+    },
+    "4. Trajectory Prediction/Display Mode": {
+      "name": "보이는 때",
+      "desc": "0 이면 수류탄을 든 동안 늘 보이고, 1 이면 조준할 때(발사 버튼을 누른 동안)만 보인다."
+    },
+    "4. Trajectory Prediction/Trajectory Color": {
+      "name": "궤적 선 색",
+      "desc": "궤적 선의 색이다."
+    },
+    "4. Trajectory Prediction/Landing Point Color": {
+      "name": "낙하 지점 색",
+      "desc": "낙하 지점 표시의 색이다."
+    },
+    "4. Trajectory Prediction/Landing Point Radius": {
+      "name": "낙하 지점 크기",
+      "desc": "낙하 지점 표시 원의 반지름이다."
+    },
+    "4. Trajectory Prediction/Trajectory Points": {
+      "name": "궤적 점 수",
+      "desc": "궤적을 따라 찍는 점의 수다. 많으면 매끄럽지만 무거워진다."
+    },
+    "4. Trajectory Prediction/Trajectory Step Size": {
+      "name": "궤적 점 간격",
+      "desc": "궤적 점 사이의 가로 거리(미터)다. 작으면 점이 많아지고 매끄러워진다."
+    },
+    "4. Trajectory Prediction/Trajectory Line Width": {
+      "name": "궤적 선 굵기",
+      "desc": "궤적 선의 굵기다."
+    },
+    "4. Trajectory Prediction/Throw Force Multiplier": {
+      "name": "던지는 힘 배율",
+      "desc": "던지는 힘을 어림할 때 쓰는 배율이다. 궤적이 실제 던진 거리와 맞지 않으면 조절한다."
+    },
+    "4. Trajectory Prediction/Recalc Interval (frames)": {
+      "name": "다시 계산 간격(프레임)",
+      "desc": "던지는 조건이 그대로일 때 궤적을 몇 프레임마다 다시 계산할지다. 1 이면 매 프레임이고, 올리면 싸지지만 반응이 둔해진다."
+    },
+    "5. Cook Indicator/Enable Cook Indicator": {
+      "name": "쿠킹 표시 켜기",
+      "desc": "쿠킹하는 동안 수류탄 위에 깜빡이는 표시를 보인다. 시간이 줄수록 빨리 깜빡이고 마지막 2초에는 빨개진다."
+    },
+    "5. Cook Indicator/Indicator Height": {
+      "name": "표시 높이",
+      "desc": "수류탄 위로 표시를 띄울 높이(미터)다."
+    },
+    "5. Cook Indicator/Indicator Scale": {
+      "name": "표시 크기",
+      "desc": "표시 아이콘의 크기다."
+    },
+    "5. Cook Indicator/Offset X (px)": {
+      "name": "표시 X 밀기(px)",
+      "desc": "화면 가운데에서 가로로 미는 픽셀 수다. 양수면 오른쪽, 음수면 왼쪽이다."
+    },
+    "5. Cook Indicator/Offset Y (px)": {
+      "name": "표시 Y 밀기(px)",
+      "desc": "화면 가운데에서 세로로 미는 픽셀 수다. 양수면 위, 음수면 아래다."
+    },
+    "5. Cook Indicator/Throw Animation Duration (s)": {
+      "name": "투척 동작 시간(초)",
+      "desc": "던질 때 표시가 돌며 사라지는 데 걸리는 시간이다."
+    },
+    "6. Grenade Wheel/Enable Grenade Wheel": {
+      "name": "수류탄 휠 켜기",
+      "desc": "수류탄 고르는 휠을 켠다. 지정한 키를 누르고 있으면 들고 있는 수류탄이 둥글게 펼쳐지고, 마우스로 고른 뒤 키를 놓으면 든다."
+    },
+    "6. Grenade Wheel/Grenade Wheel Key": {
+      "name": "수류탄 휠 키",
+      "desc": "수류탄 휠을 열려고 누르고 있을 키다."
+    },
+    "6. Grenade Wheel/Equip Immediately On Select": {
+      "name": "고르면 바로 들기",
+      "desc": "켜면 휠을 닫을 때 고른 수류탄을 바로 손에 든다. 끄면 선호 수류탄으로만 정해 두고 다시 키를 눌러 꺼내야 한다."
+    },
+    "6. Grenade Wheel/Switch Immediately When Holding": {
+      "name": "들고 있을 때 바로 바꾸기",
+      "desc": "켜면 이미 수류탄을 든 상태에서 휠로 다른 것을 고를 때 바로 바꿔 든다. 끄면 선호만 바꾸므로 다시 키를 눌러야 한다."
+    },
+    "6. Grenade Wheel/Hold Duration To Open (s)": {
+      "name": "열리기까지 누름 시간(초)",
+      "desc": "휠이 열리기까지 키를 몇 초 누르고 있어야 하는지다."
+    },
+    "7. Medicine Wheel/Enable Medicine Wheel": {
+      "name": "의약품 휠 켜기",
+      "desc": "의약품 고르는 휠을 켠다. 지정한 키를 누르고 있으면 들고 있는 의약품이 둥글게 펼쳐지고, 마우스로 고른 뒤 키를 놓으면 쓴다."
+    },
+    "7. Medicine Wheel/Medicine Wheel Key": {
+      "name": "의약품 휠 키",
+      "desc": "의약품 휠을 열려고 누르고 있을 키다."
+    },
+    "7. Medicine Wheel/Scan Secure Container For Medicine": {
+      "name": "보안 가방도 훑기",
+      "desc": "켜면 보안 가방 안의 의약품도 함께 찾는다."
+    },
+    "7. Medicine Wheel/Scan Backpack For Medicine": {
+      "name": "배낭도 훑기",
+      "desc": "켜면 배낭 안의 의약품도 함께 찾는다. 끄면 주머니와 전술 조끼만 찾는다. 보안 가방은 위의 설정이 따로 맡는다."
+    },
+    "7. Medicine Wheel/Include Food And Drinks": {
+      "name": "음식·음료도 넣기",
+      "desc": "켜면 음식과 음료도 의약품 휠에 보인다."
+    },
+    "7. Medicine Wheel/Hold Duration To Open (s)": {
+      "name": "열리기까지 누름 시간(초)",
+      "desc": "휠이 열리기까지 키를 몇 초 누르고 있어야 하는지다."
+    }
+  }
+}

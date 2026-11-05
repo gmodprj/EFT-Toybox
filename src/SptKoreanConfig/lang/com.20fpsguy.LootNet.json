@@ -1,0 +1,34 @@
+{
+  "guid": "com.20fpsguy.LootNet",
+  "name": "레이드 수익 정리 (LootNet)",
+  "sections": {
+    "Display": "표시",
+    "Prices": "가격"
+  },
+  "settings": {
+    "Display/Secret Summary Feature": {
+      "name": "숨은 기능",
+      "desc": "찾아냈다. 켜고 다음 레이드를 끝내 보면 무엇이 생기는지 알 수 있다."
+    },
+    "Display/Manual Dismiss Only": {
+      "name": "직접 닫기",
+      "desc": "켜면 레이드 정리 화면이 눌러서 닫을 때까지 열려 있고 저절로 닫히는 시간이 꺼진다."
+    },
+    "Display/Show In-Raid Inventory Counter": {
+      "name": "레이드 중 가방 합계 보이기",
+      "desc": "켜면 레이드 중 가방 화면 안에 지금까지 모은 전리품 값을 보인다. 끄면 감춘다."
+    },
+    "Display/Persist Raid History": {
+      "name": "레이드 기록 저장",
+      "desc": "켜면 레이드 기록을 BepInEx/plugins/LootNet/raid_history.json 에 저장해 게임을 켤 때 다시 읽어, 지난 레이드와 최고 기록이 계속 보인다. 15회까지만 들고 오래된 것부터 버린다. 기록을 지우려면 그 파일을 지운다."
+    },
+    "Prices/Use Handbook Prices": {
+      "name": "도감 가격 쓰기",
+      "desc": "플리마켓 가격 대신 도감(기본) 가격을 쓴다. 상인을 바꾸는 모드를 쓰거나 플리마켓이 없으면 켠다. 게임을 다시 켜야 적용된다."
+    },
+    "Prices/Default Flea Market Rules": {
+      "name": "플리마켓 규칙 따르기",
+      "desc": "켜면 플리마켓에 팔 수 있는 물건만 레이드 수익으로 센다(바닐라 규칙과 같다). 끄면 퀘스트 물건처럼 본래 거래할 수 없는 것까지 모두 센다. 플리마켓 제한을 푸는 모드를 쓰면 끈다."
+    }
+  }
+}

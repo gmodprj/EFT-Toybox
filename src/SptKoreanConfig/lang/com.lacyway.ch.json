@@ -1,0 +1,21 @@
+{
+  "guid": "com.lacyway.ch",
+  "name": "이어서 치료 (Continuous Healing)",
+  "sections": {
+    "1. Settings": "1. 설정"
+  },
+  "settings": {
+    "1. Settings/Heal Limbs": {
+      "name": "수술 키트도 이어서",
+      "desc": "수술 키트를 쓸 때도 이어서 치료할지. 동작이 되풀이되지는 않는다."
+    },
+    "1. Settings/Heal Delay": {
+      "name": "치료 사이 간격",
+      "desc": "부위마다 치료 사이의 간격이다. 게임 기본값은 2 이고, 0 으로 두면 이 모드가 의도한 대로 이어서 치료한다."
+    },
+    "1. Settings/Reset Animations": {
+      "name": "동작 다시 재생",
+      "desc": "부위마다 치료 사이에 동작을 새로 재생할지. 치료 속도에는 영향이 없다."
+    }
+  }
+}

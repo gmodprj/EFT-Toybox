@@ -1,0 +1,120 @@
+{
+  "guid": "com.fiodor.smoothtalker",
+  "name": "혼잣말 (Smooth Talker)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Kills": "2. 처치",
+    "3. Reload": "3. 장전",
+    "4. Out of Ammo": "4. 탄 떨어짐",
+    "5. Grenade": "5. 수류탄",
+    "6. Shot At": "6. 총 맞을 때",
+    "7. Enemy Spotted": "7. 적 발견",
+    "8. Confirmation": "8. 응답"
+  },
+  "settings": {
+    "1. General/Enabled": {
+      "name": "켜기",
+      "desc": "모든 대사의 전체 스위치다."
+    },
+    "1. General/Cooldown (seconds)": {
+      "name": "대사 사이 간격(초)",
+      "desc": "대사가 쏟아지지 않도록 어떤 대사든 사이에 두는 최소 시간이다."
+    },
+    "1. General/Combat Only": {
+      "name": "전투 중에만",
+      "desc": "처치·장전·탄 떨어짐 대사를 전투 중에만 낸다. 전투는 아래의 시간 안에 내가 총을 쏜 상태를 말한다. 수류탄과 총 맞을 때 대사는 이 설정과 상관없이 늘 난다."
+    },
+    "1. General/Combat Timeout (seconds)": {
+      "name": "전투 유지 시간(초)",
+      "desc": "마지막으로 쏜 뒤 몇 초가 지나면 전투가 끝난 것으로 볼지다."
+    },
+    "1. General/Not a schizophrenic": {
+      "name": "혼자일 때는 말 안 하기",
+      "desc": "다른 사람 플레이어가 적어도 한 명 살아 있을 때만 대사를 낸다. Fika 가 있어야 하고, 없으면 이 설정은 아무 일도 하지 않는다."
+    },
+    "2. Kills/Kill Delay (seconds)": {
+      "name": "처치 대사 뜸",
+      "desc": "처치 대사를 내기 전에 기다리는 시간(초)이다."
+    },
+    "2. Kills/PMC Kill Voice": {
+      "name": "PMC 처치 대사",
+      "desc": "PMC(USEC·BEAR)를 죽일 때 낼 대사다."
+    },
+    "2. Kills/Scav Kill Voice": {
+      "name": "스캐브 처치 대사",
+      "desc": "스캐브를 죽일 때 낼 대사다."
+    },
+    "2. Kills/Other Kill Voice": {
+      "name": "그 밖의 처치 대사",
+      "desc": "그 밖의 것(보스·경비·모드 봇 등)을 죽일 때 낼 대사다."
+    },
+    "3. Reload/Enabled": {
+      "name": "장전 대사 켜기",
+      "desc": "장전할 때 대사를 낸다."
+    },
+    "3. Reload/Voice Trigger": {
+      "name": "장전 대사",
+      "desc": "장전할 때 낼 대사다."
+    },
+    "4. Out of Ammo/Enabled": {
+      "name": "탄 떨어짐 대사 켜기",
+      "desc": "빈 약실에서 방아쇠를 당길 때 대사를 낸다."
+    },
+    "4. Out of Ammo/Voice Trigger": {
+      "name": "탄 떨어짐 대사",
+      "desc": "탄이 떨어졌을 때 낼 대사다."
+    },
+    "5. Grenade/Enabled": {
+      "name": "수류탄 대사 켜기",
+      "desc": "수류탄을 던질 때 대사를 낸다."
+    },
+    "5. Grenade/Voice Trigger": {
+      "name": "수류탄 대사",
+      "desc": "수류탄을 던질 때 낼 대사다."
+    },
+    "6. Shot At/Enabled": {
+      "name": "총 맞을 때 대사 켜기",
+      "desc": "총알이 바닐라의 스치는 효과가 생길 만큼 가까이 지날 때 대사를 낸다."
+    },
+    "6. Shot At/Max distance to the shot": {
+      "name": "총알 거리",
+      "desc": "총알이 이 거리보다 가까이 지날 때만 대사를 낸다."
+    },
+    "6. Shot At/Cooldown (seconds)": {
+      "name": "총 맞을 때 간격(초)",
+      "desc": "총 맞을 때 대사를 다시 낼 수 있기까지의 시간이다. 그 사이에 또 스치면 시간이 다시 시작된다."
+    },
+    "6. Shot At/Voice Trigger": {
+      "name": "총 맞을 때 대사",
+      "desc": "총에 맞을 뻔할 때 낼 대사다."
+    },
+    "7. Enemy Spotted/Enabled": {
+      "name": "적 발견 대사 켜기",
+      "desc": "Fika 표시가 적 플레이어를 가리킬 때 대사를 낸다."
+    },
+    "7. Enemy Spotted/Only Play While Out Of Combat": {
+      "name": "전투 중이 아닐 때만",
+      "desc": "전투 중이 아닐 때만 적 발견 대사를 낸다."
+    },
+    "7. Enemy Spotted/Voice Trigger": {
+      "name": "적 발견 대사",
+      "desc": "적 플레이어를 찍을 때 낼 대사다."
+    },
+    "8. Confirmation/Enabled": {
+      "name": "응답 켜기",
+      "desc": "켜면 동료가 이미 찍은 자리 근처를 찍을 때 응답 대사를 내고, 보내는 표시와 화면 표시를 모두 누른다. Fika 가 있어야 한다."
+    },
+    "8. Confirmation/Suppression Radius (meters)": {
+      "name": "응답 거리(m)",
+      "desc": "내가 찍은 지점이 동료가 찍은 지점에서 몇 미터 안이어야 응답으로 바뀔지다."
+    },
+    "8. Confirmation/Suppression Delay (seconds)": {
+      "name": "응답으로 바꾸는 시간(초)",
+      "desc": "동료가 찍은 뒤 몇 초 동안은 내가 찍는 대신 응답할지다."
+    },
+    "8. Confirmation/Confirmation Voice": {
+      "name": "응답 대사",
+      "desc": "동료가 이미 그 자리를 찍어 내 표시가 눌릴 때 낼 대사다."
+    }
+  }
+}

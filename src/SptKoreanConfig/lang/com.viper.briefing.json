@@ -1,0 +1,29 @@
+{
+  "guid": "com.viper.briefing",
+  "name": "퀘스트 브리핑 창 (Briefing)",
+  "sections": {
+    "Layout": "배치"
+  },
+  "settings": {
+    "Layout/Side margin": {
+      "name": "좌우 여백",
+      "desc": "브리핑 판의 좌우 여백이다(기준 해상도 단위). 탭을 다시 열 때 적용된다."
+    },
+    "Layout/Top margin": {
+      "name": "위 여백",
+      "desc": "탭 줄 아래와 판 위 사이의 간격이다(기준 해상도 단위). 탭을 다시 열 때 적용된다."
+    },
+    "Layout/Bottom margin": {
+      "name": "아래 여백",
+      "desc": "화면 아래 메뉴 줄에 판이 걸리지 않게 두는 여백이다(기준 해상도 단위). 탭을 다시 열 때 적용된다."
+    },
+    "Layout/Left column width": {
+      "name": "왼쪽 칸 너비",
+      "desc": "왼쪽 칸(퀘스트 목록)의 너비다(기준 해상도 단위). 0 이면 기본값 540 이다. 칸 사이의 손잡이를 끌면 저절로 저장된다."
+    },
+    "Layout/Right column width": {
+      "name": "오른쪽 칸 너비",
+      "desc": "오른쪽 칸의 너비다(기준 해상도 단위). 0 이면 기본값 470 이다. 칸 사이의 손잡이를 끌면 저절로 저장된다."
+    }
+  }
+}

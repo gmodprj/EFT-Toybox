@@ -1,0 +1,17 @@
+{
+  "guid": "com.hj.modsource",
+  "name": "물건 출처 모드 (Mod Source)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/debugLogging": {
+      "name": "진단 기록",
+      "desc": "살펴본 물건마다 알아낸 출처를 BepInEx 콘솔에 적는다."
+    },
+    "General/showLowConfidence": {
+      "name": "확실하지 않은 추측도 보이기",
+      "desc": "물건의 내부 이름이 설치된 모드의 GUID 나 어셈블리 이름과 맞는 것만으로 한 추측도 보인다. 그것은 일부 모드가 따르는 관례일 뿐 규칙이 아니고, 복제한 물건이 원래 모드의 이름을 그대로 들고 있을 수 있으므로 기본으로 꺼져 있다. 보일 때는 뒤에 ? 가 붙는다."
+    }
+  }
+}

@@ -1,0 +1,2498 @@
+{
+  "guid": "com.dizzlow.impactcue",
+  "name": "타격 표시 (ImpactCue)",
+  "sections": {
+    "00. Internal UI": "00. 내부 창 상태",
+    "01. General": "01. 일반",
+    "02. Hit Marker": "02. 명중 표시",
+    "03. Floating Damage": "03. 떠오르는 피해 숫자",
+    "04. Kill Feed": "04. 처치 기록",
+    "05. Kill Feed Layout": "05. 처치 기록 배치",
+    "06. Kill Feed Safe Area": "06. 처치 기록 여백",
+    "07. Kill Feed Animation": "07. 처치 기록 움직임",
+    "08. Kill Feed Elements": "08. 처치 기록 구성 요소",
+    "08.5 Weapon Icons": "08.5 무기 아이콘",
+    "08.6 Custom Faction Icons": "08.6 소속 아이콘 바꾸기",
+    "09. HUD Position": "09. 화면 표시 위치",
+    "10. Advanced": "10. 고급",
+    "11. Hit Sound": "11. 명중 소리",
+    "11. Kill Sound": "11. 처치 소리",
+    "12. Kill Effect": "12. 처치 효과",
+    "13. Compact HUD": "13. 간략 표시",
+    "13.10 Armor Zones": "13.10 방어구 부위",
+    "13.4 Default HUD": "13.4 기본 표시",
+    "13.4 Tactical Glass": "13.4 전술 유리",
+    "13.5 Current Weapon": "13.5 든 무기",
+    "13.6 Combat Strip": "13.6 전투 띠",
+    "13.7 Stamina HUD": "13.7 기력 표시",
+    "13.8 Vanilla HUD": "13.8 바닐라 표시",
+    "13.9 Magazine HUD": "13.9 탄창 표시",
+    "14. Crosshair": "14. 조준점",
+    "15. Raid Compass": "15. 나침반",
+    "16. Raid Start": "16. 레이드 시작",
+    "17. BTR Passenger HUD": "17. BTR 탑승 표시",
+    "99. Internal": "99. 내부"
+  },
+  "settings": {
+    "01. General/Language": {
+      "name": "언어",
+      "desc": "locales 폴더에서 검색된 언어를 선택합니다. JSON 파일은 .json 확장자를 제외한 파일명으로 표시됩니다. 언어 JSON 파일을 추가한 뒤 게임을 재시작하면 목록이 갱신됩니다."
+    },
+    "01. General/Standalone Settings Hotkey": {
+      "name": "ImpactCue 설정 단축키",
+      "desc": "ImpactCue 내장 설정 창을 열거나 닫습니다. ConfigurationManager/F12가 필요하지 않습니다."
+    },
+    "01. General/ImpactCue Enabled": {
+      "name": "ImpactCue 활성화",
+      "desc": "ImpactCue HUD 렌더링의 전체 스위치입니다."
+    },
+    "01. General/HUD Position Edit Mode": {
+      "name": "HUD 위치 편집 모드",
+      "desc": "활성화한 뒤 ImpactCue 설정 창을 닫고 HUD 블록을 드래그해 위치를 조정합니다. HUD 클릭으로 설정 열기가 활성화되어 있으면 드래그하지 않고 블록을 클릭해 해당 내장 설정을 열 수 있습니다."
+    },
+    "01. General/HUD Click To Settings": {
+      "name": "HUD 클릭으로 설정 열기",
+      "desc": "HUD 위치 편집 모드가 활성화되어 있을 때 HUD 블록을 드래그하지 않고 클릭하면 해당 ImpactCue 내장 설정을 엽니다. 비활성화하면 편집 모드는 드래그만 사용합니다."
+    },
+    "01. General/HUD Scale": {
+      "name": "HUD 크기",
+      "desc": "모든 ImpactCue HUD 요소에 적용되는 전체 크기 배율입니다."
+    },
+    "01. General/HUD Opacity": {
+      "name": "HUD 불투명도",
+      "desc": "모든 ImpactCue HUD 요소에 적용되는 전체 불투명도입니다."
+    },
+    "01. General/HUD Text Outline Enabled": {
+      "name": "텍스트 외곽선",
+      "desc": "기존 드롭 섀도우를 유지한 채 HUD 텍스트에 외곽선을 표시합니다."
+    },
+    "01. General/HUD Text Outline Color": {
+      "name": "텍스트 외곽선 색상",
+      "desc": "HUD 텍스트 외곽선의 색상과 투명도를 설정합니다."
+    },
+    "01. General/HUD Text Outline Thickness": {
+      "name": "텍스트 외곽선 두께",
+      "desc": "1080p 기준 HUD 텍스트 외곽선 두께를 설정합니다."
+    },
+    "01. General/HUD Image Outline Enabled": {
+      "name": "이미지 외곽선",
+      "desc": "지원되는 HUD 이미지 및 아이콘 요소에 외곽선을 표시합니다."
+    },
+    "01. General/HUD Image Outline Color": {
+      "name": "이미지 외곽선 색상",
+      "desc": "이미지 외곽선의 색상과 불투명도입니다."
+    },
+    "01. General/HUD Image Outline Thickness": {
+      "name": "이미지 외곽선 두께",
+      "desc": "이미지 외곽선의 두께입니다."
+    },
+    "01. General/Hide HUD While Inventory Is Open": {
+      "name": "인벤토리 열림 시 HUD 숨기기",
+      "desc": "레이드 중 인벤토리/전리품 화면이 열려 있을 때 모든 ImpactCue HUD를 숨깁니다."
+    },
+    "01. General/Patch Notes": {
+      "name": "업데이트 내역",
+      "desc": "ImpactCue 2.0.3에 포함된 새 기능, 개선 사항 및 수정 사항을 확인합니다."
+    },
+    "02. Hit Marker/Hit Marker Enabled": {
+      "name": "명중 마커 활성화",
+      "desc": "공격이 다른 플레이어/봇에게 피해를 주면 명중 마커를 표시합니다."
+    },
+    "02. Hit Marker/Show Hit Marker While Scoped": {
+      "name": "조준 중 명중 마커 표시",
+      "desc": "비활성화하면 조준/스코프 사용 중 명중 마커만 숨깁니다. 플로팅 데미지는 독립적으로 표시됩니다."
+    },
+    "02. Hit Marker/Style": {
+      "name": "스타일",
+      "desc": "절차적으로 그리는 ImpactCue 마커 스타일입니다. 외부 UI 에셋은 사용하지 않습니다."
+    },
+    "02. Hit Marker/Color": {
+      "name": "색상",
+      "desc": "일반 명중 마커 색상입니다."
+    },
+    "02. Hit Marker/Size": {
+      "name": "크기",
+      "desc": "명중 마커 크기 배율입니다."
+    },
+    "02. Hit Marker/Duration": {
+      "name": "지속 시간",
+      "desc": "명중 마커가 표시되는 시간(초)입니다."
+    },
+    "02. Hit Marker/Thickness": {
+      "name": "두께",
+      "desc": "1080p 기준 마커 선의 기본 두께입니다."
+    },
+    "02. Hit Marker/Gap": {
+      "name": "간격",
+      "desc": "1080p에서 마커와 화면 중앙 사이의 최종 간격입니다."
+    },
+    "02. Hit Marker/Use Kill Color": {
+      "name": "킬 색상 사용",
+      "desc": "기록된 명중이 치명타일 때 별도의 색상을 사용합니다."
+    },
+    "02. Hit Marker/Kill Color": {
+      "name": "킬 색상",
+      "desc": "킬 색상 사용이 활성화되어 있을 때 치명타 명중 마커에 사용하는 색상입니다."
+    },
+    "02. Hit Marker/Use Headshot Color": {
+      "name": "헤드샷 색상 사용",
+      "desc": "머리 명중에 별도의 색상을 사용합니다."
+    },
+    "02. Hit Marker/Headshot Color": {
+      "name": "헤드샷 색상",
+      "desc": "헤드샷 색상 사용이 활성화되어 있을 때 머리 명중 마커에 사용하는 색상입니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Enabled": {
+      "name": "아머 히트 아이콘 표시",
+      "desc": "실제로 방어구에 접촉한 명중에만 방패 아이콘을 표시합니다. 막힘/도탄은 빨간색, 관통은 파란색이며 Flesh Hit에는 표시하지 않습니다."
+    },
+    "02. Hit Marker/Penetrated Armor Icon Enabled": {
+      "name": "방어구 관통 아이콘 표시",
+      "desc": "방어구를 관통한 명중에 아이콘을 표시합니다. 꺼도 막힘 또는 도탄 방어구 명중 아이콘에는 영향을 주지 않습니다."
+    },
+    "02. Hit Marker/Blocked Armor Icon Enabled": {
+      "name": "방어된 방어구 아이콘 표시",
+      "desc": "방어구가 탄환을 막거나 도탄시킨 경우 방어구 아이콘을 표시합니다. 꺼도 방어구 관통 아이콘에는 영향을 주지 않습니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Size": {
+      "name": "아머 히트 아이콘 크기",
+      "desc": "아머 접촉 아이콘의 크기를 조절합니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Opacity": {
+      "name": "아머 히트 아이콘 투명도",
+      "desc": "아머 접촉 아이콘의 투명도를 조절합니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Duration": {
+      "name": "아머 히트 아이콘 표시 시간",
+      "desc": "아머 접촉 아이콘이 표시되는 시간을 조절합니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Motion Strength": {
+      "name": "방어구 피격 아이콘 애니메이션 강도",
+      "desc": "단발 명중과 완전자동 연속 방어구 명중 시 아이콘 애니메이션의 강도를 조절합니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Sustain Window": {
+      "name": "방어구 피격 아이콘 지속 판정 시간",
+      "desc": "연속 방어구 명중을 하나의 완전자동 연사로 처리하는 시간 범위를 조절합니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Offset X": {
+      "name": "아머 히트 아이콘 X 오프셋",
+      "desc": "1080p 기준으로 히트 마커 위치에서 가로 오프셋을 조절합니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Offset Y": {
+      "name": "아머 히트 아이콘 Y 오프셋",
+      "desc": "1080p 기준으로 히트 마커 위치에서 세로 오프셋을 조절합니다. 양수는 아래로 이동합니다."
+    },
+    "02. Hit Marker/Armor Hit Icon Color": {
+      "name": "방어구 관통 아이콘 색상",
+      "desc": "방어구를 관통했을 때 사용하는 파란 계열 색상을 선택합니다."
+    },
+    "02. Hit Marker/Armor Blocked Icon Color": {
+      "name": "방어구 비관통 아이콘 색상",
+      "desc": "방어구가 탄을 막거나 도탄시켰을 때 사용하는 빨간 계열 색상을 선택합니다."
+    },
+    "03. Floating Damage/Floating Damage Enabled": {
+      "name": "플로팅 데미지 활성화",
+      "desc": "명중 마커와 별개로 플로팅 데미지 숫자를 표시합니다."
+    },
+    "03. Floating Damage/Color": {
+      "name": "색상",
+      "desc": "일반 플로팅 데미지 색상입니다."
+    },
+    "03. Floating Damage/Headshot Color": {
+      "name": "헤드샷 색상",
+      "desc": "머리 명중용 플로팅 데미지 색상입니다. 기본값은 흰색입니다."
+    },
+    "03. Floating Damage/Font Size": {
+      "name": "글꼴 크기",
+      "desc": "플로팅 데미지 텍스트 크기 배율입니다."
+    },
+    "03. Floating Damage/Duration": {
+      "name": "지속 시간",
+      "desc": "플로팅 데미지 표시 시간(초)입니다."
+    },
+    "03. Floating Damage/Float Distance": {
+      "name": "떠오르는 거리",
+      "desc": "1080p 기준 데미지 숫자가 위로 이동하는 화면 픽셀 거리입니다."
+    },
+    "03. Floating Damage/Fade Out": {
+      "name": "페이드 아웃",
+      "desc": "표시 시간이 끝나갈 때 데미지 숫자를 서서히 흐리게 합니다."
+    },
+    "03. Floating Damage/Show Decimal": {
+      "name": "소수점 표시",
+      "desc": "반올림된 정수 데미지 대신 소수점 한 자리까지 표시합니다."
+    },
+    "03. Floating Damage/Combine Rapid Hits": {
+      "name": "빠른 연속 명중 합치기",
+      "desc": "같은 대상에 빠르게 연속으로 적중한 피해를 하나의 플로팅 숫자로 합칩니다."
+    },
+    "03. Floating Damage/Combine Window": {
+      "name": "합치기 시간 창",
+      "desc": "합칠 수 있는 명중 사이의 최대 시간입니다."
+    },
+    "03. Floating Damage/Prevent Overlap": {
+      "name": "겹침 방지",
+      "desc": "활성 플로팅 데미지 라벨이 서로 겹치지 않도록 합니다."
+    },
+    "03. Floating Damage/Damage Spread Pattern": {
+      "name": "데미지 분산 패턴",
+      "desc": "겹침 배치: Smart는 주변 빈 공간을 찾고, Alternating은 좌우로 펼치며, Vertical은 위로 쌓고, None은 충돌 재배치를 비활성화합니다."
+    },
+    "03. Floating Damage/Minimum Damage Separation": {
+      "name": "최소 데미지 간격",
+      "desc": "1080p에서 플로팅 데미지 겹침 방지에 사용하는 최소 추가 간격입니다."
+    },
+    "03. Floating Damage/Maximum Damage Offset": {
+      "name": "최대 데미지 오프셋",
+      "desc": "1080p에서 충돌 해소된 데미지 라벨이 의도한 위치에서 이동할 수 있는 최대 거리입니다."
+    },
+    "04. Kill Feed/Kill Feed Enabled": {
+      "name": "킬 피드 활성화",
+      "desc": "프레임 없는 ImpactCue 킬 피드를 표시합니다."
+    },
+    "04. Kill Feed/Own Kills Only": {
+      "name": "내 킬만 표시",
+      "desc": "내 킬만 표시합니다. 비활성화하면 관찰된 킬 이벤트도 포함합니다."
+    },
+    "04. Kill Feed/Font / UI Size": {
+      "name": "글꼴 / UI 크기",
+      "desc": "킬 피드 크기 배율입니다."
+    },
+    "04. Kill Feed/Display Duration": {
+      "name": "표시 시간",
+      "desc": "각 항목이 표시되는 시간(초)입니다."
+    },
+    "04. Kill Feed/Max Entries": {
+      "name": "최대 항목 수",
+      "desc": "표시 가능한 킬 피드 항목의 최대 개수입니다."
+    },
+    "04. Kill Feed/Fade Duration": {
+      "name": "페이드 시간",
+      "desc": "페이드 아웃 지속 시간(초)입니다."
+    },
+    "04. Kill Feed/Killer Name Color": {
+      "name": "킬러 이름 색상",
+      "desc": "킬러 이름 색상입니다."
+    },
+    "04. Kill Feed/Victim Name Color": {
+      "name": "희생자 이름 색상",
+      "desc": "진영 색상 표시를 끄거나 진영을 알 수 없을 때 사용할 피해자 이름 색상입니다."
+    },
+    "04. Kill Feed/Color Victim Name By Faction": {
+      "name": "피해자 이름 유형별 색상",
+      "desc": "빠른 식별을 위해 피해자 이름을 유형별로 색상 구분합니다. USEC, BEAR, SCAV, Boss, Follower, Rogue, Raider, Cultist를 각각 설정하며 그 외에는 Victim Name Color를 사용합니다."
+    },
+    "04. Kill Feed/USEC Victim Color": {
+      "name": "USEC 피해자 이름 색상",
+      "desc": "진영 색상이 켜져 있을 때 USEC 피해자 이름에 적용할 색상입니다."
+    },
+    "04. Kill Feed/BEAR Victim Color": {
+      "name": "BEAR 피해자 이름 색상",
+      "desc": "진영 색상이 켜져 있을 때 BEAR 피해자 이름에 적용할 색상입니다."
+    },
+    "04. Kill Feed/SCAV Victim Color": {
+      "name": "SCAV 피해자 이름 색상",
+      "desc": "진영 색상이 켜져 있을 때 SCAV 피해자 이름에 적용할 색상입니다."
+    },
+    "04. Kill Feed/Boss Victim Color": {
+      "name": "Boss 피해자 색상",
+      "desc": "유형별 색상 사용 시 주요 Boss 피해자 이름에 사용할 색상입니다."
+    },
+    "04. Kill Feed/Follower Victim Color": {
+      "name": "Follower 피해자 색상",
+      "desc": "유형별 색상 사용 시 Boss Follower 및 Guard 피해자 이름에 사용할 색상입니다."
+    },
+    "04. Kill Feed/Rogue Victim Color": {
+      "name": "Rogue 피해자 색상",
+      "desc": "유형별 색상 사용 시 Rogue 피해자 이름에 사용할 색상입니다."
+    },
+    "04. Kill Feed/Raider Victim Color": {
+      "name": "Raider 피해자 색상",
+      "desc": "유형별 색상 사용 시 Raider 피해자 이름에 사용할 색상입니다."
+    },
+    "04. Kill Feed/Cultist Victim Color": {
+      "name": "Cultist 피해자 색상",
+      "desc": "유형별 색상 사용 시 Cultist 피해자 이름에 사용할 색상입니다."
+    },
+    "04. Kill Feed/Distance Color": {
+      "name": "거리 색상",
+      "desc": "킬 거리 색상입니다."
+    },
+    "04. Kill Feed/Weapon Name Color": {
+      "name": "무기 이름 색상",
+      "desc": "현지화된 EFT/SPT 무기 ShortName의 색상입니다. 확인할 수 없는 값은 넓은 무기 분류로 대체됩니다."
+    },
+    "04. Kill Feed/Headshot Marker Color": {
+      "name": "헤드샷 마커 색상",
+      "desc": "헤드샷 전용 킬 피드 마커 색상입니다."
+    },
+    "04. Kill Feed/Font Family": {
+      "name": "글꼴",
+      "desc": "킬 피드 텍스트 전용 글꼴입니다. 설치된 글꼴은 시작할 때 검색합니다."
+    },
+    "05. Kill Feed Layout/Kill Feed Anchor": {
+      "name": "킬 피드 앵커",
+      "desc": "킬 피드의 화면 앵커입니다. Custom은 고급 Custom Kill Feed X/Y 값을 사용합니다."
+    },
+    "05. Kill Feed Layout/Kill Feed Offset X": {
+      "name": "킬 피드 X 오프셋",
+      "desc": "1080p에서 선택한 앵커 기준 가로 픽셀 오프셋입니다."
+    },
+    "05. Kill Feed Layout/Kill Feed Offset Y": {
+      "name": "킬 피드 Y 오프셋",
+      "desc": "1080p에서 선택한 앵커 기준 세로 픽셀 오프셋입니다. 기본값은 안전 영역 앵커보다 32px 아래입니다."
+    },
+    "05. Kill Feed Layout/Kill Feed Header": {
+      "name": "킬 피드 헤더",
+      "desc": "KILL FEED 헤더 표시 방식: Hidden, EditModeOnly 또는 Always."
+    },
+    "05. Kill Feed Layout/Kill Feed Header Spacing": {
+      "name": "킬 피드 헤더 간격",
+      "desc": "1080p에서 KILL FEED 헤더와 첫 항목 사이의 세로 간격입니다."
+    },
+    "05. Kill Feed Layout/Kill Feed Entry Spacing": {
+      "name": "킬 피드 항목 간격",
+      "desc": "1080p에서 킬 피드 줄 사이의 세로 간격입니다."
+    },
+    "05. Kill Feed Layout/Kill Feed Element Spacing": {
+      "name": "킬 피드 요소 간격",
+      "desc": "1080p에서 킬러, 무기, 희생자, 거리, 헤드샷 요소 사이의 가로 간격입니다."
+    },
+    "05. Kill Feed Layout/Independent Kill Feed Element Layout": {
+      "name": "킬 피드 요소 개별 배치",
+      "desc": "HUD 편집 모드에서 킬 피드의 이름·진영 아이콘·무기·거리·헤드샷 표시를 각각 이동하고 크기를 변경합니다."
+    },
+    "05. Kill Feed Layout/Reset Kill Feed Element Layout": {
+      "name": "킬 피드 요소 레이아웃 초기화",
+      "desc": "모든 킬 피드 개별 요소의 오프셋과 크기를 기본 행 레이아웃으로 되돌립니다."
+    },
+    "06. Kill Feed Safe Area/Use Safe Area": {
+      "name": "안전 영역 사용",
+      "desc": "앵커된 킬 피드가 설정 가능한 화면 가장자리 여백 안에 있도록 합니다."
+    },
+    "06. Kill Feed Safe Area/Safe Margin Top": {
+      "name": "상단 안전 여백",
+      "desc": "1080p 기준 화면 상단 여백입니다."
+    },
+    "06. Kill Feed Safe Area/Safe Margin Bottom": {
+      "name": "하단 안전 여백",
+      "desc": "1080p 기준 화면 하단 여백입니다."
+    },
+    "06. Kill Feed Safe Area/Safe Margin Left": {
+      "name": "왼쪽 안전 여백",
+      "desc": "1080p 기준 화면 왼쪽 여백입니다."
+    },
+    "06. Kill Feed Safe Area/Safe Margin Right": {
+      "name": "오른쪽 안전 여백",
+      "desc": "1080p 기준 화면 오른쪽 여백입니다."
+    },
+    "07. Kill Feed Animation/Animation Preset": {
+      "name": "애니메이션 프리셋",
+      "desc": "Kill Feed 애니메이션 프리셋을 선택합니다. 단순 이동, 타이핑, 특수 텍스트, 임팩트 효과 순으로 정렬되어 있습니다."
+    },
+    "07. Kill Feed Animation/Animation Speed": {
+      "name": "애니메이션 속도",
+      "desc": "Kill Feed 등장 및 텍스트 애니메이션의 전체 속도 배율입니다."
+    },
+    "07. Kill Feed Animation/Character Interval": {
+      "name": "문자 간격",
+      "desc": "Typewriter, Slide + Type, Keyboard Burst, Projectile Type에서 문자가 표시되는 간격(초)입니다."
+    },
+    "07. Kill Feed Animation/Element Stagger": {
+      "name": "요소 지연",
+      "desc": "Killer, Weapon, Victim, Distance, Headshot 애니메이션 구간 사이의 지연입니다."
+    },
+    "07. Kill Feed Animation/Text Slide Distance": {
+      "name": "텍스트 슬라이드 거리",
+      "desc": "Slide + Type 및 Keyboard Burst에서 사용하는 1080p 기준 수평 이동 거리입니다."
+    },
+    "07. Kill Feed Animation/Victim Highlight Style": {
+      "name": "희생자 강조 스타일",
+      "desc": "희생자 강조: None, Pulse, Flash, Flicker 또는 BracketBlink. 등장 애니메이션 프리셋과는 별개입니다."
+    },
+    "07. Kill Feed Animation/Victim Pulse Strength": {
+      "name": "희생자 펄스 강도",
+      "desc": "희생자 이름의 Pulse/Flicker/Flash 효과 강도입니다. 0이면 강도 변화를 비활성화합니다."
+    },
+    "07. Kill Feed Animation/Victim Pulse Count": {
+      "name": "희생자 펄스 횟수",
+      "desc": "Pulse와 BracketBlink에 사용하는 펄스 반복 횟수입니다."
+    },
+    "07. Kill Feed Animation/Victim Highlight Duration": {
+      "name": "희생자 강조 지속 시간",
+      "desc": "항목이 나타난 뒤 희생자 이름 강조가 유지되는 시간입니다."
+    },
+    "07. Kill Feed Animation/Victim Flicker Speed": {
+      "name": "희생자 깜빡임 속도",
+      "desc": "Flicker 강조 스타일에서 초당 깜빡임 변화 횟수입니다."
+    },
+    "08. Kill Feed Elements/Show Killer Name": {
+      "name": "킬러 이름 표시",
+      "desc": "킬러 이름을 표시합니다."
+    },
+    "08. Kill Feed Elements/Show Victim Name": {
+      "name": "희생자 이름 표시",
+      "desc": "희생자 이름을 표시합니다."
+    },
+    "08. Kill Feed Elements/Show Distance": {
+      "name": "거리 표시",
+      "desc": "가능한 경우 킬 거리를 미터 단위로 표시합니다."
+    },
+    "08. Kill Feed Elements/Show Headshot Marker": {
+      "name": "헤드샷 마커 표시",
+      "desc": "헤드샷 킬일 때만 작은 빨간 헤드샷 마커를 표시합니다."
+    },
+    "08. Kill Feed Elements/Show Faction Icon": {
+      "name": "진영 아이콘 표시",
+      "desc": "킬러와 희생자 이름 옆에 USEC / BEAR / SCAV 대분류 식별 표시를 보여 줍니다. 현재 로드된 EFT 에셋에서 표시를 찾으며, BOSS 등급은 대신 별도 별 아이콘을 사용합니다."
+    },
+    "08. Kill Feed Elements/Faction Icon Color": {
+      "name": "진영 아이콘 색상",
+      "desc": "USEC / BEAR / SCAV 표시의 색조입니다."
+    },
+    "08. Kill Feed Elements/Faction Icon Size": {
+      "name": "진영 아이콘 크기",
+      "desc": "1080p 기준 USEC / BEAR / SCAV 표시의 픽셀 크기입니다."
+    },
+    "08. Kill Feed Elements/Faction Icon Opacity": {
+      "name": "진영 아이콘 불투명도",
+      "desc": "전체 HUD 불투명도가 적용되기 전 진영 표시의 불투명도입니다."
+    },
+    "08. Kill Feed Elements/Show Boss Icon": {
+      "name": "보스 아이콘 표시",
+      "desc": "Black Division과 보스 경호원/추종자를 포함한 모든 BOSS 등급 항목에 공통 오각별을 표시합니다."
+    },
+    "08. Kill Feed Elements/Boss Star Color": {
+      "name": "보스 별 색상",
+      "desc": "BOSS 별에 적용되는 색조입니다. 기본값은 절제된 전술용 빨간색입니다."
+    },
+    "08. Kill Feed Elements/Boss Star Opacity": {
+      "name": "보스 별 불투명도",
+      "desc": "전체 HUD 불투명도가 적용되기 전 BOSS 별의 불투명도입니다."
+    },
+    "08. Kill Feed Elements/Boss Star Glow": {
+      "name": "보스 별 글로우",
+      "desc": "BOSS 별 뒤에 은은한 빨간 글로우를 그립니다."
+    },
+    "08. Kill Feed Elements/Boss Star Glow Strength": {
+      "name": "보스 별 글로우 강도",
+      "desc": "글로우 강도입니다. 별이 눈부시지 않으면서 읽기 쉽게 유지되도록 의도적으로 낮게 설정됩니다."
+    },
+    "08. Kill Feed Elements/Own Kill Logo Enabled": {
+      "name": "내 킬 로고 — 활성화",
+      "desc": "자신이 처치한 적에 한해 킬러 진영 아이콘을 사용자 지정 로고로 바꿉니다."
+    },
+    "08. Kill Feed Elements/Own Kill Logo Preset": {
+      "name": "내 킬 로고 — 프리셋",
+      "desc": "Choose a built-in logo or Custom Image."
+    },
+    "08. Kill Feed Elements/Own Kill Logo File": {
+      "name": "내 킬 로고 — 파일",
+      "desc": "KillFeedLogos 폴더에서 이미지를 선택합니다. 새 이미지를 추가한 뒤 재시작하세요."
+    },
+    "08. Kill Feed Elements/Own Kill Logo Opacity": {
+      "name": "내 킬 로고 — 불투명도",
+      "desc": "자신의 킬에 사용할 로고의 불투명도입니다."
+    },
+    "08. Kill Feed Elements/Own Kill Logo Color": {
+      "name": "내 킬 로고 — 색상",
+      "desc": "로고에 적용할 색상입니다. 흰색은 이미지 원래 색상을 보존합니다."
+    },
+    "08.5 Weapon Icons/Weapon Icon Enabled": {
+      "name": "무기 아이콘 — 활성화",
+      "desc": "내장 아이콘이 있으면 킬 피드의 무기 이름 옆에 흰색 무기 실루엣을 표시합니다."
+    },
+    "08.5 Weapon Icons/Show Weapon Name": {
+      "name": "무기 이름 표시",
+      "desc": "현지화된 무기 ShortName을 표시합니다. 해석되지 않는 숫자/locale 키는 AR, SMG, SG, SR, Pistol, LMG 등의 범주로 대체됩니다."
+    },
+    "08.5 Weapon Icons/Placement": {
+      "name": "위치",
+      "desc": "무기 이름 앞이나 뒤에 아이콘을 배치합니다. 이름이 숨겨져도 아이콘은 표시할 수 있습니다."
+    },
+    "08.5 Weapon Icons/Height": {
+      "name": "높이",
+      "desc": "1080p 기준 무기 아이콘 높이(픽셀)입니다. 너비는 종횡비를 따릅니다."
+    },
+    "08.5 Weapon Icons/Name Gap": {
+      "name": "이름 간격",
+      "desc": "무기 아이콘과 무기 이름 사이의 간격입니다."
+    },
+    "08.5 Weapon Icons/Opacity": {
+      "name": "불투명도",
+      "desc": "전체 HUD 불투명도가 적용되기 전의 무기 아이콘 불투명도입니다."
+    },
+    "08.5 Weapon Icons/Color": {
+      "name": "색상",
+      "desc": "무기 실루엣에 적용할 색상입니다. 흰색은 기존 단색 스타일을 유지합니다."
+    },
+    "08.6 Custom Faction Icons/Custom Faction Icons Enabled": {
+      "name": "사용자 지정 진영 아이콘",
+      "desc": "킬 피드에 사용자 지정 PNG를 사용합니다. 없거나 잘못된 이미지는 기존 아이콘으로 표시합니다."
+    },
+    "08.6 Custom Faction Icons/Preserve PNG Colors": {
+      "name": "PNG 원본 색상 유지",
+      "desc": "PNG 원본 색상을 유지합니다. 끄면 진영/보스 색상을 적용합니다. 불투명도와 윤곽선 설정은 계속 적용됩니다."
+    },
+    "08.6 Custom Faction Icons/PMC Icon File": {
+      "name": "PMC 아이콘 파일",
+      "desc": "FactionIcons 목록에서 공통 PMC PNG를 선택합니다. USEC/BEAR 전용 선택이 있으면 우선합니다. 미선택, 파일 없음 또는 로드 실패 시 기존 아이콘을 사용합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
+    },
+    "08.6 Custom Faction Icons/USEC Icon File": {
+      "name": "USEC 아이콘 파일",
+      "desc": "FactionIcons 목록에서 선택적으로 USEC PNG를 고릅니다. 미선택, 파일 없음 또는 로드 실패 시 공통 PMC 이미지, 그다음 기존 USEC 아이콘을 사용합니다. USEC/BEAR에서 「기본값」은 선택된 공용 PMC PNG를 먼저 사용하고, 그다음 기본 진영 아이콘으로 폴백합니다."
+    },
+    "08.6 Custom Faction Icons/BEAR Icon File": {
+      "name": "BEAR 아이콘 파일",
+      "desc": "FactionIcons 목록에서 선택적으로 BEAR PNG를 고릅니다. 미선택, 파일 없음 또는 로드 실패 시 공통 PMC 이미지, 그다음 기존 BEAR 아이콘을 사용합니다. USEC/BEAR에서 「기본값」은 선택된 공용 PMC PNG를 먼저 사용하고, 그다음 기본 진영 아이콘으로 폴백합니다."
+    },
+    "08.6 Custom Faction Icons/Scav Icon File": {
+      "name": "Scav 아이콘 파일",
+      "desc": "FactionIcons 목록에서 Scav 계열 PNG를 선택합니다. 보스가 아닌 Raider/Rogue/Cultist도 포함됩니다. 실패 시 기존 아이콘을 사용합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
+    },
+    "08.6 Custom Faction Icons/Guard Icon File": {
+      "name": "Guard 아이콘 파일",
+      "desc": "FactionIcons 목록에서 보스 경호원/추종자용 PNG를 선택합니다. PMC 팀원은 PMC를 유지하고, 이름이 있는 보스는 Boss 이미지를 사용합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
+    },
+    "08.6 Custom Faction Icons/Boss Icon File": {
+      "name": "Boss 아이콘 파일",
+      "desc": "FactionIcons 목록에서 공통 보스 PNG를 선택합니다. Killa/Tagilla와 Black Division 보스도 포함됩니다. 실패 시 기존 보스 아이콘을 유지합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
+    },
+    "09. HUD Position/Custom Kill Feed X": {
+      "name": "사용자 지정 킬 피드 X",
+      "desc": "Kill Feed Anchor = Custom일 때만 사용하는 킬 피드 가로 위치입니다."
+    },
+    "09. HUD Position/Custom Kill Feed Y": {
+      "name": "사용자 지정 킬 피드 Y",
+      "desc": "Kill Feed Anchor = Custom일 때만 사용하는 킬 피드 세로 위치입니다."
+    },
+    "09. HUD Position/Hit Marker X": {
+      "name": "명중 마커 X",
+      "desc": "명중 마커의 가로 위치입니다. 0 = 왼쪽, 1 = 오른쪽."
+    },
+    "09. HUD Position/Hit Marker Y": {
+      "name": "명중 마커 Y",
+      "desc": "명중 마커의 세로 위치입니다. 0 = 위, 1 = 아래."
+    },
+    "09. HUD Position/Floating Damage X": {
+      "name": "플로팅 데미지 X",
+      "desc": "플로팅 데미지의 가로 원점입니다. 0 = 왼쪽, 1 = 오른쪽."
+    },
+    "09. HUD Position/Floating Damage Y": {
+      "name": "플로팅 데미지 Y",
+      "desc": "플로팅 데미지의 세로 원점입니다. 0 = 위, 1 = 아래."
+    },
+    "09. HUD Position/Compact HUD X": {
+      "name": "간소화 HUD X",
+      "desc": "Compact HUD의 왼쪽 위치입니다. HUD 위치 편집 모드에서 드래그하면 쉽게 배치할 수 있습니다."
+    },
+    "09. HUD Position/Compact HUD Y": {
+      "name": "간소화 HUD Y",
+      "desc": "Compact HUD의 상단 위치입니다."
+    },
+    "09. HUD Position/Raid Compass X": {
+      "name": "레이드 나침반 X",
+      "desc": "레이드 나침반의 중앙 위치입니다."
+    },
+    "09. HUD Position/Raid Compass Y": {
+      "name": "레이드 나침반 Y",
+      "desc": "레이드 나침반의 상단 위치입니다."
+    },
+    "09. HUD Position/Center Snap": {
+      "name": "중앙 스냅",
+      "desc": "드래그한 HUD 요소가 화면 가로/세로 중앙에 가까워지면 스냅합니다."
+    },
+    "09. HUD Position/Center Snap Distance": {
+      "name": "중앙 스냅 거리",
+      "desc": "1080p 기준 중앙 스냅에 사용하는 화면 픽셀 거리입니다."
+    },
+    "09. HUD Position/Safe Area Snap": {
+      "name": "안전 영역 스냅",
+      "desc": "킬 피드를 드래그할 때 설정된 안전 영역 가장자리에 가까워지면 스냅합니다."
+    },
+    "09. HUD Position/Editor Center Crosshair": {
+      "name": "편집 중앙 십자선",
+      "desc": "HUD 위치 편집 모드에서만 화면 중앙에 작은 정렬 십자선을 표시합니다."
+    },
+    "09. HUD Position/Editor Grid": {
+      "name": "편집 그리드",
+      "desc": "HUD 위치 편집 모드에서만 화면 중앙 기준의 은은한 정렬 그리드를 표시합니다."
+    },
+    "09. HUD Position/Editor Grid Spacing": {
+      "name": "편집 그리드 간격",
+      "desc": "HUD 위치 편집 모드에서 1080p 기준 그리드 선 간격을 설정합니다."
+    },
+    "09. HUD Position/Editor Guide Lines": {
+      "name": "편집 가이드 라인",
+      "desc": "HUD 요소를 드래그하는 동안 요소의 가장자리와 중앙을 지나는 정렬 가이드를 표시합니다."
+    },
+    "09. HUD Position/Reset Kill Feed Position": {
+      "name": "킬 피드 위치 초기화",
+      "desc": "킬 피드 위치/앵커만 초기화합니다."
+    },
+    "09. HUD Position/Reset Hit Marker Position": {
+      "name": "명중 마커 위치 초기화",
+      "desc": "명중 마커 위치만 초기화합니다."
+    },
+    "09. HUD Position/Reset Floating Damage Position": {
+      "name": "플로팅 데미지 위치 초기화",
+      "desc": "플로팅 데미지 위치만 초기화합니다."
+    },
+    "09. HUD Position/Reset Compact HUD Position": {
+      "name": "Compact HUD 위치 초기화",
+      "desc": "Compact HUD 위치만 초기화합니다."
+    },
+    "09. HUD Position/Reset Raid Compass Position": {
+      "name": "레이드 나침반 위치 초기화",
+      "desc": "레이드 나침반 위치만 초기화합니다."
+    },
+    "09. HUD Position/Reset All HUD Positions": {
+      "name": "모든 HUD 위치 초기화",
+      "desc": "모든 ImpactCue HUD 위치를 기본값으로 초기화합니다."
+    },
+    "10. Advanced/Maximum Damage Numbers": {
+      "name": "최대 데미지 숫자",
+      "desc": "동시에 활성 상태로 유지할 플로팅 데미지 라벨의 최대 개수입니다. 낮은 값은 화면 혼잡을 줄이고 빠른 연속 명중 시 UI 작업량을 약간 줄입니다."
+    },
+    "10. Advanced/UI Animation FPS Independent": {
+      "name": "UI 애니메이션 FPS 독립",
+      "desc": "ImpactCue 애니메이션에 실제 비스케일 시간을 사용하여 슬로 모션, 일시정지와 유사한 시간 배율 변화 또는 프레임률 변동이 애니메이션 타이밍을 왜곡하지 않게 합니다. 권장: 활성화."
+    },
+    "10. Advanced/Developer Tools": {
+      "name": "개발자 도구",
+      "desc": "개발자 전용 진단을 표시합니다. 일반 게임에서는 비활성화하세요."
+    },
+    "10. Advanced/Debug Logging": {
+      "name": "디버그 로그",
+      "desc": "추가 ImpactCue 진단 로그를 활성화합니다."
+    },
+    "10. Advanced/Dump Runtime Audit": {
+      "name": "런타임 감사 덤프",
+      "desc": "현재 SPT/EFT ExfiltrationController, 필드/속성/메서드 목록과 감지된 Transit 기록을 ImpactCue-Runtime-Audit.txt에 기록합니다."
+    },
+    "11. Hit Sound/Hit Sound Enabled": {
+      "name": "명중 사운드 활성화",
+      "desc": "자신의 탄환 명중 시 확인음을 재생합니다. 육체, 방어구, 머리 명중에 서로 다른 프리셋을 사용할 수 있습니다."
+    },
+    "11. Hit Sound/Master Volume": {
+      "name": "마스터 볼륨",
+      "desc": "모든 명중 사운드 범주에 적용되는 전체 볼륨 배율입니다."
+    },
+    "11. Hit Sound/Body Hit Sound Enabled": {
+      "name": "육체 명중 사운드 활성화",
+      "desc": "EFT가 실제 육체/HP 피해를 기록하고 방어구 피해가 없으며 머리 명중이 아닐 때만 육체 명중음을 재생합니다."
+    },
+    "11. Hit Sound/Body Hit Preset": {
+      "name": "육체 명중 프리셋",
+      "desc": "육체 명중에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG 파일을 선택합니다."
+    },
+    "11. Hit Sound/Body Hit Volume": {
+      "name": "육체 명중 볼륨",
+      "desc": "마스터 볼륨 적용 전 육체 명중 사운드의 볼륨입니다."
+    },
+    "11. Hit Sound/Flesh Hit Pitch Offset": {
+      "name": "육체 명중 피치 오프셋",
+      "desc": "육체 명중 사운드에만 적용되는 피치 보정입니다."
+    },
+    "11. Hit Sound/Armor Hit Sound Enabled": {
+      "name": "방어구 명중 사운드 활성화",
+      "desc": "EFT가 실제 방어구 피해를 기록하면 전용 사운드를 사용합니다. 같은 탄환이 HP 피해도 주면 방어구 사운드가 우선됩니다."
+    },
+    "11. Hit Sound/Armor Hit Preset": {
+      "name": "방어구 명중 프리셋",
+      "desc": "방어구 명중에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG 파일을 선택합니다."
+    },
+    "11. Hit Sound/Armor Hit Volume": {
+      "name": "방어구 명중 볼륨",
+      "desc": "마스터 볼륨 적용 전 방어구 명중 사운드의 볼륨입니다."
+    },
+    "11. Hit Sound/Armor Hit Pitch Offset": {
+      "name": "방어구 명중 피치 오프셋",
+      "desc": "방어구 명중 사운드에만 적용되는 피치 보정입니다."
+    },
+    "11. Hit Sound/Head Hit Sound Enabled": {
+      "name": "머리 명중 사운드 활성화",
+      "desc": "실제 HP 피해가 있고 방어구 피해가 없는 비치명적 머리 명중에 별도 사운드를 사용합니다."
+    },
+    "11. Hit Sound/Head Hit Preset": {
+      "name": "머리 명중 프리셋",
+      "desc": "방어구에 맞지 않은 머리 명중에 사용할 내장 프리셋 또는 Custom WAV / MP3 / OGG 파일을 선택합니다."
+    },
+    "11. Hit Sound/Head Hit Volume": {
+      "name": "머리 명중 볼륨",
+      "desc": "마스터 볼륨 적용 전 머리 명중 사운드의 볼륨입니다."
+    },
+    "11. Hit Sound/Base Pitch": {
+      "name": "기본 피치",
+      "desc": "육체, 방어구, 머리 명중 사운드에 적용되는 전체 재생 피치입니다."
+    },
+    "11. Hit Sound/Random Pitch Variation": {
+      "name": "무작위 피치 변화",
+      "desc": "반복 명중이 지나치게 기계적으로 들리지 않도록 명중마다 작은 무작위 피치 변화를 줍니다."
+    },
+    "11. Hit Sound/Head Hit Pitch Offset": {
+      "name": "머리 명중 피치 오프셋",
+      "desc": "머리 명중 사운드에만 적용되는 피치 보정입니다."
+    },
+    "11. Hit Sound/Stereo Pan": {
+      "name": "스테레오 팬",
+      "desc": "스테레오 위치: -1 = 왼쪽, 0 = 중앙, +1 = 오른쪽."
+    },
+    "11. Hit Sound/Playback Delay": {
+      "name": "재생 지연",
+      "desc": "명중 판정 후 확인음이 재생되기까지의 지연 시간(초)입니다."
+    },
+    "11. Hit Sound/Minimum Interval": {
+      "name": "최소 간격",
+      "desc": "명중 사운드 사이의 최소 시간입니다. 산탄총이나 연사 시 과도한 중첩을 줄입니다."
+    },
+    "11. Hit Sound/Mute While Scoped": {
+      "name": "조준 중 음소거",
+      "desc": "조준/스코프 사용 중에는 명중 확인음을 재생하지 않습니다."
+    },
+    "11. Kill Sound/Kill Sound Enabled": {
+      "name": "킬 사운드 활성화",
+      "desc": "내장 프리셋 또는 사용자 WAV / MP3 / OGG 파일로 킬 확인 사운드를 재생합니다."
+    },
+    "11. Kill Sound/Master Volume": {
+      "name": "마스터 볼륨",
+      "desc": "모든 킬 사운드 범주에 적용되는 전체 볼륨 배율입니다."
+    },
+    "11. Kill Sound/Normal Kill Preset": {
+      "name": "일반 킬 프리셋",
+      "desc": "일반 킬에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
+    },
+    "11. Kill Sound/Normal Kill Volume": {
+      "name": "일반 킬 볼륨",
+      "desc": "Master Volume 적용 전 일반 킬의 볼륨입니다."
+    },
+    "11. Kill Sound/Headshot Kill Sound Enabled": {
+      "name": "헤드샷 킬 사운드 활성화",
+      "desc": "치명타가 헤드샷일 때 전용 헤드샷 프리셋을 사용합니다. 비활성화하면 Normal Kill 프리셋을 대신 사용합니다."
+    },
+    "11. Kill Sound/Headshot Kill Preset": {
+      "name": "헤드샷 킬 프리셋",
+      "desc": "헤드샷 킬에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
+    },
+    "11. Kill Sound/Headshot Kill Volume": {
+      "name": "헤드샷 킬 볼륨",
+      "desc": "Master Volume 적용 전 헤드샷 킬의 볼륨입니다."
+    },
+    "11. Kill Sound/Boss Kill Sound Enabled": {
+      "name": "보스 킬 사운드 활성화",
+      "desc": "BOSS 등급, 보스 경호원/추종자 및 Black Division 킬에 전용 BOSS 프리셋을 사용합니다. BOSS와 Headshot이 동시에 적용되면 BOSS가 우선합니다."
+    },
+    "11. Kill Sound/Boss Kill Preset": {
+      "name": "보스 킬 프리셋",
+      "desc": "BOSS/Black Division 킬에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
+    },
+    "11. Kill Sound/Boss Kill Volume": {
+      "name": "보스 킬 볼륨",
+      "desc": "Master Volume 적용 전 BOSS/Black Division 킬의 볼륨입니다."
+    },
+    "11. Kill Sound/Base Pitch": {
+      "name": "기본 피치",
+      "desc": "세 가지 킬 사운드 범주 모두에 적용되는 전체 재생 피치입니다."
+    },
+    "11. Kill Sound/Random Pitch Variation": {
+      "name": "랜덤 피치 변화",
+      "desc": "반복 킬이 덜 기계적으로 들리도록 킬마다 약간의 랜덤 피치 변화를 적용합니다."
+    },
+    "11. Kill Sound/Headshot Pitch Offset": {
+      "name": "헤드샷 피치 오프셋",
+      "desc": "헤드샷 킬 사운드에만 추가되는 선택적 피치 조정입니다. 선택한 프리셋을 그대로 들으려면 0을 사용하세요."
+    },
+    "11. Kill Sound/Boss Pitch Offset": {
+      "name": "보스 피치 오프셋",
+      "desc": "BOSS 킬 사운드에만 추가되는 선택적 피치 조정입니다. 선택한 프리셋을 그대로 들으려면 0을 사용하세요."
+    },
+    "11. Kill Sound/Stereo Pan": {
+      "name": "스테레오 팬",
+      "desc": "-1 = 왼쪽, 0 = 중앙, +1 = 오른쪽."
+    },
+    "11. Kill Sound/Playback Delay": {
+      "name": "재생 지연",
+      "desc": "킬 확인과 사운드 재생 사이의 지연 시간(초)입니다."
+    },
+    "11. Kill Sound/Minimum Interval": {
+      "name": "최소 간격",
+      "desc": "킬 사운드 사이의 최소 시간입니다. 빠른 멀티킬에서 거친 사운드 중첩을 방지합니다."
+    },
+    "11. Kill Sound/Mute While Scoped": {
+      "name": "조준 중 음소거",
+      "desc": "치명타가 조준/스코프 상태에서 발사된 경우 킬 사운드를 억제합니다."
+    },
+    "11. Kill Sound/Preview Normal Sound": {
+      "name": "일반 사운드 미리듣기",
+      "desc": "현재 Master/Normal 볼륨 및 피치 설정으로 선택한 Normal Kill 프리셋을 즉시 재생합니다. Kill Sound Enabled가 꺼져 있어도 작동합니다."
+    },
+    "11. Kill Sound/Preview Headshot Sound": {
+      "name": "헤드샷 사운드 미리듣기",
+      "desc": "현재 Master/Headshot 볼륨 및 피치 설정으로 선택한 Headshot Kill 프리셋을 즉시 재생합니다. Headshot Kill Sound가 꺼져 있어도 작동합니다."
+    },
+    "11. Kill Sound/Preview Boss Sound": {
+      "name": "보스 사운드 미리듣기",
+      "desc": "현재 Master/BOSS 볼륨 및 피치 설정으로 선택한 BOSS Kill 프리셋을 즉시 재생합니다. Boss Kill Sound가 꺼져 있어도 작동합니다."
+    },
+    "11. Kill Sound/Stop Sound Preview": {
+      "name": "사운드 미리듣기 중지",
+      "desc": "현재 재생 중인 킬 사운드 샘플을 중지합니다."
+    },
+    "12. Kill Effect/Kill Effect Enabled": {
+      "name": "킬 효과 활성화",
+      "desc": "내 킬에 대해 화면 중앙에 짧은 킬 확인 효과를 표시합니다."
+    },
+    "12. Kill Effect/Effect Preset": {
+      "name": "효과 프리셋",
+      "desc": "시각 프리셋: CleanPulse, CrossSnap, RadialBurst, DiamondBurst 또는 StarBurst."
+    },
+    "12. Kill Effect/Duration": {
+      "name": "지속 시간",
+      "desc": "킬 효과 표시 시간(초)입니다."
+    },
+    "12. Kill Effect/Size": {
+      "name": "크기",
+      "desc": "킬 효과 크기 배율입니다."
+    },
+    "12. Kill Effect/Opacity": {
+      "name": "불투명도",
+      "desc": "전체 HUD 불투명도가 적용되기 전 킬 효과의 불투명도입니다."
+    },
+    "12. Kill Effect/Use Preset Color": {
+      "name": "프리셋 색상 사용",
+      "desc": "선택한 효과 프리셋에 맞춘 색상을 사용합니다. Custom Color를 사용하려면 비활성화하세요."
+    },
+    "12. Kill Effect/Custom Color": {
+      "name": "사용자 지정 색상",
+      "desc": "Use Preset Color가 비활성화되어 있을 때 사용하는 사용자 지정 효과 색상입니다."
+    },
+    "12. Kill Effect/Glow Enabled": {
+      "name": "글로우 활성화",
+      "desc": "주요 킬 효과 뒤에 부드러운 글로우를 그립니다."
+    },
+    "12. Kill Effect/Glow Strength": {
+      "name": "글로우 강도",
+      "desc": "글로우 강도입니다. 기본값은 절제되어 있습니다."
+    },
+    "12. Kill Effect/Screen Flash Enabled": {
+      "name": "화면 플래시 활성화",
+      "desc": "킬 시 매우 짧은 전체 화면 색상 플래시를 추가합니다."
+    },
+    "12. Kill Effect/Screen Flash Strength": {
+      "name": "화면 플래시 강도",
+      "desc": "화면 플래시의 최대 불투명도입니다. 편안함을 위해 낮게 유지하세요."
+    },
+    "12. Kill Effect/Headshot Accent": {
+      "name": "헤드샷 강조",
+      "desc": "헤드샷 킬 효과를 약간 더 날카롭고 밝게 만듭니다."
+    },
+    "12. Kill Effect/Boss Accent": {
+      "name": "보스 강조",
+      "desc": "BOSS 등급 및 Black Division 킬에 절제된 빨간 강조와 더 강한 펄스를 사용합니다."
+    },
+    "12. Kill Effect/Show While Scoped": {
+      "name": "조준 중 표시",
+      "desc": "치명타를 조준/스코프 상태에서 발사했을 때 킬 효과를 표시합니다."
+    },
+    "12. Kill Effect/Follow Hit Marker Position": {
+      "name": "명중 마커 위치 따라가기",
+      "desc": "설정된 명중 마커 위치에 효과를 배치합니다. 별도 사용자 지정 위치를 쓰려면 비활성화하세요."
+    },
+    "12. Kill Effect/Custom X": {
+      "name": "사용자 지정 X",
+      "desc": "Follow Hit Marker Position이 비활성화되어 있을 때 사용하는 가로 위치입니다."
+    },
+    "12. Kill Effect/Custom Y": {
+      "name": "사용자 지정 Y",
+      "desc": "Follow Hit Marker Position이 비활성화되어 있을 때 사용하는 세로 위치입니다."
+    },
+    "12. Kill Effect/Preview Kill Effect": {
+      "name": "킬 효과 미리보기",
+      "desc": "설정된 위치에서 선택한 킬 효과를 미리 봅니다."
+    },
+    "13. Compact HUD/Compact HUD Enabled": {
+      "name": "Compact HUD 활성화",
+      "desc": "체력, 에너지, 수분, 무게, 수류탄 수, 현재 무기 탄약을 하나의 컴팩트 HUD에 표시합니다."
+    },
+    "13. Compact HUD/Scale": {
+      "name": "크기",
+      "desc": "Compact HUD 크기 배율입니다."
+    },
+    "13. Compact HUD/Opacity": {
+      "name": "불투명도",
+      "desc": "전체 HUD 불투명도가 적용되기 전 Compact HUD의 불투명도입니다."
+    },
+    "13. Compact HUD/Independent Element Layout": {
+      "name": "요소 개별 배치",
+      "desc": "켜면 HUD 편집 모드에서 Tactical HUD 요소를 각각 이동·확대할 수 있습니다. 끌어서 이동하고 휠로 크기를 바꿉니다."
+    },
+    "13. Compact HUD/Reset Individual Element Layout": {
+      "name": "개별 배치 초기화",
+      "desc": "개별 Tactical HUD 요소의 위치와 크기를 기본값으로 초기화합니다."
+    },
+    "13. Compact HUD/Show Health": {
+      "name": "Health HUD 표시",
+      "desc": "Health HUD 전체의 마스터 표시 설정입니다."
+    },
+    "13. Compact HUD/Show Health Bar": {
+      "name": "Health Bar 표시",
+      "desc": "Health HUD의 체력 바를 표시합니다."
+    },
+    "13. Compact HUD/Show Health Logo": {
+      "name": "체력 로고 표시",
+      "desc": "체력 HUD에 체력 로고/아이콘을 표시합니다."
+    },
+    "13. Compact HUD/Show Health Value": {
+      "name": "체력 수치 표시",
+      "desc": "체력 HUD에 현재 체력 수치를 표시합니다."
+    },
+    "13. Compact HUD/Show Only When Health Is Reduced": {
+      "name": "체력이 감소했을 때만 표시",
+      "desc": "활성화하면 체력이 최대일 때 Health HUD를 숨기고, 회복 중을 포함해 현재 체력이 최대치보다 낮은 동안에만 표시합니다."
+    },
+    "13. Compact HUD/Show Energy": {
+      "name": "에너지 표시",
+      "desc": "에너지 아이콘과 현재 에너지 값을 표시합니다."
+    },
+    "13. Compact HUD/Show Hydration": {
+      "name": "수분 표시",
+      "desc": "수분 아이콘과 현재 수분 값을 표시합니다."
+    },
+    "13. Compact HUD/Show Weight": {
+      "name": "무게 표시",
+      "desc": "더 큰 무게 아이콘과 그 아래 현재 소지 무게를 표시합니다."
+    },
+    "13. Compact HUD/Show Ammo": {
+      "name": "탄약 표시",
+      "desc": "현재 장전 탄 수, 탄창 용량, 탄약 유형을 표시합니다."
+    },
+    "13. Compact HUD/Ammo Counter Mode": {
+      "name": "탄약 카운터 모드",
+      "desc": "탄창 용량(30/30) 또는 소지 탄약(30/100)을 선택합니다. 소지 탄약은 장착된 탄창을 제외한 동일 구경의 여분 탄약과 예비 탄창 속 탄약을 합산합니다. 탄종이 달라도 구경이 같으면 합산합니다."
+    },
+    "13. Compact HUD/Low Ammo Warning": {
+      "name": "탄약 부족 경고",
+      "desc": "탄창 잔탄이 설정한 비율 아래로 내려가면 Tactical HUD의 탄약 수를 빨간색으로 표시합니다."
+    },
+    "13. Compact HUD/Low Ammo Threshold (%)": {
+      "name": "탄약 부족 기준 (%)",
+      "desc": "탄약 수가 빨간색으로 바뀌고 경고음이 재생될 수 있는 탄창 잔탄 비율입니다."
+    },
+    "13. Compact HUD/Low Ammo Warning Sound": {
+      "name": "탄약 부족 경고음",
+      "desc": "잔탄이 기준 아래인 동안 발사할 때마다 짧은 경고음을 재생합니다."
+    },
+    "13. Compact HUD/Low Ammo Warning Volume": {
+      "name": "탄약 부족 경고음 볼륨",
+      "desc": "탄약 부족 경고음의 볼륨입니다."
+    },
+    "13. Compact HUD/Show Fire Mode": {
+      "name": "사격 모드 표시",
+      "desc": "선택한 사격 모드에 맞는 단발/완전자동 탄환 아이콘을 표시합니다."
+    },
+    "13. Compact HUD/Show Grenade": {
+      "name": "수류탄 표시",
+      "desc": "수류탄 타일, 수류탄 개수, 들고 있는 수류탄 종류를 표시합니다."
+    },
+    "13. Compact HUD/Show Hold Breath": {
+      "name": "호흡 바 표시",
+      "desc": "로컬 플레이어가 숨을 참고 있는 동안 남은 호흡을 바로 표시합니다."
+    },
+    "13. Compact HUD/Single Icon Mode": {
+      "name": "단일 아이콘 모드",
+      "desc": "폐 게이지 아이콘만 표시합니다. 끄면 폐 게이지와 Breath Bar 및 숫자 값을 함께 표시합니다."
+    },
+    "13. Compact HUD/Show Only When Holding Breath": {
+      "name": "숨 참는 동안만 표시",
+      "desc": "활성화하면 로컬 플레이어가 숨을 참고 있는 동안에만 Breath Bar를 표시합니다. 비활성화하면 Tactical HUD가 표시되는 동안 Breath Bar를 계속 표시합니다."
+    },
+    "13. Compact HUD/Show Weapon Name": {
+      "name": "무기 이름 표시",
+      "desc": "체력 선 위에 현재 장착된 무기 이름을 표시합니다."
+    },
+    "13. Compact HUD/Show Maximum Health": {
+      "name": "최대 체력 표시",
+      "desc": "현재 체력만 표시하는 대신 전체 체력을 현재/최대로 표시합니다."
+    },
+    "13. Compact HUD/Show Magazine Capacity": {
+      "name": "탄창 용량 표시",
+      "desc": "무기 장착 시 현재 장전 탄 수 옆에 탄창 최대 용량을 표시합니다."
+    },
+    "13. Compact HUD/Show Ammo Type": {
+      "name": "탄약 종류 표시",
+      "desc": "무기가 장착되어 있을 때 현재 탄약의 짧은 이름 또는 구경을 표시합니다."
+    },
+    "13. Compact HUD/Include Chambered Round": {
+      "name": "약실 탄 포함",
+      "desc": "약실에 있는 탄을 현재 탄약 표시 수량에 더합니다."
+    },
+    "13. Compact HUD/Ammo Leading Zeros": {
+      "name": "탄약 앞자리 0",
+      "desc": "탄약 수를 앞자리 0으로 표시합니다. 예: 030 / 030."
+    },
+    "13. Compact HUD/Low Health Threshold": {
+      "name": "낮은 체력 임계값",
+      "desc": "체력 값이 경고 색상을 사용하는 기준 이하의 총 HP 비율입니다."
+    },
+    "13. Compact HUD/Low Hydration Threshold": {
+      "name": "낮은 수분 임계값",
+      "desc": "수분 표시가 경고 색상을 사용하는 기준 이하의 수분 값입니다."
+    },
+    "13. Compact HUD/Low Energy Threshold": {
+      "name": "낮은 에너지 임계값",
+      "desc": "에너지 표시가 경고 색상을 사용하는 기준 이하의 에너지 값입니다."
+    },
+    "13. Compact HUD/Health Line Color": {
+      "name": "체력 선 색상",
+      "desc": "일반 체력 선과 체력 값 색상입니다."
+    },
+    "13. Compact HUD/Health Icon Color": {
+      "name": "체력 아이콘 색상",
+      "desc": "체력 아이콘 색상입니다. 기본값은 빨간색입니다."
+    },
+    "13. Compact HUD/Warning Color": {
+      "name": "체력 부족 색상",
+      "desc": "체력 부족 경고 색상입니다. 수분과 에너지는 별도로 설정합니다."
+    },
+    "13. Compact HUD/Hydration Color": {
+      "name": "수분 색상",
+      "desc": "수분 아이콘/값 색상입니다. 기본값은 연한 파란색입니다."
+    },
+    "13. Compact HUD/Energy Color": {
+      "name": "에너지 색상",
+      "desc": "에너지 아이콘/값 색상입니다. 기본값은 노랑-주황입니다."
+    },
+    "13. Compact HUD/Low Ammo Warning Color": {
+      "name": "잔탄 부족 경고 색상",
+      "desc": "잔탄 부족 경고 색상을(를) 조정합니다."
+    },
+    "13. Compact HUD/Low Hydration Color": {
+      "name": "수분 부족 색상",
+      "desc": "체력 경고와 별도로 수분 또는 에너지 경고 색상을 설정합니다."
+    },
+    "13. Compact HUD/Low Energy Color": {
+      "name": "에너지 부족 색상",
+      "desc": "체력 경고와 별도로 수분 또는 에너지 경고 색상을 설정합니다."
+    },
+    "13. Compact HUD/Show Breath Label": {
+      "name": "호흡 라벨 표시",
+      "desc": "단일 아이콘 모드가 우선하며 폐 아이콘은 유지됩니다."
+    },
+    "13. Compact HUD/Show Breath Bar": {
+      "name": "호흡 막대 표시",
+      "desc": "단일 아이콘 모드가 우선하며 폐 아이콘은 유지됩니다."
+    },
+    "13. Compact HUD/Show Breath Number": {
+      "name": "호흡 수치 표시",
+      "desc": "단일 아이콘 모드가 우선하며 폐 아이콘은 유지됩니다."
+    },
+    "13. Compact HUD/Breath Color": {
+      "name": "호흡 색상",
+      "desc": "호흡 색상을(를) 조정합니다."
+    },
+    "13. Compact HUD/Low Breath Warning": {
+      "name": "호흡 부족 경고",
+      "desc": "설정 비율 이하에서 경고 색상을 사용합니다. 경고음은 없습니다."
+    },
+    "13. Compact HUD/Low Breath Threshold (%)": {
+      "name": "호흡 부족 기준 (%)",
+      "desc": "최대치 대비 기준 비율입니다. 이 값 이하에서 경고합니다."
+    },
+    "13. Compact HUD/Low Breath Color": {
+      "name": "호흡 부족 색상",
+      "desc": "호흡 부족 색상을(를) 조정합니다."
+    },
+    "13.10 Armor Zones/Healthy Armor Color": {
+      "name": "정상 방어구 색상",
+      "desc": "내구도 0%, 50%, 100% 색상 사이를 부드럽게 보간합니다."
+    },
+    "13.10 Armor Zones/Worn Armor Color": {
+      "name": "마모된 방어구 색상",
+      "desc": "내구도 0%, 50%, 100% 색상 사이를 부드럽게 보간합니다."
+    },
+    "13.10 Armor Zones/Damaged Armor Color": {
+      "name": "손상된 방어구 색상",
+      "desc": "내구도 0%, 50%, 100% 색상 사이를 부드럽게 보간합니다."
+    },
+    "13.10 Armor Zones/Armor Zones Enabled": {
+      "name": "방어구 상태 — 활성화",
+      "desc": "장착한 방어구의 부위별 내구도를 표시합니다."
+    },
+    "13.10 Armor Zones/Show Front": {
+      "name": "전면 — 표시",
+      "desc": "방어구 전면 실루엣을 표시합니다."
+    },
+    "13.10 Armor Zones/Show Back": {
+      "name": "후면 — 표시",
+      "desc": "방어구 후면 실루엣을 표시합니다."
+    },
+    "13.10 Armor Zones/Show Front Back Labels": {
+      "name": "전·후면 레이블 — 표시",
+      "desc": "실루엣 아래에 FRONT 및 BACK 레이블을 표시합니다."
+    },
+    "13.10 Armor Zones/Show Status Text": {
+      "name": "상태 텍스트 — 표시",
+      "desc": "대기·미리보기·일부 데이터 등 방어구 상태 문구를 표시합니다."
+    },
+    "13.10 Armor Zones/Independent Front Back Layout": {
+      "name": "전·후면 개별 배치",
+      "desc": "전면과 후면 실루엣을 각각 이동하고 크기를 변경합니다."
+    },
+    "13.10 Armor Zones/Position X": {
+      "name": "X 위치",
+      "desc": "통합 방어구 배치의 가로 위치입니다."
+    },
+    "13.10 Armor Zones/Position Y": {
+      "name": "Y 위치",
+      "desc": "통합 방어구 배치의 세로 위치입니다."
+    },
+    "13.10 Armor Zones/Scale": {
+      "name": "크기",
+      "desc": "통합 배치에서 방어구 실루엣의 크기 배율입니다."
+    },
+    "13.10 Armor Zones/Opacity": {
+      "name": "불투명도",
+      "desc": "통합 배치에서 방어구 실루엣의 불투명도입니다."
+    },
+    "13.10 Armor Zones/Front Position X": {
+      "name": "전면 — X 위치",
+      "desc": "개별 배치 시 전면 실루엣의 가로 위치입니다."
+    },
+    "13.10 Armor Zones/Front Position Y": {
+      "name": "전면 — Y 위치",
+      "desc": "개별 배치 시 전면 실루엣의 세로 위치입니다."
+    },
+    "13.10 Armor Zones/Front Scale": {
+      "name": "전면 — 크기",
+      "desc": "개별 배치 시 전면 실루엣의 크기 배율입니다."
+    },
+    "13.10 Armor Zones/Front Opacity": {
+      "name": "전면 — 불투명도",
+      "desc": "개별 배치 시 전면 실루엣의 불투명도입니다."
+    },
+    "13.10 Armor Zones/Back Position X": {
+      "name": "후면 — X 위치",
+      "desc": "개별 배치 시 후면 실루엣의 가로 위치입니다."
+    },
+    "13.10 Armor Zones/Back Position Y": {
+      "name": "후면 — Y 위치",
+      "desc": "개별 배치 시 후면 실루엣의 세로 위치입니다."
+    },
+    "13.10 Armor Zones/Back Scale": {
+      "name": "후면 — 크기",
+      "desc": "개별 배치 시 후면 실루엣의 크기 배율입니다."
+    },
+    "13.10 Armor Zones/Back Opacity": {
+      "name": "후면 — 불투명도",
+      "desc": "개별 배치 시 후면 실루엣의 불투명도입니다."
+    },
+    "13.5 Current Weapon/Current Weapon Enabled": {
+      "name": "현재 무기 표시",
+      "desc": "현재 들고 있는 무기를 Compact HUD 프리셋과 독립된 전술 HUD 요소로 표시합니다."
+    },
+    "13.5 Current Weapon/Show Weapon Name": {
+      "name": "무기 이름 표시",
+      "desc": "현재 무기의 짧은 이름을 실루엣 아래에 표시합니다."
+    },
+    "13.5 Current Weapon/Screen X": {
+      "name": "화면 X 위치",
+      "desc": "요소의 가로 위치입니다. HUD 편집 모드에서 드래그로 이동할 수도 있습니다."
+    },
+    "13.5 Current Weapon/Screen Y": {
+      "name": "화면 Y 위치",
+      "desc": "요소의 세로 위치입니다. HUD 편집 모드에서 드래그로 이동할 수도 있습니다."
+    },
+    "13.5 Current Weapon/Scale": {
+      "name": "크기",
+      "desc": "현재 무기 아이콘 크기 배율입니다. HUD 편집 모드에서 요소 위의 마우스 휠로 크기를 조절할 수 있습니다."
+    },
+    "13.5 Current Weapon/Opacity": {
+      "name": "불투명도",
+      "desc": "전역 HUD 불투명도가 적용되기 전의 무기 아이콘 불투명도입니다."
+    },
+    "13.5 Current Weapon/Color": {
+      "name": "색상",
+      "desc": "무기 실루엣에 적용할 색상입니다. 흰색은 기본 단색 스타일을 유지합니다."
+    },
+    "13.5 Current Weapon/Show Weapon Icon": {
+      "name": "무기 아이콘 표시",
+      "desc": "끄고 무기 이름 표시를 켜면 이름만 표시할 수 있습니다."
+    },
+    "13.6 Combat Strip/Weapon Icon Visible": {
+      "name": "무기 아이콘 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Weapon Icon X": {
+      "name": "무기 아이콘 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Weapon Icon Y": {
+      "name": "무기 아이콘 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Weapon Icon Scale": {
+      "name": "무기 아이콘 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Weapon Icon Opacity": {
+      "name": "무기 아이콘 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Weapon Name Visible": {
+      "name": "무기 이름 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Weapon Name X": {
+      "name": "무기 이름 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Weapon Name Y": {
+      "name": "무기 이름 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Weapon Name Scale": {
+      "name": "무기 이름 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Weapon Name Opacity": {
+      "name": "무기 이름 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Ammo Count Visible": {
+      "name": "탄약 수 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Ammo Count X": {
+      "name": "탄약 수 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Ammo Count Y": {
+      "name": "탄약 수 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Ammo Count Scale": {
+      "name": "탄약 수 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Ammo Count Opacity": {
+      "name": "탄약 수 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Reserve Ammo Visible": {
+      "name": "예비 탄약 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Reserve Ammo X": {
+      "name": "예비 탄약 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Reserve Ammo Y": {
+      "name": "예비 탄약 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Reserve Ammo Scale": {
+      "name": "예비 탄약 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Reserve Ammo Opacity": {
+      "name": "예비 탄약 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Ammo Type Visible": {
+      "name": "탄종 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Ammo Type X": {
+      "name": "탄종 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Ammo Type Y": {
+      "name": "탄종 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Ammo Type Scale": {
+      "name": "탄종 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Ammo Type Opacity": {
+      "name": "탄종 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Fire Mode Visible": {
+      "name": "사격 모드 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Fire Mode X": {
+      "name": "사격 모드 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Fire Mode Y": {
+      "name": "사격 모드 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Fire Mode Scale": {
+      "name": "사격 모드 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Fire Mode Opacity": {
+      "name": "사격 모드 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Icon Visible": {
+      "name": "수류탄 아이콘 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Grenade Icon X": {
+      "name": "수류탄 아이콘 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Icon Y": {
+      "name": "수류탄 아이콘 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Icon Scale": {
+      "name": "수류탄 아이콘 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Icon Opacity": {
+      "name": "수류탄 아이콘 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Count Visible": {
+      "name": "수류탄 수 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Grenade Count X": {
+      "name": "수류탄 수 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Count Y": {
+      "name": "수류탄 수 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Count Scale": {
+      "name": "수류탄 수 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Count Opacity": {
+      "name": "수류탄 수 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Name Visible": {
+      "name": "수류탄 이름 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Grenade Name X": {
+      "name": "수류탄 이름 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Name Y": {
+      "name": "수류탄 이름 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Name Scale": {
+      "name": "수류탄 이름 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Grenade Name Opacity": {
+      "name": "수류탄 이름 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Accent Line Visible": {
+      "name": "강조선 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Accent Line X": {
+      "name": "강조선 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Accent Line Y": {
+      "name": "강조선 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Accent Line Scale": {
+      "name": "강조선 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Accent Line Opacity": {
+      "name": "강조선 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Fade Background Visible": {
+      "name": "페이드 배경 — 표시",
+      "desc": "이 Combat Strip 요소를 표시합니다."
+    },
+    "13.6 Combat Strip/Fade Background X": {
+      "name": "페이드 배경 — X 위치",
+      "desc": "기준 배치에서 가로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Fade Background Y": {
+      "name": "페이드 배경 — Y 위치",
+      "desc": "기준 배치에서 세로 위치를 조정합니다."
+    },
+    "13.6 Combat Strip/Fade Background Scale": {
+      "name": "페이드 배경 — 크기",
+      "desc": "이 요소의 크기를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Fade Background Opacity": {
+      "name": "페이드 배경 — 불투명도",
+      "desc": "이 요소의 불투명도를 개별 조정합니다."
+    },
+    "13.6 Combat Strip/Accent Color": {
+      "name": "강조 색상",
+      "desc": "서서히 사라지는 선과 배경의 색상입니다."
+    },
+    "13.7 Stamina HUD/Stamina HUD Enabled": {
+      "name": "스태미나 HUD — 활성화",
+      "desc": "독립형 스태미나 HUD를 표시합니다. 기존 배치를 유지하도록 기본값은 OFF입니다."
+    },
+    "13.7 Stamina HUD/Show Only When Stamina Is Used": {
+      "name": "스태미나 사용 시에만 표시",
+      "desc": "활성화하면 스태미나가 가득 찼을 때 HUD를 숨기고, 회복 중을 포함해 최대치보다 낮은 동안 표시합니다."
+    },
+    "13.7 Stamina HUD/Show Stamina Label": {
+      "name": "스태미나 이름 표시",
+      "desc": "바 위에 STAMINA 이름을 표시합니다."
+    },
+    "13.7 Stamina HUD/Show Stamina Bar": {
+      "name": "스태미나 바 표시",
+      "desc": "Show the stamina bar."
+    },
+    "13.7 Stamina HUD/Show Stamina Number": {
+      "name": "스태미나 수치 표시",
+      "desc": "바 옆에 현재 스태미나 수치를 표시합니다."
+    },
+    "13.7 Stamina HUD/Screen X": {
+      "name": "X 위치",
+      "desc": "스태미나 HUD의 가로 위치입니다. HUD 편집 모드에서 끌어서 옮길 수도 있습니다."
+    },
+    "13.7 Stamina HUD/Screen Y": {
+      "name": "Y 위치",
+      "desc": "스태미나 HUD의 세로 위치입니다. HUD 편집 모드에서 끌어서 옮길 수도 있습니다."
+    },
+    "13.7 Stamina HUD/Scale": {
+      "name": "크기",
+      "desc": "스태미나 HUD의 크기 배율입니다. HUD 편집 모드에서 휠로 크기를 변경합니다."
+    },
+    "13.7 Stamina HUD/Opacity": {
+      "name": "불투명도",
+      "desc": "전체 HUD 불투명도가 적용되기 전의 스태미나 HUD 불투명도입니다."
+    },
+    "13.7 Stamina HUD/Color": {
+      "name": "색상",
+      "desc": "스태미나 바와 수치의 색상입니다."
+    },
+    "13.7 Stamina HUD/Show Stamina Percentage": {
+      "name": "스태미나를 백분율로 표시",
+      "desc": "최대 스태미나 대비 비율을 표시합니다."
+    },
+    "13.7 Stamina HUD/Low Stamina Warning": {
+      "name": "스태미나 부족 경고",
+      "desc": "설정 비율 이하에서 경고 색상을 사용합니다. 경고음은 없습니다."
+    },
+    "13.7 Stamina HUD/Low Stamina Threshold (%)": {
+      "name": "스태미나 부족 기준 (%)",
+      "desc": "최대치 대비 기준 비율입니다. 이 값 이하에서 경고합니다."
+    },
+    "13.7 Stamina HUD/Low Stamina Color": {
+      "name": "스태미나 부족 색상",
+      "desc": "스태미나 부족 색상을(를) 조정합니다."
+    },
+    "13.8 Vanilla HUD/Hide Vanilla Fire Mode Text": {
+      "name": "숨기기 — 기본 사격 모드 텍스트",
+      "desc": "Tarkov 기본 사격 모드 팝업이 ImpactCue HUD와 겹치지 않도록 숨깁니다."
+    },
+    "13.8 Vanilla HUD/Hide Vanilla Ammo Panel": {
+      "name": "숨기기 — 기본 탄약 패널",
+      "desc": "ImpactCue의 탄약 및 사격 모드 HUD를 사용할 때 Tarkov 기본 탄약·상태 패널을 숨깁니다."
+    },
+    "13.9 Magazine HUD/Magazine HUD Enabled": {
+      "name": "탄창 HUD 사용",
+      "desc": "현재 무기와 호환되는 예비 탄창을 표시합니다."
+    },
+    "13.9 Magazine HUD/Show Frame": {
+      "name": "테두리 표시",
+      "desc": "Magazine HUD의 테두리를 표시합니다. 깔끔한 화면을 위해 기본값은 OFF입니다."
+    },
+    "13.9 Magazine HUD/Show Background": {
+      "name": "배경 표시",
+      "desc": "Magazine HUD 뒤에 어두운 배경 패널을 표시합니다."
+    },
+    "13.9 Magazine HUD/Background Opacity": {
+      "name": "배경 불투명도",
+      "desc": "탄창 아이콘이나 텍스트는 그대로 두고 어두운 배경의 불투명도만 조정합니다."
+    },
+    "13.9 Magazine HUD/Show Title": {
+      "name": "제목 표시",
+      "desc": "현재 HUD에 표시되는 예비 탄창 수를 MAGS로 보여 줍니다. 장착된 탄창은 포함하지 않습니다."
+    },
+    "13.9 Magazine HUD/Show Numbers": {
+      "name": "수치 표시",
+      "desc": "각 탄창 아이콘 아래에 탄약 수를 표시합니다."
+    },
+    "13.9 Magazine HUD/Show Equipped Magazine": {
+      "name": "장착된 탄창 표시",
+      "desc": "장착 탄창을 위치와 크기를 따로 조정할 수 있는 HUD 요소로 표시합니다."
+    },
+    "13.9 Magazine HUD/Show Loose Ammo Count": {
+      "name": "낱발 탄약 수 표시",
+      "desc": "호환되는 낱발 탄약을 설명 문구 없이 숫자로만 표시합니다. 탄창과 약실에 들어 있는 탄약은 제외합니다."
+    },
+    "13.9 Magazine HUD/Equipped Magazine Position X": {
+      "name": "장착 탄창 위치 X",
+      "desc": "장착 탄창의 가로 위치입니다. HUD CUSTOMIZE에서 개별적으로 이동할 수 있습니다."
+    },
+    "13.9 Magazine HUD/Equipped Magazine Position Y": {
+      "name": "장착 탄창 위치 Y",
+      "desc": "장착 탄창의 세로 위치입니다. HUD CUSTOMIZE에서 개별적으로 이동할 수 있습니다."
+    },
+    "13.9 Magazine HUD/Equipped Magazine Scale": {
+      "name": "장착 탄창 크기",
+      "desc": "장착 탄창의 크기입니다. HUD CUSTOMIZE에서 마우스 휠로 조절합니다."
+    },
+    "13.9 Magazine HUD/Loose Ammo Position X": {
+      "name": "낱발 탄약 위치 X",
+      "desc": "낱발 탄약 수의 가로 위치입니다. HUD CUSTOMIZE에서 개별적으로 이동할 수 있습니다."
+    },
+    "13.9 Magazine HUD/Loose Ammo Position Y": {
+      "name": "낱발 탄약 위치 Y",
+      "desc": "낱발 탄약 수의 세로 위치입니다. HUD CUSTOMIZE에서 개별적으로 이동할 수 있습니다."
+    },
+    "13.9 Magazine HUD/Loose Ammo Scale": {
+      "name": "낱발 탄약 크기",
+      "desc": "낱발 탄약 수의 크기입니다. HUD CUSTOMIZE에서 마우스 휠로 조절합니다."
+    },
+    "13.9 Magazine HUD/Screen X": {
+      "name": "화면 X",
+      "desc": "탄창 HUD의 가로 위치입니다. HUD 편집 모드에서도 드래그하여 이동할 수 있습니다."
+    },
+    "13.9 Magazine HUD/Screen Y": {
+      "name": "화면 Y",
+      "desc": "탄창 HUD의 세로 위치입니다. HUD 편집 모드에서도 드래그하여 이동할 수 있습니다."
+    },
+    "13.9 Magazine HUD/Scale": {
+      "name": "크기",
+      "desc": "탄창 HUD의 크기 배율입니다. HUD 편집 모드에서 요소 위에 마우스를 두고 휠을 사용해 크기를 조절할 수 있습니다."
+    },
+    "13.9 Magazine HUD/Opacity": {
+      "name": "불투명도",
+      "desc": "전역 HUD 불투명도가 적용되기 전의 탄창 HUD 불투명도입니다."
+    },
+    "13.9 Magazine HUD/Reset Magazine HUD Layout": {
+      "name": "탄창 HUD 레이아웃 초기화",
+      "desc": "Magazine HUD의 위치·크기·개별 텍스트 오프셋을 기본값으로 초기화합니다."
+    },
+    "13.9 Magazine HUD/Maximum Visible Magazines": {
+      "name": "최대 탄창 표시 수",
+      "desc": "1~12개 아이콘을 표시합니다. 제목은 대상 탄창 전체 수입니다."
+    },
+    "13.9 Magazine HUD/Magazine Columns": {
+      "name": "탄창 열 수",
+      "desc": "한 줄의 아이콘 수입니다(1~6)."
+    },
+    "13.9 Magazine HUD/Hide Empty Magazines": {
+      "name": "빈 탄창 숨기기",
+      "desc": "빈 탄창을 목록과 개수에서 제외하고 인벤토리 순서는 유지합니다."
+    },
+    "13.9 Magazine HUD/Magazine Color": {
+      "name": "탄창 색상",
+      "desc": "탄창 색상을(를) 조정합니다."
+    },
+    "13.9 Magazine HUD/Low Magazine Warning": {
+      "name": "탄창 잔탄 부족 경고",
+      "desc": "설정 비율 미만에서 경고 색상을 사용합니다. 경고음은 없습니다."
+    },
+    "13.9 Magazine HUD/Low Magazine Threshold (%)": {
+      "name": "탄창 잔탄 부족 기준 (%)",
+      "desc": "탄창 잔탄 비율이 이 값 미만이면 경고 색상을 사용합니다."
+    },
+    "13.9 Magazine HUD/Low Magazine Color": {
+      "name": "탄창 잔탄 부족 색상",
+      "desc": "탄창 잔탄 부족 색상을(를) 조정합니다."
+    },
+    "14. Crosshair/Crosshair Enabled": {
+      "name": "조준점 활성화",
+      "desc": "화면 중앙에 ImpactCue 조준점을 표시합니다."
+    },
+    "14. Crosshair/Preset": {
+      "name": "프리셋",
+      "desc": "내장 프리셋, 수동 설정 또는 Crosshairs/ 폴더에 추가한 이미지를 선택합니다. 현재 썸네일을 누르면 갤러리가 열립니다."
+    },
+    "14. Crosshair/Color": {
+      "name": "색상",
+      "desc": "조준점에 적용할 색상입니다."
+    },
+    "14. Crosshair/Opacity": {
+      "name": "불투명도",
+      "desc": "전체 HUD 불투명도가 적용되기 전의 조준점 불투명도입니다."
+    },
+    "14. Crosshair/Scale": {
+      "name": "크로스헤어 크기",
+      "desc": "크로스헤어 전체 크기를 조절합니다. 0.20 = 20%, 1.00 = 100%, 4.00 = 400%. 내장 프리셋, 수동 모양, 사용자 이미지에 모두 적용됩니다."
+    },
+    "14. Crosshair/Rotation": {
+      "name": "회전",
+      "desc": "조준점을 중심으로 지정한 각도만큼 회전합니다."
+    },
+    "14. Crosshair/Outline": {
+      "name": "윤곽선",
+      "desc": "조준점 뒤에 검은색 윤곽선을 그려 시인성을 높입니다."
+    },
+    "14. Crosshair/Outline Opacity": {
+      "name": "윤곽선 불투명도",
+      "desc": "검은색 조준점 윤곽선의 불투명도입니다."
+    },
+    "14. Crosshair/Custom Thickness": {
+      "name": "사용자 두께",
+      "desc": "수동 모드에서만 사용하는 선 두께입니다."
+    },
+    "14. Crosshair/Custom Gap": {
+      "name": "사용자 간격",
+      "desc": "수동 모드에서만 사용하는 중앙 간격입니다."
+    },
+    "14. Crosshair/Custom Center Dot": {
+      "name": "사용자 중앙 점",
+      "desc": "수동 모드일 때 중앙 점을 표시합니다."
+    },
+    "14. Crosshair/Screen X Offset": {
+      "name": "화면 X 오프셋",
+      "desc": "1080p 기준 화면 중앙에서의 가로 픽셀 오프셋입니다."
+    },
+    "14. Crosshair/Screen Y Offset": {
+      "name": "화면 Y 오프셋",
+      "desc": "1080p 기준 화면 중앙에서의 세로 픽셀 오프셋입니다."
+    },
+    "14. Crosshair/Show While ADS": {
+      "name": "ADS 중 표시",
+      "desc": "조준경 사용으로 판정되지 않는 ADS 상태에서도 조준점을 표시합니다."
+    },
+    "14. Crosshair/Show While Scoped": {
+      "name": "조준경 사용 중 표시",
+      "desc": "조준경 사용으로 판정되는 동안에도 조준점을 표시합니다."
+    },
+    "14. Crosshair/Enemy Color Change": {
+      "name": "적 감지 시 색상 변경",
+      "desc": "살아 있는 적 플레이어가 조준점 바로 아래에 보일 때 조준점 색상을 변경합니다."
+    },
+    "14. Crosshair/Enemy Hover Color": {
+      "name": "적 감지 색상",
+      "desc": "적이 조준점 바로 아래에 있을 때 사용할 색상입니다."
+    },
+    "14. Crosshair/Preview Crosshair": {
+      "name": "조준점 미리보기",
+      "desc": "조준점 기능이 꺼져 있어도 선택한 조준점을 잠시 미리 봅니다."
+    },
+    "14. Crosshair/Save Custom Preset": {
+      "name": "수동 프리셋 저장",
+      "desc": "현재 수동 조준선 모양을 저장하여 나중에 복원합니다."
+    },
+    "14. Crosshair/Load Custom Preset": {
+      "name": "저장된 수동 설정 불러오기",
+      "desc": "저장된 수동 조준선 모양을 복원하고 수동 모드를 선택합니다."
+    },
+    "14. Crosshair/Reset Crosshair": {
+      "name": "조준점 초기화",
+      "desc": "모든 조준점 설정을 기본값으로 초기화합니다."
+    },
+    "15. Raid Compass/Raid Compass Enabled": {
+      "name": "레이드 나침반 활성화",
+      "desc": "현재 레이드에서 읽은 마커와 함께 화면 상단 중앙에 방향 눈금을 표시합니다."
+    },
+    "15. Raid Compass/Key Reveal Enabled": {
+      "name": "키로 표시",
+      "desc": "활성화하면 설정한 표시 키를 누를 때까지 레이드 나침반을 숨깁니다. 키가 지정되지 않은 경우에는 나침반이 계속 표시됩니다."
+    },
+    "15. Raid Compass/Reveal Key": {
+      "name": "표시 키",
+      "desc": "키 표시 기능이 활성화된 동안 레이드 나침반을 표시하는 키입니다."
+    },
+    "15. Raid Compass/Hold to Show": {
+      "name": "누르는 동안만 표시",
+      "desc": "OFF: 표시 키를 누르면 설정된 표시 시간 동안 나침반이 보입니다. ON: 표시 키를 누르고 있는 동안에만 나침반이 보입니다."
+    },
+    "15. Raid Compass/Reveal Duration": {
+      "name": "표시 시간",
+      "desc": "“누르는 동안만 표시”가 OFF일 때 표시 키를 누른 후 나침반이 유지되는 시간(초)입니다."
+    },
+    "15. Raid Compass/Style": {
+      "name": "스타일",
+      "desc": "레이드 나침반의 시각 디자인을 선택합니다. Classic은 직선 방향 테이프, Arc는 곡선형 전술 HUD, FocusRail은 레일을 최소화하고 조준 중인 마커에만 상세 정보를 펼칩니다."
+    },
+    "15. Raid Compass/Auto Flip Vertical Layout": {
+      "name": "수직 레이아웃 자동 뒤집기",
+      "desc": "HUD가 화면 하단에 위치하면 마커 정보를 나침반 위로 자동 이동합니다. 편집 모드에서 드래그하면 즉시 갱신됩니다."
+    },
+    "15. Raid Compass/Manual Info Side": {
+      "name": "정보 위치 수동 선택",
+      "desc": "자동 수직 뒤집기가 비활성화되어 있을 때 Below 또는 Above를 선택합니다."
+    },
+    "15. Raid Compass/Focus Frame Style": {
+      "name": "포커스 프레임 스타일",
+      "desc": "Classic, Arc, FocusRail에서 사용하는 포커스 마커 프레임: None, Bracket 또는 Diamond."
+    },
+    "15. Raid Compass/Scale": {
+      "name": "크기",
+      "desc": "레이드 나침반 크기 배율입니다."
+    },
+    "15. Raid Compass/Opacity": {
+      "name": "불투명도",
+      "desc": "전체 HUD 불투명도가 적용되기 전 레이드 나침반 불투명도입니다."
+    },
+    "15. Raid Compass/Width": {
+      "name": "너비",
+      "desc": "1080p 기준 나침반 너비(픽셀)입니다."
+    },
+    "15. Raid Compass/Heading Span": {
+      "name": "방향 범위",
+      "desc": "나침반이 표시하는 총 방향 범위(도)입니다."
+    },
+    "15. Raid Compass/Show Extracts": {
+      "name": "탈출구 표시",
+      "desc": "현재 레이드에서 사용 가능한 탈출구를 읽어 나침반에 표시합니다."
+    },
+    "15. Raid Compass/Show Transits": {
+      "name": "Transit 표시",
+      "desc": "현재 레이드에서 활성 Transit 지점을 읽어 나침반에 표시합니다."
+    },
+    "15. Raid Compass/Show Quest Objectives": {
+      "name": "퀘스트 목표 표시",
+      "desc": "현재 레이드에서 찾은 지원되는 활성 퀘스트 visit/place/find 목표의 월드 위치를 표시합니다."
+    },
+    "15. Raid Compass/Show Airdrops": {
+      "name": "에어드롭 표시",
+      "desc": "착륙한 에어드롭 보급 상자를 빨간색 동적 나침반 마커로 표시합니다."
+    },
+    "15. Raid Compass/Show BTR": {
+      "name": "BTR 표시",
+      "desc": "활성 BTR을 표시합니다. 초록색은 비적대, 런타임 상태를 확인할 수 있으면 빨간색은 적대를 뜻합니다."
+    },
+    "15. Raid Compass/Show Armored Train": {
+      "name": "장갑 열차 표시",
+      "desc": "Armored Train 탈출구를 전용 열차 마커로 표시합니다."
+    },
+    "15. Raid Compass/Show Marker Distance": {
+      "name": "마커 거리 표시",
+      "desc": "탈출구, Transit, 퀘스트 마커 아래에 미터 단위 거리를 표시합니다."
+    },
+    "15. Raid Compass/Show Marker Names": {
+      "name": "마커 이름 표시",
+      "desc": "각 마커 아래에 현재 레이드의 실제 탈출구/Transit/퀘스트 이름을 작은 글씨로 표시합니다."
+    },
+    "15. Raid Compass/Quest Marker Name Size": {
+      "name": "퀘스트 마커 이름 크기",
+      "desc": "퀘스트 마커 이름의 글자 크기만 조정합니다."
+    },
+    "15. Raid Compass/Extract Marker Name Size": {
+      "name": "탈출구 마커 이름 크기",
+      "desc": "탈출구 마커 이름의 글자 크기만 조정합니다."
+    },
+    "15. Raid Compass/Transit Marker Name Size": {
+      "name": "Transit 마커 이름 크기",
+      "desc": "Transit 마커 이름의 글자 크기만 조정합니다."
+    },
+    "15. Raid Compass/Arc Focus Angle": {
+      "name": "Arc 포커스 각도",
+      "desc": "Arc 전용: 조준한 마커를 사각형에서 마름모로 바꾸는 각도 범위입니다."
+    },
+    "15. Raid Compass/Arc Marker Spacing": {
+      "name": "Arc 마커 간격",
+      "desc": "Arc 전용: 같은 레인에 있는 마커 사이의 최소 가로 간격입니다."
+    },
+    "15. Raid Compass/Arc Lane Spacing": {
+      "name": "Arc 레인 간격",
+      "desc": "Arc 전용: 마커 레인 사이의 세로 간격입니다."
+    },
+    "15. Raid Compass/Focus Rail Focus Angle": {
+      "name": "Focus Rail 포커스 각도",
+      "desc": "Focus Rail 전용: 조준 중인 마커를 선택하는 각도 범위입니다."
+    },
+    "15. Raid Compass/Focus Rail Length": {
+      "name": "Focus Rail 길이",
+      "desc": "Focus Rail 전용: 1080p 기준 수평 레일 길이(픽셀)입니다. 일반 Width 설정은 외부 한계로 유지됩니다."
+    },
+    "15. Raid Compass/Focus Rail Marker Spacing": {
+      "name": "Focus Rail 마커 간격",
+      "desc": "Focus Rail 전용: 가까운 마커를 그룹화할 때 사용하는 최소 가로 거리입니다."
+    },
+    "15. Raid Compass/Focus Rail Show Distance": {
+      "name": "거리 표시",
+      "desc": "Focus Rail 전용: 전체 마커 거리 옵션이 활성화되어 있을 때 마커 거리를 표시합니다."
+    },
+    "15. Raid Compass/Focus Rail Show Focus Name": {
+      "name": "포커스 이름 표시",
+      "desc": "Focus Rail 전용: 중앙 상세 패널에 포커스된 마커 이름을 표시합니다."
+    },
+    "15. Raid Compass/Focus Rail Show Vertical Delta": {
+      "name": "수직 차이 표시",
+      "desc": "Focus Rail 전용: 포커스된 마커의 위/아래 높이 차이를 표시합니다."
+    },
+    "15. Raid Compass/Focus Rail Stack Nearby Markers": {
+      "name": "주변 마커 스택",
+      "desc": "Focus Rail 전용: 레일에서 매우 가까운 마커를 합치고 스택 개수를 표시합니다."
+    },
+    "15. Raid Compass/Focus Rail Show Edge Indicators": {
+      "name": "가장자리 표시기 표시",
+      "desc": "Focus Rail 전용: 보이는 방향 범위 밖의 마커에 대해 레일 양 끝에 방향 표시기를 하나씩 유지합니다."
+    },
+    "15. Raid Compass/Maximum Visible Markers": {
+      "name": "최대 표시 마커",
+      "desc": "보이는 방향 범위 안에 그리는 최대 마커 수입니다. 가까운 마커가 우선됩니다."
+    },
+    "15. Raid Compass/Marker Refresh Interval": {
+      "name": "마커 새로고침 간격",
+      "desc": "캐시된 나침반 스냅샷을 새로고침하는 간격(초)입니다. 퀘스트 마커는 활성 퀘스트 상태가 변경될 때만 재구성되며, 탈출구는 레이드별로 캐시되고 Transit은 런타임 또는 씬 데이터가 변경될 때만 새로고침됩니다."
+    },
+    "15. Raid Compass/Compass Color": {
+      "name": "나침반 색상",
+      "desc": "방향선, 눈금, 방위 라벨, 중앙 포인터 색상입니다."
+    },
+    "15. Raid Compass/Extract Color": {
+      "name": "탈출구 색상",
+      "desc": "현재 레이드 탈출구 마커 색상입니다."
+    },
+    "15. Raid Compass/Transit Color": {
+      "name": "Transit 색상",
+      "desc": "Transit 마커 색상입니다."
+    },
+    "15. Raid Compass/Quest Color": {
+      "name": "퀘스트 색상",
+      "desc": "활성 퀘스트 목표 마커 색상입니다."
+    },
+    "16. Raid Start/Location Banner Enabled": {
+      "name": "지역 정보 활성화",
+      "desc": "레이드가 시작될 때 현재 지역 이름을 화면 상단에 표시합니다."
+    },
+    "16. Raid Start/Location Banner Duration": {
+      "name": "표시 시간",
+      "desc": "레이드 시작 지역 이름이 표시되는 시간입니다."
+    },
+    "16. Raid Start/Location Banner X": {
+      "name": "위치 X",
+      "desc": "레이드 시작 지역 배너의 가로 중심 위치입니다. HUD 편집 모드에서 드래그해 변경할 수도 있습니다."
+    },
+    "16. Raid Start/Location Banner Y": {
+      "name": "위치 Y",
+      "desc": "레이드 시작 지역 배너의 세로 상단 위치입니다. HUD 편집 모드에서 드래그해 변경할 수도 있습니다."
+    },
+    "16. Raid Start/Location Banner Scale": {
+      "name": "크기",
+      "desc": "레이드 시작 지역 이름의 크기 배율입니다. HUD 편집 모드에서는 배너 위에서 마우스 휠로도 변경할 수 있습니다."
+    },
+    "16. Raid Start/Location Banner Opacity": {
+      "name": "불투명도",
+      "desc": "전체 HUD 불투명도 적용 전 지역 이름의 불투명도입니다."
+    },
+    "16. Raid Start/Location Name Color": {
+      "name": "지역 이름 색상",
+      "desc": "레이드 시작 지역 이름에 사용할 색상입니다."
+    },
+    "16. Raid Start/Quest Display Enabled": {
+      "name": "퀘스트 아이콘 표시",
+      "desc": "지역 이름 아래에 퀘스트 아이콘을 표시합니다. 퀘스트 수가 켜져 있으면 옆에 숫자를 표시합니다."
+    },
+    "16. Raid Start/Quest Count Enabled": {
+      "name": "퀘스트 수 표시",
+      "desc": "현재 지역에 명시적으로 지정된 진행 중 퀘스트 수를 표시합니다."
+    },
+    "16. Raid Start/Boss Display Enabled": {
+      "name": "보스 아이콘 표시",
+      "desc": "지역 이름 아래에 보스 별 아이콘을 표시합니다. 보스 수가 켜져 있으면 옆에 숫자를 표시합니다."
+    },
+    "16. Raid Start/Boss Count Enabled": {
+      "name": "보스 수 표시",
+      "desc": "현재 레이드에서 살아 있는 것으로 감지된 보스 수를 표시합니다."
+    },
+    "17. BTR Passenger HUD/BTR Passenger HUD Enabled": {
+      "name": "BTR 탑승 HUD 활성화",
+      "desc": "BTR 내부에 탑승 중일 때 전용 BTR 탑승 HUD를 표시합니다."
+    },
+    "17. BTR Passenger HUD/Screen X": {
+      "name": "위치 X",
+      "desc": "BTR 탑승 HUD의 가로 중심 위치입니다. HUD 편집 모드에서 드래그로 변경할 수도 있습니다."
+    },
+    "17. BTR Passenger HUD/Screen Y": {
+      "name": "위치 Y",
+      "desc": "BTR 탑승 HUD의 세로 상단 위치입니다. HUD 편집 모드에서 드래그로 변경할 수도 있습니다."
+    },
+    "17. BTR Passenger HUD/Scale": {
+      "name": "크기",
+      "desc": "BTR 탑승 HUD의 크기 배율입니다. HUD 편집 모드에서 마우스 휠로도 변경할 수 있습니다."
+    },
+    "17. BTR Passenger HUD/Opacity": {
+      "name": "불투명도",
+      "desc": "전역 HUD 불투명도를 적용하기 전 BTR 탑승 HUD의 불투명도입니다."
+    },
+    "17. BTR Passenger HUD/Show Speed Gauge": {
+      "name": "속도계 표시",
+      "desc": "속도계, 속도 수치와 km/h 라벨을 표시합니다."
+    },
+    "17. BTR Passenger HUD/Show Passenger Count": {
+      "name": "탑승 인원 표시",
+      "desc": "탑승 인원을 표시하고 좌석 표시는 유지합니다."
+    },
+    "17. BTR Passenger HUD/Show Stop Timer": {
+      "name": "정차 타이머 표시",
+      "desc": "정차 중 남은 시간이 있으면 초 단위로 표시합니다."
+    },
+    "99. Internal/Status Hold Breath X": {
+      "name": "숨 참기 상태 — X",
+      "desc": "숨 참기 표시의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Hold Breath Y": {
+      "name": "숨 참기 상태 — Y",
+      "desc": "숨 참기 표시의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Hold Breath Scale": {
+      "name": "숨 참기 상태 — 크기",
+      "desc": "숨 참기 표시의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Hold Breath Opacity": {
+      "name": "숨 참기 상태 — 불투명도",
+      "desc": "숨 참기 표시의 불투명도를 따로 정한다."
+    },
+    "00. Internal UI/Main Window X": {
+      "name": "설정 창 X 위치",
+      "desc": "자체 설정 창의 배치 값이다. 창을 옮기면 저절로 바뀐다."
+    },
+    "00. Internal UI/Main Window Y": {
+      "name": "설정 창 Y 위치",
+      "desc": "자체 설정 창의 배치 값이다. 창을 옮기면 저절로 바뀐다."
+    },
+    "00. Internal UI/Main Window Width": {
+      "name": "설정 창 너비",
+      "desc": "자체 설정 창의 배치 값이다. 창 크기를 바꾸면 저절로 바뀐다."
+    },
+    "00. Internal UI/Main Window Height": {
+      "name": "설정 창 높이",
+      "desc": "자체 설정 창의 배치 값이다. 창 크기를 바꾸면 저절로 바뀐다."
+    },
+    "00. Internal UI/Sidebar Width": {
+      "name": "왼쪽 목록 너비",
+      "desc": "자체 설정 창의 배치 값이다."
+    },
+    "00. Internal UI/Value Column Width": {
+      "name": "값 칸 너비",
+      "desc": "자체 설정 창의 배치 값이다."
+    },
+    "00. Internal UI/HUD Live Panel X": {
+      "name": "미리보기 판 X 위치",
+      "desc": "자체 설정 창의 배치 값이다."
+    },
+    "00. Internal UI/HUD Live Panel Y": {
+      "name": "미리보기 판 Y 위치",
+      "desc": "자체 설정 창의 배치 값이다."
+    },
+    "00. Internal UI/HUD Live Panel Width": {
+      "name": "미리보기 판 너비",
+      "desc": "자체 설정 창의 배치 값이다."
+    },
+    "00. Internal UI/HUD Live Panel Height": {
+      "name": "미리보기 판 높이",
+      "desc": "자체 설정 창의 배치 값이다."
+    },
+    "00. Internal UI/Interface Tint": {
+      "name": "설정 창 배경색",
+      "desc": "자체 설정 창의 배경색이다. 글자가 읽히도록 결과를 어둡게 유지한다."
+    },
+    "00. Internal UI/Interface Font Scale": {
+      "name": "설정 창 글자 크기",
+      "desc": "자체 설정 창의 글자 크기다."
+    },
+    "00. Internal UI/Interface Font": {
+      "name": "설정 창 글꼴",
+      "desc": "자체 설정 창이 쓸 운영체제 글꼴. Default 는 유니티가 쓰는 글꼴을 그대로 쓴다."
+    },
+    "00. Internal UI/Navigation Placement": {
+      "name": "분류 목록 위치",
+      "desc": "F10 설정 창에서 분류 목록을 붙일 자리다."
+    },
+    "00. Internal UI/Favorite Settings": {
+      "name": "즐겨찾기 목록",
+      "desc": "자체 설정 창이 기억하는 즐겨찾기 목록이다."
+    },
+    "04. Kill Feed/Row Background Enabled": {
+      "name": "줄 배경 켜기",
+      "desc": "처치 기록 각 줄 뒤에 옅은 띠를 깐다. 요소를 따로 배치한 모드에서는 띠가 없다."
+    },
+    "04. Kill Feed/Row Background Opacity": {
+      "name": "줄 배경 불투명도",
+      "desc": "처치 기록 줄 배경 띠의 불투명도다."
+    },
+    "04. Kill Feed/Row Background Color": {
+      "name": "줄 배경 색",
+      "desc": "처치 기록 줄 배경 띠의 색이다."
+    },
+    "07. Kill Feed Animation/Row Stack Animation": {
+      "name": "줄 밀림 움직임",
+      "desc": "새 처치가 들어올 때 기존 줄이 어떻게 밀릴지 고른다. Off 로 두면 줄 밀림만 멈추고 글자 움직임은 그대로다."
+    },
+    "11. Hit Sound/Preview Body Hit Sound": {
+      "name": "몸통 명중 소리 들어 보기",
+      "desc": "고른 몸통 명중 소리를 지금 설정한 크기·높이로 틀어 본다."
+    },
+    "11. Hit Sound/Preview Armor Hit Sound": {
+      "name": "방어구 명중 소리 들어 보기",
+      "desc": "고른 방어구 명중 소리를 지금 설정한 크기·높이로 틀어 본다."
+    },
+    "11. Hit Sound/Preview Head Hit Sound": {
+      "name": "머리 명중 소리 들어 보기",
+      "desc": "고른 머리 명중 소리를 지금 설정한 크기·높이로 틀어 본다."
+    },
+    "11. Hit Sound/Stop Hit Sound Preview": {
+      "name": "미리듣기 멈추기",
+      "desc": "지금 나오는 미리듣기 소리를 멈춘다."
+    },
+    "13. Compact HUD/Preset": {
+      "name": "배치 고르기",
+      "desc": "간략 표시의 배치를 고른다. Tactical Glass 는 가벼운 정보 묶음이고, Combat Strip 은 무기 아이콘·탄약·발사 모드·수류탄을 가로로 늘어놓는 무기 중심 배치다."
+    },
+    "13.4 Default HUD/Health Bar Opacity": {
+      "name": "체력 바 불투명도",
+      "desc": "체력 바의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Health Value Opacity": {
+      "name": "체력 숫자 불투명도",
+      "desc": "체력 숫자의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Energy Opacity": {
+      "name": "에너지 불투명도",
+      "desc": "에너지의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Hydration Opacity": {
+      "name": "수분 불투명도",
+      "desc": "수분의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Weight Opacity": {
+      "name": "무게 불투명도",
+      "desc": "무게의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Ammo Count Opacity": {
+      "name": "탄 수 불투명도",
+      "desc": "탄 수의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Ammo Type Opacity": {
+      "name": "탄종 불투명도",
+      "desc": "탄종의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Fire Mode Opacity": {
+      "name": "발사 모드 불투명도",
+      "desc": "발사 모드의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Grenade Opacity": {
+      "name": "수류탄 불투명도",
+      "desc": "수류탄의 불투명도를 따로 정한다."
+    },
+    "13.4 Default HUD/Weapon Name Opacity": {
+      "name": "무기 이름 불투명도",
+      "desc": "무기 이름의 불투명도를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Count Visible": {
+      "name": "탄 수 보이기",
+      "desc": "탄 수을 보일지 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Count X": {
+      "name": "탄 수 X 위치",
+      "desc": "탄 수의 화면 가로 위치를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Count Y": {
+      "name": "탄 수 Y 위치",
+      "desc": "탄 수의 화면 세로 위치를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Count Scale": {
+      "name": "탄 수 크기",
+      "desc": "탄 수의 크기를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Count Opacity": {
+      "name": "탄 수 불투명도",
+      "desc": "탄 수의 불투명도를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Type Visible": {
+      "name": "탄종 보이기",
+      "desc": "탄종을 보일지 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Type X": {
+      "name": "탄종 X 위치",
+      "desc": "탄종의 화면 가로 위치를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Type Y": {
+      "name": "탄종 Y 위치",
+      "desc": "탄종의 화면 세로 위치를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Type Scale": {
+      "name": "탄종 크기",
+      "desc": "탄종의 크기를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Ammo Type Opacity": {
+      "name": "탄종 불투명도",
+      "desc": "탄종의 불투명도를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Fire Mode Visible": {
+      "name": "발사 모드 보이기",
+      "desc": "발사 모드을 보일지 정한다."
+    },
+    "13.4 Tactical Glass/Fire Mode X": {
+      "name": "발사 모드 X 위치",
+      "desc": "발사 모드의 화면 가로 위치를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Fire Mode Y": {
+      "name": "발사 모드 Y 위치",
+      "desc": "발사 모드의 화면 세로 위치를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Fire Mode Scale": {
+      "name": "발사 모드 크기",
+      "desc": "발사 모드의 크기를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Fire Mode Opacity": {
+      "name": "발사 모드 불투명도",
+      "desc": "발사 모드의 불투명도를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Grenade Visible": {
+      "name": "수류탄 보이기",
+      "desc": "수류탄을 보일지 정한다."
+    },
+    "13.4 Tactical Glass/Grenade X": {
+      "name": "수류탄 X 위치",
+      "desc": "수류탄의 화면 가로 위치를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Grenade Y": {
+      "name": "수류탄 Y 위치",
+      "desc": "수류탄의 화면 세로 위치를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Grenade Scale": {
+      "name": "수류탄 크기",
+      "desc": "수류탄의 크기를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Grenade Opacity": {
+      "name": "수류탄 불투명도",
+      "desc": "수류탄의 불투명도를 따로 정한다."
+    },
+    "13.4 Tactical Glass/Show Magazine Capacity": {
+      "name": "탄창 용량 함께 보기",
+      "desc": "지금 탄 수 옆에 탄창 용량을 함께 보인다."
+    },
+    "13.4 Tactical Glass/Background Visible": {
+      "name": "배경 보이기",
+      "desc": "전술 유리의 배경 면과 구분선을 보인다."
+    },
+    "13.4 Tactical Glass/Background Opacity": {
+      "name": "배경 불투명도",
+      "desc": "전술 유리의 배경 면과 구분선의 불투명도다."
+    },
+    "14. Crosshair/Favorite Presets": {
+      "name": "즐겨찾는 조준점",
+      "desc": "즐겨찾는 조준점 묶음을 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Selected Image File": {
+      "name": "고른 그림 파일",
+      "desc": "그림 조준점으로 고른 파일 이름을 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Valid": {
+      "name": "저장한 조준점 있음",
+      "desc": "직접 만든 조준점이 저장되어 있는지 알리는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Color": {
+      "name": "저장한 조준점 색",
+      "desc": "직접 만든 조준점의 색을 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Opacity": {
+      "name": "저장한 조준점 불투명도",
+      "desc": "직접 만든 조준점의 불투명도를 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Scale": {
+      "name": "저장한 조준점 크기",
+      "desc": "직접 만든 조준점의 크기를 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Thickness": {
+      "name": "저장한 조준점 굵기",
+      "desc": "직접 만든 조준점의 굵기를 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Gap": {
+      "name": "저장한 조준점 틈",
+      "desc": "직접 만든 조준점의 가운데 틈을 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Outline": {
+      "name": "저장한 조준점 테두리",
+      "desc": "직접 만든 조준점의 테두리 여부를 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Outline Opacity": {
+      "name": "저장한 조준점 테두리 불투명도",
+      "desc": "직접 만든 조준점 테두리의 불투명도를 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Center Dot": {
+      "name": "저장한 조준점 가운데 점",
+      "desc": "직접 만든 조준점의 가운데 점 여부를 기억하는 내부 값이다."
+    },
+    "14. Crosshair/Saved Custom Rotation": {
+      "name": "저장한 조준점 회전",
+      "desc": "직접 만든 조준점의 회전값을 기억하는 내부 값이다."
+    },
+    "99. Internal/Feed Killer Icon Offset X": {
+      "name": "처치 기록 처치자 아이콘 X 밀기",
+      "desc": "처치 기록 처치자 아이콘의 가로 밀기 값이다."
+    },
+    "99. Internal/Feed Killer Icon Offset Y": {
+      "name": "처치 기록 처치자 아이콘 Y 밀기",
+      "desc": "처치 기록 처치자 아이콘의 세로 밀기 값이다."
+    },
+    "99. Internal/Feed Killer Icon Scale": {
+      "name": "처치 기록 처치자 아이콘 크기",
+      "desc": "처치 기록 처치자 아이콘의 크기를 따로 정한다."
+    },
+    "99. Internal/Feed Killer Name Offset X": {
+      "name": "처치 기록 처치자 이름 X 밀기",
+      "desc": "처치 기록 처치자 이름의 가로 밀기 값이다."
+    },
+    "99. Internal/Feed Killer Name Offset Y": {
+      "name": "처치 기록 처치자 이름 Y 밀기",
+      "desc": "처치 기록 처치자 이름의 세로 밀기 값이다."
+    },
+    "99. Internal/Feed Killer Name Scale": {
+      "name": "처치 기록 처치자 이름 크기",
+      "desc": "처치 기록 처치자 이름의 크기를 따로 정한다."
+    },
+    "99. Internal/Feed Weapon Offset X": {
+      "name": "처치 기록 무기 이름 X 밀기",
+      "desc": "처치 기록 무기 이름의 가로 밀기 값이다."
+    },
+    "99. Internal/Feed Weapon Offset Y": {
+      "name": "처치 기록 무기 이름 Y 밀기",
+      "desc": "처치 기록 무기 이름의 세로 밀기 값이다."
+    },
+    "99. Internal/Feed Weapon Scale": {
+      "name": "처치 기록 무기 이름 크기",
+      "desc": "처치 기록 무기 이름의 크기를 따로 정한다."
+    },
+    "99. Internal/Feed Victim Icon Offset X": {
+      "name": "처치 기록 대상 아이콘 X 밀기",
+      "desc": "처치 기록 대상 아이콘의 가로 밀기 값이다."
+    },
+    "99. Internal/Feed Victim Icon Offset Y": {
+      "name": "처치 기록 대상 아이콘 Y 밀기",
+      "desc": "처치 기록 대상 아이콘의 세로 밀기 값이다."
+    },
+    "99. Internal/Feed Victim Icon Scale": {
+      "name": "처치 기록 대상 아이콘 크기",
+      "desc": "처치 기록 대상 아이콘의 크기를 따로 정한다."
+    },
+    "99. Internal/Feed Victim Name Offset X": {
+      "name": "처치 기록 대상 이름 X 밀기",
+      "desc": "처치 기록 대상 이름의 가로 밀기 값이다."
+    },
+    "99. Internal/Feed Victim Name Offset Y": {
+      "name": "처치 기록 대상 이름 Y 밀기",
+      "desc": "처치 기록 대상 이름의 세로 밀기 값이다."
+    },
+    "99. Internal/Feed Victim Name Scale": {
+      "name": "처치 기록 대상 이름 크기",
+      "desc": "처치 기록 대상 이름의 크기를 따로 정한다."
+    },
+    "99. Internal/Feed Distance Offset X": {
+      "name": "처치 기록 거리 X 밀기",
+      "desc": "처치 기록 거리의 가로 밀기 값이다."
+    },
+    "99. Internal/Feed Distance Offset Y": {
+      "name": "처치 기록 거리 Y 밀기",
+      "desc": "처치 기록 거리의 세로 밀기 값이다."
+    },
+    "99. Internal/Feed Distance Scale": {
+      "name": "처치 기록 거리 크기",
+      "desc": "처치 기록 거리의 크기를 따로 정한다."
+    },
+    "99. Internal/Feed Headshot Offset X": {
+      "name": "처치 기록 머리 명중 표시 X 밀기",
+      "desc": "처치 기록 머리 명중 표시의 가로 밀기 값이다."
+    },
+    "99. Internal/Feed Headshot Offset Y": {
+      "name": "처치 기록 머리 명중 표시 Y 밀기",
+      "desc": "처치 기록 머리 명중 표시의 세로 밀기 값이다."
+    },
+    "99. Internal/Feed Headshot Scale": {
+      "name": "처치 기록 머리 명중 표시 크기",
+      "desc": "처치 기록 머리 명중 표시의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Health X": {
+      "name": "체력 X 위치",
+      "desc": "체력의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Health Y": {
+      "name": "체력 Y 위치",
+      "desc": "체력의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Health Scale": {
+      "name": "체력 크기",
+      "desc": "체력의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Health Bar X": {
+      "name": "체력 바 X 위치",
+      "desc": "체력 바의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Health Bar Y": {
+      "name": "체력 바 Y 위치",
+      "desc": "체력 바의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Health Bar Scale": {
+      "name": "체력 바 크기",
+      "desc": "체력 바의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Health Value X": {
+      "name": "체력 숫자 X 위치",
+      "desc": "체력 숫자의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Health Value Y": {
+      "name": "체력 숫자 Y 위치",
+      "desc": "체력 숫자의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Health Value Scale": {
+      "name": "체력 숫자 크기",
+      "desc": "체력 숫자의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Energy X": {
+      "name": "에너지 X 위치",
+      "desc": "에너지의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Energy Y": {
+      "name": "에너지 Y 위치",
+      "desc": "에너지의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Energy Scale": {
+      "name": "에너지 크기",
+      "desc": "에너지의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Hydration X": {
+      "name": "수분 X 위치",
+      "desc": "수분의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Hydration Y": {
+      "name": "수분 Y 위치",
+      "desc": "수분의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Hydration Scale": {
+      "name": "수분 크기",
+      "desc": "수분의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Weight X": {
+      "name": "무게 X 위치",
+      "desc": "무게의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Weight Y": {
+      "name": "무게 Y 위치",
+      "desc": "무게의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Weight Scale": {
+      "name": "무게 크기",
+      "desc": "무게의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Ammo X": {
+      "name": "탄약 X 위치",
+      "desc": "탄약의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Ammo Y": {
+      "name": "탄약 Y 위치",
+      "desc": "탄약의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Ammo Scale": {
+      "name": "탄약 크기",
+      "desc": "탄약의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Ammo Count X": {
+      "name": "탄 수 X 위치",
+      "desc": "탄 수의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Ammo Count Y": {
+      "name": "탄 수 Y 위치",
+      "desc": "탄 수의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Ammo Count Scale": {
+      "name": "탄 수 크기",
+      "desc": "탄 수의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Ammo Type X": {
+      "name": "탄종 X 위치",
+      "desc": "탄종의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Ammo Type Y": {
+      "name": "탄종 Y 위치",
+      "desc": "탄종의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Ammo Type Scale": {
+      "name": "탄종 크기",
+      "desc": "탄종의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Fire Mode X": {
+      "name": "발사 모드 X 위치",
+      "desc": "발사 모드의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Fire Mode Y": {
+      "name": "발사 모드 Y 위치",
+      "desc": "발사 모드의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Fire Mode Scale": {
+      "name": "발사 모드 크기",
+      "desc": "발사 모드의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Grenade X": {
+      "name": "수류탄 X 위치",
+      "desc": "수류탄의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Grenade Y": {
+      "name": "수류탄 Y 위치",
+      "desc": "수류탄의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Grenade Scale": {
+      "name": "수류탄 크기",
+      "desc": "수류탄의 크기를 따로 정한다."
+    },
+    "99. Internal/Status Weapon Name X": {
+      "name": "무기 이름 X 위치",
+      "desc": "무기 이름의 화면 가로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Weapon Name Y": {
+      "name": "무기 이름 Y 위치",
+      "desc": "무기 이름의 화면 세로 위치를 따로 정한다."
+    },
+    "99. Internal/Status Weapon Name Scale": {
+      "name": "무기 이름 크기",
+      "desc": "무기 이름의 크기를 따로 정한다."
+    },
+    "99. Internal/Magazine HUD Title Offset X": {
+      "name": "탄창 표시 제목 X 밀기",
+      "desc": "탄창 표시 제목의 가로 밀기 값이다."
+    },
+    "99. Internal/Magazine HUD Title Offset Y": {
+      "name": "탄창 표시 제목 Y 밀기",
+      "desc": "탄창 표시 제목의 세로 밀기 값이다."
+    },
+    "99. Internal/Magazine HUD Numbers Offset X": {
+      "name": "탄창 표시 숫자 X 밀기",
+      "desc": "탄창 표시 숫자의 가로 밀기 값이다."
+    },
+    "99. Internal/Magazine HUD Numbers Offset Y": {
+      "name": "탄창 표시 숫자 Y 밀기",
+      "desc": "탄창 표시 숫자의 세로 밀기 값이다."
+    },
+    "99. Internal/Custom Faction Default Selection V1 Applied": {
+      "name": "내부 적용 표시",
+      "desc": "ImpactCue 가 기본값을 한 번만 옮겨 넣었는지 기억하는 내부 표시다. 건드리지 않는다."
+    },
+    "99. Internal/Custom Faction Default Selection V2 Applied": {
+      "name": "내부 적용 표시",
+      "desc": "ImpactCue 가 기본값을 한 번만 옮겨 넣었는지 기억하는 내부 표시다. 건드리지 않는다."
+    },
+    "99. Internal/Custom Faction Default Selection V3 Applied": {
+      "name": "내부 적용 표시",
+      "desc": "ImpactCue 가 기본값을 한 번만 옮겨 넣었는지 기억하는 내부 표시다. 건드리지 않는다."
+    },
+    "99. Internal/Armor Hit Icon Lower Position V2 Applied": {
+      "name": "내부 적용 표시",
+      "desc": "ImpactCue 가 기본값을 한 번만 옮겨 넣었는지 기억하는 내부 표시다. 건드리지 않는다."
+    },
+    "99. Internal/Raid Location Banner Lower Default V1 Applied": {
+      "name": "내부 적용 표시",
+      "desc": "ImpactCue 가 기본값을 한 번만 옮겨 넣었는지 기억하는 내부 표시다. 건드리지 않는다."
+    },
+    "99. Internal/Compact HUD Color Defaults V2 Applied": {
+      "name": "내부 적용 표시",
+      "desc": "ImpactCue 가 기본값을 한 번만 옮겨 넣었는지 기억하는 내부 표시다. 건드리지 않는다."
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "guid": "com.manimal.csgas",
+  "name": "최루 가스 (CS Gas)",
+  "sections": {
+    "Cough Animation": "기침 동작",
+    "Gas": "가스",
+    "Volumetric": "부피 구름"
+  },
+  "settings": {
+    "Cough Animation/Blend in time": {
+      "name": "동작 들어오는 시간",
+      "desc": "기침 동작이 섞여 들어오는 시간(초)이다."
+    },
+    "Cough Animation/Blend out time": {
+      "name": "동작 나가는 시간",
+      "desc": "기본 자세로 돌아가는 데 걸리는 시간(초)이다."
+    },
+    "Cough Animation/Blend out lead": {
+      "name": "동작 나가기 시작하는 시점",
+      "desc": "동작이 끝나기 몇 초 전부터 빠지기 시작할지다."
+    },
+    "Gas/CoughIntervalSec": {
+      "name": "기침 간격(초)",
+      "desc": "구름 안에 있는 동안 기침 사이의 간격(초)이다."
+    },
+    "Gas/ThoraxDamagePerSec": {
+      "name": "가슴 피해(초당)",
+      "desc": "구름 안에 있는 동안 질식으로 가슴에 주는 피해다(1.0 이면 초당 2HP). 0 이면 끈다."
+    },
+    "Gas/TearsEnabled": {
+      "name": "눈물 효과 켜기",
+      "desc": "눈이 매운 화면 효과다. 렌더 파이프라인이 부딪쳐 화면이 깨질 때를 위한 차단 스위치다."
+    },
+    "Gas/TearsStrength": {
+      "name": "눈물 효과 세기",
+      "desc": "가스 안에 있는 동안 눈가가 흐려지는 세기다(1.0 이면 최루 가스 기준 0.5 로 묶인다)."
+    },
+    "Gas/LongExposureIntoxication": {
+      "name": "오래 노출되면 중독",
+      "desc": "오래 노출되면 중독 효과를 준다. 가혹해서 기본으로 꺼져 있다."
+    },
+    "Gas/LongExposureSec": {
+      "name": "오래 노출 기준(초)",
+      "desc": "몇 초를 이어서 노출되면 오래 노출된 것으로 볼지다."
+    },
+    "Gas/RequiresLineOfSight": {
+      "name": "가로막히면 안 통하기",
+      "desc": "나와 구름 중심 사이에 벽이 있으면 효과가 막힌다(1.0 의 확산을 대신하는 간단한 처리다)."
+    },
+    "Gas/ExtraGasMaskTpls": {
+      "name": "가스를 완전히 막는 장비",
+      "desc": "가스를 완전히 막는 얼굴 장비 tpl 을 쉼표로 나눠 더 적는다(GP-5·GP-7·Avon M53A1 처럼)."
+    },
+    "Gas/ExtraRespiratorTpls": {
+      "name": "호흡만 막는 장비",
+      "desc": "건강·기침 효과만 막는(눈은 그대로 매운) 얼굴 장비 tpl 을 쉼표로 나눠 더 적는다(방진 마스크처럼)."
+    },
+    "Volumetric/Enabled": {
+      "name": "부피 구름 켜기",
+      "desc": "RShG-2 의 부피 폭발 광선 추적기를 써서 방을 채우는 가스 구름을 만든다. 끄면 간단한 구 모양 구름을 쓴다."
+    },
+    "Volumetric/MaxRadiusM": {
+      "name": "최대 퍼지는 거리(m)",
+      "desc": "가스가 퍼지는 최대 거리다. 8 은 1.0 이 부피 투척물에 두는 한계와 같다."
+    },
+    "Volumetric/GrowTimeSec": {
+      "name": "퍼지는 시간(초)",
+      "desc": "구름이 최대까지 퍼지는 데 걸리는 시간이다."
+    },
+    "Volumetric/RayCount": {
+      "name": "광선 수",
+      "desc": "수류탄 주변의 빈 공간을 훑는 광선 수다. 묶어 쏘아 비용이 적다."
+    },
+    "Volumetric/ParticlesPerEmit": {
+      "name": "한 번에 내는 입자 수",
+      "desc": "한 번 뿜을 때 놓는 연기 입자 수다."
+    },
+    "Volumetric/EmitIntervalSec": {
+      "name": "뿜는 간격(초)",
+      "desc": "뿜는 사이의 간격이다."
+    },
+    "Volumetric/PointRadiusM": {
+      "name": "안으로 보는 거리(m)",
+      "desc": "구름 지점에서 이 거리 안에 있으면 가스 안에 있는 것으로 본다."
+    },
+    "Volumetric/CloudOpacity": {
+      "name": "구름 불투명도",
+      "desc": "가스 구름 입자마다의 불투명도다. 새로 뿜는 입자에 적용되고 이미 있는 것은 예전 값으로 사라진다."
+    }
+  }
+}

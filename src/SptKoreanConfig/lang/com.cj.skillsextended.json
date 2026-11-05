@@ -1,0 +1,70 @@
+{
+  "guid": "com.cj.skillsextended",
+  "name": "기술 확장 (Skills Extended)",
+  "sections": {
+    "Developer tools": "개발 도구",
+    "Hacking": "해킹",
+    "Lock Picking": "자물쇠 따기",
+    "LP Mini Game": "자물쇠 따기 조작",
+    "Memory": "메모리",
+    "Signals Intelligence": "신호 정보"
+  },
+  "settings": {
+    "Developer tools/Enable developer editor": {
+      "name": "개발용 편집기 켜기",
+      "desc": "게임 안 개발용 편집기를 켠다. Fika 에서는 내 프로필에 서버 승인이 필요하다. 편집하는 동안에도 AI 와 레이드 시간은 흐른다."
+    },
+    "Developer tools/Open developer editor": {
+      "name": "개발용 편집기 열기",
+      "desc": "맵을 불러온 상태에서 게임 안 개발용 편집기를 켜고 끈다."
+    },
+    "Hacking/Hacking volume (%)": {
+      "name": "해킹 소리 크기(%)",
+      "desc": "되돌림·주변음·경보를 포함한 모든 PDA 해킹 소리의 크기다. 0 이면 끄고 100 이면 원래 크기다. 연습과 레이드에서 게임 소리 설정과 함께 바로 적용된다."
+    },
+    "Lock Picking/Increase tension": {
+      "name": "힘 올리기",
+      "desc": "힘을 주고 있는 동안 압력을 올린다. 마우스 휠로도 조절할 수 있다."
+    },
+    "Lock Picking/Decrease tension": {
+      "name": "힘 내리기",
+      "desc": "힘을 주고 있는 동안 압력을 내린다. 힘을 놓으면 핀이 모두 되돌아간다."
+    },
+    "Lock Picking/Fine control": {
+      "name": "미세 조작",
+      "desc": "누르고 있으면 들어올리는 속도가 4분의 1 이 되고 압력이 1%씩 움직인다. 깊이 조작은 그대로다."
+    },
+    "Lock Picking/Toggle tension": {
+      "name": "힘을 눌러서 켜고 끄기",
+      "desc": "힘 키를 한 번 누르면 힘이 들어가고 다시 누르면 놓으며 핀이 되돌아간다. 끄면 누르고 있는 동안만 힘이 들어간다. 새로 시도할 때마다 이 값은 꺼진 상태로 시작한다."
+    },
+    "Lock Picking/Volume (%)": {
+      "name": "소리 크기(%)",
+      "desc": "자물쇠를 다루는 기계음의 크기다."
+    },
+    "Lock Picking/Mouse sensitivity": {
+      "name": "마우스 감도",
+      "desc": "픽의 깊이와 들어올림 감도다."
+    },
+    "Lock Picking/Reduced motion": {
+      "name": "흔들림 줄이기",
+      "desc": "버티는 진동을 끈다. 기계적인 되돌림은 눈으로 그대로 볼 수 있다."
+    },
+    "LP Mini Game/Turn Cylinder Key bind": {
+      "name": "실린더 돌리는 키",
+      "desc": "핀을 다루는 동안 힘을 준다. 기본으로는 누르고 있고, 위의 눌러서 켜고 끄기를 켜면 한 번씩 눌러 켜고 끈다. 힘을 놓으면 핀이 되돌아간다."
+    },
+    "Memory/Automatic garbage collection during raids": {
+      "name": "레이드 중 메모리 자동 정리",
+      "desc": "레이드 중에도 메모리 자동 정리를 켜 둔 채로 두어 임시로 잡은 메모리를 되찾게 한다. 레이드를 나갈 때 게임이 마지막으로 요청한 방식으로 되돌린다. 레이드 중에도 바꿀 수 있다."
+    },
+    "Signals Intelligence/Receiver volume (%)": {
+      "name": "수신기 소리 크기(%)",
+      "desc": "수신기와 탐색 구역 근접 신호음의 크기다. 소리를 꺼도 화면 수치는 돌아간다."
+    },
+    "Signals Intelligence/Open receiver": {
+      "name": "수신기 열기",
+      "desc": "개조한 PDA 를 들고 있을 때 수신기를 연다."
+    }
+  }
+}

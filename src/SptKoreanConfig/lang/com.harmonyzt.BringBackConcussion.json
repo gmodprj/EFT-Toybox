@@ -1,0 +1,95 @@
+{
+  "guid": "com.harmonyzt.BringBackConcussion",
+  "name": "뇌진탕 되살리기 (Bring Back Concussion)",
+  "sections": {
+    "Audio": "소리",
+    "General": "일반",
+    "Misc": "그 밖"
+  },
+  "settings": {
+    "Audio/Enable Death Headshot Sound": {
+      "name": "머리 피격 사망 소리",
+      "desc": "머리에 맞아 죽을 때 바이저·헬멧 타격 소리를 켜거나 끈다."
+    },
+    "Audio/Enable Death UI Sound": {
+      "name": "사망 UI 소리",
+      "desc": "사망 UI 소리를 켜거나 끈다."
+    },
+    "Audio/Use More Random Helmet Hit Sounds": {
+      "name": "헬멧 타격 소리 섞기",
+      "desc": "끄면 소리를 무작위로 고르지 않고 하나만 쓴다."
+    },
+    "Audio/Cut Off Sound On Explosion": {
+      "name": "폭발 때 소리 끊기",
+      "desc": "근처에서 폭발이 일어나면 세상의 소리를 끊는다. 가까우면 더 깊이 끊고, 그 뒤 소리가 서서히 돌아온다. 함께 생기는 이명은 그대로 남는다."
+    },
+    "Audio/Explosion Sound Fade In Time": {
+      "name": "소리 돌아오는 시간",
+      "desc": "폭발로 끊긴 소리가 돌아오는 데 걸리는 시간(초)이다."
+    },
+    "General/Concussion Strength": {
+      "name": "뇌진탕 세기",
+      "desc": "뇌진탕 효과의 세기다."
+    },
+    "General/Concussion Duration": {
+      "name": "뇌진탕 지속",
+      "desc": "뇌진탕이 몇 초 동안 이어질지다."
+    },
+    "General/Tinnitus Effect": {
+      "name": "이명 효과",
+      "desc": "이명 효과를 켜거나 끈다(헤드셋을 쓰지 않았을 때만 생긴다). 섬광에 당한 동안 이명을 누르려면 아래의 이명 늘 누르기를 켜 둔다."
+    },
+    "General/Panic": {
+      "name": "당황",
+      "desc": "어떤 상황에서 캐릭터가 당황할 확률을 켜거나 끈다."
+    },
+    "General/Concussion From Nearby Explosions": {
+      "name": "근처 폭발로도 뇌진탕",
+      "desc": "파편에 맞지 않았더라도 근처에서 폭발이 일어나면 뇌진탕·이명·당황을 준다. 범위는 아래의 폭발 효과 반지름으로 묶인다."
+    },
+    "General/Explosion Effect Radius": {
+      "name": "폭발 효과 반지름",
+      "desc": "이 모드의 뇌진탕·이명·소리 끊김이 생기려면 폭발이 몇 미터 안에서 일어나야 하는지다. 수류탄 자신의 기본 폭발 반지름을 덮어쓰지만 피해 자체는 바뀌지 않는다."
+    },
+    "General/Adrenaline Effect": {
+      "name": "아드레날린 효과",
+      "desc": "머리에 맞았을 때 확률로 아드레날린(진통) 효과를 받는 기능을 켜거나 끈다. 확률은 스트레스 저항 기술 수준에 따라 달라진다."
+    },
+    "General/Adrenaline Duration": {
+      "name": "아드레날린 지속",
+      "desc": "아드레날린(진통) 효과가 몇 초 동안 이어질지다."
+    },
+    "Misc/Ignore Tinnitus Equipment Checks": {
+      "name": "장비 상관없이 이명",
+      "desc": "켜면 헤드셋을 쓰고 있어도 이명이 들린다. 켜면 위의 이명 효과 설정보다 우선한다."
+    },
+    "Misc/Frag Grenades Always Concuss": {
+      "name": "파편 수류탄은 늘 뇌진탕",
+      "desc": "파편 수류탄의 뇌진탕을 켜거나 끈다. 끄면 파편 수류탄 뇌진탕은 BSG 의 기본 처리만 쓴다."
+    },
+    "Misc/Frag Grenades Blinds You": {
+      "name": "파편 수류탄이 눈을 멀게",
+      "desc": "파편 수류탄으로 시야가 멀어지는 것을 켜거나 끈다."
+    },
+    "Misc/Frag Grenade Blindness Strength": {
+      "name": "파편 수류탄 실명 세기",
+      "desc": "그 실명의 세기다. 아주 민감하다."
+    },
+    "Misc/Headshots Blinds You": {
+      "name": "머리 피격이 눈을 멀게",
+      "desc": "머리에 맞아 시야가 멀어지는 것을 켜거나 끈다."
+    },
+    "Misc/Headshot Blindness Strength": {
+      "name": "머리 피격 실명 세기",
+      "desc": "머리에 맞았을 때 실명의 세기다. 아주 민감하다."
+    },
+    "Misc/Always Mitigate Tinnitus Effect": {
+      "name": "이명 늘 누르기",
+      "desc": "켜면 섬광과 뇌진탕을 동시에 당한 동안(또는 늘) 이명이 들리지 않는다."
+    },
+    "Misc/Verbose Logging": {
+      "name": "자세한 기록",
+      "desc": "머리 피격·폭발 충격과 그 억제를 기록에 적는다. 제작자에게 알릴 때 쓸모가 있고 평소에는 꺼 둔다."
+    }
+  }
+}

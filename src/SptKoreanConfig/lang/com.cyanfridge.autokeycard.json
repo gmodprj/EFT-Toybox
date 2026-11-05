@@ -1,0 +1,26 @@
+{
+  "guid": "com.cyanfridge.autokeycard",
+  "name": "키카드 자동 사용 (AutoKeycard)",
+  "sections": {
+    "General": "일반",
+    "Logging": "기록"
+  },
+  "settings": {
+    "General/Show Required Keycard Name": {
+      "name": "필요한 키카드 이름 보이기",
+      "desc": "키카드가 없을 때 어떤 것이 필요한지 이름을 보인다."
+    },
+    "General/Show Used Keycard Message": {
+      "name": "쓴 키카드 알리기",
+      "desc": "키카드를 쓸 때 알림을 보인다."
+    },
+    "Logging/Enable Logging": {
+      "name": "기록 남기기",
+      "desc": "AutoKeycard 의 보통 기록을 남긴다."
+    },
+    "Logging/Debug Logging": {
+      "name": "진단 기록",
+      "desc": "진단용 정보를 더 남긴다."
+    }
+  }
+}

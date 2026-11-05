@@ -1,0 +1,31 @@
+{
+  "guid": "com.flir.increaselookdirection",
+  "name": "자유 시선 각도 늘리기 (Increase Look Direction)",
+  "sections": {
+    "1. Main Settings": "1. 기본 설정",
+    "2. General": "2. 일반",
+    "3. Camera (experimental)": "3. 카메라 (실험)"
+  },
+  "settings": {
+    "1. Main Settings/Enable Mod": {
+      "name": "켜기",
+      "desc": "플러그인을 켠다."
+    },
+    "2. General/Left look limit (deg)": {
+      "name": "왼쪽 한계(도)",
+      "desc": "자유 시선 키를 누른 동안 고개를 왼쪽으로 돌릴 수 있는 최대 각도다."
+    },
+    "2. General/Right look limit (deg)": {
+      "name": "오른쪽 한계(도)",
+      "desc": "자유 시선 키를 누른 동안 고개를 오른쪽으로 돌릴 수 있는 최대 각도다. 왼쪽 한계까지로 묶인다 — 게임이 위아래 각도를 왼쪽 한계에 맞춰 계산하므로, 오른쪽을 더 넓게 두면 오른쪽 어깨 위로 올려다볼 때 화면이 뒤집힌다."
+    },
+    "3. Camera (experimental)/Raise camera while free-looking": {
+      "name": "자유 시선에서 시점 올리기",
+      "desc": "고개가 돌아가는 만큼 시점을 올려 화면에 어깨가 덜 차게 한다."
+    },
+    "3. Camera (experimental)/Lift at full turn (m)": {
+      "name": "끝까지 돌렸을 때 높이(m)",
+      "desc": "고개가 한계까지 돌아갔을 때 카메라가 올라가는 높이다."
+    }
+  }
+}

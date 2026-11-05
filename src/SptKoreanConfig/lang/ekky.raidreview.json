@@ -1,0 +1,72 @@
+{
+  "guid": "ekky.raidreview",
+  "name": "레이드 되돌아보기 (Raid Review)",
+  "sections": {
+    "Legacy Integrations": "옛 모드 연동",
+    "Main": "기본",
+    "Server": "서버",
+    "Tracking Settings": "기록할 것"
+  },
+  "settings": {
+    "Legacy Integrations/Enable legacy Phobos integration": {
+      "name": "옛 Phobos 연동",
+      "desc": "옛 Phobos 모드(com.janky.phobos)에서 봇 목표 정보를 가져온다. 지원하지 않는 기능이다 — 그 모드가 공개 API 를 내놓지 않아 리플렉션으로 읽는다. 오류가 보이면 끈다."
+    },
+    "Legacy Integrations/Enable legacy QuestingBots integration": {
+      "name": "옛 QuestingBots 연동",
+      "desc": "0.11.0 보다 오래된 QuestingBots 에만 쓴다(그보다 새 판은 공식 연동 API 를 쓰며 늘 켜져 있다). 지원하지 않는 기능이고 리플렉션으로 읽는다. 오류가 보이면 끈다."
+    },
+    "Main/Open Webpage Keybind": {
+      "name": "웹 화면 열기 키",
+      "desc": "웹 클라이언트를 여는 키다."
+    },
+    "Main/Insert Menu Item": {
+      "name": "메뉴에 항목 넣기",
+      "desc": "웹 클라이언트를 열 메뉴 항목을 넣는다."
+    },
+    "Main/Recording Notification": {
+      "name": "기록 알림",
+      "desc": "기록이 시작되고 끝날 때 알린다."
+    },
+    "Main/Performance logging": {
+      "name": "성능 기록",
+      "desc": "10초마다 수집 비용·메모리 할당·GC 횟수·전송 밀림을 기록에 적는다. GC 와 힙 합계는 게임 전체를 포함하고, 수집 할당은 게임 스레드의 이 모드 몫만이다."
+    },
+    "Server/1. Server IP": {
+      "name": "서버 주소",
+      "desc": "서버의 IP 주소다."
+    },
+    "Server/2. Server WS Port": {
+      "name": "웹소켓 포트",
+      "desc": "레이드 되돌아보기 웹소켓 서버가 받는 포트다."
+    },
+    "Server/3. Server HTTP Port": {
+      "name": "HTTP 포트",
+      "desc": "레이드 되돌아보기 HTTP 서버가 받는 포트다."
+    },
+    "Server/4. TLS": {
+      "name": "TLS 쓰기",
+      "desc": "HTTP 서버 앞에 SSL 인증서를 두고 있으면 켠다."
+    },
+    "Server/5. Enable Recording": {
+      "name": "기록 켜기",
+      "desc": "끄면 수집을 즉시 멈추고 지금 기록은 다음 수집 시점에 마무리한다. 켜는 것은 다음 레이드부터 적용된다."
+    },
+    "Tracking Settings/Player Tracking": {
+      "name": "사람 위치 기록",
+      "desc": "플레이어와 봇의 위치를 기록한다."
+    },
+    "Tracking Settings/Kill Tracking": {
+      "name": "처치 위치 기록",
+      "desc": "처치가 일어난 위치를 기록한다."
+    },
+    "Tracking Settings/Loot Tracking": {
+      "name": "전리품 위치 기록",
+      "desc": "전리품을 집은 위치를 기록한다."
+    },
+    "Tracking Settings/Ballistics Tracking": {
+      "name": "탄도 기록",
+      "desc": "탄도의 위치를 기록한다."
+    }
+  }
+}
