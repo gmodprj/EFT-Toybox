@@ -1,0 +1,43 @@
+{
+  "guid": "com.mybutthasarash.cabinetlooter",
+  "name": "서류함 한꺼번에 뒤지기 (Cabinet Looter)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Cabinet clusters": "2. 서류함 묶음",
+    "3. Debug": "3. 진단"
+  },
+  "settings": {
+    "1. General/Show the whole cabinet": {
+      "name": "서류함 전체 보이기",
+      "desc": "서류함의 서랍 하나를 열면 그 함의 모든 서랍을 전리품 창에 보인다. 끄면 다음에 여는 서랍부터 원래대로 돌아간다."
+    },
+    "1. General/Search every drawer automatically": {
+      "name": "모든 서랍 자동 수색",
+      "desc": "내가 연 서랍에 이어 그 함의 남은 서랍을 보통 속도로 차례차례 뒤진다. 끄면 서랍들만 보이고, 제목을 눌러 직접 뒤진다."
+    },
+    "1. General/Resume half-searched drawers": {
+      "name": "덜 뒤진 서랍 이어서",
+      "desc": "수색이 끊긴 서랍(창을 닫거나 멈춘 경우)을 다시 열 때 자동으로 이어 뒤진다. 원래 게임은 직접 수색을 눌러야 한다. 이미 찾은 물건은 어느 쪽이든 그대로 남는다."
+    },
+    "1. General/Slide drawers open as they are searched": {
+      "name": "뒤질 때 서랍 열리게",
+      "desc": "서랍을 뒤지기 시작할 때마다 소리와 함께 열려, 다 뒤진 서류함이 뒤진 것처럼 보인다. 끄면 내가 연 서랍만 움직이고 나머지는 닫혀 있다."
+    },
+    "2. Cabinet clusters/Include cabinets standing next to it": {
+      "name": "붙어 있는 서류함까지",
+      "desc": "내가 연 서류함의 바로 옆이나 위에 붙어 있는 것들까지 한 묶음으로 보인다. 벽 너머의 것은 절대 들어가지 않는다."
+    },
+    "2. Cabinet clusters/Largest gap between cabinets (metres)": {
+      "name": "한 묶음으로 보는 간격(m)",
+      "desc": "두 서류함이 이보다 가까우면 한 묶음으로 센다. 간격은 중심이 아니라 **옆면** 사이로 잰다."
+    },
+    "2. Cabinet clusters/Most cabinets in a cluster": {
+      "name": "한 묶음의 최대 개수",
+      "desc": "내가 연 것을 포함해 이 수에서 묶음이 멈춘다. 가까운 것부터 남긴다."
+    },
+    "3. Debug/Log cabinet details": {
+      "name": "서류함 진단 로그",
+      "desc": "찾은 서류함과 묶음, 시작한 수색을 `LogOutput.log` 에 적는다."
+    }
+  }
+}

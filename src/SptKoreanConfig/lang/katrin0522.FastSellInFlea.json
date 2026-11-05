@@ -1,0 +1,33 @@
+{
+  "guid": "katrin0522.FastSellInFlea",
+  "name": "플리마켓 빨리 올리기 (Fast Sell In Flea)",
+  "sections": {
+    "Settings": "설정"
+  },
+  "settings": {
+    "Settings/Quick Offer Hold Key": {
+      "name": "빠른 등록 누름 키",
+      "desc": "오른쪽 클릭 메뉴를 열 때 이 키를 누르고 있으면 빠른 등록 항목이 보인다."
+    },
+    "Settings/Quick Offer Press Key When Hover": {
+      "name": "가리킨 채 누르는 키",
+      "desc": "물건에 마우스를 올린 채 이 키를 누르면 바로 등록한다."
+    },
+    "Settings/Flea Market Price Preset": {
+      "name": "가격 기준",
+      "desc": "올릴 가격을 시세의 무엇에 맞출지 고른다."
+    },
+    "Settings/Type Adjust Price": {
+      "name": "깎는 방식",
+      "desc": "Value 는 가져온 가격에서 정해진 액수를 빼고, Percent 는 비율만큼 뺀다."
+    },
+    "Settings/Price Subtract Value": {
+      "name": "깎는 액수",
+      "desc": "가져온 플리마켓 가격에서 뺄 액수. 등록 전에 적용된다."
+    },
+    "Settings/Price Subtract Percent %": {
+      "name": "깎는 비율(%)",
+      "desc": "가져온 플리마켓 가격에서 뺄 비율. 등록 전에 적용된다."
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "guid": "de.tosox.dynamicitemweights",
+  "name": "내용물에 따른 무게 (Dynamic Item Weights)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Debug": "2. 진단"
+  },
+  "settings": {
+    "1. General/Enabled": {
+      "name": "켜기",
+      "desc": "끄면 내용물에 따라 무게가 바뀌지 않는다."
+    },
+    "1. General/Default Tare Fraction": {
+      "name": "빈 무게 비율(기본값)",
+      "desc": "따로 정해진 값이 없을 때, 빈 용기 자체의 무게를 원래 무게에 대한 비율로 잡는다."
+    },
+    "2. Debug/Verbose Logging": {
+      "name": "자세한 로그",
+      "desc": "문제를 짚을 때 쓰도록 로그에 자세한 내용을 더 적는다."
+    }
+  }
+}

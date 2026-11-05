@@ -1,0 +1,29 @@
+{
+  "guid": "com.maschine.CombatLog",
+  "name": "전투 기록 (Combat Log)",
+  "sections": {
+    "Post-Raid Screens": "레이드 뒤 화면"
+  },
+  "settings": {
+    "Post-Raid Screens/Ammo in kill list": {
+      "name": "사살 목록에 탄종",
+      "desc": "레이드 종료 화면의 사살 목록에 숨통을 끊은 탄을 정확히 덧붙인다."
+    },
+    "Post-Raid Screens/Damaged targets in kill list": {
+      "name": "맞혔지만 못 죽인 상대도",
+      "desc": "맞히기만 하고 죽이지 못한 상대를 레이드 종료 목록의 보기용 사본에 더한다."
+    },
+    "Post-Raid Screens/Killer details on death screen": {
+      "name": "사망 화면에 가해자 정보",
+      "desc": "나를 죽인 무기·탄종·거리와 그 사람의 남은 체력을 보인다."
+    },
+    "Post-Raid Screens/Killer 3D model on death screen": {
+      "name": "사망 화면에 가해자 모델",
+      "desc": "내 모델 대신 나를 죽인 쪽의 실제 3D 모델·장비·레벨을 보인다."
+    },
+    "Post-Raid Screens/Weapon and distance in treatment tooltips": {
+      "name": "치료 화면 설명에 무기·거리",
+      "desc": "레이드 뒤 부위별 피해 설명에 무기와 실제 거리를 함께 적는다."
+    }
+  }
+}

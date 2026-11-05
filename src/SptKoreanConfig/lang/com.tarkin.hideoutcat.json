@@ -1,0 +1,17 @@
+{
+  "guid": "com.tarkin.hideoutcat",
+  "name": "은신처 고양이 (Hideout Cat)",
+  "sections": {
+    "Cat": "고양이"
+  },
+  "settings": {
+    "Cat/Coat": {
+      "name": "털색",
+      "desc": "은신처를 다시 불러올 때 적용된다."
+    },
+    "Cat/Eye Colour": {
+      "name": "눈색",
+      "desc": "은신처를 다시 불러올 때 적용된다."
+    }
+  }
+}

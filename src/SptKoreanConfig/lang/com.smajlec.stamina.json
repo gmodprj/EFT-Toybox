@@ -1,0 +1,30 @@
+{
+  "guid": "com.smajlec.stamina",
+  "name": "기력 조정 (Smajlec's Stamina)",
+  "sections": {
+    "Main": "기본",
+    "Require Stamina": "기력을 요구할 동작"
+  },
+  "settings": {
+    "Main/Jog Speed": {
+      "name": "기력 바닥일 때 속도",
+      "desc": "기력이 다 떨어졌을 때의 달리는 속도."
+    },
+    "Main/Sprint Downtime": {
+      "name": "회복 시작까지 쉬는 시간",
+      "desc": "전력질주를 멈춘 뒤 기력이 다시 차기 시작할 때까지 걸리는 시간."
+    },
+    "Main/Disable Fatigue": {
+      "name": "탈진 효과 끄기",
+      "desc": "기력이 바닥났을 때 걸리는 탈진 효과를 없앤다."
+    },
+    "Require Stamina/Jump": {
+      "name": "점프",
+      "desc": "점프에 녹색 기력을 요구한다."
+    },
+    "Require Stamina/Vault": {
+      "name": "넘기",
+      "desc": "넘어가는 동작에 녹색 기력을 요구한다."
+    }
+  }
+}
