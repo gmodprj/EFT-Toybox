@@ -1,0 +1,3 @@
+2395__LacyPvETweaks	SPT_Runtime\user\mods\LacyPvETweaks\LacyPvETweaks.dll
+2395__LacyPvETweaks	SPT_Runtime\user\mods\LacyPvETweaks\License.md
+2395__LacyPvETweaks	SPT_Runtime\user\mods\LacyPvETweaks\config\config.jsonc

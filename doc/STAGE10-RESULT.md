@@ -326,6 +326,56 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 레이드 흔적 16건으로 **얕다.** 기준선의 SAIN·STM 줄이 안 나왔고, 10-H 의 본 시험인 **맵별 진입과 프레임**도 로그로는 알 수 없다(위 10-H 절의 네 가지).
 
+## 10-K — 결속 소형 6개, 하나씩 · 2026-11-05
+
+프로필에 자기 자료를 넣는 것들이라 **프로필 백업 → 하나 설치 → 서버 테스트**를 6번 되풀이했다.
+
+| 항목 | 결과 |
+| --- | --- |
+| 의존성 | Quest Backport 가 요구하는 WTT CommonLib **3.0.6** · WTT Content Backport **2.0.5** 가 이미 설치돼 있고 **Forge 가 요구하는 버전과 정확히 같다** |
+| 받기 | 6개 모두 바이트 수 **정확히 일치** (합 921,212 바이트) |
+| 겹침 검사 | **CLEAN (0/0/0)**, 설치 대상 307개 |
+| 프로필 백업 | `backup/profiles-before-stage10-K/` — 7개 / 7,361,268 바이트 |
+| 기록 | 307줄 = 겹침 검사의 307 경로와 **정확히 일치**. 생성 파일 0건 |
+| 오류 | 6회 전부 `Could not add` 48 · `Unable to add bundle` 1 — **기준선과 같다.** 새 오류 0 |
+
+하나씩 넣은 결과
+
+| 순서 | 모드 | 분류 | 서버 모드 | 기록 줄 | 로드 확인 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | IOF: Inventory Organizing Feature (2960) | 게임 | **154 유지** | 2 | 서버 로그에 안 찍힌다(정상 — 클라이언트 전용) |
+| 2 | Item Preview QoL + screenshots (2206) | 게임 | **154 유지** | 1 | 같음 |
+| 3 | PityLoot (3077) | 서버 | 154 → **155** | 6 | `(Added 1 mods: PityLoot (1.0.0))`, `54 quest key mappings, 25 gunsmith`, `Loot patches enabled` |
+| 4 | TraumaCore (2893) | 게임 | **155 유지** | 2 | 서버 로그에 안 찍힌다 |
+| 5 | Lacy 의 PvE Tweaks (2395) | 서버 | 155 → **156** | 3 | `(Added 1 mods: Lacyway's PvE Tweaks (1.3.2))`, `Successfully loaded!` |
+| 6 | Quest Backport (3026) | 게임+서버 | 156 → **157** | 293 | `(Added 1 mods: QuestBackport (1.0.9))` |
+
+서버 154 → **157**. 게임 전용 3개는 수가 그대로인 것이 맞다.
+
+### Lacy 의 PvE Tweaks — 끌 것이 없었다
+
+계획은 "설치된 SVM 과 겹치는 항목을 끈 상태로 시작한다" 였는데, `config/config.jsonc` 의 **기본값이 열 개 전부 `false`** 였다. 손댈 것이 없다. 쓰려면 하나씩 켜면서 SVM 쪽과 대조해야 한다 — 특히 `questTweaks`·`removeMapLimitations`·`addRecipes`.
+
+함께 드러난 것: 이 모드는 **같은 작성자의 MergeConsumablesServer(이미 설치됨)와 나란히 찍힌다.** 둘은 별개 모드이고 서로를 밀어내지 않았다.
+
+### 프로필은 아직 바뀌지 않았다 — 그것이 정상이다
+
+설치 뒤 백업과 대조했다.
+
+- 아이템 수준(`tools/stm-profile-diff.mjs`): 프로필 7개 **전부 변화 없음.** 아이템 수·루블 모두 그대로이고, 새로 생긴 id 충돌도 없다.
+- 키·개수 수준(depth 4): **변화 없음.**
+
+**서버를 켜는 것만으로는 프로필에 심지 않는다**는 뜻이다. Quest Backport 가 퀘스트를 심는 것은 게임이 프로필을 불러올 때다. 그러므로 **이 백업이 여전히 유효한 "전" 상태**이고, 진짜 비교는 **게임을 한 번 돌린 뒤**에 같은 두 명령으로 다시 해야 한다.
+
+되돌릴 때는 모드 기록으로 파일을 지우고 `backup/profiles-before-stage10-K/` 를 덮어 쓴다. Quest Backport 는 이 복원이 **필수**다.
+
+### 다음 게임 기동에서 볼 것
+
+- 플러그인 수 **228 → 232**. 10-K 가 넣은 클라이언트 DLL 은 4개다 — `flir.iof.dll`, `JBOBYH_ItemPreviewQoL.dll`, `TraumaCore.dll`, `QuestBackport.Client.dll`. 232 보다 적으면 그중 하나가 플러그인 속성이 없거나 GUID 가 겹친 것이다.
+- `[Error` 가 기존 건(SAIN 6 · DirectReload 1 · STM 2)뿐인지.
+- **프로필 비교를 다시 한다** — 위 두 명령. 새로 생긴 키가 이 6개의 것인지 본다.
+- 눈으로 볼 것: IOF 의 인벤토리 정리, Item Preview QoL 의 아이템 미리보기, TraumaCore 의 치료 화면, Quest Backport 의 새 퀘스트가 상인 목록에 뜨는지.
+
 ## 10-J — 도구·성능 7개 (하나씩) · 2026-11-05
 
 로더·설정 화면·오버레이를 건드려 다른 모드 전체에 영향이 가므로 하나씩 넣었다.

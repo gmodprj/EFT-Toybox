@@ -1,0 +1,2 @@
+2960__flir.iof-v1.10.1	BepInEx\plugins\flir.iof\flir.iof.dll
+2960__flir.iof-v1.10.1	BepInEx\plugins\flir.iof\README.md

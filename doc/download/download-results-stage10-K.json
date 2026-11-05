@@ -1,0 +1,68 @@
+[
+  {
+    "id": 2206,
+    "name": "Item Preview QoL + screenshots",
+    "version": "1.2.0",
+    "file": "2206__JBOBYH_ItemPreviewQoL_4.1.6.zip",
+    "bytes": 12067,
+    "expected": 12067,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2395,
+    "name": "Lacy's PvE Tweaks",
+    "version": "1.3.2",
+    "file": "2395__LacyPvETweaks.zip",
+    "bytes": 18008,
+    "expected": 18008,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2960,
+    "name": "IOF: Inventory Organizing Feature",
+    "version": "1.10.1",
+    "file": "2960__flir.iof-v1.10.1.zip",
+    "bytes": 24908,
+    "expected": 24908,
+    "sizeOk": true,
+    "host": "gitlab.com",
+    "seconds": 1
+  },
+  {
+    "id": 3077,
+    "name": "PityLoot",
+    "version": "1.0.0",
+    "file": "3077__PityLoot-1.0.0.zip",
+    "bytes": 45874,
+    "expected": 45874,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2893,
+    "name": "TraumaCore",
+    "version": "1.7.0",
+    "file": "2893__TraumaCore-1.7.0.zip",
+    "bytes": 108790,
+    "expected": 108790,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3026,
+    "name": "Quest Backport",
+    "version": "1.0.9",
+    "file": "3026__QuestBackport-1.0.9.zip",
+    "bytes": 711565,
+    "expected": 711565,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]
