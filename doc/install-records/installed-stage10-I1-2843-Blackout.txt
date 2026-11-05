@@ -1,0 +1,5 @@
+2843__Blackout_4.1.1	BepInEx\plugins\Blackout\blackout_sounds.bundle
+2843__Blackout_4.1.1	BepInEx\plugins\Blackout\Blackout.dll
+2843__Blackout_4.1.1	BepInEx\plugins\Blackout\BlackoutFika.dll
+2843__Blackout_4.1.1	SPT_Runtime\user\mods\Blackout\BlackoutServer.dll
+2843__Blackout_4.1.1	SPT_Runtime\user\mods\Blackout\config.json

@@ -1,0 +1,2 @@
+2734__BetterNightSkies	BepInEx\plugins\BetterNightSkies\BetterNightSkies.dll
+2734__BetterNightSkies	BepInEx\plugins\BetterNightSkies\nightsky.bundle

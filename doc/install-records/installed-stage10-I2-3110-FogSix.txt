@@ -1,0 +1,4 @@
+3110__FogSix-1.0.1	BepInEx\plugins\FogSix\FogSix.dll
+3110__FogSix-1.0.1	BepInEx\plugins\FogSix\Assets\volfog
+3110__FogSix-1.0.1	SPT_Runtime\user\mods\DynamicFog\config.json
+3110__FogSix-1.0.1	SPT_Runtime\user\mods\DynamicFog\DynamicFog.dll

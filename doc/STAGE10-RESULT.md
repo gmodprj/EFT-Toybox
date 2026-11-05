@@ -326,6 +326,62 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 레이드 흔적 16건으로 **얕다.** 기준선의 SAIN·STM 줄이 안 나왔고, 10-H 의 본 시험인 **맵별 진입과 프레임**도 로그로는 알 수 없다(위 10-H 절의 네 가지).
 
+## 10-I — 그래픽·음향 16개 (둘로 쪼갬) · 2026-11-05
+
+계획은 "16개를 하나씩" 이었으나, 이 단계는 **서버 테스트로 아무것도 드러나지 않아** 하나씩 가면 게임 기동을 16번 해야 한다. 사용자와 정해 둘로 쪼갰다.
+
+| 묶음 | 내용 | 방식 |
+| --- | --- | --- |
+| **10-I1** (10개, 465.0 MB) | HollywoodFX · Better Night Skies · Blackout · Shadow Flicker Fix · Headshot Darkness · Ragdoll Kinetics · Manimal Watch Animations · BushWhacker · Battle Ambience · Music Extender | 서로 건드리는 곳이 달라 한 묶음 + 테스트 한 번 |
+| **10-I2** (6개, 24.5 MB) | CloudSix · FogSix · ReflectSix · AOSix · POMSix · TraceSix | 같은 제작자 묶음이라 **하나씩**, 기록도 따로 |
+
+| 항목 | 결과 |
+| --- | --- |
+| 받기 | 16개 모두 바이트 수 **정확히 일치** |
+| 겹침 검사 | I1 CLEAN(81개). I2 는 처음 **ATTENTION(1)** → 아래 참조, 빼낸 뒤 CLEAN(15개) |
+| 설치 | I1 10개(81파일 + 빈 폴더 1), I2 6개(15파일) |
+| 서버 모드 | 150 → **151**(Blackout, 시작 144초) → **152**(FogSix) |
+| 오류 | I1 테스트에서 새 오류 0 |
+
+### CloudSix 가 선택 Fika DLL 을 담아 왔다
+
+```
+[3] 설치 경로가 아닌 파일: 1
+    2567__CloudSix_4.0.2 -> FikaSync (OPTIONAL)/BepInEx/plugins/CloudSix/CloudSix-FikaSync.dll
+```
+
+폴더 이름에 **`(OPTIONAL)`** 이라고 제작자가 적어 뒀고 이 설치본은 Fika 를 쓰지 않으므로 `extracted/stage10-I2/_excluded/` 로 빼냈다. 10-D 의 `Name Plate.exe` 와 같은 처리다.
+
+### 10-I2 는 서버 테스트를 못 돌렸다
+
+FogSix 의 서버 쪽(`user/mods/DynamicFog/`)이 들어갔으므로 수는 **152** 가 되어야 하는데, **서버 테스트로 확인하지 못했다.** `install-and-test.ps1` 은 설치와 테스트가 한 몸이라 "테스트만" 돌릴 수 없고(이미 설치된 것을 다시 넣으려 하면 설계대로 거부한다), 서버를 따로 띄우면 **프로세스 종료가 권한 분류기에 막혀 끌 수가 없다.**
+
+대신 확인한 것 — `user/mods` 폴더 수가 **152** 다(151 + DynamicFog). `ModLoader: 총 152 개` 는 **다음 서버 기동에서** 확인한다.
+
+### 용량 — 받는 크기와 설치 크기가 많이 다르다
+
+**HollywoodFX 는 내려받기 258 MB 인데 설치하면 973 MB** 다. Music Extender 도 121 MB → 122 MB, Battle Ambience 는 11.5 MB → 82.9 MB 다. [PLAN-STAGE10.md](PLAN-STAGE10.md) 의 분량(14.8 GB)은 **내려받는 크기 기준**이므로 실제 디스크 사용은 그보다 크다. `E:\` 여유가 1 TB 라 문제는 없지만, 남은 단계(특히 10-M·10-O 의 GB 단위 맵)에서는 **압축 해제 뒤 크기로 다시 봐야 한다.**
+
+### 다음 게임 기동에서 볼 것 — 222
+
+16개가 넣은 플러그인 DLL 은 19개인데 **플러그인은 17개**다.
+
+- **HollywoodFX 혼자 플러그인을 둘 등록한다** — `HollywoodFX.dll` + `HollywoodGraphics.dll`.
+- 라이브러리 2개는 0 으로 센다 — `Blackout\BlackoutFika.dll`(플러그인 속성 없음)과 `TraceSix\native\TraceSixRT.dll`(네이티브).
+
+`BlackoutFika.dll` 은 10-G 의 `LootNetFika.dll` 과 이름이 닮았지만 **속성이 없어 안 올라온다.** 이름이 아니라 속성으로 센다는 정정이 여기서 다시 확인됐다.
+
+그래서 **205 + 17 = 222** 다.
+
+### 아직 확인되지 않은 것
+
+이 단계는 **로그로 거의 검증되지 않는다.** 게임을 띄워 봐야 한다.
+
+- 플러그인 수 222 와 새 오류 유무
+- **설치된 Amands' Sense 와 화면이 겹치는지** — 이 단계 내내 보기로 한 것이다
+- **프레임** — TraceSix(레이트레이싱·복셀 GI)·POMSix·CloudSix 는 무겁다. 돌아가는 것과 쓸 수 있는 것은 다르다
+- Six 계열은 **하나씩 기록이 갈려 있어** 무거우면 그 모드만 빼면 된다
+
 ## 10-H — 맵·레이드 소형 7개 (하나씩) · 2026-11-05
 
 맵을 건드리는 것은 터질 때 레이드 진입이 막히므로, 작아도 하나씩 넣고 그때마다 서버 테스트를 돌렸다. **7회 전부 정상 시작**이다.

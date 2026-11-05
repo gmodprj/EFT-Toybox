@@ -1,0 +1,2 @@
+1582__HeadshotDarkness	BepInEx\plugins\HeadshotDarkness\deathstrings.json
+1582__HeadshotDarkness	BepInEx\plugins\HeadshotDarkness\HeadshotDarkness.dll

@@ -1,0 +1,13 @@
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodFX\hollywoodfx
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodFX\HollywoodFX.dll
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\HollywoodGraphics.dll
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust1.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust2.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust3.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust4.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust4A.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust4B.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust5.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust6.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust7.png
+2003__HollywoodFx_3.0.0	BepInEx\plugins\HollywoodGraphics\bloom\LensDust8.png

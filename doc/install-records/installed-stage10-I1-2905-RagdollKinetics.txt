@@ -1,0 +1,2 @@
+2905__RagdollKinetics-1.2.0	BepInEx\plugins\Hysocs-RagdollKinetics\LICENSE
+2905__RagdollKinetics-1.2.0	BepInEx\plugins\Hysocs-RagdollKinetics\RagdollKinetics.dll
