@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -17,6 +18,8 @@ namespace SptKoreanConfig
     [BepInPlugin(PluginGuid, "F12 설정 한글화", "0.2.0")]
     [BepInDependency(CmGuid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SainGuid, BepInDependency.DependencyFlags.SoftDependency)]
+    // Better BepInEx 가 깔려 있으면 그보다 뒤에 올라와야 그 어셈블리를 찾아 패치할 수 있다.
+    [BepInDependency(BetterBepInExPatch.Guid, BepInDependency.DependencyFlags.SoftDependency)]
     public class KoreanConfigPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.koreanconfig";
@@ -58,6 +61,10 @@ namespace SptKoreanConfig
                 Log.LogInfo($"창 UI 한글화 — 사전 {UiStringPatch.Loaded}개, 메서드 {UiStringPatch.PatchedMethods}개, 문자열 {UiStringPatch.ReplacedLiterals}개 교체");
                 UiStringPatch.LogUnused();
             }
+
+            // Better BepInEx 가 F12 창을 갈아끼우면 CM 의 목록 생성이 돌지 않는다.
+            // 그 모드가 설정을 모으는 지점에 같은 번역을 다시 건다. 없으면 조용히 꺼진다.
+            BetterBepInExPatch.TryPatch(harmony);
 
             // SAIN 편집기. 설정 이름·설명·분류는 SAIN 이 속성에서 읽어 만든 객체를 고쳐서,
             // 창 안에 박힌 글자는 위와 같은 방법으로 바꾼다. SAIN 이 없으면 둘 다 조용히 꺼진다.
@@ -151,6 +158,22 @@ namespace SptKoreanConfig
 
             if (!(AllSettingsField.GetValue(cm) is List<SettingEntryBase> all)) return;
 
+            ApplyToEntries(all, "CM");
+
+            // 섹션 묶음은 Category 로 다시 만들어야 한글 제목으로 묶인다.
+            BuildFiltered?.Invoke(cm, null);
+        }
+
+        /// <summary>
+        /// 설정 목록 하나를 한글로 덮어쓴다. CM 이 만든 것이든 다른 메뉴가 만든 것이든
+        /// <see cref="SettingEntryBase"/> 목록이기만 하면 된다.
+        /// </summary>
+        internal static void ApplyToEntries(IEnumerable<SettingEntryBase> entries, string where)
+        {
+            if (entries == null) return;
+            var all = entries.Where(e => e != null).ToList();
+            if (all.Count == 0) return;
+
             var mark = KoreanConfigPlugin.MarkUntranslated.Value;
             var sectionsDone = new HashSet<string>();
             int named = 0, missing = 0;
@@ -197,10 +220,7 @@ namespace SptKoreanConfig
             }
 
             _lastAppliedKorean = true;
-            KoreanConfigPlugin.Log.LogInfo($"한글 적용 — 항목 {named}/{all.Count}, 섹션 {sectionsDone.Count}종, 사전에 없음 {missing}");
-
-            // 섹션 묶음은 Category 로 다시 만들어야 한글 제목으로 묶인다.
-            BuildFiltered?.Invoke(cm, null);
+            KoreanConfigPlugin.Log.LogInfo($"한글 적용({where}) — 항목 {named}/{all.Count}, 섹션 {sectionsDone.Count}종, 사전에 없음 {missing}");
         }
 
         /// <summary>표시용 이름이 아니라 .cfg 에 적히는 원문 섹션/키를 꺼낸다.</summary>
