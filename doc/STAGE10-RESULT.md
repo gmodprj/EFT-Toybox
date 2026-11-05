@@ -275,6 +275,32 @@ Simple Workout QTE(1437)의 설정과 Expanded Task Text(2153)의 설명 캐시�
 
 Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 여기서 빼기로 하면 그쪽도 함께 막힌다.
 
+## 게임 기동 확인 (10-G·10-H 설치 후, 2026-11-05 12:05)
+
+로그가 설치(11:40)보다 뒤인지 백그라운드로 기다렸다가 로드가 끝난 뒤 읽었다.
+
+| 항목 | 값 | 예상 |
+| --- | --- | --- |
+| `plugins to load` | **205** | 204 — **내 예상이 하나 적었다** |
+| `Loading [` 줄 | **205** | 일치, `Chainloader startup complete` |
+| `[Error` / `[Fatal` | **1줄 / 0줄** | 알려진 `DirectReload` + Fika 건뿐 |
+
+### 하나 어긋난 이유를 가렸다 — `LootNet.Fika` 가 올라왔다
+
+`Loading [LootNet.Fika 1.0.9]` 가 떴다. 10-G 절에 적은 "Fika 변종이라 올라오지 않는다"가 틀렸고, 그 절에 정정을 달았다. 요점은 **`-Fika` 라는 이름이 아니라 DLL 의 플러그인 속성만 본다**는 것이다.
+
+그래서 **191 + 1(ORBIT) + 6(10-G) + 7(10-H) = 205** 로 맞는다.
+
+### 10-H 7개 전부 로드됐다
+
+`acidphantasm-enablelabyrinth 1.1.0` · `TacticalToaster-UNTARGH 3.2.1` · `RUAFComeHome 1.2.1` · `DrakiaXYZ-DoorRandomizer 1.8.0` · `acidphantasm-letmeout 1.1.0` · `BlackDiv 1.3.1` · `itsRipper-RippersCasino 1.0.1`.
+
+여기서도 이름이 모드명과 달랐다 — UNTAR Go Home! 은 `TacticalToaster-UNTARGH`, Rippers Casino 는 `itsRipper-RippersCasino`, Black Division 집은 `BlackDiv` 다.
+
+### 아직 확인되지 않은 것
+
+레이드 흔적 16건으로 **얕다.** 기준선의 SAIN·STM 줄이 안 나왔고, 10-H 의 본 시험인 **맵별 진입과 프레임**도 로그로는 알 수 없다(위 10-H 절의 네 가지).
+
 ## 10-H — 맵·레이드 소형 7개 (하나씩) · 2026-11-05
 
 맵을 건드리는 것은 터질 때 레이드 진입이 막히므로, 작아도 하나씩 넣고 그때마다 서버 테스트를 돌렸다. **7회 전부 정상 시작**이다.
@@ -341,7 +367,18 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 **`OTHERMOD` 는 "기록 안 해도 되는 파일"이 아니라 "이 태그의 것이 아니다"라는 뜻**이다. 앞 단계에서 이미 기록한 것인지, 이번 단계 모드의 것인지 매번 가린다.
 
-### 다음 게임 기동에서 볼 것 — 197 (198 아님)
+### 정정 (2026-11-05 12:05 기동) — 예상 197 은 틀렸고 198 이 맞았다
+
+아래에서 `LootNetFika.dll` 을 "Fika 변종이라 올라오지 않는다"고 적었는데 **틀렸다.** 실제 로그에 `Loading [LootNet.Fika 1.0.9]` 가 떴다. 그래서 10-G 의 기여는 5가 아니라 **6**이다.
+
+왜 틀렸나 — 두 가지를 섞었다.
+
+- `FixPluginTypesSerialization` 의 `Excluding 'LootNetFika.dll' ... It references Fika.Core which doesn't exist` 는 **직렬화 수정 대상에서 뺀다**는 뜻이지, BepInEx 가 플러그인을 안 올린다는 뜻이 아니다. 그 경고가 떠도 플러그인은 올라온다.
+- 10-E 의 All Quests Checkmarks 를 선례로 삼았는데, 그 모드의 `-Fika.dll` 은 **플러그인 속성이 아예 없는 라이브러리**였다(해제본에서 확인: `AllQuestsCheckmarks-Fika.dll` → `BepInPlugin` 없음, `AllQuestsCheckmarks-Client.dll` → 있음). `LootNetFika.dll` 은 `BepInPlugin` 이 **있다**. 둘은 이름만 닮았고 종류가 다르다.
+
+**판정 기준 정정 — `-Fika` 라는 이름으로 세지 말고 DLL 의 플러그인 속성만 본다.** 속성이 있으면 1, 없으면 0 이다. Fika 가 없으면 그 플러그인이 실제로 하는 일은 없을 수 있지만, **세는 수에는 들어간다.**
+
+### (틀린 예상) 다음 게임 기동에서 볼 것 — 197 (198 아님)
 
 10-G 가 `BepInEx\plugins` 에 넣은 DLL 은 6개이고 **전부 플러그인 표식이 있다.** 그런데 그중 하나가 `LootNet\LootNetFika.dll` 이다.
 
