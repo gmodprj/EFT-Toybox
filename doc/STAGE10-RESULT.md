@@ -416,6 +416,40 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 **아직 확인되지 않은 것** — 게임 쪽 `ORBIT.dll` 은 플러그인 표식이 있어 다음 기동에서 **192** 가 되어야 한다. 그리고 이 단계의 본 시험은 **레이드에서 봇이 멈추거나 떼로 몰리지 않는지**다. 서버 테스트로는 SAIN 쪽 경고가 없다는 것까지만 확인했다.
 
+### ORBIT 과 SAIN 은 어떤 관계인가 (2026-11-05 조사)
+
+**덮어쓰지 않는다. 그러나 별개로 도는 것도 아니다** — 역할을 나눠 맞물린다.
+
+덮어쓰지 않는 근거
+
+- ORBIT 의 설치 기록 19줄에 **SAIN 경로가 0건**이다. 자기 폴더(`plugins/ORBIT`, `user/mods/ORBIT`)만 쓴다.
+- ORBIT 의 `config.json`(323KB)에 **SAIN 문자열이 0건**이다. 키는 전부 자기 것이다 — `ambush`·`rush`·`multi_step`·`movement`·`zones`·`personalities`·`ai_limiter`·`poi_guard`·`main_objectives`·`loot`.
+- **서버 쪽 `Orbit.Server.dll` 은 SAIN·BigBrain 을 아예 참조하지 않는다**(문자열 0건). 서버는 설정·구역 데이터만 다룬다.
+- ORBIT 설치 후 SAIN 폴더에서 바뀐 파일은 `SAIN/EditorDefaults.json` 하나인데, 수정 시각이 **게임 기동 시각(12:05:13)** 이고 모든 플러그인 `.cfg` 가 같은 시각에 함께 바뀌었다. 내용에 ORBIT 언급이 없다 — **SAIN 이 자기 UI 상태를 다시 쓴 것**이다.
+
+맞물리는 근거 — 클라이언트 `ORBIT.dll` 안에 `Orbit.Sain` 네임스페이스가 통째로 있다.
+
+| 문자열 | 뜻 |
+| --- | --- |
+| `BepInDependency`, `me.sol.sain` | SAIN 을 **하드 의존**으로 선언한다 |
+| `BrainManager`, `AddCustomLayer`, `CustomLayer`, `AICoreLayer` | **BigBrain 커스텀 레이어로 끼어든다** — 레이어 우선순위로 조정되는 구조이고, SAIN 도 같은 틀을 쓴다 |
+| `get_IsSainAvailable`, `SainCombatLayerName`, `_sainCombatActive`, `SainResolveDeadline`, `SainResolveTimeoutSeconds`, `_sainCombatEndedAt` | SAIN 의 전투 레이어가 **도는 동안 비켜서고, 끝날 때까지 기다린다** |
+| `SainStopsProtected`, `PreservePathDuringSainCleanup`, `SainCleanupScopeReady`, `SainStopGuardReady`, `ReportedSainProtection` | SAIN 의 stop·cleanup 이 **ORBIT 이 깐 경로를 지우지 못하게 막는다** |
+| `SniperSainDecisionPatch`, `SniperSainAlertPatch`, `NativeGhostSainStopPatch`, `NativeGhostSainCleanupPatch`, `GhostSpawnSainContactPatch` | SAIN 메서드에 **Harmony 패치를 건다**(파일을 고치는 것이 아니라 런타임 후킹) |
+| `SainPersonality` | SAIN 의 **성격 값을 읽어** 자기 행동에 쓴다 — `config.json` 의 `timmy`·`cautious`·`average`·`aggressive`·`very_aggressive` 묶음이 그것이다 |
+
+제작자 설명도 같은 말이다 — **"ORBIT handles activity between fights and Ghost simulation. Awake combat stays with SAIN/native AI."** 즉 **싸움은 SAIN, 싸움 사이의 이동·목표·매복·탈출은 ORBIT** 이다.
+
+### 그래서 해야 할 설정이 하나 있다 — SAIN 의 extraction 끄기
+
+모드 페이지가 설치 절차로 못박아 둔 것이다.
+
+> Turn SAIN extraction OFF and save your SAIN preset.
+
+ORBIT 의 `config.json` 에는 탈출 조건(전리품·목표 완료·시간·부상)이 들어 있고, SAIN 에도 자체 탈출 기능이 있다. **둘 다 켜 두면 탈출을 정하는 주체가 둘이 된다.** 아직 하지 않았다 — **F12 의 SAIN 설정에서 extraction 을 끄고 프리셋을 저장**해야 한다. 파일로 대신할 수 없는 작업이다(SAIN 프리셋은 F12 에서 저장해야 기록된다).
+
+함께 적어 둘 것 — 제작자가 **SAIN Personality Mixer**(선택)를 권한다. PMC 성격 확률을 레벨·장비와 무관하게 F12 에서 정할 수 있어 ORBIT 행동이 다양해진다고 한다. 이 설치본에는 없다.
+
 ## 레이드 확인 (10-F 설치 후, 2026-11-05 11:06까지)
 
 10:26 기동이 11:06 까지 이어졌다. 앞 절의 10:40 판독과 **같은 기동이고 레이드가 더 깊어진 것**이다(`GameWorld`·`RaidStartPatch` 흔적 15 → 18, 로그 214KB → 270KB).
