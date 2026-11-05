@@ -275,6 +275,50 @@ Simple Workout QTE(1437)의 설정과 Expanded Task Text(2153)의 설명 캐시�
 
 Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 여기서 빼기로 하면 그쪽도 함께 막힌다.
 
+## 게임 기동 확인 (10-F 설치 후, 2026-11-05 10:40)
+
+로그가 설치(10:10)보다 뒤인지 기다렸다가 플러그인 로드가 끝난 뒤 읽었다.
+
+| 항목 | 값 | 예상 |
+| --- | --- | --- |
+| `plugins to load` | **191** | **191** — 맞다 |
+| `Loading [` 줄 | **191** | 일치, `Chainloader startup complete` |
+| `[Error` / `[Fatal` | **1줄 / 0줄** | 25 → 1 |
+| `AllQuestsCheckmarks` 언급 | **0건** | 사라져야 한다 — 맞다 |
+
+### 2025 제거의 게임 쪽 확인이 끝났다
+
+앞 기동의 오류 25줄 가운데 24줄이 All Quests Checkmarks 것이었는데, 이번 로그에는 **그 모드 언급이 한 건도 없고 오류는 1줄**(알려진 `DirectReload` + Fika 건)뿐이다. 서버 쪽은 10-F 테스트의 `Removed 1 mods` 로 이미 확인됐으므로, 이로써 양쪽 다 닫혔다.
+
+### 10-F 플러그인 11개 전부 로드됐다
+
+| 모드 | `Loading [` 줄 이름 |
+| --- | --- |
+| Bring Back Concussion | `Bring Back Concussion 1.2.1` |
+| CookingGrenades | `CookingGrenades 1.4.4` |
+| Inspectionless Malfunctions Reborn | `InspectionlessMalfsReborn 1.0.0` |
+| Deminvincibility | `Deminvincibility 2.2.0` |
+| Smajlec 의 Stamina | `SmajlecStamina 1.4.0` |
+| Classic Movement | `Classic Movement 1.1.3` |
+| Climbable Ladders | `tarkin.ladders.bep 1.0.4` |
+| Increase Look Direction | `IncreaseLookDirection 1.3.0` |
+| Auto Shoulder Swap | `hazelify.StanceSync 1.1.1` |
+| **No Aim Swing** | **`No Aim OverSwing 1.2.0`** |
+| Deadzone | `Manimal-Deadzone 1.2.0` |
+
+Increase Climb Height(1575)는 **서버 전용**이라 플러그인이 없다.
+
+**이름으로 찾을 때 걸린 것** — No Aim Swing 은 자기를 `No Aim OverSwing` 으로 알린다(GUID `ciallo.noaimswing`). 모드 이름으로 로그를 훑으면 놓친다. 수가 맞는데 이름이 안 보이면 **DLL 안의 문자열에서 플러그인 표시 이름을 읽어** 확인한다.
+
+### 적어 둘 것
+
+- **CookingGrenades 는 로그를 중국어로 찍는다**(`[GrenadeWheel] 已初始化` 등). 오류가 아니고 패치도 전부 `已启用` 로 걸렸다. 이 모드만 로그 언어가 다르다는 것을 알아 두면 다음에 당황하지 않는다.
+
+### 아직 확인되지 않은 것
+
+- **레이드가 얕았다** — `GameWorld`·`RaidStartPatch` 흔적 15건이고, 기준선의 SAIN·STM·ECOTI 14줄이 안 나왔다. 즉 **깊은 레이드에서의 오류 비교는 아직 못 했다.**
+- **조작감은 로그로 알 수 없다.** 걷기·달리기·스태미나, 사다리와 넘기 높이, 조준 흔들림, 수류탄 쿠킹과 섬광은 몸으로 확인해야 한다. 이상하면 이동 넷과 조준 둘을 먼저 의심한다(위 10-F 절).
+
 ## 게임 기동 확인 (10-E·10-E2 설치 후, 2026-11-05 09:49)
 
 `LogOutput.log` 09:49 > 설치 08:50 — 설치 이후 기동이 맞다.
