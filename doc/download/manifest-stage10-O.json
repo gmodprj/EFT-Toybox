@@ -1,0 +1,35 @@
+{
+  "stage": "stage10-O",
+  "spt": "4.1.6",
+  "note": "10-O Manimal 맵 백포트 3개. 표 순서를 바꾸지 않는다 — ICEBREAKER(2866)가 Interchange Expansion(3025)을 요구하므로 맨 뒤다. 하나에 1.4~2.3 GB 이므로 하나 넣고 그 맵에 들어가 보는 것까지 끝낸 뒤 다음으로 간다(계획: 받아 놓고 몰아서 넣지 않는다). 세 개 모두 WTT Content Backport 와 같은 계열이라 파일 겹침이 가장 의심되는 단계다 — 덮어쓰기 경고가 하나라도 나오면 멈춘다. ICEBREAKER 의 선행 8개(UnityToolkit 2.0.2 · WTT CommonLib 3.0.6 · WTT Content Backport 2.0.5 · BigBrain 1.5.0 · MoreBotsAPI 2.1.1 · WTT Black Division 1.3.1 · Climbable Ladders 1.0.4 · Manimal CS Gas 2.0.0)는 모두 설치돼 있고 3025 만 이 단계에서 들어간다. UnityToolkit 은 Forge 에 4.1.6 표기가 없지만(최신 2.0.2 가 4.1.5) 설치본에서 프리패처가 실제로 돌고 있어 차단 사유가 아니다 — PLAN-STAGE10.md 10-0-5. 참고: 10-M 의 DynamicMaps Extended DLL 이 com.manimal.icebreaker 를 참조한다 — 2866 이 들어가면 그쪽 지도에 할 일이 생긴다. 또 10-B 의 Map Variants 가 찍던 [MV] no backported location found 가 이 단계 뒤에 사라지는지 본다. 계획은 PLAN-STAGE10.md 10-O.",
+  "totalSize": 5637623632,
+  "mods": [
+    {
+      "group": "10O-1",
+      "id": 3025,
+      "name": "Manimal's 1.0 Interchange Expansion Backport",
+      "version": "1.0.8",
+      "size": 1509917405,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3025/manimals-10-interchange-expansion-backport/1.0.8"
+    },
+    {
+      "group": "10O-2",
+      "id": 3022,
+      "name": "Manimal's 1.0 Lighthouse Rework Backport",
+      "version": "1.0.7",
+      "size": 2455455438,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3022/manimals-10-lighthouse-rework-backport/1.0.7"
+    },
+    {
+      "group": "10O-3",
+      "id": 2866,
+      "name": "MANIMAL'S ICEBREAKER BACKPORT",
+      "version": "1.1.3",
+      "size": 1672250789,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2866/manimals-icebreaker-backport/1.1.3"
+    }
+  ]
+}
