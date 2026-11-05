@@ -1,8 +1,0 @@
-2025__allquestscheckmarks-1.4.0-spt-4.1	BepInEx\plugins\AllQuestsCheckmarks\AllQuestsCheckmarks-Client.dll
-2025__allquestscheckmarks-1.4.0-spt-4.1	BepInEx\plugins\AllQuestsCheckmarks\AllQuestsCheckmarks-Fika.dll
-2025__allquestscheckmarks-1.4.0-spt-4.1	BepInEx\plugins\AllQuestsCheckmarks\AllQuestsCheckmarksAssets
-2025__allquestscheckmarks-1.4.0-spt-4.1	BepInEx\plugins\AllQuestsCheckmarks\locales\ch.json
-2025__allquestscheckmarks-1.4.0-spt-4.1	BepInEx\plugins\AllQuestsCheckmarks\locales\en.json
-2025__allquestscheckmarks-1.4.0-spt-4.1	BepInEx\plugins\AllQuestsCheckmarks\locales\pl.json
-2025__allquestscheckmarks-1.4.0-spt-4.1	BepInEx\plugins\AllQuestsCheckmarks\locales\ru.json
-2025__allquestscheckmarks-1.4.0-spt-4.1	SPT_Runtime\user\mods\AllQuestsCheckmarks\AllQuestsCheckmarks-Server.dll
