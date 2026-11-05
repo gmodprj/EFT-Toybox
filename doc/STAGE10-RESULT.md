@@ -471,7 +471,24 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 > Turn SAIN extraction OFF and save your SAIN preset.
 
-ORBIT 의 `config.json` 에는 탈출 조건(전리품·목표 완료·시간·부상)이 들어 있고, SAIN 에도 자체 탈출 기능이 있다. **둘 다 켜 두면 탈출을 정하는 주체가 둘이 된다.** 아직 하지 않았다 — **F12 의 SAIN 설정에서 extraction 을 끄고 프리셋을 저장**해야 한다. 파일로 대신할 수 없는 작업이다(SAIN 프리셋은 F12 에서 저장해야 기록된다).
+ORBIT 의 `config.json` 에는 탈출 조건(전리품·목표 완료·시간·부상)이 들어 있고, SAIN 에도 자체 탈출 기능이 있다. **둘 다 켜 두면 탈출을 정하는 주체가 둘이 된다.**
+
+**확인 결과 — 이미 꺼져 있다 (2026-11-05).** 처음에 "아직 하지 않았다"고 적었는데 **확인하지 않고 쓴 것이었다.** 실제로는 이렇다.
+
+- SAIN 설정은 **F12 가 아니라 F6 자체 에디터**다(`me.sol.sain.cfg` 의 `Open Editor Shortcut = F6`).
+- 활성 프리셋은 **`My Preset`**(`plugins/SAIN/EditorDefaults.json` → `SelectedCustomPreset`), 파일은 `SPT_Runtime/user/mods/Solarint-SAIN-ServerMod/Presets/My Preset.json`.
+- 그 안의 주 스위치가 **`GlobalSettings.General.Extract.SAIN_EXTRACT_TOGGLE = false`** 다. 파일 수정 시각이 **11-04 13:26** 으로 ORBIT 설치(11-05 11:55)보다 앞서니, ORBIT 때문에 끈 것이 아니라 **원래 꺼져 있었다.**
+
+남아 있는 것과 그 뜻
+
+| 항목 | 값 | 판단 |
+| --- | --- | --- |
+| `GlobalSettings.General.Extract.SAIN_EXTRACT_TOGGLE` | **false** | 주 스위치. 꺼져 있다 |
+| `BotSettings.<봇종류>.Settings.<난이도>.Mind.EnableExtracts` | true ×244 | 봇 종류별 개별 스위치. 주 스위치가 꺼진 상태에서 이것들이 어떻게 취급되는지는 SAIN 내부 로직이라 **파일만 보고는 단정할 수 없다** |
+| `GlobalSettings.General.LootingBots.ExtractFromLoot` | true | **Looting Bots 연동 항목인데 그 모드가 설치돼 있지 않다** — 무의미하다 |
+| `GlobalSettings.General.Layers.SAINExtractLayerPriority` | 24 | 레이어 우선순위. 주 스위치가 꺼져 있으면 쓰이지 않는다 |
+
+**그래도 눈으로 한 번 보는 편이 낫다** — F6 에디터를 열어 Global Settings → General → Extract 에서 토글이 꺼진 것으로 보이면 끝이다. 봇이 레이드 중에 탈출하는 것이 실제로 보이면 그때 개별 스위치를 본다.
 
 함께 적어 둘 것 — 제작자가 **SAIN Personality Mixer**(선택)를 권한다. PMC 성격 확률을 레벨·장비와 무관하게 F12 에서 정할 수 있어 ORBIT 행동이 다양해진다고 한다. 이 설치본에는 없다.
 
