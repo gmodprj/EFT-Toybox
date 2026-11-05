@@ -326,6 +326,68 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 레이드 흔적 16건으로 **얕다.** 기준선의 SAIN·STM 줄이 안 나왔고, 10-H 의 본 시험인 **맵별 진입과 프레임**도 로그로는 알 수 없다(위 10-H 절의 네 가지).
 
+## 10-J — 도구·성능 7개 (하나씩) · 2026-11-05
+
+로더·설정 화면·오버레이를 건드려 다른 모드 전체에 영향이 가므로 하나씩 넣었다.
+
+| 순서 | 모드 | 파일 | 서버 모드 | 시작 |
+| --- | --- | --- | --- | --- |
+| 1 | Raid Review (1479) | 13 | 152 → **153** | 147초 |
+| 2 | Combat Log (3072) | 1 | **153 유지** | 141초 |
+| 3 | ASBP (2931) | 2 | **153 유지** | 144초 |
+| 4 | Better BepInEx (3207) | 1 | **153 유지** | 140초 |
+| 5 | Performance Scope (3076) | 1 | - | `-SkipTest` |
+| 6 | DERP (2200) | 1 | - | `-SkipTest` |
+| 7 | Knight Mask Fix (3109) | 3 | → **154** | 141초 |
+
+- 받기: 7개 모두 바이트 수 정확히 일치(7.68 MB). 겹침 검사 CLEAN(22개).
+- 5회 테스트 모두 `Could not add` 48 · `Unable to add bundle` 1 · `err.txt` 0바이트로 기준선과 같다.
+
+### Raid Review 는 자체 포트를 연다 — 6969 안이 아니다
+
+```
+[RAID-REVIEW] Config loaded. WS port: 7828, HTTP port: 7829
+[RAID-REVIEW] WebSocket Server listening on 'ws://127.0.0.1:7828'.
+[RAID-REVIEW] HTTP Web Server running at 'http://127.0.0.1:7829'.
+```
+
+지금까지 웹 화면을 붙인 모드들(`/orbit`·`/questcodex`·`/impactcue`·`/LotsofLoot`·`/SAIN`·`/coti-assets/`·`/TheBlacklist/`·`/modsource`·`/nameplate`)은 전부 **SPT 서버 포트 6969 안**이었는데 이것만 다르다. 바인딩에 성공했으므로 지금은 충돌이 없다. 자작 WebConfigBridge 도 별도 포트를 열지 않는다(6969 안).
+
+### Raid Review 는 자기 파일을 옮긴다 — 기록을 다시 썼다
+
+첫 기동 뒤 검산에서 **기록된 4개가 디스크에 없었다.**
+
+```
+없음: SPT_Runtime\user\mods\RaidReview\Microsoft.Data.Sqlite.dll
+없음: ...\SQLitePCLRaw.batteries_v2.dll / .core.dll / .provider.e_sqlite3.dll
+```
+
+찾아보니 모드가 **`lib\sqlite\` 로 옮겼다**(로그의 `SQLite isolated runtime`). 옮기면서 `lib\sqlite\legacy\upgrade-<해시>\` 에 작은 파일 4개도 남겼다. SPT 자체 SQLite 와 섞이지 않게 자기 런타임을 떼어 놓는 것이다.
+
+그래서 **설치본의 현재 상태에서 그 모드가 소유한 경로만 다시 읽어 기록을 새로 썼다**(18줄 → 22줄). 이제 기록만으로 지우면 깨끗이 지워진다.
+
+**새 범주다** — 지금까지는 "설치 중 생성되는 파일"(`NEWFILE`·`OTHERMOD`)만 챙기면 됐는데, 이 모드는 **설치된 파일 자체를 옮긴다.** 앞으로 기록 검산에서 "없음"이 뜨면 삭제가 아니라 **이동**을 먼저 의심한다.
+
+`data\logs\` 에는 서버를 켤 때마다 로그가 하나씩 쌓인다(지금 5개). 기록에 든 것은 이 시점의 것들이고, 제거할 때는 폴더째 비우는 편이 낫다.
+
+### 오류 수 세기가 한 번 속았다
+
+ASBP 테스트만 `error` 가 4줄이고 나머지는 3줄이었다. 열어 보니 네 번째가 **SVM 의 농담 문구**였다.
+
+```
+[SVM] Initialization complete. ERROR: THE USER IS TOO HANDSOME TO PLAY THIS ...
+```
+
+SVM 은 기동마다 문구를 바꾸고, 그중에 `ERROR` 라는 낱말이 든 것이 있다([PROCEDURE.md](PROCEDURE.md) 의 "실행마다 바뀌는 농담 문구"). **문구 수가 하나 늘었다고 오류가 는 것이 아니다** — 늘면 그 줄을 열어 본다.
+
+### 다음 게임 기동에서 볼 것 — 228, 그리고 Better BepInEx
+
+7개가 넣은 플러그인 DLL 6개가 전부 플러그인이다(Knight Mask Fix 는 서버 전용). **222 + 6 = 228.**
+
+**Better BepInEx(3207)는 BepInEx 자체를 건드린다.** 그래서 이번 기동의 판정은 "늘었나"가 아니라 **"줄지 않았나"** 다. 228 보다 적으면 다른 플러그인이 밀려난 것이니 3207 을 먼저 되돌린다(기록 1줄).
+
+ASBP 는 기존 ConfigurationManager 패널을 키우는 모드인데, 이 설치본에는 CM 제공자가 둘(SPT 자체, ICM 내장)이고 그중 하나가 조용히 버려진다 — **ASBP 는 살아남은 쪽에 붙는다.** F12 패널 크기가 안 바뀌면 그 때문일 수 있다.
+
 ## 10-I — 그래픽·음향 16개 (둘로 쪼갬) · 2026-11-05
 
 계획은 "16개를 하나씩" 이었으나, 이 단계는 **서버 테스트로 아무것도 드러나지 않아** 하나씩 가면 게임 기동을 16번 해야 한다. 사용자와 정해 둘로 쪼갰다.

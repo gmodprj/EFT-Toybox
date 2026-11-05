@@ -1,0 +1,2 @@
+2931__acidphantasm-bepinexconfigurationmanager	BepInEx\plugins\acidphantasm-bepinexconfigurationmanager\acidphantasm-bepinexconfigurationmanager.dll
+2931__acidphantasm-bepinexconfigurationmanager	BepInEx\plugins\acidphantasm-bepinexconfigurationmanager\LICENSE
