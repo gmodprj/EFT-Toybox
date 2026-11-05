@@ -238,6 +238,57 @@ Simple Workout QTE(1437)의 설정과 Expanded Task Text(2153)의 설명 캐시�
 
 **아직 확인되지 않은 것** — 게임 전용이라 **서버 테스트로는 선행 참조가 풀렸는지 알 수 없다.** 다음 기동에서 `Loading [Broken Limbs ...]` 줄이 뜨는지, Effects Manager 관련 경고가 없는지를 봐야 한다. 골절이 레이드 종료 후 유지되는지는 레이드를 한 번 돌아야 안다.
 
+## 게임 기동 확인 (10-E·10-E2 설치 후, 2026-11-05 09:49)
+
+`LogOutput.log` 09:49 > 설치 08:50 — 설치 이후 기동이 맞다.
+
+| 항목 | 값 | 앞 기동 대비 |
+| --- | --- | --- |
+| `plugins to load` | **181** | 173 → +8 |
+| `Loading [` 줄 | **181** | 일치, `Chainloader startup complete` |
+| `[Error` / `[Fatal` | **25줄 / 0줄** | 1 → 25 |
+
+### 내가 예상한 177 이 틀렸다 — 181 이 맞다
+
+앞 턴에 "게임 쪽 4개라 173 → 177" 이라고 적었는데 **틀렸다.** 게임 전용 모드(Vertical Hideout·Hideout Cat·Target Dummies)와 10-E2 만 세고, **`게임+서버` 모드도 클라이언트 DLL 을 싣는다는 것을 빼먹었다.** 실제 게임 쪽 플러그인은 8개다.
+
+| 모드 | Loading 줄 이름 |
+| --- | --- |
+| Target Dummies (2932) | `7Bpencil.TargetDummies 0.3.1` |
+| Simple Workout QTE (1437) | `acidphantasm-simpleworkoutqte 2.2.2` |
+| **Broken Limbs Don't Heal (3121)** | `Broken Limbs Dont Heal 1.1.0` |
+| All Quests Checkmarks (2025) | `ZGFueDkx-AllQuestsCheckmarks 1.4.0` |
+| Tarkin's Hideout Cat (2908) | `hideoutcat 1.1.1` |
+| Vertical Hideout (2530) | `tarkin.hideoutuirevamp 1.1.1` |
+| Hideout In Progress (2076) | `Tyfon.HideoutInProgress 3.0.0` |
+| Skill Distribution (2144) | `ZGFueDkx-SkillDistribution 1.3.0` |
+
+173 + 8 = **181** 로 맞는다. 판정 기준에 하나 더 붙는다 — **`게임+서버` 로 분류된 모드도 플러그인을 싣는다.** 예상치는 `BepInEx\plugins\*.dll` 기록 줄로 세야 하고, 설치 위치 분류로 세면 안 된다.
+
+### 10-E2 는 통과다
+
+`Loading [Broken Limbs Dont Heal 1.1.0]` 이 떴고 Effects Manager 관련 경고·오류가 없다. 선행(Effects Manager Framework)이 **플러그인이 아니라 라이브러리인데도 참조로 제대로 끌려 올라갔다.** 10-E2 를 단독으로 떼어 둔 이유가 이것이었고, 확인됐다. 골절이 레이드 종료 후 유지되는지는 여전히 레이드를 돌아야 안다.
+
+### 그런데 오류 25줄 중 24줄이 새것이다 — 전부 All Quests Checkmarks (2025)
+
+| 건수 | 내용 |
+| --- | --- |
+| 12 | `Failed to set custom checkmark in ItemSpecificationPanel!` |
+| 12 | `Attempted to remove non-existing quest <id> from quest data!` (서로 다른 id 7종) |
+| 1 | 알려진 `DirectReload` + Fika 건 |
+
+기준선의 SAIN·STM·ECOTI 줄은 이번에 안 나왔다 — 레이드 깊이가 얕았다(`GameWorld`·`RaidStartPatch` 11건). 그러니 **25줄 중 24줄이 순수하게 새로 생긴 것**이다.
+
+파헤쳐 보니 셋이 겹친다.
+
+1. **핵심 기능이 실패한다.** 이 모드가 하는 일은 퀘스트 목록에 체크 표시를 그리는 것인데, 그 패치가 12번 실패했다(`ItemSpecificationPanel`).
+2. **모드가 추가한 퀘스트를 감당하지 못한다.** "없는 퀘스트" 라고 말하는 id 7종은 **실제로는 프로필에 들어 있다**(각 1~5회). 이 설치본에는 Amonya 가 퀘스트 195개, NATO Quartermaster 가 6개를 더하는 등 모드 퀘스트가 많다 — 그쪽을 자기 데이터에서 찾지 못하는 것이다.
+3. **한국어가 없다.** `Couldn't load locale 'kr' - file does not exist! Falling back to en.json` — 이 설치본은 한국어인데 이 모드만 영어로 나온다.
+
+게임은 돌고 레이드도 들어갔으므로 **멈출 수준은 아니다.** 다만 [PLAN-STAGE10.md](PLAN-STAGE10.md) 의 멈춤 판정은 "알려진 정상 메시지 표에 없는 새 오류는 실패로 본다" 이고, 이 모드는 **얻는 것(장식용 체크 표시)보다 내는 소음이 크다.** 이 설치본에는 이미 퀘스트 UI 가 여럿 있다(Expanded Task Text, Quest Codex, Hj 의 Task Item/Turn-in Indicator, Task List Fixes, Hj's Task Search, Pinned Quest HUD).
+
+**권고 — 2025 를 뺀다.** 기록 `installed-stage10-E-2025-AllQuestsCheckmarks.txt`(8줄)의 파일만 지우면 되돌아간다. 프로필에 아무것도 심지 않았으므로 백업 복원도 필요 없다.
+
 ## 게임·서버 기동 확인 (10-C·10-D 설치 후, 2026-11-05 08:17~08:22)
 
 사용자가 직접 서버와 게임을 띄웠다. 서버 로그는 사용자가 넘겨 주었고, 게임 로그는 `BepInEx/LogOutput.log`(08:21 기동, 10-D 설치 08:08 이후)를 읽었다.
@@ -288,5 +339,6 @@ FikaHostReloadMirror — Fika ObservedFirearmController not found
 ## 다음 단계의 판정 기준에 더할 것
 
 1. **플러그인 수 증가분은 DLL 개수가 아니다.** 라이브러리 DLL(플러그인 속성 없음)은 0 으로 세고, DLL 하나가 플러그인 여러 개를 등록할 수 있다. 어긋나면 `Loading [` 목록을 직접 비교한다.
+1-1. **예상치는 `BepInEx\plugins\*.dll` 기록 줄로 센다.** 겹침 검사의 `게임`·`서버`·`게임+서버` 분류로 세면 틀린다 — `게임+서버` 모드도 클라이언트 DLL 을 싣는다(10-E 에서 4 로 예상했다가 실제 8 이었다).
 2. **GUID 충돌은 조용하다.** 같은 GUID 를 가진 플러그인이 둘이면 하나는 경고 없이 버려진다. 프레임워크·설정 화면 계열을 넣은 뒤에는 `Loading [` 목록에서 **사라진 이름이 없는지** 본다.
 3. **오류 줄 수는 레이드 깊이에 따라 달라진다.** 적게 나온 것을 통과로 치지 않는다. 비교는 같은 깊이의 기동끼리, 또는 문구별로 한다.
