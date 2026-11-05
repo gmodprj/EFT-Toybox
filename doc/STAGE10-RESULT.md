@@ -275,6 +275,53 @@ Simple Workout QTE(1437)의 설정과 Expanded Task Text(2153)의 설명 캐시�
 
 Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 여기서 빼기로 하면 그쪽도 함께 막힌다.
 
+## 10-G — 전리품·경제·봇 이름 11개 · 2026-11-05
+
+| 항목 | 결과 |
+| --- | --- |
+| 받기 | 11개 모두 바이트 수 **정확히 일치** (1.18 MB) |
+| 겹침 검사 | CLEAN (0/0/0), 설치 대상 29개 |
+| 설치 | 10개 `-SkipTest` + 마지막 2784 에서 테스트 한 번 |
+| 설치 기록 | **33줄** (= 29 + 생성된 파일 4), 적힌 파일 전부 실재 |
+| 서버 모드 | 138 → **145** (= 서버 쪽 7개) |
+| 시작 시간 | 135초 |
+| 로드 확인 | `(Added 7 mods: CratesInAirdrop, LootNet, Bosses Have GP Coins, Bosses Have Lega Medals, Bot Callsigns, Realistic PMC Names, Lots of Loot Redux)` |
+| 오류 | 새 오류 0. 기준 문구 48 · 1 그대로, `err.txt` 0바이트. **플리마켓 생성 단계에서도 오류가 없다** |
+
+출력: `server-tests/server-test-stage10-G-2784-AutoIFF.out.txt`
+
+- Lots of Loot Redux 는 `/LotsofLoot/` 웹 화면을 서버 포트 안에 붙인다 — 기존 경로들과 겹치지 않는다.
+
+### 생성 파일 4개를 기록에 넣었다
+
+`OTHERMOD` 줄이 많이 나왔지만 **이번 단계 것만** 골라야 한다.
+
+| 파일 | 주인 | 처리 |
+| --- | --- | --- |
+| `BotCallsigns\config.json`, `nameData\allNames.json`, `nameData\userDefinedNames.json` | Bot Callsigns (1873, 이번 단계) | 기록에 더함 (3줄 → 6줄) |
+| `bushtail-CratesInAirdrop\config.json` | Crates In Airdrop (2481, 이번 단계) | 기록에 더함 (1줄 → 2줄) |
+| `ORBIT\config.json` + 구역 15개 | ORBIT (10-F2) | **이미 기록돼 있다**(19줄). 서버가 매번 다시 쓰므로 다른 태그에서는 `OTHERMOD` 로 보인다 |
+| `ExpandedTaskText\...descriptionCache.json` | 10-E | 이미 기록돼 있다 |
+| `kazusa-SimpleItemModifier\...` | 설치본에 원래 있던 모드 | 건드리지 않는다 |
+
+**`OTHERMOD` 는 "기록 안 해도 되는 파일"이 아니라 "이 태그의 것이 아니다"라는 뜻**이다. 앞 단계에서 이미 기록한 것인지, 이번 단계 모드의 것인지 매번 가린다.
+
+### 다음 게임 기동에서 볼 것 — 197 (198 아님)
+
+10-G 가 `BepInEx\plugins` 에 넣은 DLL 은 6개이고 **전부 플러그인 표식이 있다.** 그런데 그중 하나가 `LootNet\LootNetFika.dll` 이다.
+
+10-E 의 All Quests Checkmarks 가 선례다 — 그 모드도 `-Client.dll` 과 `-Fika.dll` 을 함께 깔았지만 `Loading [` 줄은 **하나**였고 플러그인 수도 1만 늘었다. 이 설치본은 Fika 를 쓰지 않으므로 `-Fika` 변종은 올라오지 않는다(`FixPluginTypesSerialization` 이 `It references Fika.Core which doesn't exist` 로 걸러낸다).
+
+그래서 예상치는 **191 + 1(ORBIT) + 5 = 197** 이다. 198 이 나오면 `LootNetFika` 가 올라온 것이니 그때 다시 본다.
+
+**판정 기준에 더할 것** — `-Fika` 가 붙은 DLL 은 플러그인 표식이 있어도 **0 으로 센다**(이 설치본에 Fika 가 없는 한).
+
+### 아직 확인되지 않은 것
+
+- **전리품 밀도** — Lots of Loot Redux(1619)가 설치된 전리품 모드와 배율이 누적될 수 있다. 맵 하나를 돌아 눈으로 봐야 한다. 서버 테스트는 "터지지 않는다"까지만 말해 준다.
+- **플리 판매 흐름** — Fast Sell In Flea(2207)는 SVM 플리 설정과 함께 봐야 한다.
+- **보스 전리품 둘** — Lega Medals(1539)와 GP Coins(2523)가 같은 보스 인벤토리에 넣는다. 둘 다 오류는 없지만 실제로 둘 다 떨어지는지는 보스를 잡아야 안다.
+
 ## 10-F2 — ORBIT 3.0 (2706) 단독 · 2026-11-05
 
 | 항목 | 결과 |

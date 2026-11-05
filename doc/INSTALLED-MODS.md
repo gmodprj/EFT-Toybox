@@ -3,9 +3,9 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **240개**, 설치 파일 **11167개** (자동 생성 설정 파일 포함)
-- **현재 로드 수 (2026-11-05 실측): 서버 모드 138개(10-F2 까지) / 게임 쪽 플러그인 191개(10-F 까지).** 게임 쪽은 ORBIT 을 넣은 뒤로 띄우지 않았으므로 다음 기동 예상치는 **192** 다. 게임은 10:40 기동에서 `191 plugins to load` = `Loading [` 191줄이고 `Chainloader startup complete` 까지 떴으며, `[Error` 1줄 / `[Fatal` 0줄 — 알려진 DirectReload+Fika 건뿐이다. 그 기동이 11:06 까지 이어져 레이드가 깊어진 뒤에는 `[Error` 9줄이 됐는데 **전부 기존 건**이다 — SAIN 6, 알려진 DirectReload 1, 그리고 STM 의 LootPatrol 억제 예외가 두 줄로 찍힌 것 2. **10-F 가 낸 오류는 0건이다.** 단계별 결과는 `STAGE10-RESULT.md`
-- 10차 서버 모드 변화: 115(기준선) → 116(10-A) → 120(10-B) → 122(10-C, 150초) → 127(10-D, 144초) → 136(10-E, 159초 / 10-E2, 129초) → **135**(All Quests Checkmarks 제거) → **137**(10-F, 135초) → **138**(10-F2 ORBIT, 144초). 제거는 10-F 테스트 출력이 직접 찍었다 — `(Added 2 mods: ClassicMovement, Increase Climb Height; Removed 1 mods: All Quests Checkmarks)`. 시작 시간의 약 100초는 `[ItemInfo]` 하나가 쓴다. QuestCodex 는 서버 포트 안에 `/questcodex` 를 붙인다(별도 포트가 아니다)
+- 설치된 모드: **251개**, 설치 파일 **11200개** (자동 생성 설정 파일 포함)
+- **현재 로드 수 (2026-11-05 실측): 서버 모드 145개(10-G 까지) / 게임 쪽 플러그인 191개(10-F 까지).** 게임 쪽은 ORBIT·10-G 를 넣은 뒤로 띄우지 않았으므로 다음 기동 예상치는 **197** 이다 — 191 + 1(ORBIT) + 5(10-G). 10-G 가 넣은 플러그인 DLL 은 6개지만 그중 `LootNetFika.dll` 은 **Fika 변종이라 이 설치본에서는 올라오지 않는다**(10-E 의 All Quests Checkmarks 가 같은 선례다). 게임은 10:40 기동에서 `191 plugins to load` = `Loading [` 191줄이고 `Chainloader startup complete` 까지 떴으며, `[Error` 1줄 / `[Fatal` 0줄 — 알려진 DirectReload+Fika 건뿐이다. 그 기동이 11:06 까지 이어져 레이드가 깊어진 뒤에는 `[Error` 9줄이 됐는데 **전부 기존 건**이다 — SAIN 6, 알려진 DirectReload 1, 그리고 STM 의 LootPatrol 억제 예외가 두 줄로 찍힌 것 2. **10-F 가 낸 오류는 0건이다.** 단계별 결과는 `STAGE10-RESULT.md`
+- 10차 서버 모드 변화: 115(기준선) → 116(10-A) → 120(10-B) → 122(10-C, 150초) → 127(10-D, 144초) → 136(10-E, 159초 / 10-E2, 129초) → **135**(All Quests Checkmarks 제거) → **137**(10-F, 135초) → **138**(10-F2 ORBIT, 144초) → **145**(10-G, 전리품·경제 11개 중 서버 7, 135초. 플리마켓 생성 단계에서도 오류 없음). 제거는 10-F 테스트 출력이 직접 찍었다 — `(Added 2 mods: ClassicMovement, Increase Climb Height; Removed 1 mods: All Quests Checkmarks)`. 시작 시간의 약 100초는 `[ItemInfo]` 하나가 쓴다. QuestCodex 는 서버 포트 안에 `/questcodex` 를 붙인다(별도 포트가 아니다)
 - 10차 게임 플러그인 변화: 147(기준선) → 151(10-B) → 173(10-C·10-D) → 181(10-E·10-E2) → **191**(10-F, 10:40 기동에서 실측). **넣은 DLL 수와 같지 않다.** ① 플러그인 속성이 없는 **라이브러리**는 0 으로 센다 — 지금까지 3건(Effects Manager Framework, `BriefingBriefing.Core.dll`, `tarkin-ladders	arkin.ladders.shared.dll`). ② DLL 하나가 플러그인 여러 개를 등록할 수 있다 — ICM 이 그렇고, 그중 `Configuration Manager` 는 SPT 자체의 `plugins/spt/ConfigurationManager` 와 **GUID 가 겹쳐 하나가 조용히 버려진다**(F12 한글화는 2026-11-05 확인 결과 멀쩡하다). ③ 겹침 검사가 `게임+서버` 로 분류한 모드도 클라이언트 DLL 을 싣는다 — 예상치는 `BepInExplugins*.dll` 기록 줄로 세야 한다
 - **All Quests Checkmarks(2025)는 10-E 에서 넣었다가 같은 날 뺐다.** 09:49 기동의 `[Error` 25줄 가운데 24줄이 이 모드 하나였다(체크 표시 패치 실패 12 + 모드가 추가한 퀘스트를 못 찾는 것 12). 한국어 locale 도 없다. 기록은 `install-records/removed/` 에 있다
 - 기준선(2026-11-04)의 오류 내역: 게임 `[Error` 15줄 / `[Fatal` 0줄이고 전부 기존 건이다 — SAIN `sectactPriestEvent` 6, STM `AimingFailure` 6·`MedicalActivity` 1, ECOTI per-frame 1, Fika 미설치 관련 DirectReload 패치 1. **이 중 14줄은 레이드를 깊게 돌아야 나온다** — 메뉴까지만 돈 기동에서 오류가 1줄이라고 좋아진 것이 아니다. 서버는 `[Error]` 49줄 = `Could not add` 48건(원인 `MountOlympus.dll` — `REVIEW-LOAD-ORDER.md`) + `BundleLoader Unable to add bundle: ...barrel_vpo215_600mm_366tkm.bundle` 1건(번들 중복으로 보이며 시작은 정상 — `PLAN-STAGE10.md` §10-0-1)
@@ -313,6 +313,17 @@
 | [No Aim Swing](https://sp-mod.com/mod/2719) | 1.2.0 | 게임 | - | 1 | `stage10-F-2719-NoAimSwing` |
 | [Deadzone](https://sp-mod.com/mod/3067) | 1.2.0 | 게임 | - | 1 | `stage10-F-3067-Deadzone` |
 | [ORBIT 3.0](https://sp-mod.com/mod/2706) | 3.1.0 | 게임+서버 | - | 19 | `stage10-F2-2706-ORBIT` |
+| [Lots of Loot Redux](https://sp-mod.com/mod/1619) | 4.2.2 | 서버 | - | 5 | `stage10-G-1619-LotsOfLootRedux` |
+| [Rai's Hidden Caches](https://sp-mod.com/mod/1265) | 1.4.0 | 게임 | - | 1 | `stage10-G-1265-RaisHiddenCaches` |
+| [Bosses Have Lega Medals](https://sp-mod.com/mod/1539) | 2.1.0 | 서버 | - | 3 | `stage10-G-1539-BossesHaveLegaMedals` |
+| [Bosses Have Gp Coins](https://sp-mod.com/mod/2523) | 1.1.0 | 서버 | - | 3 | `stage10-G-2523-BossesHaveGpCoins` |
+| [LootNET](https://sp-mod.com/mod/2679) | 1.2.0 | 게임+서버 | - | 4 | `stage10-G-2679-LootNET` |
+| [Crates In Airdrop](https://sp-mod.com/mod/2481) | 2.0.0 | 서버 | - | 2 | `stage10-G-2481-CratesInAirdrop` |
+| [Fast Sell In Flea](https://sp-mod.com/mod/2207) | 1.3.1 | 게임 | - | 1 | `stage10-G-2207-FastSellInFlea` |
+| [Bot Callsigns - Reloaded](https://sp-mod.com/mod/1873) | 2.0.6 | 서버 | - | 6 | `stage10-G-1873-BotCallsignsReloaded` |
+| [Realistic PMC Names](https://sp-mod.com/mod/3064) | 1.1.0 | 서버 | - | 6 | `stage10-G-3064-RealisticPMCNames` |
+| [Smooth Talker](https://sp-mod.com/mod/2635) | 1.3.0 | 게임 | - | 1 | `stage10-G-2635-SmoothTalker` |
+| [Auto IFF](https://sp-mod.com/mod/2784) | 2.1.1 | 게임 | - | 1 | `stage10-G-2784-AutoIFF` |
 
 ## 다른 경로로 설치된 것
 
