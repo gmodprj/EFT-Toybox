@@ -326,6 +326,64 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 레이드 흔적 16건으로 **얕다.** 기준선의 SAIN·STM 줄이 안 나왔고, 10-H 의 본 시험인 **맵별 진입과 프레임**도 로그로는 알 수 없다(위 10-H 절의 네 가지).
 
+## 10-L — 결속 콘텐츠·대형 11개, 하나씩 · 2026-11-05
+
+| 항목 | 결과 |
+| --- | --- |
+| 받기 | 11개 모두 바이트 수 **정확히 일치** (합 3,829,817,633 = 3.57 GiB). 받기 로그만 믿지 않고 디스크에서 다시 쟀다 |
+| 겹침 검사 | 손본 뒤 **CLEAN (0/0/0)**, 설치 대상 1504개 (아래) |
+| 프로필 백업 | `backup/profiles-before-stage10-L/` — 7개 |
+| 기록 | **1505줄** = 겹침 검사 1504 + 설치 중 생성된 `StrangeCurios/Data/config.json` 1개. 없는 파일 0건 / 기록에 없는 파일 0건 |
+| 오류 | 11회 전부 `Could not add` 48 · `Unable to add bundle` 1 · `cannot import quest` 1 — **기존과 같다.** 새 오류 0 |
+
+### 겹침 검사에서 걸린 두 건 — 둘 다 그대로 두면 설치가 멈췄다
+
+1. **WTT Halloween Masks 의 압축이 `BepinEx`(소문자 n)였다.** Windows 는 대소문자를 가리지 않아 설치 자체는 됐겠지만 기록에 틀린 철자가 남고, 검사기는 설치 경로로 인정하지 않는다. 해제본에서 `BepInEx` 로 고쳤다. 더 중요한 것은 이 모드가 검사에서 **`서버` 로 분류되는데 클라이언트 DLL(`WTTHalloweenClient.dll`)을 싣는다**는 점이다 — "분류로 세면 틀린다"가 또 맞았다.
+2. **Manimal's CS Gas 의 압축 뿌리에 `LICENSE` 가 섞여 있었고, `E:\Spt\LICENSE` 가 이미 있다**(SPT 자체 것, 35,148 바이트). 그대로 두면 설치 스크립트가 덮어쓰기로 보고 **2864 에서 중단됐을 것**이다. 설치 경로가 아닌 파일이라 해제본에서 지웠다.
+
+### 하나씩 넣은 결과
+
+| 순서 | 모드 | 분류 | 서버 모드 | 기록 줄 | 로드 확인 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Manimal's CS Gas (2864) | 게임+서버 | 157 → **158** | 9 | `(Added 1 mods: CSGas (2.0.0))` |
+| 2 | Content Backport - Prestiges (2540) | 게임+서버 | **159** | 63 | `(Added 1 mods: Content Backport - Prestiges (1.1.0))` |
+| 3 | Strange Curios (3059) | 게임+서버 | **160** | 18 | `(Added 1 mods: Strange Curios (1.1.0))` |
+| 4 | Borkel 의 Realistic NVGs (954) | 게임+서버 | **161** | 102 | `(Added 1 mods: Borkel's Realistic Night Vision Goggles (2.2.0))` |
+| 5 | Deploy Screen Overhaul (3047) | 게임 | **161 유지** | 149 | 서버 로그에 안 찍힌다(정상 — 게임 전용) |
+| 6 | Tushonka Rare Collectibles (3062) | 서버 | **162** | 28 | `(Added 1 mods: TarkovRareCollectibles (1.2.2))` |
+| 7 | WTT Halloween Masks (2401) | 게임+서버 | **163** | 15 | `(Added 1 mods: WTT Halloween (5.0.1))` |
+| 8 | Skills Extended (2383) | 게임+서버 | **164** | 95 | `(Added 1 mods: Skills Extended (3.1.4))` |
+| 9 | Russian Special Forces Pack (3035) | 서버 | **165** | 135 | `(Added 1 mods: Russian-SF-Pack (2.0.1))` |
+| 10 | Epic's All in One (1263) | 서버 | **166** | 632 | `모드 Epic's All In One 버전 5.0.2 ... 불러옴` |
+| 11 | ECOT (2195) | 서버 | **167** | 259 | `(Added 1 mods: Eukyre-Consortium (2.0.1))` |
+
+서버 157 → **167.** 11개 중 10개가 서버 모드를 싣고 Deploy Screen Overhaul 만 게임 전용이라, 예상치와 정확히 맞는다.
+
+**모드가 적는 버전이 Forge 의 버전과 다른 것이 둘 있다** — BRNVG 는 Forge 3.0.4 인데 로그에 `2.2.0`, Halloween Masks 는 Forge 2.0.0 인데 `5.0.1` 로 찍힌다. Epic 은 Forge 가 `~4.1.6` 으로 적은 판인데 모드 자신은 `targets SPT: ~4.1.0` 이라 한다. 셋 다 로드에는 문제가 없다 — **버전 대조는 Forge 쪽 숫자로 한다.**
+
+### ECOT ↔ Epic 의 버전 어긋남 — 서버 쪽에서는 드러나지 않았다
+
+받을 때 적어 둔 위험(ECOT 2.0.1 은 2026-09-30, Epic 5.0.2 는 2026-10-16 이라 ECOT 의 의존성 목록이 5.0.1 까지만 가리킨다)은 **서버 시작에서는 나타나지 않았다.** 둘이 나란히 올라오고(`com.epicrangetime.aio` 5.0.2 · `com.eukyre.ecot` 2.0.1), ECOTI 가 센 슬롯 내역에도 양쪽 아이템이 다 들어 있다 — `EukyreECOT 10, WTT-ContentBackport 10, vanilla 46 … fits 217 slots`. 다만 **아이템 하나하나가 맞는지는 게임에서 봐야** 한다.
+
+### 프로필 — Skills Extended 가 처음으로 실제로 심었다
+
+| 변화 | 값 |
+| --- | --- |
+| `characters.pmc.Skills.Common` | 프로필 **7개 전부** +2 (45 → 47, 또는 59 → 61) |
+| 더해진 것 | `SignalsIntelligence`, `Hacking` — 둘 다 진행도 **0** |
+| 기존 스킬 진행도 | **전부 그대로.** 사라진 스킬 0 |
+| 아이템·루블 | 변화 없음. 새 id 충돌 없음 |
+
+계획 §10-L 이 "Skills Extended 는 스킬 트리를 바꾼다 — 기존 스킬 수치가 남는지 프로필 비교로 본다"고 둔 관문을 **넘었다.**
+
+**10-K 와 달리 서버 테스트만으로 프로필이 바뀌었다.** 10-K 의 6개는 게임이 프로필을 불러와야 심었는데, Skills Extended 는 서버가 프로필을 읽는 시점에 스킬 칸을 넣는다. 그러므로 **되돌릴 기준은 `backup/profiles-before-stage10-L/`** 이고, 이 뒤로는 그 백업이 유일한 "스킬 2개 없던" 상태다.
+
+### 다음 게임 기동에서 볼 것
+
+- 플러그인 **232 → 239 예상.** 클라이언트 DLL 은 9개인데 Skills Extended 가 셋(`.Client.Skills`·`.Client.API`·`.Common`)을 싣고 그중 둘은 라이브러리로 본다. 237~240 밖이면 `Loading [` 목록을 직접 대조한다.
+- `[Error` 가 기존 건(SAIN 6 · DirectReload 1 · STM 2)뿐인지.
+- 눈으로 볼 것: 상인 줄이 넘치지 않는지(넘치면 설치된 Kaeno-TraderScrolling), **플리마켓이 터지지 않는지**(아이템을 넣는 것이 7개다), Epic·ECOT 의 아이템이 제대로 보이는지, 새 스킬 둘이 스킬 화면에 뜨는지, Deploy Screen Overhaul 의 출발 화면, BRNVG 의 야시경, Halloween 가면.
+
 ## 게임 기동 확인 (10-K 설치 + F12 프레임 수정 후, 2026-11-05 17:19~17:23)
 
 | 항목 | 예상 | 실측 | 판정 |

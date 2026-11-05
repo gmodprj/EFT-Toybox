@@ -1,0 +1,15 @@
+2401__WTT.Halloween.2.0.0	BepInEx\plugins\WTTHalloweenClient.dll
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles.json
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\WTT_Halloween.dll
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\alt_bundles\mask_many_eyes.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_3face.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_fans.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_hands.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_holes.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_many_eyes.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_smooth.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_spikes.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_split.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_stitches.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\bundles\wearables\facecovers\mask_wires.bundle
+2401__WTT.Halloween.2.0.0	SPT_Runtime\user\mods\WTT_Halloween\db\CustomItems\Masks.json
