@@ -386,6 +386,81 @@ A 쪽 `mod_barrel` 이 4 → **220** 이다. 적은 줄은 하나인데 **216개
 { "Filters": { "5a0abb6e1526d8000a025282": { "dd6b29946db0932ea75e09c4": "mod_muzzle" } } }
 ```
 
+### 10-O-3 — 2866 ICEBREAKER 설치 (2026-11-06 07:0x) · **10차의 마지막**
+
+| 항목 | 결과 |
+| --- | --- |
+| 압축 검사 | 95항목, 상위 폴더가 `BepInEx/plugins`(26) 와 `SPT_Runtime/user`(69) 뿐. **루트에 흩어진 파일 0개** |
+| 충돌 검사 | **2866 기준 0건** (설치 대상 293경로 − 이미 설치된 198 = 95, 압축 항목 수와 같다) |
+| 설치 | **95파일 / 1,832.5 MB / 4초** |
+| 기록 | **95줄** — 설치 파일 수와 정확히 같다 |
+| 서버 모드 | 171 → **172** (예상치와 같다) |
+| 시작 | `SERVER STARTED in 165s`, `(Added 1 mods: ManimalIcebreaker (1.1.3))` |
+| 오류 | 48 / 1 / 1 — **기존과 같다.** `error`·`exception`·`fail` 로 훑어 추가 줄 0건 |
+
+10-M 때 Manimal 의 CS Gas 가 루트에 `LICENSE` 를 넣어 와 설치가 중단될 뻔했고 WTT Halloween 은 `BepinEx` 로 왔다. 이번 압축은 둘 다 아니었다 — 그래서 **압축을 먼저 들여다보는 절차는 계속 값을 한다**(이번에는 할 일이 없었다는 것이 결과다).
+
+### ICEBREAKER 는 백포트 변종이 아니라 독립 맵이다
+
+```
+[Manimal-Icebreaker] Icebreaker registered as an independent location
+```
+
+그래서 Map Variants 의 목록에 **나오지 않는 것이 맞다**. 같은 기동에서 MV 가 찍는 것은 여전히 셋뿐이다.
+
+```
+[MV] Interchange: backport discovered, 7 of 7 field(s) replaced
+[MV] Lighthouse:  backport discovered, 7 of 7 field(s) replaced
+[MV] Labyrinth:   backport discovered, 1 of 7 field(s) replaced
+```
+
+### 다른 맵까지 건드리는 것이 둘 있다
+
+이 모드는 자기 맵만 넣는 것이 아니다. 서버 로그가 직접 적는다.
+
+| 줄 | 무엇을 바꾸나 |
+| --- | --- |
+| `'boreas_amg' spawns on rezervbase reduced to one random point per raid` | **리저브**의 보스 스폰을 줄인다 |
+| `knight T1 spawn chance was 0, restored to 100 after SPT's goon rotation` | SPT 의 고블린 로테이션이 0 으로 만든 **나이트 T1 스폰 확률을 100 으로 되돌린다** |
+
+둘 다 ICEBREAKER 밖에서 효과가 난다. 전리품 쪽은 반대로 **격리한다**고 적는다.
+
+```
+[Icebreaker] loot isolation armed (suspend/restore) — icebreaker raids run vanilla loot generation; other maps untouched
+```
+
+그 밖에 자기 맵용으로 적은 것: 컨테이너 전리품 17종, 작성된 산개 전리품(레이드별 그룹 위치 + 강제 스폰 굴림), 리테일 컨테이너 83개, BD 장비 상자(28개 풀·5회 뽑기·5만~10만 루블), 로딩 화면 배너 3장, 그리고 **살아 있는 봇 상한을 40 으로** 올린 것(`SPT 의 미등재 맵 기본값 23 이 후반 트리거 웨이브를 잘라먹었다`).
+
+### 플러그인 예상치는 245 다 (244 가 아니다)
+
+2866 이 넣은 클라이언트 DLL 은 **2개**인데 하나만 센다.
+
+| DLL | `BepInPlugin` | 센다 |
+| --- | --- | --- |
+| `ManimalIcebreakerClient.dll` | 있다 | **1** |
+| `PerfectCullingRuntime.dll` | 없다 | 0 (라이브러리) |
+
+그래서 243(3025 까지 실측) + 1(3022) + 1(2866) = **245**. 앞서 3022 만 보고 "244" 라고 적었는데, 2866 까지 들어간 지금 기준은 245 다. 3022 쪽도 같은 방식으로 확인했다 — `ManimalLighthouse.dll` 은 속성이 있고 `ManimalLighthouse.Shared.dll` 은 없다.
+
+### 10-O 가 끝났고 10차가 끝났다
+
+| 모드 | 설치 | 서버 모드 | 시작 | 기록 |
+| --- | --- | --- | --- | --- |
+| 3025 Interchange Expansion | 148파일 / 12초 | 169 → 170 | 201초 | 150줄 (설치 148 + 서버가 만든 배너 2장) |
+| 3022 Lighthouse Rework | 50파일 / 9초 | 170 → 171 | 198초 | 50줄 |
+| 2866 ICEBREAKER | 95파일 / 4초 | 171 → 172 | 165초 | 95줄 |
+
+세 번 모두 오류가 48/1/1 에서 늘지 않았다. 계획이 못 박은 "하나 넣고 그 맵에 들어가 보는 것까지 끝낸 뒤 다음으로 간다" 는 3025 에서 지켰다(인터체인지 레이드 15분 42초 + 사용자가 확장 구역을 눈으로 확인). 3022·2866 은 그 뒤 연이어 넣었다.
+
+**모드 304개 / 파일 14,027개** (`INSTALLED-MODS.md` 재생성).
+
+### 아직 실측하지 않은 것
+
+- **게임 쪽 플러그인 245**. 서버로는 셀 수 없다 — BepInEx 체인로더가 게임 안에서 찍는 수다.
+- **라이트하우스와 ICEBREAKER 를 눈으로** 보는 것. ICEBREAKER 는 독립 맵이므로 맵 선택 목록에 새로 나타나야 한다.
+- **DynamicMaps Extended 의 지도 화면.** 그 모드의 DLL 이 `com.manimal.icebreaker` 를 참조하므로, 이것이 들어온 지금 지도에 할 일이 생겼을 수 있다.
+- 리저브의 `boreas_amg` 와 나이트 T1 변경이 실제 레이드에서 어떻게 보이는지.
+
 ## 서버만 켜서 확인 (3022 설치 후, 2026-11-06 06:31~06:34)
 
 게임은 켜지 않고 서버만 띄워 받을 수 있는 것만 받았다(사용자 지시). 세션은 **마지막 `ModLoader: 총` 줄로 잘라** 읽었다 — 하루치 로그가 한 파일에 쌓이고 시각이 UTC 이므로 시각으로 자르면 틀린다.
@@ -638,7 +713,7 @@ ORBIT 이 KIBA 매장 문을 여는 다단계 행동을 쓰려다 **장면 물�
 - `xyz.drakia.Sense.json` 의 색 항목 58개는 **설명이 없다**. 원문 `.cfg` 에도 설명이 없어 커버리지는 통과한다(이름은 다 한글이다).
 - Better BepInEx 창 자체의 글(`_ui.json` 쪽)은 이 묶음에 넣지 않았다 — 설정 항목이 아니라 창 틀의 글이다.
 
-## 10-O — Manimal 맵 백포트 3개 (진행 중) · 2026-11-05
+## 10-O — Manimal 맵 백포트 3개 (완료) · 2026-11-05~06
 
 **계획이 이 단계에만 둔 제약 둘을 그대로 지킨다.** ① 표 순서를 바꾸지 않는다 — ICEBREAKER(2866)가 Interchange Expansion(3025)을 요구하므로 맨 뒤다. ② **하나 넣고 그 맵에 들어가 보는 것까지 끝낸 뒤** 다음으로 간다. 그래서 앞 단계들처럼 몰아서 넣지 않고 모드마다 멈춘다(사용자와 확인).
 
@@ -648,7 +723,7 @@ ORBIT 이 KIBA 매장 문을 여는 다단계 행동을 쓰려다 **장면 물�
 | --- | --- | --- | --- | --- | --- |
 | 3025 Interchange Expansion | 1.0.8 | 1,509,917,405 | **바이트 일치** | **CLEAN (0/0/0)**, 148개 | **들어갔고 레이드까지 돌았다** (아래) |
 | 3022 Lighthouse Rework | 1.0.7 | 2,455,455,438 | 받기 OK (2026-11-06) | **CLEAN (0/0/0)**, 50개 | **들어갔다** (아래) |
-| 2866 ICEBREAKER | 1.1.3 | 1,672,250,789 | **바이트 일치** | - | - |
+| 2866 ICEBREAKER | 1.1.3 | 1,672,250,789 | **바이트 일치** | **CLEAN (0/0/0)**, 95개 | **들어갔다** (아래) |
 
 매니페스트의 링크·버전·용량은 Forge API 응답과 **전부 일치**하는지 따로 대조했다(손으로 적은 링크를 믿지 않는다).
 
