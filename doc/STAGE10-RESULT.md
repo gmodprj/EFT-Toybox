@@ -326,6 +326,44 @@ Climbable Ladders(2649)는 10-O 의 ICEBREAKER(2866) 선행이기도 하므로, 
 
 레이드 흔적 16건으로 **얕다.** 기준선의 SAIN·STM 줄이 안 나왔고, 10-H 의 본 시험인 **맵별 진입과 프레임**도 로그로는 알 수 없다(위 10-H 절의 네 가지).
 
+## 10-O — Manimal 맵 백포트 3개 (진행 중) · 2026-11-05
+
+**계획이 이 단계에만 둔 제약 둘을 그대로 지킨다.** ① 표 순서를 바꾸지 않는다 — ICEBREAKER(2866)가 Interchange Expansion(3025)을 요구하므로 맨 뒤다. ② **하나 넣고 그 맵에 들어가 보는 것까지 끝낸 뒤** 다음으로 간다. 그래서 앞 단계들처럼 몰아서 넣지 않고 모드마다 멈춘다(사용자와 확인).
+
+**ICEBREAKER 의 선행 8개가 모두 설치돼 있다** — UnityToolkit 2.0.2 · WTT CommonLib 3.0.6 · WTT Content Backport 2.0.5 · BigBrain 1.5.0 · MoreBotsAPI 2.1.1 · WTT Black Division 1.3.1 · Climbable Ladders 1.0.4 · Manimal CS Gas 2.0.0. 이 단계에서 새로 들어가는 선행은 3025 하나다.
+
+| 모드 | 버전 | 크기 | 받기 | 해제·검사 | 설치 |
+| --- | --- | --- | --- | --- | --- |
+| 3025 Interchange Expansion | 1.0.8 | 1,509,917,405 | **바이트 일치** | **CLEAN (0/0/0)**, 148개 | 대기 |
+| 3022 Lighthouse Rework | 1.0.7 | 2,455,455,438 | **미완** (아래) | - | - |
+| 2866 ICEBREAKER | 1.1.3 | 1,672,250,789 | **바이트 일치** | - | - |
+
+매니페스트의 링크·버전·용량은 Forge API 응답과 **전부 일치**하는지 따로 대조했다(손으로 적은 링크를 믿지 않는다).
+
+### 3022 만 받기가 막혔다 — 호스트 차이다
+
+3025(1.5 GB)는 **36초**, 2866(1.6 GB)은 **64초**에 받아졌다. 둘 다 GitHub release 자산이다. 그런데 3022 는 받는 곳이 **Cloudflare R2**(`pub-…r2.dev`)이고,
+
+- 1차: 70 MB 에서 `TypeError: terminated` 로 끊김
+- 2차(재시도): 4분에 12 MB — **약 3 MB/분.** 남은 2.2 GB 를 이 속도면 12시간
+
+사용자와 **나중으로 미뤘다.** 받은 조각은 `downloads/stage10-O/3022__1.0.7.part` 로 남아 있고(이어받기는 하지 않는다), 다시 받을 때 지워진다.
+
+**도구를 하나 만들었다 — `tools/redownload-mod.mjs`.** `download-stage.mjs` 는 건너뛰기가 없어 다시 돌리면 그 단계 **전체**를 다시 받는다(10-O 면 5.25 GB). 그래서 한 모드만 다시 받는 길을 따로 뒀다.
+
+```
+node tools/redownload-mod.mjs stage10-O 3022
+```
+
+남은 `.part` 를 지우고 네 번까지 다시 걸며, 바이트 수가 매니페스트와 어긋나면 받은 파일을 지우고 실패로 끝낸다.
+
+### 다음에 할 일
+
+1. 게임·서버를 닫고 **3025 설치 → 서버 테스트 → 그 맵(Interchange)에 들어가 보기.** 서버 모드는 169 → 170 이 될 것이고, 클라이언트 DLL 수는 설치 뒤 센다.
+2. 3022 를 다시 받아 같은 방식으로.
+3. 마지막에 2866 ICEBREAKER. **10-M 의 DynamicMaps Extended DLL 이 `com.manimal.icebreaker` 를 참조하므로**, 이것이 들어가면 그쪽 지도에 할 일이 생긴다 — 넣은 뒤 지도 화면을 다시 본다.
+4. 이 단계 뒤에 **10-B 의 Map Variants 가 찍던 `[MV] no backported location found` 가 사라지는지** 본다. 지금은 `lighthouse=Manimal (backport NOT seen yet), interchange=Manimal (backport NOT seen yet)` 로 찍힌다 — 3025·3022 가 바로 그 백포트다.
+
 ## 10-M — 대형 3개, 하나씩 · 2026-11-05
 
 | 항목 | 결과 |
