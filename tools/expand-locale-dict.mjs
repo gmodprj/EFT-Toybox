@@ -124,12 +124,28 @@ if (english) {
 const entries = {};
 let matchedTexts = 0;
 const unusedTexts = [];
+
+// byKey: 문구로 짝지을 수 없는 열쇠를 **열쇠로 직접** 적는다.
+// 왜 필요한가 — 드물게 어떤 모드는 **en 과 대상 locale 에 서로 다른 영문**을 써 넣는다
+// (실측: 단독 id 열쇠 4,079개 중 2개. 보기: en 은 "Lose 4 matches", kr 은 "Lose 5 matches").
+// 그런 열쇠는 en 을 기준으로 옮기면 화면에 보이는 글과 다른 것을 번역하게 되므로 손으로 적는다.
+const byKey = raw.byKey ?? {};
+let byKeyUsed = 0;
+const byKeyMissing = [];
+for (const [k, ko] of Object.entries(byKey)) {
+    if (!re.test(k)) { byKeyMissing.push(`${k} (묶음 밖)`); continue; }
+    if (english && !(k in served)) { byKeyMissing.push(`${k} (locale 에 없다)`); continue; }
+    if (taken.has(k)) { byKeyMissing.push(`${k} (다른 사전이 맡았다)`); continue; }
+    entries[k] = ko;
+    byKeyUsed++;
+}
 for (const [en, ko] of Object.entries(texts)) {
     const keys = byText.get(en);
     if (!keys) { unusedTexts.push(en); continue; }
     matchedTexts++;
     for (const k of keys) {
         if (taken.has(k)) continue;
+        if (k in byKey) continue;   // byKey 는 손으로 못박은 것이라 문구 짝보다 세다
         entries[k] = ko;
     }
 }
@@ -137,7 +153,12 @@ for (const [en, ko] of Object.entries(texts)) {
 const keyList = Object.keys(entries).sort();
 console.log(`지도 '${name}': 문구 ${Object.keys(texts).length}개`);
 console.log(`묶음 "${pattern}" 의 영문 열쇠 ${englishKeys}개 / 서로 다른 문구 ${byText.size}개`);
-console.log(`짝이 맞은 문구 ${matchedTexts}개 → 열쇠 ${keyList.length}개`);
+console.log(`짝이 맞은 문구 ${matchedTexts}개 → 열쇠 ${keyList.length}개`
+    + (Object.keys(byKey).length ? ` (그중 열쇠로 직접 적은 것 ${byKeyUsed}개)` : ''));
+if (byKeyMissing.length) {
+    console.log(`!  byKey 에 적었는데 쓰이지 않은 열쇠 ${byKeyMissing.length}개:`);
+    for (const m of byKeyMissing.slice(0, 8)) console.log(`     ${m}`);
+}
 if (unusedTexts.length) {
     console.log(`!  지도에만 있고 지금 서버에 없는 문구 ${unusedTexts.length}개 (모드가 바뀌었거나 오타다):`);
     for (const t of unusedTexts.slice(0, 8)) console.log(`     ${t.slice(0, 80)}`);

@@ -189,3 +189,26 @@ node tools/check-locale-dict.mjs
 
 **숨기지 않고 셈에 남겨 둔다** — 서버 오류 48/1/1 을 기준선으로 적어 두는 것과 같은 꼴이다.
 이 수가 12 에서 늘면 그때는 새로 생긴 일이라는 뜻이다.
+
+## `byKey` — 문구로 짝지을 수 없는 열쇠
+
+드물게 어떤 모드는 **`en` 과 대상 locale 에 서로 다른 영문**을 써 넣는다. 실측으로 단독 id 열쇠
+4,079개 가운데 **2개**가 그렇다.
+
+| 열쇠 | `en` | `kr` |
+| --- | --- | --- |
+| `683421515619c8e2a9031518` | `Failure Condition: Lose 4 matches` | `Failure Condition: Lose 5 matches` |
+| `6834158f2f0e2a7eb90b62cc` | `Hand over the found in raid items from the Food category` | `Hand over the found in raid item: Bottle of Pevko Light beer` |
+
+짝은 `en` 에 맞추므로, 이런 열쇠는 **화면에 보이는 글(kr)과 다른 것을 번역하게 된다.** 그래서
+지도에 `byKey` 를 둔다 — 열쇠로 직접 적고, **문구 짝보다 세다.**
+
+```json
+{
+  "texts": { "…": "…" },
+  "byKey": { "683421515619c8e2a9031518": "실패 조건: 5경기 패배" }
+}
+```
+
+처음에는 `byKey` 를 먼저 넣고 문구 짝을 나중에 돌려서 **덮여 버렸다**(화면에 `4경기` 가 찍혔다).
+지금은 문구 짝이 `byKey` 열쇠를 건너뛴다. `byKey` 에 적었는데 쓰이지 않은 열쇠는 경고로 알려 준다.
