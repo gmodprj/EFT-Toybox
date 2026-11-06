@@ -24,6 +24,12 @@
 | `ChildSlotNamesOf` + `Cartridges`·`StackSlots`·`Chambers`·`Grids` · `IsGridSlot`(꾸러미 구매 고침) | **있다** |
 | `AICoreAgent.Update` 예외를 한 번만 적는 진단(`75eab70`) | **있다** |
 
+> **2026-11-06 이후 소스가 설치본보다 한 걸음 앞서 있다 — 주석 한 군데뿐이다.**
+> `FriendlyTeammateSocialCallbacks` 의 회원 분류 주석이 "인게임 확인 대기" 로 남아 있던 것을 고쳤다
+> (실제로는 2026-11-01 에 통과했다). **IL 은 바뀌지 않으므로 다시 깔 필요가 없고**, 설치본은 계속
+> 위 표의 `D7001316` 이다. 재빌드한 산출물의 md5 가 `8740BF7C` 로 다른 것은 변경 때문이 아니라
+> **같은 소스도 재빌드하면 달라지기** 때문이다(§5 의 작업 규칙 3번).
+
 설치 기록 검사도 깨끗하다: `node tools/check-install-records.mjs` → **`OK — 0/0`**(기록 285개·줄 14,001·
 모드 304개).
 
