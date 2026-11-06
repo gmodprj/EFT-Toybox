@@ -157,10 +157,12 @@ public class FriendlyTeammateSocialCallbacks(
     }
 
     // Membership category: mercenaries are MemberCategory.Unheard (ToFriendSummary), so profile
-    // members take Default to be told apart in the invite window. Whether this reads the way we
-    // want on screen is confirmed in game in Task 7 (design 8).
-    // THE one place to change the profile members' icon/category if Default does not look different from
-    // mercenaries (Unheard) in game. Both fields below read it.
+    // members take Default to be told apart in the invite window.
+    // CONFIRMED in game (2026-11-01, plan 1 gate item 5): the invite window draws profile members
+    // with a person icon and PIT mercenaries with a lightning icon, so the two are told apart by
+    // eye. That closed the item design section 8 left to the builder.
+    // THE one place to change the profile members' icon/category if that ever stops looking
+    // different from mercenaries (Unheard) in game. Both fields below read it.
     internal const MemberCategory ProfileMemberCategory = MemberCategory.Default;
 
     private static UserDialogInfo ToProfileMemberDialog(ProfileCandidate candidate) => new()
