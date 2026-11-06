@@ -26,6 +26,6 @@
 
 | 할 일 | 어디에 들어갔나 |
 | --- | --- |
-| **게임 DB 퀘스트 한글화 — 이름·목표·설명·대사** | 2026-11-06. 네 묶음을 모두 덮었다 — 퀘스트 이름 1,243 · 목표(조건) 3,482 · 설명 1,526 · 대사·메일 1,746. 사전 16개 / 8,019항목, 서버 실측 **8,019/8,019 적용, 값 다름 0**. 도구: `tools/expand-locale-dict.mjs`·`gen-quest-descriptions.mjs`·`gen-quest-messages.mjs`·`check-locale-dict.mjs`·`lint-locale-src.mjs`. 경위는 [REVIEW-KOREAN-LOCALIZATION.md](REVIEW-KOREAN-LOCALIZATION.md), 인계는 [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) §7 |
+| **게임 DB 퀘스트 한글화 — 이름·목표·설명·대사** | 2026-11-06. 네 묶음을 모두 덮었다 — 퀘스트 이름 1,243 · 목표(조건) 3,482 · 설명 1,526 · 대사·메일 1,744. 사전 16개 / 8,017항목, 서버 실측 **8,017/8,017 적용, 값 다름 0**(일부러 영문으로 둔 것 10개). 도구: `tools/expand-locale-dict.mjs`·`gen-quest-descriptions.mjs`·`gen-quest-messages.mjs`·`check-locale-dict.mjs`·`lint-locale-src.mjs`. 경위는 [REVIEW-KOREAN-LOCALIZATION.md](REVIEW-KOREAN-LOCALIZATION.md), 인계는 [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) §7 |
 | **ISB 특수부대 자막·플러그인 locale 한글화** | 2026-11-06. ISB 자막 222 + AdvancedStashSorting 104 + WishlistExtended 10 + LootInVicinity 2. [src/PluginLocales](../src/PluginLocales), 설치는 `tools/install-plugin-locales.ps1`, 검사는 `tools/check-plugin-locales.mjs` |
 | **ISB 역할 이름 10개의 한국어 번역** | 2026-11-06. 봇 역할 이름 전체(26개)로 범위를 넓혀 처리했다 — 9개를 번역하고 `ScavRole/ISB` 는 세력 약어라 그대로 뒀다. 새 서버 모드 [SptKoreanLocale](../src/SptKoreanLocale) 과 사전 `lang/scav-roles.json`. 모드 파일은 건드리지 않았다. 범위 검토는 [REVIEW-KOREAN-LOCALIZATION.md](REVIEW-KOREAN-LOCALIZATION.md) |

@@ -25,7 +25,6 @@
     "625d7001c4874104f230c0c5 successMessageText": "고맙습니다. 등대지기가 이 각성제들을 자기에게 전달하는 방법을 이미 설명해 주었습니다. 소포는 다른 사람을 통해 보내겠습니다, 배달 일까지 전부 당신에게 맡기고 싶지는 않으니까요. 우리가 믿을 만한 동업자라는 걸 등대지기에게 이미 증명했으면 좋겠습니다.",
     "625d70031ed3bb5bcc5bd9e5 successMessageText": "좋네, 필요한 건 전부 갖췄군. 잘됐네.",
     "625d7005a4eb80027c4f2e09 successMessageText": "작동하지 않았다는 게 무슨 말인가?! 내가 이 손으로 만든 건 늘 작동하네. 분명히 몸에 지니고 있었나? 그래, 뭐. 할 말이 없군. 적어도 자네가 멀쩡하다는 건 다행이네. 왜 그랬는지 알아보도록 하지.",
-    "625d700aefebc4442a7b3875 successMessageText": "Механик_049",
     "625d700cc48e6c62a440fab5 failMessageText": "그걸 틀리게 할 수 있다는 건 생각도 못 했네… 그런데 빌어먹을, 자네가 해냈군. 그래, 그에게 보상하지 않는 한 자네는 등대지기 근처엔 영영 못 갈 걸세. 아주 수상한 짓을 했네, 용병. 이 일로 내 처지도 꽤 곤란해졌어. 공짜로 넘어갈 거라고는 기대하지 말게.",
     "625d700cc48e6c62a440fab5 successMessageText": "어떻게 됐나? 전부 얘기해 보게.",
     "626148251ed3bb5bcc5bd9ed successMessageText": "좋아, 준비는 다 됐네. 어떻게 되는지 알려 주겠네.",
@@ -532,7 +531,6 @@
     "616041eb031af660100c9967 successMessageText 5a7c2eca46aef81a7ca2145d 0": "좋아, 여기 내 지도네, 자네가 찾은 걸 보여주게. 좋아, 의뢰인들에게 알리지. 고맙네, 친구.",
     "616041eb031af660100c9967 successMessageText 5ac3b934156ae10c4430e83c 0": "대단하군, 형제, 이 일은 잊지 않겠네!",
     "616041eb031af660100c9967 successMessageText 5c0647fdd443bc2504c2d371 0": "자, 이제 나갈 때가 됐군. 고맙네, 꼬마.",
-    "61604635c725987e815b1a46 startedMessageText 54cb50c76803fa8b248b4571 0": "test",
     "61604635c725987e815b1a46 successMessageText 54cb50c76803fa8b248b4571 0": "왔군! 다 가져왔나? 좋은 물건이야.",
     "61604635c725987e815b1a46 successMessageText 54cb57776803fa99248b456e 0": "좋은 일을 하셨습니다, 용병.",
     "61604635c725987e815b1a46 successMessageText 58330581ace78e27b8b10cee 0": "우리 심부름꾼이 왔군. 잘했네, 친구.",
@@ -700,7 +698,9 @@
     "67464750efd379bfffb1d539 successMessageText": "인상적인 일 처리였네. 세르게이가 USB 드라이브를 해독해서 '거짓 선지자들' 이라는 제목의 특이한 파일을 찾아냈지… 정보를 좀 더 모아서 곧 연락하겠네. 아주 잘했네, 친구. 대단한 충성심을 보여 줬어. 그럼 다음에 보지. 몸 사리고 있게.",
     "67464750efd379bfffb1d539 completePlayerMessage": "대단한 일 처리야. 세르게이가 USB 드라이브를 해독했고 '거짓 선지자들'이라는 파일을 하나 찾아냈네... 정보를 좀 더 모은 뒤에 곧 연락하지. 아주 잘했어, 친구. 그리고 큰 충성을 보여 줬네. 그럼 다음에 보지, 조용히 지내게.",
     "674652a3507f4bb1aecd1086 startedMessageText": "친구, 또 보게 되어 반갑네. 앉게. 세르게이가 이른바 '거짓 선지자' 둘에 대한 정보를 알아냈어. 마음 약한 사람들을 휘두를 만큼의 힘을 가진 자들로, 카리스마만으로 신뢰를 얻는 무리인 모양이네. 그중 한 놈은 제16화학공장, 그 공장에서 관리인으로 일했다더군. 그 둘은 형제고, 본명은 알 수 없지만 '킬라'와 '타길라'로 불리지. 여기 타르코프에서 아주 강력한 두 인물이네. 다음 '거짓 선지자'의 위치를 밝혀내기 위해 그들을 찾아내라.",
-    "674652a3507f4bb1aecd1086 acceptPlayerMessage": "친구, 또 보게 되어 반갑네. 앉게. 세르게이가 이른바 '거짓 선지자' 중 두 명에 대한 정보를 알아냈네. 마음이 약한 자들을 휘두를 만한 힘을 가진 무리인 것 같아. 순전히 카리스마만으로 신뢰를 얻는 자들이지. 그중 한 놈은 제16화학공장, 그 공장에서 관리인으로 일했다고 하네. 둘은 형제고, 본명은 알 수 없지만 '킬라' 와 '타길라' 로 불리지. 여기 타르코프에서 아주 강력한 인물 둘이야. 다음 '거짓 선지자' 의 위치를 알아내려면 그 둘을 찾아내게."
+    "674652a3507f4bb1aecd1086 acceptPlayerMessage": "친구, 또 보게 되어 반갑네. 앉게. 세르게이가 이른바 '거짓 선지자' 중 두 명에 대한 정보를 알아냈네. 마음이 약한 자들을 휘두를 만한 힘을 가진 무리인 것 같아. 순전히 카리스마만으로 신뢰를 얻는 자들이지. 그중 한 놈은 제16화학공장, 그 공장에서 관리인으로 일했다고 하네. 둘은 형제고, 본명은 알 수 없지만 '킬라' 와 '타길라' 로 불리지. 여기 타르코프에서 아주 강력한 인물 둘이야. 다음 '거짓 선지자' 의 위치를 알아내려면 그 둘을 찾아내게.",
+    "674652a3507f4bb1aecd1086 successMessageText": "카반과의 거래에 대한 소문이라고? 큰형님이 그에 대해 좀 알고 있을지도 모르겠군. 언제 칠지 신호를 주겠네. 그때까지는 조용히 있게. [어쩌면 계속될지도...]",
+    "674652a3507f4bb1aecd1086 completePlayerMessage": "카반과의 거래에 대한 소문이라고? 그 큰형님이 뭘 좀 아는 모양이군. 언제 칠지 내가 신호를 주겠다. 그때까지는 조용히 있어라. [어쩌면 계속될지도...]"
   },
   "sources": {
     "5967733e86f774602332fc84 successMessageText": "Thank you, young man. The first aid kits will be put to good use. I won't tell you any more than that, though.",
@@ -727,7 +727,6 @@
     "625d7001c4874104f230c0c5 successMessageText": "Thank you. Lightkeeper has already explained to me how to deliver these stimulants to him. I'll send the package with someone else, because I don't want you to have to do all the courier work as well. I hope we've already proven to Lightkeeper that we're reliable partners.",
     "625d70031ed3bb5bcc5bd9e5 successMessageText": "Alright, we have everything we need, that's good.",
     "625d7005a4eb80027c4f2e09 successMessageText": "What do you mean, it didn't work?! What I make with my bare hands always works. You sure you had it on you? Oh well. I don't even know what to say. It's a good thing you're in one piece, at least. I'll try to figure out why that happened.",
-    "625d700aefebc4442a7b3875 successMessageText": "Механик_049 ",
     "625d700cc48e6c62a440fab5 failMessageText": "I had no idea you could manage to do it wrong... But hell, you did it. Well, you'll never get near Lightkeeper until you make it up to him. That's a sketchy thing you did, mercenary, this set me up pretty bad. Don't expect to get away with it scot-free.",
     "625d700cc48e6c62a440fab5 successMessageText": "How did it go? Tell me everything.",
     "626148251ed3bb5bcc5bd9ed successMessageText": "Okay, we're all set. I'll let you know how it goes.",
@@ -1234,7 +1233,6 @@
     "616041eb031af660100c9967 successMessageText 5a7c2eca46aef81a7ca2145d 0": "Alright, here's my map, show me what you found. Good, I'll let the clients know. Thank you, friend.",
     "616041eb031af660100c9967 successMessageText 5ac3b934156ae10c4430e83c 0": "Awesome, brother, I won’t forget this!",
     "616041eb031af660100c9967 successMessageText 5c0647fdd443bc2504c2d371 0": "Well, guess it’s time to head out then. Thank you, kid.",
-    "61604635c725987e815b1a46 startedMessageText 54cb50c76803fa8b248b4571 0": "test",
     "61604635c725987e815b1a46 successMessageText 54cb50c76803fa8b248b4571 0": "There you are! You got everything? Good stuff.",
     "61604635c725987e815b1a46 successMessageText 54cb57776803fa99248b456e 0": "You've done a good deed, mercenary.",
     "61604635c725987e815b1a46 successMessageText 58330581ace78e27b8b10cee 0": "Here's our errand boy. You've done good, mate.",
@@ -1402,6 +1400,12 @@
     "67464750efd379bfffb1d539 successMessageText": "Impressive work. Sergey decrypted the flash drives and found a particular file titled 'False Prophets'... I'll gather some more intel and will contact you shortly. You did very well, my friend, and showed great loyalty. Until next time then, lay low.",
     "67464750efd379bfffb1d539 completePlayerMessage": "Impressive work. Sergey decrypted the flash drives and found a particular file titled 'False Prophets'... I'll gather some more intel and will contact you shortly. You did very well, my friend, and showed great loyalty. Until next time then, lay low.",
     "674652a3507f4bb1aecd1086 startedMessageText": "Buddy, glad to see you once again. Sit down. Sergey discovered some information about two of the so-called 'False Prophets.' It seems they are a group of men who hold enough power to influence weak-minded people, earning their trust with mere charisma. One of these guys used to work as a janitor at Chemical Plant No. 16, the Factory. They are brothers, no idea of their real names but they go by 'Killa' and 'Tagilla', two very powerful figures here in Tarkov. Locate them in order to reveal the location of our next 'False Prophet'.",
-    "674652a3507f4bb1aecd1086 acceptPlayerMessage": "Buddy, glad to see you once again. Sit down. Sergey discovered some information about two of the so-called 'False Prophets.' It seems they are a group of men who hold enough power to influence weak-minded people, earning their trust with mere charisma. One of these guys used to work as a janitor at Chemical Plant No. 16, the Factory. They are brothers, no idea of their real names but they go by 'Killa' and 'Tagilla', two very powerful figures here in Tarkov. Locate them in order to reveal the location of our next 'False Prophet'."
+    "674652a3507f4bb1aecd1086 acceptPlayerMessage": "Buddy, glad to see you once again. Sit down. Sergey discovered some information about two of the so-called 'False Prophets.' It seems they are a group of men who hold enough power to influence weak-minded people, earning their trust with mere charisma. One of these guys used to work as a janitor at Chemical Plant No. 16, the Factory. They are brothers, no idea of their real names but they go by 'Killa' and 'Tagilla', two very powerful figures here in Tarkov. Locate them in order to reveal the location of our next 'False Prophet'.",
+    "674652a3507f4bb1aecd1086 successMessageText": "A rumor about a deal with Kaban, you say? I think the Big Brother might know a thing or two about that. I'll give you a signal when to strike; until then, lay low. [TO BE MAYBE CONTINUED...]",
+    "674652a3507f4bb1aecd1086 completePlayerMessage": "A rumor about a deal with Kaban, you say? I think the Big Brother might know what he's talking about. I'll give you a signal when to strike; until then, lay low. [TO BE MAYBE CONTINUED...]"
+  },
+  "keptAsIs": {
+    "625d700aefebc4442a7b3875 successMessageText": "Механик_049 — 모드가 쓰는 내부 이름이다. 화면에 뜻이 있는 말이 아니다",
+    "61604635c725987e815b1a46 startedMessageText 54cb50c76803fa8b248b4571 0": "값이 \"test\" 인 시험 문자열이다. 번역할 뜻이 없다"
   }
 }
