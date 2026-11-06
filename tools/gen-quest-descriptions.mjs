@@ -136,25 +136,51 @@ const handBody = hand.byKey ?? {};
 // \uC77C\uBD80\uB7EC \uC601\uBB38\uC73C\uB85C \uB450\uB294 \uAC83(\uB0B4\uBD80 \uC774\uB984 \uB4F1). \uBC88\uC5ED \uAC70\uB9AC\uC5D0\uC11C \uBE7C\uACE0, \uD3B4\uB0B8 \uC0AC\uC804\uC758 keptAsIs \uB85C \uB0A8\uAE34\uB2E4.
 const handKeep = hand.keptAsIs ?? {};
 
+// 바닐라 공식 한국어를 되쓸 수 있는 열쇠인가 — ExpandedTaskText 가 머리말을 붙이고 본문은
+// 기본 `en` 그대로 남겨 둔 경우다. `kr.json` 에는 그 퀘스트의 공식 한국어가 아직 들어 있다.
+function canReuseVanilla(key, enValue) {
+    const vanillaEn = (baseEn[key] ?? '').trim();
+    const vanillaKr = (baseKr[key] ?? '').trim();
+    if (!vanillaEn || !HANGUL.test(vanillaKr)) return false;
+    // **머리말이 붙어 있어야** 우리가 맡을 열쇠다. 머리말이 없으면 ExpandedTaskText 가 손대지 않은
+    // 바닐라 항목이고, 그 `kr` 은 이미 공식 한국어라 우리가 같은 값을 다시 쓸 이유가 없다.
+    if (!hasEttHeader(enValue)) return false;
+    return enValue.trim().endsWith(vanillaEn);
+}
+
+/// 첫 줄이 ExpandedTaskText 머리말 꼴인가.
+function hasEttHeader(value) {
+    const first = value.split('\n').find(l => l.trim() !== '');
+    return first !== undefined && translateHeadLine(first) !== null;
+}
+
 // --- 본문을 빼고 머리말만 한국어로 옮긴 다음, 본문을 붙인다
 const entries = {}, sources = {}, kept = {};
 const stat = { reused: 0, hand: 0, headerOnly: 0, pending: 0, alreadyKorean: 0, noHeadNoBody: 0, kept: 0 };
 const pending = [];
 
-for (const [key, v] of Object.entries(srvKr)) {
+// **`en` 을 기준으로 돈다.** `kr` 을 기준으로 삼으면 멱등하지 않다 — 우리가 이미 입힌 한국어를
+// "남이 번역해 둔 것" 으로 보고 걸러내, 다시 펴낼 때 그 항목들이 사전에서 빠진다(실측: 494개가 빠졌다).
+// `en` 은 늘 영문이고, 설명 열쇠에서는 ExpandedTaskText 가 덮기 전의 `kr` 값과 글자까지 같다.
+for (const [key, v] of Object.entries(srvEn)) {
     const km = key.match(KEY);
     if (!km || typeof v !== 'string') continue;
-    if (HANGUL.test(v)) { stat.alreadyKorean++; continue; }
     const id = km[1];
     if (handKeep[id]) { kept[key] = handKeep[id]; stat.kept++; continue; }
+    // 우리가 맡은 열쇠가 아닌데 이미 한국어라면(바닐라나 다른 모드가 번역해 둔 것) 건드리지 않는다.
+    const ours = Boolean(handBody[id]) || canReuseVanilla(key, v);
+    if (!ours && HANGUL.test(String(srvKr[key] ?? ''))) { stat.alreadyKorean++; continue; }
 
     const lines = v.split('\n');
     const out = [];
-    let i = 0;
+    let i = 0, sawHeader = false;
     for (; i < lines.length; i++) {
         const ko = translateHeadLine(lines[i]);
-        if (ko !== null) { out.push(ko); continue; }
-        if (LIST_LINE.test(lines[i])) { out.push(translateListItem(lines[i])); continue; }
+        if (ko !== null) { out.push(ko); sawHeader = true; continue; }
+        // 들여쓴 줄은 **머리말 안에서만** 목록 항목으로 본다. 그러지 않으면 앞에 공백이 하나 붙은
+        // 본문(보기: `" Good afternoon Mercenary…"`)을 목록으로 잘못 보고 글 전체를 머리말로 삼켜,
+        // 그 열쇠가 번역 거리에도 오르지 못하고 조용히 빠진다(실측 1건).
+        if (sawHeader && LIST_LINE.test(lines[i])) { out.push(translateListItem(lines[i])); continue; }
         if (lines[i].trim() === '') { out.push(lines[i]); continue; }
         break;                          // 여기부터 본문
     }
