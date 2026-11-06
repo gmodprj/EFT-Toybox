@@ -73,27 +73,56 @@ if (english) {
     }
 }
 
-// 이 묶음의 열쇠 가운데, 지금 영문인 것의 영문 값을 모은다.
-// (이미 한국어인 열쇠는 우리가 앞서 덮은 것이거나 바닐라가 가진 것이므로 건드리지 않는다.)
-const HANGUL = /[가-힣ᄀ-ᇿ㄰-㆏]/;
+// 짝은 **en locale** 을 기준으로 맞춘다. 대상 locale(kr)을 기준으로 하면 **앞서 펴낸 것이 이미
+// 한국어라 짝이 안 맞아 통째로 빠진다** — 한 번 그렇게 956개를 잃었다. en 은 우리가 건드리지 않으므로
+// 몇 번 펴내도 같은 결과가 나온다(idempotent).
+const HANGUL = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
 const re = new RegExp(pattern);
+const reference = english ?? served;
+
+// 바닐라가 이미 번역해 둔 열쇠는 건드리지 않는다(기본 파일에서 en 과 kr 이 다르면 번역된 것이다).
+const BASE = 'E:/Spt/SPT_Runtime/SPT_Data/database/locales/global';
+const readBase = f => { try { return JSON.parse(readFileSync(`${BASE}/${f}`, 'utf8').replace(/^\uFEFF/, '')); } catch { return {}; } };
+const baseEn = readBase('en.json');
+const baseTarget = readBase(`${locale}.json`);
+
 const byText = new Map();
 let englishKeys = 0;
-for (const [k, v] of Object.entries(served)) {
+for (const [k, v] of Object.entries(reference)) {
     if (!re.test(k) || typeof v !== 'string') continue;
-    if (HANGUL.test(v)) continue;
+    if (HANGUL.test(v)) continue;                                   // en 쪽이 이미 한국어면 우리 일이 아니다
+    if (english && !(k in served)) continue;                        // en 에만 있고 대상 locale 에 없는 열쇠(실측 9개)
+    if (k in baseTarget && baseTarget[k] !== baseEn[k]) continue;   // 바닐라가 번역해 둔 것
     englishKeys++;
     if (!byText.has(v)) byText.set(v, []);
     byText.get(v).push(k);
 }
 
 // 이미 다른 사전이 맡은 열쇠는 비켜 둔다(겹쳐 적으면 어느 쪽이 이기는지 헷갈린다).
+// 이 이름으로 앞서 펴낸 파일은 다시 쓸 것이라 세지 않는다.
 const mine = new RegExp(`^${name}-\\d+\\.json$`);
 const taken = new Set();
-for (const f of readdirSync(OUT_DIR).filter(x => x.endsWith('.json') && !x.startsWith('_') && !mine.test(x))) {
-    const o = JSON.parse(readFileSync(path.join(OUT_DIR, f), 'utf8').replace(/^﻿/, ''));
-    for (const k of Object.keys(o.entries ?? {})) taken.add(k);
-    for (const k of Object.keys(o.keptAsIs ?? {})) taken.add(k);
+const ourPrevious = new Set();
+for (const f of readdirSync(OUT_DIR).filter(x => x.endsWith('.json') && !x.startsWith('_'))) {
+    const o = JSON.parse(readFileSync(path.join(OUT_DIR, f), 'utf8').replace(/^\uFEFF/, ''));
+    const into = mine.test(f) ? ourPrevious : taken;
+    for (const k of Object.keys(o.entries ?? {})) into.add(k);
+    for (const k of Object.keys(o.keptAsIs ?? {})) into.add(k);
+}
+
+// 우리도 바닐라도 아닌 **다른 모드**가 대상 locale 을 한국어로 바꿔 둔 열쇠는 비켜 둔다.
+// 우리 것인지 가리는 근거 둘: ① 이 이름으로 앞서 펴낸 파일에 있다 ② 지금 값이 이 지도의 한국어
+// 가운데 하나다. ②가 필요한 까닭은, 서버에는 적용돼 있는데 파일에서는 지워진 상태가 있을 수
+// 있어서다(펴내기를 잘못해 잃은 뒤 다시 펴낼 때).
+const ourValues = new Set(Object.values(texts));
+if (english) {
+    for (const [k, v] of Object.entries(served)) {
+        if (!re.test(k) || typeof v !== 'string') continue;
+        if (!HANGUL.test(v)) continue;
+        if (ourPrevious.has(k) || ourValues.has(v)) continue;          // 우리가 바꾼 것이다
+        if (k in baseTarget && baseTarget[k] !== baseEn[k]) continue;  // 바닐라가 바꾼 것이다
+        taken.add(k);
+    }
 }
 
 const entries = {};
