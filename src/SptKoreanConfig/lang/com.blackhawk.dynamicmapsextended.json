@@ -228,6 +228,10 @@
     "Map Artwork Overrides/Interchange (Manimal)": {
       "name": "인터체인지 (Manimal)",
       "desc": "Manimal 백포트 인터체인지의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
+    },
+    "Map Artwork Overrides/Icebreaker": {
+      "name": "ICEBREAKER",
+      "desc": "ICEBREAKER 의 지도 그림을 따로 고른다. 확인되어 쓸 수 있는 종류만 목록에 나온다."
     }
   }
 }
