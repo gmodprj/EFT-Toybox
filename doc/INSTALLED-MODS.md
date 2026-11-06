@@ -3,7 +3,7 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **304개**, 설치 파일 **14027개** (자동 생성 설정 파일 포함)
+- 설치된 모드: **304개**, 설치 파일 **14001개** (자동 생성 설정 파일 포함)
 - **현재 로드 수 (2026-11-05 실측): 서버 모드 172개(10-O 끝, 10차 전체 완료) / 게임 쪽 플러그인 243개(10-O 중 3025 까지).** 그 뒤 3022 와 2866 이 플러그인 속성을 가진 클라이언트 DLL 을 하나씩 넣어 **245 가 예상치**이고 아직 실측하지 않았다(2866 이 함께 넣은 `PerfectCullingRuntime.dll` 은 플러그인 속성이 없어 0 으로 센다). 마지막 기동에서 `243 plugins to load` = `Loading [` 243줄, `Chainloader startup complete`, `[Error` 1줄 / `[Fatal` 0줄(알려진 DirectReload+Fika 건뿐). **다만 Better BepInEx 가 F12 창을 자기 메뉴로 갈아끼우면서 SptKoreanConfig 의 한글화 패치와 ASBP 의 패치를 떼어 냈다** — 수는 줄지 않았지만 **로드된 것과 일하는 것은 다르다**. 되돌리려면 그 모드 설정의 `Use the new menu` 를 끈다. 고를 수 있는 길은 `STAGE10-RESULT.md` 의 10-J 절
 - 레이드를 깊게 돈 기동(11-05 11:06)에서는 `[Error` 9줄이었고 **전부 기존 건**이다 — SAIN 6, 알려진 DirectReload 1, STM 의 LootPatrol 억제 예외가 두 줄로 찍힌 것 2. 메뉴까지만 돈 기동이 1줄인 것은 좋아진 것이 아니라 **아직 안 나온 것**이다
 - 10차 서버 모드 변화: 115(기준선) → 116(10-A) → 120(10-B) → 122(10-C, 150초) → 127(10-D, 144초) → 136(10-E, 159초 / 10-E2, 129초) → **135**(All Quests Checkmarks 제거) → **137**(10-F, 135초) → **138**(10-F2 ORBIT, 144초) → **145**(10-G, 전리품·경제 11개 중 서버 7, 135초. 플리마켓 생성 단계에서도 오류 없음) → **150**(10-H, 맵 7개를 하나씩. 141~162초, 7회 전부 정상 시작) → **151**(10-I1 중 Blackout, 144초) → **152**(10-I2 중 FogSix) → **153**(10-J 중 Raid Review, 147초) → **154**(10-J 중 Knight Mask Fix, 141초) → **155**(10-K 중 PityLoot) → **156**(10-K 중 Lacy 의 PvE Tweaks) → **157**(10-K 중 Quest Backport) → **167**(10-L, 결속 콘텐츠·대형 11개를 하나씩. 11회 전부 정상 시작이고 11개 중 10개가 서버 모드를 싣는다 — Deploy Screen Overhaul 만 게임 전용). 10-K 는 결속 소형 6개를 **하나씩** 넣었고 6회 전부 정상 시작했다(게임 전용 3개는 수가 그대로다). 이어 **169**(10-M, 대형 3개를 하나씩. DynamicMaps Extended 는 게임 전용이라 167 유지, Labs Office Backport 168, Arena Map Port 169. 3회 전부 정상 시작) → **170**(10-O 중 Manimal Interchange Expansion Backport, 201초) → **171**(10-O 중 Manimal Lighthouse Rework Backport, 198초. 앞의 것을 인터체인지 레이드로 확인한 뒤에 넣었다 — 계획이 못 박은 대로 모드마다 멈춘다) → **172**(10-O 의 마지막 MANIMAL ICEBREAKER BACKPORT, 165초. **이것으로 10차가 끝났다**). 10-O 의 세 모드 모두 기록 줄 수가 설치 파일 수와 같거나 서버가 만든 파일만큼만 많았고, 오류는 세 번 다 48/1/1 로 늘지 않았다. Raid Review 만 자체 포트(7828 WS / 7829 HTTP)를 열고 나머지 웹 화면은 모두 6969 안이다. 제거는 10-F 테스트 출력이 직접 찍었다 — `(Added 2 mods: ClassicMovement, Increase Climb Height; Removed 1 mods: All Quests Checkmarks)`. 시작 시간의 약 100초는 `[ItemInfo]` 하나가 쓴다. QuestCodex 는 서버 포트 안에 `/questcodex` 를 붙인다(별도 포트가 아니다)
@@ -191,13 +191,13 @@
 | [Better OKP-7](https://sp-mod.com/mod/2711) | 1.1.0 | 서버 | **결속** | 6 | `stage7D-2711.dirs`, `stage7D-2711` |
 | [TraderGen](https://sp-mod.com/mod/2749) | 2.4.1 | 게임+서버 | **결속** | 12 | `stage7D-2749` |
 | [The Quartermaster](https://sp-mod.com/mod/2817) | 1.4.3 | - | **결속** | 0 | **미설치** |
-| [Wolfik's Heavy Trooper Masks](https://sp-mod.com/mod/1569) | 1.2.0 | 서버 | **결속** | 13 | `stage7D-1569` |
-| [Manimal's Ammo Loading Animations](https://sp-mod.com/mod/2681) | 2.0.0 | 게임+서버 | **결속** | 10 | `stage7D-2681` |
-| [Sage's Incendiary Grenade](https://sp-mod.com/mod/3113) | 1.1.0 | 게임+서버 | **결속** | 9 | `stage7D-3113` |
-| [.22lr Ammunition](https://sp-mod.com/mod/2516) | 2.0.0 | 서버 | **결속** | 24 | `stage7D-2516` |
-| [Peacemaker Continued](https://sp-mod.com/mod/2414) | 2.1.0 | 서버 | **결속** | 18 | `stage7D-2414` |
-| [Better Rear Sights](https://sp-mod.com/mod/1591) | 1.8.0 | 서버 | **결속** | 43 | `stage7D-1591` |
-| [Fold That Stock](https://sp-mod.com/mod/2691) | 2.1.0 | 게임+서버 | **결속** | 25 | `stage7D-2691` |
+| [Wolfik's Heavy Trooper Masks](https://sp-mod.com/mod/1569) | 1.2.0 | 서버 | **결속** | 10 | `stage7D-1569` |
+| [Manimal's Ammo Loading Animations](https://sp-mod.com/mod/2681) | 2.0.0 | 게임+서버 | **결속** | 7 | `stage7D-2681` |
+| [Sage's Incendiary Grenade](https://sp-mod.com/mod/3113) | 1.1.0 | 게임+서버 | **결속** | 6 | `stage7D-3113` |
+| [.22lr Ammunition](https://sp-mod.com/mod/2516) | 2.0.0 | 서버 | **결속** | 21 | `stage7D-2516` |
+| [Peacemaker Continued](https://sp-mod.com/mod/2414) | 2.1.0 | 서버 | **결속** | 15 | `stage7D-2414` |
+| [Better Rear Sights](https://sp-mod.com/mod/1591) | 1.8.0 | 서버 | **결속** | 40 | `stage7D-1591` |
+| [Fold That Stock](https://sp-mod.com/mod/2691) | 2.1.0 | 게임+서버 | **결속** | 22 | `stage7D-2691` |
 | [WTT - Pack 'n' Strap](https://sp-mod.com/mod/1278) | 2.1.1 | 게임+서버 | **결속** | 60 | `stage7E-1278` |
 | [Kalashnikov Enhanced Modding ](https://sp-mod.com/mod/3010) | 4.1.2 | - | **결속** | 0 | **미설치** |
 | [Tactical Gear Component](https://sp-mod.com/mod/1125) | 3.0.0 | 서버 | **결속** | 137 | `stage7E-1125` |
@@ -348,7 +348,7 @@
 | [AOSix](https://sp-mod.com/mod/2569) | 2.0.1 | 게임 | - | 2 | `stage10-I2-2569-AOSix` |
 | [POMSix](https://sp-mod.com/mod/3100) | 1.0.2 | 게임 | - | 2 | `stage10-I2-3100-POMSix` |
 | [TraceSix - Full Raytracing and Voxel GI](https://sp-mod.com/mod/3221) | 1.0.1 | 게임 | - | 3 | `stage10-I2-3221-TraceSix` |
-| [Raid Review](https://sp-mod.com/mod/1479) | 1.10.0 | 게임+서버 | - | 22 | `stage10-J-1479-RaidReview` |
+| [Raid Review](https://sp-mod.com/mod/1479) | 1.10.0 | 게임+서버 | - | 17 | `stage10-J-1479-RaidReview` |
 | [Combat Log](https://sp-mod.com/mod/3072) | 1.0.0 | 게임 | - | 1 | `stage10-J-3072-CombatLog` |
 | [ASBP - Acid's Scalable BepinEx Panel](https://sp-mod.com/mod/2931) | 1.0.1 | 게임 | - | 2 | `stage10-J-2931-ASBP` |
 | [Better BepInEx](https://sp-mod.com/mod/3207) | 1.0.3 | 게임 | - | 1 | `stage10-J-3207-BetterBepInEx` |

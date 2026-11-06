@@ -20,6 +20,3 @@
 2691__FoldThatStock-v2.1.0	SPT_Runtime\user\mods\FoldThatStock\FoldThatStockServer.dll
 2691__FoldThatStock-v2.1.0	SPT_Runtime\user\mods\FoldThatStock\FoldThatStockServer.pdb
 2691__FoldThatStock-v2.1.0	SPT_Runtime\user\mods\FoldThatStock\FoldThatStockServer.staticwebassets.endpoints.json
-2691__FoldThatStock-v2.1.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Images\quest.png
-2691__FoldThatStock-v2.1.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Locales\en.json
-2691__FoldThatStock-v2.1.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Quests\quest_definitions.json

@@ -19,6 +19,3 @@
 2516__22lr	SPT_Runtime\user\mods\spt_22lr\db\CustomItems\22lr.json
 2516__22lr	SPT_Runtime\user\mods\spt_22lr\db\CustomLocales\en.json
 2516__22lr	SPT_Runtime\user\mods\Amonya\db\99_Ids\ids_2026-10-25_16-35-59.json
-2516__22lr	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Images\quest.png
-2516__22lr	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Locales\en.json
-2516__22lr	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Quests\quest_definitions.json
