@@ -105,12 +105,37 @@ F12 쪽을 `SptKoreanConfig` 하나로 처리한 것과 같은 꼴이다 — 사
 
 확인한 제약 둘:
 
+**이 얼개는 만들어 돌려 봤다** — [src/SptKoreanLocale](../src/SptKoreanLocale), 1차 범위는 §7 의 A(봇 역할 이름)다.
+
 | 근거 | 제약 |
 | --- | --- |
-| `SPTarkov.Server.Core.xml` 의 `LocaleTable.Global` 주석: "DO NOT USE THIS PROPERTY DIRECTLY, USE LOCALESERVICE INSTEAD. THIS IS LAZY LOADED AND YOUR CHANGES WILL NOT BE SAVED" | 테이블을 직접 건드리면 안 된다. `LocaleService.GetLocaleDb("kr")` 로 받은 사전에 써야 한다 |
+| **사전에 값을 직접 쓰면 날아간다** (아래) | `LazyLoad.AddTransformer` 로 **변환기를 등록**한다. 사전이 다시 세워질 때마다 입혀진다 |
 | 기억해 둔 규칙 — **DB 변경은 아이템 만드는 모드보다 늦게 돌아야 한다** | `PostLoad` 단계여야 한다. 그보다 이르면 모드가 만든 아이템·퀘스트의 키가 아직 없다 |
+| `LocaleService.GetLocaleDb(language)` 는 그 언어가 없으면 **조용히 `en` 으로 떨어진다**(역컴파일 실측) | `LocaleService` 를 쓰지 않고 `localeTable.Global` 에 그 언어가 정말 있는지 보고, 없으면 아무것도 하지 않는다 |
 
-`LocaleService.GetLocaleDb(language)` 는 `TryGetLocaleDb(language)` 가 실패하면 `en` 으로 떨어진다(역컴파일 실측). `kr.json` 은 있으므로 `kr` 은 제대로 잡힌다.
+### 값을 직접 쓰면 왜 날아가나 — 한 번 틀리고 실측으로 고쳤다
+
+처음 만든 얼개는 `LocaleService.GetLocaleDb("kr")` 로 받은 사전에 그대로 썼다.
+`GlobalLocaleDictionary` 에 `[CacheLazyLoad]` 가 붙어 있고 `ImporterUtil` 이 그것을 보고 `cacheValue: true` 로
+`LazyLoad` 를 만들므로 `.Value` 가 같은 인스턴스를 돌려준다 — 그래서 남을 것이라고 읽었다.
+
+**모드 로그는 "22항목을 바꿨다" 고 적었지만, 서버에 물어보니 22항목 전부가 영문이었다.**
+
+| 실측 | 값 |
+| --- | --- |
+| 모드가 `PostLoad` 에서 본 locale 항목 수 | 60,398 |
+| 그 뒤 `/client/locale/kr` 이 내려준 항목 수 | **61,125** |
+| 우리가 쓴 22항목 | 전부 영문으로 되돌아 있었다 |
+
+빠진 고리는 `LazyLoad.AddTransformer` 가 `Clear()` 를 부른다는 것이다. 우리보다 **늦게** 변환기를 등록하는
+모드가 하나라도 있으면 캐시가 버려지고, 다음 읽기에서 **파일을 다시 읽어 등록된 변환기만** 다시 입힌다.
+사전에 직접 쓴 값은 그 자리에 없다. 항목이 727개 늘어난 것이 다시 세워졌다는 증거다.
+
+그래서 값을 쓰지 않고 변환기를 등록한다. `LocaleTable.Global` 의 "DO NOT USE THIS PROPERTY DIRECTLY" 주석이
+막는 것은 **값을 직접 고치는 것**이고(바로 그 방식이 날아갔다), 변환기를 등록하는 길은 `LazyLoad` 에만 있다.
+
+**교훈: "로그가 바꿨다고 적었다" 는 적용의 증거가 아니다.** 확인은 `node tools/check-locale-dict.mjs` 가
+켜져 있는 서버에게 `/client/locale/kr` 을 물어 하는 것이다.
 
 ### 사전은 어디서 오나
 
@@ -174,8 +199,8 @@ F12 창 밖에서 플러그인이 그리는 글자(패널 제목·버튼·HUD �
 
 | 단계 | 할 일 | 크기 | 왜 먼저인가 |
 | --- | --- | --- | --- |
-| **A** | 봇 역할 이름 26항목 | 26 | 킬 패널·시체·지도에 즉시 보인다. BACKLOG 에 이미 있다 |
-| **B** | 서버 모드 얼개 만들기 (`PostLoad` 에서 `kr` locale 덮어쓰기 + 사전 파일 + 커버리지 검사 도구) | 코드 | A 부터 D 까지가 전부 이 위에 올라간다. F12 쪽 `check-lang-coverage.mjs` 와 같은 꼴의 검사를 함께 만든다 |
+| ~~**A**~~ | ~~봇 역할 이름 26항목~~ | 26 | **끝났다 (2026-11-06)** — 22항목을 번역하고 세력 약어 4개(`ISB`·`RUAF`·`UNTAR`·`REMNANT`)는 바닐라가 `USEC`·`BEAR` 를 영문으로 두는 것과 같이 그대로 뒀다. `ScavRole/Sectant` 는 바닐라도 `???` 다 |
+| ~~**B**~~ | ~~서버 모드 얼개 만들기~~ | 코드 | **끝났다 (2026-11-06)** — [src/SptKoreanLocale](../src/SptKoreanLocale) + `tools/install-koreanlocale.ps1` + `tools/check-locale-dict.mjs`. C 부터 E 까지가 이 위에 올라간다 |
 | **C** | ISB 자막 222줄 + 플러그인 locale 3개 | 338 | 파일만 넣으면 된다. 자막은 길이 열린 것을 확인했다 |
 | **D** | 퀘스트 — 이름·설명 2,284 + 목표 4,461 + 대사 1,353 | 8,098항목 / 130만 자 | 읽어야 하는 글이라 영문이면 막힌다. 아이템 정보 블록의 영문 퀘스트 이름도 같이 고쳐진다 |
 | **E** | 아이템 이름·약칭 중 장비·소모품 | 8,001 중 일부 | 탄약 이름은 바닐라도 영문이라 뺀다 |
