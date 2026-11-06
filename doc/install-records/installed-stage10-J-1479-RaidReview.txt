@@ -1,11 +1,6 @@
 1479__raid_review__1.10.0	BepInEx\plugins\RAID_REVIEW.dll
 1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\RaidReview.dll
 1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\config\config.json
-1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\logs\1793858840701_raid_review.log
-1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\logs\1793858981523_raid_review.log
-1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\logs\1793859145990_raid_review.log
-1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\logs\1793859292470_raid_review.log
-1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\logs\1793859446422_raid_review.log
 1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\raid_review_mod.db
 1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\raid_review_mod.db-shm
 1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\raid_review_mod.db-wal

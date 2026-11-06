@@ -5,6 +5,3 @@
 2681__LoadAmmoAnim-2.0.0	SPT_Runtime\user\mods\LoadAmmoAnimServer\bundles\manimal\stanags_container.bundle
 2681__LoadAmmoAnim-2.0.0	SPT_Runtime\user\mods\LoadAmmoAnimServer\db\CustomItems\hidden_anim_STANAGS.jsonc
 2681__LoadAmmoAnim-2.0.0	SPT_Runtime\user\mods\LoadAmmoAnimServer\db\CustomParents\loadammo_bundle_parent.jsonc
-2681__LoadAmmoAnim-2.0.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Images\quest.png
-2681__LoadAmmoAnim-2.0.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Locales\en.json
-2681__LoadAmmoAnim-2.0.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Quests\quest_definitions.json

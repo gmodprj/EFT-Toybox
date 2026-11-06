@@ -8,6 +8,3 @@
 1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\config\config.jsonc
 1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\db\MaskProps.json
 1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\WolfiksHeavyTrooperMasks\locales\locales.json
-1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Images\quest.png
-1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Locales\en.json
-1569__WolfiksHeavyTroopers1.2.0	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Quests\quest_definitions.json

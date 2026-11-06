@@ -38,6 +38,3 @@
 1591__SPTBetterRearSights	SPT_Runtime\user\mods\SPTBetterRearSights\bundles\assets\content\items\mods\sights rear\sight_rear_val_tochmash_val_std.bundle
 1591__SPTBetterRearSights	SPT_Runtime\user\mods\SPTBetterRearSights\bundles\assets\content\items\mods\sights rear\sight_rear_vepr_molot_vpo-101_std.bundle
 1591__SPTBetterRearSights	SPT_Runtime\user\mods\SPTBetterRearSights\bundles\assets\content\items\mods\sights rear\sight_rear_vss_tochmash_vss_std.bundle
-1591__SPTBetterRearSights	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Images\quest.png
-1591__SPTBetterRearSights	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Locales\en.json
-1591__SPTBetterRearSights	SPT_Runtime\user\mods\TheQuartermaster\db\CommunityQuests\66789abcde1234567890abcd\Quests\quest_definitions.json
