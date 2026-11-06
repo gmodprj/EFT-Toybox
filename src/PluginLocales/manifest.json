@@ -1,0 +1,47 @@
+{
+  "comment": "모드 폴더 안에 넣어야 하는 한국어 locale 파일 목록. 모드 업데이트에 날아가므로 tools/install-plugin-locales.ps1 로 다시 넣는다. source 는 이 폴더 기준, dest 와 reference 는 BepInEx\\plugins 기준이다.",
+
+  "targets": [
+    {
+      "name": "ISB 무전·방송 자막",
+      "plugin": "ISB Special Forces (SOF Extras)",
+      "source": "ISBSpecialForcesPlugin/subtitles-kr.json",
+      "dest": "ISBSpecialForcesPlugin/ISBSpecialForces_Audios/Subtitles/locales/kr.json",
+      "reference": "ISBSpecialForcesPlugin/ISBSpecialForces_Audios/Subtitles/locales/en.json",
+      "format": "isb-subtitles",
+      "evidence": "ISBSOF_Extras.dll 역컴파일 — FindAvailableLocale 이 locales/<코드>.json 의 존재를 보고, NormalizeLocale 은 모르는 코드를 그대로 돌려준다. ResolveText 가 키마다 영어로 떨어지므로 일부만 번역해도 된다."
+    },
+    {
+      "name": "보관함 정렬 창",
+      "plugin": "Advanced Stash Sorting",
+      "source": "AdvancedStashSorting/kr.json",
+      "dest": "AdvancedStashSorting/locales/kr.json",
+      "reference": "AdvancedStashSorting/locales/en.json",
+      "format": "flat",
+      "evidence": "AdvancedStashSorting.dll 역컴파일 — LoadLocales 가 locales/*.json 을 파일 이름으로 키 삼아 읽고, Localization.Culture = LocalizationManager.Culture 다. GetRaw 가 키마다 en 으로 떨어진다."
+    },
+    {
+      "name": "위시리스트 확장",
+      "plugin": "Wishlist Extended",
+      "source": "WishlistExtended/kr.json",
+      "dest": "WishlistExtended/locales/kr.json",
+      "reference": "WishlistExtended/locales/en.json",
+      "format": "flat",
+      "evidence": "WishlistExtended-Client.dll 역컴파일 — LoadLocale 이 locales/<코드>.json 을 읽고 빠진 키를 en 에서 채운다(그때 경고를 남기므로 전부 넣는다). LocalizationManager.ContainsCulture(코드) 가 참이어야 한다."
+    },
+    {
+      "name": "주변 아이템 패널",
+      "plugin": "Softwyx Loot In Vicinity",
+      "source": "Softwyx-LootInVicinity/kr.json",
+      "dest": "Softwyx-LootInVicinity/locales/kr.json",
+      "reference": "Softwyx-LootInVicinity/locales/en.json",
+      "format": "flat",
+      "evidence": "Softwyx-LootInVicinity.dll 역컴파일 — LocaleFileStore 가 locales/*.json 을 훑고 파일 이름을 ^[a-z]{2}([_-][a-z]{2})?$ 로 검사하므로 kr 이 통과한다. 키는 ^lootinvicinity_[a-z0-9_]+$ 여야 한다. MergeMissingKeys 가 en 에서 채우며 경고를 남기므로 전부 넣는다."
+    }
+  ],
+
+  "localeCode": {
+    "value": "kr",
+    "evidence": "게임이 서버에 보내는 요청이 /client/locale/kr 이다(서버 로그 user/logs/spt/spt20261106.log 실측). 서버 웹 화면의 ko 와 다르다."
+  }
+}
