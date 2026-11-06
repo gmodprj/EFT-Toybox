@@ -119,6 +119,14 @@ const keptStillEnglish = [];
 const keptNowKorean = [];
 const uncovered = [];
 
+// 묶음 검사는 **사전 전체**를 한 덩어리로 본다. 한 묶음을 여러 파일로 쪼개 적을 수 있어야 하고
+// (퀘스트 이름처럼 수가 많은 것), 그때 옆 파일이 맡은 열쇠를 "빠뜨렸다" 고 잡으면 안 된다.
+const coveredKeys = new Set();
+for (const { data } of dicts) {
+    for (const k of Object.keys(data.entries ?? {})) coveredKeys.add(k);
+    for (const k of Object.keys(data.keptAsIs ?? {})) coveredKeys.add(k);
+}
+
 for (const { name, data } of dicts) {
     const entries = data.entries ?? {};
     const kept = data.keptAsIs ?? {};
@@ -135,18 +143,36 @@ for (const { name, data } of dicts) {
         else keptStillEnglish.push({ name, key, got: served[key] });
     }
 
-    // 이 사전이 책임지는 묶음에서 빠뜨린 열쇠 찾기
-    for (const prefix of data.coveragePrefixes ?? []) {
+    // 이 사전이 책임지는 묶음에서 빠뜨린 열쇠 찾기.
+    // 접두로 묶이는 것(ScavRole/ 등)과 정규식으로만 묶이는 것(퀘스트 열쇠)을 함께 본다.
+    const scopes = [
+        ...(data.coveragePrefixes ?? []).map(p => ({ label: p, test: k => k.startsWith(p) })),
+        ...(data.coveragePatterns ?? []).map(p => {
+            const re = new RegExp(p);
+            return { label: p, test: k => re.test(k) };
+        }),
+    ];
+    for (const scope of scopes) {
         for (const key of Object.keys(served)) {
-            if (!key.startsWith(prefix)) continue;
-            if (key in entries || key in kept) continue;
+            if (!scope.test(key)) continue;
+            if (coveredKeys.has(key)) continue;
             const value = String(served[key]);
             if (HANGUL.test(value)) continue;            // 바닐라나 다른 모드가 이미 한국어로 둔 것
             if (!/[A-Za-z]/.test(value)) continue;       // '???' 처럼 글자가 없는 것
-            uncovered.push({ name, prefix, key, got: value });
+            uncovered.push({ name, prefix: scope.label, key, got: value });
         }
     }
 }
+
+// 같은 묶음을 여러 파일이 선언하면 같은 열쇠가 여러 번 걸린다. 열쇠로 한 번만 센다.
+const seenUncovered = new Set();
+const uncoveredUnique = uncovered.filter(r => {
+    if (seenUncovered.has(r.key)) return false;
+    seenUncovered.add(r.key);
+    return true;
+});
+uncovered.length = 0;
+uncovered.push(...uncoveredUnique);
 
 // --- 보고 ----------------------------------------------------------------
 

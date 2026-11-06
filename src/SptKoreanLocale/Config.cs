@@ -62,4 +62,11 @@ public class LangFile
     /// </summary>
     [JsonPropertyName("coveragePrefixes")]
     public List<string> CoveragePrefixes { get; set; } = [];
+
+    /// <summary>
+    /// 접두로는 묶을 수 없는 열쇠 묶음을 위한 정규식. 퀘스트 열쇠는 24자리 16진수 id 로 시작해
+    /// 접두가 없다 — 보기: <c>^[0-9a-f]{24} name$</c>. 모드는 쓰지 않고 검사 도구가 쓴다.
+    /// </summary>
+    [JsonPropertyName("coveragePatterns")]
+    public List<string> CoveragePatterns { get; set; } = [];
 }
