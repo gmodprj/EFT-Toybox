@@ -58,6 +58,19 @@
 | [mod-patches/505-olympus-firearmMags.md](mod-patches/505-olympus-firearmMags.md) | Olympus 가 없는 총기를 참조해 탄창 적용이 중간에 멈추던 것 — 12개 제거. **되돌리는 법과 원본 보관 위치** |
 | [external-mods/stage8-G-GamePanelHUD-port.md](external-mods/stage8-G-GamePanelHUD-port.md) | Forge 밖에서 받은 유일한 모드 — 출처·해시·바이러스 검사·라이선스 검토 |
 
+## SPT Team Manager (STM) — 직접 만드는 포크
+
+PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 묶음은 먼저 인계 문서를 읽고 시작한다.**
+
+| 문서 | 내용 |
+| --- | --- |
+| [STM-HANDOVER.md](STM-HANDOVER.md) | **STM 인계 (먼저 읽어라)** — 지금 설치본, 반드시 지킬 불변식 11가지, 코드 지도, 열린 항목, 다음 사람이 집을 거리 |
+| [specs/2026-10-31-spt-team-manager-design.md](specs/2026-10-31-spt-team-manager-design.md) | 설계 — 왜 "빼는 쪽만" 쓰는지, 프로필 팀원과 용병이 어디서 갈라지는지 |
+| [specs/2026-11-04-stash-parity-checklist.md](specs/2026-11-04-stash-parity-checklist.md) | **대조표** — 스태시 조작을 칸으로 세어 "내 스태시=O, 팀원 편집기=X" 를 추린 표. 미측정 칸이 없고, 남은 X 는 전부 "설계상 닫는다" 다 |
+| [specs/2026-11-04-stash-operations-survey.md](specs/2026-11-04-stash-operations-survey.md) | 그 배경 조사 — 컨트롤러를 바꾸면 무엇이 서버로 나가는지(불변식 11 의 근거) |
+| [specs/2026-11-04-death-strip-gate.md](specs/2026-11-04-death-strip-gate.md) | 사망 시 장비 삭제 관문 |
+| [fixes/2026-11-05-aicoreagent-invalidcast.md](fixes/2026-11-05-aicoreagent-invalidcast.md) | Release 로 다시 깐 뒤 사라진 매 프레임 InvalidCast — **원인은 미확정** |
+
 ## 그 밖
 
 | 문서 | 내용 |
