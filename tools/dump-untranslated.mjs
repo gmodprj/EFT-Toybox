@@ -104,15 +104,27 @@ const baseKeys = existsSync(BASE)
 // 묶음을 여러 번에 걸쳐 적을 때 "다음에 적을 것" 만 보려는 용도다.
 const onlyVerbFirst = args.includes('--verb-first');
 const pendingOnly = args.includes('--pending');
-const alreadyWritten = new Set();
+const alreadyWritten = new Set();   // 열쇠로 이미 적힌 것
+const alreadyTexts = new Set();     // 지도에 문구로 이미 적힌 것
 if (pendingOnly) {
+    // 펴낸 사전(lang)과 **손으로 적는 지도(lang-src)** 둘 다 본다.
+    // 지도에 적고 아직 펴내지 않은 사이에 --pending 이 그것을 "아직 안 했다" 고 알려 주면
+    // 같은 문구를 두 번 적게 된다(한 번 그렇게 330문구를 다시 받았다).
     const LANG = 'E:/Spt_Mods/src/SptKoreanLocale/lang';
+    const SRC = 'E:/Spt_Mods/src/SptKoreanLocale/lang-src';
     const { readdirSync } = await import('node:fs');
     for (const f of readdirSync(LANG).filter(x => x.endsWith('.json') && !x.startsWith('_'))) {
         const o = JSON.parse(readFileSync(`${LANG}/${f}`, 'utf8').replace(/^\uFEFF/, ''));
         for (const k of Object.keys(o.entries ?? {})) alreadyWritten.add(k);
         for (const k of Object.keys(o.keptAsIs ?? {})) alreadyWritten.add(k);
     }
+    try {
+        for (const f of readdirSync(SRC).filter(x => x.endsWith('.json'))) {
+            const o = JSON.parse(readFileSync(`${SRC}/${f}`, 'utf8').replace(/^\uFEFF/, ''));
+            for (const t of Object.keys(o.texts ?? {})) alreadyTexts.add(t);
+            for (const k of Object.keys(o.byKey ?? {})) alreadyWritten.add(k);
+        }
+    } catch { /* 지도가 없으면 넘어간다 */ }
 }
 
 const re = new RegExp(pattern);
@@ -122,7 +134,7 @@ for (const [k, v] of Object.entries(served)) {
     if (typeof v !== 'string') continue;
     if (HANGUL.test(v)) continue;
     if (words(v) < minWords) continue;
-    if (pendingOnly && alreadyWritten.has(k)) continue;
+    if (pendingOnly && (alreadyWritten.has(k) || alreadyTexts.has(v))) continue;
     if (onlyVerbFirst && !verbFirst(v)) continue;
     rows.push({ key: k, en: v, mod: !baseKeys.has(k) });
 }
