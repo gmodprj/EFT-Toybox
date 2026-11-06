@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- SPT 4.1.6 서버는 net10.0 이다(SPT.Server.runtimeconfig.json 의 tfm). -->
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>SptKoreanLocale</AssemblyName>
+    <RootNamespace>SptKoreanLocale</RootNamespace>
+    <Version>0.1.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DebugType>none</DebugType>
+    <!-- 서버가 이미 들고 있는 어셈블리를 다시 복사하지 않는다 -->
+    <EnableDynamicLoading>false</EnableDynamicLoading>
+    <!-- 설치 경로. 다른 곳에 SPT가 있으면 -p:SptDir=... 로 덮어쓴다 -->
+    <SptDir Condition="'$(SptDir)' == ''">E:\Spt</SptDir>
+    <ServerDir>$(SptDir)\SPT_Runtime</ServerDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="SPTarkov.Server.Core">
+      <HintPath>$(ServerDir)\SPTarkov.Server.Core.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SPTarkov.Common">
+      <HintPath>$(ServerDir)\SPTarkov.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SPTarkov.DI">
+      <HintPath>$(ServerDir)\SPTarkov.DI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SemanticVersioning">
+      <HintPath>$(ServerDir)\SemanticVersioning.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 빌드 결과 옆에 기본 설정과 사전을 둔다. 설치 스크립트가 이것을 함께 복사한다. -->
+    <None Include="config.jsonc" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="lang\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
