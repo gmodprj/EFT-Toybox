@@ -576,6 +576,40 @@ public partial class MainWindow : Window
         MessageLine.Text = "베꼈다. 이름을 고치고 저장을 누른다.";
     }
 
+    /// <summary>
+    /// 지금 입고 있는 것을 뽑아 편집기에 올린다(설계 §18).
+    ///
+    /// **저장하지 않는다.** 뽑자마자 목록이 늘면 실수로 지우기 어렵다 — 베끼기와 같은
+    /// 흐름으로, 이름을 고치고 저장을 누르는 것은 사람이 한다.
+    /// </summary>
+    private async void OnExtractWorn(object sender, RoutedEventArgs e)
+    {
+        if (_client is null)
+        {
+            return;
+        }
+
+        await Guard(async () =>
+        {
+            var result = await _client.ExtractAsync(null, CancellationToken.None);
+            if (result?.Ok != true || result.Preset is null)
+            {
+                MessageLine.Text = result?.Reason ?? "장비를 뽑지 못했다. 서버 로그를 본다.";
+                return;
+            }
+
+            // 선택을 지워야 저장할 때 새 id 로 올라간다(베끼기와 같다).
+            PresetList.SelectedItem = null;
+            await LoadPresetIntoEditorAsync(result.Preset, result.Preset.Name);
+
+            var skipped = result.Skipped.Count > 0
+                ? "  (" + string.Join(" / ", result.Skipped) + ")"
+                : string.Empty;
+            MessageLine.Text =
+                $"지금 입은 것을 뽑았다 — 품목 {result.Preset.Items.Count}줄. 이름을 고치고 저장을 누른다.{skipped}";
+        });
+    }
+
     private void OnNewPreset(object sender, RoutedEventArgs e)
     {
         PresetList.SelectedItem = null;

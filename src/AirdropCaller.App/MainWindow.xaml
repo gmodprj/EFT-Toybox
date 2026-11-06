@@ -24,6 +24,9 @@
         <Button x:Name="NewPresetButton" Content="새로" Click="OnNewPreset" Padding="8,5" />
         <Button x:Name="CopyPresetButton" Content="복사" Click="OnCopyPreset" Padding="8,5" />
         <Button x:Name="DeletePresetButton" Content="삭제" Click="OnDeletePreset" Padding="8,5" />
+        <!-- 지금 입고 있는 것을 그대로 뽑아 편집기에 올린다(설계 §18). 저장은 사람이 누른다. -->
+        <Button x:Name="ExtractWornButton" Content="입은 것" Click="OnExtractWorn" Padding="8,5"
+                ToolTip="지금 로그인한 프로필이 입고 있는 장비를 프리셋으로 뽑는다. 보안 컨테이너는 뺀다." />
       </StackPanel>
       <ListBox x:Name="PresetList" DisplayMemberPath="Name" SelectionChanged="OnPresetSelected" />
     </DockPanel>
