@@ -1,0 +1,22 @@
+{
+  "guid": "com.manimal.lighthouse",
+  "name": "라이트하우스 리워크 (Lighthouse Rework)",
+  "sections": {
+    "Development": "개발",
+    "Diagnostics": "진단"
+  },
+  "settings": {
+    "Development/AllowProbeContent": {
+      "name": "적재 시험 콘텐츠 허용",
+      "desc": "표시해 둔 적재 시험용 콘텐츠를 허용한다. 보통 레이드에서는 꺼 둔다."
+    },
+    "Development/AllowTestContent": {
+      "name": "맵 전체 시험 빌드 쓰기",
+      "desc": "표시해 둔 맵 전체 시험 빌드를 불러온다. SPT 자체 환경 관리자를 쓰고, 미완성 기능이 문서에 적힌 대로 들어 있다."
+    },
+    "Diagnostics/CaptureRain": {
+      "name": "비 진단 자료 뜨기",
+      "desc": "비 재질·깊이 진단 자료를 뜬다. 장면 전체를 훑고 GPU 에서 되읽어 비싸므로, 일부러 요청받았을 때만 켠다."
+    }
+  }
+}
