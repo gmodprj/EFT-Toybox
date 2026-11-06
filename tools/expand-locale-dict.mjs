@@ -80,19 +80,16 @@ const HANGUL = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
 const re = new RegExp(pattern);
 const reference = english ?? served;
 
-// 바닐라가 이미 번역해 둔 열쇠는 건드리지 않는다(기본 파일에서 en 과 kr 이 다르면 번역된 것이다).
-const BASE = 'E:/Spt/SPT_Runtime/SPT_Data/database/locales/global';
-const readBase = f => { try { return JSON.parse(readFileSync(`${BASE}/${f}`, 'utf8').replace(/^\uFEFF/, '')); } catch { return {}; } };
-const baseEn = readBase('en.json');
-const baseTarget = readBase(`${locale}.json`);
-
+// 누가 번역해 두었는지는 **기본 파일이 아니라 지금 서버 값**으로 가린다.
+// 기본 파일(바닐라 kr.json)로 가리면, 바닐라가 번역했는데 **모드가 영문으로 덮어 버린** 열쇠를
+// "이미 번역됐다" 로 잘못 보고 건너뛴다(실측 1건: 60e745d6479eef59b01b0bdc — 바닐라가 한국어로
+// 들고 있었으나 모드가 en·kr 둘 다 같은 영문으로 덮었다). 지금 서버 값이 영문이면 우리 일이다.
 const byText = new Map();
 let englishKeys = 0;
 for (const [k, v] of Object.entries(reference)) {
     if (!re.test(k) || typeof v !== 'string') continue;
-    if (HANGUL.test(v)) continue;                                   // en 쪽이 이미 한국어면 우리 일이 아니다
-    if (english && !(k in served)) continue;                        // en 에만 있고 대상 locale 에 없는 열쇠(실측 9개)
-    if (k in baseTarget && baseTarget[k] !== baseEn[k]) continue;   // 바닐라가 번역해 둔 것
+    if (HANGUL.test(v)) continue;            // en 쪽이 이미 한국어면 우리 일이 아니다
+    if (english && !(k in served)) continue; // en 에만 있고 대상 locale 에 없는 열쇠
     englishKeys++;
     if (!byText.has(v)) byText.set(v, []);
     byText.get(v).push(k);
@@ -120,8 +117,7 @@ if (english) {
         if (!re.test(k) || typeof v !== 'string') continue;
         if (!HANGUL.test(v)) continue;
         if (ourPrevious.has(k) || ourValues.has(v)) continue;          // 우리가 바꾼 것이다
-        if (k in baseTarget && baseTarget[k] !== baseEn[k]) continue;  // 바닐라가 바꾼 것이다
-        taken.add(k);
+        taken.add(k);   // 바닐라든 다른 모드든, 지금 한국어로 들고 있으면 남의 일이다
     }
 }
 
