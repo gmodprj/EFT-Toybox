@@ -67,7 +67,27 @@ F12 설정 창은 [SptKoreanConfig](../SptKoreanConfig) 가, 서버 웹 화면�
 
 - `entries` 가 실제로 덮어쓰는 것.
 - `keptAsIs` 는 코드가 쓰지 않는다. **"빠뜨린 것" 과 "일부러 둔 것" 을 가르기 위한 기록**이고, 검사 도구가 읽는다.
-- `coveragePrefixes` 도 모드는 쓰지 않는다. 검사 도구가 그 접두로 시작하는 열쇠 중 사전에도 `keptAsIs` 에도 없고 아직 영문인 것을 찾아 **빠뜨림**으로 알린다.
+- `coveragePrefixes`·`coveragePatterns` 도 모드는 쓰지 않는다. 검사 도구가 그 범위의 열쇠 중 사전에도 `keptAsIs` 에도 없고 아직 영문인 것을 찾아 **빠뜨림**으로 알린다. 접두로 묶이지 않는 것(퀘스트 열쇠는 24자리 id 로 시작한다)은 `coveragePatterns` 에 정규식으로 적는다 — 보기: `^[0-9a-f]{24} name$`.
+- **한 묶음을 여러 파일로 쪼개도 된다.** 검사 도구의 묶음 검사는 사전 전체를 한 덩어리로 보므로, 옆 파일이 맡은 열쇠를 "빠뜨렸다" 고 잡지 않는다(퀘스트 이름은 `quest-names-1..4.json` 넷이다).
+
+## 지금 들어 있는 사전
+
+| 파일 | 묶음 | 번역 | 유지 |
+| --- | --- | --- | --- |
+| `scav-roles.json` | 봇 역할 이름 (`ScavRole/*`) | 22 | 5 |
+| `quest-names-1..4.json` | 퀘스트 이름 (`<id> name`) | 1,243 | 2 |
+
+## 번역할 거리 만들기
+
+```
+node tools/dump-untranslated.mjs "^[0-9a-f]{24} name$"                요약(항목 수·글자수·모드/바닐라)
+node tools/dump-untranslated.mjs "^[0-9a-f]{24} name$" --tsv          id<TAB>영문
+node tools/dump-untranslated.mjs "^[0-9a-f]{24} name$" --pending      아직 사전에 없는 것만
+```
+
+켜져 있는 서버에게 물으므로 **모드가 전부 올라간 뒤**의 영문 항목만 나온다. 이미 번역한 것은
+한글이라 저절로 빠지고, `--pending` 은 사전에 적어 둔 열쇠까지 뺀다 — 큰 묶음을 여러 번에
+걸쳐 적을 때 다음 거리를 만들어 준다.
 
 ### 번역 규칙
 
