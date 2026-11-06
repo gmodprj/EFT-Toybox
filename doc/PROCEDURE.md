@@ -51,6 +51,11 @@
    - `-SkipTest`: 복사만. 여러 개를 넣고 마지막에 한 번 테스트할 때.
 3. 결속 모드는 하나씩 설치·테스트.
 4. 목록 갱신: `node tools/gen-installed-mods.mjs` → `doc/INSTALLED-MODS.md`
+5. 기록 검사: `node tools/check-install-records.mjs` → **`OK — 0/0`** 이어야 한다(문제가 있으면 종료 코드 1).
+   - `[1]` 기록에 있는데 설치본에 없는 경로, `[2]` 서로 다른 모드가 같은 경로를 기록한 것을 본다.
+   - **이 단계에서 넣은 모드와 상관없는 다른 모드가 걸릴 수 있다.** 모드가 들어오면 다른 모드의 설정 항목·파일이 늘어나기 때문이다(보기: 조명 모드 하나가 들어와 No Barrel Shadow 기록에 46줄이 생겼다).
+   - 없는 파일이 나와도 **유실로 단정하지 않는다.** 2번의 마지막 항목대로 테스트 중 새로 생긴 파일도 기록에 들어가는데, 그것을 누가 만들었는지는 기록에 남지 않는다 — 서버나 다른 모드가 만든 파일이 그때 설치 중이던 모드 몫으로 적힌다. 판정 전에 셋을 본다: ① 해제본 `extracted/<단계>/<모드>/`에 그 경로가 있나, ② `install-records/removed/`에 그 경로를 가진 제거 기록이 있나, ③ 같은 경로를 여러 모드가 적었나.
+   - 지울 때는 "없는 것 전부"가 아니라 아는 종류만 지우고 지운 내역을 파일로 남긴다(보기: `doc/install-records/README-removed-stale-lines-2026-11-06.md`).
 
 
 ### STM(SPT Team Manager)과 PIT Fireteam은 함께 설치하지 않는다
@@ -70,6 +75,7 @@
 | 게임 플러그인 | `E:\Spt\BepInEx\LogOutput.log` | `N plugins to load`, `Loading [이름 버전]`, `[Error`/`[Fatal` |
 | 게임 실행 여부 | `LogOutput.log` 수정 시각, `E:\Spt\Logs\log_*`, 런처 로그 | 설치 시각 이후인지 (이전이면 새 모드는 아직 로드된 적 없음) |
 | 프로필 영향 | 프로필 해시 vs 백업 | 서버 시작 시 재저장으로 시각은 바뀌어도 내용은 같아야 함 |
+| 설치 기록 정합성 | `node tools/check-install-records.mjs` | `OK — 0/0`. 없는 경로·중복 기록 (§3-5 의 주의를 함께 읽는다) |
 
 주의
 
