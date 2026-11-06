@@ -7191,3 +7191,33 @@ check-locale-dict → 적용 8019 / 값 다름 0 / 열쇠 없음 0 / 빠뜨림 0
 서버 오류    → Error 49 (ItemBaseClass 48 + BundleLoader 1) 기준선과 같은 종류, Critical 0
 ModLoader 총 173,  check-install-records OK — 0/0
 ```
+
+### STM 설치본을 다시 쟀다 — 인계 문서가 두 세대 뒤쳐져 있었다 (2026-11-06)
+
+세션 마무리로 STM 문서를 정리하다 **인계 문서의 설치본 표가 틀린 것**을 발견했다. 거기 적힌
+`7A605C1A`/`6C9AAC58` 은 2026-11-04 의 **Debug** 산출물인데, 실제로 깔린 것은 2026-11-05 20:52 의
+**Release** 다(`355ADC71`/`D7001316`). 그 설치는 `fixes/2026-11-05-aicoreagent-invalidcast.md` 에만
+적혀 있었고 STM 인계 문서에는 반영되지 않았다.
+
+**시각으로 판정하지 않고 내용으로 확인했다.** `.cs` 수십 개가 Release DLL 보다 새로워 보이고(머지가
+수정 시각을 올린다) 마지막 소스 커밋 `75eab70` 은 빌드보다 **4분 늦게** 찍혀 있어, 파일 시각만 보면
+"설치본이 낡았다" 로 읽힌다. 설치본 IL 을 직접 세어 보니 전부 들어 있었다:
+
+| 확인한 것 | 설치본 |
+|---|---|
+| `FitStmStashSection` · `EnableStmStashSearch` · `EnableStmStashMultiSelect` | 있다 |
+| `IsStmPinInteractionAllowed` · `StmGearEditInventoryController` | 있다 |
+| `ChildSlotNamesOf` + `Cartridges`·`StackSlots`·`Chambers`·`Grids` · `IsGridSlot` | 있다 |
+| `AICoreAgent.Update` 진단(`75eab70`, 빌드보다 4분 늦은 커밋) | 있다 |
+
+즉 **편집 → 빌드 → 설치 → 커밋** 순서였고 설치본과 소스는 같은 세대다. "md5 는 그 변경이 들었다를
+말하지 않는다" 와 같은 이유로 **파일 시각도 말하지 않는다** - 둘 다 IL 로 본다.
+
+**2026-11-04 에 코드로 닫은 여덟 가지는 아직 게임에서 한 번도 돌지 않았다.** 그 사이 로그에 편집기를
+연 흔적도(`Stash fit`·`Stash search tab wired` 없음) 꾸러미를 산 흔적도 없다. 인계 문서에 **한 묶음
+점검표**로 옮겨 적었다(§1-b) - 편집기 한 번에 여섯, 꾸러미 한 번에 둘이 정리된다.
+
+**문서 색인에 STM 묶음이 통째로 빠져 있었다.** `doc/README.md` 에 절을 만들어 인계·설계·대조표·조사·
+관문·사고 기록 여섯을 넣었다(경로는 전부 존재를 확인했다).
+
+설치 기록 검사: `node tools/check-install-records.mjs` → **`OK — 0/0`**(기록 285개·줄 14,001·모드 304개).
