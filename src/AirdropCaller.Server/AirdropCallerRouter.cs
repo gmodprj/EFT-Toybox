@@ -40,10 +40,11 @@ public class AirdropCallerRouter : StaticRouter
         ItemSearch itemSearch,
         PresetStore presets,
         WindowWatch windowWatch,
-        SlotCatalog slotCatalog)
+        SlotCatalog slotCatalog,
+        EquipmentExtractor extractor)
         : base(jsonUtil, BuildRoutes(
             jsonUtil, logger, store, httpResponseUtil, crateBuilder, queue, raidState, itemSearch, presets,
-            windowWatch, slotCatalog))
+            windowWatch, slotCatalog, extractor))
     {
     }
 
@@ -61,7 +62,8 @@ public class AirdropCallerRouter : StaticRouter
         ItemSearch itemSearch,
         PresetStore presets,
         WindowWatch windowWatch,
-        SlotCatalog slotCatalog)
+        SlotCatalog slotCatalog,
+        EquipmentExtractor extractor)
     {
         string Json<T>(T value) => jsonUtil.Serialize(value) ?? "{}";
 
@@ -115,22 +117,28 @@ public class AirdropCallerRouter : StaticRouter
                 (url, info, sessionId, output, ct) => ValueTask.FromResult<object>(
                     Json(itemSearch.ListCategories()))),
 
+            // 지금 입고 있는 것을 프리셋으로 뽑는다(설계 §18). **저장하지 않는다** —
+            // 창이 받아서 보여 주고 사람이 이름을 붙여 저장한다.
+            new RouteAction<ExtractRequest>(
+                "/airdrop-caller/extract",
+                (url, info, sessionId, output, ct) => ValueTask.FromResult(
+                    Json(extractor.Extract(sessionId.ToString(), info.Name)))),
             new RouteAction(
                 "/airdrop-caller/presets",
                 (url, info, sessionId, output, ct) => ValueTask.FromResult<object>(
-                    Json(new PresetListResponse { Presets = presets.List(sessionId.ToString()) }))),
+                    Json(new PresetListResponse { Presets = presets.List() }))),
 
             new RouteAction<PresetSaveRequest>(
                 "/airdrop-caller/presets/save",
                 (url, info, sessionId, output, ct) => ValueTask.FromResult(
-                    Json(info.Preset is not null && presets.Save(sessionId.ToString(), info.Preset)
+                    Json(info.Preset is not null && presets.Save(info.Preset)
                         ? new SimpleResponse { Ok = true }
                         : new SimpleResponse { Ok = false, Reason = "프리셋을 저장하지 못했다. 서버 로그를 본다." }))),
 
             new RouteAction<PresetIdRequest>(
                 "/airdrop-caller/presets/delete",
                 (url, info, sessionId, output, ct) => ValueTask.FromResult(
-                    Json(info.Id is not null && presets.Delete(sessionId.ToString(), info.Id)
+                    Json(info.Id is not null && presets.Delete(info.Id)
                         ? new SimpleResponse { Ok = true }
                         : new SimpleResponse { Ok = false, Reason = "그런 프리셋이 없다." }))),
 
@@ -369,7 +377,7 @@ public class AirdropCallerRouter : StaticRouter
         // 프리셋으로 불렀으면 거기서 읽어 온다. 외부 창이 품목을 다시 보낼 필요가 없다.
         if (!string.IsNullOrWhiteSpace(request.PresetId))
         {
-            var preset = presets.Get(profileId, request.PresetId!);
+            var preset = presets.Get(request.PresetId!);
             if (preset is null)
             {
                 return new QueueResponse { Ok = false, Reason = $"프리셋 '{request.PresetId}' 을 찾지 못했다." };

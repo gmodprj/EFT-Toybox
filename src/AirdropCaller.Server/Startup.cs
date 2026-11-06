@@ -15,10 +15,14 @@ namespace AirdropCaller.Server;
 /// </summary>
 [Injectable(InjectionType.Singleton, OnLoadOrder.PostLoad)]
 public class AirdropCallerStartup(
-    ISptLogger<AirdropCallerStartup> logger, ConfigStore store, BigCrate bigCrate) : IOnLoad
+    ISptLogger<AirdropCallerStartup> logger, ConfigStore store, BigCrate bigCrate, PresetStore presets) : IOnLoad
 {
     public Task OnLoadAsync(CancellationToken cancellationToken)
     {
+        // 프리셋 자리 옮기기는 설정이 꺼져 있어도 한다 — 파일이 어디 있느냐의 문제이지
+        // 모드가 도느냐의 문제가 아니다(설계 §17.3).
+        presets.MigrateToGlobal();
+
         var config = store.Config;
 
         if (store.LoadError is not null)
