@@ -1,7 +1,7 @@
 # 문서 색인
 
 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743).
-**2026-11-06 기준 모드 304개 / 파일 14,001개** + 직접 만든 플러그인 6개. **서버 모드 172개, 게임 플러그인 245개** (둘 다 실측).
+**2026-11-06 기준 모드 304개 / 파일 14,001개** + 직접 만든 플러그인 6개. **서버 모드 173개, 게임 플러그인 245개** (둘 다 실측).
 
 > **10차까지 끝났다.** 차수별 결과는 [STAGE10-RESULT.md](STAGE10-RESULT.md), 계획은 [PLAN-STAGE10.md](PLAN-STAGE10.md).
 > 가장 최근 세션 인계는 [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md).
@@ -64,10 +64,10 @@
 | --- | --- |
 | [SERVER-WEB-KOREAN.md](SERVER-WEB-KOREAN.md) | 서버 웹 설정창(SIC) 한글 로케일 |
 | [REVIEW-KOREAN-LOCALIZATION.md](REVIEW-KOREAN-LOCALIZATION.md) | **F12 밖의 한글화 범위 검토** — 모드 메뉴·퀘스트·이벤트·장비·대사. 서버가 실제로 내려주는 `kr` locale 61,125항목을 재어 **영문 산문 18,798항목 / 208만 자**를 확인했고, 퀘스트가 왜 1순위인지·아이템 설명은 왜 번역해도 안 보이는지·ISB 자막은 파일만 넣으면 되는지를 실측으로 적었다. 권하는 단계와 먼저 정할 것도 있다 |
-| [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) | **2026-11-06 세션 인계 (최신)** — 10차 완료, F12 한글화 전수, 설치본 감사, 남은 미확정 |
+| [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) | **2026-11-06 세션 인계 (최신)** — 10차 완료, F12 한글화 전수, 설치본 감사, **게임 DB 퀘스트 네 묶음 한글화 완료**, 남은 미확정 |
 | [HANDOVER-2026-10-26.md](HANDOVER-2026-10-26.md) | 2026-10-26 세션 인계 |
 | [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 |
-| [../src/SptKoreanLocale/README.md](../src/SptKoreanLocale/README.md) | **게임 DB locale 한글화 서버 모드** — 아이템 이름·퀘스트·봇 역할 이름. 1차 범위는 봇 역할 이름 22항목. **사전에 값을 직접 쓰면 날아가는 실측**과 `LazyLoad.AddTransformer` 로 가는 이유가 여기 있다 |
+| [../src/SptKoreanLocale/README.md](../src/SptKoreanLocale/README.md) | **게임 DB locale 한글화 서버 모드** — 지금 **사전 16개 / 8,019항목**이다(봇 역할 이름 22 · 퀘스트 이름 1,243 · 목표 3,482 · 설명 1,526 · 대사·메일 1,746). **사전에 값을 직접 쓰면 날아가는 실측**, `LazyLoad.AddTransformer` 로 가는 이유, **나중에 등록한 변환기가 이긴다**는 것(ExpandedTaskText 가 `int.MaxValue` 를 쓴다), 다시 펴낼 때 기준이 `en` 이어야 하는 이유, 묶음을 병렬로 나눠 번역할 때의 검사가 여기 있다 |
 | [../src/PluginLocales/README.md](../src/PluginLocales/README.md) | **모드 폴더 안에 넣는 한국어 locale 4개 (338항목)** — ISB 무전·방송 자막 222줄, 보관함 정렬 창, 위시리스트 확장, 주변 아이템 패널. 네 모드가 각각 어떻게 locale 코드를 고르는지 역컴파일로 확인한 표와, **모드 업데이트에 날아가므로 다시 넣는** 절차 |
 | [../src/GridWindowScroll/README.md](../src/GridWindowScroll/README.md) | 가방·상자 내부 인벤 창을 화면 안에 가두는 플러그인 (보이는 칸 수 제한 + 스크롤) |
 | [../src/StackUnify/README.md](../src/StackUnify/README.md) | 최대 스택 크기를 한 곳에서 정하는 서버 모드. **`PostLoad` 단계가 클라이언트에 닿는다는 실측**도 여기 있다 |
