@@ -6700,3 +6700,75 @@ OK — 22/22 적용, 빠뜨린 열쇠 0
 **아직 게임에서 눈으로 보지 않았다.** 킬 패널·시체 표시·지도 범주의 **칸 너비**가 한글을 받는지는
 레이드에서 봐야 한다 — 영문 쪽이 `GHOST BUST.` 처럼 줄여 쓰고 있어 자리가 넉넉하지 않을 수 있다.
 넘치면 `lang/scav-roles.json` 을 고치고 서버만 다시 켜면 된다.
+
+### 2026-11-06 — ISB 자막 222줄 + 플러그인 locale 3개 (PluginLocales)
+
+[한글화 범위 검토](REVIEW-KOREAN-LOCALIZATION.md) 의 C 단계다. 제 `locales/` 폴더를 읽는 게임
+플러그인 네 곳에 한국어 파일을 넣었다. **네 파일 / 338항목.**
+
+| 대상 | 플러그인 | 항목 |
+| --- | --- | --- |
+| 무전·방송 자막 | ISB Special Forces (SOF Extras) | **222** |
+| 보관함 정렬 창 | Advanced Stash Sorting | 104 |
+| 위시리스트 확장 | Wishlist Extended | 10 |
+| 주변 아이템 패널 | Softwyx Loot In Vicinity | 2 |
+
+#### locale 코드를 추측하지 않았다
+
+서버 로그(`user/logs/spt/spt20261106.log`)에 게임이 보낸 요청이 남아 있었다.
+
+```
+[클라이언트 요청] /client/locale/kr
+```
+
+그래서 파일 이름은 `kr.json` 이다. 서버 웹 화면의 `ko` 와 다르다(그쪽은 `locales/web/` 소관).
+
+#### 네 모드가 코드를 고르는 방식 — 역컴파일로 확인했다
+
+검토 문서에 "자막은 확인했지만 나머지 셋은 어떤 코드를 찾는지 확인하지 않았다" 고 적어 둔 것을 메웠다.
+`ilspycmd` 로 세 DLL 을 풀어 보니 **셋 다 `locales/` 를 훑어 파일 이름을 코드로 쓰고 빠진 키는 영어로 떨어진다.**
+
+| 플러그인 | 코드를 어디서 얻나 | 빠진 키 |
+| --- | --- | --- |
+| Advanced Stash Sorting | `Localization.Culture = LocalizationManager.Culture` | `GetRaw` 가 키마다 `en` 으로 (조용히) |
+| Wishlist Extended | `LocalizationManager.ContainsCulture(코드)` 가 참이어야 한다 | `en` 에서 채우고 **키마다 경고** |
+| Softwyx Loot In Vicinity | 파일 이름 `^[a-z]{2}([_-][a-z]{2})?$`, 키 `^lootinvicinity_[a-z0-9_]+$` | `MergeMissingKeys` 가 채우고 **경고** |
+
+뒤의 둘이 경고를 남기므로 **일부만 번역하지 않고 전부 넣었다.** 그러면 로그가 깨끗하고, 경고가
+보이면 그것이 곧 빠뜨린 신호가 된다.
+
+#### 번역은 바닐라 한국어에서 읽어 왔다
+
+Advanced Stash Sorting 의 분류 이름은 대부분 바닐라 EFT 에 이미 한국어가 있다. 지어내지 않고
+`en.json` → `kr.json` 역인덱스를 만들어 그 값을 가져왔다 — 의약품·응급 치료 키트·돌격소총·기관단총·
+경기관총·볼트액션 소총·총열덮개·장전 손잡이·전방 손잡이·양각대·권총 손잡이·인식표·마운트 등
+**45개 낱말이 바닐라 표기 그대로**다. 바닐라에 없던 것(키카드·방탄판·완장·수리 키트 등)만 새로 적었다.
+
+#### 모드 폴더 안이라 날아간다
+
+네 파일 모두 모드 폴더 안에 들어간다. 그래서 원본은 [src/PluginLocales](../src/PluginLocales) 에 두고
+설치는 `tools/install-plugin-locales.ps1` 이 한다(`-Remove`·`-WhatIf` 있음). 모드의 `en.json` 은
+건드리지 않고 `kr.json` 만 새로 넣는다. 설치 스크립트는 게임이 켜져 있으면 중단한다.
+
+#### 실측 확인
+
+```
+node tools/check-plugin-locales.mjs
+
+ISB 무전·방송 자막   번역 222 / 원본 222 | 빠진 열쇠 0 | 없는 열쇠 0 | 자리표시자 어긋남 0 | 설치본과 같다
+보관함 정렬 창        번역 104 / 원본 104 | 빠진 열쇠 0 | 없는 열쇠 0 | 자리표시자 어긋남 0 | 설치본과 같다
+위시리스트 확장        번역  10 / 원본  10 | 빠진 열쇠 0 | 없는 열쇠 0 | 자리표시자 어긋남 0 | 설치본과 같다
+주변 아이템 패널       번역   2 / 원본   2 | 빠진 열쇠 0 | 없는 열쇠 0 | 자리표시자 어긋남 0 | 설치본과 같다
+
+OK — 네 사전 모두 원본과 맞고 설치본과 같다
+```
+
+이 도구는 **"없는 열쇠"(오타)와 "자리표시자 어긋남"** 도 본다. 오타는 조용히 무시되고 `{0}` 이
+빠지면 화면이 깨지는데, 둘 다 스스로는 드러나지 않기 때문이다. "한글 없는 값" 은 **문제로 세지
+않고 보여만 준다** — ISB 의 카운트다운 숫자 38개와 ASS 의 모드 이름 2개(ODT ItemInfo·ItemValuation)가
+거기 걸리고 둘 다 정상이다.
+
+**아직 게임에서 눈으로 보지 않았다.** 파일이 맞는 것과 플러그인이 집어 가는 것은 다르다. 다음에
+게임을 켜면 `LogOutput.log` 에서 `Validated locale packs: en, kr.` · `Merged 2 locale entries for 'kr'.`
+(Loot In Vicinity) 와 `Loding locale: kr` (Wishlist Extended, 모드 쪽 오타다) 를 보면 된다 — 메뉴까지만
+켜도 나오고, 경고가 없으면 전수 적용된 것이다. ISB 자막을 실제로 들으려면 **랩스 레이드**가 필요하다.

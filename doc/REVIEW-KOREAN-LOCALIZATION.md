@@ -147,7 +147,38 @@ F12 쪽을 `SptKoreanConfig` 하나로 처리한 것과 같은 꼴이다 — 사
 | 모드가 들고 있는 kr 파일 옮기기 | 적음 | 1,808항목. acidphantasm Scorpion·QuestBackport 가 대부분 |
 | 손으로(또는 기계로) 번역 | 큼 | 나머지 전부. 208만 자 |
 
-## 5. 작은 것들 — 파일만 넣으면 되는 것
+## 5. 작은 것들 — 파일만 넣으면 되는 것 — **끝났다 (2026-11-06)**
+
+네 파일 **338항목**을 번역해 넣었다. 사전은 [src/PluginLocales](../src/PluginLocales) 에 있고,
+설치·제거는 `tools/install-plugin-locales.ps1` (`-Remove`), 확인은 `node tools/check-plugin-locales.mjs` 다.
+
+```
+locale 코드: kr  (게임이 서버에 /client/locale/kr 을 요청한다 — 서버 로그 실측)
+
+ISB 무전·방송 자막   번역 222 / 원본 222 | 빠진 열쇠 0 | 없는 열쇠 0 | 자리표시자 어긋남 0 | 설치본과 같다
+보관함 정렬 창        번역 104 / 원본 104 | 빠진 열쇠 0 | 없는 열쇠 0 | 자리표시자 어긋남 0 | 설치본과 같다
+위시리스트 확장        번역  10 / 원본  10 | 빠진 열쇠 0 | 없는 열쇠 0 | 자리표시자 어긋남 0 | 설치본과 같다
+주변 아이템 패널       번역   2 / 원본   2 | 빠진 열쇠 0 | 없는 열쇠 0 | 자리표시자 어긋남 0 | 설치본과 같다
+
+OK — 네 사전 모두 원본과 맞고 설치본과 같다
+```
+
+**locale 코드가 `kr` 인 것은 추측이 아니다.** 서버 로그(`user/logs/spt/spt20261106.log`)에
+게임이 보낸 `[클라이언트 요청] /client/locale/kr` 이 남아 있다. 서버 웹 화면의 `ko` 와 다르다.
+
+**아직 게임에서 눈으로 보지 않았다.** 파일이 맞는 것과 플러그인이 그것을 집어 가는 것은 다르다.
+다음에 게임을 켜면 `E:\Spt\BepInEx\LogOutput.log` 에서 이 줄을 보면 된다(메뉴까지만 켜도 나온다):
+
+```
+Validated locale packs: en, kr.          ← Loot In Vicinity
+Merged 2 locale entries for 'kr'.        ← Loot In Vicinity
+Loding locale: kr                        ← Wishlist Extended (모드 쪽 오타다)
+```
+
+Wishlist Extended·Loot In Vicinity 는 빠진 키마다 경고를 남기므로, **경고가 없으면 전수 적용된 것**이다.
+Advanced Stash Sorting 은 로그를 남기지 않아 보관함 정렬 창을 직접 열어 봐야 한다.
+ISB 자막은 `com.samc137.isbsofextras.cfg` 의 진단 로그를 켜야 `Subtitle locale loaded: kr.` 이 찍히고,
+실제로 들으려면 **랩스 레이드**가 필요하다.
 
 ### 5-1. ISB 무전·방송 자막 222줄 — **길이 열려 있다 (역컴파일 실측)**
 
@@ -178,7 +209,15 @@ private string FindAvailableLocale(string requested) {
 | Wishlist Extended | en·pl | 10 | 한국어 없음. 제작·은신처 목록 제목들 |
 | Softwyx Loot In Vicinity | en | 2 | `"Nearby Items"` 와 그 개수 표기 |
 
-Advanced Stash Sorting·Wishlist Extended·Loot In Vicinity 는 **`kr.json`(또는 그 모드가 쓰는 코드)을 넣는 것으로 끝날 가능성이 높다.** 다만 자막과 달리 **어떤 코드를 찾는지 역컴파일로 확인하지 않았다** — 하기로 정하면 그것부터 본다.
+셋 다 역컴파일로 확인했고 **파일 하나를 넣는 것으로 끝난다.** 셋 모두 `locales/` 를 훑어 **파일 이름을 locale 코드로** 쓰고, 빠진 키는 영어로 채운다.
+
+| 플러그인 | 코드를 어디서 얻나 | 파일 규칙 | 빠진 키 |
+| --- | --- | --- | --- |
+| Advanced Stash Sorting | `Localization.Culture = LocalizationManager.Culture` | `locales/*.json`, 파일 이름이 코드 | `GetRaw` 가 키마다 `en` 으로 떨어진다 (조용히) |
+| Wishlist Extended | `LocalizationManager.ContainsCulture(코드)` 가 참이어야 한다 | `locales/<코드>.json` | `en` 에서 채우고 **키마다 경고를 남긴다** |
+| Softwyx Loot In Vicinity | `LocaleApplicationLanguagePatch` | `locales/<코드>.json`, 이름이 `^[a-z]{2}([_-][a-z]{2})?$`, 키가 `^lootinvicinity_[a-z0-9_]+$` | `MergeMissingKeys` 가 `en` 에서 채우고 **경고를 남긴다** |
+
+뒤의 둘이 경고를 남기므로 **일부만 번역하지 않고 전부 넣었다** — 그러면 로그가 깨끗하고, 경고가 보이면 그것이 곧 빠뜨린 신호가 된다.
 
 ### 5-3. 봇 역할 이름 26항목
 
@@ -201,7 +240,7 @@ F12 창 밖에서 플러그인이 그리는 글자(패널 제목·버튼·HUD �
 | --- | --- | --- | --- |
 | ~~**A**~~ | ~~봇 역할 이름 26항목~~ | 26 | **끝났다 (2026-11-06)** — 22항목을 번역하고 세력 약어 4개(`ISB`·`RUAF`·`UNTAR`·`REMNANT`)는 바닐라가 `USEC`·`BEAR` 를 영문으로 두는 것과 같이 그대로 뒀다. `ScavRole/Sectant` 는 바닐라도 `???` 다 |
 | ~~**B**~~ | ~~서버 모드 얼개 만들기~~ | 코드 | **끝났다 (2026-11-06)** — [src/SptKoreanLocale](../src/SptKoreanLocale) + `tools/install-koreanlocale.ps1` + `tools/check-locale-dict.mjs`. C 부터 E 까지가 이 위에 올라간다 |
-| **C** | ISB 자막 222줄 + 플러그인 locale 3개 | 338 | 파일만 넣으면 된다. 자막은 길이 열린 것을 확인했다 |
+| ~~**C**~~ | ~~ISB 자막 222줄 + 플러그인 locale 3개~~ | 338 | **끝났다 (2026-11-06)** — [src/PluginLocales](../src/PluginLocales) 의 네 파일. 원본과 열쇠가 1:1 로 맞고 설치본과도 같다(§5). **게임에서 눈으로는 아직 안 봤다** |
 | **D** | 퀘스트 — 이름·설명 2,284 + 목표 4,461 + 대사 1,353 | 8,098항목 / 130만 자 | 읽어야 하는 글이라 영문이면 막힌다. 아이템 정보 블록의 영문 퀘스트 이름도 같이 고쳐진다 |
 | **E** | 아이템 이름·약칭 중 장비·소모품 | 8,001 중 일부 | 탄약 이름은 바닐라도 영문이라 뺀다 |
 | — | 아이템 설명 960 | **하지 않는다** | Item Info 가 갈아끼워 화면에 안 나온다(§3) |

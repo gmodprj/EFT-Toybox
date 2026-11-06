@@ -1,0 +1,13 @@
+{
+  "wext_current_crafts": "제작:",
+  "wext_favorite_crafts": "즐겨찾는 제작:",
+  "wext_future_crafts": "앞으로 가능한 제작:",
+  "wext_other_crafts": "그 밖의 제작:",
+  "wext_current_upgrades": "은신처 개선:",
+  "wext_future_upgrades": "앞으로 가능한 은신처 개선:",
+  "wext_barters": "교환:",
+  "wext_current_quests": "진행 중인 퀘스트:",
+  "wext_future_quests": "앞으로 받을 퀘스트:",
+
+  "wext_in_stash": "은신처에 있음: {0} (발견 {1})"
+}
