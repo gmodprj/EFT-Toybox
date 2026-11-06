@@ -7107,3 +7107,33 @@ lint-locale-src   → OK,  dump --pending → 0문구
 서버 오류          → Error 49 (ItemBaseClass 48 + BundleLoader 1) 기준선과 같은 종류, Critical 0
 ModLoader 총 173,  check-install-records OK — 0/0
 ```
+
+### 퀘스트 설명 1차 — 생성기와 로드 순서 (2026-11-06)
+
+설명 묶음을 재 보니 미번역 1,603개 / 864,390자이고 그 가운데 **머리말이 8%, 본문이 92%**였다.
+머리말은 ExpandedTaskText 가 붙인 것이고 고정 어휘가 6꼴뿐이라 규칙으로 옮길 수 있다 —
+`tools/gen-quest-descriptions.mjs` 를 만들어 머리말을 옮기고 목록의 퀘스트·열쇠 이름은 서버가 이미
+한국어로 내려주는 값을 되쓴다. 본문은 바닐라 `kr.json` 의 공식 한국어를 되쓰거나(225개)
+`lang-src/quest-descriptions.json` 에 손으로 적는다(269개). **합 494개.**
+
+#### 설명 232개가 영문으로 되돌아갔다
+
+ExpandedTaskText 도 `AddTransformer` 를 쓰고 변환기는 나중에 등록한 쪽이 이긴다. 우리는
+`OnLoadOrder.PostLoad` 였다. `OnLoadOrder` 는 enum 이 아니라 `int` 상수여서 `PostLoad + 100000` 으로
+올렸더니 오래된 값 다름 12건은 사라졌지만 설명 232건은 그대로였다 — DLL 을 뜯어 보니 그 모드는
+`int.MaxValue` 를 쓴다. 같은 `int.MaxValue` 로 두자(동순위는 발견 순서로 갈리고 우리 이름이 뒤다)
+**5241/5241 적용, 값 다름 0** 이 됐다. 문서로 보장된 순서가 아니라는 점은 검토 문서에 적어 뒀다.
+
+#### 낡는 것을 알리게 했다
+
+설명은 다른 모드가 붙인 머리말까지 통째로 덮으므로, 펴낸 사전에 그때의 영문 원본을 `sources` 로 적고
+`check-locale-dict.mjs` 가 지금의 `en` 과 맞춰 "원본이 바뀜" 으로 알린다. 실측 494개 모두 일치.
+
+#### 실측
+
+```
+check-locale-dict → 적용 5241 / 값 다름 0 / 열쇠 없음 0 / 빠뜨림 0 / 원본 바뀜 0
+서버 오류          → Error 49 (ItemBaseClass 48 + BundleLoader 1) 기준선과 같은 종류, Critical 0
+ModLoader 총 173,  check-install-records OK — 0/0
+남은 설명 본문      → 1,031개 / 634,104자
+```

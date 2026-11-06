@@ -117,6 +117,10 @@ const mismatched = [];
 const absent = [];
 const keptStillEnglish = [];
 const keptNowKorean = [];
+// 생성한 사전이 적어 둔 영문 원본(`sources`)이 지금 서버의 en 과 어긋난 것.
+// 설명 사전은 ExpandedTaskText 가 붙이는 머리말까지 통째로 덮으므로, 모드 구성이 바뀌면
+// 우리 값이 낡는다. 그때 조용히 틀리지 않게 알린다 — 생성기를 다시 돌리면 된다.
+const staleSources = [];
 const uncovered = [];
 
 // 묶음 검사는 **사전 전체**를 한 덩어리로 본다. 한 묶음을 여러 파일로 쪼개 적을 수 있어야 하고
@@ -135,6 +139,14 @@ for (const { name, data } of dicts) {
         if (!(key in served)) { absent.push({ name, key, want }); continue; }
         if (served[key] === want) { ok++; continue; }
         mismatched.push({ name, key, want, got: served[key] });
+    }
+
+    if (english && data.sources) {
+        for (const [key, src] of Object.entries(data.sources)) {
+            if (!(key in english)) continue;          // 열쇠가 사라진 것은 '열쇠가 없음' 이 잡는다
+            if (english[key] === src) continue;
+            staleSources.push({ name, key, want: src, got: String(english[key]) });
+        }
     }
 
     for (const key of Object.keys(kept)) {
@@ -188,6 +200,7 @@ console.log(`  열쇠가 없음       ${absent.length}`);
 console.log(`  유지 — 영문 그대로 ${keptStillEnglish.length}  (이것이 정상이다)`);
 console.log(`  유지 — 한글로 바뀜 ${keptNowKorean.length}  (다른 것이 손댔다)`);
 console.log(`  묶음에서 빠뜨림   ${uncovered.length}`);
+console.log(`  원본이 바뀜       ${staleSources.length}  (생성기를 다시 돌려야 한다)`);
 
 function dump(title, rows, fmt) {
     if (rows.length === 0) return;
@@ -206,12 +219,14 @@ dump('유지했는데 한글로 바뀐 것', keptNowKorean,
     r => `[${r.name}] ${r.key} = ${r.got}`);
 dump('묶음에서 빠뜨린 열쇠', uncovered,
     r => `[${r.name}] ${r.prefix} … ${r.key} = ${r.got}`);
+dump('영문 원본이 바뀐 열쇠 — 우리 값이 낡았다(생성기를 다시 돌린다)', staleSources,
+    r => `[${r.name}] ${r.key}\n      적어 둔 원본: ${r.want.slice(0, 90)}\n      지금의 영문:  ${r.got.slice(0, 90)}`);
 
-const bad = mismatched.length + absent.length + uncovered.length;
+const bad = mismatched.length + absent.length + uncovered.length + staleSources.length;
 console.log('');
 if (bad === 0) {
     console.log(`OK — ${ok}/${dictTotal} 적용, 빠뜨린 열쇠 0`);
 } else {
-    console.log(`!  문제 ${bad}건 (값 다름 ${mismatched.length} / 없는 열쇠 ${absent.length} / 빠뜨림 ${uncovered.length})`);
+    console.log(`!  문제 ${bad}건 (값 다름 ${mismatched.length} / 없는 열쇠 ${absent.length} / 빠뜨림 ${uncovered.length} / 원본 바뀜 ${staleSources.length})`);
 }
 process.exit(bad === 0 ? 0 : 1);
