@@ -1,0 +1,13 @@
+{
+  "guid": "com.lacyway.hanb",
+  "name": "손 상태 되돌리기 (Hands Are Not Broken)",
+  "sections": {
+    "Keybind": "키 설정"
+  },
+  "settings": {
+    "Keybind/Reset Key": {
+      "name": "되돌리기 키",
+      "desc": "망가진 조작을 되돌릴 키다."
+    }
+  }
+}

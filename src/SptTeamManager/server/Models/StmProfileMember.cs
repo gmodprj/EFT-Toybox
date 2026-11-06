@@ -6,7 +6,9 @@ namespace pitTeam.Server.Models;
 // The fact of registration only: which launcher profile the user put on the team, plus the two
 // team-level choices made about it. No nickname, level, gear, stash or stats are stored here -
 // the launcher profile is the single source of truth, and a copy would become "ghost assets".
-// Tactic and AutoJoin are persisted only; nothing in this task interprets them.
+// Tactic is persisted only and nothing interprets it yet. AutoJoin and HandEdited are changed after
+// registration through StmProfileMemberStore.Update (ProfileMemberUpdatePolicy); whoever acts on them
+// is a later task.
 // Property names are pinned: this is persisted data, and renaming a property later orphans what
 // the human gate writes through SPT's real serializer.
 // NOTE: StmProfileMember is a positional record, so reading it back depends on constructor-parameter
@@ -15,7 +17,12 @@ namespace pitTeam.Server.Models;
 public record StmProfileMember(
     [property: JsonPropertyName("profileId")] string ProfileId,
     [property: JsonPropertyName("tactic")] string Tactic,
-    [property: JsonPropertyName("autoJoin")] bool AutoJoin);
+    [property: JsonPropertyName("autoJoin")] bool AutoJoin,
+    // Appended last, and documents written before it existed have no "handEdited": a constructor parameter
+    // missing from the JSON binds to false. That is checked by a machine at every server start
+    // (StmProfileMemberStore.VerifyOldDocumentBinding), not assumed. One-way: set once the teammate's gear
+    // was hand-edited, never cleared by an update (ProfileMemberUpdatePolicy).
+    [property: JsonPropertyName("handEdited")] bool HandEdited);
 
 // Shape of the stm-profile-members.json document.
 public record StmProfileMembersDocument
@@ -42,6 +49,11 @@ public record StmRosterRow
     [JsonPropertyName("side")] public string Side { get; set; } = string.Empty;
     // Ready | Empty | Unreadable | CurrentSession | Missing
     [JsonPropertyName("status")] public string Status { get; set; } = string.Empty;
+    [JsonPropertyName("autoJoin")] public bool AutoJoin { get; set; }
+    [JsonPropertyName("handEdited")] public bool HandEdited { get; set; }
+    // SpawnGearPolicy.Decide 의 결과("Real"/"Temporary"). 화면은 이 한 값만 보고 말한다 -
+    // 손으로 고쳤는지만으로는 가릴 수 없기 때문이다(손대지 않아도 장비와 무기가 다 있으면 실물로 나간다).
+    [JsonPropertyName("gear")] public string Gear { get; set; } = string.Empty;
 }
 
 public record StmRosterResponse

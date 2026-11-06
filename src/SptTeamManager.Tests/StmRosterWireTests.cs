@@ -129,4 +129,38 @@ public class StmRosterWireTests
         var s = StmRosterWire.Interpret(Env($"[{Row("", 1, "Ready")},{{\"aid\":2}}]"), Own);
         Assert.Empty(s.Members);
     }
+
+    // 2026-11-03: 명단 타일이 "실물 장비" 와 "임시 장비" 를 가르려면 서버의 판정이 전선을 건너야 한다.
+    // 빠뜨리면 화면은 조용히 "아직 판정하지 않음" 으로 돌아간다. 모른다고 말하는 쪽이 거짓말보다는 낫지만, 그래도 못 박는다.
+    [Fact]
+    public void gear_가_오면_그대로_읽는다()
+    {
+        string row = $"{{\"profileId\":\"p1\",\"aid\":5,\"nickname\":\"N\",\"level\":3,\"side\":\"Usec\",\"status\":\"Ready\",\"gear\":\"Real\"}}";
+        var s = StmRosterWire.Interpret(Env($"[{row}]"), Own);
+        Assert.True(s.Ok);
+        Assert.Equal("Real", Assert.Single(s.Members).GearKind);
+    }
+
+    [Fact]
+    public void gear_가_없으면_빈_문자열이다()
+    {
+        var s = StmRosterWire.Interpret(Env($"[{Row("p1", 5, "Ready")}]"), Own);
+        Assert.Equal(string.Empty, Assert.Single(s.Members).GearKind);
+    }
+    // 2026-11-03: 자동 합류 단추가 이 값으로 켜짐/꺼짐을 그린다. 빠지면 켜 둔 팀원도 꺼진 것으로 보이고,
+    // 사용자가 다시 누르면 **켜져 있던 것을 끄게** 된다. 조용히 반대로 도는 쪽이라 못 박는다.
+    [Fact]
+    public void autoJoin_이_오면_그대로_읽는다()
+    {
+        string row = $"{{\"profileId\":\"p1\",\"aid\":5,\"nickname\":\"N\",\"level\":3,\"side\":\"Usec\",\"status\":\"Ready\",\"autoJoin\":true}}";
+        var s = StmRosterWire.Interpret(Env($"[{row}]"), Own);
+        Assert.True(Assert.Single(s.Members).AutoJoin);
+    }
+
+    [Fact]
+    public void autoJoin_이_없으면_꺼진_것이다()
+    {
+        var s = StmRosterWire.Interpret(Env($"[{Row("p1", 5, "Ready")}]"), Own);
+        Assert.False(Assert.Single(s.Members).AutoJoin);
+    }
 }

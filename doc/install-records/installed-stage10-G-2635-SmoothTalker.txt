@@ -1,0 +1,1 @@
+2635__SmoothTalker-1.3.0	BepInEx\plugins\SmoothTalker\SmoothTalker.dll

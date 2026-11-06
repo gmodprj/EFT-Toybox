@@ -32,7 +32,8 @@ namespace pitTeam.Patches
     {
         private static readonly FieldInfo ButtonRawTextField = AccessTools.Field(typeof(DefaultUIButton), "_rawText");
         private static readonly FieldInfo BuildListWeightField = AccessTools.Field(typeof(EquipmentBuildListView), "_weight");
-        private static readonly FieldInfo ScreenSelectedBuildField = AccessTools.Field(typeof(EquipmentBuildsScreen), "_currentBuild");
+        // STM 의 꾸러미가 고른 빌드를 읽는다(계획 4 Task 4-b). PIT 파일에는 private -> internal 승격만 한다.
+        internal static readonly FieldInfo ScreenSelectedBuildField = AccessTools.Field(typeof(EquipmentBuildsScreen), "_currentBuild");
         private static readonly FieldInfo ScreenWeightField = AccessTools.Field(typeof(EquipmentBuildsScreen), "_weight");
         private static readonly FieldInfo EditBuildOnlyAvailableToggleField = AccessTools.Field(typeof(EditBuildScreen), "_onlyAvailableToggle");
         private const string BuyKitRoute = "/singleplayer/pitfireteam/teammate/profile/buy-kit";
@@ -60,7 +61,8 @@ namespace pitTeam.Patches
         private static ResultProfile _profile;
         private static EFT.IEftSession _session;
         private static EFT.InventoryLogic.BackEndInventoryController _backendInventoryController;
-        private static EquipmentBuildsScreen _activeScreen;
+        // STM 의 꾸러미가 고른 빌드를 읽을 때 쓴다. 승격만 한다.
+        internal static EquipmentBuildsScreen _activeScreen;
         private static Action _profileBackOverrideAction;
         private static bool _openingFromProfile;
         private static bool _returningToProfile;
@@ -215,6 +217,7 @@ namespace pitTeam.Patches
 
             _activeScreen = screen;
             CaptureScreenChrome(screen);
+            HideStandardBuildsTabForStm(screen);
             HideScreenBottomPanel(screen.transform);
             HideCurrentWeightValue(screen.transform);
             EnsureExcludeExistingItemsToggle(screen.transform);
@@ -259,6 +262,13 @@ namespace pitTeam.Patches
             if (!ShouldCustomizeBuildsScreen)
             {
                 return false;
+            }
+
+            // STM: 프로필 팀원이면 여기서 갈라진다. 값도 구매도 STM 의 경로가 한다.
+            if (StmKitNativeFlow.IsActive)
+            {
+                var stmBuild = ScreenSelectedBuildField?.GetValue(_activeScreen) as EFT.UI.Builds.EquipmentBuild;
+                return StmKitNativeFlow.HandleBuyRequest(stmBuild?.Id, stmBuild?.Name);
             }
 
             if (!TryCreateBuyQuote(out EquipmentBuildBuyQuote quote))
@@ -313,6 +323,9 @@ namespace pitTeam.Patches
             {
                 return;
             }
+
+            // STM 모드를 끈다(여기서 끄지 않으면 다음에 연 용병 화면이 STM 분기를 탄다).
+            StmKitNativeFlow.End();
 
             if (string.IsNullOrWhiteSpace(_accountId))
             {
@@ -572,6 +585,26 @@ namespace pitTeam.Patches
             }
         }
 
+        // STM: 이 화면은 **저장된 프로필 빌드**만 다룬다. 표준형 탭에 뜨는 것은 게임의 기본 프리셋이라
+        // 어느 프로필의 저장 목록에도 없고, 그래서 서버가 값을 매기지 못한다 - 골라 봐야 버튼이 죽은 채로
+        // "고른 빌드를 찾지 못했습니다" 가 돌아온다. 팀원 꾸러미에서는 아예 빈 목록으로 보인다(빌드 사전을
+        // 바꿔 끼우면서 표준형이 함께 빠지기 때문이다). 막다른 탭이므로 숨긴다.
+        // 되돌리기는 ScreenObjects 가 맡는다 - 원래 활성 상태를 적어 두면 RestoreScreenChrome 이 되살린다.
+        private static void HideStandardBuildsTabForStm(EquipmentBuildsScreen screen)
+        {
+            if (!StmKitNativeFlow.IsActive || screen == null) return;
+
+            var tab = screen._standardBuildsTab;
+            if (tab == null || tab.gameObject == null) return;
+
+            if (_screenChromeState?.ScreenObjects != null)
+            {
+                AddOriginalActive(_screenChromeState.ScreenObjects, tab.transform);
+            }
+
+            tab.gameObject.SetActive(false);
+        }
+
         private static void HideScreenBottomPanel(Transform screen)
         {
             HideChild(screen, "BottomPanel");
@@ -590,8 +623,23 @@ namespace pitTeam.Patches
 
         private static void EnsureExcludeExistingItemsToggle(Transform screen)
         {
+            // STM: 이 칸은 서버가 보지 않는다. 프로필 팀원의 꾸러미는 늘 **전부 새로 산다**(사용자가 고른 규칙).
+            // 눌러도 아무 일이 없는 칸을 두면 거짓말이 되므로 숨기고, 용병 쪽에서 켜 두었던 값도 끈다
+            // (static 이라 모드를 넘어 남는다 - 남으면 버튼 글자가 "장착" 으로 바뀐다).
+            if (StmKitNativeFlow.IsActive)
+            {
+                _excludeExistingItems = false;
+                if (_screenChromeState?.ExcludeExistingItemsToggleRoot != null)
+                {
+                    _screenChromeState.ExcludeExistingItemsToggleRoot.SetActive(false);
+                }
+
+                return;
+            }
+
             if (_screenChromeState?.ExcludeExistingItemsToggleRoot != null)
             {
+                _screenChromeState.ExcludeExistingItemsToggleRoot.SetActive(true);
                 return;
             }
 
@@ -1961,15 +2009,22 @@ namespace pitTeam.Patches
                 return;
             }
 
+            // STM: 목록 줄과 같다 - 서버가 준 값만 쓰고, 모르면 아무것도 쓰지 않는다.
+            // PIT 의 값 계산을 타지 않으므로 [UI][KitPrice] 진단도 나지 않는다.
+            if (StmKitNativeFlow.IsActive)
+            {
+                if (StmKitNativeFlow.TryGetRowPrice(selectedBuild.Id.ToString(), out int stmPrice))
+                {
+                    WriteRoublePrice(weightPanel, stmPrice);
+                }
+
+                return;
+            }
+
             KitLoadoutPricingContext pricingContext = CreateKitLoadoutPricingContext(selectedBuild.Equipment);
             int price = CalculateBuildMarketRoublePrice(selectedBuild.Equipment, pricingContext);
             LogBuildPriceDiagnosticsOnce(selectedBuild, pricingContext, price, "selected");
-            weightPanel.SetParameterValue(new ValueStruct
-            {
-                Current = price,
-                Maximum = 0f
-            }, -1f, 0, false, true);
-            weightPanel.SetWarningColor(false, false);
+            WriteRoublePrice(weightPanel, price);
         }
 
         private static void ApplyBuildListPrice(EquipmentBuildListView view, EFT.UI.BuildWrapper<EFT.UI.Builds.EquipmentBuild> buildWrapper)
@@ -1985,9 +2040,25 @@ namespace pitTeam.Patches
                 return;
             }
 
+            // STM: PIT 의 값은 용병용 규칙이 붙은 것이라 우리가 청구하는 값과 다르다. 대신 **서버가
+            // 목록과 함께 준 값**을 쓴다 - 구매 창이 청구할 값과 같은 계산이다. 값을 모르는 줄에는
+            // 아무 숫자도 쓰지 않는다(게임이 쓰는 무게가 그대로 남는다).
+            if (StmKitNativeFlow.IsActive)
+            {
+                if (!StmKitNativeFlow.TryGetRowPrice(build.Id.ToString(), out int stmPrice)) return;
+                ApplyRoublesIcon(view.transform, force: true);
+                WriteRoublePrice(weightPanel, stmPrice);
+                return;
+            }
+
             KitLoadoutPricingContext pricingContext = CreateKitLoadoutPricingContext(build.Equipment);
             int price = CalculateBuildMarketRoublePrice(build.Equipment, pricingContext);
             LogBuildPriceDiagnosticsOnce(build, pricingContext, price, "list");
+            WriteRoublePrice(weightPanel, price);
+        }
+
+        private static void WriteRoublePrice(HealthParameterPanel weightPanel, int price)
+        {
             weightPanel.SetParameterValue(new ValueStruct
             {
                 Current = price,
@@ -3960,7 +4031,9 @@ namespace pitTeam.Patches
         private static void ApplyActionButtonState(Transform screen)
         {
             string label = GetSocialUiText("PurchaseKitAction");
-            if (_excludeExistingItems && TryCreateBuyQuote(out EquipmentBuildBuyQuote quote) && quote.CanEquipFromStash)
+            // STM 모드에서는 스태시에서 꺼내 쓰지 않으므로 "장착" 이 될 일이 없고, PIT 의 값 계산도 타지 않는다.
+            if (!StmKitNativeFlow.IsActive
+                && _excludeExistingItems && TryCreateBuyQuote(out EquipmentBuildBuyQuote quote) && quote.CanEquipFromStash)
             {
                 label = GetSocialUiText("EquipKitAction");
             }
@@ -3969,13 +4042,29 @@ namespace pitTeam.Patches
             DefaultUIButton button = buttonTransform?.GetComponent<DefaultUIButton>();
             if (button != null)
             {
-                button.SetRawText(label, 18);
                 // Stock SetCurrentBuild gates Equip on a simulated transfer into the player's gear.
                 // Buying for a teammate only needs a selected kit here; the confirmation owns resources.
                 EFT.UI.Builds.EquipmentBuild selectedBuild = _activeScreen == null
                     ? null
                     : ScreenSelectedBuildField?.GetValue(_activeScreen) as EFT.UI.Builds.EquipmentBuild;
-                button.Interactable = selectedBuild?.Equipment != null;
+                bool interactable = selectedBuild?.Equipment != null;
+
+                // STM: 값을 매길 수 없는 빌드는 **누를 수 없게** 한다. 누르면 거절당할 것을 알면서
+                // 누르게 두지 않는다. 글자를 같이 바꿔 눌러 보기 전에 알게 하고, 이유는 토스트로 말한다
+                // (죽은 버튼은 스스로 이유를 말하지 못한다).
+                if (StmKitNativeFlow.IsActive && selectedBuild != null)
+                {
+                    string selectedId = selectedBuild.Id.ToString();
+                    if (!StmKitNativeFlow.TryGetRowPrice(selectedId, out _))
+                    {
+                        label = StmKitNativeFlow.UnbuyableActionLabel;
+                        interactable = false;
+                        StmKitNativeFlow.ExplainUnbuyable(selectedId, selectedBuild.Name);
+                    }
+                }
+
+                button.SetRawText(label, 18);
+                button.Interactable = interactable;
             }
 
             TMP_Text text = buttonTransform?.GetComponentInChildren<TMP_Text>(true);
@@ -4029,8 +4118,13 @@ namespace pitTeam.Patches
             }
         }
 
-        private static void ApplyRoublesIcon(Transform row)
+        private static void ApplyRoublesIcon(Transform row, bool force = false)
         {
+            // STM: 값을 쓰지 못하는 줄에는 아이콘도 달지 않는다. 달아 두면 그 자리에 남는 **무게** 숫자가
+            // 값처럼 보인다(2026-11-02 인게임에서 44.3·25.2 를 값으로 읽을 뻔했다).
+            // 값을 쓰는 줄은 force 로 부른다 - 그때는 용병 쪽과 똑같이 ₽ 가 붙는다.
+            if (StmKitNativeFlow.IsActive && !force) return;
+
             Transform iconTransform = FindChildRecursive(row, "WeightIcon");
             Image image = iconTransform?.GetComponent<Image>();
             Sprite sprite = LoadRoublesSprite();

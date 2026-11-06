@@ -1,0 +1,11 @@
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\city_ladders
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\custom_ladders
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\factory_rework_ladders
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\interchange_ladders
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\lighthouse_ladders
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\reserve_base_ladders
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\sandbox_ladders
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\shoreline_ladders
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\tarkin.ladders.bep.dll
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\tarkin.ladders.shared.dll
+2649__tarkin-ladders-v1.0.4	BepInEx\plugins\tarkin-ladders\woods_ladders

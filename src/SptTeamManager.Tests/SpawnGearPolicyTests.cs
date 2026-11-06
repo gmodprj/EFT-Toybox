@@ -26,6 +26,36 @@ public class SpawnGearPolicyTests
     }
 
     [Fact]
+    public void 손으로_고친_팀원은_비어_있어도_임시가_아니다()
+    {
+        // 설계 §6-4 "편집하면 실물이 된다": 손으로 한 번 고치면 그 팀원은 그 뒤로 임시 장비 대상이
+        // 아니다. 편집이 슬롯을 비워 놓고 끝났어도 그렇다 - 비웠다는 것도 플레이어의 결정이고,
+        // 임시 장비를 덮어씌우면 그 결정이 조용히 사라진다. 되돌리려면 등록을 빼고 다시 넣는다.
+        foreach (var hasWeapon in new[] { false, true })
+        {
+            var decision = SpawnGearPolicy.Decide(hasAnyEquipment: false, hasWeaponInRequiredSlot: hasWeapon, handEdited: true);
+            Assert.Equal(SpawnGearKind.Real, decision.Kind);
+            Assert.False(string.IsNullOrWhiteSpace(decision.Reason));
+            // 사유가 "장비가 하나도 없어 임시" 와 같아서는 안 된다 - 로그에서 원인을 가려야 한다.
+            Assert.NotEqual(SpawnGearPolicy.Decide(false, hasWeapon).Reason, decision.Reason);
+        }
+
+        // 손으로 고치고 장비도 갖춘 팀원은 평소와 같은 Real 이다.
+        Assert.Equal(SpawnGearKind.Real, SpawnGearPolicy.Decide(true, true, handEdited: true).Kind);
+
+        // 손으로 고치지 않은 팀원의 판정은 그대로다(기존 두 인자 오버로드와 같다).
+        foreach (var (equip, weapon) in new[] { (false, false), (false, true), (true, false), (true, true) })
+        {
+            Assert.Equal(
+                SpawnGearPolicy.Decide(equip, weapon).Kind,
+                SpawnGearPolicy.Decide(equip, weapon, handEdited: false).Kind);
+            Assert.Equal(
+                SpawnGearPolicy.Decide(equip, weapon).Reason,
+                SpawnGearPolicy.Decide(equip, weapon, handEdited: false).Reason);
+        }
+    }
+
+    [Fact]
     public void 기본_슬롯만_찬_프로필은_장비_없음_사유로_Temporary_다()
     {
         // 슬롯 이름에서 결정까지 한 번에 — 이 테스트만이 두 단계를 이어서 고정한다.

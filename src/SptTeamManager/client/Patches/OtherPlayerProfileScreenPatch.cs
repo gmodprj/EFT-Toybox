@@ -71,6 +71,8 @@ namespace pitTeam.Patches
         public List<string> OwnedBodyCustomizationIds { get; set; }
         public List<string> OwnedFeetCustomizationIds { get; set; }
         public FriendlyTeammateProfileRecoveryNotice RecoveryNotice { get; set; }
+        // 프로필 팀원(STM)일 때만 값이 있다. PIT 용병의 응답에는 없다.
+        public StmProfileDetailWire Stm { get; set; }
     }
 
     internal class FriendlyTeammateProfileRecoveryNotice
@@ -963,6 +965,13 @@ namespace pitTeam.Patches
             }
 
             FriendlyTeammateProfileOptions options = TryLoadProfileOptions(profile.AccountId);
+
+            // STM: 프로필 팀원의 화면이면 여기서 처리하고 PIT 의 용병 편집 UI 는 만들지 않는다. 아니면 아래가 그대로 흐른다.
+            if (TryApplyStmDetail(__instance, profile, options, inventoryController, session, playerModelWindow))
+            {
+                return;
+            }
+
             if (options == null)
             {
                 return;

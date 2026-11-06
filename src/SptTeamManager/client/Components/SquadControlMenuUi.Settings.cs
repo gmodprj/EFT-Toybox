@@ -387,6 +387,7 @@ namespace pitTeam.Components
                 pitFireTeam.friendlyEncounterChance,
                 pitFireTeam.friendlyScavEncounters,
                 pitFireTeam.pmcArmbands,
+                pitFireTeam.autoJoinMaxMembers,
                 pitFireTeam.factionHostilities))
             {
                 yield return setting;
@@ -2655,6 +2656,7 @@ namespace pitTeam.Components
             if (entry == pitFireTeam.badGuy) return language.badGuy;
             if (entry == pitFireTeam.factionHostilities) return language.factionHostilities;
             if (entry == pitFireTeam.pmcArmbands) return language.pmcArmbands;
+            if (entry == pitFireTeam.autoJoinMaxMembers) return language.autoJoinMaxMembers;
             if (entry == pitFireTeam.englishBear) return language.englishBear;
             if (entry == pitFireTeam.botGrenades) return language.botGrenades;
             if (entry == pitFireTeam.pingKey) return language.pingSquad;

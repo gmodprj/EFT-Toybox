@@ -4,6 +4,11 @@
 //
 // 기준: E:\Spt\BepInEx\config\<GUID>.cfg 의 [섹션] 과 `키 = 값`
 // 사전: src/SptKoreanConfig/lang/<GUID>.json
+//
+// 두 쪽에서 센다. 사전 쪽만 돌면 **사전이 아예 없는 모드**는 목록에 나타나지도 않는다 —
+// STM(`xyz.stm.teammanager`)이 PIT 포크로 GUID 가 바뀌면서 사전이 조용히 끊겼는데도 이 도구가
+// OK 만 찍고 있었던 것이 그 때문이다(2026-11-02). 그래서 설치된 .cfg 쪽에서도 한 바퀴 돌아
+// 사전이 없는 모드를 따로 알린다.
 
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, basename } from 'node:path';
@@ -99,6 +104,36 @@ for (const r of rows) {
   }
 }
 
+// 설치된 .cfg 쪽에서 한 바퀴: 사전이 아예 없는 모드를 찾는다.
+const haveDict = new Set(langFiles.map((f) => basename(f, '.json')));
+const cfgGuids = existsSync(CONFIG_DIR)
+  ? readdirSync(CONFIG_DIR)
+      .filter((f) => f.endsWith('.cfg'))
+      .map((f) => basename(f, '.cfg'))
+  : [];
+const noDict = cfgGuids.filter((g) => !haveDict.has(g) && (!only || g === only));
+
+if (noDict.length > 0) {
+  // 우리가 만든 모드는 설정 이름 자체가 한글이라 사전이 필요 없다. 그 둘을 구별해서 알린다.
+  const rowsNoDict = noDict.map((g) => {
+    const keys = readCfg(join(CONFIG_DIR, `${g}.cfg`));
+    const alreadyKorean = keys.length > 0 && keys.every((k) => /[가-힣]/.test(k));
+    return { guid: g, count: keys.length, alreadyKorean };
+  });
+  const needs = rowsNoDict.filter((r) => !r.alreadyKorean);
+
+  console.log(`\n사전이 없는 모드 ${rowsNoDict.length}개 — 그중 번역이 필요한 것 ${needs.length}개`);
+  for (const r of rowsNoDict) {
+    console.log(
+      `    ${r.alreadyKorean ? 'OK ' : '！ '} ${r.guid} — 항목 ${r.count}개, 사전 파일 없음` +
+        (r.alreadyKorean ? ' (원문이 이미 한글이다)' : ''),
+    );
+  }
+}
+
 if (!only) {
-  console.log(`\n합계: ${totalDone}/${totalKeys} 항목, 사전 ${rows.length}개`);
+  console.log(
+    `\n합계: ${totalDone}/${totalKeys} 항목, 사전 ${rows.length}개` +
+      `, 사전 없는 모드 ${noDict.length}개 / 설치된 .cfg ${cfgGuids.length}개`,
+  );
 }

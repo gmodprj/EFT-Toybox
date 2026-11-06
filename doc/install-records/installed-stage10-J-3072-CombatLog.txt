@@ -1,0 +1,1 @@
+3072__maschine-CombatLog-1.0.0	BepInEx\plugins\maschine-CombatLog.dll

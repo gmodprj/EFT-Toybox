@@ -1,0 +1,1 @@
+2857__RSSV1.3.1	BepInEx\plugins\RaidSettingsSkipper.dll

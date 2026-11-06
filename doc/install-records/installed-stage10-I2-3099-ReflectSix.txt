@@ -1,0 +1,2 @@
+3099__ReflectSix-1.0.1	BepInEx\plugins\ReflectSix\ReflectSix.dll
+3099__ReflectSix-1.0.1	BepInEx\plugins\ReflectSix\Assets\reflectsix

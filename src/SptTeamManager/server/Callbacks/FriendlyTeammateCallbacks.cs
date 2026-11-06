@@ -1,5 +1,6 @@
 using pitTeam.Server.Models;
 using pitTeam.Server.Services;
+using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
@@ -21,11 +22,33 @@ public class FriendlyTeammateCallbacks(
     FollowerInsuranceCourierTransferService courierTransfers,
     JsonUtil jsonUtil,
     StmProfileViewFactory profileViewFactory,
+    StmAutoJoinService autoJoinService,
+    StmTacticService tacticService,
+    StmProfileOperationGuard operationGuard,
     ISptLogger<FriendlyTeammateCallbacks> logger
 )
 {
+    // 프로필 팀원에게 뜻이 없는 조작을 PIT 에 닿기 전에 거부한다(STM 먼저, 불변식 3). 프로필 팀원이 아니면 false 이고 PIT 경로가
+    // 그대로 흐른다. 사유는 플레이어가 읽는 말이다(ProfileMemberOperationPolicy).
+    private bool RefuseProfileMember(MongoId sessionId, string? accountId, ProfileMemberOperation operation, out ValueTask<string> refusal)
+    {
+        if (operationGuard.TryRefuse(sessionId, accountId, operation, out var message))
+        {
+            refusal = new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+            return true;
+        }
+
+        refusal = default;
+        return false;
+    }
+
+    private static bool IsReadFailure(string reason) =>
+        string.Equals(reason, ProfileViewPolicy.ReadFailedReason, StringComparison.Ordinal);
+
     public ValueTask<string> InsureEquipment(string url, FriendlyTeammateInsuranceRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Insurance, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             return new ValueTask<string>(httpResponse.GetBody(teammateService.InsureTeammateEquipment(sessionId, request)));
@@ -101,7 +124,9 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> ListAutoJoin(string url, EmptyRequestData _, MongoId sessionId)
     {
-        return new ValueTask<string>(httpResponse.GetBody(teammateService.GetAutoJoinTeammateAccountIds(sessionId)));
+        // PIT 결과가 먼저 나오고 STM 은 뒤에 붙기만 한다. AppendAccountIds 는 던지지 않는다(실패하면 PIT 목록 그대로).
+        return new ValueTask<string>(httpResponse.GetBody(
+            autoJoinService.AppendAccountIds(sessionId, teammateService.GetAutoJoinTeammateAccountIds(sessionId))));
     }
 
     public ValueTask<string> GetGameplayMode(string url, EmptyRequestData request, MongoId sessionId)
@@ -169,7 +194,9 @@ public class FriendlyTeammateCallbacks(
             return new ValueTask<string>(httpResponse.GetBody(profileMemberView));
         }
 
-        if (!string.IsNullOrWhiteSpace(unavailableReason))
+        // 읽기 실패는 거절이 아니라 PIT 길이다: 이 라우트의 PIT 길에는 SPT 응답 꼬리가 없어(용병이 없으면 오류) 새는 것이 없고,
+        // 거절하면 PIT 용병의 조회가 STM 의 읽기 실패로 깨진다.
+        if (!string.IsNullOrWhiteSpace(unavailableReason) && !IsReadFailure(unavailableReason))
         {
             return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: unavailableReason));
         }
@@ -186,6 +213,19 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> GetProfileOptions(string url, FriendlyTeammateProfileOptionsRequest request, MongoId sessionId)
     {
+        // STM 먼저. 프로필 팀원이면 여기서 답하고 PIT 의 옵션 조회(용병 문서를 찾다 던진다)는 부르지 않는다.
+        // 쓸 수 없는 등록 팀원은 사유(상태 이름)를 오류로 돌려 화면이 설명으로 바꾼다.
+        if (profileViewFactory.TryBuildOptions(sessionId, request.Aid, out var profileMemberOptions, out var optionsUnavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody(profileMemberOptions));
+        }
+
+        // 읽기 실패는 PIT 길로 보낸다(위 GetProfile 과 같은 이유): PIT 용병의 옵션 화면이 STM 의 읽기 실패로 깨지면 안 된다.
+        if (!string.IsNullOrWhiteSpace(optionsUnavailableReason) && !IsReadFailure(optionsUnavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: optionsUnavailableReason));
+        }
+
         try
         {
             return new ValueTask<string>(httpResponse.GetBody(teammateService.GetProfileOptions(sessionId, request)));
@@ -198,6 +238,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetSuit(string url, FriendlyTeammateSuitRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Suit, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateSuit(sessionId, request);
@@ -211,6 +253,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> Rename(string url, FriendlyTeammateRenameRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Rename, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.RenameTeammate(sessionId, request);
@@ -224,6 +268,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetLoadout(string url, FriendlyTeammateLoadoutRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Loadout, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateLoadout(sessionId, request);
@@ -237,6 +283,11 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SaveDefaultEquipment(string url, FriendlyTeammateDefaultEquipmentRequest request, MongoId sessionId)
     {
+        // STM 먼저(불변식 3). PIT 의 이 경로는 제출된 PlayerStashItems 로 플레이어 스태시 트리를 갈아 끼우고
+        // 결과를 PIT 의 용병 문서에 쓴다 - 프로필 팀원에게는 출처도(§6-4 "출처는 본인 스태시뿐") 목적지도 틀렸다.
+        // 그냥 두면 같은 Aid 의 보이지 않는 용병 장비가 바뀐다(계획 3 Task 5 이월 사항).
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.DefaultEquipmentCommit, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             var response = teammateService.SaveTeammateDefaultEquipment(sessionId, request);
@@ -250,6 +301,10 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> BuyKit(string url, FriendlyTeammateBuyKitRequest request, MongoId sessionId)
     {
+        // 플레이어 돈이 나가고 팀원 쪽에 장비가 생기는 조작이다. 프로필 팀원에게는 프로필 두 개를 오가는
+        // 전송이 되고(설계 §6-5, 다음으로 미뤘다), PIT 는 생긴 장비를 용병 문서에 쓴다 - 런처 프로필에는 닿지 않는다.
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.BuyKit, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             var response = teammateService.BuyTeammateKit(sessionId, request);
@@ -263,6 +318,10 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> RepairDefaultEquipment(string url, FriendlyTeammateRepairEquipmentRequest request, MongoId sessionId)
     {
+        // 플레이어의 수리 키트·돈을 쓰고 팀원 아이템의 내구도를 고치는 조작이다. 프로필 팀원에게는 역시
+        // 프로필 두 개를 오가고(§6-5), PIT 는 용병 문서의 아이템을 고친다 - 런처 프로필의 아이템이 아니다.
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.RepairEquipment, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             var response = teammateService.RepairTeammateDefaultEquipment(sessionId, request);
@@ -276,6 +335,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetAggression(string url, FriendlyTeammateAggressionRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Aggression, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateAggression(sessionId, request);
@@ -289,6 +350,8 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetProficiency(string url, FriendlyTeammateProficiencyRequest request, MongoId sessionId)
     {
+        if (RefuseProfileMember(sessionId, request.Aid, ProfileMemberOperation.Proficiency, out var profileMemberRefusal)) return profileMemberRefusal;
+
         try
         {
             teammateService.SetTeammateProficiency(sessionId, request);
@@ -302,6 +365,19 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetTactic(string url, FriendlyTeammateTacticRequest request, MongoId sessionId)
     {
+        // STM 먼저(불변식 3). 처리했으면 PIT 를 부르지 않는다. 프로필 팀원이 아니면(false + 사유 없음) PIT 경로가 그대로다.
+        // 2026-11-02 전에는 여기서 프로필 팀원을 거부했다 - 전술이 등록 문서에 저장되고 투입 경로까지 흐르는데
+        // 바꿀 길만 없었다. 이제 STM 이 자기 등록에 쓴다(StmTacticService).
+        if (tacticService.TrySetTactic(sessionId, request.Aid, request.Tactic, out var unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.NullResponse());
+        }
+
+        if (!string.IsNullOrWhiteSpace(unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: unavailableReason));
+        }
+
         try
         {
             teammateService.SetTeammateTactic(sessionId, request);
@@ -315,6 +391,17 @@ public class FriendlyTeammateCallbacks(
 
     public ValueTask<string> SetAutoJoin(string url, FriendlyTeammateAutoJoinRequest request, MongoId sessionId)
     {
+        // STM 먼저(불변식 3). 처리했으면 PIT 를 부르지 않는다. 프로필 팀원이 아니면(false + 사유 없음) PIT 경로가 그대로다.
+        if (autoJoinService.TrySetAutoJoin(sessionId, request.Aid, request.Enabled, out var unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.NullResponse());
+        }
+
+        if (!string.IsNullOrWhiteSpace(unavailableReason))
+        {
+            return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: unavailableReason));
+        }
+
         try
         {
             teammateService.SetTeammateAutoJoin(sessionId, request);

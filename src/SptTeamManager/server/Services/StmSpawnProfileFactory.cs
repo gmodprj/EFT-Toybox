@@ -72,7 +72,9 @@ public class StmSpawnProfileFactory(
         }
 
         var facts = SpawnGearPolicy.FromOccupiedSlots(ReadOccupiedEquipmentSlots(member.Pmc));
-        var decision = SpawnGearPolicy.Decide(facts.HasAnyEquipment, facts.HasWeaponInRequiredSlot);
+        // handEdited 는 해석기가 이미 읽은 등록 레코드에서 온다(새 읽기 없음). 손으로 고친 팀원은
+        // 장비가 비어도 Real 이다 - 설계 §6-4 "편집하면 실물이 된다".
+        var decision = SpawnGearPolicy.Decide(facts.HasAnyEquipment, facts.HasWeaponInRequiredSlot, member.HandEdited);
         kind = decision.Kind;
 
         var spawn = decision.Kind == SpawnGearKind.Real
@@ -353,7 +355,7 @@ public class StmSpawnProfileFactory(
     // Reads which equipment slots the profile has something in, and nothing more - the judgment is
     // the policy's. Read-only: never assigns Inventory.Equipment, unlike PIT's GetEquipmentRootId,
     // because the profile passed in may be the live object.
-    private static List<string> ReadOccupiedEquipmentSlots(BotBase? profile)
+    internal static List<string> ReadOccupiedEquipmentSlots(BotBase? profile)
     {
         var occupied = new List<string>();
         var items = profile?.Inventory?.Items;

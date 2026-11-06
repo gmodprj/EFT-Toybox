@@ -9,6 +9,13 @@ using UnityEngine.UI;
 
 namespace pitTeam.Components
 {
+    /// <summary>명단의 하위 탭. 용병(PIT 가 소유한 동료)과 프로필 팀원(런처의 다른 프로필)은 한 격자에 섞지 않는다.</summary>
+    internal enum StmRosterSection
+    {
+        Mercenaries,
+        Profiles,
+    }
+
     // STM: launcher-profile teammates on the squad roster (design 6-3, left list).
     //
     // Everything here sits beside PIT's mercenary roster and never replaces it: the mercenary tiles
@@ -25,6 +32,140 @@ namespace pitTeam.Components
         private DefaultUIButton loadProfileButton;
         private GameObject stmPickerOverlay;
         private bool stmRequestBusy;
+
+        // ---- 명단 하위 탭 ----
+        internal const float StmRosterSectionTabsHeight = 36f;
+        private const float StmRosterTabWidth = 150f;
+        private const float StmRosterTabGap = 6f;
+
+        /// <summary>지금 보고 있는 쪽. 기본은 용병 — PIT 가 원래 보여 주던 것이다.</summary>
+        private StmRosterSection stmRosterSection = StmRosterSection.Mercenaries;
+
+        private readonly Dictionary<StmRosterSection, Button> stmSectionTabButtons = new Dictionary<StmRosterSection, Button>();
+        private readonly Dictionary<StmRosterSection, TextMeshProUGUI> stmSectionTabLabels = new Dictionary<StmRosterSection, TextMeshProUGUI>();
+
+        private static string StmSectionTabText(StmRosterSection section)
+        {
+            return section == StmRosterSection.Mercenaries ? "용병" : "프로필 팀원";
+        }
+
+        // 명단 위에 붙는 두 칸짜리 탭 줄. 탭을 바꾸면 명단을 다시 그린다(서버에 다시 묻는다 - 사이에 바뀌었을 수 있다).
+        // 그리기가 실패해도 명단 자체는 선다: 탭이 없으면 기본값인 용병 쪽이 그대로 보인다.
+        private void CreateStmRosterSectionTabs(RectTransform shellRect)
+        {
+            try
+            {
+                stmSectionTabButtons.Clear();
+                stmSectionTabLabels.Clear();
+
+                if (shellRect == null)
+                {
+                    return;
+                }
+
+                GameObject rowObject = new GameObject("pitFireTeam_StmRosterSectionTabs", typeof(RectTransform));
+                rowObject.transform.SetParent(shellRect, false);
+                RectTransform row = rowObject.GetComponent<RectTransform>();
+                row.anchorMin = new Vector2(0f, 1f);
+                row.anchorMax = new Vector2(1f, 1f);
+                row.pivot = new Vector2(0f, 1f);
+                row.offsetMin = new Vector2(18f, -(RosterViewportTopInset + StmRosterSectionTabsHeight));
+                row.offsetMax = new Vector2(-18f, -RosterViewportTopInset);
+
+                float x = 0f;
+                foreach (StmRosterSection section in new[] { StmRosterSection.Mercenaries, StmRosterSection.Profiles })
+                {
+                    CreateStmSectionTab(row, section, x);
+                    x += StmRosterTabWidth + StmRosterTabGap;
+                }
+
+                UpdateStmRosterSectionTabs();
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] Failed to draw the roster section tabs; the roster itself is unaffected.");
+                pitFireTeam.Log.LogError(ex);
+            }
+        }
+
+        private void CreateStmSectionTab(RectTransform row, StmRosterSection section, float x)
+        {
+            GameObject tabObject = new GameObject(
+                $"pitFireTeam_StmRosterSectionTab_{section}",
+                typeof(RectTransform),
+                typeof(Image),
+                typeof(Button));
+            tabObject.transform.SetParent(row, false);
+
+            RectTransform rect = tabObject.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0f, 0f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 0.5f);
+            rect.sizeDelta = new Vector2(StmRosterTabWidth, 0f);
+            rect.anchoredPosition = new Vector2(x, 0f);
+
+            GameObject textObject = CreateText(
+                $"pitFireTeam_StmRosterSectionTabText_{section}",
+                StmSectionTabText(section),
+                18f,
+                TextAlignmentOptions.Center);
+            RectTransform textRect = textObject.GetComponent<RectTransform>();
+            textRect.SetParent(rect, false);
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+
+            TextMeshProUGUI label = textObject.GetComponent<TextMeshProUGUI>();
+            label.raycastTarget = false;
+
+            Button button = tabObject.GetComponent<Button>();
+            button.transition = Selectable.Transition.None;
+            button.targetGraphic = tabObject.GetComponent<Image>();
+            StmRosterSection target = section;
+            button.onClick.AddListener(() => SelectStmRosterSection(target));
+
+            stmSectionTabButtons[section] = button;
+            stmSectionTabLabels[section] = label;
+        }
+
+        private void SelectStmRosterSection(StmRosterSection section)
+        {
+            if (stmRosterSection == section)
+            {
+                return;
+            }
+
+            stmRosterSection = section;
+            RebuildRosterTiles();
+        }
+
+        /// <summary>고른 탭을 밝게 둔다. 탭이 없으면(그리기 실패) 아무 일도 하지 않는다.</summary>
+        private void UpdateStmRosterSectionTabs()
+        {
+            foreach (KeyValuePair<StmRosterSection, Button> pair in stmSectionTabButtons)
+            {
+                if (pair.Value == null)
+                {
+                    continue;
+                }
+
+                bool selected = pair.Key == stmRosterSection;
+                if (pair.Value.targetGraphic is Image background)
+                {
+                    background.color = selected
+                        ? new Color(0.6235f, 0.6157f, 0.5647f, 1f)
+                        : new Color(0.045f, 0.045f, 0.045f, 0.9f);
+                }
+
+                if (stmSectionTabLabels.TryGetValue(pair.Key, out TextMeshProUGUI label) && label != null)
+                {
+                    label.color = selected
+                        ? new Color(0.08f, 0.08f, 0.08f, 1f)
+                        : new Color(0.78f, 0.78f, 0.76f, 1f);
+                }
+            }
+        }
 
         // Fetched on every roster rebuild. null = the profile section is not shown at all.
         private static StmRosterSnapshot LoadStmSnapshot()
@@ -83,7 +224,8 @@ namespace pitTeam.Components
                         string.Empty,
                         StmProfileRosterClient.LoadFailedLine,
                         unavailable: true,
-                        removeProfileId: null);
+                        removeProfileId: null,
+                        openAccountId: null);
                     return;
                 }
 
@@ -97,9 +239,11 @@ namespace pitTeam.Components
                         row.ProfileId,
                         string.IsNullOrWhiteSpace(row.Nickname) ? row.ProfileId : row.Nickname,
                         ready ? $"Lv {row.Level}  {row.Side}" : string.Empty,
-                        StmStatusLine(row.Status),
+                        StmStatusLine(row),
                         unavailable: !ready,
-                        removeProfileId: row.ProfileId);
+                        removeProfileId: row.ProfileId,
+                        openAccountId: StmTileAccountId(row, ready),
+                        autoJoin: row.AutoJoin);
                 }
 
                 // Rows stay visible; the user is told the client-side session filter did not run.
@@ -112,7 +256,8 @@ namespace pitTeam.Components
                         string.Empty,
                         StmProfileRosterClient.SessionUnverifiedLine,
                         unavailable: true,
-                        removeProfileId: null);
+                        removeProfileId: null,
+                        openAccountId: null);
                 }
             }
             catch (Exception ex)
@@ -122,13 +267,27 @@ namespace pitTeam.Components
             }
         }
 
+        // The account id every profile route is keyed by is the aid as a string (StmRosterWire.IsCurrentSession
+        // compares it the same way). A row without a usable aid - a Missing registration has aid 0 - cannot be
+        // opened: SPT's GetOtherProfile would fall back to the player's own profile for an unknown account id.
+        private static string StmTileAccountId(RegisteredProfileRow row, bool ready)
+        {
+            return ready && row.Aid != 0 ? row.Aid.ToString() : null;
+        }
+
         // One line per status. CurrentSession never reaches here (filtered in StmProfileRosterClient.Load);
         // if it ever did it would read as unreadable, never as usable.
-        private static string StmStatusLine(RosterRowStatus status)
+        private static string StmStatusLine(RegisteredProfileRow row)
         {
-            switch (status)
+            switch (row.Status)
             {
                 case RosterRowStatus.Ready:
+                    // 쓸 수 있는 팀원만 장비 구분을 말한다. 못 쓰는 줄에 장비 이야기를 얹으면
+                    // 왜 못 쓰는지가 묻힌다. 판정은 서버가 한다 - 여기서 다시 하지 않는다.
+                    if (string.Equals(row.GearKind, StmProfileRosterClient.GearKindReal, StringComparison.Ordinal))
+                        return StmProfileRosterClient.EquipmentReal;
+                    if (string.Equals(row.GearKind, StmProfileRosterClient.GearKindTemporary, StringComparison.Ordinal))
+                        return StmProfileRosterClient.EquipmentTemporary;
                     return StmProfileRosterClient.EquipmentUndecided;
                 case RosterRowStatus.Empty:
                     return StmProfileRosterClient.ReasonEmpty;
@@ -146,7 +305,9 @@ namespace pitTeam.Components
             string infoLine,
             string statusLine,
             bool unavailable,
-            string removeProfileId)
+            string removeProfileId,
+            string openAccountId,
+            bool autoJoin = false)
         {
             GameObject tileObject = new GameObject(
                 $"pitFireTeam_StmTile_{key}",
@@ -175,9 +336,10 @@ namespace pitTeam.Components
 
             AddStmTileText(tileRect, "Caption", StmProfileRosterClient.TileCaption, 16f,
                 new Color(0.55f, 0.55f, 0.53f, 1f), new Vector2(16f, 176f), new Vector2(-44f, -10f));
-            AddStmTileText(tileRect, "Name", title, 24f, nameColor, new Vector2(16f, 114f), new Vector2(-16f, -44f));
+            TextMeshProUGUI nameLabel = AddStmTileText(tileRect, "Name", title, 24f, nameColor, new Vector2(16f, 114f), new Vector2(-16f, -44f));
             AddStmTileText(tileRect, "Info", infoLine, 20f, infoColor, new Vector2(16f, 84f), new Vector2(-16f, -100f));
-            AddStmTileText(tileRect, "Status", statusLine, 18f, statusColor, new Vector2(16f, 14f), new Vector2(-16f, -134f));
+            // 아래쪽 띠(y 10~42)는 자동 합류 단추의 자리다. 상태 줄을 그만큼 올린다.
+            AddStmTileText(tileRect, "Status", statusLine, 18f, statusColor, new Vector2(16f, 48f), new Vector2(-16f, -134f));
 
             if (!string.IsNullOrWhiteSpace(removeProfileId))
             {
@@ -194,10 +356,135 @@ namespace pitTeam.Components
                 removeButton.onClick.AddListener(() => RemoveStmProfile(profileId));
             }
 
+            // 자동 합류를 켜고 끄는 자리. **이 화면에는 그런 자리가 없었다** - 서버는 저장·조회·출격 구성을
+            // 다 갖추고 있는데 누를 곳이 없어 계획 3 의 관문 15번(자동 합류 증명)을 돌릴 수 없었다(열린 항목 8).
+            // 쓸 수 있는 줄에만 둔다: 비어 있거나 읽지 못한 프로필은 출격에 끼울 수 없으므로 켤 이유도 없다.
+            if (!string.IsNullOrWhiteSpace(openAccountId))
+            {
+                string autoJoinAccountId = openAccountId;
+                bool nextState = !autoJoin;
+                CreateStmAutoJoinButton(tileRect, autoJoin, () => ToggleStmAutoJoin(autoJoinAccountId, nextState));
+            }
+
+            // The way in to the teammate detail screen (and from there the gear editor). Same construction as
+            // the mercenary tile (SquadControlMenuUi.Roster.cs CreateRosterTile): a Button on the tile itself
+            // plus the shared hover controller. The remove button is a child Button and consumes its own click,
+            // so it does not open the screen. An unavailable row is passed no account id and stays inert.
+            if (!string.IsNullOrWhiteSpace(openAccountId))
+            {
+                Color hoverColor = new Color(0.6235f, 0.6157f, 0.5647f, 1f);
+                Color pressedColor = new Color(0.16f, 0.16f, 0.16f, 0.99f);
+
+                Button tileButton = tileObject.AddComponent<Button>();
+                tileButton.transition = Selectable.Transition.None;
+                tileButton.targetGraphic = tileBackground;
+
+                string accountId = openAccountId;
+                tileButton.onClick.AddListener(() => OpenProfile(accountId));
+
+                RosterTileHoverController hoverController = tileObject.AddComponent<RosterTileHoverController>();
+                hoverController.Configure(tileBackground, nameLabel, tileBackground.color, hoverColor, pressedColor);
+            }
+
             return tileObject;
         }
 
-        private void AddStmTileText(
+        // 설정 화면의 CreateActionButton 과 같은 생김새(테두리 + 안쪽 채움 + 가운데 글자)를 타일 크기에 맞춘 것.
+        // 켜짐과 꺼짐을 **글자와 색 둘 다**로 가른다 - 색만으로 가르면 꺼진 것인지 쓸 수 없는 것인지 알 수 없다.
+        private Button CreateStmAutoJoinButton(RectTransform tileRect, bool on, UnityEngine.Events.UnityAction onClick)
+        {
+            GameObject buttonObject = new GameObject("pitFireTeam_StmAutoJoin", typeof(RectTransform), typeof(Image), typeof(Button));
+            buttonObject.transform.SetParent(tileRect, false);
+
+            RectTransform buttonRect = buttonObject.GetComponent<RectTransform>();
+            buttonRect.anchorMin = new Vector2(0f, 0f);
+            buttonRect.anchorMax = new Vector2(1f, 0f);
+            buttonRect.pivot = new Vector2(0.5f, 0f);
+            buttonRect.offsetMin = new Vector2(16f, 10f);
+            buttonRect.offsetMax = new Vector2(-16f, 42f);
+
+            Image border = buttonObject.GetComponent<Image>();
+            border.color = on
+                ? new Color(0.52f, 0.43f, 0.27f, 0.95f)
+                : new Color(0.28f, 0.28f, 0.27f, 0.9f);
+            border.raycastTarget = true;
+
+            GameObject fillObject = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            fillObject.transform.SetParent(buttonObject.transform, false);
+            RectTransform fillRect = fillObject.GetComponent<RectTransform>();
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = Vector2.one;
+            fillRect.offsetMin = new Vector2(1f, 1f);
+            fillRect.offsetMax = new Vector2(-1f, -1f);
+
+            Image fill = fillObject.GetComponent<Image>();
+            fill.color = new Color(0.1f, 0.1f, 0.1f, 0.96f);
+            fill.raycastTarget = true;
+
+            GameObject textObject = CreateText(
+                "pitFireTeam_StmAutoJoinLabel",
+                on ? StmProfileRosterClient.AutoJoinOn : StmProfileRosterClient.AutoJoinOff,
+                16f,
+                TextAlignmentOptions.Center);
+            RectTransform textRect = textObject.GetComponent<RectTransform>();
+            textRect.SetParent(buttonObject.transform, false);
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
+
+            TextMeshProUGUI label = textObject.GetComponent<TextMeshProUGUI>();
+            label.color = on
+                ? new Color(0.92f, 0.84f, 0.62f, 1f)
+                : new Color(0.55f, 0.55f, 0.53f, 1f);
+            label.raycastTarget = false;
+
+            Button button = buttonObject.GetComponent<Button>();
+            button.transition = Selectable.Transition.ColorTint;
+            button.targetGraphic = fill;
+            button.onClick.AddListener(onClick);
+            return button;
+        }
+
+        // 켜고 끄기. 성공하면 명단을 다시 그린다 - 서버가 돌려준 상태로 다시 읽는 것이지,
+        // 눌렀으니 바뀌었겠거니 하고 화면만 고치지 않는다(거절당하면 화면과 서버가 어긋난다).
+        private async void ToggleStmAutoJoin(string accountId, bool enabled)
+        {
+            if (string.IsNullOrWhiteSpace(accountId) || stmRequestBusy)
+            {
+                return;
+            }
+
+            stmRequestBusy = true;
+            try
+            {
+                string failure = await StmProfileRosterClient.SetAutoJoinAsync(accountId, enabled);
+                if (this == null)
+                {
+                    return;
+                }
+
+                if (failure != null)
+                {
+                    AddTeammateCreationFlow.ShowToast(failure);
+                    return;
+                }
+
+                RebuildRosterTiles();
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError($"[STM] 자동 합류를 바꾸지 못했다 (aid '{accountId}').");
+                pitFireTeam.Log.LogError(ex);
+                AddTeammateCreationFlow.ShowToast(StmProfileRosterClient.AutoJoinFailedToast);
+            }
+            finally
+            {
+                stmRequestBusy = false;
+            }
+        }
+
+        private TextMeshProUGUI AddStmTileText(
             RectTransform tileRect,
             string name,
             string text,
@@ -219,6 +506,7 @@ namespace pitTeam.Components
             label.overflowMode = TextOverflowModes.Ellipsis;
             label.color = color;
             label.raycastTarget = false;
+            return label;
         }
 
         // ---- "프로필 불러오기" ---------------------------------------------------------------

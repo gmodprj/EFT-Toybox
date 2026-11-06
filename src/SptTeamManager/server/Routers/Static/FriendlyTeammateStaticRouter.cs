@@ -142,6 +142,34 @@ public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCal
                 "/stm/members/remove",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.Remove(url, info, sessionId))
             ),
+            new RouteAction<StmCloseTransferRequest>(
+                "/stm/members/close-transfer",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.CloseTransfer(url, info, sessionId))
+            ),
+            new RouteAction<StmInventoryApplyRequest>(
+                "/stm/members/apply-inventory",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.ApplyInventory(url, info, sessionId))
+            ),
+            new RouteAction<StmGearStashRequest>(
+                "/stm/members/gear-stash",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.GearStash(url, info, sessionId))
+            ),
+            new RouteAction<StmGearBuildsRequest>(
+                "/stm/members/builds",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.GearBuilds(url, info, sessionId))
+            ),
+            new RouteAction<StmGearKitQuoteRequest>(
+                "/stm/members/kit-quote",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.KitQuote(url, info, sessionId))
+            ),
+            new RouteAction<StmGearKitPurchaseRequest>(
+                "/stm/members/kit-buy",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.KitBuy(url, info, sessionId))
+            ),
+            new RouteAction<StmDiscardJournalRequest>(
+                "/stm/members/discard-journal",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.DiscardUnreadableJournal(url, info, sessionId))
+            ),
         ]
     )
 { }

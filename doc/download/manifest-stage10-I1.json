@@ -1,0 +1,98 @@
+{
+  "stage": "stage10-I1",
+  "spt": "4.1.6",
+  "note": "10-I 를 둘로 쪼갠 앞 묶음. 그래픽·음향 중 서로 건드리는 곳이 다른 10개를 한 번에 넣는다 — 야간 하늘·그림자·헤드샷 암전·래그돌·시계 애니메이션·부시워커·전투 음향·음악. 서버 테스트로는 거의 드러나지 않으므로 판정은 게임 기동의 Loading 목록과 오류 출처로 한다. 문제가 나면 모드별 설치 기록으로 하나씩 되돌린다. 계획은 PLAN-STAGE10.md 10-I.",
+  "totalSize": 487553742,
+  "mods": [
+    {
+      "group": "10I1-01",
+      "id": 2003,
+      "name": "HollywoodFX",
+      "version": "3.0.0",
+      "size": 270826931,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2003/hollywoodfx/3.0.0"
+    },
+    {
+      "group": "10I1-02",
+      "id": 2734,
+      "name": "Better Night Skies",
+      "version": "2.0.0",
+      "size": 70980819,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2734/better-night-skies/2.0.0"
+    },
+    {
+      "group": "10I1-03",
+      "id": 2843,
+      "name": "Blackout",
+      "version": "4.1.1",
+      "size": 6086149,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2843/blackout/4.1.1"
+    },
+    {
+      "group": "10I1-04",
+      "id": 1621,
+      "name": "Shadow Flicker Fix",
+      "version": "1.5.3",
+      "size": 6747,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1621/shadow-flicker-fix/1.5.3"
+    },
+    {
+      "group": "10I1-05",
+      "id": 1582,
+      "name": "Headshot Darkness",
+      "version": "1.2.5",
+      "size": 9993,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1582/headshot-darkness/1.2.5"
+    },
+    {
+      "group": "10I1-06",
+      "id": 2905,
+      "name": "Ragdoll Kinetics",
+      "version": "1.2.0",
+      "size": 45393,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2905/ragdoll-kinetics/1.2.0"
+    },
+    {
+      "group": "10I1-07",
+      "id": 2745,
+      "name": "Manimal's Watch Animations",
+      "version": "2.0.0",
+      "size": 87964,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2745/manimals-watch-animations/2.0.0"
+    },
+    {
+      "group": "10I1-08",
+      "id": 2329,
+      "name": "BushWhacker - Standalone",
+      "version": "1.7.0",
+      "size": 6510,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2329/bushwhacker-standalone/1.7.0"
+    },
+    {
+      "group": "10I1-09",
+      "id": 2264,
+      "name": "Battle Ambience",
+      "version": "2.4.0",
+      "size": 12050875,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2264/battle-ambience/2.4.0"
+    },
+    {
+      "group": "10I1-10",
+      "id": 2962,
+      "name": "Music Extender",
+      "version": "1.2.0",
+      "size": 127452361,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2962/music-extender/1.2.0"
+    }
+  ]
+}

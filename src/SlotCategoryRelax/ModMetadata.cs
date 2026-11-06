@@ -12,7 +12,7 @@ public record SlotCategoryRelaxModMetadata : IModMetadata
     public string Name { get; init; } = "Slot Category Relax";
     public string Author { get; init; } = "Qahnaarin";
     public List<string>? Contributors { get; init; } = [];
-    public SemanticVersioning.Version Version { get; init; } = new("0.1.0");
+    public SemanticVersioning.Version Version { get; init; } = new("0.2.0");
     public SemanticVersioning.Range SptVersion { get; init; } = new("~4.1.6");
     public bool HasPrepatcher { get; init; }
     public List<string>? Incompatibilities { get; init; } = [];

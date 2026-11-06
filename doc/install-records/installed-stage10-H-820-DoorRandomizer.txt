@@ -1,0 +1,1 @@
+820__DrakiaXYZ-DoorRandomizer-1.8.0	BepInEx\plugins\DrakiaXYZ-DoorRandomizer.dll

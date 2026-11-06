@@ -1,0 +1,2 @@
+3007__Breakout_Outlines_v1.2.0	BepInEx\plugins\BreakoutOutline\BreakoutOutlines.dll
+3007__Breakout_Outlines_v1.2.0	BepInEx\plugins\BreakoutOutline\OutlineShader

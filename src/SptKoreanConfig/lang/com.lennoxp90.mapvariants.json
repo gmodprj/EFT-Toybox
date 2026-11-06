@@ -1,0 +1,23 @@
+{
+  "guid": "com.lennoxp90.mapvariants",
+  "name": "맵 판 고르기 (Map Variants)",
+  "sections": {
+    "General": "일반",
+    "Interchange": "인터체인지",
+    "Lighthouse": "라이트하우스"
+  },
+  "settings": {
+    "General/PromptSelection": {
+      "name": "들어갈 때 묻기",
+      "desc": "백포트가 깔린 맵을 맵 화면에서 고르면 어느 판을 띄울지 묻는다. 대답은 그 레이드에만 적용된다. 끄면 묻지 않고 맵마다 아래의 기본 선택을 띄운다."
+    },
+    "Interchange/DefaultSelection": {
+      "name": "기본 선택",
+      "desc": "위의 묻기를 껐을 때 띄울 판이고, 이 맵으로 가는 환승에 내가 먼저 들어갔을 때 다른 사람에게 내놓는 판이다."
+    },
+    "Lighthouse/DefaultSelection": {
+      "name": "기본 선택",
+      "desc": "위의 묻기를 껐을 때 띄울 판이고, 이 맵으로 가는 환승에 내가 먼저 들어갔을 때 다른 사람에게 내놓는 판이다."
+    }
+  }
+}

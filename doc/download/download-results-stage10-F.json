@@ -1,0 +1,134 @@
+[
+  {
+    "id": 2719,
+    "name": "No Aim Swing",
+    "version": "1.2.0",
+    "file": "2719__NoAimSwing_v1.2.0.zip",
+    "bytes": 3715,
+    "expected": 3715,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2639,
+    "name": "Auto Shoulder Swap",
+    "version": "1.1.1",
+    "file": "2639__hazelify.StanceSync.zip",
+    "bytes": 4949,
+    "expected": 4949,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2992,
+    "name": "Inspectionless Malfunctions Reborn",
+    "version": "1.0.0",
+    "file": "2992__InspectionlessMalfsReborn-v1.0.0.zip",
+    "bytes": 4977,
+    "expected": 4977,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2608,
+    "name": "Smajlec's Stamina",
+    "version": "1.4.0",
+    "file": "2608__SmajlecStamina.zip",
+    "bytes": 5012,
+    "expected": 5012,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2121,
+    "name": "Increase Look Direction",
+    "version": "1.3.0",
+    "file": "2121__flir.IncreaseLookDirection-v1.3.0.zip",
+    "bytes": 5098,
+    "expected": 5098,
+    "sizeOk": true,
+    "host": "gitlab.com",
+    "seconds": 1
+  },
+  {
+    "id": 3067,
+    "name": "Deadzone",
+    "version": "1.2.0",
+    "file": "3067__Manimal-Deadzone-1.2.0.zip",
+    "bytes": 7461,
+    "expected": 7461,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1575,
+    "name": "Increase Climb Height",
+    "version": "2.1.1",
+    "file": "1575__Increase.Climb.Height.2.1.1.zip",
+    "bytes": 7884,
+    "expected": 7884,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1117,
+    "name": "Deminvincibility",
+    "version": "2.2.0",
+    "file": "1117__Deminvincibility.zip",
+    "bytes": 8562,
+    "expected": 8562,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2550,
+    "name": "Bring Back Concussion",
+    "version": "1.2.1",
+    "file": "2550__Bring_Back_Concussion_v1.2.1.7z",
+    "bytes": 12407,
+    "expected": 12407,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1860,
+    "name": "Classic Movement",
+    "version": "1.1.3",
+    "file": "1860__ClassicMovement113.zip",
+    "bytes": 63094,
+    "expected": 63094,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2649,
+    "name": "Climbable Ladders",
+    "version": "1.0.4",
+    "file": "2649__tarkin-ladders-v1.0.4.zip",
+    "bytes": 942291,
+    "expected": 942291,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2951,
+    "name": "CookingGrenades 4.1",
+    "version": "1.4.4",
+    "file": "2951__CookingGrenades.zip",
+    "bytes": 1801939,
+    "expected": 1801946,
+    "sizeOk": false,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

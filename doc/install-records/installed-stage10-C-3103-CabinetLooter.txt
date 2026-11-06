@@ -1,0 +1,1 @@
+3103__CabinetLooter-1.0.4	BepInEx\plugins\CabinetLooter.dll

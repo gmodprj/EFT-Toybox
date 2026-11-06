@@ -1,0 +1,5 @@
+2153__ExpandedTaskText.v2.1.0	SPT_Runtime\user\mods\ExpandedTaskText\ExpandedTaskText.dll
+2153__ExpandedTaskText.v2.1.0	SPT_Runtime\user\mods\ExpandedTaskText\Resources\EttConfig.json
+2153__ExpandedTaskText.v2.1.0	SPT_Runtime\user\mods\ExpandedTaskText\Resources\GunsmithInfo.json
+2153__ExpandedTaskText.v2.1.0	SPT_Runtime\user\mods\ExpandedTaskText\Resources\QuestInfo.json
+2153__ExpandedTaskText.v2.1.0	SPT_Runtime\user\mods\ExpandedTaskText\Resources\descriptionCache.json

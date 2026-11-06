@@ -53,6 +53,24 @@ else
     }
 
     <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">약실</MudText>
+        <MudSwitch T="bool" @bind-Value="_config.RelaxChambers" Color="Color.Warning"
+                   Label="모든 총기의 약실에 모든 탄종 — 약실이 받던 분류의 탄을 전부 넣는다" />
+        <MudText Typo="Typo.caption">
+            약실은 부품 칸이 아니라 Chambers 라 위의 분류 스위치가 닿지 않는다. 탄창은 건드리지 않으므로
+            다른 구경의 탄은 약실에 한 발씩 물리는 것까지다.
+        </MudText>
+
+        <MudTextField T="string" @bind-Value="_excludedChamberCalibers" Lines="3" Variant="Variant.Outlined"
+                      Class="mt-4" Label="약실을 넓히지 않을 구경"
+                      HelperText="한 줄에 하나씩. 기본값은 유탄발사기 셋(Caliber40x46 · Caliber40mmRU · Caliber30x29)과 신호권총(Caliber26x75). 비우면 그것들도 열린다." />
+
+        <MudTextField T="string" @bind-Value="_excludedChamberWeapons" Lines="3" Variant="Variant.Outlined"
+                      Class="mt-4" Label="약실을 넓히지 않을 총기 id"
+                      HelperText="한 줄에 하나씩. 구경으로 거르지 못하는 총만 여기 적는다." />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
         <MudText Typo="Typo.subtitle1" GutterBottom="true">건드리지 않을 칸</MudText>
         <MudTextField T="string" @bind-Value="_excludedSlots" Lines="3" Variant="Variant.Outlined"
                       Label="칸 이름"
@@ -67,6 +85,8 @@ else
     private readonly ConfigStamp _stamp = new();
     private List<DiscoveredCategory> _discovered = [];
     private string _excludedSlots = string.Empty;
+    private string _excludedChamberWeapons = string.Empty;
+    private string _excludedChamberCalibers = string.Empty;
 
     /// <summary>
     /// 분류를 계열로 묶어 보여준다. 여기 없는 이름은 "그 밖" 으로 간다 —
@@ -108,6 +128,8 @@ else
         _config = Store.Load<SlotCategoryRelaxConfig>(ConfigStore.Targets.SlotCategoryRelax, _stamp);
         _discovered = Store.Load<List<DiscoveredCategory>>(ConfigStore.Targets.SlotCategoryRelaxDiscovered) ?? [];
         _excludedSlots = TextLines.Join(_config?.ExcludedSlotNames);
+        _excludedChamberWeapons = TextLines.Join(_config?.ExcludedChamberWeaponIds);
+        _excludedChamberCalibers = TextLines.Join(_config?.ExcludedChamberCalibers);
     }
 
     private bool IsOn(string name) =>
@@ -124,6 +146,8 @@ else
         if (_config is null) return;
 
         _config.ExcludedSlotNames = TextLines.Split(_excludedSlots);
+        _config.ExcludedChamberWeaponIds = TextLines.Split(_excludedChamberWeapons);
+        _config.ExcludedChamberCalibers = TextLines.Split(_excludedChamberCalibers);
         await SaveResult.ReportAsync(
             Store, Snackbar, Dialog, ConfigStore.Targets.SlotCategoryRelax, _config, _stamp, Reload);
     }

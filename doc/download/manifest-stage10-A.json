@@ -1,0 +1,16 @@
+{
+  "stage": "stage10-A",
+  "spt": "4.1.6",
+  "note": "10-A 부착물 호환. All In Weapon: Unslotted(2576) 제거를 전제로 단독으로 넣는다(제거는 2026-11-04 a4cfb3d). 계획은 PLAN-STAGE10.md §10-A. 로드 자리가 TraderRegistration-1 로 이르다는 한계를 알고 들어간다.",
+  "mods": [
+    {
+      "group": "10A-1",
+      "id": 2940,
+      "name": "Easy Slot Filters",
+      "version": "1.0.0",
+      "size": 6084,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2940/easy-slot-filters/1.0.0"
+    }
+  ]
+}

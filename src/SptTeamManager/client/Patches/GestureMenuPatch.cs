@@ -134,20 +134,11 @@ namespace pitTeam.Patches
                 // modify phrases here
                 if (localizationKey == "COMMAND")
                 {
-                    phrases =
-                    [
-                        EPhraseTrigger.Suppress,
-                        EPhraseTrigger.Regroup,
-                        EPhraseTrigger.HoldPosition,
-                        EPhraseTrigger.Look,
-                        EPhraseTrigger.Gogogo,
-                        EPhraseTrigger.GoForward,
-                        EPhraseTrigger.FollowMe,
-                        EPhraseTrigger.CoverMe,
-                        EPhraseTrigger.Stop,
-                        //EPhraseTrigger.Silence,
-                        EPhraseTrigger.OnYourOwn
-                    ];
+                    // The menu offers exactly what GestureCommandPolicy lists - no second list here.
+                    var supported = new List<EPhraseTrigger>();
+                    foreach (string name in pitTeam.Shared.GestureCommandPolicy.CommandGroupPhrases)
+                        supported.Add((EPhraseTrigger)Enum.Parse(typeof(EPhraseTrigger), name));
+                    phrases = supported.ToArray();
                 }
                 else if (localizationKey == "HELP")
                 {

@@ -1,0 +1,46 @@
+{
+  "guid": "com.hazelify.deminvincibility",
+  "name": "죽지 않기 (Dem Invincibility)",
+  "sections": {
+    "1. Health": "1. 체력",
+    "2. Death": "2. 사망"
+  },
+  "settings": {
+    "1. Health/1 HP Mode": {
+      "name": "체력 1 로 버티기",
+      "desc": "켜면 죽지 않는다."
+    },
+    "1. Health/Allow 0hp on limbs": {
+      "name": "팔다리는 0 까지 허용",
+      "desc": "켜면 체력 1 로 버티기를 켠 상태에서도 팔과 다리는 0 까지 떨어질 수 있다."
+    },
+    "1. Health/Allow blacking of limbs": {
+      "name": "팔다리 불구 허용",
+      "desc": "켜면 체력 1 로 버티기를 켠 상태에서 팔다리가 0 이 될 때 불구가 된다."
+    },
+    "1. Health/Allow blacking of Head & Thorax": {
+      "name": "머리·가슴 불구 허용",
+      "desc": "켜면 머리와 가슴도 0 이 될 때 불구가 된다. 위의 팔다리 불구 허용을 꺼 두면 이 값은 무시한다."
+    },
+    "1. Health/Ignore health side effects?": {
+      "name": "부수 효과 무시",
+      "desc": "켜면 골절·출혈을 비롯한 부수 효과가 저절로 치료된다. 끄면 뜻하지 않은 부작용이 생길 수 있으니 조심한다."
+    },
+    "1. Health/% Damage received": {
+      "name": "받는 피해(%)",
+      "desc": "받는 피해를 비율로 정한다."
+    },
+    "2. Death/Enable second chance protection?": {
+      "name": "두 번째 기회",
+      "desc": "켜면 보통은 죽을 타격을 받았을 때 한 번 더 살아날 기회를 받는다."
+    },
+    "2. Death/Second chance health effect removal": {
+      "name": "두 번째 기회에 효과 없애기",
+      "desc": "켜면 두 번째 기회가 발동할 때 출혈·골절 같은 나쁜 상태가 모두 없어진다."
+    },
+    "2. Death/Second chance health restore on critical limbs": {
+      "name": "두 번째 기회 머리·가슴 체력",
+      "desc": "두 번째 기회가 발동할 때 머리와 가슴의 체력을 얼마로 둘지 고른다. 해당 부위가 그보다 많으면 깎지 않는다. 위의 효과 없애기를 꺼 둔 상태에서 None 과 1HP 는 위험하다."
+    }
+  }
+}

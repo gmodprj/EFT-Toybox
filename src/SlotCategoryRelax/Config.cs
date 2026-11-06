@@ -33,4 +33,25 @@ public class Config
     /// </summary>
     [JsonPropertyName("IncludeAttachmentSlots")]
     public bool IncludeAttachmentSlots { get; set; } = true;
+
+    /// <summary>
+    /// 약실(Chambers)이 받는 탄을 넓힌다 — All In Weapon 의 FckChambers 자리다.
+    /// 약실이 이미 받고 있는 분류의 탄을 전부 넣는다(거의 다 Ammo). 탄창은 건드리지 않는다.
+    /// </summary>
+    [JsonPropertyName("RelaxChambers")]
+    public bool RelaxChambers { get; set; } = true;
+
+    /// <summary>
+    /// 약실을 넓히지 않을 총기 아이템 id. 유탄발사기·신호권총처럼 빼 두고 싶은 것을 적는다.
+    /// </summary>
+    [JsonPropertyName("ExcludedChamberWeaponIds")]
+    public List<string> ExcludedChamberWeaponIds { get; set; } = [];
+
+    /// <summary>
+    /// 약실을 넓히지 않을 구경(<c>ammoCaliber</c>). 아이템 id 보다 오래 간다 — 모드가 더한 총도 걸린다.
+    /// 기본값은 유탄발사기 셋(40x46·40mmRU·30x29)과 신호권총(26x75)이다. 소총탄이 들어갈 자리가 아니다.
+    /// </summary>
+    [JsonPropertyName("ExcludedChamberCalibers")]
+    public List<string> ExcludedChamberCalibers { get; set; } =
+        ["Caliber40x46", "Caliber40mmRU", "Caliber30x29", "Caliber26x75"];
 }

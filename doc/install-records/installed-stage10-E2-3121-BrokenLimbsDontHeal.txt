@@ -1,0 +1,2 @@
+3121__Broken_Limbs_Dont_Heal_v1.1.0	BepInEx\plugins\BrokenLimbsDontHeal\BrokenLimbsDontHeal.dll
+3121__Broken_Limbs_Dont_Heal_v1.1.0	BepInEx\plugins\BrokenLimbsDontHeal\HealedFracture.png

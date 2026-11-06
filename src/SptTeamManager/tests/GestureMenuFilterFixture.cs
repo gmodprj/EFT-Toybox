@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using EFT;
 using EFT.UI.Gestures;
@@ -7,6 +8,7 @@ using HarmonyLib;
 using SPT.Reflection.Patching;
 
 /* PHRASE_ENUM */
+/* POLICY */
 namespace EFT { public enum EPlayerSide { Usec, Bear, Savage } }
 public enum CustomPhrases { TeamStatus = 10000 }
 public static class pitFireTeam
@@ -87,6 +89,11 @@ namespace pitTeam.Patches
 public static class GestureMenuFilterChecks
 {
     private static int checks;
+    // The 18 entries of the native COMMAND group, by phrase name (WORKLOG menu table; Loot lives in another group).
+    private static readonly HashSet<EPhraseTrigger> NativeCommandPhrases = new HashSet<EPhraseTrigger>(new[] {
+        EPhraseTrigger.FollowMe, EPhraseTrigger.CoverMe, EPhraseTrigger.Look, EPhraseTrigger.Gogogo, EPhraseTrigger.Suppress, EPhraseTrigger.Regroup,
+        EPhraseTrigger.HoldPosition, EPhraseTrigger.GoForward, EPhraseTrigger.OnYourOwn, EPhraseTrigger.Stop, EPhraseTrigger.Silence, EPhraseTrigger.GetInCover,
+        EPhraseTrigger.KnifesOnly, EPhraseTrigger.Fire, EPhraseTrigger.HoldFire, EPhraseTrigger.Spreadout, EPhraseTrigger.GetBack });
     private static void Check(bool result, string name) { checks++; if (!result) throw new Exception(name); }
     private static bool Contains(GesturesMenu menu, string group, EPhraseTrigger phrase) => Array.IndexOf(menu.Group(group).Phrases, phrase) >= 0;
     public static int Run()
@@ -96,7 +103,15 @@ public static class GestureMenuFilterChecks
         var available = new HashSet<EPhraseTrigger>();
         pitFireTeam.hideUnsupportedCommands.Value = true;
         menu.Init(binds, available, EPlayerSide.Usec);
-        Check(!Contains(menu, "COMMAND", EPhraseTrigger.Fire) && Contains(menu, "COMMAND", EPhraseTrigger.FollowMe), "USEC filters unsupported commands and retains supported commands");
+        Check(Contains(menu, "COMMAND", EPhraseTrigger.FollowMe), "USEC retains supported commands");
+        Check(Contains(menu, "COMMAND", EPhraseTrigger.Fire) && Contains(menu, "COMMAND", EPhraseTrigger.HoldFire) && Contains(menu, "COMMAND", EPhraseTrigger.GetInCover), "USEC shows Fire, Hold Fire and Take Cover now that they are handled");
+        Check(!Contains(menu, "COMMAND", EPhraseTrigger.Silence) && !Contains(menu, "COMMAND", EPhraseTrigger.KnifesOnly) && !Contains(menu, "COMMAND", EPhraseTrigger.Spreadout) && !Contains(menu, "COMMAND", EPhraseTrigger.GetBack), "USEC still hides the four unsupported commands");
+        // Menu and policy must agree: every phrase the native COMMAND group offers is shown exactly when the policy supports it.
+        foreach (var native in Enum.GetValues(typeof(EPhraseTrigger)).Cast<EPhraseTrigger>().Where(p => NativeCommandPhrases.Contains(p)))
+            Check(Contains(menu, "COMMAND", native) == pitTeam.Shared.GestureCommandPolicy.IsSupportedPhrase(native.ToString()), "Menu and GestureCommandPolicy agree on " + native);
+        // Whatever the policy translates must be shown (the defect that left Task 7 invisible).
+        foreach (var phrase in pitTeam.Shared.GestureCommandPolicy.CommandGroupPhrases)
+            Check(Contains(menu, "COMMAND", (EPhraseTrigger)Enum.Parse(typeof(EPhraseTrigger), phrase)), "Policy-supported phrase is shown: " + phrase);
         Check(menu.Group("HEALTH STATUS") == null, "PMC health status group remains filtered");
         Check(Contains(menu, "HELP", EPhraseTrigger.Cooperation), "Filtered PMC retains Cooperate under Help");
         Check(Contains(menu, "REACTION", EPhraseTrigger.Roger) && Contains(menu, "REACTION", EPhraseTrigger.Negative), "Filtered PMC retains recruitment answers");
@@ -108,7 +123,7 @@ public static class GestureMenuFilterChecks
         menu.Init(binds, available, EPlayerSide.Savage);
         Check(ReferenceEquals(scavGroup, menu.Group("COMMAND")), "Same-side repeated Init does not unnecessarily recreate groups");
         menu.Init(binds, available, EPlayerSide.Bear);
-        Check(!Contains(menu, "COMMAND", EPhraseTrigger.Fire) && menu.Group("HEALTH STATUS") == null, "Reused Scav menu filters BEAR phrases");
+        Check(!Contains(menu, "COMMAND", EPhraseTrigger.Silence) && menu.Group("HEALTH STATUS") == null, "Reused Scav menu filters BEAR phrases");
         Check(ReferenceEquals(menu.Binds, binds), "Menu side change preserves native binding storage");
         menu.Show();
         pitFireTeam.hideUnsupportedCommands.Value = false;

@@ -1,0 +1,371 @@
+{
+  "guid": "com.pein.battleambience",
+  "name": "먼 교전 소리 (Battle Ambience)",
+  "sections": {
+    "00. General Settings": "00. 전체 설정",
+    "01. Map Settings - Customs": "01. 맵별 - 커스텀",
+    "02. Map Settings - Factory": "02. 맵별 - 팩토리",
+    "03. Map Settings - Woods": "03. 맵별 - 우즈",
+    "04. Map Settings - Shoreline": "04. 맵별 - 쇼어라인",
+    "05. Map Settings - Interchange": "05. 맵별 - 인터체인지",
+    "06. Map Settings - Lighthouse": "06. 맵별 - 라이트하우스",
+    "07. Map Settings - Reserve": "07. 맵별 - 리저브",
+    "08. Map Settings - Streets": "08. 맵별 - 스트리트",
+    "09. Map Settings - Ground Zero": "09. 맵별 - 그라운드 제로",
+    "10. Map Settings - Labs": "10. 맵별 - 연구소"
+  },
+  "settings": {
+    "00. General Settings/Enable Debug Logging": {
+      "name": "디버그 기록 남기기",
+      "desc": "BepInEx 콘솔에 진단용 기록을 남긴다."
+    },
+    "00. General Settings/Global Ambient Volume Multiplier": {
+      "name": "전체 소리 크기 배율",
+      "desc": "먼 교전 소리 전체의 크기에 곱한다."
+    },
+    "00. General Settings/Global Ambient Cooldown Multiplier": {
+      "name": "전체 간격 배율",
+      "desc": "먼 교전 소리가 다시 날 때까지의 간격에 곱한다."
+    },
+    "00. General Settings/Use Event Weights": {
+      "name": "사건 가중치 쓰기",
+      "desc": "소리를 무작위로 고를 때 정해진 가중치를 쓴다."
+    },
+    "00. General Settings/Ambient Rolloff Distance": {
+      "name": "소리 감쇠 거리",
+      "desc": "먼 교전 소리가 거리에 따라 작아지는 기준 거리다."
+    },
+    "00. General Settings/Occlusion Test Mode": {
+      "name": "가림 판정 방식",
+      "desc": "먼 교전 소리의 가림 판정 방식이다. ContinuousPropagated 또는 Fast 만 쓴다."
+    },
+    "00. General Settings/Audio Source Group": {
+      "name": "소리 묶음",
+      "desc": "먼 교전 소리를 어느 소리 묶음으로 낼지 정한다."
+    },
+    "00. General Settings/Play Ambient Shortcut": {
+      "name": "소리 바로 내 보기 키",
+      "desc": "먼 교전 소리를 즉시 내 보는 진단용 키다."
+    },
+    "01. Map Settings - Customs/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "01. Map Settings - Customs/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "01. Map Settings - Customs/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "01. Map Settings - Customs/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "01. Map Settings - Customs/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "01. Map Settings - Customs/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "01. Map Settings - Customs/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "01. Map Settings - Customs/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "02. Map Settings - Factory/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "02. Map Settings - Factory/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "02. Map Settings - Factory/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "02. Map Settings - Factory/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "02. Map Settings - Factory/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "02. Map Settings - Factory/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "02. Map Settings - Factory/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "02. Map Settings - Factory/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "03. Map Settings - Woods/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "03. Map Settings - Woods/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "03. Map Settings - Woods/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "03. Map Settings - Woods/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "03. Map Settings - Woods/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "03. Map Settings - Woods/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "03. Map Settings - Woods/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "03. Map Settings - Woods/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "04. Map Settings - Shoreline/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "04. Map Settings - Shoreline/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "04. Map Settings - Shoreline/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "04. Map Settings - Shoreline/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "04. Map Settings - Shoreline/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "04. Map Settings - Shoreline/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "04. Map Settings - Shoreline/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "04. Map Settings - Shoreline/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "05. Map Settings - Interchange/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "05. Map Settings - Interchange/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "05. Map Settings - Interchange/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "05. Map Settings - Interchange/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "05. Map Settings - Interchange/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "05. Map Settings - Interchange/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "05. Map Settings - Interchange/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "05. Map Settings - Interchange/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "06. Map Settings - Lighthouse/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "06. Map Settings - Lighthouse/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "06. Map Settings - Lighthouse/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "06. Map Settings - Lighthouse/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "06. Map Settings - Lighthouse/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "06. Map Settings - Lighthouse/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "06. Map Settings - Lighthouse/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "06. Map Settings - Lighthouse/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "07. Map Settings - Reserve/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "07. Map Settings - Reserve/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "07. Map Settings - Reserve/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "07. Map Settings - Reserve/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "07. Map Settings - Reserve/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "07. Map Settings - Reserve/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "07. Map Settings - Reserve/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "07. Map Settings - Reserve/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "08. Map Settings - Streets/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "08. Map Settings - Streets/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "08. Map Settings - Streets/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "08. Map Settings - Streets/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "08. Map Settings - Streets/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "08. Map Settings - Streets/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "08. Map Settings - Streets/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "08. Map Settings - Streets/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "09. Map Settings - Ground Zero/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "09. Map Settings - Ground Zero/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "09. Map Settings - Ground Zero/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "09. Map Settings - Ground Zero/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "09. Map Settings - Ground Zero/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "09. Map Settings - Ground Zero/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "09. Map Settings - Ground Zero/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "09. Map Settings - Ground Zero/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    },
+    "10. Map Settings - Labs/Enable Events": {
+      "name": "이 맵에서 켜기",
+      "desc": "이 맵에서 먼 교전 소리를 낼지 정한다."
+    },
+    "10. Map Settings - Labs/Min Volume Multiplier": {
+      "name": "최소 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 작은 크기 배율이다."
+    },
+    "10. Map Settings - Labs/Max Volume Multiplier": {
+      "name": "최대 크기 배율",
+      "desc": "이 맵에서 교전 소리의 가장 큰 크기 배율이다."
+    },
+    "10. Map Settings - Labs/Ambience Event Cooldown Multiplier": {
+      "name": "간격 배율",
+      "desc": "이 맵에서 교전 소리 사이의 간격에 곱한다. 크게 하면 소리가 드물어진다."
+    },
+    "10. Map Settings - Labs/Map Center": {
+      "name": "맵 중심",
+      "desc": "교전 소리를 낼 기준이 되는 맵 중심 좌표다."
+    },
+    "10. Map Settings - Labs/Map Radius": {
+      "name": "맵 반지름",
+      "desc": "맵 중심에서 이 거리 안에 교전 소리를 낸다."
+    },
+    "10. Map Settings - Labs/Use Player Direction": {
+      "name": "보는 쪽에서 내기",
+      "desc": "켜면 맵 중심을 기준으로 플레이어가 보는 쪽에서 교전 소리가 난다. 끄면 플레이어 주위 아무 쪽에서나 난다."
+    },
+    "10. Map Settings - Labs/Use Sound Zones": {
+      "name": "소리 구역 쓰기",
+      "desc": "켜면 맵 설정 json 에 적힌 소리 구역에서만 교전 소리가 난다. 라이트하우스·쇼어라인처럼 물속에서 교전 소리가 나는 문제를 막는다."
+    }
+  }
+}

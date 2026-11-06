@@ -1,0 +1,3 @@
+2523__acidphantasm-bosseshavegpcoins	SPT_Runtime\user\mods\acidphantasm-bosseshavegpcoins\acidphantasm-bosseshavegpcoins.dll
+2523__acidphantasm-bosseshavegpcoins	SPT_Runtime\user\mods\acidphantasm-bosseshavegpcoins\config.json
+2523__acidphantasm-bosseshavegpcoins	SPT_Runtime\user\mods\acidphantasm-bosseshavegpcoins\LICENSE

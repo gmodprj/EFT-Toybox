@@ -1,0 +1,153 @@
+{
+  "guid": "com.fiodor.betternightskies",
+  "name": "밤하늘 (Better Night Skies)",
+  "sections": {
+    "General": "일반",
+    "Horizon Fade": "지평선 흐리기",
+    "Sky": "하늘",
+    "Stars": "별",
+    "Textures": "그림 파일"
+  },
+  "settings": {
+    "General/Enabled": {
+      "name": "켜기",
+      "desc": "모드를 켠다."
+    },
+    "General/Random Main Texture On Raid Start": {
+      "name": "레이드마다 하늘 바꾸기",
+      "desc": "레이드가 시작될 때 주된 하늘 그림을 무작위로 고른다."
+    },
+    "General/Time of Day Fade Multiplier": {
+      "name": "시간대 배율",
+      "desc": "올리면 밤하늘이 더 늦게 나타나고 더 일찍 사라진다."
+    },
+    "General/Sky Dome Scale Multiplier": {
+      "name": "하늘 돔 크기 배율",
+      "desc": "게임의 하늘 돔 크기에 곱한다. 올리면 돔의 보이는 테두리가 더 멀어진다."
+    },
+    "Horizon Fade/Horizon Fade Start Degrees": {
+      "name": "지평선 흐리기 시작 각도",
+      "desc": "지평선 어둡히기가 가장 센 하늘 높이다. 낮추면 어두운 구역이 땅쪽으로 내려간다."
+    },
+    "Horizon Fade/Horizon Fade End Degrees": {
+      "name": "지평선 흐리기 끝 각도",
+      "desc": "지평선 어둡히기가 끝나 온전한 밝기가 되는 하늘 높이다. 흐림이 하늘 너무 위까지 올라오면 낮춘다."
+    },
+    "Horizon Fade/Horizon Brightness Multiplier": {
+      "name": "지평선 밝기 배율",
+      "desc": "지평선에서의 밝기 배율이다. 1 이면 흐리지 않고, 0 이면 지평선 근처에 별이 보이지 않는다."
+    },
+    "Horizon Fade/Show Horizon Fade Zone": {
+      "name": "흐리는 구역 보이기",
+      "desc": "지평선 흐리기가 걸리는 구역을 분홍으로 칠해 보인다."
+    },
+    "Sky/Sky brightness": {
+      "name": "하늘 밝기",
+      "desc": "하늘의 밝기다."
+    },
+    "Sky/Saturation": {
+      "name": "채도",
+      "desc": "하늘 색의 채도다. 0 이면 흑백, 1 이면 원본, 1 보다 크면 더 짙어진다."
+    },
+    "Sky/Horizontal Scale": {
+      "name": "가로 크기",
+      "desc": "그림의 가로 크기다. 올리면 하늘 무늬가 작아지고 되풀이된다."
+    },
+    "Sky/Vertical Scale": {
+      "name": "세로 크기",
+      "desc": "그림의 세로 크기다. 올리면 하늘 무늬가 세로로 작아진다."
+    },
+    "Sky/HorizontalOffsetDegrees": {
+      "name": "가로 밀기(도)",
+      "desc": "그림을 가로로 미는 각도다."
+    },
+    "Sky/VerticalOffsetDegrees": {
+      "name": "세로 밀기(도)",
+      "desc": "그림을 세로로 미는 각도다."
+    },
+    "Sky/MainBandEnabled": {
+      "name": "띠로 범위 정하기",
+      "desc": "켜면 주된 그림이 덮는 범위를 그림 해상도가 아니라 아래의 띠 크기로 정한다."
+    },
+    "Sky/MainBandCenterU": {
+      "name": "띠 가로 중심",
+      "desc": "하늘 UV 좌표에서 띠의 가로 중심이다."
+    },
+    "Sky/MainBandCenterV": {
+      "name": "띠 세로 중심",
+      "desc": "하늘 UV 좌표에서 띠의 세로 중심이다."
+    },
+    "Sky/MainBandWidth": {
+      "name": "띠 가로 범위",
+      "desc": "띠가 덮는 가로 범위다. 1 이면 360도 전체, 0.5 면 지평선의 절반이다."
+    },
+    "Sky/MainBandHeight": {
+      "name": "띠 세로 범위",
+      "desc": "띠가 덮는 세로 범위다. 0.5 면 하늘 돔의 절반이다."
+    },
+    "Sky/MainClampToTransparent": {
+      "name": "범위 밖은 투명하게",
+      "desc": "켜면 그림의 세로 UV 범위를 벗어난 곳은 투명해진다."
+    },
+    "Sky/MainHorizontalFade": {
+      "name": "가로 테두리 흐리기",
+      "desc": "띠의 좌우 끝을 부드럽게 흐린다."
+    },
+    "Sky/MainVerticalFade": {
+      "name": "세로 테두리 흐리기",
+      "desc": "그림의 위아래 끝을 부드럽게 흐린다."
+    },
+    "Sky/YawDegrees": {
+      "name": "좌우 회전(도)",
+      "desc": "하늘을 수직축으로 돌린다."
+    },
+    "Sky/PitchDegrees": {
+      "name": "앞뒤 기울기(도)",
+      "desc": "하늘을 앞뒤로 기울인다."
+    },
+    "Sky/RollDegrees": {
+      "name": "옆 기울기(도)",
+      "desc": "하늘을 보는 방향 축으로 굴린다."
+    },
+    "Stars/Stars brightness": {
+      "name": "별 밝기",
+      "desc": "배경 별의 밝기다."
+    },
+    "Stars/Stars saturation": {
+      "name": "별 채도",
+      "desc": "배경 별의 채도다. 0 이면 흑백, 1 이면 원본, 1 보다 크면 더 짙어진다."
+    },
+    "Stars/Stars Scale": {
+      "name": "별 크기",
+      "desc": "배경 별 그림의 크기다."
+    },
+    "Stars/BackgroundHorizontalOffsetDegrees": {
+      "name": "별 가로 밀기(도)",
+      "desc": "배경 별 그림을 가로로 미는 각도다."
+    },
+    "Stars/BackgroundVerticalOffsetDegrees": {
+      "name": "별 세로 밀기(도)",
+      "desc": "배경 별 그림을 세로로 미는 각도다."
+    },
+    "Textures/Main Bundle": {
+      "name": "번들 파일",
+      "desc": "쓸 에셋 번들 파일 이름이다."
+    },
+    "Textures/Sky Texture": {
+      "name": "하늘 그림",
+      "desc": "밤하늘 그림 파일이다."
+    },
+    "Textures/Material Asset": {
+      "name": "재질 에셋",
+      "desc": "직접 넣은 등장방형 하늘을 그릴 때 쓰는 재질 에셋이다."
+    },
+    "Textures/Background Texture Asset": {
+      "name": "배경 별 에셋",
+      "desc": "번들에 든 배경 별 큐브맵 에셋이다. 없어도 된다."
+    },
+    "Textures/TexturePropertyName": {
+      "name": "그림 속성 이름",
+      "desc": "우주 재질에 그림을 넣을 속성 이름이다."
+    }
+  }
+}

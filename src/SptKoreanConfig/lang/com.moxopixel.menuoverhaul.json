@@ -1,0 +1,152 @@
+{
+  "guid": "com.moxopixel.menuoverhaul",
+  "name": "메인 메뉴 손보기 (Menu Overhaul)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Adjustments": "2. 위치·크기",
+    "3. Colors": "3. 색",
+    "4. Advanced": "4. 고급"
+  },
+  "settings": {
+    "1. General/Enable Background": {
+      "name": "배경 켜기",
+      "desc": "메인 메뉴의 배경을 켜거나 끈다."
+    },
+    "1. General/Enable Top Glow": {
+      "name": "위쪽 빛 켜기",
+      "desc": "메인 메뉴 위쪽의 푸른·노란 빛을 켜거나 끈다."
+    },
+    "1. General/Enable Extra Shadows": {
+      "name": "그림자 더하기",
+      "desc": "메뉴의 캐릭터가 더 또렷해 보이게 그림자를 더 넣는다."
+    },
+    "1. General/Enable Larger Player Model": {
+      "name": "캐릭터 크게 보기",
+      "desc": "메인 메뉴의 캐릭터 모델을 더 크고 가깝게 보인다."
+    },
+    "1. General/Enable High Quality Player Preview": {
+      "name": "캐릭터 미리보기 고품질",
+      "desc": "메인 메뉴의 캐릭터를 더 또렷하게 그린다(GPU 를 더 쓴다). 낮은 사양에서는 끈다."
+    },
+    "1. General/Enable Default Player Animation": {
+      "name": "기본 캐릭터 동작",
+      "desc": "메인 메뉴에서 EFT 의 기본 캐릭터 동작을 쓴다. 끄면 가만히 선 자세가 된다."
+    },
+    "1. General/Enable Menu Button Icons": {
+      "name": "메뉴 아이콘 보이기",
+      "desc": "메뉴 버튼 아이콘을 보이거나 감춘다. 끄면 보통 상태와 올린 상태 모두에서 감춘다."
+    },
+    "2. Adjustments/Position Logotype Horizontal": {
+      "name": "로고 가로 위치",
+      "desc": "로고의 가로 위치를 조절한다."
+    },
+    "2. Adjustments/Position Logotype Vertical": {
+      "name": "로고 세로 위치",
+      "desc": "로고의 세로 위치를 기본 자리에서 옮긴다."
+    },
+    "2. Adjustments/Position Player Model Horizontal": {
+      "name": "캐릭터 가로 위치",
+      "desc": "메인 메뉴 캐릭터 모델의 가로 위치를 조절한다."
+    },
+    "2. Adjustments/Position Player Info Horizontal": {
+      "name": "캐릭터 정보 가로 위치",
+      "desc": "메인 메뉴 캐릭터 정보 글의 가로 위치를 조절한다."
+    },
+    "2. Adjustments/Position Player Info Vertical": {
+      "name": "캐릭터 정보 세로 위치",
+      "desc": "메인 메뉴 캐릭터 정보 글의 세로 위치를 조절한다."
+    },
+    "2. Adjustments/Scale Background Horizontally": {
+      "name": "배경 가로 크기",
+      "desc": "배경 그림의 가로 크기를 조절한다."
+    },
+    "2. Adjustments/Scale Background Vertically": {
+      "name": "배경 세로 크기",
+      "desc": "배경 그림의 세로 크기를 조절한다."
+    },
+    "2. Adjustments/Rotate Player Model": {
+      "name": "캐릭터 회전",
+      "desc": "메인 메뉴 캐릭터 모델의 좌우 회전을 조절한다."
+    },
+    "3. Colors/Enable Logotype Light Accent Color": {
+      "name": "로고 빛에 강조색 쓰기",
+      "desc": "로고 빛을 흰색 대신 아래의 강조색으로 낸다."
+    },
+    "3. Colors/Accent Color": {
+      "name": "강조색",
+      "desc": "별명·경험치 글·강조한 버튼·위쪽 빛의 색조에 쓰는 강조색이다(투명도는 늘 1 로 맞춘다)."
+    },
+    "4. Advanced/Hover Label Slide Distance": {
+      "name": "올렸을 때 글 밀림",
+      "desc": "메뉴 글에 마우스를 올릴 때 가로로 밀리는 거리다."
+    },
+    "4. Advanced/Hover Icon Scale Multiplier": {
+      "name": "올렸을 때 아이콘 배율",
+      "desc": "마우스를 올린 동안 버튼 아이콘에 곱하는 크기 배율이다."
+    },
+    "4. Advanced/Hover Indicator Size Multiplier": {
+      "name": "올렸을 때 표시 크기",
+      "desc": "아이콘 크기에 대한 표시의 크기 배율이다."
+    },
+    "4. Advanced/Hover Indicator Spacing": {
+      "name": "올렸을 때 표시 간격",
+      "desc": "아이콘 끝과 표시 사이의 가로 간격이다."
+    },
+    "4. Advanced/Hover Animation Duration Preset": {
+      "name": "움직임 속도",
+      "desc": "마우스를 올리고 뗄 때의 움직임 속도를 고른다."
+    },
+    "4. Advanced/Enable Debug Diagnostics": {
+      "name": "진단 기록",
+      "desc": "메뉴 손보기의 진단 기록을 켠다."
+    },
+    "4. Advanced/Enable Verbose Lifecycle Diagnostics": {
+      "name": "자세한 진단 기록",
+      "desc": "생명주기 조정기의 자세한 추적을 더 남긴다(위의 진단 기록이 켜져 있어야 한다)."
+    },
+    "4. Advanced/Position Play Button Horizontal": {
+      "name": "플레이 버튼 가로 위치",
+      "desc": "플레이 버튼 묶음(글 + 아이콘)의 가로 위치를 조절한다."
+    },
+    "4. Advanced/Position Character Button Horizontal": {
+      "name": "캐릭터 버튼 가로 위치",
+      "desc": "캐릭터 버튼 묶음(글 + 아이콘)의 가로 위치를 조절한다."
+    },
+    "4. Advanced/Position Trade Button Horizontal": {
+      "name": "거래 버튼 가로 위치",
+      "desc": "거래 버튼 묶음(글 + 아이콘)의 가로 위치를 조절한다."
+    },
+    "4. Advanced/Position Hideout Button Horizontal": {
+      "name": "은신처 버튼 가로 위치",
+      "desc": "은신처 버튼 묶음(글 + 아이콘)의 가로 위치를 조절한다."
+    },
+    "4. Advanced/Position Exit Button Horizontal": {
+      "name": "나가기 버튼 가로 위치",
+      "desc": "나가기 버튼 묶음(글 + 아이콘)의 가로 위치를 조절한다."
+    },
+    "4. Advanced/Camera Player Position X": {
+      "name": "카메라 X 위치",
+      "desc": "메인 메뉴 캐릭터 미리보기 카메라의 X 위치를 옮긴다."
+    },
+    "4. Advanced/Camera Player Position Y": {
+      "name": "카메라 Y 위치",
+      "desc": "메인 메뉴 캐릭터 미리보기 카메라의 Y 위치를 옮긴다."
+    },
+    "4. Advanced/Camera Player Position Z": {
+      "name": "카메라 Z 위치",
+      "desc": "메인 메뉴 캐릭터 미리보기 카메라의 Z 위치를 옮긴다."
+    },
+    "4. Advanced/Camera Player Rotation X": {
+      "name": "카메라 X 회전",
+      "desc": "메인 메뉴 캐릭터 미리보기 카메라의 X 회전을 정한다."
+    },
+    "4. Advanced/Camera Player Rotation Y": {
+      "name": "카메라 Y 회전",
+      "desc": "메인 메뉴 캐릭터 미리보기 카메라의 Y 회전을 정한다."
+    },
+    "4. Advanced/Camera Player Rotation Z": {
+      "name": "카메라 Z 회전",
+      "desc": "메인 메뉴 캐릭터 미리보기 카메라의 Z 회전을 정한다."
+    }
+  }
+}

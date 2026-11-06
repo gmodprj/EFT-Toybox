@@ -1,0 +1,71 @@
+{
+  "stage": "stage10-B",
+  "spt": "4.1.6",
+  "note": "10-B 선행·프레임워크 7개. 뒤 단계가 요구하는 것부터 넣는다 — 3123→3121(10-E2), 2879→3072(10-J), 3040→3097(10-M), 3054→3158(10-D). 전부 비결속·의존성 없음. 7개를 -SkipTest 로 복사하고 마지막 하나에서 서버 테스트를 한 번 돌린다. 계획은 PLAN-STAGE10.md §10-B.",
+  "totalSize": 7486059,
+  "mods": [
+    {
+      "group": "10B-1",
+      "id": 3123,
+      "name": "Effects Manager Framework",
+      "version": "1.1.0",
+      "size": 30593,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3123/effects-manager-framework/1.1.0"
+    },
+    {
+      "group": "10B-2",
+      "id": 2879,
+      "name": "WebOverlay",
+      "version": "1.11.0",
+      "size": 174334,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2879/weboverlay/1.11.0"
+    },
+    {
+      "group": "10B-3",
+      "id": 3040,
+      "name": "Map Variants",
+      "version": "1.1.0",
+      "size": 4055810,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3040/map-variants/1.1.0"
+    },
+    {
+      "group": "10B-4",
+      "id": 3054,
+      "name": "Quest Codex",
+      "version": "1.11.1",
+      "size": 3034545,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3054/quest-codex/1.11.1"
+    },
+    {
+      "group": "10B-5",
+      "id": 2689,
+      "name": "Item Property Backport",
+      "version": "1.5.2",
+      "size": 130656,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2689/item-property-backport/1.5.2"
+    },
+    {
+      "group": "10B-6",
+      "id": 3083,
+      "name": "Hj's Mod Source",
+      "version": "1.1.0",
+      "size": 40294,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3083/hjs-mod-source/1.1.0"
+    },
+    {
+      "group": "10B-7",
+      "id": 3095,
+      "name": "Integrated Configuration Manager",
+      "version": "1.0.0",
+      "size": 19827,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3095/integrated-configuration-manager/1.0.0"
+    }
+  ]
+}

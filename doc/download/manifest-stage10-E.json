@@ -1,0 +1,116 @@
+{
+  "stage": "stage10-E",
+  "spt": "4.1.6",
+  "note": "10-E 퀘스트·하이드아웃·진행 12개. 결속 표시는 없으나 프로필을 읽는 것들이라 설치 전에 프로필을 backup/profiles-before-stage10-E/ 로 백업했다(7개, 크기 전부 일치 확인). 하이드아웃 두 개(2982 Hideout Overhaul, 2530 Vertical Hideout)가 같은 배치를 건드릴 수 있어 함께 넣고 겹치면 하나만 남긴다. SVM Hideout.RemoveConstructionsRequirements 는 false 유지다. 스킬·레벨당 체력(2144, 1706)은 프로필 수치를 다시 계산하므로 설치 후 체력·스킬이 사라지지 않았는지 본다. Broken Limbs Dont Heal(3121)은 10-E2 로 단독 설치한다. 계획은 PLAN-STAGE10.md 10-E.",
+  "totalSize": 21259768,
+  "mods": [
+    {
+      "group": "10E-01",
+      "id": 2025,
+      "name": "All Quests Checkmarks",
+      "version": "1.4.0",
+      "size": 45724,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2025/all-quests-checkmarks/1.4.0"
+    },
+    {
+      "group": "10E-02",
+      "id": 2153,
+      "name": "Expanded Task Text (ETT)",
+      "version": "2.1.0",
+      "size": 51118,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2153/expanded-task-text-ett/2.1.0"
+    },
+    {
+      "group": "10E-03",
+      "id": 2076,
+      "name": "Hideout In Progress",
+      "version": "3.0.0",
+      "size": 22388,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2076/hideout-in-progress/3.0.0"
+    },
+    {
+      "group": "10E-04",
+      "id": 2982,
+      "name": "Hideout Overhaul",
+      "version": "0.2.0",
+      "size": 68536,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2982/hideout-overhaul/0.2.0"
+    },
+    {
+      "group": "10E-05",
+      "id": 2530,
+      "name": "Vertical Hideout",
+      "version": "1.1.1",
+      "size": 8326,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2530/vertical-hideout/1.1.1"
+    },
+    {
+      "group": "10E-06",
+      "id": 2932,
+      "name": "Target Dummies",
+      "version": "0.3.1",
+      "size": 15292,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2932/target-dummies/0.3.1"
+    },
+    {
+      "group": "10E-07",
+      "id": 2908,
+      "name": "Tarkin's Hideout Cat",
+      "version": "1.1.1",
+      "size": 20818452,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2908/tarkins-hideout-cat/1.1.1"
+    },
+    {
+      "group": "10E-08",
+      "id": 2657,
+      "name": "Cultist Circle Improvements",
+      "version": "1.1.0",
+      "size": 122337,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2657/cultist-circle-improvements/1.1.0"
+    },
+    {
+      "group": "10E-09",
+      "id": 1437,
+      "name": "Simple Workout QTE",
+      "version": "2.2.2",
+      "size": 13031,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1437/simple-workout-qte/2.2.2"
+    },
+    {
+      "group": "10E-10",
+      "id": 2144,
+      "name": "Skill Distribution",
+      "version": "1.3.0",
+      "size": 27990,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2144/skill-distribution/1.3.0"
+    },
+    {
+      "group": "10E-11",
+      "id": 1706,
+      "name": "Health Per Level",
+      "version": "2.2.0",
+      "size": 37929,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1706/health-per-level/2.2.0"
+    },
+    {
+      "group": "10E-12",
+      "id": 2652,
+      "name": "Fair Progression",
+      "version": "1.1.0",
+      "size": 28645,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2652/fair-progression/1.1.0"
+    }
+  ]
+}

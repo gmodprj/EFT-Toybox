@@ -14,7 +14,10 @@ public partial class FriendlyTeammateService
         item => itemHelper.IsOfBaseclass(item.Template, BaseClasses.ARMOR_PLATE),
         CreateHiringUnitPriceLookup());
 
-    private Func<Item, double> CreateHiringUnitPriceLookup()
+    // STM 의 장비 꾸러미 견적이 같은 값을 쓴다(계획 4 Task 2). 값을 매기는 집은 하나여야 한다 -
+    // 용병 고용가와 프로필 팀원 꾸러미 값이 다른 표를 보면 같은 물건에 다른 값이 붙는다.
+    // PIT 파일에는 private -> internal 승격만 한다(인계 §3-4).
+    internal Func<Item, double> CreateHiringUnitPriceLookup()
     {
         var config = ragfairConfig.Dynamic.GenerateBaseFleaPrices;
         var craftItems = (hideoutTable.Production.Recipes ?? [])

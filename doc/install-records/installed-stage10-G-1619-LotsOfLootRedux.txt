@@ -1,0 +1,5 @@
+1619__LotsofLootRedux-4.2.2	SPT_Runtime\user\mods\archangelwtf-lotsoflootredux\config.json
+1619__LotsofLootRedux-4.2.2	SPT_Runtime\user\mods\archangelwtf-lotsoflootredux\LICENSE.md
+1619__LotsofLootRedux-4.2.2	SPT_Runtime\user\mods\archangelwtf-lotsoflootredux\LotsofLoot.dll
+1619__LotsofLootRedux-4.2.2	SPT_Runtime\user\mods\archangelwtf-lotsoflootredux\Presets\default.json
+1619__LotsofLootRedux-4.2.2	SPT_Runtime\user\mods\archangelwtf-lotsoflootredux\wwwroot\css\lotsofloot.css

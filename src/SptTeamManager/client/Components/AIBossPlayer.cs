@@ -346,6 +346,14 @@ namespace pitTeam.Components
                     ApplyCoverMeCommandDrop(info.PlayerRequester);
                     return;
                 }
+                else if (HandlesEngagementPhrase(info.PlayerRequester, info.phrase))
+                {
+                    // Fire / Hold Fire / Take Cover: which phrases these are, and what they mean, both come
+                    // from GestureCommandPolicy (shared, tested); this only carries the result to the AI.
+                    // Vanilla is kept off the same phrase by BotReceiverPhraseOverridePatch, which asks the
+                    // same HandlesEngagementPhrase - this return alone does not do that.
+                    if (ApplyEngagementGesture(info.PlayerRequester, info.phrase)) return;
+                }
                 else if (info.phrase == EPhraseTrigger.OpenDoor)
                 {
                     // Open Door: closest eligible follower opens the target door.
@@ -3517,21 +3525,133 @@ namespace pitTeam.Components
             ApplyTemporaryCombatAggressionCommand(requester, null, EPhraseTrigger.Roger);
         }
 
+        // The ONE place an EFT phrase is mapped onto the policy (by name, so shared/ stays free of EFT types).
+        // The router, ApplyEngagementGesture and BotReceiverPhraseOverridePatch all ask through here.
+        public static bool IsEngagementPhrase(EPhraseTrigger phrase)
+        {
+            return pitTeam.Shared.GestureCommandPolicy.Translate(EngagementMenuCommand(phrase)) != null;
+        }
+
+        // THE condition under which this fork handles an engagement phrase for this boss: the phrase is one the
+        // policy translates AND the speaker is this boss's own player. PhraseSaid's branch and the vanilla
+        // skip below both use it, so vanilla is silenced exactly where a fork handler will run.
+        public bool HandlesEngagementPhrase(IPlayer requester, EPhraseTrigger phrase)
+        {
+            return requester != null &&
+                   realPlayer != null &&
+                   requester.ProfileId == realPlayer.ProfileId &&
+                   IsEngagementPhrase(phrase);
+        }
+
+        // The follower the speaker is looking at, or null when none: the handlers below act on that one follower
+        // alone when it exists, on the whole squad otherwise.
+        private BotOwner FocusedEngagementFollower(IPlayer requester)
+        {
+            return requester is Player requesterPlayer
+                ? FindLookedAtFollower(requesterPlayer, PhraseCommandDistance, 0.15f, 4f)
+                : null;
+        }
+
+        // THE per-follower eligibility of an engagement handler. The handlers (Fire / Hold Fire / Take Cover)
+        // loop over Followers and the vanilla skip asks about one follower - both go through this one method, so
+        // "the fork acts on this follower" has a single definition. Take Cover additionally needs the follower
+        // to be in contact (there is nothing to take cover from otherwise); Fire / Hold Fire do not.
+        private bool EngagementHandlerActsOn(BotOwner follower, BotOwner focusedFollower, bool requiresCombatEnemy)
+        {
+            if (follower == null || follower.IsDead || follower.BotState != EBotState.Active) return false;
+            if (IsFollowerLockedByLootCommand(follower)) return false;
+            if (focusedFollower != null && follower != focusedFollower) return false;
+            if (requiresCombatEnemy && !HasActiveCombatEnemy(follower)) return false;
+            return BossPlayers.Instance?.GetFollower(follower) != null;
+        }
+
+        // Should vanilla BotReceiver skip this phrase for this follower? Only when the fork handler will actually
+        // ACT on this follower: the speaker is a registered boss whose own squad contains the follower AND the
+        // handler's per-follower eligibility holds (EngagementHandlerActsOn - looked-at follower only when one
+        // is focused, in contact for Take Cover, alive/active, not locked by a loot command). For every other
+        // follower - another boss's squad, an unregistered speaker, or a squad-mate the handler skips - nothing
+        // in the fork acts on the phrase, so vanilla must still run or the command would silently do nothing.
+        public static bool ForkHandlesEngagementFor(BotOwner follower, IPlayer requester, EPhraseTrigger phrase)
+        {
+            if (follower == null || requester == null) return false;
+            pitAIBossPlayer boss = BossPlayers.GetBoss(requester.ProfileId);
+            if (boss == null ||
+                !boss.HandlesEngagementPhrase(requester, phrase) ||
+                boss.Followers == null ||
+                !boss.Followers.Contains(follower))
+            {
+                return false;
+            }
+
+            pitTeam.Shared.GestureCommandEffect effect = pitTeam.Shared.GestureCommandPolicy.Translate(EngagementMenuCommand(phrase));
+            if (effect == null) return false;
+
+            bool seekCover = effect.Engagement == pitTeam.Shared.GestureCommandPolicy.SeekCover;
+            return boss.EngagementHandlerActsOn(follower, boss.FocusedEngagementFollower(requester), seekCover);
+        }
+
+        private static string EngagementMenuCommand(EPhraseTrigger phrase)
+        {
+            return pitTeam.Shared.GestureCommandPolicy.MenuCommandForPhrase(phrase.ToString());
+        }
+
+        // Returns true when the phrase was a known engagement command and was carried out, so PhraseSaid skips
+        // its own fan-out to followers. Unknown -> false and nothing changes. (Keeping the vanilla receiver
+        // off the phrase is a separate guarantee: BotReceiverPhraseOverridePatch.)
+        private bool ApplyEngagementGesture(IPlayer requester, EPhraseTrigger phrase)
+        {
+            string menuCommand = EngagementMenuCommand(phrase);
+            pitTeam.Shared.GestureCommandEffect effect = pitTeam.Shared.GestureCommandPolicy.Translate(menuCommand);
+            if (effect == null) return false;
+
+            switch (effect.Engagement)
+            {
+                case pitTeam.Shared.GestureCommandPolicy.WeaponsFree:
+                    // Same lever Go Go Go uses: drop the temporary override so the persisted tactic decides.
+                    ApplyTemporaryCombatAggressionCommand(requester, null, EPhraseTrigger.Roger);
+                    return true;
+                case pitTeam.Shared.GestureCommandPolicy.HoldFire:
+                    // Same lever Hold Position uses for combat: aggression 0, without the movement hold.
+                    ApplyTemporaryCombatAggressionCommand(requester, 0f, EPhraseTrigger.Roger);
+                    return true;
+                case pitTeam.Shared.GestureCommandPolicy.SeekCover:
+                    ApplyTakeCoverCommand(requester);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Take Cover: followers in contact fall back to cover near the boss (the same short combat command
+        // Come With Me issues). Followers not in contact are left alone - there is nothing to take cover from.
+        private void ApplyTakeCoverCommand(IPlayer requester)
+        {
+            if (requester == null) return;
+
+            BotOwner focusedFollower = FocusedEngagementFollower(requester);
+
+            foreach (BotOwner follower in Followers)
+            {
+                if (!EngagementHandlerActsOn(follower, focusedFollower, requiresCombatEnemy: true)) continue;
+
+                BotFollowerPlayer followerData = BossPlayers.Instance?.GetFollower(follower);
+                if (followerData == null) continue;
+
+                followerData.SetCombatComeToBossCover(8f);
+                follower.BotTalk.TrySay(EPhraseTrigger.Roger, false);
+                follower.Gesture.TryGestus(EInteraction.OkGesture, false);
+            }
+        }
+
         private void ApplyTemporaryCombatAggressionCommand(IPlayer requester, float? overrideAggression, EPhraseTrigger response)
         {
             if (requester == null) return;
 
-            BotOwner focusedFollower = null;
-            if (requester is Player requesterPlayer)
-            {
-                focusedFollower = FindLookedAtFollower(requesterPlayer, PhraseCommandDistance, 0.15f, 4f);
-            }
+            BotOwner focusedFollower = FocusedEngagementFollower(requester);
 
             foreach (BotOwner follower in Followers)
             {
-                if (follower == null || follower.IsDead || follower.BotState != EBotState.Active) continue;
-                if (IsFollowerLockedByLootCommand(follower)) continue;
-                if (focusedFollower != null && follower != focusedFollower) continue;
+                if (!EngagementHandlerActsOn(follower, focusedFollower, requiresCombatEnemy: false)) continue;
 
                 BotFollowerPlayer followerData = BossPlayers.Instance?.GetFollower(follower);
                 if (followerData == null) continue;

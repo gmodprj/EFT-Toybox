@@ -57,18 +57,31 @@ namespace pitTeam.Components
             // STM: profile teammates, fetched fresh (already joined against the catalog by the server).
             // Never throws; on failure the section is one error tile and the mercenary tiles still draw.
             StmRosterSnapshot stmSnapshot = LoadStmSnapshot();
-            int stmTileCount = CountStmTiles(stmSnapshot);
-            UpdateRosterGridLayout(entries.Count + stmTileCount);
 
-            foreach (SquadRosterEntry entry in entries)
+            // STM: 하위 탭이 고른 쪽만 그린다. 용병과 프로필 팀원은 소유·수명·장비의 주인이 달라서 한 줄에 섞이면
+            // 어느 쪽 타일인지 읽기 어렵다(2026-11-02 인게임에서 같은 격자에 섞여 나왔다).
+            bool showMercenaries = stmRosterSection == StmRosterSection.Mercenaries;
+            int stmTileCount = showMercenaries ? 0 : CountStmTiles(stmSnapshot);
+            int mercTileCount = showMercenaries ? entries.Count : 0;
+            UpdateRosterGridLayout(mercTileCount + stmTileCount);
+
+            if (showMercenaries)
             {
-                CreateRosterTile(rosterGridRoot, entry, rosterBuildVersion);
+                foreach (SquadRosterEntry entry in entries)
+                {
+                    CreateRosterTile(rosterGridRoot, entry, rosterBuildVersion);
+                }
+            }
+            else
+            {
+                AppendStmTiles(rosterGridRoot, stmSnapshot);
             }
 
-            AppendStmTiles(rosterGridRoot, stmSnapshot);
+            UpdateStmRosterSectionTabs();
 
             // Only real members count: an STM error/notice tile must not remove PIT's empty-roster guidance.
-            UpdateEmptyRosterState(entries.Count + (stmSnapshot != null && stmSnapshot.Ok ? stmSnapshot.Members.Count : 0) == 0);
+            UpdateEmptyRosterState(
+                mercTileCount + (!showMercenaries && stmSnapshot != null && stmSnapshot.Ok ? stmSnapshot.Members.Count : 0) == 0);
 
             if (rosterGridRoot != null)
             {
@@ -1237,7 +1250,10 @@ namespace pitTeam.Components
             RectTransform scrollRoot = scrollRootObject.GetComponent<RectTransform>();
             Stretch(scrollRoot);
             scrollRoot.offsetMin = new Vector2(18f, RosterViewportBottomInset);
-            scrollRoot.offsetMax = new Vector2(-18f, -RosterViewportTopInset);
+            // STM: 명단 위에 하위 탭 줄(용병 / 프로필 팀원)이 들어간다. 그만큼 목록을 아래로 내린다.
+            scrollRoot.offsetMax = new Vector2(-18f, -(RosterViewportTopInset + StmRosterSectionTabsHeight));
+
+            CreateStmRosterSectionTabs(shellRect);
 
             GameObject viewportObject = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(RectMask2D));
             viewportObject.transform.SetParent(scrollRoot, false);

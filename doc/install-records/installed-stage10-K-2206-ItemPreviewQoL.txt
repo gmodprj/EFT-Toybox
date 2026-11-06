@@ -1,0 +1,1 @@
+2206__JBOBYH_ItemPreviewQoL_4.1.6	BepInEx\plugins\JBOBYH\JBOBYH_ItemPreviewQoL.dll

@@ -1,0 +1,112 @@
+[
+  {
+    "id": 2329,
+    "name": "BushWhacker - Standalone",
+    "version": "1.7.0",
+    "file": "2329__BushWhackerStandalone.zip",
+    "bytes": 6510,
+    "expected": 6510,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 1621,
+    "name": "Shadow Flicker Fix",
+    "version": "1.5.3",
+    "file": "1621__ShadowFlickerFix.7z",
+    "bytes": 6747,
+    "expected": 6747,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1582,
+    "name": "Headshot Darkness",
+    "version": "1.2.5",
+    "file": "1582__HeadshotDarkness.7z",
+    "bytes": 9993,
+    "expected": 9993,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2905,
+    "name": "Ragdoll Kinetics",
+    "version": "1.2.0",
+    "file": "2905__RagdollKinetics-1.2.0.zip",
+    "bytes": 45393,
+    "expected": 45393,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2745,
+    "name": "Manimal's Watch Animations",
+    "version": "2.0.0",
+    "file": "2745__Manimal-WatchAnims-2.0.0.zip",
+    "bytes": 87964,
+    "expected": 87964,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2843,
+    "name": "Blackout",
+    "version": "4.1.1",
+    "file": "2843__Blackout_4.1.1.zip",
+    "bytes": 6086149,
+    "expected": 6086149,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2264,
+    "name": "Battle Ambience",
+    "version": "2.4.0",
+    "file": "2264__BattleAmbience.7z",
+    "bytes": 12050875,
+    "expected": 12050875,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2734,
+    "name": "Better Night Skies",
+    "version": "2.0.0",
+    "file": "2734__BetterNightSkies.7z",
+    "bytes": 70980819,
+    "expected": 70980819,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 3
+  },
+  {
+    "id": 2962,
+    "name": "Music Extender",
+    "version": "1.2.0",
+    "file": "2962__MusicExtender_v1.2.0.7z",
+    "bytes": 127452361,
+    "expected": 127452361,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 6
+  },
+  {
+    "id": 2003,
+    "name": "HollywoodFX",
+    "version": "3.0.0",
+    "file": "2003__HollywoodFx_3.0.0.zip",
+    "bytes": 270826931,
+    "expected": 270826931,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 13
+  }
+]

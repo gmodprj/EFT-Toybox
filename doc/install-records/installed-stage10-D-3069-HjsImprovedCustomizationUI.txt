@@ -1,0 +1,3 @@
+3069__ImprovedCustomizationUI-1.1.2	BepInEx\plugins\ImprovedCustomizationUI\ImprovedCustomizationUI.dll
+3069__ImprovedCustomizationUI-1.1.2	SPT_Runtime\user\mods\ImprovedCustomizationUI\ImprovedCustomizationUI.Server.dll
+3069__ImprovedCustomizationUI-1.1.2	SPT_Runtime\user\mods\ImprovedCustomizationUI\config.json

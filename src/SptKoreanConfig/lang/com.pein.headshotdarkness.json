@@ -1,0 +1,80 @@
+{
+  "guid": "com.pein.headshotdarkness",
+  "name": "머리 피격 암전 (Headshot Darkness)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Death Fade": "2. 사망 암전",
+    "3. Death Text": "3. 사망 문구",
+    "Debug": "진단"
+  },
+  "settings": {
+    "1. General/Enabled": {
+      "name": "켜기",
+      "desc": "머리 피격 암전을 켜거나 끈다."
+    },
+    "1. General/Disable UI Death Sound": {
+      "name": "사망 UI 소리 끄기",
+      "desc": "사망 UI 소리를 아예 나지 않게 한다. 머리 피격 효과가 생길 때는 늘 꺼지는데, 이것을 켜면 모든 죽음에서 끈다."
+    },
+    "2. Death Fade/Audio Fade Time": {
+      "name": "소리 사라지는 시간",
+      "desc": "소리가 사라지는 시간을 바꾼다."
+    },
+    "2. Death Fade/Headshot Fade Style": {
+      "name": "머리 피격 암전 방식",
+      "desc": "머리에 맞아 죽었을 때의 암전 방식을 바꾼다."
+    },
+    "2. Death Fade/Explosion Fade Style": {
+      "name": "폭발 암전 방식",
+      "desc": "폭발로 죽었을 때의 암전 방식을 바꾼다."
+    },
+    "2. Death Fade/Other Fade Style": {
+      "name": "그 밖의 암전 방식",
+      "desc": "그 밖의 죽음에서의 암전 방식을 바꾼다. 주로 진단용이지만, 몸에 맞아 죽을 때도 이 효과를 보고 싶으면 쓴다."
+    },
+    "3. Death Text/Enable Death Text": {
+      "name": "사망 문구 보이기",
+      "desc": "사망 문구를 켜거나 끈다. 머리 피격 효과가 생길 때만 보인다."
+    },
+    "3. Death Text/Death Text String": {
+      "name": "사망 문구",
+      "desc": "보일 사망 문구를 적는다."
+    },
+    "3. Death Text/Contextual Death Text": {
+      "name": "죽은 방식에 맞춘 문구",
+      "desc": "켜면 위의 문구 대신 deathstrings.json 에서 죽은 방식에 맞는 문구를 무작위로 뽑는다."
+    },
+    "3. Death Text/Death Text Font": {
+      "name": "사망 문구 글꼴",
+      "desc": "사망 문구의 글꼴이다."
+    },
+    "3. Death Text/Death Text Size": {
+      "name": "사망 문구 크기",
+      "desc": "사망 문구의 글자 크기다."
+    },
+    "3. Death Text/Death Text Color": {
+      "name": "사망 문구 색",
+      "desc": "사망 문구의 색이다. 값마다 0~1 범위다."
+    },
+    "3. Death Text/Death Text Lifetime": {
+      "name": "사망 문구 머무는 시간",
+      "desc": "사망 문구가 보이는 시간을 바꾼다."
+    },
+    "3. Death Text/Death Text Fade In Time": {
+      "name": "사망 문구 나타나는 시간",
+      "desc": "사망 문구가 떠오르는 데 걸리는 시간을 바꾼다."
+    },
+    "3. Death Text/Death Text Fade Out Time": {
+      "name": "사망 문구 사라지는 시간",
+      "desc": "사망 문구가 사라지는 데 걸리는 시간을 바꾼다."
+    },
+    "3. Death Text/Death Text Fade Delay Time": {
+      "name": "사망 문구 뜸들이는 시간",
+      "desc": "사망 문구가 뜨기까지 기다리는 시간을 바꾼다."
+    },
+    "Debug/4. Debug": {
+      "name": "진단 기록",
+      "desc": "BepInEx 콘솔에 진단 기록을 켜거나 끈다."
+    }
+  }
+}

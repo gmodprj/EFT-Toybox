@@ -1,0 +1,2 @@
+2745__Manimal-WatchAnims-2.0.0	BepInEx\plugins\Manimal.WatchAnims\Manimal.WatchAnims.dll
+2745__Manimal-WatchAnims-2.0.0	BepInEx\plugins\Manimal.WatchAnims\bundles\watch_animations.bundle

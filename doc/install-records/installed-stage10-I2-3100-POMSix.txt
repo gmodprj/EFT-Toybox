@@ -1,0 +1,2 @@
+3100__POMSix_1.0.2	BepInEx\plugins\POMSix\POMSix.dll
+3100__POMSix_1.0.2	BepInEx\plugins\POMSix\Assets\pom

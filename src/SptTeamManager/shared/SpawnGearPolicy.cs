@@ -87,8 +87,21 @@ namespace pitTeam.Shared
             return new GearFacts(hasAnyEquipment, hasWeaponInRequiredSlot);
         }
 
-        public static GearDecision Decide(bool hasAnyEquipment, bool hasWeaponInRequiredSlot)
+        public static GearDecision Decide(bool hasAnyEquipment, bool hasWeaponInRequiredSlot) =>
+            Decide(hasAnyEquipment, hasWeaponInRequiredSlot, handEdited: false);
+
+        // handEdited: 설계 §6-4 "편집하면 실물이 된다" - STM 화면에서 손으로 한 번 고친 팀원은 그
+        // 뒤로 임시 장비 대상이 아니다. 편집이 슬롯을 비워 놓고 끝났어도 그렇다: 비웠다는 것도
+        // 플레이어의 결정이고, 그 위에 임시 장비를 생성해 덮으면 결정이 조용히 사라진다(그리고
+        // 죽어도 잃을 것이 없어져 "실물" 의 뜻이 깨진다). 되돌리는 길은 깃발을 되돌리는 것이 아니라
+        // 등록을 빼고 다시 넣는 것이다 - 한 방향이라서 "편집했는데 임시로 나갔다" 가 생길 수 없다.
+        public static GearDecision Decide(bool hasAnyEquipment, bool hasWeaponInRequiredSlot, bool handEdited)
         {
+            if (handEdited)
+            {
+                return new GearDecision(SpawnGearKind.Real, "손으로 고친 장비라서 비어 있어도 프로필의 실물 장비로 내보낸다.");
+            }
+
             // Nothing worn: sending the profile in as-is would be a naked teammate.
             if (!hasAnyEquipment)
             {

@@ -1,0 +1,1 @@
+2200__Dynamic-External-Resolution-1.1.2	BepInEx\plugins\DynamicExternalResolution.dll

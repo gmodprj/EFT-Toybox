@@ -1,0 +1,102 @@
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\BorkelRNVG.dll
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\prebake_lens_masks.py
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\CommonAssets\noise.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\CommonAssets\pixel_mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\LensLayouts\binocular.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\LensLayouts\monocular.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\LensLayouts\quadnods.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\readme.txt
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\filtered new\mask_anvis\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\filtered new\mask_binocular\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\filtered new\mask_old_monocular\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\filtered new\mask_pnv\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\filtered new\mask_pnv57e\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\filtered new\mask_PVS31\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\OLD Textures - Extra-blurry\mask_anvis.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\OLD Textures - Extra-blurry\mask_binocular.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\OLD Textures - Extra-blurry\mask_old_monocular.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\OLD Textures - Extra-blurry\mask_pnv.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\OLD thermal mask\mask_thermal.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\unfiltered new\mask_anvis\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\unfiltered new\mask_binocular\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\unfiltered new\mask_old_monocular\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\unfiltered new\mask_pnv\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\unfiltered new\mask_pnv57e\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\MaskTextures\unfiltered new\mask_PVS31\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera\lens_left.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera\lens_right.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera\mask_left.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera\mask_right.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MC\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MC\lens_left.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MC\lens_right.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MC\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MC\mask_left.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MC\mask_right.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MC\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MCA\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MCA\lens_left.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MCA\lens_right.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MCA\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MCA\mask_left.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MCA\mask_right.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\chimera MCA\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\dtnvs_green\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\dtnvs_green\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\dtnvs_green\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\dtnvs_white\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\dtnvs_white\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\dtnvs_white\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\gpnvg\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\gpnvg\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\gpnvg\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\gpnvg ISB\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\gpnvg ISB\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\gpnvg ISB\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\n15\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\n15\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\n15\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pnv10t\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pnv10t\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pnv10t\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pnv57e\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pnv57e\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pnv57e\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs14\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs14\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs14\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a GRN PHOS\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a GRN PHOS\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a GRN PHOS\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a ISB FDE\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a ISB FDE\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a ISB FDE\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a ISB White\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a ISB White\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs31a ISB White\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs5a\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs5a\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\NVG\pvs5a\mask.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\Shaders\brnvg_shaders.bundle
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\Shaders\CustomNightVision.shader
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\Shaders\pein_shaders
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\Sounds\gatingKnob_alt.wav
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\Sounds\gatingKnob.wav
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\Thermal\t7\config.json
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\Thermal\t7\lens.png
+954__BRNVG-3.0.4-SPT4.1	BepInEx\plugins\BorkelRNVG\Assets\Thermal\t7\mask.png
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\BorkelRNVGServer.dll
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\bundles.json
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\bundles\assets\content\items\equipment\customizable\gpnvg\nvg_l3_gpnvg-18_anvis.bundle
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\bundles\assets\content\items\equipment\customizable\nvg_alfa_pnv-10t\nvg_alfa_pnv-10t.bundle
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\bundles\assets\content\items\equipment\customizable\nvg_armasight_n-15\nvg_armasight_n-15.bundle
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\bundles\assets\content\items\equipment\customizable\pvs_14\nvg_pvs_14.bundle
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\bundles\assets\content\items\equipment\nvg_pvs14\pvs14_textures.bundle
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\Optional black GPNVG-18\INSTALLATION.txt
+954__BRNVG-3.0.4-SPT4.1	SPT_Runtime\user\mods\BorkelRNVGServer\Optional black GPNVG-18\nvg_l3_gpnvg-18_anvis.bundle

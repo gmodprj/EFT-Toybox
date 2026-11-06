@@ -1,0 +1,4 @@
+2500__wishlistextended-1.2.0-spt-4.1	BepInEx\plugins\WishlistExtended\WishlistExtended-Client.dll
+2500__wishlistextended-1.2.0-spt-4.1	BepInEx\plugins\WishlistExtended\locales\en.json
+2500__wishlistextended-1.2.0-spt-4.1	BepInEx\plugins\WishlistExtended\locales\pl.json
+2500__wishlistextended-1.2.0-spt-4.1	SPT_Runtime\user\mods\WishlistExtended\WishlistExtended-Server.dll

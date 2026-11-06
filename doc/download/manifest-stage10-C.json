@@ -1,0 +1,107 @@
+{
+  "stage": "stage10-C",
+  "spt": "4.1.6",
+  "note": "10-C 편의·인벤토리 11개. 전부 비결속·소형이고 파일만 지우면 되돌아간다. 10개를 -SkipTest 로 복사하고 마지막 하나에서 서버 테스트를 한 번 돌린다. Loot In Vicinity(2698)의 Fika 비호환 표시는 이 설치본에 해당 없다(Fika 미설치). Dynamic Item Weights(2344)는 SVM 의 무게 옵션과 겹치니 설치 후 아이템 무게를 한 번 본다. 계획은 PLAN-STAGE10.md §10-C.",
+  "totalSize": 6937819,
+  "mods": [
+    {
+      "group": "10C-01",
+      "id": 1657,
+      "name": "MergeConsumables",
+      "version": "1.6.3",
+      "size": 20653,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1657/mergeconsumables/1.6.3"
+    },
+    {
+      "group": "10C-02",
+      "id": 1884,
+      "name": "Continuous Healing",
+      "version": "1.6.3",
+      "size": 6539,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1884/continuous-healing/1.6.3"
+    },
+    {
+      "group": "10C-03",
+      "id": 1274,
+      "name": "Healing Autocancel",
+      "version": "5.0.1",
+      "size": 3654,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1274/healing-autocancel/5.0.1"
+    },
+    {
+      "group": "10C-04",
+      "id": 1298,
+      "name": "HandsAreNotBusy",
+      "version": "1.7.1",
+      "size": 4984,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/1298/handsarenotbusy/1.7.1"
+    },
+    {
+      "group": "10C-05",
+      "id": 865,
+      "name": "Gilded Key Storage",
+      "version": "2.1.1",
+      "size": 6814359,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/865/gilded-key-storage/2.1.1"
+    },
+    {
+      "group": "10C-06",
+      "id": 933,
+      "name": "Use Loose Loot",
+      "version": "1.6.0",
+      "size": 2783,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/933/use-loose-loot/1.6.0"
+    },
+    {
+      "group": "10C-07",
+      "id": 2698,
+      "name": "Loot In Vicinity",
+      "version": "3.0.6",
+      "size": 46233,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2698/loot-in-vicinity/3.0.6"
+    },
+    {
+      "group": "10C-08",
+      "id": 3103,
+      "name": "Cabinet Looter",
+      "version": "1.0.4",
+      "size": 20631,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3103/cabinet-looter/1.0.4"
+    },
+    {
+      "group": "10C-09",
+      "id": 2857,
+      "name": "Raid Settings Skipper",
+      "version": "1.3.1",
+      "size": 4955,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2857/raid-settings-skipper/1.3.1"
+    },
+    {
+      "group": "10C-10",
+      "id": 2881,
+      "name": "AutoKeycard for Labs",
+      "version": "1.0.1",
+      "size": 5902,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2881/autokeycard-for-labs/1.0.1"
+    },
+    {
+      "group": "10C-11",
+      "id": 2344,
+      "name": "Dynamic Item Weights",
+      "version": "1.2.1",
+      "size": 7126,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2344/dynamic-item-weights/1.2.1"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+2982__Arisu-sensei-HideoutOverhaul-0.2.0	SPT_Runtime\user\mods\Arisu-sensei-HideoutOverhaul\config.jsonc
+2982__Arisu-sensei-HideoutOverhaul-0.2.0	SPT_Runtime\user\mods\Arisu-sensei-HideoutOverhaul\HideoutOverhaul.dll
+2982__Arisu-sensei-HideoutOverhaul-0.2.0	SPT_Runtime\user\mods\Arisu-sensei-HideoutOverhaul\Gamemodes\Areas\hideout-overhaul.jsonc
+2982__Arisu-sensei-HideoutOverhaul-0.2.0	SPT_Runtime\user\mods\Arisu-sensei-HideoutOverhaul\Gamemodes\Areas\hideout-overhaul.vanilla-timers.jsonc
+2982__Arisu-sensei-HideoutOverhaul-0.2.0	SPT_Runtime\user\mods\Arisu-sensei-HideoutOverhaul\Gamemodes\Areas\vanilla.jsonc
+2982__Arisu-sensei-HideoutOverhaul-0.2.0	SPT_Runtime\user\mods\Arisu-sensei-HideoutOverhaul\Gamemodes\Production\vanilla.jsonc

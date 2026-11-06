@@ -53,6 +53,40 @@ namespace pitTeam.Shared
         // special slots under the pockets container; a dogtag or special slot must survive either way.
         private static readonly string[] PermanentSlotFragments = { "Dogtag", "SpecialSlot" };
 
+        // 위 두 주석 덩이가 산문으로 적은 "프로필에서 빠지면 안 되는 것" 을 집합으로 적은 것. 사망이
+        // 가져가지 않는다는 것과 **어떤 경로로도 프로필에서 떼어내선 안 된다**는 것은 같은 판단의
+        // 두 면이다: 주머니를 떼면 장비 손실이 아니라 구조 손상이고(PIT 도 같은 이유로 팔로워의
+        // 주머니를 지킨다), 보안 컨테이너·완장·칼집도 PIT 의 "사망이 가져가지 않는" 모델 그대로다.
+        // 계획 3 Task 6 의 장비 편집(벗기기)이 이 어휘를 **그대로** 쓴다 - 두 번째 목록을 만들면
+        // 둘이 조용히 갈라진다(ProfileGearEditPolicyTests 의 교차 계약 테스트가 못박는다).
+        private static readonly HashSet<string> NeverRemovedSlots = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            PocketsSlot, "Scabbard", "ArmBand", "SecuredContainer",
+        };
+
+        internal static IReadOnlySet<string> NeverRemovedSlotNames => NeverRemovedSlots;
+
+        // 특수 슬롯(열쇠고리·나침반 등을 담는 자리)인가. 사망은 이것을 가져가지 않지만 **플레이어는
+        // 자기 특수 슬롯의 물건을 손으로 넣고 뺀다** - 그래서 편집 금지 판정만 이 조각을 빼고 본다
+        // (ProfileGearEditPolicy.IsStructuralSlot). 조각 이름의 집은 여기 하나다.
+        internal static bool IsSpecialSlot(string? slotId)
+        {
+            if (string.IsNullOrWhiteSpace(slotId)) return false;
+            return slotId!.Trim().IndexOf("SpecialSlot", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        // 이 슬롯에 있는 아이템은 어떤 편집으로도 프로필에서 떼어낼 수 없다. 이름 집합과 영구 조각
+        // (Dogtag·SpecialSlot) 둘 다 본다. 슬롯 이름을 모르면 false 다 - 이 함수는 "지우지 말라" 를
+        // 답하는 자리가 아니라 "떼어낼 수 없다" 를 답하는 자리이고, 모르는 이름의 닫힌 쪽 처리는
+        // 부르는 쪽(허용 목록)이 이미 하고 있다.
+        internal static bool IsNeverRemovedSlot(string? slotId)
+        {
+            if (string.IsNullOrWhiteSpace(slotId)) return false;
+
+            var slot = slotId!.Trim();
+            return NeverRemovedSlots.Contains(slot) || IsPermanentSlot(slot);
+        }
+
         // The items to delete, as ids. Each is a tree root: the caller's deletion takes the descendants
         // with it, and CollectSubtreeIds below names them for the write-back check.
         //

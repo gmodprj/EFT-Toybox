@@ -1,0 +1,35 @@
+[
+  {
+    "id": 2937,
+    "name": "Manimal's 1.0 Labs Office Backport",
+    "version": "2.0.0",
+    "file": "2937__Manimal-LabsBoiler-2.0.0.zip",
+    "bytes": 94285352,
+    "expected": 94285352,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 3
+  },
+  {
+    "id": 3097,
+    "name": "DynamicMaps Extended",
+    "version": "2.5.2",
+    "file": "3097__DynamicMaps-Extended-2.5.2-SPT4.1.zip",
+    "bytes": 1823357646,
+    "expected": 1823357646,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 68
+  },
+  {
+    "id": 3166,
+    "name": "Arena Map Port",
+    "version": "0.4.0",
+    "file": "3166__maschine-ArenaMapPort-0.4.0.zip",
+    "bytes": 3836857033,
+    "expected": 3836857033,
+    "sizeOk": true,
+    "host": "pixeldrain.com",
+    "seconds": 121
+  }
+]

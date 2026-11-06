@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1533,
+    "name": "More Tag Colours",
+    "version": "1.5.0",
+    "file": "1533__acidphantasm-moretagcolours.zip",
+    "bytes": 5126,
+    "expected": 5126,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 3082,
+    "name": "Hj's Task Item Indicator",
+    "version": "1.0.1",
+    "file": "3082__TaskItemIndicator.zip",
+    "bytes": 9251,
+    "expected": 9251,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3058,
+    "name": "Inventory Walker",
+    "version": "0.3.1",
+    "file": "3058__InventoryWalker_V0.3.1.zip",
+    "bytes": 13007,
+    "expected": 13007,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1262,
+    "name": "Easy Ammo Names",
+    "version": "2.1.0",
+    "file": "1262__EasyAmmoNames-2.1.0.7z",
+    "bytes": 16428,
+    "expected": 16428,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3071,
+    "name": "Hj's Task Turn in Indicator",
+    "version": "1.0.0",
+    "file": "3071__TaskTurnInIndicator.zip",
+    "bytes": 21804,
+    "expected": 21804,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3007,
+    "name": "Breakout Outlines",
+    "version": "1.2.0",
+    "file": "3007__Breakout_Outlines_v1.2.0.7z",
+    "bytes": 40435,
+    "expected": 40435,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2500,
+    "name": "Wishlist Extended",
+    "version": "1.2.0",
+    "file": "2500__wishlistextended-1.2.0-spt-4.1.zip",
+    "bytes": 54402,
+    "expected": 54402,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3069,
+    "name": "Hj's Improved Customization UI",
+    "version": "1.1.2",
+    "file": "3069__ImprovedCustomizationUI-1.1.2.zip",
+    "bytes": 188872,
+    "expected": 188872,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3158,
+    "name": "Briefing",
+    "version": "1.1.0",
+    "file": "3158__Briefing-1.1.0.zip",
+    "bytes": 398677,
+    "expected": 398677,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1775,
+    "name": "WTT - Menu Overhaul",
+    "version": "1.3.0",
+    "file": "1775__MoxoPixel-MenuOverhaul.zip",
+    "bytes": 779102,
+    "expected": 779102,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3131,
+    "name": "Name Plate",
+    "version": "1.1.0",
+    "file": "3131__NamePlate-1.1.0.zip",
+    "bytes": 2615427,
+    "expected": 2615427,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3029,
+    "name": "ImpactCue-UI-MOD",
+    "version": "2.0.3",
+    "file": "3029__ImpactCue-UI-MOD-2.0.3.zip",
+    "bytes": 42398489,
+    "expected": 42398489,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  }
+]

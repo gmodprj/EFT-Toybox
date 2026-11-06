@@ -1,0 +1,7 @@
+2937__Manimal-LabsBoiler-2.0.0	BepInEx\plugins\Manimal-LabsBoiler\boiler_windows.json
+2937__Manimal-LabsBoiler-2.0.0	BepInEx\plugins\Manimal-LabsBoiler\labs_office_audio.json
+2937__Manimal-LabsBoiler-2.0.0	BepInEx\plugins\Manimal-LabsBoiler\manimal_labs_boiler.bundle
+2937__Manimal-LabsBoiler-2.0.0	BepInEx\plugins\Manimal-LabsBoiler\ManimalLabsBoiler.dll
+2937__Manimal-LabsBoiler-2.0.0	SPT_Runtime\user\mods\ManimalLabsBoiler\ManimalLabsBoilerServer.dll
+2937__Manimal-LabsBoiler-2.0.0	SPT_Runtime\user\mods\ManimalLabsBoiler\db\labs_containers.json
+2937__Manimal-LabsBoiler-2.0.0	SPT_Runtime\user\mods\ManimalLabsBoiler\db\labs_office_looseloot.json

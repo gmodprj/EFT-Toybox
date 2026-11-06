@@ -1,0 +1,262 @@
+{
+  "guid": "com.janky.hollywoodfx",
+  "name": "총격·폭발 효과 (HollywoodFX)",
+  "sections": {
+    "00. General": "00. 일반",
+    "01. Impact Effects": "01. 탄착 효과",
+    "02. Explosion FX": "02. 폭발 효과",
+    "03. Muzzle Blast Effects": "03. 총구 화염",
+    "04. Ambient Battle Effects (RESTART)": "04. 주변 전투 효과 (다시 켜야 함)",
+    "05. Gore Emission (RESTART)": "05. 피 뿜는 양 (다시 켜야 함)",
+    "06. Gore Size": "06. 피 크기",
+    "07. Gore Decals": "07. 핏자국",
+    "08. Ragdoll Effects (DISABLED BY VISCERAL COMBAT)": "08. 시체 물리 (Visceral Combat 가 끈다)",
+    "09. Miscellaneous Flotsam": "09. 그 밖의 잡동사니",
+    "10. Graphics": "10. 그래픽",
+    "11. Whimsy": "11. 장난",
+    "12. Debug": "12. 진단",
+    "99. Internal": "99. 내부"
+  },
+  "settings": {
+    "00. General/Load Template (RESTART)": {
+      "name": "설정 묶음 불러오기 (다시 켜야 함)",
+      "desc": "HFX 설정을 미리 만들어 둔 묶음으로 바꾼다. 모든 설정이 적용되려면 게임을 다시 켜야 한다."
+    },
+    "01. Impact Effects/Impact Effect Size": {
+      "name": "탄착 효과 크기",
+      "desc": "탄착 효과의 크기를 조절한다."
+    },
+    "01. Impact Effects/Enable Tracer Round Impacts": {
+      "name": "예광탄 탄착 효과",
+      "desc": "예광탄에 쓰는 특별한 탄착 효과를 켜거나 끈다."
+    },
+    "02. Explosion FX/Fireball Density": {
+      "name": "불덩이 밀도",
+      "desc": "불덩이의 밀도를 조절한다. 크게 하면 성능에 영향이 있을 수 있다."
+    },
+    "02. Explosion FX/Debris Density": {
+      "name": "파편 밀도",
+      "desc": "파편과 불꽃의 밀도를 조절한다. 크게 하면 성능에 영향이 있을 수 있다."
+    },
+    "02. Explosion FX/Smoke Density (CPU HEAVY)": {
+      "name": "연기 밀도 (CPU 부담)",
+      "desc": "연기의 밀도를 조절한다. 크게 하면 성능에 영향이 있을 수 있다."
+    },
+    "02. Explosion FX/Sparks Density (CPU HEAVY)": {
+      "name": "불꽃 밀도 (CPU 부담)",
+      "desc": "불꽃의 밀도를 조절한다. 크게 하면 성능에 영향이 있을 수 있다."
+    },
+    "02. Explosion FX/Dust Density (CPU HEAVY)": {
+      "name": "먼지 밀도 (CPU 부담)",
+      "desc": "먼지의 밀도를 조절한다. 크게 하면 성능에 영향이 있을 수 있다."
+    },
+    "02. Explosion FX/Compute Fidelity (RESTART)": {
+      "name": "계산 정밀도 (다시 켜야 함)",
+      "desc": "폭발이 갇힌 공간인지 판정하는 해상도와 정밀도를 조절한다. 낮추면 CPU 부담이 줄어든다."
+    },
+    "03. Muzzle Blast Effects/Enable Muzzle Effects (RESTART)": {
+      "name": "총구 효과 켜기 (다시 켜야 함)",
+      "desc": "새 총구 화염 효과를 켜거나 끈다."
+    },
+    "03. Muzzle Blast Effects/Muzzle Jet Size": {
+      "name": "총구 화염 크기",
+      "desc": "총구에서 뻗는 화염의 크기를 조절한다."
+    },
+    "03. Muzzle Blast Effects/Muzzle Sparks Size": {
+      "name": "총구 불꽃 크기",
+      "desc": "총구 불꽃의 크기를 조절한다."
+    },
+    "03. Muzzle Blast Effects/Muzzle Sparks Emission Rate (RESTART)": {
+      "name": "총구 불꽃 양 (다시 켜야 함)",
+      "desc": "총구에서 나오는 불꽃의 양을 조절한다."
+    },
+    "03. Muzzle Blast Effects/Muzzle Smoke Size": {
+      "name": "총구 연기 크기",
+      "desc": "총구 연기의 크기를 조절한다."
+    },
+    "03. Muzzle Blast Effects/Muzzle Smoke Emission Rate (RESTART)": {
+      "name": "총구 연기 양 (다시 켜야 함)",
+      "desc": "총구에서 나오는 연기의 양을 조절한다. 자욱하게 하고 싶으면 3 쯤으로 둔다."
+    },
+    "03. Muzzle Blast Effects/Enable Muzzle Light Shadow (RESTART)": {
+      "name": "총구 빛 그림자 (다시 켜야 함)",
+      "desc": "총구 빛이 그림자를 드리울지 켜거나 끈다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Enable Scope DoF": {
+      "name": "조준경 심도 효과",
+      "desc": "배율 조준경을 쓸 때 심도 흐림 효과를 켠다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Scope DoF Intensity": {
+      "name": "조준경 심도 세기",
+      "desc": "조준경 심도 효과의 세기를 조절한다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Enable Concussion FX": {
+      "name": "뇌진탕 화면 효과",
+      "desc": "뇌진탕 화면 효과를 켜거나 끈다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Concussion Duration": {
+      "name": "뇌진탕 지속",
+      "desc": "뇌진탕 효과가 이어지는 시간을 조절한다. 올리면 더 오래 간다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Concussion Range": {
+      "name": "뇌진탕 범위",
+      "desc": "뇌진탕 효과의 범위를 조절한다. 올리면 더 멀리서도 뇌진탕이 생긴다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Enable Suppression FX": {
+      "name": "제압 화면 효과",
+      "desc": "제압 화면 효과를 켜거나 끈다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Suppression Duration": {
+      "name": "제압 지속",
+      "desc": "제압 효과가 이어지는 시간을 조절한다. 올리면 더 오래 간다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Suppression Range": {
+      "name": "제압 범위",
+      "desc": "제압 효과의 범위를 조절한다. 올리면 더 멀리서도 제압 효과가 생긴다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Battle Blur Intensity": {
+      "name": "전투 흐림 세기",
+      "desc": "뇌진탕과 제압이 만드는 전투 흐림의 세기를 조절한다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Forced Simulation Range": {
+      "name": "강제 계산 범위",
+      "desc": "바로 보이지 않더라도 플레이어 주변 이 범위에서는 주변 전투 효과를 계산한다. 봇끼리 싸우는 분위기를 만드는 데 쓴다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Ambient Effect Emission Rate": {
+      "name": "주변 효과 양",
+      "desc": "주변 효과의 밀도를 조절한다. 올리면 연기·파편·반짝임이 짙어진다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Ambient Effect Particle Limit": {
+      "name": "주변 효과 입자 한계",
+      "desc": "살아 있는 입자 수의 내부 한계를 조절한다. 구성 요소마다 한계가 다르므로 모두 비례해 조절한다."
+    },
+    "04. Ambient Battle Effects (RESTART)/Ambient Effect Particle Lifetime": {
+      "name": "주변 효과 입자 수명",
+      "desc": "입자의 내부 수명을 조절한다. 구성 요소마다 다르므로 모두 비례해 조절한다."
+    },
+    "05. Gore Emission (RESTART)/Enable Gore Effects": {
+      "name": "피 효과 켜기",
+      "desc": "피 효과를 그릴지 켜거나 끈다. 끄면 BSG 의 기본 피 효과만 보인다."
+    },
+    "05. Gore Emission (RESTART)/Blood Spray Emission Rate": {
+      "name": "피 분무 양",
+      "desc": "고운 피 분무 입자의 양을 조절한다. 끊기면 내린다. 1 을 넘으면 CPU 부담이 커진다."
+    },
+    "05. Gore Emission (RESTART)/Squirt Emission Rate": {
+      "name": "피 솟구침 양",
+      "desc": "피가 솟구치는 입자의 양을 조절한다. 끊기면 내린다. 1 을 넘으면 CPU 부담이 커진다."
+    },
+    "05. Gore Emission (RESTART)/Finisher Emission Rate": {
+      "name": "마무리 타격 양",
+      "desc": "마무리 타격 효과의 입자 양을 조절한다. 끊기면 내린다. 1 을 넘으면 CPU 부담이 커진다."
+    },
+    "05. Gore Emission (RESTART)/Arterial Bleed Emission Rate": {
+      "name": "동맥 출혈 양",
+      "desc": "동맥 출혈 효과의 입자 양을 조절한다. 끊기면 내린다. 2 를 넘으면 CPU 부담이 커진다."
+    },
+    "06. Gore Size/Spray Size": {
+      "name": "분무 크기",
+      "desc": "고운 피 분무의 크기를 조절한다."
+    },
+    "06. Gore Size/Squirt Size": {
+      "name": "솟구침 크기",
+      "desc": "솟구치는 피의 크기를 조절한다."
+    },
+    "06. Gore Size/Finisher Gore Size": {
+      "name": "마무리 타격 크기",
+      "desc": "마무리 사격이 만드는 피의 크기를 조절한다."
+    },
+    "06. Gore Size/Arterial Bleed Size": {
+      "name": "동맥 출혈 크기",
+      "desc": "동맥 출혈이 만드는 피의 크기를 조절한다."
+    },
+    "07. Gore Decals/Wound Decals on Bodies": {
+      "name": "몸에 상처 자국",
+      "desc": "몸에 새 피 자국이 생기게 할지 켜거나 끈다. 끄면 거의 보이지 않는 EFT 기본 상처 효과만 보인다."
+    },
+    "07. Gore Decals/Wound Decal Size": {
+      "name": "상처 자국 크기",
+      "desc": "몸에 생기는 상처 자국의 크기를 조절한다."
+    },
+    "07. Gore Decals/Blood Splatter on Environment": {
+      "name": "주변에 핏자국",
+      "desc": "관통한 타격에서 주변에 새 핏자국이 튀게 할지 켜거나 끈다. 끄면 EFT 기본값을 쓴다."
+    },
+    "07. Gore Decals/Blood Splatter Decal Size": {
+      "name": "핏자국 크기",
+      "desc": "주변에 튄 핏자국의 크기를 조절한다."
+    },
+    "08. Ragdoll Effects (DISABLED BY VISCERAL COMBAT)/Enable Ragdoll Effects (RESTART)": {
+      "name": "시체 물리 켜기 (다시 켜야 함)",
+      "desc": "시체 물리 효과를 켤지 정한다."
+    },
+    "08. Ragdoll Effects (DISABLED BY VISCERAL COMBAT)/Enable Cinematic Ragdolls (RESTART)": {
+      "name": "영화 같은 시체 물리 (다시 켜야 함)",
+      "desc": "시체의 뼈대와 관절 성질을 더 영화처럼 보이게 조절한다."
+    },
+    "08. Ragdoll Effects (DISABLED BY VISCERAL COMBAT)/Drop Weapon on Death (RESTART)": {
+      "name": "죽을 때 무기 떨어뜨리기 (다시 켜야 함)",
+      "desc": "적이 죽을 때 무기를 떨어뜨릴지 켜거나 끈다."
+    },
+    "08. Ragdoll Effects (DISABLED BY VISCERAL COMBAT)/Ragdoll Force Multiplier": {
+      "name": "시체 충격 배율",
+      "desc": "적이 죽을 때 시체에 가하는 힘에 곱한다."
+    },
+    "09. Miscellaneous Flotsam/Enable Decal Limit Adjustment (RESTART)": {
+      "name": "자국 한계 바꾸기 (다시 켜야 함)",
+      "desc": "게임에 들어 있는 자국 수 한계를 덮어쓸지 정한다. Visceral Combat 에서 이미 켜 두었으면 여기서는 끈다."
+    },
+    "09. Miscellaneous Flotsam/Decal Limits (RESTART)": {
+      "name": "자국 한계 (다시 켜야 함)",
+      "desc": "게임이 그릴 자국의 최대 수를 조절한다. 바닐라는 200 뿐이다."
+    },
+    "09. Miscellaneous Flotsam/Spent Shells Lifetime (seconds)": {
+      "name": "탄피 남는 시간(초)",
+      "desc": "탄피가 사라지기까지 바닥에 남는 시간이다. 게임 기본값은 1초다."
+    },
+    "09. Miscellaneous Flotsam/Spent Shells Size": {
+      "name": "탄피 크기",
+      "desc": "탄피의 크기에 곱한다(2 면 두 배)."
+    },
+    "09. Miscellaneous Flotsam/Shell Ejection Velocity": {
+      "name": "탄피 튀는 속도",
+      "desc": "튀어나오는 탄피의 속도에 곱한다(2 면 두 배)."
+    },
+    "09. Miscellaneous Flotsam/Enhanced Shell Physics (RESTART)": {
+      "name": "탄피 물리 개선 (다시 켜야 함)",
+      "desc": "탄피 물리를 더 섬세하게 계산해 튀고 구르는 것이 자연스러워진다."
+    },
+    "10. Graphics/Effect Quality Bias": {
+      "name": "효과 품질 보정",
+      "desc": "양수로 두면 먼 거리에서도 더 좋은 효과 그림을 쓴다. 4 를 넘으면 비디오 메모리를 크게 써서 끊길 수 있다."
+    },
+    "11. Whimsy/Bullet Kinetics Scaling": {
+      "name": "탄 운동 에너지 배율",
+      "desc": "운동 에너지와 충격량 전체에 곱한다."
+    },
+    "11. Whimsy/AcidPhantasm Michelin Man Mode": {
+      "name": "미쉐린 맨 모드",
+      "desc": "제작자의 장난 설정이다."
+    },
+    "11. Whimsy/JPDARKONE Clause": {
+      "name": "JPDARKONE 조항",
+      "desc": "제작자의 장난 설정이다. \"할 수 있을지만 생각하고 해야 할지는 생각하지 않았다\"."
+    },
+    "11. Whimsy/Peen": {
+      "name": "Peen",
+      "desc": "제작자의 장난 설정이다."
+    },
+    "12. Debug/Debug Index": {
+      "name": "진단 번호",
+      "desc": "진단용 번호다."
+    },
+    "12. Debug/Enable Debug Logging (RESTART)": {
+      "name": "진단 기록 (다시 켜야 함)",
+      "desc": "진단 기록을 남긴다. 게임을 다시 켜야 적용된다."
+    },
+    "99. Internal/ConfigVersion": {
+      "name": "설정 판",
+      "desc": "건드리지 않는다."
+    }
+  }
+}

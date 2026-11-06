@@ -24,6 +24,19 @@ public class SlotCategoryRelaxConfig : TargetConfig
 
     [JsonPropertyName("IncludeAttachmentSlots")]
     public bool IncludeAttachmentSlots { get; set; } = true;
+
+    /// <summary>약실(Chambers)이 받는 탄을 넓힌다. 탄창은 건드리지 않는다.</summary>
+    [JsonPropertyName("RelaxChambers")]
+    public bool RelaxChambers { get; set; } = true;
+
+    /// <summary>약실을 넓히지 않을 총기 아이템 id.</summary>
+    [JsonPropertyName("ExcludedChamberWeaponIds")]
+    public List<string> ExcludedChamberWeaponIds { get; set; } = [];
+
+    /// <summary>약실을 넓히지 않을 구경. 기본값은 유탄발사기 셋과 신호권총이다.</summary>
+    [JsonPropertyName("ExcludedChamberCalibers")]
+    public List<string> ExcludedChamberCalibers { get; set; } =
+        ["Caliber40x46", "Caliber40mmRU", "Caliber30x29", "Caliber26x75"];
 }
 
 /// <summary>SlotCategoryRelax 가 내놓는 분류 목록의 한 줄.</summary>

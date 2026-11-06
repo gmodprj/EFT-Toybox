@@ -1,0 +1,63 @@
+{
+  "guid": "com.pj568.performancescope",
+  "name": "조준경 성능 조절 (Performance Scope)",
+  "sections": {
+    "1. 通用 · General": "1. 일반",
+    "2. 镜内分辨率 · Scope Resolution": "2. 조준경 안 해상도",
+    "3. 镜内贴图与细节 · Scope Textures & Details": "3. 조준경 안 텍스처·세부"
+  },
+  "settings": {
+    "1. 通用 · General/启用模组 | Enable Mod": {
+      "name": "모드 켜기",
+      "desc": "전체 스위치. 끄면 게임 기본 조준경 해상도로 돌아간다."
+    },
+    "1. 通用 · General/启用日志 | Enable Logging": {
+      "name": "로그 켜기",
+      "desc": "이 모드의 일반·진단·경고 로그를 남긴다(오류는 늘 남는다)."
+    },
+    "1. 通用 · General/详细日志 | Verbose Logging": {
+      "name": "자세한 로그",
+      "desc": "로그 켜기 위에 더 자세한 진단 내용을 얹는다."
+    },
+    "2. 镜内分辨率 · Scope Resolution/取值方式 | Resolution Mode": {
+      "name": "해상도 정하는 방식",
+      "desc": "게임 기본 / 화면 높이 비율 / 절대 픽셀 중에서 고른다."
+    },
+    "2. 镜内分辨率 · Scope Resolution/屏幕高度比例 | Screen Height Ratio": {
+      "name": "화면 높이 비율",
+      "desc": "조준경 안 한 변의 길이 = 화면 높이 × 이 값(반올림)."
+    },
+    "2. 镜内分辨率 · Scope Resolution/绝对像素 | Absolute Pixels": {
+      "name": "절대 픽셀",
+      "desc": "조준경 안을 그리는 정사각 렌더 텍스처의 한 변 길이(픽셀)."
+    },
+    "2. 镜内分辨率 · Scope Resolution/瞄准中立即应用 | Apply While Scoped": {
+      "name": "조준 중에도 바로 적용",
+      "desc": "끄면 조준경을 보는 동안 바꾼 값은 조준경에서 빠져나온 뒤에 적용된다 — 한 프레임 깜박임을 피하려는 것이다."
+    },
+    "3. 镜内贴图与细节 · Scope Textures & Details/镜内贴图 mip 模式 | Scope Mip Mode": {
+      "name": "조준경 텍스처 mip 방식",
+      "desc": "게임 기본 또는 직접 지정. 직접 지정하면 조준경 카메라의 텍스처 mip 보정을 덮어쓴다."
+    },
+    "3. 镜内贴图与细节 · Scope Textures & Details/Mip 偏差 | Mip Bias": {
+      "name": "mip 보정값",
+      "desc": "조준경 카메라의 `streamingMipmapBias` 를 이 값으로 덮어쓴다. 값이 크면 더 거친 mip 이 남아 흐릿해진다. mip 상주량과 업로드·디스크 입출력에 영향을 주고 GPU 샘플링 LOD 에는 영향이 없다. 텍스처 스트리밍을 켠 동안에만 적용된다."
+    },
+    "3. 镜内贴图与细节 · Scope Textures & Details/关闭镜内泛光 | Disable Scope Bloom": {
+      "name": "조준경 안 블룸 끄기",
+      "desc": "켜면 조준경 카메라의 블룸을 끈다. 끄면 게임 기본대로 둔다."
+    },
+    "3. 镜内贴图与细节 · Scope Textures & Details/关闭镜内终极泛光 | Disable Scope Ultimate Bloom": {
+      "name": "조준경 안 얼티밋 블룸 끄기",
+      "desc": "켜면 조준경 카메라의 얼티밋 블룸을 끈다."
+    },
+    "3. 镜内贴图与细节 · Scope Textures & Details/关闭镜内色散 | Disable Scope Chromatic Aberration": {
+      "name": "조준경 안 색수차 끄기",
+      "desc": "켜면 조준경 카메라의 색수차를 끈다."
+    },
+    "3. 镜内贴图与细节 · Scope Textures & Details/关闭镜内鱼眼 | Disable Scope Fisheye": {
+      "name": "조준경 안 어안 끄기",
+      "desc": "켜면 조준경 카메라의 어안 왜곡을 끈다."
+    }
+  }
+}

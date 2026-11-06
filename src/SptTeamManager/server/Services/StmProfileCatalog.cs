@@ -40,7 +40,11 @@ public class StmProfileCatalog(SaveServer saveServer, ISptLogger<StmProfileCatal
             if (pmc == null || info == null) return new ProfileSnapshot(profileId, 0, null, null, null, false);
             // A played profile always has an Aid; its absence means it did not read cleanly. No substitute value.
             if (pmc.Aid == null) return new ProfileSnapshot(profileId, 0, info.Nickname, info.Level, info.Side, true);
-            return new ProfileSnapshot(profileId, pmc.Aid.Value, info.Nickname, info.Level, info.Side, false);
+            // 레이드에 무엇을 입고 나가는지는 입은 슬롯에서 나온다. 읽기만 한다 - 살아 있는 프로필 객체다.
+            // 슬롯을 읽는 코드는 스폰 공장의 것을 그대로 쓴다(집이 둘이 되면 두 화면이 다른 말을 한다).
+            var facts = SpawnGearPolicy.FromOccupiedSlots(StmSpawnProfileFactory.ReadOccupiedEquipmentSlots(pmc));
+            var gear = new ProfileGear(facts.HasAnyEquipment, facts.HasWeaponInRequiredSlot);
+            return new ProfileSnapshot(profileId, pmc.Aid.Value, info.Nickname, info.Level, info.Side, false, gear);
         }
         catch (Exception ex)
         {

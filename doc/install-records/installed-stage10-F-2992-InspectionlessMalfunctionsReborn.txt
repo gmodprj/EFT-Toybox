@@ -1,0 +1,1 @@
+2992__InspectionlessMalfsReborn-v1.0.0	BepInEx\plugins\InspectionlessMalfsReborn.dll

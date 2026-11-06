@@ -1,0 +1,13 @@
+{
+  "guid": "com.tarkin.huir",
+  "name": "장비 UI 위치 (Hideout UI Reposition)",
+  "sections": {
+    "": "일반"
+  },
+  "settings": {
+    "/AnchorToEdge": {
+      "name": "화면 끝에 붙이기",
+      "desc": "울트라와이드 모니터에서 쓰면 좋다."
+    }
+  }
+}

@@ -1,0 +1,17 @@
+1479__raid_review__1.10.0	BepInEx\plugins\RAID_REVIEW.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\RaidReview.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\config\config.json
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\raid_review_mod.db
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\raid_review_mod.db-shm
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\data\raid_review_mod.db-wal
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\lib\sqlite\Microsoft.Data.Sqlite.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\lib\sqlite\SQLitePCLRaw.batteries_v2.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\lib\sqlite\SQLitePCLRaw.core.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\lib\sqlite\SQLitePCLRaw.provider.e_sqlite3.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\lib\sqlite\legacy\upgrade-8f6c310967674219bda7ea8dcde1c9f7\Microsoft.Data.Sqlite.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\lib\sqlite\legacy\upgrade-8f6c310967674219bda7ea8dcde1c9f7\SQLitePCLRaw.batteries_v2.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\lib\sqlite\legacy\upgrade-8f6c310967674219bda7ea8dcde1c9f7\SQLitePCLRaw.core.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\lib\sqlite\legacy\upgrade-8f6c310967674219bda7ea8dcde1c9f7\SQLitePCLRaw.provider.e_sqlite3.dll
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\runtimes\linux-arm64\native\libe_sqlite3.so
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\runtimes\linux-x64\native\libe_sqlite3.so
+1479__raid_review__1.10.0	SPT_Runtime\user\mods\RaidReview\runtimes\win-x64\native\e_sqlite3.dll

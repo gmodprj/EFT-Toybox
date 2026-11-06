@@ -50,5 +50,23 @@
 
   // 부품에 달린 하위 칸까지 넓힐지. 끄면 무기 본체의 칸만 넓힌다.
   // 마운트 위에 조준경을 올리는 조합은 이것이 켜져 있어야 열린다.
-  "IncludeAttachmentSlots": true
+  "IncludeAttachmentSlots": true,
+
+  // 약실(Chambers)이 받는 탄을 넓힌다 — All In Weapon 의 FckChambers 자리다.
+  // 약실은 부품 칸이 아니라 Chambers 에 들어 있어 위의 분류 스위치가 닿지 않는다. 그래서 따로 둔다.
+  // 그 약실이 이미 받던 분류(거의 다 Ammo)의 탄을 전부 넣는다 — 모든 총기의 약실에 모든 탄종.
+  // 탄창은 건드리지 않으므로, 다른 구경의 탄은 약실에 한 발씩 물리는 것까지다.
+  "RelaxChambers": true,
+
+  // 약실을 넓히지 않을 총기 아이템 id. 비워두면 구경 목록으로만 거른다.
+  "ExcludedChamberWeaponIds": [],
+
+  // 약실을 넓히지 않을 구경(ammoCaliber). 아이템 id 보다 오래 간다 — 모드가 더한 총도 걸린다.
+  // 기본값은 유탄발사기 셋과 신호권총이다. 소총탄이 들어갈 자리가 아니다.
+  //   Caliber40x46  FN40GL · M203
+  //   Caliber40mmRU GP-25
+  //   Caliber30x29  AGS-30
+  //   Caliber26x75  ZiD SP-81 신호권총
+  // 이것까지 열고 싶으면 비워 둔다(RPG 류는 애초에 Rocket 분류라 로켓만 들어간다).
+  "ExcludedChamberCalibers": ["Caliber40x46", "Caliber40mmRU", "Caliber30x29", "Caliber26x75"]
 }

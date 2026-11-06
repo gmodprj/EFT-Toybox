@@ -21,11 +21,33 @@ else
     </MudPaper>
 
     <MudPaper Class="pa-4 mb-4">
-        <MudText Typo="Typo.subtitle1" GutterBottom="true">충돌 정리</MudText>
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">헬멧 충돌 정리</MudText>
         <MudSwitch T="bool" @bind-Value="_config.RemoveAttachmentConflicts" Color="Color.Primary"
                    Label="파츠끼리의 충돌 지우기 — 칸을 넓혀도 이것이 남으면 '동시에 장착할 수 없습니다' 가 뜬다" />
         <MudSwitch T="bool" @bind-Value="_config.RemoveAllConflictsOnAttachments" Color="Color.Warning"
                    Label="충돌 통째로 비우기 — 범위 밖 항목까지 사라져 다른 모드와 부딪힐 수 있다" />
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.subtitle1" GutterBottom="true">총기 충돌 정리</MudText>
+        <MudText Typo="Typo.caption" Class="mb-2">
+            총기 쪽은 칸 필터를 건드리지 않는다. 칸을 넓히는 것은 Slot Category Relax 같은 모드가 하고,
+            넓힌 뒤에도 남는 "동시에 장착할 수 없습니다" 만 여기서 푼다.
+        </MudText>
+        <MudSwitch T="bool" @bind-Value="_config.RemoveWeaponAttachmentConflicts" Color="Color.Primary"
+                   Label="총기 파츠끼리의 충돌 지우기 — 총기와 총기 파츠끼리 서로를 막는 항목만" />
+        <MudSwitch T="bool" @bind-Value="_config.RemoveAllConflictsOnWeaponAttachments" Color="Color.Warning"
+                   Label="총기 충돌 통째로 비우기 — 탄약·구경 제한까지 사라진다" />
+        <MudSwitch T="bool" @bind-Value="_config.RemoveRemainingConflicts" Color="Color.Warning"
+                   Label="남은 충돌까지 전부 — 안면 보호구·헤드셋처럼 두 범위에 걸친 것들(탄창·장전 손잡이의 구경 제한은 남는다)" />
+
+        <MudTextField T="string" @bind-Value="_weaponExcludedCategoryIds" Lines="3" Variant="Variant.Outlined"
+                      Class="mt-4" Label="총기 충돌 정리에서 뺄 분류 id"
+                      HelperText="기본값은 탄창(5448bc234bdc2d3c308b4569)·장전 손잡이(55818a6f4bdc2db9688b456b). 그 둘은 모양이 아니라 구경을 막는다 — 비우면 .338 볼트에 7.62 총열이 끼워진다." />
+
+        <MudTextField T="string" @bind-Value="_excludedWeaponIds" Lines="3" Variant="Variant.Outlined"
+                      Class="mt-4" Label="제외할 총기 아이템 id"
+                      HelperText="한 줄에 하나씩. 비워두면 전부 건드린다." />
     </MudPaper>
 
     <MudPaper Class="pa-4 mb-4">
@@ -63,6 +85,8 @@ else
     private readonly ConfigStamp _stamp = new();
     private string _excludedSlotNames = string.Empty;
     private string _excludedHelmetIds = string.Empty;
+    private string _weaponExcludedCategoryIds = string.Empty;
+    private string _excludedWeaponIds = string.Empty;
 
     protected override void OnInitialized() => Reload();
 
@@ -71,6 +95,8 @@ else
         _config = Store.Load<HelmetSlotUnionConfig>(ConfigStore.Targets.HelmetSlotUnion, _stamp);
         _excludedSlotNames = ToLines(_config?.ExcludedSlotNames);
         _excludedHelmetIds = ToLines(_config?.ExcludedHelmetIds);
+        _weaponExcludedCategoryIds = ToLines(_config?.WeaponConflictExcludedCategoryIds);
+        _excludedWeaponIds = ToLines(_config?.ExcludedWeaponIds);
     }
 
     private async Task Save()
@@ -82,6 +108,8 @@ else
 
         _config.ExcludedSlotNames = FromLines(_excludedSlotNames);
         _config.ExcludedHelmetIds = FromLines(_excludedHelmetIds);
+        _config.WeaponConflictExcludedCategoryIds = FromLines(_weaponExcludedCategoryIds);
+        _config.ExcludedWeaponIds = FromLines(_excludedWeaponIds);
 
         await SaveResult.ReportAsync(
             Store, Snackbar, Dialog, ConfigStore.Targets.HelmetSlotUnion, _config, _stamp, Reload);

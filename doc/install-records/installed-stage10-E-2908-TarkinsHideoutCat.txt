@@ -1,0 +1,9 @@
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\AssetBundleLoader.dll
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\HideoutCat.dll
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\bundles\CatNodeGraph.json
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\bundles\hideoutcat
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\bundles\hideoutcat_audio
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\bundles\hideoutcat_audio.manifest
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\bundles\hideoutcat_props
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\bundles\hideoutcat_props.manifest
+2908__tarkin-HideoutCat-v1.1.1	BepInEx\plugins\tarkin-HideoutCat\bundles\hideoutcat.manifest

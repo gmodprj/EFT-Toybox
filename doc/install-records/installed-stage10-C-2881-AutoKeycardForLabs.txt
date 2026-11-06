@@ -1,0 +1,1 @@
+2881__AutoKeycard_1.0.1	BepInEx\plugins\AutoKeycard\AutoKeycard.dll

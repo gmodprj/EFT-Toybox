@@ -1,0 +1,134 @@
+[
+  {
+    "id": 2530,
+    "name": "Vertical Hideout",
+    "version": "1.1.1",
+    "file": "2530__tarkin.hideoutuirevamp-v1.1.1.zip",
+    "bytes": 8326,
+    "expected": 8326,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1437,
+    "name": "Simple Workout QTE",
+    "version": "2.2.2",
+    "file": "1437__acidphantasm-simpleworkoutqte.7z",
+    "bytes": 13031,
+    "expected": 13031,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2932,
+    "name": "Target Dummies",
+    "version": "0.3.1",
+    "file": "2932__7Bpencil.TargetDummies.0.3.1.zip",
+    "bytes": 15292,
+    "expected": 15292,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2076,
+    "name": "Hideout In Progress",
+    "version": "3.0.0",
+    "file": "2076__Tyfon-HideoutInProgress-3.0.0.zip",
+    "bytes": 22388,
+    "expected": 22388,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2144,
+    "name": "Skill Distribution",
+    "version": "1.3.0",
+    "file": "2144__skilldistribution-1.3.0-spt-4.1.zip",
+    "bytes": 27990,
+    "expected": 27990,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2652,
+    "name": "Fair Progression",
+    "version": "1.1.0",
+    "file": "2652__FairProgression-1.1.0.zip",
+    "bytes": 28645,
+    "expected": 28645,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 1706,
+    "name": "Health Per Level",
+    "version": "2.2.0",
+    "file": "1706__fryciarz7-HealthPerLevel.zip",
+    "bytes": 37929,
+    "expected": 37929,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2025,
+    "name": "All Quests Checkmarks",
+    "version": "1.4.0",
+    "file": "2025__allquestscheckmarks-1.4.0-spt-4.1.zip",
+    "bytes": 45724,
+    "expected": 45724,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2153,
+    "name": "Expanded Task Text (ETT)",
+    "version": "2.1.0",
+    "file": "2153__ExpandedTaskText.v2.1.0.zip",
+    "bytes": 51118,
+    "expected": 51118,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2982,
+    "name": "Hideout Overhaul",
+    "version": "0.2.0",
+    "file": "2982__Arisu-sensei-HideoutOverhaul-0.2.0.zip",
+    "bytes": 68536,
+    "expected": 68536,
+    "sizeOk": true,
+    "host": "codeberg.org",
+    "seconds": 2
+  },
+  {
+    "id": 2657,
+    "name": "Cultist Circle Improvements",
+    "version": "1.1.0",
+    "file": "2657__acidphantasm-cultistcircleimprovements.7z",
+    "bytes": 122337,
+    "expected": 122337,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2908,
+    "name": "Tarkin's Hideout Cat",
+    "version": "1.1.1",
+    "file": "2908__tarkin-HideoutCat-v1.1.1.zip",
+    "bytes": 20818452,
+    "expected": 20818452,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  }
+]

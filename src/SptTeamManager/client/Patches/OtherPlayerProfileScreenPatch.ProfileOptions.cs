@@ -59,6 +59,7 @@ namespace pitTeam.Patches
 
         private static FriendlyTeammateProfileOptions TryLoadProfileOptions(string accountId)
         {
+            ResetStmOptionsRefusal();
             try
             {
                 string responseJson = RequestHandler.PostJson(OptionsRoute, SerializeBody(new { aid = accountId }));
@@ -69,6 +70,9 @@ namespace pitTeam.Patches
                 {
                     return body.data;
                 }
+
+                // STM: 등록된 프로필 팀원을 쓸 수 없을 때 서버는 상태 이름을 오류로 돌린다. 화면이 그 이유를 말하도록 적어 둔다.
+                NoteStmOptionsRefusal(accountId, body?.err ?? 0, body?.errmsg);
 
                 return JsonConvert.DeserializeObject<FriendlyTeammateProfileOptions>(responseJson);
             }

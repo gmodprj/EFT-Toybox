@@ -1,0 +1,123 @@
+[
+  {
+    "id": 2864,
+    "name": "Manimal's CS Gas",
+    "version": "2.0.0",
+    "file": "2864__Manimal-CSGas-2.0.0.zip",
+    "bytes": 12682671,
+    "expected": 12682671,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2540,
+    "name": "Content Backport - Prestiges",
+    "version": "1.1.0",
+    "file": "2540__ContentBackportPrestiges-1.1.0.zip",
+    "bytes": 22214789,
+    "expected": 22214789,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 3059,
+    "name": "Strange Curios",
+    "version": "1.1.0",
+    "file": "3059__StrangeCurios-v1.1.0.zip",
+    "bytes": 26917083,
+    "expected": 26917083,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 954,
+    "name": "Borkel's Realistic Night Vision Goggles (NVGs and T-7)",
+    "version": "3.0.4",
+    "file": "954__BRNVG-3.0.4-SPT4.1.zip",
+    "bytes": 33232679,
+    "expected": 33232679,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 3047,
+    "name": "Deploy Screen Overhaul",
+    "version": "1.1.0",
+    "file": "3047__DeployScreen_V1.1.0.zip",
+    "bytes": 64773384,
+    "expected": 64773384,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 4
+  },
+  {
+    "id": 3062,
+    "name": "Tushonka Rare Collectibles",
+    "version": "1.2.2",
+    "file": "3062__YellowDoge-TarkovRareCollectibles-1.2.2.7z",
+    "bytes": 76407974,
+    "expected": 76407974,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 4
+  },
+  {
+    "id": 2401,
+    "name": "WTT Halloween Masks",
+    "version": "2.0.0",
+    "file": "2401__WTT.Halloween.2.0.0.7z",
+    "bytes": 91586232,
+    "expected": 91586232,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 4
+  },
+  {
+    "id": 2383,
+    "name": "Skills Extended",
+    "version": "3.1.4",
+    "file": "2383__SkillsExtended-3.1.4-Release.zip",
+    "bytes": 114966637,
+    "expected": 114966637,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 4
+  },
+  {
+    "id": 3035,
+    "name": "Russian Special Forces Pack",
+    "version": "2.0.1",
+    "file": "3035__Russian-SF-Pack_4_1.7z",
+    "bytes": 587162450,
+    "expected": 587162450,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 23
+  },
+  {
+    "id": 2195,
+    "name": "ECOT - Eukyre's Consortium of Things",
+    "version": "2.0.1",
+    "file": "2195__EukyreECOTv2.0.1.7z",
+    "bytes": 1217404252,
+    "expected": 1217404252,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 46
+  },
+  {
+    "id": 1263,
+    "name": "Epic's All in One",
+    "version": "5.0.2",
+    "file": "1263__EpicRangeTime-Epic.s.All.In.One_v5.0.2.zip",
+    "bytes": 1582469482,
+    "expected": 1582469482,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 59
+  }
+]

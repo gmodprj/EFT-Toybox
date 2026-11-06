@@ -1,0 +1,1 @@
+3076__PerformanceScope-v0.2.0	BepInEx\plugins\PerformanceScope\PerformanceScope.dll
