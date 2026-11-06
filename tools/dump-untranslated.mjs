@@ -34,6 +34,31 @@ const jsonOut = args.includes('--json') ? opt('json', null) : null;
 const HANGUL = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
 const words = v => (v.replace(/<[^>]*>/g, ' ').match(/[A-Za-z][A-Za-z'’-]{1,}/g) || []).length;
 
+// --verb-first: 첫 낱말이 지시 동사인 문구만 남긴다.
+//
+// 단독 id 열쇠(^[0-9a-f]{24}$)에는 퀘스트 조건만 있는 것이 아니라 **장비·의상·프리셋·시즌 이름**도
+// 섞여 있다. 바닐라도 그런 이름은 영문으로 둔다 — 실측: 바닐라 단독 id 열쇠 3,287개 가운데 한국어는
+// 992개뿐이고 Tactical·Zenit·Face 는 kr.json 에서도 영문이다. 그래서 번역 대상이 아니다.
+//
+// 첫 낱말이 지시 동사인지로 가른다. **낱말 전체로** 맞춘다 — 접두로 맞추면 'Use' 가 'USEC …' 의상
+// 이름을 잡는다(한 번 그렇게 틀려서 3,545로 세었다).
+const VERBS = new Set([
+    'eliminate', 'hand', 'survive', 'locate', 'find', 'reach', 'construct', 'use', 'win', 'visit',
+    'mark', 'sell', 'obtain', 'extract', 'complete', 'assist', 'earn', 'activate', 'explore',
+    'contact', 'enable', 'disable', "don't", 'figure', 'return', 'reflash', 'discover', 'deliver',
+    'plant', 'place', 'install', 'repair', 'kill', 'destroy', 'collect', 'gather', 'bring', 'give',
+    'take', 'buy', 'purchase', 'craft', 'upgrade', 'scan', 'search', 'talk', 'speak', 'report',
+    'escort', 'protect', 'defend', 'secure', 'clear', 'loot', 'stash', 'hide', 'unlock', 'open',
+    'close', 'shoot', 'hit', 'throw', 'heal', 'cure', 'wear', 'equip', 'carry', 'transfer', 'trade',
+    'exchange', 'pay', 'spend', 'rescue', 'capture', 'neutralize', 'scout', 'observe', 'investigate',
+    'verify', 'confirm', 'submit', 'provide', 'request', 'avoid', 'escape', 'reveal', 'expose',
+    'retrieve', 'recover', 'acquire', 'do', 'you', 'failure',
+]);
+const verbFirst = v => {
+    const m = v.trim().match(/^([A-Za-z']+)/);
+    return m ? VERBS.has(m[1].toLowerCase()) : false;
+};
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 async function ask(code) {
@@ -77,6 +102,7 @@ const baseKeys = existsSync(BASE)
 
 // --pending: 이미 사전(src/SptKoreanLocale/lang/*.json)에 적은 열쇠는 뺀다.
 // 묶음을 여러 번에 걸쳐 적을 때 "다음에 적을 것" 만 보려는 용도다.
+const onlyVerbFirst = args.includes('--verb-first');
 const pendingOnly = args.includes('--pending');
 const alreadyWritten = new Set();
 if (pendingOnly) {
@@ -97,6 +123,7 @@ for (const [k, v] of Object.entries(served)) {
     if (HANGUL.test(v)) continue;
     if (words(v) < minWords) continue;
     if (pendingOnly && alreadyWritten.has(k)) continue;
+    if (onlyVerbFirst && !verbFirst(v)) continue;
     rows.push({ key: k, en: v, mod: !baseKeys.has(k) });
 }
 rows.sort((a, b) => a.en.localeCompare(b.en) || a.key.localeCompare(b.key));
