@@ -1,8 +1,6 @@
 {
   "comment": "퀘스트 대사·메일 — tools/gen-quest-messages.mjs 가 만든다(직접 고치지 않는다). 본문은 바닐라 kr.json 의 한국어를 되쓰거나 lang-src/quest-messages.json 의 byKey 에 손으로 적은 것을 쓴다.",
   "entries": {
-    "674652a3507f4bb1aecd1086 successMessageText": "카반과의 거래에 대한 소문이라고? 큰형님이 그에 대해 좀 알고 있을지도 모르겠군. 언제 칠지 신호를 주겠네. 그때까지는 조용히 있게. [어쩌면 계속될지도...]",
-    "674652a3507f4bb1aecd1086 completePlayerMessage": "카반과의 거래에 대한 소문이라고? 그 큰형님이 뭘 좀 아는 모양이군. 언제 칠지 내가 신호를 주겠다. 그때까지는 조용히 있어라. [어쩌면 계속될지도...]",
     "687b616db015c21f329bf45f startedMessageText": "밖에서 등 뒤를 조심하게. 삼림은 스캐브가 들끓고 있고, 놈들은 그런 물건을 손에 넣고 싶어 안달일 거야. 빠르게 움직이고, 정신 똑바로 차리게.",
     "687b616db015c21f329bf45f successMessageText": "인상적인 일 처리다. 어디 좀 보자… 깔끔하군. 규격을 글자 하나까지 따랐다. 따로 챙겨 둔 장비가 좀 있다. 리저브에서 나온 좋은 물건이지. 받을 자격이 있다. 아, 세르게이가 한번 들러 보라고 했다. 자네가 관심 가질 만한 새 물건이 들어왔다고 하더군.",
     "687b616db015c21f329bf45f failMessageText": "안됐군.",
@@ -700,11 +698,11 @@
     "67516c77476efeef09be34a1 successMessagetext": "적어도 내 눈엔 괜찮아 보이네. 제 몫은 제대로 할 거야. 고맙네, 전사.",
     "6751718a8b3f5b546858efb2 successMessagetext": "좋아! 꼭 도적에게서 집어 온 것처럼 보이는군, 완벽해!",
     "6751751f0e38a97dbe6a3d91 successMessagetext": "훌륭해, 정말 상징적이지. 하지만 지금은 이쯤이면 될 것 같네..",
-    "67618f93c508b3ae798a0239 successMessagetext": "벌써 끝났나? 잘했네 병사, 일이 더 생기면 연락하겠네."
+    "67618f93c508b3ae798a0239 successMessagetext": "벌써 끝났나? 잘했네 병사, 일이 더 생기면 연락하겠네.",
+    "675a456b801bb92dae60542e successMessagetext": "좋아 그럼, 내가 요청한 게 다 들어 있군, 잘했네. 이제 SKS 리시버를 살 수 있게 됐네, 재미있게 쓰게.",
+    "67618aad83c2ba931e036514 successMessagetext": "좋아! 아주 좋아 보이는군, 제 구실을 잘 해내면 좋겠네."
   },
   "sources": {
-    "674652a3507f4bb1aecd1086 successMessageText": "A rumor about a deal with Kaban, you say? I think the Big Brother might know a thing or two about that. I'll give you a signal when to strike; until then, lay low. [TO BE MAYBE CONTINUED...]",
-    "674652a3507f4bb1aecd1086 completePlayerMessage": "A rumor about a deal with Kaban, you say? I think the Big Brother might know what he's talking about. I'll give you a signal when to strike; until then, lay low. [TO BE MAYBE CONTINUED...]",
     "687b616db015c21f329bf45f startedMessageText": "Watch your back out there. The woods are crawling with scavs, and they’d love to get their hands on a prize like that. Move quick, stay sharp.",
     "687b616db015c21f329bf45f successMessageText": "Impressive work. Let me see it...Clean job. You followed the specs to the letter. I’ve got some extra gear stashed away, good stuff from the reserve. You earned it. Oh, Sergey said you should go by and see him, he's got some new wares you might be interested in. \n\n\n\n\n\n\n\n",
     "687b616db015c21f329bf45f failMessageText": "Unfortunate. ",
@@ -1402,6 +1400,8 @@
     "67516c77476efeef09be34a1 successMessagetext": "Looks fine to me at least, it should do the job just right. Thank you warrior.",
     "6751718a8b3f5b546858efb2 successMessagetext": "Great! That looks just like it was picked up from a bandit, perfect!",
     "6751751f0e38a97dbe6a3d91 successMessagetext": "Fantastic, so iconic, but I think that should be it for now..",
-    "67618f93c508b3ae798a0239 successMessagetext": "Already done? Well done soldier, I'll contact you with more work soon."
+    "67618f93c508b3ae798a0239 successMessagetext": "Already done? Well done soldier, I'll contact you with more work soon.",
+    "675a456b801bb92dae60542e successMessagetext": "Alright then, it has all the things I asked for, good job. You got access to SKS receivers now, have fun.",
+    "67618aad83c2ba931e036514 successMessagetext": "Great! They look great, I hope they will server their purpose well."
   }
 }
