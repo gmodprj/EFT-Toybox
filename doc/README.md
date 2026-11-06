@@ -1,7 +1,10 @@
 # 문서 색인
 
 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743).
-**2026-10-28 기준 모드 186개** + 직접 만든 플러그인 6개. 서버 모드 114개, 게임 플러그인 143개.
+**2026-11-06 기준 모드 304개 / 파일 14,001개** + 직접 만든 플러그인 6개. **서버 모드 172개, 게임 플러그인 245개** (둘 다 실측).
+
+> **10차까지 끝났다.** 차수별 결과는 [STAGE10-RESULT.md](STAGE10-RESULT.md), 계획은 [PLAN-STAGE10.md](PLAN-STAGE10.md).
+> 가장 최근 세션 인계는 [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md).
 
 > 8차까지가 절차를 거친 설치고, 그 뒤 **절차 밖에서 들어온 8개**는 2026-10-28 에 설치 기록을
 > 뒤늦게 복원해 문서에 올렸다. 당시 기록이 아니라 "지금 가진 파일" 목록이다 —
@@ -18,7 +21,8 @@
 | [INSTALLED-MODS.md](INSTALLED-MODS.md) | 지금 설치된 모드 전체 — 버전, 게임/서버 위치, 프로필 결속 여부, 설치 기록 (**자동 생성**, 직접 고치지 않는다) |
 | [WORKLOG.md](WORKLOG.md) | 단계별 작업 이력, 발생한 문제와 조치, 바로잡은 안내 |
 | [BACKLOG.md](BACKLOG.md) | **나중에 할 일** — 작업 중에 범위 밖으로 미룬 것만. 후보 목록이 아니라 하기로 정한 것 |
-| [PROCEDURE.md](PROCEDURE.md) | 모드 추가 절차(조회→다운로드→해제→충돌 검사→설치→검증→되돌리기), SVM 메모, 무시해도 되는 로그 메시지 |
+| [PROCEDURE.md](PROCEDURE.md) | 모드 추가 절차(조회→다운로드→해제→충돌 검사→설치→**기록 검사**→검증→되돌리기), SVM 메모, 무시해도 되는 로그 메시지 |
+| [audit/2026-11-06-install-audit.md](audit/2026-11-06-install-audit.md) | **설치본 정합성 감사 7항목** — 기록↔파일 대조, 중복 기록, 서버 모드 수, 플러그인 DLL↔로드, 고아 cfg, SPT 버전 표기, 테스트 출력. 하위 세션이 만들고 컨트롤러가 숫자를 다시 재어 **결론 두 곳을 정정**했다(실제 손실 0건) |
 
 ## 차수별 계획과 결과
 
@@ -45,6 +49,9 @@
 | [fixes/2026-10-27-pit-stash-ammo.md](fixes/2026-10-27-pit-stash-ammo.md) | **봇 AI 정지 사건 전말** — 9x19 탄창의 5.56 탄 때문에 PIT 동료 생성이 깨지고, 반쯤 만들어진 동료 기록이 레이드를 망가뜨렸다. 내가 세운 가설 셋 중 둘이 틀린 경위도 적었다 |
 | [fixes/2026-10-28-olympus-missing-item-ids.md](fixes/2026-10-28-olympus-missing-item-ids.md) | **서버 오류 48건의 전말** — Olympus 가 만들지 않는 아이템 id 48개를 참조한다. 증거·배제한 후보·제작자 보고용 영문 정리와 id 48개 전체 |
 | [fixes/2026-10-27-pit-lootpatrol-nre.md](fixes/2026-10-27-pit-lootpatrol-nre.md) | PIT `LootPatrolLayer.GetDecision` NullReference 조사 + 제작자 보고용 영문 정리 |
+| [fixes/2026-11-05-aicoreagent-invalidcast.md](fixes/2026-11-05-aicoreagent-invalidcast.md) | **BigBrain 봇 업데이트에서 매 프레임 InvalidCast 4,524줄** — STM 을 Release 로 다시 깐 뒤 0줄이 됐지만 그때 변수를 둘 바꿔 **원인은 미확정**이다. 진단용 finalizer 를 어떻게 짰는지도 적었다 |
+| [fixes/2026-11-06-lighthouse-rework-load-stall.md](fixes/2026-11-06-lighthouse-rework-load-stall.md) | **리워크 라이트하우스 진입 로딩 멈춤** — 멈춘 자리(심장박동 정지)와 두 번의 메모리 실측. 1차는 남은 4,466 MB 에서 멈추고 2차는 **72 MB 에서 47분을 돌아**, 메모리 여유로 설명하려던 가설을 거뒀다. **원인 미확정** |
+| [install-records/README-removed-stale-lines-2026-11-06.md](install-records/README-removed-stale-lines-2026-11-06.md) | 철 지난 설치 기록 **26줄을 지운 내역** — 줄 단위 표와 근거. 기록을 지우는 일이므로 지운 것을 남겼다 |
 | [mod-patches/stackunify-pinned-stacks.md](mod-patches/stackunify-pinned-stacks.md) | 구경 43종의 최대 스택을 **지금 쓰이던 값으로 고정**했다 — 한 구경 안에서 값이 갈려 있던 15종을 포함. 넣은 값 전체와 되돌리는 법 |
 | [mod-patches/theblacklist-restore-author-bans.md](mod-patches/theblacklist-restore-author-bans.md) | 콘텐츠 모드 제작자가 막아 둔 아이템 858건을 플레아에서 다시 막았다 — **244건이라던 숫자가 틀렸던 경위**와 아직 열려 있는 114건 |
 | [mod-patches/svm-currency-off.md](mod-patches/svm-currency-off.md) | SVM 과 BarterItemsStacks 가 같은 화폐 스택을 쓰고 있었다 — SVM 쪽 네 줄을 껐다. **되돌리는 법과 Greed 로 저장할 때 주의** |
@@ -56,6 +63,7 @@
 | 문서 | 내용 |
 | --- | --- |
 | [SERVER-WEB-KOREAN.md](SERVER-WEB-KOREAN.md) | 서버 웹 설정창(SIC) 한글 로케일 |
+| [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) | **2026-11-06 세션 인계 (최신)** — 10차 완료, F12 한글화 전수, 설치본 감사, 남은 미확정 |
 | [HANDOVER-2026-10-26.md](HANDOVER-2026-10-26.md) | 2026-10-26 세션 인계 |
 | [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 |
 | [../src/GridWindowScroll/README.md](../src/GridWindowScroll/README.md) | 가방·상자 내부 인벤 창을 화면 안에 가두는 플러그인 (보이는 칸 수 제한 + 스크롤) |
@@ -69,7 +77,8 @@
 
 | 폴더 | 내용 |
 | --- | --- |
-| `install-records/` | 설치 단위별 파일 목록 `installed-<Tag>.txt` (`모드폴더<TAB>E:\Spt 기준 경로`). **되돌릴 때 이 목록만 삭제** |
+| `install-records/` | 설치 단위별 파일 목록 `installed-<Tag>.txt` (`모드폴더<TAB>E:\Spt 기준 경로`). **되돌릴 때 이 목록만 삭제**. 정합성은 `node tools/check-install-records.mjs` 로 재고 `OK — 0/0` 이어야 한다 |
+| `audit/` | 설치본 정합성 감사 보고 |
 | `download/` | 단계별 `manifest-stage*.json`, 크기 검증 `download-results*.json`, 경로 충돌 검사 `conflict-check-stage*.txt` |
 | `server-tests/` | 설치 직후 테스트 서버 출력 |
 | `fixes/`, `mod-patches/`, `external-mods/` | 위 "사고와 수정 기록" 참조 |
@@ -94,6 +103,8 @@
 | 6차 | `stage6A-<id>`, `stage6B-<id>`, `stage6C-<id>`, `stage6D-<이름>` | 상인·파츠. GitHub·Nexus 모드는 id 대신 이름(`gh-`·`nexus-` 접두) |
 | 7차 | `stage7A`~`stage7E-<id>` | 방어구·탄환·파츠·상인 (C 조는 결속 26개를 하나씩) |
 | 8차 | `stage8A-<id>` ~ `stage8G-gamepanelhud` | OP·AI 동료·HUD. 자세한 것은 [STAGE8-RESULT.md](STAGE8-RESULT.md) |
+| 9차 | (없음) | 생성기가 "절차 밖에서 들어온 것" 에 이미 써 버린 차수다. 설치 단위 이름으로는 쓰이지 않는다 |
+| 10차 | `stage10-A` ~ `stage10-O-<id>-<이름>` | 모드 121개를 17단계로. 결속 단계(10-K·10-L)와 대형 맵(10-M·10-O)은 **하나씩** 넣고 단계마다 멈췄다. 자세한 것은 [STAGE10-RESULT.md](STAGE10-RESULT.md) |
 
 ## 백업 (git 제외, `../backup/`)
 
