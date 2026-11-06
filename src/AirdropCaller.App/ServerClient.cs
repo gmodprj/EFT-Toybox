@@ -205,6 +205,20 @@ public record QueueResponse
     [JsonPropertyName("reason")] public string? Reason { get; set; }
 }
 
+/// <summary>지금 입고 있는 것을 뽑은 결과. 서버 `ExtractResponse` 와 짝이다(설계 §18).</summary>
+public record ExtractResponse
+{
+    [JsonPropertyName("ok")] public bool Ok { get; set; }
+
+    /// <summary>뽑은 것. **서버가 저장하지 않는다** — 창이 받아 보여 주고 사람이 이름을 붙인다.</summary>
+    [JsonPropertyName("preset")] public Preset? Preset { get; set; }
+
+    /// <summary>뺀 것과 그 이유(보안 컨테이너 등). 조용히 버리지 않는다.</summary>
+    [JsonPropertyName("skipped")] public List<string> Skipped { get; set; } = [];
+
+    [JsonPropertyName("reason")] public string? Reason { get; set; }
+}
+
 public record SimpleResponse
 {
     [JsonPropertyName("ok")] public bool Ok { get; set; }
@@ -347,6 +361,10 @@ public sealed class ServerClient : IDisposable
     public Task<QueueResponse?> QueueAsync(
         string? presetId, string icon, List<ItemSpec> items, bool bigCrate, CancellationToken ct) =>
         PostAsync<QueueResponse>("/airdrop-caller/queue", new { presetId, icon, items, bigCrate }, ct);
+
+    /// <summary>지금 입고 있는 것을 프리셋으로 뽑는다(설계 §18). 저장은 하지 않는다.</summary>
+    public Task<ExtractResponse?> ExtractAsync(string? name, CancellationToken ct) =>
+        PostAsync<ExtractResponse>("/airdrop-caller/extract", new { name }, ct);
 
     public Task<SimpleResponse?> CancelAsync(CancellationToken ct) =>
         PostAsync<SimpleResponse>("/airdrop-caller/cancel", null, ct);
