@@ -1,10 +1,10 @@
 # 문서 색인
 
 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743).
-**2026-11-06 기준 모드 304개 / 파일 14,001개** + 직접 만든 플러그인 6개. **서버 모드 173개, 게임 플러그인 245개** (둘 다 실측).
+**2026-11-06 기준 모드 304개 / 파일 14,001개** + **직접 만든 것 18개**(`src/`, 테스트 프로젝트 제외. 그중 자기 이름의 설치 자리를 가진 것 13개 — 아래 "직접 만든 모드" 절). **서버 모드 173개, 게임 플러그인 245개** (둘 다 실측).
 
 > **10차까지 끝났다.** 차수별 결과는 [STAGE10-RESULT.md](STAGE10-RESULT.md), 계획은 [PLAN-STAGE10.md](PLAN-STAGE10.md).
-> 가장 최근 세션 인계는 [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md).
+> 가장 최근 세션 인계는 [HANDOVER-2026-11-07.md](HANDOVER-2026-11-07.md).
 
 > 8차까지가 절차를 거친 설치고, 그 뒤 **절차 밖에서 들어온 8개**는 2026-10-28 에 설치 기록을
 > 뒤늦게 복원해 문서에 올렸다. 당시 기록이 아니라 "지금 가진 파일" 목록이다 —
@@ -77,7 +77,8 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 | --- | --- |
 | [SERVER-WEB-KOREAN.md](SERVER-WEB-KOREAN.md) | 서버 웹 설정창(SIC) 한글 로케일 |
 | [REVIEW-KOREAN-LOCALIZATION.md](REVIEW-KOREAN-LOCALIZATION.md) | **F12 밖의 한글화 범위 검토** — 모드 메뉴·퀘스트·이벤트·장비·대사. 서버가 실제로 내려주는 `kr` locale 61,125항목을 재어 **영문 산문 18,798항목 / 208만 자**를 확인했고, 퀘스트가 왜 1순위인지·아이템 설명은 왜 번역해도 안 보이는지·ISB 자막은 파일만 넣으면 되는지를 실측으로 적었다. 권하는 단계와 먼저 정할 것도 있다 |
-| [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) | **2026-11-06 세션 인계 (최신)** — 10차 완료, F12 한글화 전수, 설치본 감사, **게임 DB 퀘스트 네 묶음 한글화 완료**, 남은 미확정 |
+| [HANDOVER-2026-11-07.md](HANDOVER-2026-11-07.md) | **2026-11-07 세션 인계 (최신)** — 저널 복구 경로 실측, Airdrop 프리셋 전역화와 장비 뽑기, 묵은 문서 아홉 곳 정정. 설치본은 그대로 |
+| [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) | 2026-11-06 세션 인계 — 10차 완료, F12 한글화 전수, 설치본 감사, **게임 DB 퀘스트 네 묶음 한글화 완료**, 남은 미확정 |
 | [HANDOVER-2026-10-26.md](HANDOVER-2026-10-26.md) | 2026-10-26 세션 인계 |
 | [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 |
 | [../src/SptKoreanLocale/README.md](../src/SptKoreanLocale/README.md) | **게임 DB locale 한글화 서버 모드** — 지금 **사전 16개 / 8,017항목**이다(봇 역할 이름 22 · 퀘스트 이름 1,243 · 목표 3,482 · 설명 1,526 · 대사·메일 1,744). **사전에 값을 직접 쓰면 날아가는 실측**, `LazyLoad.AddTransformer` 로 가는 이유, **나중에 등록한 변환기가 이긴다**는 것(ExpandedTaskText 가 `int.MaxValue` 를 쓴다), 다시 펴낼 때 기준이 `en` 이어야 하는 이유, 묶음을 병렬로 나눠 번역할 때의 검사가 여기 있다 |
@@ -85,9 +86,35 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 | [../src/GridWindowScroll/README.md](../src/GridWindowScroll/README.md) | 가방·상자 내부 인벤 창을 화면 안에 가두는 플러그인 (보이는 칸 수 제한 + 스크롤) |
 | [../src/StackUnify/README.md](../src/StackUnify/README.md) | 최대 스택 크기를 한 곳에서 정하는 서버 모드. **`PostLoad` 단계가 클라이언트에 닿는다는 실측**도 여기 있다 |
 
-직접 만든 플러그인 7개(`SptKoreanConfig`, `SptKoreanLocale`, `GridWindowScroll`, `StackUnify`,
-`HelmetSlotUnion`, `SlotCategoryRelax`, `WebConfigBridge`)는 Forge 모드가 아니라 설치 기록에 없다. INSTALLED-MODS.md 의
-"다른 경로로 설치된 것" 표를 본다.
+직접 만든 것은 **Forge 모드가 아니라 설치 기록에 없다.** INSTALLED-MODS.md 의 "다른 경로로 설치된 것"
+표를 본다. 목록과 설계 문서는 아래 "직접 만든 모드" 절에 있다.
+
+## 직접 만든 모드 (`src/`)
+
+**18개**(테스트 프로젝트 제외). 그중 **자기 이름의 설치 자리를 가진 것이 13개**다.
+`PluginLocales`·`ServerWebKorean` 은 자기 폴더 없이 **남의 모드 폴더와 서버 웹에 파일로** 들어가고,
+`CompatToggle` 은 지금 설치본에 없다.
+
+| 모드 | 무엇 | 설계·계획 |
+| --- | --- | --- |
+| **SptTeamManager (STM)** | PIT Fireteam 포크. 다른 런처 프로필을 팀원으로 | [인계](STM-HANDOVER.md) · [설계](specs/2026-10-31-spt-team-manager-design.md) · 계획 [1](plans/2026-10-31-spt-team-manager-plan-1-foundation.md)·[2](plans/2026-11-01-spt-team-manager-plan-2-raid.md)·[3](plans/2026-11-02-spt-team-manager-plan-3-gear-editing.md)·[4](plans/2026-11-02-stm-plan4-kit-loadouts.md)·[5](plans/2026-11-03-stm-plan5-gear-parity.md)·[6](plans/2026-11-06-stm-plan6-accrual-and-stash-transfer.md) · [대조표](specs/2026-11-04-stash-parity-checklist.md) · [조사](specs/2026-11-04-stash-operations-survey.md) · [사망 관문](specs/2026-11-04-death-strip-gate.md) · [편집기 여섯](specs/2026-11-06-stm-six-checks.md) · [제거 조사](specs/2026-11-04-allinweapon-removal-survey.md) |
+| **AirdropCaller** | 외부 창으로 보급을 부른다(`.Server`+`.Plugin`+`.App` 세 조각) | [설계](specs/2026-10-28-airdrop-caller-design.md) · [1단계](specs/2026-10-29-airdrop-stage1-findings.md) · [2단계](specs/2026-10-29-airdrop-stage2-result.md) |
+| `AirdropProbe` | 보급 지점 측정기. AirdropCaller 1단계용 | 위 설계 §7.9 |
+| `SptKoreanConfig` | F12 설정 창 한글화 | [README](../src/SptKoreanConfig/README.md) |
+| `SptKoreanLocale` | 게임 DB locale 한글화 | [README](../src/SptKoreanLocale/README.md) · [범위 검토](REVIEW-KOREAN-LOCALIZATION.md) · [아이템 범위](specs/2026-11-06-item-locale-scope.md) · [계획](plans/2026-11-02-korean-localization-plan.md) |
+| `PluginLocales` | 모드 폴더에 넣는 한국어 locale 4개 | [README](../src/PluginLocales/README.md) |
+| `ServerWebKorean` | 서버 웹 설정창 한글 locale | [문서](SERVER-WEB-KOREAN.md) |
+| `GogglesWheel` | 야시경·실드 휠 | [설계](specs/2026-10-30-goggles-wheel-design.md) · [계획](plans/2026-10-30-goggles-wheel-plan.md) |
+| `DynamicMapsFactionMarkers` | 지도에 세력 표시 | [설계](specs/2026-10-30-dynamicmaps-faction-markers-design.md) · [계획](plans/2026-10-30-dynamicmaps-faction-markers-plan.md) · [세력 조사](specs/2026-10-30-faction-identification-survey.md) |
+| `GridWindowScroll` | 가방·상자 창을 화면 안에 가둔다 | [README](../src/GridWindowScroll/README.md) |
+| `StackUnify` | 최대 스택을 한 곳에서 정한다 | [README](../src/StackUnify/README.md) |
+| `HelmetSlotUnion`·`SlotCategoryRelax` | 슬롯 필터를 넓힌다(STM 편집기가 기댄다) | STM 인계 불변식 9 |
+| `ScavRaidWaves` | 스캐브 레이드 웨이브 | — |
+| `WebConfigBridge` | 서버 웹 설정 다리 | — |
+| `CompatToggle` | 호환 토글(**지금 설치본에 없다**) | [설계](specs/2026-10-26-compat-toggle-design.md) · [계획](plans/2026-10-26-compat-toggle-plan.md) |
+
+그 밖의 조사 문서: [F12 메뉴 검토](specs/2026-10-26-f12-menu-review.md) ·
+[모드 페이지 후보](specs/2026-10-26-modpage-candidates.md).
 
 ## 기록 폴더
 
