@@ -1,0 +1,110 @@
+# SptKoreanLocale — 게임 DB locale 한글화
+
+아이템 이름·퀘스트·목표·봇 역할 이름처럼 **서버가 내려주는 게임 locale** 을 우리 사전으로 덮어쓰는 서버 모드다.
+F12 설정 창은 [SptKoreanConfig](../SptKoreanConfig) 가, 서버 웹 화면은 [ServerWebKorean](../ServerWebKorean) 이 맡는다.
+
+범위와 남은 분량은 [doc/REVIEW-KOREAN-LOCALIZATION.md](../../doc/REVIEW-KOREAN-LOCALIZATION.md) 에 있다.
+
+## 무엇을 건드리고 무엇을 안 건드리나
+
+| 건드리는 것 | 건드리지 않는 것 |
+| --- | --- |
+| 서버가 메모리에 들고 있는 `locales/global/<코드>` 사전의 **값** | `locales/global/*.json` 파일 |
+| | 다른 모드의 파일 (업데이트에 날아가므로 손대지 않는다) |
+| | 아이템·퀘스트 자체의 내용 (글자만 바꾼다) |
+
+모드를 빼면 다음 서버 시작에서 원래 글자로 돌아간다.
+
+## 왜 이 방법이 되는가 (SPT 4.1.6 역컴파일 + 서버 실측)
+
+**값을 직접 쓰면 안 된다.** 처음에 `LocaleService.GetLocaleDb("kr")` 로 받은 사전에 그대로 썼고,
+모드 로그도 "22항목을 바꿨다" 고 적었다. 그런데 서버에 물어보니 22항목 전부가 영문으로 돌아와 있었다.
+
+| 실측 | 값 |
+| --- | --- |
+| 모드가 `PostLoad` 에서 본 locale 항목 수 | 60,398 |
+| 그 뒤 `/client/locale/kr` 이 내려준 항목 수 | 61,125 |
+| 우리가 쓴 22항목 | 전부 영문으로 되돌아 있었다 |
+
+`GlobalLocaleDictionary` 에 `[CacheLazyLoad]` 가 붙어 있어 `LazyLoad.Value` 는 **캐시된 같은 인스턴스**를
+돌려준다. 다만 `LazyLoad.AddTransformer` 가 `Clear()` 를 부른다 — 우리보다 **늦게** 변환기를 등록하는
+모드가 하나라도 있으면 캐시가 버려지고, 다음 읽기에서 **파일을 다시 읽어 등록된 변환기만** 다시 입힌다.
+사전에 직접 쓴 값은 그 자리에 없다. 항목이 727개 늘어난 것이 다시 세워졌다는 증거다.
+
+**그래서 값을 쓰지 않고 변환기를 등록한다.**
+
+| 근거 | 뜻 |
+| --- | --- |
+| `LazyLoad.AddTransformer(Func<T?,T?>)` — "Transformers execute in registration order" | 사전이 다시 세워질 때마다 돈다. `PostLoad` 라 늦게 등록되므로 우리 것이 마지막에 입혀진다 |
+| `DataCallbacks.GetLocalesGlobal` 이 요청마다 `LocaleService.GetLocaleDb(url 의 언어)` → `LazyLoad.Value` 를 내려보낸다 | 변환기를 거친 사전이 그대로 클라이언트에 간다 |
+| `LocaleService.GetLocaleDb` 는 그 언어가 없으면 **조용히 `en` 으로 떨어진다** | 그래서 `LocaleService` 를 쓰지 않고 `localeTable.Global` 에 그 언어가 정말 있는지 보고, 없으면 **아무것도 하지 않는다** |
+| `LocaleTable.Global` 의 "DO NOT USE THIS PROPERTY DIRECTLY" 주석 | 그 주석이 막는 것은 **값을 직접 고치는 것**이다(위에서 날아간 그 방식). 변환기를 등록하는 길은 `LazyLoad` 에만 있어 이 속성을 거치는 수밖에 없고, 값은 건드리지 않는다 |
+
+변환기는 사전이 다시 세워질 때마다 돌기 때문에, 로그는 **첫 번째만** `Info` 로 적고 그 뒤는 `debug` 로 내린다.
+`applied-report.json` 의 `run` 이 몇 번째 적용인지 알려 준다.
+
+## 실행 순서
+
+`OnLoadOrder.PostLoad` 다. 모드가 만드는 아이템·퀘스트의 locale 열쇠는 그 모드가 돈 뒤에 생기므로,
+이르게 돌면 덮어쓸 열쇠가 아직 없다.
+
+## 사전 형식
+
+`lang/<묶음>.json`. 밑줄로 시작하는 파일은 읽지 않는다(메모·보류용).
+
+```json
+{
+  "coveragePrefixes": ["ScavRole/"],
+  "comment": "사람이 읽는 메모. 코드는 쓰지 않는다",
+  "entries": {
+    "<locale 열쇠>": "<한국어>"
+  },
+  "keptAsIs": {
+    "<locale 열쇠>": "일부러 영문으로 두는 이유"
+  }
+}
+```
+
+- `entries` 가 실제로 덮어쓰는 것.
+- `keptAsIs` 는 코드가 쓰지 않는다. **"빠뜨린 것" 과 "일부러 둔 것" 을 가르기 위한 기록**이고, 검사 도구가 읽는다.
+- `coveragePrefixes` 도 모드는 쓰지 않는다. 검사 도구가 그 접두로 시작하는 열쇠 중 사전에도 `keptAsIs` 에도 없고 아직 영문인 것을 찾아 **빠뜨림**으로 알린다.
+
+### 번역 규칙
+
+바닐라 한국어 locale 을 따른다 — **역할·사물 낱말은 번역하고, 세력 약어는 그대로 둔다.**
+바닐라도 `USEC`·`BEAR`·`UNTAR` 를 영문으로 두고, `Boss`→`보스`·`Guard`→`경호원`·`Sniper`→`저격수` 로 옮긴다.
+
+## 설정
+
+| 항목 | 기본값 | 내용 |
+| --- | --- | --- |
+| `modEnabled` | `true` | 끄면 사전만 읽고 셈을 로그에 남긴다 |
+| `locale` | `"kr"` | SPT 의 한국어는 `kr` 이다. 서버 웹의 `ko` 와 다르다 |
+| `onlyExistingKeys` | `true` | 이미 있는 열쇠만 덮어쓴다. 없는 열쇠는 경고로 알린다 |
+| `skipAlreadyKorean` | `false` | 켜면 이미 한글인 값은 건드리지 않는다 |
+| `debug` | `false` | 항목 하나하나를 로그에 적는다 |
+
+## 빌드·설치·확인
+
+```
+dotnet build src/SptKoreanLocale -c Release
+pwsh -File tools/install-koreanlocale.ps1
+```
+
+서버를 다시 켠 뒤:
+
+```
+node tools/check-locale-dict.mjs
+```
+
+이 도구는 사전을 세지 않고 **켜져 있는 서버에게 `/client/locale/kr` 을 물어** 그 글자가 실제로 가는지 본다.
+`locale` 이 없어 서버가 `en` 을 돌려준 경우에는 셈을 내놓지 않고 중단한다.
+
+제거는 `pwsh -File tools/install-koreanlocale.ps1 -Remove` 다.
+
+## 알아 둘 것
+
+- **서버 모드라 사전을 고치면 서버를 다시 켜야 한다.** F12 사전처럼 그 자리에서 다시 읽지 않는다.
+- 서버가 시작할 때 `applied-report.json` 을 모드 폴더에 남긴다 — 로그는 기동마다 덮이므로 결과를 읽을 자리가 필요하다.
+- 다른 모드가 **우리보다 뒤에서** 같은 열쇠를 덮으면 우리 글자가 밀린다. `check-locale-dict.mjs` 의 "값이 다름" 이 그것을 잡는다.
+- `locale` 을 `en` 으로 두면 안전장치가 꺼진다(그 경우는 en 에 쓰는 것이 의도이므로). 한국어를 쓸 때는 `kr` 로 둔다.
