@@ -40,8 +40,16 @@ namespace SptKoreanLocale;
 /// 것은 <b>값을 직접 고치는 것</b>이고(바로 위에서 날아간 그 방식이다), 변환기를 등록하는 길은
 /// <c>LazyLoad</c> 에만 있어 이 속성을 거치는 수밖에 없다. 값은 건드리지 않는다.
 /// </para>
+///
+/// <para>
+/// <b>왜 <c>PostLoad</c> 보다 더 늦는가.</b> 변환기는 등록한 순서대로 적용되므로 <b>나중에 등록한 쪽이
+/// 이긴다</b>. ExpandedTaskText 도 퀘스트 설명마다 <c>AddTransformer</c> 를 걸어 자기 영문을 써 넣는데,
+/// 그 모드가 <c>PostLoad</c> 에서 우리보다 늦게 돌아 설명 244개를 되돌려 놨다(실측). <c>OnLoadOrder</c> 는
+/// enum 이 아니라 <c>int</c> 상수 묶음이어서 그보다 큰 값을 줄 수 있다 — 그래서 <c>PostLoad</c> 뒤에
+/// 넉넉히 떨어뜨려 마지막에 입힌다. 다른 모드가 먼저 넣은 한글을 우리가 밀어내면 그 수를 로그에 남긴다.
+/// </para>
 /// </summary>
-[Injectable(InjectionType.Singleton, OnLoadOrder.PostLoad)]
+[Injectable(InjectionType.Singleton, int.MaxValue)]
 public class SptKoreanLocale(
     ISptLogger<SptKoreanLocale> logger,
     LocaleTable localeTable,

@@ -50,6 +50,15 @@ public class LangFile
     public Dictionary<string, string> Entries { get; set; } = [];
 
     /// <summary>
+    /// 생성한 사전이 적어 두는 <b>그때의 영문 원본</b>(열쇠 → 영문). 모드는 쓰지 않는다.
+    /// 퀘스트 설명처럼 다른 모드가 붙인 머리말까지 통째로 덮는 사전은 모드 구성이 바뀌면
+    /// 값이 낡는다 — <c>tools/check-locale-dict.mjs</c> 가 이것을 지금의 <c>en</c> 과 맞춰
+    /// "원본이 바뀜" 으로 알린다.
+    /// </summary>
+    [JsonPropertyName("sources")]
+    public Dictionary<string, string> Sources { get; set; } = [];
+
+    /// <summary>
     /// 일부러 영문으로 두는 열쇠와 그 이유. 코드는 건드리지 않고, 검사 도구가
     /// "빠뜨린 것" 과 "일부러 둔 것" 을 가르는 데 쓴다.
     /// </summary>

@@ -228,3 +228,34 @@ node tools/check-locale-dict.mjs
 
 5차에서 괄호 어순을 69문구 고쳤는데 **6차에서 같은 꼴이 15문구 또 생겼다.** 사람이 매번 조심하는
 것으로는 막히지 않아 규칙을 도구로 못박았다. 묶음마다 `--fix` 를 돌린 뒤 펴낸다.
+
+## 설명 사전 — `tools/gen-quest-descriptions.mjs`
+
+퀘스트·업적·치장 **설명**은 열쇠마다 글이 달라 문구→열쇠로 펴낼 것이 없다. 대신 ExpandedTaskText 가
+붙인 **머리말**(고정 어휘 6꼴 + 이름 목록)이 있어 그 부분은 규칙으로 옮기고, 목록의 퀘스트·열쇠 이름은
+서버가 이미 한국어로 내려주는 값을 되쓴다.
+
+```
+node tools/gen-quest-descriptions.mjs --dry            세어만 본다
+node tools/gen-quest-descriptions.mjs --dump out.json  아직 본문이 없는 것을 뽑는다
+node tools/gen-quest-descriptions.mjs                 사전을 펴낸다
+```
+
+| 본문을 얻는 길 | |
+| --- | --- |
+| 바닐라 `kr.json` 의 공식 한국어 | ExpandedTaskText 가 영문을 덮어썼을 뿐 원문은 그대로 있다. 되쓴다 |
+| `lang-src/quest-descriptions.json` 의 `byKey` | **본문만** 손으로 적는다. 머리말은 도구가 붙인다 |
+| 아직 없는 것 | **건드리지 않는다.** 머리말만 한국어로 바꿔 두면 `dump-untranslated` 가 한글을 보고 다 한 것으로 센다 |
+
+### 로드 순서에 기댄다
+
+변환기는 **나중에 등록한 쪽이 이긴다.** ExpandedTaskText 는 `TypePriority = int.MaxValue` 로 맨 마지막에
+돌아 설명 232개를 영문으로 되돌려 놨다(실측). 그보다 큰 수가 없으니 우리도 `int.MaxValue` 로 두었다 —
+동순위는 발견 순서로 갈리고 `SptKoreanLocale` 이 뒤라 우리가 나중에 등록된다. **문서로 보장된 순서가
+아니다.** 설명이 영문으로 돌아가면 서버 로그에서 두 모드의 순서를 먼저 본다.
+
+### 낡는 것을 알린다
+
+설명 사전은 남이 붙인 머리말까지 값 하나로 덮으므로 모드 구성이 바뀌면 낡는다. 그래서 펴낸 사전에
+그때의 영문 원본을 `sources` 로 적고, `check-locale-dict.mjs` 가 지금의 `en` 과 맞춰 **"원본이 바뀜"** 으로
+알린다. 그러면 생성기를 다시 돌린다.
