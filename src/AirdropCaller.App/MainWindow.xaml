@@ -20,14 +20,16 @@
     <!-- ① 프리셋 -->
     <DockPanel Grid.Row="0" Grid.Column="0">
       <Label DockPanel.Dock="Top" Content="프리셋" />
-      <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
+      <!-- 단추가 넷이라 210px 칸에 가로로 늘어놓으면 마지막이 잘려 보이지 않는다(2026-11-07 실측).
+           WrapPanel 로 두어 칸이 좁으면 다음 줄로 내려간다. -->
+      <WrapPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,6,0,0">
         <Button x:Name="NewPresetButton" Content="새로" Click="OnNewPreset" Padding="8,5" />
         <Button x:Name="CopyPresetButton" Content="복사" Click="OnCopyPreset" Padding="8,5" />
         <Button x:Name="DeletePresetButton" Content="삭제" Click="OnDeletePreset" Padding="8,5" />
         <!-- 지금 입고 있는 것을 그대로 뽑아 편집기에 올린다(설계 §18). 저장은 사람이 누른다. -->
         <Button x:Name="ExtractWornButton" Content="입은 것" Click="OnExtractWorn" Padding="8,5"
                 ToolTip="지금 로그인한 프로필이 입고 있는 장비를 프리셋으로 뽑는다. 보안 컨테이너는 뺀다." />
-      </StackPanel>
+      </WrapPanel>
       <ListBox x:Name="PresetList" DisplayMemberPath="Name" SelectionChanged="OnPresetSelected" />
     </DockPanel>
 

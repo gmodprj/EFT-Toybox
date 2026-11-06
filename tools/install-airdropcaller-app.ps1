@@ -42,9 +42,19 @@ $built = Join-Path $src 'bin\Release\win-x64\publish\AirdropCaller.exe'
 
 if (-not (Test-Path $built)) {
     throw "게시 결과가 없다: $built  (먼저 dotnet publish src/AirdropCaller.App -c Release)"
+
+# **묵은 게시본을 조용히 깔지 않는다.** dotnet build 만 하고 publish 를 빠뜨리면 지난번
+# 게시본이 그대로 복사되고 바이트 수까지 같아 눈치채기 어렵다(2026-11-07 에 그랬다).
+$newestSource = Get-ChildItem $src -Recurse -Include *.cs,*.xaml,*.csproj -ErrorAction SilentlyContinue |
+    Sort-Object LastWriteTime -Descending | Select-Object -First 1
+if ($newestSource -and (Get-Item $built).LastWriteTime -lt $newestSource.LastWriteTime) {
+    throw "게시본이 소스보다 오래됐다: $($newestSource.Name) 가 더 새롭다. 먼저 dotnet publish src/AirdropCaller.App -c Release"
+}
 }
 
-Copy-Item $built -Destination $exe -Force
+# 실패하면 멈춘다. 창이 떠 있으면 파일이 잠겨 복사가 실패하는데, 그냥 두면
+# "설치됨" 도 안 찍히면서 exit 0 이라 깔린 줄 알게 된다(2026-11-07 실측).
+Copy-Item $built -Destination $exe -Force -ErrorAction Stop
 "설치됨: $exe  ({0:N0} bytes)" -f (Get-Item $exe).Length
 
 if (Test-Path $cfg) {
