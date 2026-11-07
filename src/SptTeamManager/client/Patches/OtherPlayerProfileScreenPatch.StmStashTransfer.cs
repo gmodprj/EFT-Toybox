@@ -405,7 +405,10 @@ namespace pitTeam.Patches
             // 왼쪽 여백을 넉넉히 둔다 — 스태시 패널은 분류(필터) 띠를 **자기 칸 왼쪽 바깥에** 그린다.
             // 여백이 없으면 그 띠가 옆 칸 위로 가거나 창 밖으로 나간다.
             rect.offsetMin = new Vector2(left ? 56f : 48f, 56f);
-            rect.offsetMax = new Vector2(left ? -9f : -18f, -124f);
+            // 머리줄(-96~-122) 아래로 **충분히** 내린다. 스태시 패널은 자기 위쪽에 "창고" 탭을
+            // 그리는데, -124 로 붙여 놨더니 그 탭이 우리 머리줄의 닉네임 위를 덮었다
+            // (2026-11-07: "Wrait…" 까지만 보였다 — 글자가 잘린 것이 아니라 가려진 것이었다).
+            rect.offsetMax = new Vector2(left ? -9f : -18f, -156f);
 
             Image background = body.GetComponent<Image>();
             background.color = new Color(0.08f, 0.08f, 0.08f, 0.85f);
@@ -882,6 +885,11 @@ namespace pitTeam.Patches
         {
             try
             {
+                // 스크롤을 **기억했다가 되돌린다.** 격자를 새로 세우면 맨 위로 가는데, 옮길 때마다
+                // 보던 자리를 잃는다(2026-11-07 지적). 패널이 들고 있는 그 스크롤을 그대로 쓴다.
+                Vector2 leftScroll = ReadStmTransferScroll(StmTransferLeftPanel);
+                Vector2 rightScroll = ReadStmTransferScroll(StmTransferRightPanel);
+
                 DestroyStmTransferGrids();
 
                 EFT.IEftSession session = ActiveProfileSession;
@@ -898,12 +906,47 @@ namespace pitTeam.Patches
                     DestroyStmTransferGrids();
                     pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 전송 뒤 격자를 다시 세우지 못했다. 창을 닫았다 열면 다시 선다.");
                 }
+                else
+                {
+                    ApplyStmTransferScroll(StmTransferLeftPanel, leftScroll);
+                    ApplyStmTransferScroll(StmTransferRightPanel, rightScroll);
+                }
             }
             catch (Exception ex)
             {
                 pitFireTeam.Log.LogError("[STM] 스태시 교환: 격자를 다시 세우다 실패했다.");
                 pitFireTeam.Log.LogError(ex);
                 StmTransferGridsReady = false;
+            }
+        }
+
+        // 지금 보고 있는 스크롤 자리. 못 읽으면 맨 위(Vector2.up)로 친다 — 예전 동작 그대로다.
+        private static Vector2 ReadStmTransferScroll(SimpleStashPanel panel)
+        {
+            try
+            {
+                return panel?._stashScroll != null ? panel._stashScroll.normalizedPosition : Vector2.up;
+            }
+            catch
+            {
+                return Vector2.up;
+            }
+        }
+
+        private static void ApplyStmTransferScroll(SimpleStashPanel panel, Vector2 position)
+        {
+            try
+            {
+                if (panel?._stashScroll == null) return;
+
+                // 격자가 다 그려진 뒤라야 스크롤 범위가 정해진다 — 그 전에 쓰면 튕겨 나간다.
+                Canvas.ForceUpdateCanvases();
+                panel._stashScroll.StopMovement();
+                panel._stashScroll.normalizedPosition = position;
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 스크롤 자리를 되돌리지 못했다: " + ex.Message);
             }
         }
 

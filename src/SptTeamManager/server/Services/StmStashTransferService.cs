@@ -221,6 +221,15 @@ public class StmStashTransferService(
                     item.Location = null;
                 }
 
+                // 나머지도 **놓은 자리부터** 차례로 채운다 — 화면의 녹색 덩어리가 거기서 시작한다.
+                // 놓은 자리를 모르면(목록형·좌표 없음) 격자 처음부터 찾는다(예전 동작).
+                if (request.AnchorX >= 0 && request.AnchorY >= 0
+                    && gearEdits.TryPlaceFrom(destinationDraft, item, destinationStashRoot!, anchorGrid, request.AnchorX, request.AnchorY, out _))
+                {
+                    placed++;
+                    continue;
+                }
+
                 if (!gearEdits.TryPlaceInContainer(destinationDraft, item, destinationStashRoot!, StashGridName, out var failure))
                 {
                     logger.Info($"[STM] 스태시 전송 거부: 받는 쪽 스태시에 자리가 없다({item.Id}). {failure}");
