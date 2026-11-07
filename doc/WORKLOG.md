@@ -8033,3 +8033,41 @@ IL_030e: callvirt ...StmStashPairWire::get_Teammate()
 900p 가 3줄이 안 되는 것은 804/900 = 89% 라 위 상한에 걸려서다. 1080p 이상이면 세 줄이다.
 
 클라이언트 빌드 경고 0 / 오류 0, 설치본 md5 `a179aa2f…`.
+
+### ISB 자막이 영어로 나오던 것 — 번역은 있었고 읽히지 않았다
+
+사용자 보고(2026-11-07): 랩스의 ISB 안내 방송 자막이 영어다.
+
+화면의 문구가 `cues.json` 의 **`fallback` 그대로**였고 화자도 `speakerFallback`("ISB Controller:")
+이었다 — 즉 **한국어 파일이 아예 안 읽힌** 모양이다(읽혔다면 화자만이라도 바뀐다).
+
+`ISBSOF_Extras.dll` 을 역컴파일해 읽는 경로를 그대로 봤다:
+
+```
+ResolveRequestedLocale()
+  설정 "Subtitle Language" 가 Auto 가 아니면 → NormalizeLocale(그 값)
+  Auto 면 → ResolveGameLocaleMarker()  ← 게임 로케일 표의 'isb_subtitle_locale_code' 키를 찾는다
+  그것도 없으면 → NormalizeSystemLanguage(Application.systemLanguage)
+```
+
+**`isb_subtitle_locale_code` 는 모드 작성자가 번역자용으로 둔 고리**인데 우리 로케일에 그 키가
+없어 시스템 언어로 떨어지고, 거기에 한국어 가지가 없어 `en` 이 됐다. 설정 설명의 "Supported:
+en, pt, ru and ch" 도 그래서 나온 말이다.
+
+그런데 **로더 자체는 코드를 가리지 않는다.** `NormalizeLocale` 의 기본 가지가 받은 코드를 그대로
+돌려주고, `FindAvailableLocale` 이 `locales/<코드>.json` 의 존재만 본다. 그리고 `kr.json` 은 있다 —
+**222개 전부, en 대비 빠진 키 0.** 번역은 11-06 에 이미 넣어 뒀던 것이다.
+
+그래서 고침은 설정 한 단어다:
+
+```
+BepInEx/config/com.samc137.isbsofextras.cfg
+  Subtitle Language = Auto  →  kr
+```
+
+(원본은 `.bak-20261107-172159` 로 남겼다.)
+
+**왜 로케일 쪽으로 고치지 않았나.** `isb_subtitle_locale_code` 를 우리 한국어 사전에 넣으면 Auto
+가 저절로 맞는다 — 더 깔끔한 길이다. 하지만 `SptKoreanLocale` 은 `onlyExistingKeys: true` 라
+**없던 키는 넣지 않는다**(오타로 생긴 키가 사전에 끼는 것을 막는 장치다). 키 하나 때문에 그
+장치를 풀 이유가 없어 설정 쪽으로 갔다. 나중에 그 플래그를 끄게 되면 이 키도 같이 넣는다.
