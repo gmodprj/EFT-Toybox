@@ -42,10 +42,33 @@ namespace pitTeam.Patches
                     return true; // 우리 일이 아니다. 원래대로 돈다.
                 }
 
+                // **놓은 자리를 그대로 읽는다.** 서버가 빈 자리를 찾아 넣으면 사용자가 놓은 곳과
+                // 다른 데로 가고, 그건 "자동 정렬" 처럼 보인다(2026-11-07 지적). EFT 가 드롭 위치를
+                // 계산하는 바로 그 함수를 쓴다 — 우리가 좌표를 다시 셈하지 않는다.
+                int x = -1, y = -1, rotation = 0;
+                string gridName = null;
+                try
+                {
+                    LocationInGrid where = __instance.CalculateItemLocation(itemContext);
+                    if (where != null)
+                    {
+                        x = where.x;
+                        y = where.y;
+                        rotation = (int)where.r;
+                    }
+
+                    gridName = __instance.Grid?.ID;
+                }
+                catch (Exception locationEx)
+                {
+                    // 자리를 못 읽어도 전송은 한다 — 서버가 빈 자리를 찾는다(예전 동작).
+                    pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 놓은 자리를 읽지 못했다: " + locationEx.Message);
+                }
+
                 // 원래 처리를 막는다. 막지 않으면 EFT 가 자기 컨트롤러 안에서 옮기려다 실패하고,
                 // 그 실패가 우리 전송과 겹쳐 화면과 실제가 어긋난다.
                 __result = Task.CompletedTask;
-                OtherPlayerProfileScreenPatch.StmTransferDropped(itemContext.Item, toTeammate);
+                OtherPlayerProfileScreenPatch.StmTransferDropped(itemContext.Item, toTeammate, gridName, x, y, rotation);
                 return false;
             }
             catch (Exception ex)

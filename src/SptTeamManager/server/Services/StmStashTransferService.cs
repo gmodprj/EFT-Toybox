@@ -186,11 +186,41 @@ public class StmStashTransferService(
             // 고른 것(바닥에 놓인 것)만 새 스태시에 자리를 찾아 준다. 안에 든 것은 부모를 따라간다.
             var pickedIds = request.ItemIds.Select(id => id.Trim()).ToHashSet(StringComparer.Ordinal);
             var placed = 0;
+            // 끌어다 놓은 그 한 개는 **놓은 자리에 그대로** 놓는다. 자리가 안 맞으면(막혔거나
+            // 좌표가 없으면) 조용히 빈 자리 찾기로 떨어진다 — 사람이 놓은 곳이 안 되면 어딘가에는
+            // 놓여야지, 전송 자체가 거절되면 더 나쁘다.
+            var anchorId = request.AnchorItemId?.Trim();
+            var anchorGrid = string.IsNullOrWhiteSpace(request.AnchorGrid) ? StashGridName : request.AnchorGrid!.Trim();
+
             foreach (var item in moving.Where(i => pickedIds.Contains(i.Id.ToString())))
             {
                 item.ParentId = destinationStashRoot;
                 item.SlotId = StashGridName;
                 item.Location = null;
+
+                if (!string.IsNullOrEmpty(anchorId)
+                    && string.Equals(item.Id.ToString(), anchorId, StringComparison.Ordinal)
+                    && request.AnchorX >= 0 && request.AnchorY >= 0)
+                {
+                    item.SlotId = anchorGrid;
+                    item.Location = new ItemLocation
+                    {
+                        X = request.AnchorX,
+                        Y = request.AnchorY,
+                        R = (ItemRotation)(request.AnchorRotation == 0 ? 0 : 1),
+                    };
+
+                    if (gearEdits.IsContainerSpotFree(destinationDraft, item, destinationStashRoot!, anchorGrid))
+                    {
+                        placed++;
+                        continue;
+                    }
+
+                    logger.Info($"[STM] 스태시 전송: 놓은 자리가 막혀 있어 빈 자리를 찾는다({item.Id}, {anchorGrid} {request.AnchorX},{request.AnchorY}).");
+                    item.SlotId = StashGridName;
+                    item.Location = null;
+                }
+
                 if (!gearEdits.TryPlaceInContainer(destinationDraft, item, destinationStashRoot!, StashGridName, out var failure))
                 {
                     logger.Info($"[STM] 스태시 전송 거부: 받는 쪽 스태시에 자리가 없다({item.Id}). {failure}");

@@ -20,6 +20,18 @@ public record StmStashTransferRequest : IRequestData
     [JsonPropertyName("toTeammate")] public bool ToTeammate { get; set; }
 
     [JsonPropertyName("itemIds")] public List<string>? ItemIds { get; set; }
+
+    // 끌어다 **놓은 자리**. 그 한 개(`AnchorItemId`)는 이 칸에 그대로 놓고, 나머지는 빈 자리를
+    // 찾는다. 없거나 그 자리가 막혀 있으면 전부 빈 자리 찾기로 간다(예전 동작).
+    //
+    // 왜 필요한가 — 서버가 늘 빈 자리를 찾으면 사용자가 놓은 곳과 다른 데로 가고, 그것이
+    // "자동 정렬" 처럼 보인다(2026-11-07 지적). 좌표는 클라이언트가 EFT 자신의 드롭 계산
+    // (`GridView.CalculateItemLocation`)으로 읽어 보낸다 — 우리가 다시 셈하지 않는다.
+    [JsonPropertyName("anchorItemId")] public string? AnchorItemId { get; set; }
+    [JsonPropertyName("anchorGrid")] public string? AnchorGrid { get; set; }
+    [JsonPropertyName("anchorX")] public int AnchorX { get; set; } = -1;
+    [JsonPropertyName("anchorY")] public int AnchorY { get; set; } = -1;
+    [JsonPropertyName("anchorRotation")] public int AnchorRotation { get; set; }
 }
 
 public record StmStashTransferResponse
