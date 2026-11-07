@@ -44,6 +44,27 @@
     "SpringDrivenCylinder": false
   },
 
+  // 맨 끝(int.MaxValue)에서 칸 넓히기를 한 번 더 한다.
+  //
+  // 우선순위를 적지 않은 서버 모드는 기본값이 int.MaxValue 라 PostLoad 보다 **뒤에** 돈다.
+  // 그런 모드가 칸 필터를 통째로 다시 쓰면 우리가 넓힌 것이 사라진다 — 2026-11-07 실측:
+  // ECOTI 의 ThermalRiserCompatibility 가 열화상 라이저의 조준경 목록을 갈아 끼웠다.
+  "LateSweep": true,
+
+  // 아이템별 씨앗 분류. 그 아이템의 칸에 이 분류들을 "이미 받고 있는 것" 으로 쳐 준다.
+  //
+  // 이 모드는 칸이 **이미 받고 있는** 분류만 넓힌다(없던 분류를 지어 넣지 않는다). 그래서 위의
+  // ECOTI 처럼 어떤 분류를 0개로 만들어 버리는 모드가 있으면 늦은 쓸기로도 그 칸은 못 넓힌다 —
+  // 순서가 아니라 규칙이 막는 자리다. 그럴 때만 사람이 씨앗을 적는다.
+  //
+  // 적은 아이템에만 닿는다. 분류 스위치가 상위라 Categories 에서 꺼져 있으면 무시된다.
+  // 아래 둘은 ECOTI 의 TR-1 열화상 라이저 2색이다 — COTI 가 지운 세 분류를 되돌린다.
+  // 주의: COTI 가 고른 목록 밖의 조준경은 끼워져도 열화상이 안 나올 수 있다(메시가 10개다).
+  "SeedCategories": {
+    "6ad3016bab020957abb6ca3b": ["Collimator", "AssaultScope", "SpecialScope"],
+    "6ad408a96bf1f761d970a4ff": ["Collimator", "AssaultScope", "SpecialScope"]
+  },
+
   // 건드리지 않을 칸 이름. 대소문자는 가리지 않는다.
   // 예: ["mod_magazine"] 로 두면 탄창 칸은 분류가 켜져 있어도 그대로 둔다.
   "ExcludedSlotNames": [],
