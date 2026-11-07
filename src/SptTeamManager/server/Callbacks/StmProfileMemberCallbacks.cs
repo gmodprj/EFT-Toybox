@@ -231,6 +231,18 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }
 
+    // 계획 6 B3 의 조회. 양쪽 스태시의 바닥에 놓인 것과 이름.
+    public ValueTask<string> StashPair(string url, StmStashPairRequest request, MongoId sessionId)
+    {
+        if (stashTransfers.TryReadPair(sessionId, request, out var pair, out var refusalReason) && pair != null)
+        {
+            return new ValueTask<string>(httpResponse.GetBody(pair));
+        }
+
+        var message = string.IsNullOrWhiteSpace(refusalReason) ? "스태시를 읽지 못했습니다." : refusalReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
     // Failure never reads as success: the client gets an error body with a key, not an empty list.
     private ValueTask<string> Run<T>(string action, Func<T> work)
     {
