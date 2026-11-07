@@ -42,14 +42,19 @@ $built = Join-Path $src 'bin\Release\win-x64\publish\AirdropCaller.exe'
 
 if (-not (Test-Path $built)) {
     throw "게시 결과가 없다: $built  (먼저 dotnet publish src/AirdropCaller.App -c Release)"
+}
 
 # **묵은 게시본을 조용히 깔지 않는다.** dotnet build 만 하고 publish 를 빠뜨리면 지난번
 # 게시본이 그대로 복사되고 바이트 수까지 같아 눈치채기 어렵다(2026-11-07 에 그랬다).
+# 이 검사는 처음에 위 블록 **안**에 들어가 한 번도 돌지 않았다(2026-11-07 에 고쳤다) —
+# 게시본이 없을 때만 닿는 자리였고 그 앞의 throw 가 먼저 나간다.
 $newestSource = Get-ChildItem $src -Recurse -Include *.cs,*.xaml,*.csproj -ErrorAction SilentlyContinue |
     Sort-Object LastWriteTime -Descending | Select-Object -First 1
 if ($newestSource -and (Get-Item $built).LastWriteTime -lt $newestSource.LastWriteTime) {
+    # 머지도 소스의 수정 시각을 올리므로 이 경고가 헛것일 수 있다(2026-11-07 에 그랬다 —
+    # 설치본의 BAML 이 새 게시본과 한 바이트도 다르지 않았다). 그래도 멈추는 쪽으로 둔다:
+    # 다시 게시하는 값이 묵은 exe 를 깔고 "창이 떴다" 고 보고하는 값보다 싸다.
     throw "게시본이 소스보다 오래됐다: $($newestSource.Name) 가 더 새롭다. 먼저 dotnet publish src/AirdropCaller.App -c Release"
-}
 }
 
 # 실패하면 멈춘다. 창이 떠 있으면 파일이 잠겨 복사가 실패하는데, 그냥 두면
