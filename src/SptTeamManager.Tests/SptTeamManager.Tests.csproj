@@ -32,6 +32,8 @@
     <Compile Include="../SptTeamManager/shared/SpawnGearPolicy.cs" Link="Shared/SpawnGearPolicy.cs" />
     <Compile Include="SpawnGearPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/RaidOutcomePolicy.cs" Link="Shared/RaidOutcomePolicy.cs" />
+    <Compile Include="../SptTeamManager/shared/RaidTallyPolicy.cs" Link="Shared/RaidTallyPolicy.cs" />
+    <Compile Include="RaidTallyPolicyTests.cs" />
     <Compile Include="../SptTeamManager/shared/FollowerAiProfilePolicy.cs" Link="Shared/FollowerAiProfilePolicy.cs" />
     <Compile Include="FollowerAiProfilePolicyTests.cs" />
     <Compile Include="RaidOutcomePolicyTests.cs" />
