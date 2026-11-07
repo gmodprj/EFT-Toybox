@@ -381,16 +381,18 @@ namespace pitTeam.Patches
 
         private static Transform CreateStmTransferColumnBody(Transform panel, string name, bool left)
         {
-            // RectMask2D: 격자가 칸보다 넓어도 **옆 칸을 침범하지 못하게** 자른다. 창을 넓혀 두었지만
-            // 화면이 작거나 UI 배율이 크면 다시 넘칠 수 있고, 그때 겹쳐 보이는 것보다 잘리는 편이 낫다
-            // (무엇이 어느 쪽 것인지가 안 흐려진다).
-            GameObject body = new GameObject("pitFireTeam_StmStashTransfer" + name, typeof(RectTransform), typeof(Image), typeof(RectMask2D));
+            // **마스크를 두지 않는다.** 2026-11-07 에 RectMask2D 로 겹침을 막았더니 스태시 패널이
+            // 자기 칸 **왼쪽 바깥에** 그리는 분류(필터) 띠까지 잘라 먹었다 — 플레이어 창고 화면에
+            // 늘 붙어 있는 그 세로 아이콘 줄이다. 겹침은 창을 넓혀 막고, 자르지는 않는다.
+            GameObject body = new GameObject("pitFireTeam_StmStashTransfer" + name, typeof(RectTransform), typeof(Image));
             body.transform.SetParent(panel, false);
             RectTransform rect = body.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(left ? 0f : 0.5f, 0f);
             rect.anchorMax = new Vector2(left ? 0.5f : 1f, 1f);
             rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.offsetMin = new Vector2(left ? 18f : 9f, 56f);
+            // 왼쪽 여백을 넉넉히 둔다 — 스태시 패널은 분류(필터) 띠를 **자기 칸 왼쪽 바깥에** 그린다.
+            // 여백이 없으면 그 띠가 옆 칸 위로 가거나 창 밖으로 나간다.
+            rect.offsetMin = new Vector2(left ? 56f : 48f, 56f);
             rect.offsetMax = new Vector2(left ? -9f : -18f, -124f);
 
             Image background = body.GetComponent<Image>();
