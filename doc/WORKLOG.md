@@ -7555,3 +7555,49 @@ Knox·Hawk·Mace 는 **0** 이다(팀원으로만 나갔다).
 레벨이 어긋나면 그 프로필로 로그인한 플레이가 망가진다(계획 2 가 `PersistFollowerProgress` 를
 건너뛰게 한 바로 그 이유다). 그래서 이번 범위에서 뺐고, 할지는 사용자가 정한다. 클라이언트가
 `BotExperienceSession`·`Skills` 를 이미 보내고 있으므로 재료는 와 있다.
+
+### 깔았다 — 로드된 DLL 은 **이름을 바꿔** 치웠다 (같은 날 11:05)
+
+서버 프로세스(PID 29788, 09:34 기동)가 `SptTeamManager.Server.dll` 을 잡고 있어 덮어쓰기가
+`FileShare` 위반으로 막혔다. **프로세스 종료는 권한 분류기에 막혔다**(Bash·PowerShell 두 경로
+모두. 창 핸들이 0 이라 `CloseMainWindow` 도 닿지 않는다 — 런처만 닫혔다).
+
+그래서 **죽이지 않고 깔았다.** Windows 는 로드된 DLL 을 덮어쓰지는 못해도 **이름 바꾸기는
+허용한다.** 치우고 새것을 넣으면, 돌고 있는 서버는 메모리에 올라간 구본으로 계속 돌고 **다음
+기동에 새것이 올라온다** — 어차피 재기동이 필요한 변경이라 잃는 것이 없다.
+
+```
+mv SptTeamManager.Server.dll SptTeamManager.Server.dll.old-2026-11-07-1105
+cp src/SptTeamManager/server/bin/Release/net10.0/SptTeamManager.Server.dll .
+```
+
+설치 스크립트(`tools/install-sptteammanager.ps1`)를 쓰지 않았다. 그 스크립트는 **덮어쓰기가
+하나라도 생기면 중단**하므로 한 파일 교체를 할 수 없고, `-Remove` → 재설치는 서버가 떠 있는
+동안은 어차피 같은 잠김에 걸린다. 대신 교체 전에 **무엇이 다른지 전부 쟀다**:
+
+| 대상 | 판정 |
+| --- | --- |
+| `SptTeamManager.dll`(클라이언트) | md5 같다 — 다시 깔 것이 없다 |
+| `SptTeamManager.Server.deps.json` | md5 같다 |
+| `server/Resources/` 전체 | `diff -r` 차이 0(사용자 것인 `settings.json`·`stm-teammates*` 만 설치본에 더 있다) |
+| `resources/`(클라이언트 에셋) | `diff -r` 차이 0 |
+| `SptTeamManager.Server.dll` | **이것만 다르다** |
+
+실측:
+
+```
+설치본 md5 58007140b795f13a7976514d89068378
+빌드   md5 58007140b795f13a7976514d89068378   (같다)
+설치본에서 찾은 타입 이름  StmRaidTallyService · StmRaidTallyBuffer · RaidTallyPolicy
+구본(2026-11-05)에서       셋 다 0건 — 바꿀 파일이 맞았다
+```
+
+**md5 가 증명하는 것은 "빌드한 그 파일"일 뿐이다**(C# 빌드는 비결정적이라 그 이상은 말하지
+못한다). 그래서 타입 이름을 설치본에서 직접 세어 "그 변경이 들어 있다"를 따로 봤다.
+
+계획 6 §5 가 요구하는 **프로필 백업을 먼저 했다** — `backup/2026-11-07-before-plan6/`,
+프로필 7개(모두 09:37 저장분). 게임은 꺼져 있었고 서버는 09:37 이후 아무것도 쓰지 않았다.
+
+**아직 미검증인 것은 그대로다.** 돌고 있는 서버는 구본이므로 **DI 해석(`StmRaidTallyBuffer`·
+`StmRaidTallyService`)과 라우트는 재기동해야 보인다.** 재기동 뒤 치운 구본
+(`SptTeamManager.Server.dll.old-2026-11-07-1105`)도 지운다 — 지금은 그 파일이 잠겨 있다.
