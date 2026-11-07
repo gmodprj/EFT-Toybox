@@ -624,6 +624,57 @@ public class StmGearEditService(
         }
     }
 
+    // 빈 자리를 **거기서부터** 찾는다(격자 왼쪽 위가 아니라). 끌어다 놓을 때 화면이 보여 주는
+    // 녹색 덩어리가 놓은 칸에서 시작하므로, 나머지도 그 자리부터 채워야 본 대로 놓인다
+    // (2026-11-07 요청). 거기부터 훑고 끝까지 가면 처음으로 돌아와 나머지를 본다.
+    internal bool TryPlaceFrom(List<Item> items, Item target, string containerId, string gridName, int fromX, int fromY, out string failure)
+    {
+        failure = string.Empty;
+        try
+        {
+            var container = items.FirstOrDefault(i => i?.Id != null && string.Equals(i.Id.ToString(), containerId, StringComparison.Ordinal));
+            var found = container == null ? default : itemHelper.GetItem(container.Template);
+            var grid = (container != null && found.Key ? found.Value?.Properties?.Grids : null)?
+                .FirstOrDefault(g => g?.Name != null && string.Equals(g.Name, gridName, StringComparison.OrdinalIgnoreCase));
+            if (grid?.Properties?.CellsH is not > 0 || grid.Properties.CellsV is not > 0)
+            {
+                failure = $"'{gridName}' 격자의 크기를 읽지 못했다.";
+                return false;
+            }
+
+            var cellsH = grid.Properties.CellsH!.Value;
+            var cellsV = grid.Properties.CellsV!.Value;
+            var start = Math.Clamp(fromY, 0, cellsV - 1) * cellsH + Math.Clamp(fromX, 0, cellsH - 1);
+
+            for (var step = 0; step < cellsH * cellsV; step++)
+            {
+                var cell = (start + step) % (cellsH * cellsV);
+                target.ParentId = containerId;
+                target.SlotId = grid.Name;
+                target.Location = new ItemLocation
+                {
+                    X = cell % cellsH,
+                    Y = cell / cellsH,
+                    R = ItemRotation.Horizontal,
+                };
+
+                if (IsContainerSpotFree(items, target, containerId, grid.Name!))
+                {
+                    return true;
+                }
+            }
+
+            target.Location = null;
+            failure = $"'{grid.Name}' 격자에 빈 자리가 없다.";
+            return false;
+        }
+        catch (Exception ex)
+        {
+            failure = $"자리 찾기가 실패했다: {ex.Message}";
+            return false;
+        }
+    }
+
     internal bool TryPlaceInContainer(List<Item> items, Item target, string containerId, string gridName, out string failure)
     {
         failure = string.Empty;
