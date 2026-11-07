@@ -40,7 +40,7 @@ namespace pitTeam.Patches
         private const string StmTransferButtonText = "스태시 교환";
         private const string StmTransferTitleFormat = "스태시 교환 — {0}";
         private const string StmTransferSubtitle =
-            "스태시 바닥에 놓인 것만 건넬 수 있습니다. 가방을 건네면 안에 든 것은 따라갑니다.";
+            "반대쪽 스태시로 끌어다 놓으면 옮겨집니다. 여럿을 고른 채 끌면 한 번에 갑니다. 스태시 바닥에 놓인 것만 건넬 수 있고, 가방을 건네면 안에 든 것은 따라갑니다.";
         private const string StmTransferOpenFailedToast = "스태시 교환 화면을 열지 못했습니다";
         private const string StmTransferEmptySide = "(비어 있음)";
         private const string StmTransferNothingPicked = "건넬 것을 먼저 고르세요";
@@ -334,8 +334,13 @@ namespace pitTeam.Patches
                 EnableStmTransferMultiSelect();
             }
 
-            CreateStmTransferActionButton(panel.transform, "GiveButton", "건네기 →", new Vector2(-86f, 16f), () => SubmitStmTransfer(toTeammate: true));
-            CreateStmTransferActionButton(panel.transform, "TakeButton", "← 가져오기", new Vector2(86f, 16f), () => SubmitStmTransfer(toTeammate: false));
+            // 격자가 서면 **버튼을 두지 않는다.** 끌어다 놓는 것이 곧 전송이다(B3-c).
+            // 격자를 못 세워 목록으로 떨어졌을 때만 버튼이 필요하다 — 목록은 끌 수 없다.
+            if (!StmTransferGridsReady)
+            {
+                CreateStmTransferActionButton(panel.transform, "GiveButton", "건네기 →", new Vector2(-86f, 16f), () => SubmitStmTransfer(toTeammate: true));
+                CreateStmTransferActionButton(panel.transform, "TakeButton", "← 가져오기", new Vector2(86f, 16f), () => SubmitStmTransfer(toTeammate: false));
+            }
 
             RedrawStmTransferLists();
             return true;
@@ -581,38 +586,29 @@ namespace pitTeam.Patches
             CreateStmTransferPager(list, left, page, pages);
         }
 
-        private static async void SubmitStmTransfer(bool toTeammate)
+        // 목록형(격자를 못 세웠을 때)의 길. 고른 줄을 보낸다.
+        private static void SubmitStmTransfer(bool toTeammate)
+        {
+            HashSet<string> picked = toTeammate ? StmTransferPickedLeft : StmTransferPickedRight;
+            if (picked.Count == 0)
+            {
+                SetStmTransferStatus(StmTransferNothingPicked);
+                return;
+            }
+
+            SubmitStmTransferIds(picked, toTeammate);
+        }
+
+        // 실제로 보내는 자리. 끌어다 놓기와 목록형이 **같은 길**을 쓴다 — 보내는 규칙이 둘로
+        // 갈리면 한쪽만 고쳐지는 자리가 생긴다.
+        private static async void SubmitStmTransferIds(HashSet<string> picked, bool toTeammate)
         {
             if (StmTransferBusy) return;
 
-            HashSet<string> picked;
-            if (StmTransferGridsReady)
+            if (picked == null || picked.Count == 0)
             {
-                // 격자에서는 **지금 고른 것**이 진실이다(UI Fixes 의 복수 선택). 그중 이쪽 스태시의
-                // **바닥에 놓인 것**만 보낸다 — 가방 안의 것을 따로 보내면 서버가 전체를 거절한다.
-                HashSet<string> selection = ReadStmTransferSelection();
-                StmStashSideWire side = toTeammate ? StmTransferPair?.Player : StmTransferPair?.Teammate;
-                HashSet<string> topLevel = new HashSet<string>(
-                    (side?.Items ?? new StmStashEntryWire[0]).Select(i => i.Id).Where(id => !string.IsNullOrEmpty(id)),
-                    StringComparer.Ordinal);
-                picked = new HashSet<string>(selection.Where(topLevel.Contains), StringComparer.Ordinal);
-
-                if (picked.Count == 0)
-                {
-                    SetStmTransferStatus(selection.Count == 0
-                        ? StmTransferNothingPicked
-                        : "고른 것이 이쪽 스태시의 바닥에 놓인 것이 아닙니다. 가방째 고르세요.");
-                    return;
-                }
-            }
-            else
-            {
-                picked = toTeammate ? StmTransferPickedLeft : StmTransferPickedRight;
-                if (picked.Count == 0)
-                {
-                    SetStmTransferStatus(StmTransferNothingPicked);
-                    return;
-                }
+                SetStmTransferStatus(StmTransferNothingPicked);
+                return;
             }
 
             StmTransferBusy = true;
@@ -751,6 +747,67 @@ namespace pitTeam.Patches
                 controller = null;
                 return false;
             }
+        }
+
+        // ---- 끌어다 놓기(B3-c) ----
+        //
+        // 드롭 패치가 묻는 두 가지. 이 자리에 두는 이유는 패널·자료·창 상태가 전부 여기 있어서다.
+
+        /// <summary>
+        /// 이 드롭이 **교차 드롭**인가(한쪽 스태시의 것을 반대쪽 격자에 놓았는가).
+        /// 그럴 때만 참이고, `toTeammate` 가 방향을 말한다.
+        /// </summary>
+        internal static bool StmTransferHandlesDrop(Component targetGrid, Item dragged, out bool toTeammate)
+        {
+            toTeammate = false;
+
+            if (!StmTransferGridsReady || StmTransferOverlayRoot == null || dragged?.Id == null) return false;
+            if (targetGrid == null) return false;
+
+            bool targetIsTeammate = StmTransferRightPanel != null && targetGrid.transform.IsChildOf(StmTransferRightPanel.transform);
+            bool targetIsPlayer = StmTransferLeftPanel != null && targetGrid.transform.IsChildOf(StmTransferLeftPanel.transform);
+            if (!targetIsTeammate && !targetIsPlayer) return false;
+
+            bool fromPlayer = StmTransferSideOwns(StmTransferPair?.Player, dragged.Id);
+            bool fromTeammate = StmTransferSideOwns(StmTransferPair?.Teammate, dragged.Id);
+
+            // 같은 칸 안에서 옮기는 것은 **우리 일이 아니다** — EFT 가 그대로 처리한다.
+            if (fromPlayer && targetIsTeammate) { toTeammate = true; return true; }
+            if (fromTeammate && targetIsPlayer) { toTeammate = false; return true; }
+            return false;
+        }
+
+        // 그 스태시의 **바닥에 놓인 것**인가. 가방 안의 것을 따로 건네는 길은 열지 않는다(B1 정책).
+        private static bool StmTransferSideOwns(StmStashSideWire side, string itemId)
+        {
+            if (side?.Items == null || string.IsNullOrEmpty(itemId)) return false;
+            foreach (StmStashEntryWire entry in side.Items)
+            {
+                if (string.Equals(entry?.Id, itemId, StringComparison.Ordinal)) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>끌어다 놓은 것을 실제로 보낸다. 고른 것이 여럿이면 **한 번에** 보낸다.</summary>
+        internal static void StmTransferDropped(Item dragged, bool toTeammate)
+        {
+            if (dragged?.Id == null) return;
+
+            StmStashSideWire side = toTeammate ? StmTransferPair?.Player : StmTransferPair?.Teammate;
+            HashSet<string> ids = new HashSet<string>(StringComparer.Ordinal) { dragged.Id };
+
+            // 끌어온 것이 지금 고른 것들 중 하나면 그 선택 전체를 보낸다 — 복수로 끌면 그렇게 보인다.
+            HashSet<string> selection = ReadStmTransferSelection();
+            if (selection.Contains(dragged.Id))
+            {
+                foreach (string id in selection)
+                {
+                    if (StmTransferSideOwns(side, id)) ids.Add(id);
+                }
+            }
+
+            SubmitStmTransferIds(ids, toTeammate);
         }
 
         // 선택 상자(UI Fixes)를 우리 창에도 연다. 편집기의 같은 함수와 같은 관문을 선다 —
