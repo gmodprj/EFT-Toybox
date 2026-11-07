@@ -1,3 +1,8 @@
+using Comfort.Common;
+using EFT;
+using EFT.InventoryLogic;
+using HarmonyLib;
+using System.Reflection;
 using EFT.UI;
 using Newtonsoft.Json;
 using pitTeam.Modules;
@@ -59,6 +64,19 @@ namespace pitTeam.Patches
 
         private static Transform StmTransferLeftList;
         private static Transform StmTransferRightList;
+
+        // ---- 격자 패널(B3-b) ----
+        // 한 쪽당 (스태시 트리 + 프로필 + 컨트롤러 + 패널) 한 벌. 장비 편집기가 팀원 스태시에 쓰는
+        // 그 길을 **두 번** 쓴다 — PIT 의 패널 빌더는 바깥에서 받은 프로필/컨트롤러로 그리므로
+        // 두 벌을 따로 세울 수 있다. 다만 그 함수가 끝에 LoadoutEditorStashPanel(전역)에 써 두므로
+        // 부른 **직후에 받아 두고 전역은 비운다** — 편집기의 정리 코드가 우리 패널을 건드리지 않게.
+        private static bool StmTransferGridsReady;
+        private static SimpleStashPanel StmTransferLeftPanel;
+        private static SimpleStashPanel StmTransferRightPanel;
+        private static Profile StmTransferLeftProfile;
+        private static Profile StmTransferRightProfile;
+        private static InventoryController StmTransferLeftController;
+        private static InventoryController StmTransferRightController;
         private static CustomTextMeshProUGUI StmTransferLeftHeader;
         private static CustomTextMeshProUGUI StmTransferRightHeader;
         private static CustomTextMeshProUGUI StmTransferStatusLabel;
@@ -78,6 +96,9 @@ namespace pitTeam.Patches
             public string Nickname { get; set; }
             public string StashRootId { get; set; }
             public StmStashEntryWire[] Items { get; set; }
+
+            // 격자를 세울 재료. 장비 편집기가 팀원 스태시를 세울 때 받는 것과 같은 평면 목록이다.
+            public JsonType.FlatItem[] Tree { get; set; }
         }
 
         internal class StmStashPairWire
@@ -283,6 +304,33 @@ namespace pitTeam.Patches
             StmTransferLeftList = CreateStmTransferColumnBody(panel.transform, "LeftList", left: true);
             StmTransferRightList = CreateStmTransferColumnBody(panel.transform, "RightList", left: false);
 
+            // 인게임 스태시와 같은 격자를 양쪽에 세운다. 하나라도 못 세우면 **둘 다 목록형으로** 간다 —
+            // 한쪽만 격자면 고르는 방법이 좌우로 달라져 더 헷갈린다.
+            // 상세 화면이 열릴 때 채워 둔 그 세션이다(StmDetail). 비어 있으면 격자를 세울 재료
+            // (프로필 껍데기)가 없다 — 조용히 목록으로 떨어지지 않게 그 사실을 적는다.
+            EFT.IEftSession session = ActiveProfileSession;
+            if (session?.Profile == null)
+            {
+                pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 세션이 비어 있어 격자를 세우지 못한다(목록으로 그린다).");
+            }
+            bool leftOk = TryBuildStmTransferGrid(
+                StmTransferPair.Player, StmTransferLeftList as RectTransform, session,
+                out StmTransferLeftPanel, out StmTransferLeftProfile, out StmTransferLeftController);
+            bool rightOk = leftOk && TryBuildStmTransferGrid(
+                StmTransferPair.Teammate, StmTransferRightList as RectTransform, session,
+                out StmTransferRightPanel, out StmTransferRightProfile, out StmTransferRightController);
+
+            StmTransferGridsReady = leftOk && rightOk;
+            if (!StmTransferGridsReady)
+            {
+                DestroyStmTransferGrids();
+                pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 격자를 세우지 못해 목록으로 그린다.");
+            }
+            else
+            {
+                EnableStmTransferMultiSelect();
+            }
+
             CreateStmTransferActionButton(panel.transform, "GiveButton", "건네기 →", new Vector2(-86f, 16f), () => SubmitStmTransfer(toTeammate: true));
             CreateStmTransferActionButton(panel.transform, "TakeButton", "← 가져오기", new Vector2(86f, 16f), () => SubmitStmTransfer(toTeammate: false));
 
@@ -469,12 +517,24 @@ namespace pitTeam.Patches
         {
             if (list == null) return;
 
+            StmStashEntryWire[] items = side?.Items ?? new StmStashEntryWire[0];
+
+            // 격자가 서 있으면 머리줄만 손본다 — 줄 목록을 그 위에 겹쳐 그리지 않는다.
+            if (StmTransferGridsReady)
+            {
+                if (header != null)
+                {
+                    header.text = (left ? "나" : (side?.Nickname ?? "팀원")) + "  —  " + items.Length + "개";
+                }
+
+                return;
+            }
+
             for (int i = list.childCount - 1; i >= 0; i--)
             {
                 GameObject.Destroy(list.GetChild(i).gameObject);
             }
 
-            StmStashEntryWire[] items = side?.Items ?? new StmStashEntryWire[0];
             if (header != null)
             {
                 header.text = (left ? "나" : (side?.Nickname ?? "팀원"))
@@ -519,11 +579,34 @@ namespace pitTeam.Patches
         {
             if (StmTransferBusy) return;
 
-            HashSet<string> picked = toTeammate ? StmTransferPickedLeft : StmTransferPickedRight;
-            if (picked.Count == 0)
+            HashSet<string> picked;
+            if (StmTransferGridsReady)
             {
-                SetStmTransferStatus(StmTransferNothingPicked);
-                return;
+                // 격자에서는 **지금 고른 것**이 진실이다(UI Fixes 의 복수 선택). 그중 이쪽 스태시의
+                // **바닥에 놓인 것**만 보낸다 — 가방 안의 것을 따로 보내면 서버가 전체를 거절한다.
+                HashSet<string> selection = ReadStmTransferSelection();
+                StmStashSideWire side = toTeammate ? StmTransferPair?.Player : StmTransferPair?.Teammate;
+                HashSet<string> topLevel = new HashSet<string>(
+                    (side?.Items ?? new StmStashEntryWire[0]).Select(i => i.Id).Where(id => !string.IsNullOrEmpty(id)),
+                    StringComparer.Ordinal);
+                picked = new HashSet<string>(selection.Where(topLevel.Contains), StringComparer.Ordinal);
+
+                if (picked.Count == 0)
+                {
+                    SetStmTransferStatus(selection.Count == 0
+                        ? StmTransferNothingPicked
+                        : "고른 것이 이쪽 스태시의 바닥에 놓인 것이 아닙니다. 가방째 고르세요.");
+                    return;
+                }
+            }
+            else
+            {
+                picked = toTeammate ? StmTransferPickedLeft : StmTransferPickedRight;
+                if (picked.Count == 0)
+                {
+                    SetStmTransferStatus(StmTransferNothingPicked);
+                    return;
+                }
             }
 
             StmTransferBusy = true;
@@ -582,10 +665,181 @@ namespace pitTeam.Patches
             if (StmTransferStatusLabel != null) StmTransferStatusLabel.text = text ?? string.Empty;
         }
 
+        // 한 쪽의 격자를 세운다. 장비 편집기의 길을 그대로 쓴다:
+        //   평면 목록 → EFT 스태시 트리(FlatItemsToTree) → 그 스태시를 꽂은 프로필 → InventoryController
+        //   → PIT 의 SimpleStashPanel 빌더.
+        // 실패하면 false 를 돌리고 화면은 목록형으로 떨어진다 — 빈 격자를 세워 "스태시가 비었다" 로
+        // 읽히게 두지 않는다.
+        private static bool TryBuildStmTransferGrid(
+            StmStashSideWire side,
+            RectTransform section,
+            EFT.IEftSession session,
+            out SimpleStashPanel panel,
+            out Profile profile,
+            out InventoryController controller)
+        {
+            panel = null;
+            profile = null;
+            controller = null;
+
+            try
+            {
+                if (side?.Tree == null || side.Tree.Length == 0 || string.IsNullOrWhiteSpace(side.StashRootId))
+                {
+                    return false;
+                }
+
+                StmGearStashWire asStash = new StmGearStashWire
+                {
+                    StashRootId = side.StashRootId,
+                    Items = side.Tree,
+                };
+
+                if (!TryBuildStmEditorStash(asStash, out EFT.InventoryLogic.Stash stash, out string stashFailure))
+                {
+                    pitFireTeam.Log.LogWarning($"[STM] 스태시 교환: '{side.Nickname}' 의 격자를 세우지 못했다 ({stashFailure}).");
+                    return false;
+                }
+
+                Profile baseProfile = session?.Profile?.Clone();
+                InventoryEquipment equipment = baseProfile?.Inventory?.Equipment?.CloneItemWithSameId() as InventoryEquipment;
+                if (baseProfile?.Inventory == null || equipment == null)
+                {
+                    return false;
+                }
+
+                EFT.InventoryDescriptor descriptor = new EFT.InventoryDescriptor(baseProfile.Inventory, EFT.FullySearchedSearchController.Instance)
+                {
+                    Equipment = EFT.ItemBinarySerializer.SerializeItem(equipment, null),
+                    Stash = EFT.ItemBinarySerializer.SerializeItem(stash, null),
+                };
+
+                baseProfile.Inventory = descriptor.ToInventory();
+                if (baseProfile.Inventory?.Stash == null
+                    || !string.Equals(baseProfile.Inventory.Stash.Id, side.StashRootId, StringComparison.OrdinalIgnoreCase))
+                {
+                    // 세운 스태시가 서버가 말한 그 스태시가 아니면 믿을 수 없다(편집기와 같은 관문).
+                    return false;
+                }
+
+                profile = baseProfile;
+                // examined: true — 편집기와 같은 이유다(살펴보지 않은 것으로 보면 조작 메뉴가 셋만 남는다).
+                controller = new StmGearEditInventoryController(profile, true);
+
+                SimpleStashPanel previous = LoadoutEditorStashPanel;
+                LoadoutEditorStashPanel = null;
+                TryBuildLoadoutEditorStashPanel(
+                    section, profile, controller,
+                    new EFT.InventoryLogic.InventorySelectableItemContext(EItemViewType.Inventory));
+                panel = LoadoutEditorStashPanel;
+                LoadoutEditorStashPanel = previous;
+
+                return panel != null;
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] 스태시 교환: 격자를 세우다 실패했다.");
+                pitFireTeam.Log.LogError(ex);
+                panel = null;
+                profile = null;
+                controller = null;
+                return false;
+            }
+        }
+
+        // 선택 상자(UI Fixes)를 우리 창에도 연다. 편집기의 같은 함수와 같은 관문을 선다 —
+        // 설 수 없는 자리면 붙이지 않는다(붙이면 매 프레임 null 을 만진다).
+        private static void EnableStmTransferMultiSelect()
+        {
+            try
+            {
+                if (StmTransferOverlayRoot == null) return;
+
+                Type drawMultiSelect = AccessTools.TypeByName("UIFixes.DrawMultiSelect");
+                if (drawMultiSelect == null) return;
+
+                if (StmTransferOverlayRoot.GetComponentInParent<GraphicRaycaster>() == null) return;
+
+                PreloaderUI preloader = Singleton<PreloaderUI>.Instance;
+                if (preloader == null
+                    || preloader.transform.childCount == 0
+                    || preloader.transform.GetChild(0).GetComponent<GraphicRaycaster>() == null)
+                {
+                    return;
+                }
+
+                if (StmTransferOverlayRoot.GetComponent(drawMultiSelect) != null) return;
+                StmTransferOverlayRoot.AddComponent(drawMultiSelect);
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 선택 상자를 켜지 못했다: " + ex.Message);
+            }
+        }
+
+        private static void DestroyStmTransferGrids()
+        {
+            foreach (SimpleStashPanel panel in new[] { StmTransferLeftPanel, StmTransferRightPanel })
+            {
+                try
+                {
+                    if (panel != null)
+                    {
+                        panel.Close();
+                        GameObject.Destroy(panel.gameObject);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 격자를 치우다 실패했다: " + ex.Message);
+                }
+            }
+
+            StmTransferLeftPanel = null;
+            StmTransferRightPanel = null;
+            StmTransferLeftProfile = null;
+            StmTransferRightProfile = null;
+            StmTransferLeftController = null;
+            StmTransferRightController = null;
+            StmTransferGridsReady = false;
+        }
+
+        // 복수 선택(UI Fixes)에서 지금 고른 아이템의 id 를 읽는다. UI Fixes 가 없으면 빈 목록이다 —
+        // 그때는 화면이 "고른 것이 없다" 고 말하고 아무것도 보내지 않는다(조용히 전부 보내지 않는다).
+        private static HashSet<string> ReadStmTransferSelection()
+        {
+            HashSet<string> ids = new HashSet<string>(StringComparer.Ordinal);
+            try
+            {
+                Type multiSelect = AccessTools.TypeByName("UIFixes.MultiSelect");
+                PropertyInfo contexts = multiSelect == null ? null : AccessTools.Property(multiSelect, "ItemContexts");
+                if (contexts?.GetValue(null) is System.Collections.IEnumerable list)
+                {
+                    foreach (object entry in list)
+                    {
+                        if (entry is EFT.InventoryLogic.ItemContext itemContext && itemContext.Item?.Id != null)
+                        {
+                            ids.Add(itemContext.Item.Id);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 고른 것을 읽지 못했다: " + ex.Message);
+            }
+
+            return ids;
+        }
+
         // 겉틀만 치운다. **받아 온 자료(StmTransferPair)와 고른 것은 건드리지 않는다** — 다시 그릴 때도
         // 이 함수를 쓰기 때문이다. 자료까지 비우는 것은 화면을 정말 닫을 때뿐이다.
         private static void DestroyStmTransferOverlayRoot()
         {
+            // 격자를 **먼저** 닫는다. 겉틀을 먼저 없애면 패널이 자기 자식과 함께 사라져
+            // Close() 가 이미 없는 것을 만진다.
+            DestroyStmTransferGrids();
+
             try
             {
                 if (StmTransferOverlayRoot != null)
