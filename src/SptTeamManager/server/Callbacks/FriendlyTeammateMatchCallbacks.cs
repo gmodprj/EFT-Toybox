@@ -33,6 +33,8 @@ public class FriendlyTeammateMatchCallbacks(
     // 요청 1-1 — PIT 의 경로에서 걸러낸 프로필 팀원의 **수치**(사살·생존 초)를 버리지 않고
     // 담아 둔다. 적립 자체는 레이드 id 를 들고 있는 생사 쪽이 한다(StmRaidTallyBuffer 참조).
     StmRaidTallyBuffer tallyBuffer,
+    // 뒤늦게 온 수치를 그 자리에서 쌓는다(2단계). 1단계가 담아 둔 레이드 id 가 있을 때만 부른다.
+    StmRaidTallyService tallyService,
     ICloner cloner,
     ISptLogger<FriendlyTeammateMatchCallbacks> logger
 )
@@ -483,11 +485,22 @@ public class FriendlyTeammateMatchCallbacks(
                 skipped++;
 
                 // 요청 1-1: PIT 에게 넘기지는 않지만 **수치는 버리지 않는다.** 클라이언트가 봇의
-                // SessionCounters 에서 센 값이고(client/Modules/BossPlayers.cs), 레이드 종료의 생사
-                // 보고가 이것을 꺼내 적립한다. 짝이 오지 않으면 버퍼에서 저절로 만료된다.
+                // SessionCounters 에서 센 값이다(client/Modules/BossPlayers.cs).
+                //
+                // **2026-11-07 실측 — 생사 쪽이 먼저다.** 그래서 두 길을 다 둔다:
+                //   담아 둔 레이드 id 가 있으면 = 1단계가 수치 없이 이미 쌓았다 → 여기서 수치만 쌓는다.
+                //   없으면                      = 생사가 아직 안 왔다 → 담아 두고 그쪽이 꺼내 쓴다.
+                // 어느 순서로 와도 한 번씩만 쌓인다(영수증의 열쇠 공간이 둘로 갈려 있다).
                 if (entry != null)
                 {
-                    tallyBuffer.RecordNumbers(sessionId, entry.Aid, entry.KillCount, entry.RaidSeconds);
+                    if (tallyBuffer.TryTakeRaid(sessionId, entry.Aid, out var pendingRaidId))
+                    {
+                        tallyService.ApplyNumbers(sessionId, pendingRaidId, entry.Aid, entry.KillCount, entry.RaidSeconds);
+                    }
+                    else
+                    {
+                        tallyBuffer.RecordNumbers(sessionId, entry.Aid, entry.KillCount, entry.RaidSeconds);
+                    }
                 }
 
                 continue;

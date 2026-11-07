@@ -44,6 +44,11 @@ public class StmRaidTallyService(
     // 이유가 없다(불변식 4 와 같은 결).
     private const string TallyRaidSuffix = "#tally";
 
+    // 2단계(수치)의 영수증은 **열쇠 공간이 따로다.** 같은 판에서 1단계가 이미 '#tally' 를 썼으므로
+    // 같은 접미사를 쓰면 수치가 "이미 적립된 판" 으로 걸러져 영원히 안 쌓인다.
+    private const string NumbersAction = "accrue-raid-numbers";
+    private const string NumbersRaidSuffix = "#tally-nums";
+
     // 열거된 다섯 열쇠만 쓴다. 표에 없는 것은 만들지 않는다 - 없는 열쇠를 프로필에 넣으면
     // 게임이나 다른 모드가 그것을 어떻게 읽을지 모른다(2026-10-28 에 `Ammo` 클래스 정의 노드에
     // 값을 써서 장전이 먹통이 된 그 종류의 실수다).
@@ -133,6 +138,81 @@ public class StmRaidTallyService(
             // PIT 의 경로로 던지지 않는다. 여기서 실패하면 그 판의 전적이 안 쌓이는 것이 값이고,
             // 던지면 레이드 종료 처리 전체가 멈춘다.
             logger.Error($"[STM] 전적 적립: 프로필 팀원 '{accountId}'(세션 '{sessionId}', 레이드 '{raidId}') 처리에 실패했다: {ex}");
+        }
+    }
+
+    // 2단계 — 뒤늦게 온 수치(사살·생존 시간)만 쌓는다. **레이드 횟수·생사·연속 기록은 건드리지
+    // 않는다**(1단계가 이미 쌓았고, 다시 더하면 한 판이 두 판이 된다).
+    //
+    // 2026-11-07 실측으로 생긴 길이다 — 생사가 수치보다 먼저 처리돼, 1단계만으로는 사살과
+    // 플레이시간이 영원히 0 이었다(그 판 네 명 모두 그랬다).
+    public void ApplyNumbers(MongoId sessionId, string? raidId, string? accountId, int kills, int raidSeconds)
+    {
+        try
+        {
+            // 쌓을 것이 없으면 영수증도 쓰지 않는다 - 진짜 수치가 더 늦게 오면 그때 쌓을 수 있어야 한다.
+            if (kills <= 0 && raidSeconds <= 0) return;
+
+            if (!resolver.TryResolve(sessionId, accountId, out var member, out var unavailableReason) || member == null)
+            {
+                if (!string.IsNullOrWhiteSpace(unavailableReason))
+                {
+                    logger.Warning($"[STM] 전적 적립(수치): 프로필 팀원 '{accountId}'(세션 '{sessionId}')을 읽을 수 없어({unavailableReason}) 적립하지 않는다.");
+                }
+
+                return;
+            }
+
+            var profileId = new MongoId(member.ProfileId);
+
+            if (saveServer.IsProfileInvalidOrUnloadable(profileId))
+            {
+                logger.Error($"[STM] 전적 적립(수치): 프로필 '{member.ProfileId}'(레이드 '{raidId}')이 손상/적재 불가로 표시돼 있어 저장되지 않는다. 적립하지 않고 영수증도 남기지 않는다.");
+                return;
+            }
+
+            var numbersRaidId = string.IsNullOrWhiteSpace(raidId) ? null : raidId!.Trim() + NumbersRaidSuffix;
+            if (!RaidReceiptKeyPolicy.IsUsableKey(numbersRaidId, member.ProfileId))
+            {
+                logger.Error($"[STM] 전적 적립(수치): '{member.Nickname}'(프로필 '{member.ProfileId}')의 레이드 식별자가 비어 있어(raidId '{raidId}') 멱등을 지킬 수 없다. 적립하지 않는다.");
+                return;
+            }
+
+            if (!receipts.TryReserve(sessionId, numbersRaidId, member.ProfileId, NumbersAction))
+            {
+                logger.Info($"[STM] 전적 적립(수치): '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}')의 수치는 이미 쌓인 판이라 다시 쌓지 않는다.");
+                return;
+            }
+
+            var eft = EnsureCounters(member.Pmc);
+            if (eft == null)
+            {
+                logger.Error($"[STM] 전적 적립(수치): 프로필 '{member.ProfileId}'의 통계 자리를 만들 수 없어 적립하지 않는다. 영수증은 이미 예약됐다.");
+                return;
+            }
+
+            var plan = RaidTallyPolicy.DecideNumbers(new RaidNumbers(member.ProfileId, kills, raidSeconds));
+            if (!plan.Accepted)
+            {
+                logger.Error($"[STM] 전적 적립(수치): '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}') - {plan.Reason} 영수증은 이미 예약됐다.");
+                return;
+            }
+
+            foreach (var increment in plan.Increments)
+            {
+                Add(eft, increment.Key, increment.Value);
+            }
+
+            eft.TotalInGameTime = (eft.TotalInGameTime ?? 0) + plan.TotalInGameTimeDelta;
+
+            var elapsedMs = saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
+            logger.Info(
+                $"[STM] 전적 적립(수치): '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}') - {plan.Reason} 저장했다({elapsedMs}ms). " +
+                $"누적 사살 {Read(eft, "Kills")} / 누적 플레이 {eft.TotalInGameTime ?? 0}초.");
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 전적 적립(수치): 프로필 팀원 '{accountId}'(세션 '{sessionId}', 레이드 '{raidId}') 처리에 실패했다: {ex}");
         }
     }
 
