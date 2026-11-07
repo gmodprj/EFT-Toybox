@@ -234,6 +234,9 @@ namespace pitTeam.Modules
             var button = UnityEngine.Object.Instantiate(template, controls.transform, false);
             button.gameObject.SetActive(true);
             button.SetRawText(Text(key), button.HeaderSize);
+            // 템플릿의 글자 상자가 한 글자치 폭이라 한국어가 "장" 하나로 잘렸다(2026-11-07 실측).
+            // 버튼의 크기·색·동작은 그대로다 — 안쪽 글자 상자만 늘이고 줄바꿈을 끈다.
+            StmButtonLabelFit.Fit(button);
             button.SetIcon(null);
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener(() => { if (!busy) action(); });

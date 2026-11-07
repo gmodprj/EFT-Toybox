@@ -530,6 +530,8 @@ namespace pitTeam.Components
                 loadProfileButton = Instantiate(buttonTemplate, rosterRect, false);
                 loadProfileButton.name = "pitFireTeam_SquadControlLoadProfileButton";
                 loadProfileButton.SetRawText(StmProfileRosterClient.LoadButtonText, playerButton.HeaderSize);
+                // 템플릿의 글자 상자는 한 글자치 폭이라 한국어가 "프" 하나로 잘렸다(2026-11-07 실측).
+                StmButtonLabelFit.Fit(loadProfileButton);
                 loadProfileButton.SetIcon(null);
                 loadProfileButton.Interactable = true;
                 loadProfileButton.OnClick.RemoveAllListeners();
