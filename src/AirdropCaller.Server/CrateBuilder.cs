@@ -2,6 +2,7 @@ using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Helpers.Items;
+using SPTarkov.Server.Core.Helpers.Profile;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.Location;
@@ -24,7 +25,8 @@ namespace AirdropCaller.Server;
 /// </summary>
 [Injectable(InjectionType.Singleton)]
 public class CrateBuilder(
-    ISptLogger<CrateBuilder> logger, ItemHelper itemHelper, SlotFiller slotFiller, BigCrate bigCrate)
+    ISptLogger<CrateBuilder> logger, ItemHelper itemHelper, InventoryHelper inventoryHelper,
+    SlotFiller slotFiller, BigCrate bigCrate)
 {
     /// <summary>중첩이 끝없이 깊어지는 것을 막는다. 가방 안의 가방 정도면 충분하다.</summary>
     private const int MaxDepth = 4;
@@ -80,7 +82,8 @@ public class CrateBuilder(
             Upd = new Upd { SpawnedInSession = true, StackObjectsCount = 1.0 },
         };
 
-        if (!TryOpenContainer(crateTpl, out var crateMap, out var crateSlot))
+        var crateSpots = OpenContainer(crate, crateTpl);
+        if (crateSpots.Count == 0)
         {
             logger.Error($"[AirdropCaller] {dropId}: 상자 {crateTpl} 에 격자가 없다.");
             return null;
@@ -91,7 +94,7 @@ public class CrateBuilder(
         var adjusted = new List<string>();
         var tally = new Tally();
 
-        Place(spec.Items, [new Spot(crate, crateMap!, crateSlot)], items, skipped, adjusted, tally, depth: 0);
+        Place(spec.Items, crateSpots, items, skipped, adjusted, tally, depth: 0);
 
         return new Result(
             new GetAirdropLootResponse { Icon = icon, Container = items },
@@ -217,9 +220,10 @@ public class CrateBuilder(
                 }
 
                 // 안에 넣을 것이 있다. 이 품목이 격자를 가진 그릇이어야 한다.
-                if (TryOpenContainer(item.Template, out var childMap, out var childSlot))
+                var childSpots = OpenContainer(item, item.Template);
+                if (childSpots.Count > 0)
                 {
-                    copies.Add(new Spot(item, childMap!, childSlot));
+                    copies.AddRange(childSpots);
                 }
                 else
                 {
@@ -294,42 +298,53 @@ public class CrateBuilder(
     /// 밖에서 오는 tpl 로 부르는 자리라 던지게 둘 수 없어 감싼다. 격자가 여럿인
     /// 물건(조끼 등)은 **첫 칸만** 쓴다 — 적게 담을지언정 틀리게 담지는 않는다.
     /// </summary>
-    private bool TryOpenContainer(MongoId tpl, out int[,]? map, out string slotId)
+    /// <summary>
+    /// 용기의 **격자를 전부** 연다 — 격자 하나가 그릇(<see cref="Spot"/>) 하나다.
+    ///
+    /// 전에는 `grids.FirstOrDefault()` 로 **첫 격자만** 열었다. 가방처럼 격자가 하나인
+    /// 것은 멀쩡했지만 리그·워벨트·주머니는 격자가 여러 개라 나머지 칸을 못 썼다 —
+    /// 실측(2026-11-07): 워벨트 격자 **11개 중 1개**(25칸 중 6칸), 주머니·리그 **4개 중
+    /// 1개**(8칸 중 2칸). 그래서 장비를 통째로 뽑아 넣으면 "자리 없음" 이 쏟아졌다.
+    ///
+    /// 격자마다 **자기 지도**를 만든다. `GetContainerMapping` 은 여러 격자를 **하나로
+    /// 합쳐** 버려서 쓸 수 없다 — 칸 수는 맞아 보여도 `SlotId` 가 한 격자를 가리킨다.
+    ///
+    /// <see cref="Settle"/> 가 이미 "그릇을 차례로 두드린다" 라서 호출부는 그대로다.
+    /// </summary>
+    private List<Spot> OpenContainer(Item owner, MongoId tpl)
     {
-        map = null;
-        slotId = "main";
+        var spots = new List<Spot>();
 
         var (ok, template) = itemHelper.GetItem(tpl);
         var grids = template?.Properties?.Grids;
         if (!ok || grids is null)
         {
-            return false;
+            return spots;
         }
 
-        var first = grids.FirstOrDefault();
-        if (first is null)
+        foreach (var grid in grids)
         {
-            return false;
-        }
-        if (first.Properties?.CellsH is not > 0 || first.Properties?.CellsV is not > 0)
-        {
-            return false;
+            var h = grid?.Properties?.CellsH;
+            var v = grid?.Properties?.CellsV;
+            if (h is not > 0 || v is not > 0)
+            {
+                continue;
+            }
+
+            var name = string.IsNullOrWhiteSpace(grid!.Name) ? "main" : grid.Name!;
+            try
+            {
+                // 새 상자라 안에 든 것이 없다. 빈 목록으로 격자 하나짜리 지도를 받는다.
+                var map = inventoryHelper.GetContainerMap(h.Value, v.Value, [], owner.Id);
+                spots.Add(new Spot(owner, map, name));
+            }
+            catch (Exception e)
+            {
+                // 격자 하나를 못 열어도 나머지는 쓴다. 조용히 넘기지 않는다.
+                logger.Error($"[AirdropCaller] {tpl} 의 격자 {name} 을 열지 못했다: {e.Message}");
+            }
         }
 
-        if (!string.IsNullOrWhiteSpace(first.Name))
-        {
-            slotId = first.Name!;
-        }
-
-        try
-        {
-            map = itemHelper.GetContainerMapping(tpl);
-            return true;
-        }
-        catch (Exception e)
-        {
-            logger.Error($"[AirdropCaller] {tpl} 의 격자를 읽지 못했다: {e.Message}");
-            return false;
-        }
+        return spots;
     }
 }
