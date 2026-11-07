@@ -7677,3 +7677,20 @@ cp src/SptTeamManager/server/bin/Release/net10.0/SptTeamManager.Server.dll .
 
 A4 가 더한 서버 코드 341줄에 **단위 테스트가 없다**(테스트 수가 642 에서 그대로다).
 `StmRaidTallyBuffer` 는 런타임에 안 묶여 있어 시험할 수 있다 — 거기부터가 싸다.
+
+### 종료 스크립트의 첫 실사용 — 됐다 (같은 날 12:30)
+
+마무리 중에 서버 상태를 다시 재다가, `tasklist /FI ...` 가 **Git Bash 에서 `/FI` 를 경로로**
+먹혀 아무것도 못 찾은 것을 "프로세스 없음" 으로 읽었다. PowerShell 로 다시 재니 **12:03
+기동(PID 44664)이 살아 있었다** — 다만 7829 는 `CLOSED` 로 수신을 놓은 상태였다.
+"포트가 안 열렸다" 와 "프로세스가 없다" 는 다른 말이다.
+
+`tools/stop-spt-server.ps1` 을 처음으로 실제로 썼다. 게임이 없으므로 통과했고, 정상 종료가
+닿지 않아(창 핸들 0) 강제 종료로 넘어갔고, **DLL 을 열어 잠김이 풀린 것까지** 찍었다.
+
+```
+찾음: SPT.Server PID 44664 (기동 11/07/2026 12:03:19)
+정상 종료가 안 닿았다 — 강제 종료: SPT.Server PID 44664
+종료됨.
+DLL 잠김 풀림: E:\Spt\SPT_Runtime\user\mods\SptTeamManager-ServerMod\SptTeamManager.Server.dll
+```
