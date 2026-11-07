@@ -166,6 +166,11 @@ public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCal
                 "/stm/members/kit-buy",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.KitBuy(url, info, sessionId))
             ),
+            // 계획 6 B2 — 플레이어 ↔ 팀원 스태시 전송(요청 2). 방향은 요청이 적는다.
+            new RouteAction<StmStashTransferRequest>(
+                "/stm/members/stash-transfer",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.StashTransfer(url, info, sessionId))
+            ),
             new RouteAction<StmDiscardJournalRequest>(
                 "/stm/members/discard-journal",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.DiscardUnreadableJournal(url, info, sessionId))
