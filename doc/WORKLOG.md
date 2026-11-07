@@ -7601,3 +7601,79 @@ cp src/SptTeamManager/server/bin/Release/net10.0/SptTeamManager.Server.dll .
 **아직 미검증인 것은 그대로다.** 돌고 있는 서버는 구본이므로 **DI 해석(`StmRaidTallyBuffer`·
 `StmRaidTallyService`)과 라우트는 재기동해야 보인다.** 재기동 뒤 치운 구본
 (`SptTeamManager.Server.dll.old-2026-11-07-1105`)도 지운다 — 지금은 그 파일이 잠겨 있다.
+
+### 기동 확인 — DI 는 해석됐다 (같은 날 12:03)
+
+사용자가 서버를 닫아 주어 잠김이 풀렸고, 치워 둔 구본 DLL 을 지우고 **에이전트의 백그라운드
+작업으로 서버를 띄웠다**(PID 44664, 12:03:19, 7829 포트 수신). 로그는 UTC 라 03:03 로 찍힌다.
+
+```
+[03:04:00] Teammate database ready: ... (프로필 7개 전부)
+[03:04:01] PitFireTeam loaded
+이번 기동의 pitTeam/STM Error·Warning        0건
+'unable to resolve'·'no service for type'   0건
+```
+
+**그래서 DI 해석은 통과했다.** `StmRaidTallyBuffer`·`StmRaidTallyService` 는 싱글턴이고
+`StmRaidOutcomeService`·`FriendlyTeammateMatchCallbacks` 의 생성자 인자다 — 등록이 빠졌으면
+플러그인 로드가 그 자리에서 터진다. 터지지 않고 `PitFireTeam loaded` 가 떴다.
+
+같은 기동의 다른 오류 줄은 **전부터 있던 것**이다(`ItemBaseClassService`
+"Could not add … to cache" 는 11-04 1,972건 · 11-05 2,892건 · 11-06 1,972건 으로 매 기동
+나온다. 번들 하나 `barrel_vpo215_600mm_366tkm` 도 같다). STM 과 무관하다.
+
+**아직 미검증인 것은 하나로 줄었다** — 프로필에 숫자가 실제로 쌓이는 것. 그것은 계획 6 §5 의
+1~6번, 레이드를 한 판 돌아야 본다. 백업은 `backup/2026-11-07-before-plan6/` 에 있다.
+
+### 종료를 전용 스크립트로 묶었다
+
+서버를 **띄우는 것은 허용되는데 닫는 것은 권한 분류기가 거부**해서(Bash·PowerShell 양쪽.
+창 핸들이 0 이라 `CloseMainWindow` 도 닿지 않는다) 에이전트가 자기가 띄운 것을 못 닫는
+비대칭이 있었다. 게다가 이 서버는 **옆 세션의 백그라운드 작업**이 띄운 것이어서
+`TaskStop` 도 "No task found" 였다(작업 등록은 세션별이다). 옆 세션에 닫으라고 시키는 것은
+이 세션에서 거부된 동작을 남을 통해 하는 것이라 하지 않았다.
+
+그래서 `tools/stop-spt-server.ps1` 로 묶었다. 넓은 `Stop-Process` 를 허용하는 대신 이 스크립트
+하나만 열면 된다:
+
+```
+"PowerShell(pwsh -NoProfile -File E:\Spt_Mods\tools\stop-spt-server.ps1*)"
+```
+
+그 스크립트는 **게임이 돌고 있으면 아무것도 하지 않고 중단**하고(레이드 중 끊김), 정상 종료를
+먼저 보낸 뒤 강제 종료로 넘어가고, **프로세스가 사라진 것으로 끝내지 않고 DLL 을 실제로 열어**
+잠김이 풀렸는지 본다.
+
+### 마무리에서 내 보고가 낡아 있었다 (같은 날 12:20)
+
+마무리 보고에 **`main`·`develop` 이 같고 브랜치는 둘뿐이고 서버가 돌고 있다**고 적었다. 셋 다
+그 시점에는 틀렸다. 07e 를 낸 뒤 **A4 와 설치 기록 커밋이 더 들어가** `develop` 이 4개 앞서
+있었고, `feat/stm-raid-tally` 가 남아 있었고, 서버는 닫혀 있었다. 릴리스 당시에는 맞던 문장을
+**다시 재지 않고 그대로 들고 온 것**이다.
+
+| 적었던 것 | 실제 |
+| --- | --- |
+| `main..develop` = 0 | **4** (A4·설치 기록·종료 스크립트) |
+| 브랜치 `develop`·`main` 둘뿐 | `feat/stm-raid-tally` 가 더 있었다(이미 머지됨) |
+| 서버 가동 중 | 꺼져 있었다 — 포트 비었고 프로세스 없음 |
+| 문서 색인 빠진 것 0개 | **4개** (`fixes/` 셋, `mod-patches/` 하나) |
+
+고친 것: 07f 로 릴리스하고(`d59fb7e`), 머지된 브랜치를 지우고, 빠진 문서 넷을 색인에 넣고,
+인계에 §2-B(A4)를 더했다.
+
+**인계에 한 번 더 틀리게 적었다** — "A4 의 DLL 은 올라온 적이 없다" 고 썼는데, 이 WORKLOG 의
+`기동 확인 — DI 는 해석됐다 (같은 날 12:03)` 이 바로 위에 있었다. 같은 파일 끝을 안 읽은 것이다.
+**"문서 확인" 은 끝까지 읽는 것**이라는 교훈을 또 한 번 값을 치르고 지불했다.
+
+### 이번에 쟀고 그대로 남는 것
+
+| 대상 | 값 |
+| --- | --- |
+| 테스트 | 642개 전부 통과(실패 0) |
+| STM 서버 모드 빌드 | 경고 0 오류 0 |
+| 설치 기록 | `OK — 0/0` (기록 285파일 / 14,001줄 / 모드 304개) |
+| 설치본 DLL | md5 `58007140b795f13a7976514d89068378` — 빌드본과 같다. `StmRaidTallyService`·`StmRaidTallyBuffer`·`RaidTallyPolicy` 가 들어 있다 |
+| 치워 둔 구본 DLL | 남아 있지 않다 |
+
+A4 가 더한 서버 코드 341줄에 **단위 테스트가 없다**(테스트 수가 642 에서 그대로다).
+`StmRaidTallyBuffer` 는 런타임에 안 묶여 있어 시험할 수 있다 — 거기부터가 싸다.
