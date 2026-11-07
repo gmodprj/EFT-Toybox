@@ -30,6 +30,9 @@ public class FriendlyTeammateMatchCallbacks(
     StmSpawnProfileFactory spawnProfileFactory,
     StmProfileMemberStore profileMemberStore,
     StmProfileCatalog profileCatalog,
+    // 요청 1-1 — PIT 의 경로에서 걸러낸 프로필 팀원의 **수치**(사살·생존 초)를 버리지 않고
+    // 담아 둔다. 적립 자체는 레이드 id 를 들고 있는 생사 쪽이 한다(StmRaidTallyBuffer 참조).
+    StmRaidTallyBuffer tallyBuffer,
     ICloner cloner,
     ISptLogger<FriendlyTeammateMatchCallbacks> logger
 )
@@ -478,6 +481,15 @@ public class FriendlyTeammateMatchCallbacks(
             if (ShouldSkipFollowerProgress(sessionId, entry))
             {
                 skipped++;
+
+                // 요청 1-1: PIT 에게 넘기지는 않지만 **수치는 버리지 않는다.** 클라이언트가 봇의
+                // SessionCounters 에서 센 값이고(client/Modules/BossPlayers.cs), 레이드 종료의 생사
+                // 보고가 이것을 꺼내 적립한다. 짝이 오지 않으면 버퍼에서 저절로 만료된다.
+                if (entry != null)
+                {
+                    tallyBuffer.RecordNumbers(sessionId, entry.Aid, entry.KillCount, entry.RaidSeconds);
+                }
+
                 continue;
             }
 
