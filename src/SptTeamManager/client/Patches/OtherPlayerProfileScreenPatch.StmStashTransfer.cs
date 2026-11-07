@@ -70,6 +70,13 @@ namespace pitTeam.Patches
         // 그 길을 **두 번** 쓴다 — PIT 의 패널 빌더는 바깥에서 받은 프로필/컨트롤러로 그리므로
         // 두 벌을 따로 세울 수 있다. 다만 그 함수가 끝에 LoadoutEditorStashPanel(전역)에 써 두므로
         // 부른 **직후에 받아 두고 전역은 비운다** — 편집기의 정리 코드가 우리 패널을 건드리지 않게.
+
+        // 끌어다 놓은 그 한 개와 그 자리. 서버가 **그 자리에 그대로** 놓는다(나머지는 빈 자리를 찾는다).
+        private static string StmTransferAnchorId;
+        private static string StmTransferAnchorGrid;
+        private static int StmTransferAnchorX = -1;
+        private static int StmTransferAnchorY = -1;
+        private static int StmTransferAnchorRotation;
         private static bool StmTransferGridsReady;
         private static SimpleStashPanel StmTransferLeftPanel;
         private static SimpleStashPanel StmTransferRightPanel;
@@ -366,6 +373,11 @@ namespace pitTeam.Patches
                 TextAlignmentOptions.MidlineLeft, string.Empty,
                 17f, new Color(0.87f, 0.87f, 0.84f, 1f));
 
+            // 줄바꿈을 끈다 — 켜 두면 한국어 닉네임이 글자마다 줄이 바뀌어 **첫 글자만** 보인다
+            // (버튼에서 당한 것과 같은 자리다, 2026-11-07).
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
+
             RectTransform rect = label.transform as RectTransform;
             if (rect != null)
             {
@@ -623,6 +635,11 @@ namespace pitTeam.Patches
                     profileId = StmTransferProfileId,
                     toTeammate,
                     itemIds = ids,
+                    anchorItemId = StmTransferAnchorId,
+                    anchorGrid = StmTransferAnchorGrid,
+                    anchorX = StmTransferAnchorX,
+                    anchorY = StmTransferAnchorY,
+                    anchorRotation = StmTransferAnchorRotation,
                 });
 
                 SetStmTransferStatus("옮기는 중…");
@@ -644,6 +661,15 @@ namespace pitTeam.Patches
                 {
                     StmTransferPageLeft = 0;
                     StmTransferPageRight = 0;
+
+                    // **격자는 다시 세워야 바뀐다.** 머리줄만 고치면 숫자는 맞는데 칸은 그대로라,
+                    // "일부만 옮겨졌다" 로 보이고 창을 껐다 켜면 멀쩡하다(2026-11-07 지적).
+                    // 격자는 세울 때의 스태시 트리를 들고 있어서, 새 트리로 다시 세우는 수밖에 없다.
+                    if (StmTransferGridsReady)
+                    {
+                        RebuildStmTransferGrids();
+                    }
+
                     RedrawStmTransferLists();
                 }
 
@@ -791,10 +817,19 @@ namespace pitTeam.Patches
             return false;
         }
 
-        /// <summary>끌어다 놓은 것을 실제로 보낸다. 고른 것이 여럿이면 **한 번에** 보낸다.</summary>
-        internal static void StmTransferDropped(Item dragged, bool toTeammate)
+        /// <summary>
+        /// 끌어다 놓은 것을 실제로 보낸다. 고른 것이 여럿이면 **한 번에** 보낸다.
+        /// 놓은 자리(격자 이름·칸·회전)를 함께 보내 **그 자리에 그대로** 놓이게 한다.
+        /// </summary>
+        internal static void StmTransferDropped(Item dragged, bool toTeammate, string gridName, int x, int y, int rotation)
         {
             if (dragged?.Id == null) return;
+
+            StmTransferAnchorId = dragged.Id;
+            StmTransferAnchorGrid = gridName;
+            StmTransferAnchorX = x;
+            StmTransferAnchorY = y;
+            StmTransferAnchorRotation = rotation;
 
             StmStashSideWire side = toTeammate ? StmTransferPair?.Player : StmTransferPair?.Teammate;
             HashSet<string> ids = new HashSet<string>(StringComparer.Ordinal) { dragged.Id };
@@ -839,6 +874,36 @@ namespace pitTeam.Patches
             catch (Exception ex)
             {
                 pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 선택 상자를 켜지 못했다: " + ex.Message);
+            }
+        }
+
+        // 전송 뒤 양쪽 격자를 **새 자료로 다시 세운다.** 세우지 못하면 목록으로 떨어진다.
+        private static void RebuildStmTransferGrids()
+        {
+            try
+            {
+                DestroyStmTransferGrids();
+
+                EFT.IEftSession session = ActiveProfileSession;
+                bool leftOk = TryBuildStmTransferGrid(
+                    StmTransferPair?.Player, StmTransferLeftList as RectTransform, session,
+                    out StmTransferLeftPanel, out StmTransferLeftProfile, out StmTransferLeftController);
+                bool rightOk = leftOk && TryBuildStmTransferGrid(
+                    StmTransferPair?.Teammate, StmTransferRightList as RectTransform, session,
+                    out StmTransferRightPanel, out StmTransferRightProfile, out StmTransferRightController);
+
+                StmTransferGridsReady = leftOk && rightOk;
+                if (!StmTransferGridsReady)
+                {
+                    DestroyStmTransferGrids();
+                    pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 전송 뒤 격자를 다시 세우지 못했다. 창을 닫았다 열면 다시 선다.");
+                }
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] 스태시 교환: 격자를 다시 세우다 실패했다.");
+                pitFireTeam.Log.LogError(ex);
+                StmTransferGridsReady = false;
             }
         }
 
