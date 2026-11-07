@@ -22,6 +22,19 @@ namespace pitTeam.Shared
     // (실측 모양: ["Sessions","Pmc"] · ["ExitStatus","Survived","Pmc"] · ["Kills"]).
     public sealed record CounterIncrement(IReadOnlyList<string> Key, long Value);
 
+    // 수치 쪽만의 한 판치. 생사도 연속 기록도 들어오지 않는다 — 그쪽은 1단계가 이미 쌓았다.
+    public sealed record RaidNumbers(
+        string? ProfileId,
+        int Kills,
+        int LifeTimeSeconds);
+
+    // 수치 적립 계획. 연속 기록이 없는 것이 TallyPlan 과의 차이다 — 수치는 **더하기뿐**이다.
+    public sealed record NumbersPlan(
+        bool Accepted,
+        string Reason,
+        IReadOnlyList<CounterIncrement> Increments,
+        long TotalInGameTimeDelta);
+
     // 적립 계획. Accepted 가 거짓이면 **아무것도 쓰지 않는다** — Reason 이 왜인지 말한다.
     // 연속 기록은 더하기가 아니라 **덮어쓰기**다(끊기면 0 이 된다). 그래서 증분 목록이 아니라
     // 새 값으로 낸다.
@@ -132,6 +145,65 @@ namespace pitTeam.Shared
                 NewCurrentWinStreak: newCurrent,
                 NewLongestWinStreak: newLongest);
         }
+
+        // 수치만 따로 쌓는 2단계. **2026-11-07 실측으로 필요해졌다** — 레이드 종료 때 생사
+        // (`…/teammate/raid-outcomes`)가 수치(`/client/game/bot/followerprogress`)보다 **먼저**
+        // 처리된다. 그 판 네 명 모두 "수치 보고가 아직 오지 않아 사살·생존시간은 0 으로 쌓았다"
+        // 였다. 그래서 수치가 뒤늦게 도착하면 그때 **그것만** 더한다.
+        //
+        // 1단계(Decide)가 쌓는 레이드 횟수·생사·연속 기록은 **여기서 절대 건드리지 않는다** —
+        // 그쪽은 이미 쌓였고, 다시 더하면 한 판이 두 판이 된다. 영수증도 열쇠 공간이 따로다.
+        public static NumbersPlan DecideNumbers(RaidNumbers? numbers)
+        {
+            if (numbers == null)
+            {
+                return RefusedNumbers("보고가 비어 있어 적립하지 않는다.");
+            }
+
+            if (string.IsNullOrWhiteSpace(numbers.ProfileId))
+            {
+                return RefusedNumbers("프로필 식별자가 비어 있어 적립하지 않는다.");
+            }
+
+            // Decide 와 같은 이유로 닫힌 쪽으로: 음수는 "모른다" 이지 "줄어들었다" 가 아니다.
+            if (numbers.Kills < 0 || numbers.LifeTimeSeconds < 0)
+            {
+                return RefusedNumbers(
+                    $"보고에 음수가 있어 적립하지 않는다(사살 {numbers.Kills}, 생존 {numbers.LifeTimeSeconds}초).");
+            }
+
+            // 둘 다 0 이면 쓸 것이 없다. 거절로 돌려 **영수증을 쓰지 않게** 한다 — 나중에 진짜
+            // 수치가 오면 그때 쌓을 수 있어야 한다.
+            if (numbers.Kills == 0 && numbers.LifeTimeSeconds == 0)
+            {
+                return RefusedNumbers("사살도 생존 시간도 0 이라 쌓을 것이 없다.");
+            }
+
+            var increments = new List<CounterIncrement>();
+
+            if (numbers.Kills > 0)
+            {
+                increments.Add(new CounterIncrement(new[] { "Kills" }, numbers.Kills));
+            }
+
+            if (numbers.LifeTimeSeconds > 0)
+            {
+                increments.Add(new CounterIncrement(new[] { "LifeTime", PmcSide }, numbers.LifeTimeSeconds));
+            }
+
+            return new NumbersPlan(
+                Accepted: true,
+                Reason: $"수치 — 사살 {numbers.Kills}, 생존 {numbers.LifeTimeSeconds}초.",
+                Increments: increments,
+                TotalInGameTimeDelta: numbers.LifeTimeSeconds);
+        }
+
+        private static NumbersPlan RefusedNumbers(string reason) =>
+            new NumbersPlan(
+                Accepted: false,
+                Reason: reason,
+                Increments: new List<CounterIncrement>(),
+                TotalInGameTimeDelta: 0);
 
         // 거절할 때는 연속 기록을 **그대로** 돌려준다. 호출자가 그 값을 그대로 다시 써도
         // 아무것도 바뀌지 않도록 — 거절이 프로필을 건드리는 길이 되면 안 된다.

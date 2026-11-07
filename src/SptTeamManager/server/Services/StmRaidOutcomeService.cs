@@ -89,6 +89,14 @@ public class StmRaidOutcomeService(
             var hadNumbers = tallyBuffer.TryTakeNumbers(sessionId, accountId, out var kills, out var raidSeconds);
             tallyService.Apply(sessionId, raidId, accountId, escaped, kills, raidSeconds, hadNumbers);
 
+            // **2026-11-07 실측 — 이쪽이 먼저 처리된다**(그 판 네 명 모두 수치가 없었다). 그래서
+            // 수치 없이 쌓았을 때는 이 판의 레이드 id 를 남겨 둔다. 뒤늦게 오는 수치 보고가
+            // 그것을 꺼내 사살·생존 시간만 따로 쌓는다(StmRaidTallyService.ApplyNumbers).
+            if (!hadNumbers)
+            {
+                tallyBuffer.RecordRaid(sessionId, accountId, raidId);
+            }
+
             // 2. Refuse a profile SPT will not write, BEFORE the receipt is spent.
             //    SaveProfileAsync opens with `if (IsProfileInvalidOrUnloadable(sessionID)) return 0L;`
             //    (IL_0024-IL_002d of SaveServer/<SaveProfileAsync>d__22.MoveNext, refs/4.1.0): it writes

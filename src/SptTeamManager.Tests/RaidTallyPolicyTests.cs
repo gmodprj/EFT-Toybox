@@ -189,4 +189,68 @@ public class RaidTallyPolicyTests
         var allowedFirstWords = new[] { "Sessions", "ExitStatus", "Kills", "Deaths", "LifeTime" };
         Assert.All(plan.Increments, i => Assert.Contains(i.Key[0], allowedFirstWords));
     }
+
+    // ---- 2단계(수치만) — 2026-11-07 실측으로 생긴 길. 생사가 수치보다 먼저 처리된다.
+
+    [Fact]
+    public void 수치는_사살과_생존시간만_쌓는다()
+    {
+        var plan = RaidTallyPolicy.DecideNumbers(new RaidNumbers("p1", Kills: 3, LifeTimeSeconds: 1200));
+
+        Assert.True(plan.Accepted);
+        Assert.Equal(1200, plan.TotalInGameTimeDelta);
+        var kills = Assert.Single(plan.Increments, i => i.Key.Count == 1 && i.Key[0] == "Kills");
+        Assert.Equal(3, kills.Value);
+        var life = Assert.Single(plan.Increments, i => i.Key[0] == "LifeTime");
+        Assert.Equal(1200, life.Value);
+    }
+
+    // 가장 중요한 불변식: 2단계가 레이드 횟수·생사·사망을 다시 쌓으면 한 판이 두 판이 된다.
+    [Fact]
+    public void 수치는_레이드_횟수나_생사를_다시_쌓지_않는다()
+    {
+        var plan = RaidTallyPolicy.DecideNumbers(new RaidNumbers("p1", Kills: 3, LifeTimeSeconds: 1200));
+
+        var forbidden = new[] { "Sessions", "ExitStatus", "Deaths" };
+        Assert.All(plan.Increments, i => Assert.DoesNotContain(i.Key[0], forbidden));
+    }
+
+    [Fact]
+    public void 수치가_사살만_있으면_생존시간은_쌓지_않는다()
+    {
+        var plan = RaidTallyPolicy.DecideNumbers(new RaidNumbers("p1", Kills: 2, LifeTimeSeconds: 0));
+
+        Assert.True(plan.Accepted);
+        Assert.Equal(0, plan.TotalInGameTimeDelta);
+        Assert.DoesNotContain(plan.Increments, i => i.Key[0] == "LifeTime");
+    }
+
+    // 둘 다 0 이면 거절이다 - 호출자가 영수증을 쓰지 않아야 진짜 수치가 더 늦게 와도 쌓을 수 있다.
+    [Fact]
+    public void 수치가_모두_0이면_거절한다()
+    {
+        var plan = RaidTallyPolicy.DecideNumbers(new RaidNumbers("p1", Kills: 0, LifeTimeSeconds: 0));
+
+        Assert.False(plan.Accepted);
+        Assert.Empty(plan.Increments);
+        Assert.Equal(0, plan.TotalInGameTimeDelta);
+    }
+
+    [Theory]
+    [InlineData(-1, 100)]
+    [InlineData(1, -100)]
+    public void 수치에_음수가_있으면_거절한다(int kills, int seconds)
+    {
+        var plan = RaidTallyPolicy.DecideNumbers(new RaidNumbers("p1", kills, seconds));
+
+        Assert.False(plan.Accepted);
+        Assert.Empty(plan.Increments);
+    }
+
+    [Fact]
+    public void 수치는_프로필_식별자가_비면_거절한다()
+    {
+        Assert.False(RaidTallyPolicy.DecideNumbers(new RaidNumbers("  ", 1, 1)).Accepted);
+        Assert.False(RaidTallyPolicy.DecideNumbers(null).Accepted);
+    }
 }

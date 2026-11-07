@@ -32,6 +32,13 @@ public class StmRaidTallyBuffer(ISptLogger<StmRaidTallyBuffer> logger)
     // (그리고 수치 쪽 payload 에는 그 값이 아예 없다).
     private readonly Dictionary<string, Half> pending = new(StringComparer.Ordinal);
 
+    // 반대 방향. **2026-11-07 실측으로 필요해졌다** — 생사가 수치보다 먼저 처리된다(그 판 네 명
+    // 모두 "수치 보고가 아직 오지 않아" 였다). 그래서 1단계가 수치 없이 쌓은 뒤, 뒤늦게 올
+    // 수치가 어느 레이드의 것인지 알 수 있도록 **레이드 id 를 여기 담아 둔다.**
+    private sealed record RaidRef(string RaidId, DateTimeOffset At);
+
+    private readonly Dictionary<string, RaidRef> pendingRaids = new(StringComparer.Ordinal);
+
     private readonly object sync = new();
 
     // 묶여 있을 수 있는 시간. 레이드 종료의 두 요청은 같은 teardown 안에서 수백 ms 안에 오므로
@@ -82,11 +89,51 @@ public class StmRaidTallyBuffer(ISptLogger<StmRaidTallyBuffer> logger)
         }
     }
 
+    // 1단계가 수치 없이 쌓았을 때, 그 판의 레이드 id 를 담아 둔다. 뒤늦게 올 수치가
+    // **어느 판의 것인지** 알아야 멱등 열쇠를 만들 수 있다.
+    public void RecordRaid(MongoId sessionId, string? accountId, string? raidId)
+    {
+        if (string.IsNullOrWhiteSpace(accountId) || string.IsNullOrWhiteSpace(raidId)) return;
+
+        lock (sync)
+        {
+            DropStale();
+            pendingRaids[Key(sessionId, accountId)] = new RaidRef(raidId!.Trim(), DateTimeOffset.UtcNow);
+        }
+    }
+
+    // 수치 쪽이 부를 때. 담긴 레이드 id 가 있으면 꺼내 주고 비운다(한 판에 한 번만 쓰인다).
+    public bool TryTakeRaid(MongoId sessionId, string? accountId, out string? raidId)
+    {
+        raidId = null;
+        if (string.IsNullOrWhiteSpace(accountId)) return false;
+
+        lock (sync)
+        {
+            DropStale();
+            var key = Key(sessionId, accountId);
+            if (!pendingRaids.TryGetValue(key, out var reference)) return false;
+            pendingRaids.Remove(key);
+            raidId = reference.RaidId;
+            return true;
+        }
+    }
+
     private void DropStale()
     {
         var cutoff = DateTimeOffset.UtcNow - Ttl;
         var stale = pending.Where(kv => kv.Value.At < cutoff).Select(kv => kv.Key).ToList();
         foreach (var key in stale) pending.Remove(key);
+
+        var staleRaids = pendingRaids.Where(kv => kv.Value.At < cutoff).Select(kv => kv.Key).ToList();
+        foreach (var key in staleRaids) pendingRaids.Remove(key);
+
+        while (pendingRaids.Count >= MaxPending)
+        {
+            var oldest = pendingRaids.OrderBy(kv => kv.Value.At).First().Key;
+            pendingRaids.Remove(oldest);
+            logger.Warning($"[STM] 적립 수치: 담아 둔 레이드 id 가 {MaxPending}개를 넘어 가장 묵은 것을 버렸다('{oldest}'). 수치가 오지 않는 판이 쌓이고 있다.");
+        }
 
         while (pending.Count >= MaxPending)
         {
