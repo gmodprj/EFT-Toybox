@@ -188,7 +188,11 @@ namespace pitTeam.Patches
 
         private static bool TryShowStmTransferOverlay(OtherPlayerProfileScreen screen)
         {
-            CloseStmTransferOverlay();
+            // **자료를 지우지 않고** 남은 겉틀만 치운다. 여기서 CloseStmTransferOverlay 를 부르면
+            // 그 정리가 StmTransferPair 까지 비워, 바로 아래에서 읽을 때 NullReference 가 난다
+            // (2026-11-07 인게임 실측: 버튼을 누를 때마다 "Object reference not set" 이 떴다.
+            //  IL 위치 0x30e 를 역어셈블해 이 줄로 좁혔다).
+            DestroyStmTransferOverlayRoot();
 
             GameObject overlayRoot = new GameObject("pitFireTeam_StmStashTransferOverlay", typeof(RectTransform), typeof(Image));
             overlayRoot.transform.SetParent(screen.transform, false);
@@ -578,7 +582,9 @@ namespace pitTeam.Patches
             if (StmTransferStatusLabel != null) StmTransferStatusLabel.text = text ?? string.Empty;
         }
 
-        private static void CloseStmTransferOverlay()
+        // 겉틀만 치운다. **받아 온 자료(StmTransferPair)와 고른 것은 건드리지 않는다** — 다시 그릴 때도
+        // 이 함수를 쓰기 때문이다. 자료까지 비우는 것은 화면을 정말 닫을 때뿐이다.
+        private static void DestroyStmTransferOverlayRoot()
         {
             try
             {
@@ -599,10 +605,15 @@ namespace pitTeam.Patches
                 StmTransferLeftHeader = null;
                 StmTransferRightHeader = null;
                 StmTransferStatusLabel = null;
-                StmTransferPair = null;
-                StmTransferPickedLeft.Clear();
-                StmTransferPickedRight.Clear();
             }
+        }
+
+        private static void CloseStmTransferOverlay()
+        {
+            DestroyStmTransferOverlayRoot();
+            StmTransferPair = null;
+            StmTransferPickedLeft.Clear();
+            StmTransferPickedRight.Clear();
         }
     }
 }

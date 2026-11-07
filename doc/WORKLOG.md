@@ -7961,3 +7961,44 @@ pitTeam 오류 0건. 서버 빌드 경고 0 / 오류 0, 설치본 md5 `616d1dd1�
 
 **아직 인게임에서 보지 않았다.** 화면이 그려지는지, 버튼이 상세 화면의 넷째 줄에 서는지, 물건이
 실제로 건너가는지가 전부 미검증이다 — 그리는 코드는 빌드가 증명하지 못한다.
+
+### B3 첫 인게임 — 버튼은 섰고 창이 터졌다. 내가 쓸 자료를 내가 지우고 있었다
+
+2026-11-07 인게임. "스태시 교환" 버튼은 상세 화면 넷째 줄에 제대로 섰다. 누르면 토스트가
+줄줄이 떴다 — `Object reference not set to an instance of an object`.
+
+로그가 범위를 좁혀 줬다:
+
+```
+[REQUEST SUCCESSFUL] /stm/members/stash-pair       ← 라우트는 된다
+[Error] [STM] 스태시 교환 화면을 열다 실패했다.
+System.NullReferenceException
+  at ...TryShowStmTransferOverlay (...) [0x002ff]  ← 겉틀을 세우다
+```
+
+**IL 위치로 줄을 찾았다.** `ilspycmd -il` 로 그 메서드를 역어셈블해 0x2ff 언저리를 봤더니:
+
+```
+IL_0309: ldsfld  ...::StmTransferPair
+IL_030e: callvirt ...StmStashPairWire::get_Teammate()
+```
+
+즉 `StmTransferPair` 가 **그 시점에 null** 이다. 왜냐 — `TryShowStmTransferOverlay` 가 맨 앞에서
+`CloseStmTransferOverlay()` 를 부르는데, 그 정리 함수의 `finally` 가 겉틀뿐 아니라
+**`StmTransferPair` 까지 비운다.** 방금 받아 온 자료를 제 손으로 지우고 바로 아래에서 읽었다.
+
+고침은 정리를 둘로 가른 것이다:
+
+| | 치우는 것 |
+| --- | --- |
+| `DestroyStmTransferOverlayRoot()` | 겉틀과 그리기 참조**만**. 다시 그릴 때도 쓴다 |
+| `CloseStmTransferOverlay()` | 위 + 받아 온 자료 + 고른 것. **정말 닫을 때만** |
+
+**교훈.** "열기 전에 한 번 치운다" 는 흔한 안전 습관인데, 치우는 함수가 **상태까지** 비우면
+그 습관이 자기 발을 쏜다. 겉틀 정리와 상태 정리는 다른 일이다.
+
+그리고 로그의 IL 위치는 쓸 수 있는 단서다 — 추측으로 여기저기 null 검사를 뿌리는 대신
+역어셈블 한 번으로 줄이 나왔다.
+
+클라이언트 빌드 경고 0 / 오류 0. 게임이 떠 있어 **로드된 DLL 은 이름을 바꿔 치우고** 새것을
+넣었다(서버 DLL 에 썼던 그 방법). md5 `7f3b2d7f…`. 게임을 껐다 켜야 올라온다.
