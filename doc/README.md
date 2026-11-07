@@ -51,11 +51,15 @@
 | [fixes/2026-10-27-pit-lootpatrol-nre.md](fixes/2026-10-27-pit-lootpatrol-nre.md) | PIT `LootPatrolLayer.GetDecision` NullReference 조사 + 제작자 보고용 영문 정리 |
 | [fixes/2026-11-05-aicoreagent-invalidcast.md](fixes/2026-11-05-aicoreagent-invalidcast.md) | **BigBrain 봇 업데이트에서 매 프레임 InvalidCast 4,524줄** — STM 을 Release 로 다시 깐 뒤 0줄이 됐지만 그때 변수를 둘 바꿔 **원인은 미확정**이다. 진단용 finalizer 를 어떻게 짰는지도 적었다 |
 | [fixes/2026-11-06-lighthouse-rework-load-stall.md](fixes/2026-11-06-lighthouse-rework-load-stall.md) | **리워크 라이트하우스 진입 로딩 멈춤** — 멈춘 자리(심장박동 정지)와 두 번의 메모리 실측. 1차는 남은 4,466 MB 에서 멈추고 2차는 **72 MB 에서 47분을 돌아**, 메모리 여유로 설명하려던 가설을 거뒀다. **원인 미확정** |
+| [fixes/2026-11-06-apply-inventory-accepts-overlap.md](fixes/2026-11-06-apply-inventory-accepts-overlap.md) | **`apply-inventory` 가 격자 겹침을 거절하지 않는다** — 실측과 되돌림(295개, 차이 0). 처음 "설계와 모순 아님" 으로 닫았다가 **계획 5 재작성에서 요건이 떨어져 나간 것**으로 정정한 경위도 적었다 |
+| [fixes/2026-11-05-raid-end-crash-mono.md](fixes/2026-11-05-raid-end-crash-mono.md) | 레이드 종료 후 게임 강제 종료 — 시각별 확인 사실과 좁히는 방법. **원인 미확정** |
+| [fixes/2026-10-30-pipdisabler-scope-misalign.md](fixes/2026-10-30-pipdisabler-scope-misalign.md) | PiP Disabler 에서 고배율 조준경 시야가 광축 아래로 떨어진다 — 끄면 정상. 지금은 `.cfg` 다섯 값이 기본값이 아닌 상태로 증상이 없어 **그대로 둔다** |
 | [install-records/README-removed-stale-lines-2026-11-06.md](install-records/README-removed-stale-lines-2026-11-06.md) | 철 지난 설치 기록 **26줄을 지운 내역** — 줄 단위 표와 근거. 기록을 지우는 일이므로 지운 것을 남겼다 |
 | [mod-patches/stackunify-pinned-stacks.md](mod-patches/stackunify-pinned-stacks.md) | 구경 43종의 최대 스택을 **지금 쓰이던 값으로 고정**했다 — 한 구경 안에서 값이 갈려 있던 15종을 포함. 넣은 값 전체와 되돌리는 법 |
 | [mod-patches/theblacklist-restore-author-bans.md](mod-patches/theblacklist-restore-author-bans.md) | 콘텐츠 모드 제작자가 막아 둔 아이템 858건을 플레아에서 다시 막았다 — **244건이라던 숫자가 틀렸던 경위**와 아직 열려 있는 114건 |
 | [mod-patches/svm-currency-off.md](mod-patches/svm-currency-off.md) | SVM 과 BarterItemsStacks 가 같은 화폐 스택을 쓰고 있었다 — SVM 쪽 네 줄을 껐다. **되돌리는 법과 Greed 로 저장할 때 주의** |
 | [mod-patches/505-olympus-firearmMags.md](mod-patches/505-olympus-firearmMags.md) | Olympus 가 없는 총기를 참조해 탄창 적용이 중간에 멈추던 것 — 12개 제거. **되돌리는 법과 원본 보관 위치** |
+| [mod-patches/505-olympus-firearmMags-mags.md](mod-patches/505-olympus-firearmMags-mags.md) | 위 문서의 후속 — 같은 파일에서 **없는 탄창 41개**를 뺐다 |
 | [external-mods/stage8-G-GamePanelHUD-port.md](external-mods/stage8-G-GamePanelHUD-port.md) | Forge 밖에서 받은 유일한 모드 — 출처·해시·바이러스 검사·라이선스 검토 |
 
 ## SPT Team Manager (STM) — 직접 만드는 포크
