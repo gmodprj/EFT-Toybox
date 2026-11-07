@@ -11,6 +11,7 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Servers;
+using SPTarkov.Server.Core.Services.Locales;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
@@ -39,6 +40,8 @@ public class StmStashTransferService(
     StmTransferJournal journal,
     StmProfileMemberStore store,
     SaveServer saveServer,
+    // 아이템 이름은 서버가 붙인다 — 꾸러미 견적이 쓰는 것과 같은 자리다(B3 의 조회).
+    LocaleService localeService,
     JsonUtil jsonUtil,
     FileUtil fileUtil,
     ICloner cloner,
@@ -279,6 +282,129 @@ public class StmStashTransferService(
                 : "옮기는 중 오류가 났습니다. 두 프로필의 스태시를 직접 확인하세요.";
             return false;
         }
+    }
+
+    // 계획 6 B3 의 조회 — 화면이 좌우 두 칸을 그릴 재료. **바닥에 놓인 것만** 싣고 안에 든 것은
+    // 수만 센다(전송의 단위가 바닥에 놓인 것이라서다). 이름은 여기서 붙인다 — 서버에 사전이 있다.
+    public bool TryReadPair(MongoId sessionId, StmStashPairRequest request, out StmStashPairResponse? result, out string? refusalReason)
+    {
+        result = null;
+        refusalReason = null;
+
+        try
+        {
+            if (!resolver.TryResolve(sessionId, request?.Aid ?? request?.ProfileId, out var member, out var unavailable) || member == null)
+            {
+                refusalReason = string.IsNullOrWhiteSpace(unavailable)
+                    ? "그 팀원을 찾지 못했습니다."
+                    : $"그 팀원을 쓸 수 없습니다({unavailable}).";
+                return false;
+            }
+
+            var player = saveServer.GetProfile(sessionId)?.CharacterData?.PmcData;
+            if (player?.Inventory?.Items == null || member.Pmc?.Inventory?.Items == null)
+            {
+                refusalReason = "프로필을 읽지 못했습니다.";
+                return false;
+            }
+
+            result = new StmStashPairResponse
+            {
+                Player = BuildSide(sessionId.ToString(), player.Info?.Nickname ?? "나", player),
+                Teammate = BuildSide(member.ProfileId, member.Nickname, member.Pmc),
+            };
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 스태시 조회 실패 (세션 '{sessionId}'): {ex}");
+            refusalReason = "스태시를 읽는 중 오류가 났습니다.";
+            return false;
+        }
+    }
+
+    private StmStashSideWire BuildSide(string profileId, string? nickname, PmcData pmc)
+    {
+        var items = pmc.Inventory!.Items!;
+        var rootId = pmc.Inventory.Stash?.ToString() ?? string.Empty;
+        var side = new StmStashSideWire
+        {
+            ProfileId = profileId,
+            Nickname = nickname ?? string.Empty,
+            StashRootId = rootId,
+        };
+
+        if (string.IsNullOrWhiteSpace(rootId)) return side;
+
+        // 자손 수를 세려면 부모 → 자식 색인이 한 번 필요하다. 고리가 있어도 멈추도록 담은 것은 다시 세지 않는다.
+        var children = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+        foreach (var item in items)
+        {
+            if (item?.Id == null || string.IsNullOrEmpty(item.ParentId)) continue;
+            if (!children.TryGetValue(item.ParentId!, out var list))
+            {
+                list = [];
+                children[item.ParentId!] = list;
+            }
+
+            list.Add(item.Id.ToString());
+        }
+
+        var locale = localeService.GetLocaleDb();
+        foreach (var item in items)
+        {
+            if (item?.Id == null) continue;
+            if (!string.Equals(item.ParentId, rootId, StringComparison.Ordinal)) continue;
+            if (!string.Equals(item.SlotId, StashGridName, StringComparison.Ordinal)) continue;
+
+            var tpl = item.Template.ToString();
+            side.Items.Add(new StmStashEntryWire
+            {
+                Id = item.Id.ToString(),
+                Tpl = tpl,
+                Name = ResolveName(locale, tpl),
+                Stack = (int)(item.Upd?.StackObjectsCount ?? 1),
+                Contained = CountDescendants(item.Id.ToString(), children),
+            });
+        }
+
+        return side;
+    }
+
+    private static string ResolveName(IDictionary<string, string>? locale, string tpl)
+    {
+        if (locale != null && locale.TryGetValue($"{tpl} ShortName", out var shortName) && !string.IsNullOrWhiteSpace(shortName))
+        {
+            return shortName;
+        }
+
+        if (locale != null && locale.TryGetValue($"{tpl} Name", out var name) && !string.IsNullOrWhiteSpace(name))
+        {
+            return name;
+        }
+
+        // 사전에 없으면 **그 사실이 보이게** 둔다. 빈 줄을 그리면 사람이 무엇을 고르는지 모른다.
+        return tpl;
+    }
+
+    private static int CountDescendants(string id, Dictionary<string, List<string>> children)
+    {
+        var count = 0;
+        var seen = new HashSet<string>(StringComparer.Ordinal) { id };
+        var queue = new Queue<string>();
+        queue.Enqueue(id);
+        while (queue.Count > 0)
+        {
+            if (!children.TryGetValue(queue.Dequeue(), out var kids)) continue;
+            foreach (var kid in kids)
+            {
+                if (!seen.Add(kid)) continue;
+                count++;
+                queue.Enqueue(kid);
+            }
+        }
+
+        return count;
     }
 
     // 총량 보존을 **디스크에서** 본다: 넣는 쪽에 전부 있고, 빼는 쪽에 하나도 없어야 한다.
