@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Utils;
 
 namespace pitTeam.Server.Models;
@@ -37,7 +38,17 @@ public record StmStashSideWire
     [JsonPropertyName("profileId")] public string ProfileId { get; set; } = string.Empty;
     [JsonPropertyName("nickname")] public string Nickname { get; set; } = string.Empty;
     [JsonPropertyName("stashRootId")] public string StashRootId { get; set; } = string.Empty;
+
+    /// <summary>바닥에 놓인 것의 요약(이름·쌓인 수·안에 든 것의 수). 목록으로 그릴 때 쓴다.</summary>
     [JsonPropertyName("items")] public List<StmStashEntryWire> Items { get; set; } = [];
+
+    /// <summary>
+    /// **스태시 트리 전체**(루트 포함). 화면이 인게임 스태시와 같은 격자를 세우려면 이것이 필요하다 —
+    /// `ItemFactory.FlatItemsToTree` 가 받는 그 모양이고, 장비 편집기가 팀원 스태시를 세울 때 쓰는
+    /// 것과 같은 자료다(`/stm/members/gear-stash`). 요약(`Items`)과 **같은 스태시를 두 모양으로**
+    /// 싣는 것이라 둘이 어긋날 일은 없다 — 같은 한 번의 읽기에서 만든다.
+    /// </summary>
+    [JsonPropertyName("tree")] public List<Item> Tree { get; set; } = [];
 }
 
 public record StmStashPairResponse

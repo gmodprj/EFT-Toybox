@@ -350,6 +350,30 @@ public class StmStashTransferService(
             list.Add(item.Id.ToString());
         }
 
+        // 격자용 트리. **루트가 맨 앞**이어야 한다(`FlatItemsToTree` 가 그 순서를 본다 —
+        // gear-stash 가 같은 규칙으로 싣는다). 루트 밖의 것(입은 장비 등)은 넣지 않는다.
+        var subtree = new HashSet<string>(StringComparer.Ordinal) { rootId };
+        var queue = new Queue<string>();
+        queue.Enqueue(rootId);
+        while (queue.Count > 0)
+        {
+            if (!children.TryGetValue(queue.Dequeue(), out var kids)) continue;
+            foreach (var kid in kids)
+            {
+                if (subtree.Add(kid)) queue.Enqueue(kid);
+            }
+        }
+
+        var treeItems = items.Where(i => i?.Id != null && subtree.Contains(i.Id.ToString())).ToList();
+        var root = treeItems.FirstOrDefault(i => string.Equals(i.Id.ToString(), rootId, StringComparison.Ordinal));
+        if (root != null)
+        {
+            treeItems.Remove(root);
+            treeItems.Insert(0, root);
+            // 화면이 들고 노는 복제본이다 — 살아 있는 프로필 객체를 내보내지 않는다.
+            side.Tree = cloner.Clone(treeItems) ?? [];
+        }
+
         var locale = localeService.GetLocaleDb();
         foreach (var item in items)
         {
