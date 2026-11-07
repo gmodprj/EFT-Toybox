@@ -1402,18 +1402,46 @@ namespace pitTeam.Components
             }
         }
 
+        // 명단 창의 높이. **하위 탭 줄(용병 / 프로필 팀원)을 셈에 넣는다.**
+        //
+        // 2026-11-07 인게임 실측 — 탭 줄이 생긴 뒤로 두 줄만 보이고 셋째 줄에서 스크롤이 났다.
+        // 탭은 명단 위에 36px 을 차지하는데(`scrollRoot.offsetMax` 가 그만큼 더 내려간다) 창 높이는
+        // 탭이 없던 때의 셈 그대로여서, 보이는 칸이 딱 그만큼 줄어 있었다.
+        //
+        // 그리고 **세 줄까지는 스크롤이 나지 않게** 창을 키운다(사용자 요청). 다만 화면 밖으로
+        // 넘기지는 않는다 — 작은 화면에서는 들어가는 만큼만 보이고 나머지는 스크롤이다.
         private static float CalculateRosterShellHeight()
         {
             float screenHeight = Mathf.Max(720f, Screen.height);
             float targetHeight = screenHeight * RosterHeightScreenRatio;
-            int visibleRowCount = CalculateVisibleRosterRowCount(targetHeight);
-            return CalculateRowsHeight(visibleRowCount) + RosterViewportTopInset + RosterViewportBottomInset;
+            float shellHeight = RosterShellHeightForRows(CalculateVisibleRosterRowCount(targetHeight));
+
+            float wanted = RosterShellHeightForRows(MinVisibleRosterRows);
+            if (shellHeight < wanted && wanted <= screenHeight * RosterHeightScreenRatioMax)
+            {
+                shellHeight = wanted;
+            }
+
+            return shellHeight;
         }
+
+        private static float RosterShellHeightForRows(int rowCount) =>
+            CalculateRowsHeight(rowCount)
+            + RosterViewportTopInset
+            + RosterViewportBottomInset
+            + StmRosterSectionTabsHeight;
 
         private static int CalculateVisibleRosterRowCount(float targetHeight)
         {
             float rowUnit = RosterTileHeight + RosterTileSpacing;
-            float usableHeight = Mathf.Max(0f, targetHeight - RosterViewportTopInset - RosterViewportBottomInset - RosterViewportPadding + RosterTileSpacing);
+            float usableHeight = Mathf.Max(
+                0f,
+                targetHeight
+                    - RosterViewportTopInset
+                    - RosterViewportBottomInset
+                    - StmRosterSectionTabsHeight
+                    - RosterViewportPadding
+                    + RosterTileSpacing);
             int visibleRows = Mathf.FloorToInt(usableHeight / rowUnit);
             return Mathf.Max(2, visibleRows);
         }
