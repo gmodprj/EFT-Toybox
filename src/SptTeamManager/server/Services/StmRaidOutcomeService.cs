@@ -41,6 +41,12 @@ public class StmRaidOutcomeService(
     SaveServer saveServer,
     // Only for releasing the protection on gear this service has just deleted - see StripWornGear.
     FriendlyPostRaidService postRaidService,
+    // 요청 1-1 — 전적 적립. 이 경로가 레이드 id 와 생사를 들고 있는 유일한 자리라 적립의 방아쇠도
+    // 여기다(StmRaidTallyBuffer 의 머리 주석에 그 선택의 근거가 있다). 적립은 **삭제와 완전히
+    // 분리돼 있다**: 자기 영수증을 따로 쓰고, 자기 catch 로 막혀 있고, 실패해도 아래 삭제 판정에
+    // 손을 대지 않는다.
+    StmRaidTallyBuffer tallyBuffer,
+    StmRaidTallyService tallyService,
     ISptLogger<StmRaidOutcomeService> logger)
 {
     private const string StripAction = "strip-worn-gear";
@@ -75,6 +81,13 @@ public class StmRaidOutcomeService(
             // would refuse real losses without catching a single truncated payload, and this line is the
             // trace a wrong deletion is read back from instead.
             logger.Info($"[STM] 레이드 결과 접수: '{member.Nickname}'(aid {accountId}, 프로필 '{member.ProfileId}', 레이드 '{raidId}') escaped={escaped}.");
+
+            // 요청 1-1 적립. 삭제 판정보다 **앞**이고 그 판정과 무관하다: 생환해도 임시 장비여도
+            // 레이드를 돈 것은 돈 것이다. 수치(사살·생존 초)는 다른 라우트로 와 버퍼에 담겨 있고,
+            // 아직 안 왔으면 0 으로 쌓으며 그 사실을 로그가 말한다. 적립 쪽 예외는 그 안에서
+            // 잡히므로 아래 삭제 경로는 영향을 받지 않는다.
+            var hadNumbers = tallyBuffer.TryTakeNumbers(sessionId, accountId, out var kills, out var raidSeconds);
+            tallyService.Apply(sessionId, raidId, accountId, escaped, kills, raidSeconds, hadNumbers);
 
             // 2. Refuse a profile SPT will not write, BEFORE the receipt is spent.
             //    SaveProfileAsync opens with `if (IsProfileInvalidOrUnloadable(sessionID)) return 0L;`
