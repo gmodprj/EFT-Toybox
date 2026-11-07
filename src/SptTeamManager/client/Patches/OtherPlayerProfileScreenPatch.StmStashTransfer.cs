@@ -237,8 +237,11 @@ namespace pitTeam.Patches
             panelRect.anchorMin = Vector2.zero;
             panelRect.anchorMax = Vector2.one;
             panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.offsetMin = new Vector2(280f, 130f);
-            panelRect.offsetMax = new Vector2(-280f, -130f);
+            // 좌우에 **인게임 스태시 격자 두 벌**이 들어간다. 격자는 칸 수가 고정이라 폭이 줄지
+            // 않는다 — 창이 좁으면 칸을 넘어 옆 격자 위로 겹쳐 그려진다(2026-11-07 인게임 실측).
+            // 그래서 창을 화면 거의 전체로 벌린다. 목록형(1차)의 280 은 격자에는 턱없이 좁았다.
+            panelRect.offsetMin = new Vector2(24f, 80f);
+            panelRect.offsetMax = new Vector2(-24f, -80f);
             panelRect.localScale = Vector3.one;
 
             Image panelImage = panel.GetComponent<Image>();
@@ -373,7 +376,10 @@ namespace pitTeam.Patches
 
         private static Transform CreateStmTransferColumnBody(Transform panel, string name, bool left)
         {
-            GameObject body = new GameObject("pitFireTeam_StmStashTransfer" + name, typeof(RectTransform), typeof(Image));
+            // RectMask2D: 격자가 칸보다 넓어도 **옆 칸을 침범하지 못하게** 자른다. 창을 넓혀 두었지만
+            // 화면이 작거나 UI 배율이 크면 다시 넘칠 수 있고, 그때 겹쳐 보이는 것보다 잘리는 편이 낫다
+            // (무엇이 어느 쪽 것인지가 안 흐려진다).
+            GameObject body = new GameObject("pitFireTeam_StmStashTransfer" + name, typeof(RectTransform), typeof(Image), typeof(RectMask2D));
             body.transform.SetParent(panel, false);
             RectTransform rect = body.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(left ? 0f : 0.5f, 0f);
