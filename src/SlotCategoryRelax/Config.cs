@@ -23,6 +23,50 @@ public class Config
     [JsonPropertyName("Categories")]
     public Dictionary<string, bool> Categories { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
+    /// <summary>
+    /// 맨 끝(<c>int.MaxValue</c>)에서 칸 넓히기를 **한 번 더** 한다.
+    ///
+    /// 왜 필요한가 — 2026-11-07 실측. ECOTI(COTI)의 <c>ThermalRiserCompatibility</c> 는
+    /// <c>PostLoad</c> **뒤**에 돌면서 열화상 라이저의 조준경 목록을 자기 것으로 **갈아 끼운다**.
+    /// 넓힌 것을 더하는 게 아니라 통째로 다시 써서, 우리가 넣은 분류가 사라진다:
+    ///
+    ///   라이저 원본 65개(Collimator 21 · AssaultScope 8 · SpecialScope 3 …)
+    ///     → PostLoad 에서 우리가 넓힘
+    ///     → COTI 가 89개로 다시 씀(CompactCollimator 23 · OpticScope 50 · Mount 16, **Collimator 0**)
+    ///
+    /// 그래서 FALKE LE 같은 <c>Collimator</c> 조준경이 "아이템이 호환되지 않습니다" 로 막혔다.
+    /// 맨 끝에서 한 번 더 돌면 COTI 가 다시 쓴 뒤의 목록을 기준으로 넓힌다.
+    ///
+    /// 주의 — 이 자리는 **COTI 가 고른 목록 밖의 조준경까지 올라가게 한다.** 끼워지기는 해도
+    /// 열화상이 안 나올 수 있다(COTI 가 들고 있는 메시가 10개다). 모양만 올라간 도트가 된다.
+    /// </summary>
+    [JsonPropertyName("LateSweep")]
+    public bool LateSweep { get; set; } = true;
+
+    /// <summary>
+    /// 아이템별 **씨앗 분류**. 그 아이템의 칸에 이 분류들을 "이미 받고 있는 것" 으로 쳐 준다.
+    ///
+    /// 왜 필요한가 — 2026-11-07 실측. 이 모드의 규칙은 "그 칸이 **이미 받고 있는** 분류만 넓힌다"
+    /// 다(없던 분류를 지어 넣지 않는다). 그런데 ECOTI 의 <c>ThermalRiserCompatibility</c> 가
+    /// 우리보다 뒤에서 열화상 라이저의 목록을 **갈아 끼우면서** <c>Collimator</c> 를 0개로
+    /// 만든다. 씨앗이 없으니 늦은 쓸기를 더해도 그 칸만은 넓힐 수 없었다 — 순서가 아니라
+    /// 규칙이 막는 자리다.
+    ///
+    /// 그래서 "이 아이템의 칸에는 이 분류도 받는 것으로 친다" 를 사람이 적는다. 적은 분류가
+    /// <see cref="Categories"/> 에서 꺼져 있으면 아무 일도 하지 않는다(스위치가 상위다).
+    ///
+    /// 보기 — 열화상 라이저 2색에 반사식 조준경·돌격형 조준경·특수 조준경을 되돌린다:
+    /// <code>
+    /// "SeedCategories": {
+    ///   "6ad3016bab020957abb6ca3b": ["Collimator", "AssaultScope", "SpecialScope"],
+    ///   "6ad408a96bf1f761d970a4ff": ["Collimator", "AssaultScope", "SpecialScope"]
+    /// }
+    /// </code>
+    /// </summary>
+    [JsonPropertyName("SeedCategories")]
+    public Dictionary<string, List<string>> SeedCategories { get; set; } =
+        new(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>건드리지 않을 칸 이름. 대소문자는 가리지 않는다.</summary>
     [JsonPropertyName("ExcludedSlotNames")]
     public List<string> ExcludedSlotNames { get; set; } = [];

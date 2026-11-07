@@ -7731,3 +7731,96 @@ PID 30988 의 로드된 모듈
 md5·타입 이름은 "디스크의 파일"을 증명했고, 이 모듈 목록은 **돌고 있는 프로세스가 그 파일을
 올렸다**를 증명한다. 남은 미검증은 프로필에 숫자가 쌓이는 것 하나뿐이고, 레이드 중 적립 줄을
 보도록 로그 감시를 걸어 뒀다.
+
+## 2026-11-07 — 라이저에 조준경이 안 끼워지던 것: 순서가 아니라 규칙이었다
+
+사용자 보고 — ECOTI 의 `LennoxP90 TR-1 thermal sight riser` 위에 **원래 여러 조준경을 올릴 수
+있었는데 어느 순간 막혔다.** 화면에는 "아이템이 호환되지 않습니다"(FALKE LE reflex sight).
+호환 강조 모드는 된다고 칠하는데 실제로는 안 되니, 사용자가 **"제한 거는 모드가 강조 모드보다
+나중인가"** 를 물었다.
+
+### 먼저 어디가 아닌지부터 쟀다
+
+떠 있는 서버에 `POST /client/items`(본문 없이, 인증서 검증 끔)로 최종 DB 를 받아 봤다. 그것이
+**클라이언트가 실제로 받는 목록**이라 추측이 들어갈 자리가 없다.
+
+```
+라이저 6ad3016bab020957abb6ca3b
+  mod_scope 필터        89개   ← 넓다
+  ConflictingItems      0건
+  이 라이저를 막는 아이템 0개
+  라이저를 받을 수 있는 칸 1569개
+```
+
+막는 것이 **DB 가 아니다**. 그런데 FALKE LE(`68a5ab09c44fa287ba0a97b5`)만 그 89개에 없었다.
+구성을 세어 보니 답이 나왔다:
+
+| 분류 | COTI 가 만든 직후(스냅샷) | 지금 |
+| --- | --- | --- |
+| Collimator | **21** (FALKE 포함) | **0** |
+| AssaultScope | 8 | 0 |
+| SpecialScope | 3 | 0 |
+| CompactCollimator | 1 | 23 |
+| OpticScope | 2 | 50 |
+| Mount | 30 | 16 |
+| 합계 | 65 | 89 |
+
+**FALKE 의 분류가 `Collimator` 다.** 그 분류가 한 종도 없으니 게임이 맞게 거절한 것이고,
+강조 모드(Tyfon UIFixes 의 `Highlight Compatible Slots`)가 다른 기준으로 칠해 어긋나 보였다.
+
+### 범인은 순서가 맞았다 — 다만 COTI 자신이다
+
+기동 로그의 시각이 그대로 말한다(UTC):
+
+```
+04:25:15  [COTI] Thermal riser created, id 6ad3016b…
+04:25:47  [SlotCategoryRelax] 칸 4124개에 654007개를 더했다      ← PostLoad(1000000)
+04:25:53  [COTI] Thermal riser: 89 sights and mounts (…)       ← 더 뒤에서 **갈아 끼운다**
+```
+
+ECOTI 의 `ThermalRiserCompatibility` 는 우선순위를 적지 않은 `Injectable` 이라 기본값
+`int.MaxValue` 로 `PostLoad` 뒤에 돈다. 그리고 **더하는 게 아니라 목록을 다시 쓴다.**
+
+### 늦은 쓸기만으로는 안 됐다 (실측)
+
+HelmetSlotUnion 의 `LateConflictSweep` 과 같은 자리(`int.MaxValue`)에 `LateSlotSweep` 을 더했다.
+쓸기는 COTI 뒤에서 제대로 돌았다 — `05:18:45 COTI → 05:19:02 쓸기, 칸 679개에 45512개`. 그런데
+**라이저는 89개 그대로였다.**
+
+이유는 순서가 아니라 **이 모드의 규칙**이다: "그 칸이 **이미 받고 있는** 분류만 넓힌다"(없던
+분류를 지어 넣지 않는다). COTI 가 `Collimator` 를 0개로 만들면 **넓힐 씨앗이 없어** 뒤에서
+아무리 돌아도 손댈 수 없다. 순서를 고친 것은 맞았지만 그것만으로는 모자랐다.
+
+### 그래서 씨앗을 넣는 자리를 더했다 — `SeedCategories`
+
+```jsonc
+"SeedCategories": {
+  "6ad3016bab020957abb6ca3b": ["Collimator", "AssaultScope", "SpecialScope"],
+  "6ad408a96bf1f761d970a4ff": ["Collimator", "AssaultScope", "SpecialScope"]
+}
+```
+
+적은 **그 아이템의 칸에서만** 해당 분류를 "받고 있던 것" 으로 친다. 분류 스위치가 상위라
+`Categories` 에서 꺼져 있으면 무시되고, 이름이 틀리면 경고를 낸다(조용히 안 듣는 것이 제일 나쁘다).
+
+실측 결과:
+
+```
+TR-1 thermal sight riser        89개 → 249개   FALKE 포함
+TR-1 thermal sight riser (Tan)  89개 → 249개   FALKE 포함
+  CompactCollimator 23 · OpticScope 50 · Mount 16   (COTI 가 고른 것 그대로)
+  Collimator 94 · AssaultScope 55 · SpecialScope 11  (씨앗으로 되살린 것)
+늦은 쓸기 로그  칸 679개 → 681개   ← 딱 둘만 늘었다(라이저 2색). 다른 아이템은 안 건드렸다
+```
+
+게임에서 **FALKE 가 실제로 끼워지는 것**을 사용자가 확인했다(2026-11-07).
+
+### 알아 둘 것
+
+- 이 씨앗은 **COTI 가 고른 목록 밖의 조준경까지 올라가게 한다.** COTI 가 들고 있는 열화상 메시는
+  10개뿐이라(`meshes: 10 unchanged`) 그 밖의 조준경은 **열화상이 안 나올 수** 있다. 되돌리려면
+  `"LateSweep": false` 또는 `SeedCategories` 를 비운다(서버 재시작).
+- `MongoId` 에는 `TryParse` 가 **없다**(4.1.6 실측). 그래서 씨앗의 아이템 id 는 24자리 16진수
+  모양으로 직접 검사한다 — 모양이 아닌 값을 생성자에 넣으면 서버 기동이 통째로 멈춘다.
+- `/client/items` 는 요청할 때마다 현재 DB 로 만들어 보낸다. 그래서 **"강조는 되는데 실제로
+  안 된다" 를 DB 로 가릴 수 있다** — 이번처럼 DB 가 맞고 강조가 틀린 경우가 있다.
