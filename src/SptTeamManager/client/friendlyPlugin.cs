@@ -621,6 +621,9 @@ namespace pitTeam
             new FriendlyDropdownNamePatch().Enable();
             new OtherPlayerProfileScreenPatch().Enable();
             new OtherPlayerProfileScreenClosePatch().Enable();
+            // 계획 6 B3-c — 교환 화면에서 격자 사이로 끌어다 놓으면 그것이 전송이다.
+            // 이 줄이 없으면 패치가 **등록되지 않는다**(2026-11-07 에 빠뜨려 드래그가 먹지 않았다).
+            new StmStashTransferDropPatch().Enable();
             new LoadoutEditorUnloadAmmoPatch().Enable();
             new LoadoutEditorRepairContextInteractionPatch().Enable();
             new LoadoutEditorInsurancePurchasePatch().Enable();
