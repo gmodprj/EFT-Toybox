@@ -5,6 +5,7 @@ using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
+using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Eft.Profile;
 using SPTarkov.Server.Core.Utils.Cloners;
 
@@ -75,6 +76,7 @@ public class StmProfileViewFactory(
                 ?? throw new InvalidOperationException("cloner.Clone returned null");
             TrimToWornEquipment(clone, member);
             view = teammateService.ToOtherProfileResponse(clone);
+            ClearMirroredScavStats(view);
             return true;
         }
         catch (Exception ex)
@@ -87,6 +89,25 @@ public class StmProfileViewFactory(
             logger.Error($"[STM] 프로필 조회: '{accountId}'(세션 '{sessionId}') 처리 실패 ({(identifiedAsMember ? "프로필 팀원, 읽을 수 없다고 보고" : "기본 경로로 넘긴다")}): {ex}");
             return false;
         }
+    }
+
+    // PIT 의 ToOtherProfileResponse 는 **스캐브 통계 자리에 PMC 통계를 그대로 넣는다**(업스트림
+    // 0c19a71). 게임의 종합정보는 PMC+스캐브를 더해 보여 주므로 모든 칸이 **정확히 2배**가 된다.
+    // 2026-11-07 실측 — 프로필 Raptor: 파일과 런처는 레이드 2·생존 1·KIA 1·사살 11 인데
+    // 화면은 4·2·2·22 였다.
+    //
+    // PIT 용병은 수치가 애초에 지어낸 것이라 2배여도 틀릴 것이 없었지만, **프로필 팀원은 런처와
+    // 같아야 한다**(요청 1-2). 그래서 PIT 의 함수는 건드리지 않고(불변식 4 — 용병 경로는 그대로)
+    // 프로필 팀원의 응답에서만 그 거울을 걷어낸다.
+    //
+    // 비우는 쪽을 고른 이유: 해석기가 돌려주는 것은 `Pmc` 뿐이라 **이 프로필의 진짜 스캐브 통계는
+    // 들고 오지 않는다.** 없는 값을 PMC 로 메우면 그게 바로 2배의 원인이다. 0 은 "스캐브 기록을
+    // 아직 싣지 않는다" 는 사실 그대로이고, 합계는 PMC 와 같아져 런처와 맞는다.
+    private static void ClearMirroredScavStats(GetOtherProfileResponse view)
+    {
+        if (view.ScavStats?.Eft == null) return;
+        view.ScavStats.Eft.TotalInGameTime = 0;
+        view.ScavStats.Eft.OverAllCounters = new OverallCounters { Items = [] };
     }
 
     // 상세 화면이 /profile/options 로 묻는 것의 프로필 팀원 판. 세 값 계약은 TryBuildView 와 같다:
