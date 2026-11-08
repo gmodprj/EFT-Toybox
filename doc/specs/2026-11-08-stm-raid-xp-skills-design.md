@@ -72,7 +72,31 @@ PIT 의 코드를 프로필에 쓰는 것이 아니라, **프로필에 안전한
 
 한 레벨이 100 이고 51레벨이 끝이다(5,100). **이미 5100 인 스킬이 있다** — 거기에 더하면 넘친다.
 
-### 2-4. PIT 가 고용 팀원에게 하는 것 (참고 구현, 그대로 쓰지 않는다)
+### 2-4. 스킬 세 숫자의 **정의** — 게임 어셈블리에서 읽었다 (A5-1 의 정적 절반, 2026-11-08)
+
+`ilspycmd` 로 `Assembly-CSharp.dll`(이 모드가 빌드에 쓰는 `libs4.1` 사본)의 `EFT.BaseSkill` ·
+`EFT.Skill` 을 역컴파일해 읽었다. **추측이 아니다.**
+
+| 멤버 | 정의 | 뜻 |
+|---|---|---|
+| `BaseSkill.Current` | `ClampCurrent → Mathf.Clamp(value, 0f, 5100f)`, `EXP_PER_LEVEL = 100f`, `Level => GetLevelForValue(ClampCurrent(Current))` | **누적 진행 점수 0~5,100.** 프로필 `Skills.Common[].Progress` 와 같은 자릿수다(§2-3 의 실측과 일치) |
+| `Skill.PointsEarned` | `=> _pointsEarned` | **그 판에 번 진행 점수.** 단위가 바뀌지 않는다 |
+| `Skill.ProgressValue` | `=> round(InGameStatus.InRaid ? PointsEarned : CalculateRealEarnedExpForLobby(), 2)` | **레이드 중이면 `PointsEarned` 와 같고, 로비면 레벨 경험치로 환산된 다른 수**다 |
+
+클라이언트가 보내는 세 값은 그래서 이렇다(`BossPlayers.SaveFollowersProgress`):
+
+- `Current` = `skill.Current - skill.PointsEarned` → **레이드 시작 시점의 누적 점수**
+- `Progress` = `skill.ProgressValue` → 위 표의 그 값(**단위가 상황에 따라 바뀐다**)
+- `PointsEarnedDuringSession` = `skill.PointsEarned` (+ 이 모드의 이동 스킬 보정)
+
+**§4-3 이 `PointsEarnedDuringSession` 을 delta 로 고른 근거가 이것이다.** PIT 의
+`Current + Progress` 는 레이드 중에 만들어지면 맞지만, 로비에서 만들어지면 **점수와 환산값을
+더하는** 셈이 된다. 우리가 쓰는 값은 그 분기를 타지 않는다.
+
+남은 것은 **런타임 절반** 하나다 — 그 보고가 실제로 "레이드 중" 에 만들어지는지(= 두 값이 같게
+오는지)와 수치의 크기. 측정 도구는 서버에 들어가 있다(`LogGrowthMaterials`, §5 A5-1).
+
+### 2-5. PIT 가 고용 팀원에게 하는 것 (참고 구현, 그대로 쓰지 않는다)
 
 `pit-upstream/main:server/Services/FriendlyTeammateService.cs`:
 
@@ -209,7 +233,7 @@ PointsEarnedDuringSession 필드는 프로필에 쓰지 않는다(세션 값이�
 
 | Task | 무엇 | 끝났다고 보는 근거 |
 |---|---|---|
-| **A5-1** | **재는 것 먼저.** 한 판의 `followerprogress` 본문을 **그대로 로그로 남겨** `Current`·`Progress`·`PointsEarnedDuringSession` 이 각각 무엇인지 실측한다(A1 이 카운터 열쇠에 한 것과 같은 일) | 세 숫자의 뜻이 문서에 적힌다. **`delta = PointsEarnedDuringSession` 가정이 맞는지**가 이 Task 의 산출물이다. 틀리면 §4-3 을 고치고 나서 A5-2 로 간다 |
+| **A5-1** | **재는 것 먼저.** ① 게임 어셈블리에서 세 숫자의 정의를 읽는다 ② 한 판의 `followerprogress` 본문을 **그대로 로그로 남겨** 실제로 오는 값을 본다 | **① 끝(2026-11-08, §2-4).** `Current` 는 0~5,100 누적 점수, `PointsEarned` 는 그 판의 점수, `ProgressValue` 는 **레이드 중이면 같고 로비면 단위가 다르다**. **② 측정 도구는 서버에 들어갔다**(`LogGrowthMaterials`, 가짜 보고로 배선 확인 완료 — 값 있는 스킬만 적고 두 값이 어긋나면 ★를 찍는다). **레이드 한 판이 남았다** |
 | **A5-2** | **판정(순수).** `RaidGrowthPolicy` — 레벨 재계산(표를 받는다)·스킬 delta 클램프. 프로필을 읽지도 쓰지도 않는다 | 단위 시험: 레벨이 내려가지 않는다 / 79 를 넘지 않는다 / 5100 을 넘지 않는다 / 음수·NaN·알 수 없는 Id 를 버린다 / **레벨 1 에 큰 XP 가 오면 여러 레벨이 한 번에 오른다**(상한 없음) / **이미 79 면 레벨이 79 에 머물고 경험치만 쌓인다** / 어떤 입력으로도 레벨이 내려가지 않는다 |
 | **A5-3** | **서버 적립.** `StmRaidTallyService.ApplyGrowth` — `#tally-xp` 예약 → 쓰기 → 디스크 재독 확인. 버퍼에 경험치·스킬을 더한다 | 같은 보고를 두 번 보내도 한 번만 쌓인다(`tools/stm-call.mjs` 로 두 번 쏜다). 디스크 재독 대조 |
 | **A5-4** | **인게임 관문.** 레벨이 낮은 팀원(Wraith)과 높은 팀원(Knox)을 **같은 판에** 데리고 나가 프로필을 직전 스냅샷과 대조한다 | 경험치·레벨·스킬이 기대대로 올랐고 **런처 화면과 프로필 파일이 같다**. 그다음 **그 프로필로 로그인해** 레벨·스킬이 멀쩡한지 본다(A5 의 진짜 관문) |
