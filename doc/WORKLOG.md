@@ -8319,3 +8319,21 @@ new StmStashTransferDropPatch().Enable();   ← 빠져 있던 한 줄
 
 경위: [audit/2026-11-08-stm-stash-transfer-file-audit.md](audit/2026-11-08-stm-stash-transfer-file-audit.md).
 남은 것은 **B4(끊김 실험)** 하나다 — 이 대조는 끊기지 않은 전송만 덮는다.
+
+### 끊김 실험 — 세 판정을 다 만들었다 (계획 6 B4)
+
+2026-11-08. 전송 도중 서버를 끊어 **RollBack·StopAndReport·RollForward** 를 모두 실물로 만들었다.
+`StopAndReport` 는 처음이다. 게임은 띄우지 않고 서버만 올려 라우트를 직접 쏘았다.
+
+끊는 방법을 바꿨다 — "쏘고 N ms 뒤에 죽인다" 는 절단면이 추측이 되므로, **파일이 쓰이는 사건**에
+끊었다(`tools/kill-spt-on-write.ps1`). 전송의 쓰기 순서가 그대로 절단면을 준다: 저널 db(=Prepare)
+→ 출처 프로필 → 목적지 프로필. 각각 6ms·21ms·18ms 뒤에 죽였고 판정이 기대와 전부 같았다.
+
+StopAndReport 쪽은 열린 항목(`sourceWriteStarted`·`destinationWriteStarted` 둘 다 참인데 단계는
+`Prepared`)·보고 줄·편집 관문·`close-transfer` 출구(미확인이면 거절, 확인하면 닫힘)까지 다 봤다.
+**"양쪽 다 가짐"(복제)은 이 순서로는 끊어서 만들 수 없다** — 빼는 쪽이 먼저이기 때문이다.
+
+실험 2 는 아이템 2개를 실제로 잃고 실험 3 은 1개를 실제로 옮겼으므로, 끝난 뒤 백업에서 프로필 9개와
+db 를 **전부 되돌렸다**(복원 뒤 아이템 5,104개·중복 11건·플레이어 포함 0건 — 실험 전과 같다).
+
+경위: [audit/2026-11-08-stm-transfer-interruption-b4.md](audit/2026-11-08-stm-transfer-interruption-b4.md).
