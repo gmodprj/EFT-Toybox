@@ -8337,3 +8337,23 @@ StopAndReport 쪽은 열린 항목(`sourceWriteStarted`·`destinationWriteStarte
 db 를 **전부 되돌렸다**(복원 뒤 아이템 5,104개·중복 11건·플레이어 포함 0건 — 실험 전과 같다).
 
 경위: [audit/2026-11-08-stm-transfer-interruption-b4.md](audit/2026-11-08-stm-transfer-interruption-b4.md).
+
+### A5-1 — 스킬 세 숫자의 뜻을 어셈블리에서 읽고, 측정 도구를 서버에 넣었다
+
+2026-11-08. 적립(A5-3)은 아직 안 한다. **재는 것 먼저**다.
+
+`ilspycmd` 로 `Assembly-CSharp.dll` 의 `EFT.BaseSkill`·`EFT.Skill` 을 읽었다. `Current` 는
+`Mathf.Clamp(v, 0, 5100)` 을 거치는 누적 진행 점수(한 레벨 100)이고, `PointsEarned` 는 그 판에 번
+점수이며, **`ProgressValue` 는 레이드 중이면 `PointsEarned` 와 같고 로비면**
+**`CalculateRealEarnedExpForLobby()` 로 단위가 바뀐다**(레벨 경험치 환산값).
+
+그래서 PIT 의 `Progress = Current + Progress`(절대값 덮어쓰기)는 로비에서 만들어지면 **점수와
+환산값을 더하는** 셈이다. 설계가 delta 로 `PointsEarnedDuringSession` 을 고른 근거가 이것이다 —
+그 값만 단위가 안 바뀐다.
+
+측정 도구는 서버 쪽 `LogGrowthMaterials` 다(값 있는 스킬만 한 줄씩, `Progress` 와 `PointsEarned` 가
+어긋나면 ★). **가짜 보고를 쏘아 배선을 먼저 확인했다** — 일부러 하나를 어긋나게 보내니 그 한 개를
+집어냈고, 0 짜리 스킬은 적지 않았다. 레이드를 쓰기 전에 도구가 멀쩡한지 본 것이다.
+
+남은 것은 레이드 한 판이다(실제 값과 "레이드 중에 보내는가"). 빌드 경고 0 / 오류 0, 시험 662개 통과,
+설치 검사 OK. 설계: [specs/2026-11-08-stm-raid-xp-skills-design.md](specs/2026-11-08-stm-raid-xp-skills-design.md) §2-4.
