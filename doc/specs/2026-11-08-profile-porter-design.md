@@ -675,3 +675,43 @@ MailSendService.SendSystemMessageToPlayer(
 글자까지 같고 크기도 **서버 DB 가 6x7 이라고 답한다**(파일이 아니라 돌고 있는 서버에 물었다).
 즉 **그 프로필의 스태시 배치가 실제로 겹쳐 있다** — 팀원 프로필은 사람이 아니라 모드가 채운
 것이라 그럴 수 있다. 창은 작은 것을 위에 그려, 겹쳐도 가려져 못 누르는 일은 없다.
+
+## 17. 설치 — 창은 설치본 루트에 둔다 (2026-11-08)
+
+창을 `Give Ui.exe`·`AirdropCaller.exe` 와 **같은 자리**에 둔다. 도구는
+**[tools/install-profileporter-app.ps1](../../tools/install-profileporter-app.ps1)** 이고,
+AirdropCaller 의 같은 이름 스크립트를 본떴다.
+
+```
+E:\Spt\ProfilePorter.exe              237KB (런타임 의존 게시)
+E:\Spt\profile-porter.config.json     처음 띄울 때 만들어진다
+E:\Spt\icon-cache\                    **AirdropCaller 와 함께 쓴다**
+```
+
+### 17.1 선례에서 가져온 것 — **묵은 게시본을 조용히 깔지 않는다**
+
+`dotnet build` 만 하고 `publish` 를 빠뜨리면 지난번 게시본이 그대로 복사되고 **바이트 수까지
+같아** 눈치채기 어렵다. 소스가 게시본보다 새로우면 **멈춘다.** (같은 함정을 이 세션에서도
+서버 쪽에서 한 번 밟았다 — §15.1.)
+
+창이 떠 있으면 exe 가 잠겨 복사가 실패하므로 **열어 보고 멈춘다.** 그냥 두면 "설치됨" 도 안
+찍히면서 exit 0 이라 깔린 줄 알게 된다.
+
+### 17.2 선례와 **다르게** 한 것 — 아이콘 캐시를 지우지 않는다
+
+`<SptDir>\icon-cache` 는 **AirdropCaller 와 함께 쓰는** 자리다(2026-11-08 기준 2,341개).
+AirdropCaller 쪽 스크립트는 `-Remove` 에서 그것을 자기 것으로 알고 지우는데, 그쪽이 먼저
+생겼기 때문이다. **ProfilePorter 는 지우지 않는다** — 여기서 치우면 남의 창이 다시 받아야 한다.
+
+`-Remove` 는 exe 만 지우고 설정을 남긴다. `-Purge` 가 설정까지 지운다. **내보낸 파일과
+백업은 서버 모드 폴더**에 있어 이 스크립트가 손대지 않는다.
+
+### 17.3 확인한 것
+
+| 본 것 | 결과 |
+| --- | --- |
+| 설치 자리 | `E:\Spt\ProfilePorter.exe` — `Give Ui.exe`·`AirdropCaller.exe` 와 나란히 |
+| 그 자리에서 띄우기 | 떴고 **설정 파일이 그 자리에 만들어졌다** |
+| 서버와 통신 | 기동 로그에 `/profile-porter/profiles`·`/files` |
+| `-Remove` | exe 만 지우고 **설정과 아이콘 캐시(2,341개)를 남겼다** |
+| 기록 | `gen-installed-mods.mjs` 에 두 줄(창·서버)을 더하고 다시 만들었다. `check-install-records` **OK — 0/0** |
