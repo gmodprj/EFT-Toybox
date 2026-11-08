@@ -47,12 +47,20 @@ public sealed class PorterFileItem
 [Injectable(InjectionType.Singleton)]
 public class PorterFiles(ModHelper modHelper, ISptLogger<PorterFiles> logger)
 {
-    private static readonly JsonSerializerOptions Options = new()
+    /// <summary>
+    /// 파일을 읽고 쓰는 설정. <see cref="ProfilePorterService"/> 가 `upd` 를 담을 때도 같은 것을
+    /// 쓴다 — 두 곳이 다르면 담을 때와 적을 때의 모양이 갈린다.
+    /// </summary>
+    public static readonly JsonSerializerOptions Options = new()
     {
         WriteIndented = true,
         PropertyNameCaseInsensitive = true,
         // 사람이 열어 보는 파일이다. 한국어 메모가 \uXXXX 로 깨지지 않게 한다.
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        // **비어 있는 필드는 적지 않는다.** SPT 의 `Upd` 는 쓰지 않는 필드까지 들고 있는 타입이라,
+        // 그대로 적으면 원본이 2필드인 것이 파일에서는 28필드(26개가 null)가 된다. 값은 같지만
+        // 파일이 부풀고 사람이 프로필과 견주기 어려워진다(2026-11-08 기동 확인에서 실측).
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     };
 
     private string ModFolder => modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
