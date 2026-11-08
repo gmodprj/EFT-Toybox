@@ -259,18 +259,33 @@ public sealed class StashGridView : ScrollViewer
             Cursor = Cursors.Hand,
         };
 
-        box.MouseLeftButtonUp += (_, e) =>
+        return box;
+    }
+
+    /// <summary>그 점에 있는 아이템. 겹쳐 있으면 **작은 것**이 이긴다(위에 그려진 것과 같다).</summary>
+    private StashRow? HitTest(Point at)
+    {
+        StashRow? best = null;
+        var bestArea = int.MaxValue;
+
+        foreach (var (row, _) in _boxes)
         {
-            if (_dragging)
+            var w = Math.Max(1, row.W);
+            var h = Math.Max(1, row.H);
+            var area = new Rect(row.X * Cell, row.Y * Cell, w * Cell, h * Cell);
+            if (!area.Contains(at))
             {
-                return; // 끌던 중이면 캔버스 쪽이 처리한다
+                continue;
             }
 
-            Toggle(row.Id, Additive());
-            e.Handled = true;
-        };
+            if (w * h < bestArea)
+            {
+                bestArea = w * h;
+                best = row;
+            }
+        }
 
-        return box;
+        return best;
     }
 
     /// <summary>`Ctrl` 이나 `Shift` 를 누르고 있으면 **더하고 빼기**다.</summary>
@@ -321,10 +336,19 @@ public sealed class StashGridView : ScrollViewer
             Math.Min(_dragFrom.X, now.X), Math.Min(_dragFrom.Y, now.Y),
             Math.Abs(now.X - _dragFrom.X), Math.Abs(now.Y - _dragFrom.Y));
 
-        // 끈 거리가 거의 없으면 **빈 곳을 누른 것**이다 — 고른 것을 푼다.
+        // 끈 거리가 거의 없으면 **누른 것**이다.
+        //
+        // 아이템 상자에 직접 `MouseLeftButtonUp` 을 걸면 안 된다 — 캔버스가 `Down` 에서 마우스를
+        // **붙잡기(CaptureMouse)** 때문에 `Up` 이 상자까지 가지 않는다. 그래서 칸을 눌러도 아무
+        // 일도 일어나지 않았다(2026-11-08 사용자 제보). 눌린 자리를 여기서 직접 찾는다.
         if (box.Width < 4 && box.Height < 4)
         {
-            if (!Additive())
+            var hit = HitTest(now);
+            if (hit is not null)
+            {
+                Toggle(hit.Id, Additive());
+            }
+            else if (!Additive())
             {
                 _selected.Clear();
                 Repaint();

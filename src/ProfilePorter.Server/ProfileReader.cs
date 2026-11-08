@@ -143,7 +143,7 @@ public class ProfileReader(
 
             // 크기는 **자손까지 본 실제 차지 칸**이다. 못 재면 1x1 로 둔다 — 격자에서 자리를
             // 조금 적게 차지해 보일 뿐, 그 때문에 무엇이 사라지지는 않는다.
-            var size = SafeSize(items, item.Id.ToString());
+            var size = SafeSize(item.Template);
             var (x, y, rotated) = ReadLocation(item.Location);
             var (w, h) = rotated ? (size.h, size.w) : (size.w, size.h);
 
@@ -225,17 +225,27 @@ public class ProfileReader(
         }
     }
 
-    /// <summary>크기를 재다 터지면 1x1. 밖에서 오는 자료로 불리는 자리라 던지게 두지 않는다.</summary>
-    private (int w, int h) SafeSize(List<Item> items, string id)
+    /// <summary>
+    /// 격자에서 차지하는 칸. **tpl 의 기본 크기**다.
+    ///
+    /// `ItemHelper.GetItemSize` 를 쓰면 안 된다 — 그것은 "이 트리를 격자에 **펼쳐 놓으면**
+    /// 얼마나 필요한가" 를 재는 함수라, **컨테이너 안에 든 것까지 더한다.** 실측(2026-11-08):
+    /// 같은 Item Case 가 안에 383개면 **38x4**, 77개면 11x5, 161개면 5x3 으로 제각각 나왔고
+    /// 화면이 통째로 깨졌다. 스태시에서 상자는 안이 비었든 찼든 **같은 칸**을 차지한다.
+    ///
+    /// 못 재면 1x1 로 둔다. 밖에서 오는 자료로 불리는 자리라 던지게 두지 않는다.
+    /// </summary>
+    private (int w, int h) SafeSize(MongoId tpl)
     {
         try
         {
-            var size = itemHelper.GetItemSize(items, new MongoId(id));
-            return (size?.Width ?? 1, size?.Height ?? 1);
+            var found = itemHelper.GetItem(tpl);
+            var props = found.Key ? found.Value?.Properties : null;
+            return (props?.Width ?? 1, props?.Height ?? 1);
         }
         catch (Exception e)
         {
-            logger.Warning($"[ProfilePorter] {id} 의 크기를 재지 못해 1x1 로 둔다: {e.Message}");
+            logger.Warning($"[ProfilePorter] {tpl} 의 크기를 재지 못해 1x1 로 둔다: {e.Message}");
             return (1, 1);
         }
     }
