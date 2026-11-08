@@ -72,6 +72,47 @@ public class RoundTripTests
         }
     }
 
+    /// <summary>
+    /// 설계 §20 의 결함을 가두는 시험. 2026-11-09 까지 <c>PorterItem</c> 에 <c>Location</c> 이
+    /// 아예 없어서, 내보낸 파일 넷에서 좌표가 **100% 떨어졌다**(1,130개 → 0개). 개수·<c>upd</c>·
+    /// <c>slotId</c> 만 세던 관문들은 전부 녹색이었다.
+    ///
+    /// **뿌리는 비우고 자손은 지킨다** — 보내는 쪽 스태시 좌표는 받는 쪽에서 남의 자리이고,
+    /// 상자 안의 좌표는 상자를 기준으로 한 것이라 뜻이 그대로 통한다.
+    /// </summary>
+    [Fact]
+    public void 컨테이너_안의_자리와_회전은_한_바퀴를_돌아도_그대로다()
+    {
+        var bagSpot = new { x = 3, y = 4, r = "Horizontal" };
+        var gunSpot = new { x = 1, y = 0, r = "Vertical" };
+        var ammoSlot = 2;
+
+        List<PorterItem> source =
+        [
+            new("bag", Stash, ExportSelection.StashSlot, "tpl-bag", null, bagSpot),
+            new("gun", "bag", "main", "tpl-gun", null, gunSpot),
+            new("mag", "gun", "mod_magazine", "tpl-mag", null, ammoSlot),
+        ];
+
+        var export = ExportSelection.PlanStash(source, Stash, ["bag"]);
+        Assert.True(export.Accepted, export.Reason);
+
+        var plan = ImportPlanner.Plan(ToBundle(source, export, ["bag"]), Counter());
+        Assert.True(plan.Accepted, plan.Reason);
+
+        var back = plan.IdMap.ToDictionary(kv => kv.Value, kv => kv.Key, StringComparer.Ordinal);
+        var byOldId = plan.Items.ToDictionary(i => back[i.Id], i => i, StringComparer.Ordinal);
+
+        // 뿌리는 자리를 비운다 — 자리 찾기가 채운다.
+        Assert.Null(byOldId["bag"].Location);
+
+        // 자손은 **같은 객체 그대로**다. 해석하거나 다시 만들지 않는다.
+        Assert.Same(gunSpot, byOldId["gun"].Location);
+
+        // 슬롯에 꽂힌 것은 정수 색인이다(값 타입이라 같은 객체일 수는 없고, 값이 같아야 한다).
+        Assert.Equal(ammoSlot, byOldId["mag"].Location);
+    }
+
     [Fact]
     public void 두_번_들여오면_서로_다른_id_를_받는다()
     {

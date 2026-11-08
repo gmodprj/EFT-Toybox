@@ -292,7 +292,11 @@ public class ProfileReader(
         return n;
     }
 
-    /// <summary>판정이 쓰는 모양으로 줄인다. <c>Upd</c> 는 **들여다보지 않고 그대로** 들고 간다.</summary>
+    /// <summary>
+    /// 판정이 쓰는 모양으로 줄인다. <c>Upd</c> 와 <c>Location</c> 은 **들여다보지 않고 그대로**
+    /// 들고 간다 — 여기서 빠뜨리면 내보낸 파일에서도 빠진다(설계 §20 의 결함이 바로 이 줄에
+    /// `Location` 이 없던 것이다).
+    /// </summary>
     public static List<PorterItem> ToPorterItems(IEnumerable<Item>? items) =>
         (items ?? [])
         .Where(i => i is not null)
@@ -301,7 +305,8 @@ public class ProfileReader(
             i.ParentId,
             i.SlotId,
             i.Template.ToString(),
-            i.Upd))
+            i.Upd,
+            i.Location))
         .ToList();
 
     private static bool Same(string? a, string? b) =>
