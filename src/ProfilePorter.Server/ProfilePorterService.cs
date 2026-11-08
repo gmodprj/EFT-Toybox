@@ -5,6 +5,7 @@ using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Utils;
+using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Services.Commerce;
 
 namespace ProfilePorter.Server;
@@ -34,6 +35,7 @@ public class ProfilePorterService(
     PorterFiles files,
     ConfigStore store,
     MailSendService mailSendService,
+    SaveServer saveServer,
     ISptLogger<ProfilePorterService> logger)
 {
     public PorterResult ExportStash(
@@ -154,6 +156,21 @@ public class ProfilePorterService(
         {
             logger.Error($"[ProfilePorter] 우편을 보내지 못했다: {e.Message}");
             return Fail($"우편으로 보내지 못했습니다: {e.Message}");
+        }
+
+        // 4) **디스크에 쓴다.** `MailSendService` 는 프로필의 `DialogueRecords` 를 **메모리에서만**
+        //    고친다 — 저장하지 않으면 서버가 꺼질 때 우편이 통째로 날아간다. 꽂아 넣던 때에는
+        //    바로 뒤에 `SaveProfileAsync` 가 있었는데, 우편으로 바꾸면서 그 줄까지 지웠다
+        //    (2026-11-08 실측: 보낸 뒤 프로필 파일에 우편이 없었다).
+        try
+        {
+            saveServer.SaveProfileAsync(new MongoId(profileId!)).GetAwaiter().GetResult();
+        }
+        catch (Exception e)
+        {
+            // 우편은 이미 메모리에 들어갔다. 저장만 실패한 것이라 **거짓으로 성공을 알리지 않는다.**
+            logger.Error($"[ProfilePorter] 우편은 보냈으나 프로필을 저장하지 못했다: {e.Message}");
+            return Fail($"우편은 보냈지만 저장하지 못했습니다 — 서버를 끄면 사라집니다: {e.Message}");
         }
 
         var unlockedNote = unlocked > 0 ? $"  잠금을 푼 것 {unlocked}개." : string.Empty;
