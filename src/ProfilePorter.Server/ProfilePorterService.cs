@@ -129,7 +129,12 @@ public class ProfilePorterService(
         // 3) **우편으로 보낸다**(설계 §14). 스태시에 꽂지 않는다 —
         //    자리 찾기가 없고, 받을지는 사람이 우편함에서 정한다.
         //    뿌리는 `ParentId` 가 비어 있다(P2 가 그렇게 둔다). 우편 목록이 바라는 모양 그대로다.
-        var items = plan.Items.Select(ToSptItem).ToList();
+        var unlocked = 0;
+        var items = new List<Item>(plan.Items.Count);
+        foreach (var planned in plan.Items)
+        {
+            items.Add(ToSptItem(planned, ref unlocked));
+        }
         var days = Math.Clamp(store.Config.MailStorageDays, 1, 365);
         var from = file.FromNickname;
         var what = string.Equals(file.Kind, PorterBundle.KindLoadout, StringComparison.Ordinal)
@@ -151,10 +156,18 @@ public class ProfilePorterService(
             return Fail($"우편으로 보내지 못했습니다: {e.Message}");
         }
 
-        logger.Info($"[ProfilePorter] '{fileName}' 의 {plan.Items.Count}개를 "
-                    + $"{pmc.Info?.Nickname}({profileId}) 에게 **우편으로** 보냈다({days}일 보관) — 원본은 그대로다.");
+        var unlockedNote = unlocked > 0 ? $"  잠금을 푼 것 {unlocked}개." : string.Empty;
 
-        return new PorterResult(true, null, fileName, plan.Items.Count, []);
+        logger.Info($"[ProfilePorter] '{fileName}' 의 {plan.Items.Count}개를 "
+                    + $"{pmc.Info?.Nickname}({profileId}) 에게 **우편으로** 보냈다({days}일 보관) — 원본은 그대로다."
+                    + unlockedNote);
+
+        // 푼 것은 `skipped`(=말해 주는 자리)에 적는다. 조용히 바꾸지 않는다.
+        var said = unlocked > 0
+            ? new List<string> { $"잠겨 있던 {unlocked}개의 잠금을 풀어 보냈습니다 — 잠긴 채로는 우편함에서 꺼낼 수 없습니다." }
+            : [];
+
+        return new PorterResult(true, null, fileName, plan.Items.Count, said);
     }
 
     private PorterResult WriteFile(
@@ -211,20 +224,42 @@ public class ProfilePorterService(
         },
     };
 
-    private static Item ToSptItem(PorterItem item) => new()
+    /// <summary>
+    /// 우편에 담을 모양으로 바꾼다.
+    ///
+    /// **잠금은 푼다.** `PinLockState.Locked` 인 아이템은 게임이 "옮기거나 쓰거나 고치거나
+    /// 버리거나 건넬 수 없다" 로 막아서, 그대로 보내면 **받는 사람이 우편함에서 꺼내지도
+    /// 못한다**(2026-11-08 사용자 제보). 잠금은 "그 프로필에서 실수로 건드리지 않겠다" 는
+    /// 표시이지 물건의 성질이 아니므로, 남의 우편으로 갈 때 들고 갈 이유가 없다.
+    ///
+    /// `Pinned` 는 그대로 둔다 — 자동 정렬에서 자리를 지키라는 표시일 뿐 꺼내는 것을 막지 않는다.
+    /// 푼 개수는 <paramref name="unlocked"/> 로 세어 **말해 준다.** 조용히 바꾸지 않는다.
+    /// </summary>
+    private static Item ToSptItem(PorterItem item, ref int unlocked)
     {
-        Id = new MongoId(item.Id),
-        Template = new MongoId(item.TemplateId),
-        ParentId = item.ParentId,
-        SlotId = item.SlotId,
-        Upd = item.Upd switch
+        var upd = item.Upd switch
         {
             null => null,
             JsonElement element => element.Deserialize<Upd>(),
             Upd already => already,
             _ => null,
-        },
-    };
+        };
+
+        if (upd?.PinLockState == PinLockState.Locked)
+        {
+            upd.PinLockState = PinLockState.Free;
+            unlocked++;
+        }
+
+        return new Item
+        {
+            Id = new MongoId(item.Id),
+            Template = new MongoId(item.TemplateId),
+            ParentId = item.ParentId,
+            SlotId = item.SlotId,
+            Upd = upd,
+        };
+    }
 
     private static PorterResult Fail(string reason) => new(false, reason, null, 0, []);
 }
