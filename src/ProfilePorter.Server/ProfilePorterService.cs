@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Text.Json;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
@@ -10,7 +11,12 @@ using SPTarkov.Server.Core.Utils.Cloners;
 namespace ProfilePorter.Server;
 
 /// <summary>라우트가 돌려주는 답. 거절도 **말로** 돌려준다 — 조용히 실패하지 않는다.</summary>
-public sealed record PorterResult(bool Ok, string? Reason, string? FileName, int Count, IReadOnlyList<string> Skipped);
+public sealed record PorterResult(
+    [property: JsonPropertyName("ok")] bool Ok,
+    [property: JsonPropertyName("reason")] string? Reason,
+    [property: JsonPropertyName("fileName")] string? FileName,
+    [property: JsonPropertyName("count")] int Count,
+    [property: JsonPropertyName("skipped")] IReadOnlyList<string> Skipped);
 
 /// <summary>
 /// 내보내기와 들여오기를 조립한다.
@@ -196,8 +202,9 @@ public class ProfilePorterService(
             null => null,
             JsonElement element => element,
             // 프로필에서 온 `Upd` 는 SPT 타입이다. 해석하지 않고 JSON 으로 한 번 돌려 담는다 —
-            // 필드를 아는 척하면 모르는 것이 조용히 떨어진다.
-            var other => JsonSerializer.SerializeToElement(other),
+            // 필드를 아는 척하면 모르는 것이 조용히 떨어진다. 파일과 **같은 설정**을 쓴다:
+            // 다르면 담을 때와 적을 때의 모양이 갈린다(빈 필드가 여기서 들어와 거기서 빠진다).
+            var other => JsonSerializer.SerializeToElement(other, PorterFiles.Options),
         },
     };
 

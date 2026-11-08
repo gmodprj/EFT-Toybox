@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
@@ -8,8 +9,17 @@ using SPTarkov.Server.Core.Servers;
 
 namespace ProfilePorter.Server;
 
-/// <summary>프로필 하나의 간추린 모습. 창이 목록을 그리는 데 쓴다.</summary>
-public sealed record ProfileSummary(string ProfileId, string Nickname, int Level, int StashFloorCount);
+/// <summary>
+/// 프로필 하나의 간추린 모습. 창이 목록을 그리는 데 쓴다.
+///
+/// 열쇠 이름을 적어 둔다 — `record` 는 그냥 두면 **PascalCase 로 나가고**, 익명 객체로 만든
+/// 다른 응답(`ok`·`items`)은 camelCase 로 나가 한 모드가 두 모양을 섞어 내보내게 된다.
+/// </summary>
+public sealed record ProfileSummary(
+    [property: JsonPropertyName("profileId")] string ProfileId,
+    [property: JsonPropertyName("nickname")] string Nickname,
+    [property: JsonPropertyName("level")] int Level,
+    [property: JsonPropertyName("stashFloorCount")] int StashFloorCount);
 
 /// <summary>
 /// 프로필을 **읽기만** 한다. 설계의 안티목표 1("내보내는 쪽 프로필이 바뀐다")이 여기 걸린다 —

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
@@ -7,19 +8,23 @@ using SPTarkov.Server.Core.Utils;
 
 namespace ProfilePorter.Server;
 
+// **열쇠 이름을 명시한다.** 없으면 `ProfileId` 처럼 PascalCase 로만 받고, 창이 보내는
+// camelCase(`profileId`)는 **조용히 null 이 되어** "그 프로필을 찾지 못했습니다" 로 돌아온다.
+// 2026-11-08 기동 확인에서 실제로 그렇게 거절당했다. AirdropCaller 의 `QueueRequest` 가
+// 같은 이유로 모든 속성에 이것을 달고 있다.
 public record PorterExportRequest : IRequestData
 {
-    public string? ProfileId { get; set; }
-    public string? Kind { get; set; }
-    public List<string>? ItemIds { get; set; }
-    public string? Name { get; set; }
-    public string? Note { get; set; }
+    [JsonPropertyName("profileId")] public string? ProfileId { get; set; }
+    [JsonPropertyName("kind")] public string? Kind { get; set; }
+    [JsonPropertyName("itemIds")] public List<string>? ItemIds { get; set; }
+    [JsonPropertyName("name")] public string? Name { get; set; }
+    [JsonPropertyName("note")] public string? Note { get; set; }
 }
 
 public record PorterImportRequest : IRequestData
 {
-    public string? ProfileId { get; set; }
-    public string? FileName { get; set; }
+    [JsonPropertyName("profileId")] public string? ProfileId { get; set; }
+    [JsonPropertyName("fileName")] public string? FileName { get; set; }
 }
 
 /// <summary>
