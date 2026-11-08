@@ -29,12 +29,18 @@
     </Border>
 
     <Grid Grid.Row="1">
+      <!--
+        기본 너비는 2 : 1.5 : 1 이다. 내보내는 쪽이 격자를 그리느라 가장 넓어야 하고,
+        받는 쪽은 프로필 목록뿐이라 가장 좁아도 된다.
+        가운데 띠(`GridSplitter`)를 끌어 사람이 다시 나눌 수 있다 — `MinWidth` 로 한 칸이
+        0 이 되는 것만 막는다.
+      -->
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="1.1*" />
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="2*" MinWidth="260" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="1.5*" MinWidth="200" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="1*" MinWidth="160" />
       </Grid.ColumnDefinitions>
 
       <!-- 왼쪽 — 내보내는 쪽 -->
@@ -74,8 +80,9 @@
         </Grid>
       </Border>
 
-      <TextBlock Grid.Column="1" Text="→" FontSize="22" Foreground="{StaticResource Dim}"
-                 VerticalAlignment="Center" Margin="8,0" />
+      <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch"
+                    Background="#3A3A3C" ShowsPreview="False" Cursor="SizeWE"
+                    ToolTip="끌어서 너비를 바꿉니다" />
 
       <!-- 가운데 — 내보낸 파일 -->
       <Border Grid.Column="2" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
@@ -106,8 +113,9 @@
         </Grid>
       </Border>
 
-      <TextBlock Grid.Column="3" Text="→" FontSize="22" Foreground="{StaticResource Dim}"
-                 VerticalAlignment="Center" Margin="8,0" />
+      <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Stretch"
+                    Background="#3A3A3C" ShowsPreview="False" Cursor="SizeWE"
+                    ToolTip="끌어서 너비를 바꿉니다" />
 
       <!-- 오른쪽 — 받는 쪽 -->
       <Border Grid.Column="4" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"

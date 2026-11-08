@@ -20,6 +20,25 @@ public class AppConfig
     [JsonPropertyName("sessionId")]
     public string SessionId { get; set; } = string.Empty;
 
+    /// <summary>
+    /// 아이템 아이콘을 tarkov.dev 에서 받아 올지. **밖으로 나가는 통신이다** — 아이템 id 가
+    /// 그쪽으로 가고 그림을 받아 온다. 끄면 격자에 이름만 그린다.
+    /// </summary>
+    [JsonPropertyName("downloadItemIcons")]
+    public bool DownloadItemIcons { get; set; } = true;
+
+    /// <summary>
+    /// 받은 아이콘을 쌓아 둘 곳. 비우면 `&lt;sptDir&gt;\icon-cache` — **AirdropCaller 와 같은
+    /// 자리**라 이미 받아 둔 것을 다시 받지 않는다.
+    /// </summary>
+    [JsonPropertyName("iconCacheFolder")]
+    public string IconCacheFolder { get; set; } = string.Empty;
+
+    public string ResolveIconCacheFolder() =>
+        string.IsNullOrWhiteSpace(IconCacheFolder)
+            ? System.IO.Path.Combine(SptDir, "icon-cache")
+            : IconCacheFolder;
+
     private const string FileName = "profile-porter.config.json";
 
     private static readonly JsonSerializerOptions Options = new()
@@ -43,7 +62,12 @@ public class AppConfig
                 return fresh;
             }
 
-            return JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(Path), Options) ?? new AppConfig();
+            var loaded = JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(Path), Options) ?? new AppConfig();
+
+            // **읽은 뒤 다시 적는다.** 설정 항목이 늘어도 옛 파일에는 그 줄이 없어, 사람이
+            // 무엇을 끌 수 있는지 알 길이 없다. 고쳐 둔 값은 그대로 실려 돌아간다.
+            File.WriteAllText(Path, JsonSerializer.Serialize(loaded, Options));
+            return loaded;
         }
         catch (Exception e)
         {

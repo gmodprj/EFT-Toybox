@@ -7,6 +7,7 @@ public partial class MainWindow : Window
 {
     private readonly AppConfig _config;
     private ServerClient? _client;
+    private IconService? _icons;
     private string? _folder;
 
     public MainWindow()
@@ -23,6 +24,8 @@ public partial class MainWindow : Window
         }
 
         StashGrid.SelectionChanged += StashGrid_SelectionChanged;
+        _icons = new IconService(_config.ResolveIconCacheFolder(), _config.DownloadItemIcons);
+        StashGrid.Icons = _icons;
         _client = new ServerClient(_config.SptUrl, sessionId);
         Status($"서버에 묻는 중… (세션 {how})");
         _ = LoadAllAsync();
