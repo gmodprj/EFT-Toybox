@@ -1,0 +1,67 @@
+{
+  "coveragePrefixes": ["btr_", "Trading/Btr/", "Trading/Dialog/Btr", "TransferScreen/Btr"],
+
+  "comment": "BTR 운전병 대화. 레이드 중 BTR 에 타면 화면 위쪽에 그대로 보인다(2026-11-08 사용자 제보). 설치본의 BTR 열쇠 73개 가운데 28개는 바닐라가 이미 한국어고, 45개가 영문 그대로였다 — 바닐라 kr.json 자체의 구멍이라 모드 탓이 아니다(REVIEW-KOREAN-LOCALIZATION.md §261 의 '바닐라 몫'). 말투는 거칠고 친근한 용병 구어로 맞췄다. 주의 — 플레이어가 고르는 선택지 세 줄('So you're having troubles again, yeah?' 등)은 en·kr 어느 locale 에도 없고 BepInEx 플러그인에도 없다. 게임 클라이언트가 들고 있는 글자라 서버 사전으로는 못 바꾼다.",
+
+  "entries": {
+    "Trading/Btr/Dialog/AvaliableServices": "뭘 해줄 수 있는데?",
+    "Trading/Btr/Dialog/AvailableServices/Description": "원하는 데까지 데려다줄 수 있고, 꼬리가 붙었으면 엄호 사격도 해준다. 짐을 네 은신처까지 옮겨줄 수도 있고. 자, 어떻게 할래?",
+
+    "Trading/Dialog/Btr/AskForNewQuests": "나한테 맡길 일 있나?",
+    "Trading/Dialog/Btr/News1": "어떤 개자식들이 내 창고를 털어갔어! 난 겨우 빠져나왔지만 상황은 여전히 엉망이야! 그놈들을 거기서 몰아내야 하는데… 일단은 자리 잡을 새 데가 필요해. 그다음엔 도와줄 놈을 찾아봐야지. 뭔가 생기면 연락할게, 알았지?",
+    "Trading/Dialog/Btr/News2": "소식? 갑자기 날이 얼마나 따뜻해졌는지 봤어? 따뜻한 건 좋은 거지, 근데 방심하면 안 돼! 항상 긴장하고 있어야 한다고.",
+    "Trading/Dialog/Btr/News3": "용병 몇 놈이 커스텀스의 낡은 공장 건물에 들어갔다더군. 뛰어다니면서 구석구석 다 털고 있대. 근데 말이야, 왜 진작 그 문이랑 정문을 안 열었나 몰라. 시도는 해봤으려나?",
+    "Trading/Dialog/Btr/News4": "누가 타르코프에 남은 고참들 머릿수를 세기로 했다더군. 여기 오래 있었으면 너도 표식 같은 걸 받을 수 있을 거야. 이제 신참들도 여기서 누가 제일 배짱 좋은지 알게 되겠지!",
+    "Trading/Dialog/Btr/News5": "온통 진흙투성이야! 다행히 이 녀석은 덩치가 커서 처박힐 일은 없지. 문제는 그다음 세차고! 말 나온 김에, 부업으로 내 BTR 좀 닦아볼래? 싫다고? 젠장.",
+    "Trading/Dialog/Btr/NoNews": "내가 아는 소식은 이게 다인 것 같군.",
+    "Trading/Dialog/Btr/PlayerAcceptQuest{0}": "그러지. <color=grey><i>(임무 \"{0}\" 수락)</i></color>",
+    "Trading/Dialog/Btr/PlayerFinishQuest{0}": "다 끝냈어. <color=grey><i>(임무 \"{0}\" 완료)</i></color>",
+    "Trading/Dialog/Btr/PlayerHandoverItem{0}": "여기. <color=grey><i>(아이템 \"{0}\" 건네기)</i></color>",
+    "Trading/Dialog/Btr/ServicePayoff{0}": "그래, 그 정도면 됐어. <i>(\"{0}\" 건네기)</i>",
+
+    "Trading/Dialog/BtrBotCover/Name": "엄호 사격",
+    "Trading/Dialog/BtrBotCover/Description": "네가 BTR 안에 있는 동안엔 코빼기라도 내미는 놈은 다 쏴주지. 하차 지점도 정리해주고 내릴 때 엄호도 해줄게, 오래는 못 하지만.",
+    "Trading/Dialog/BtrItemsDelivery/Name": "짐을 창고로 보내기",
+
+    "TransferScreen/BtrCaution": "BTR 이 곧 출발한다! 값을 치르지 않은 물건은 사라진다!",
+
+    "btr_generic_greetings_01": "수다 떨러 왔나, 아니면 어디 좀 갈까?",
+    "btr_generic_greetings_02": "혀라도 깨물었어? 무슨 일인지 말해 봐.",
+    "btr_generic_greetings_03": "들어와, 앉아. 어디 좀 태워줄까?",
+    "btr_generic_greetings_04": "그렇게 말없이 앉아만 있지 마, 으스스하잖아. 어디 좀 태워다 줄까?",
+
+    "btr_has_quests_01": "그래, 하나 있어. 잘 들어.",
+    "btr_has_quests_02": "당연히 있지! 앉아 봐, 얘기해줄게.",
+    "btr_has_quests_03": "너한테 줄 거라면, 하나 있지.",
+    "btr_has_quests_04": "마침 하나 있긴 해!",
+
+    "btr_no_quests_reaction_01": "아니, 지금은 다 괜찮아.",
+    "btr_no_quests_reaction_02": "지금은 별일 없이 굴러가고 있어서 손 빌릴 일이 없군.",
+    "btr_no_quests_reaction_03": "아니, 일단은 내가 알아서 정리했어.",
+    "btr_no_quests_reaction_04": "나중에 다시 와. 지금은 줄 게 없어.",
+
+    "btr_accept_quest_01": "좋아! 기다리고 있을게.",
+    "btr_accept_quest_02": "너라면 당연하지.",
+    "btr_accept_quest_03": "훌륭해! 끝나면 돌아와.",
+    "btr_fail_accept_quest_01": "우리가 같이 일하기엔 좀 이른 것 같군.",
+
+    "btr_quest_complete_01": "역시 프로야! 너랑 나랑은 손발이 잘 맞는다니까.",
+    "btr_quest_complete_02": "잘했어! 우리 꽤 잘 맞는군.",
+    "btr_quest_complete_03": "고맙다, 친구. 큰 도움이 됐어.",
+    "btr_quest_finish_failed_01": "느긋하게도 왔군. 이젠 늦었어!",
+
+    "btr_buy_01": "거래 완료! 더 필요한 거 있나?",
+
+    "btr_item_transferred_01": "잘했어. 고맙다!",
+    "btr_item_transferred_02": "딱 원하던 거야. 고마워!",
+    "btr_item_transferred_03": "벌써 끝냈어? 너랑 일하는 건 즐겁군.",
+
+    "btr_transfer_failed_01": "수상할 정도로 일찍 왔군.",
+    "btr_transfer_failed_02": "지금은 못 받아, 나중에 다시 와.",
+    "btr_transfer_failed_03": "이런, 지금은 넣을 자리가 없어. 나중에 다시 와, 알았지?"
+  },
+
+  "keptAsIs": {
+    "BTR": "차량 이름. 바닐라 kr 도 BMP·BTR 같은 차량 약어는 영문으로 둔다"
+  }
+}
