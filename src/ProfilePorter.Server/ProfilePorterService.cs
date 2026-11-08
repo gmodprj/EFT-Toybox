@@ -5,8 +5,7 @@ using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Servers;
-using SPTarkov.Server.Core.Utils.Cloners;
+using SPTarkov.Server.Core.Services.Commerce;
 
 namespace ProfilePorter.Server;
 
@@ -33,10 +32,8 @@ public sealed record PorterResult(
 public class ProfilePorterService(
     ProfileReader profiles,
     PorterFiles files,
-    StashPlacer placer,
     ConfigStore store,
-    SaveServer saveServer,
-    ICloner cloner,
+    MailSendService mailSendService,
     ISptLogger<ProfilePorterService> logger)
 {
     public PorterResult ExportStash(string? profileId, IReadOnlyList<string>? itemIds, string? name, string? note)
@@ -109,12 +106,6 @@ public class ProfilePorterService(
             return Fail("받는 프로필을 찾지 못했습니다.");
         }
 
-        var stashRootId = pmc.Inventory.Stash?.ToString();
-        if (string.IsNullOrEmpty(stashRootId))
-        {
-            return Fail("받는 프로필의 스태시를 찾지 못했습니다.");
-        }
-
         // 1) 순수 판정 — id 를 새로 매기고 꾸러미가 온전한지 본다. 아직 아무것도 안 썼다.
         var bundle = new PorterBundle(
             file.Kind,
@@ -127,32 +118,40 @@ public class ProfilePorterService(
             return new PorterResult(false, plan.Reason, fileName, 0, []);
         }
 
-        // 2) **복제본 위에서** 자리까지 찾아 본다. 여기서 실패하면 실물은 손대지 않은 채 끝난다.
-        var live = pmc.Inventory.Items ?? [];
-        var trial = cloner.Clone(live) ?? [];
-        trial.AddRange(plan.Items.Select(ToSptItem));
-
-        if (!placer.TryPlaceAll(trial, stashRootId, plan.RootIds, out var failure))
-        {
-            return new PorterResult(false, failure ?? "자리를 찾지 못했습니다.", fileName, 0, []);
-        }
-
-        // 3) 백업. **실패하면 들여오지 않는다** — 되돌릴 길 없이 나아가지 않는다(설계 §4.6).
+        // 2) 백업. **실패하면 보내지 않는다** — 되돌릴 길 없이 나아가지 않는다(설계 §4.6).
+        //    우편도 프로필(`DialogueRecords`)에 쓰이므로 여전히 되돌릴 길을 남긴다.
         if (store.Config.BackupBeforeImport && files.BackupProfile(profileId!) is null)
         {
-            return Fail("들여오기 전 백업에 실패해 아무것도 쓰지 않았습니다.");
+            return Fail("보내기 전 백업에 실패해 아무것도 쓰지 않았습니다.");
         }
 
-        // 4) 실물에 쓴다. 자리는 복제본에서 이미 정해졌으므로 그 결과를 그대로 옮긴다.
-        var placed = trial.Where(i => plan.Items.Any(p => string.Equals(p.Id, i.Id.ToString(), StringComparison.Ordinal)));
-        live.AddRange(placed);
-        pmc.Inventory.Items = live;
+        // 3) **우편으로 보낸다**(설계 §14). 스태시에 꽂지 않는다 —
+        //    자리 찾기가 없고, 받을지는 사람이 우편함에서 정한다.
+        //    뿌리는 `ParentId` 가 비어 있다(P2 가 그렇게 둔다). 우편 목록이 바라는 모양 그대로다.
+        var items = plan.Items.Select(ToSptItem).ToList();
+        var days = Math.Clamp(store.Config.MailStorageDays, 1, 365);
+        var from = file.FromNickname;
+        var what = string.Equals(file.Kind, PorterBundle.KindLoadout, StringComparison.Ordinal)
+            ? "입고 있던 한 벌"
+            : "스태시의 물건";
 
-        // 여기까지 왔다는 것은 `profiles.Pmc` 가 이 id 로 프로필을 찾았다는 뜻이다.
-        saveServer.SaveProfileAsync(new MongoId(profileId!)).GetAwaiter().GetResult();
+        try
+        {
+            mailSendService.SendSystemMessageToPlayer(
+                new MongoId(profileId!),
+                $"[Profile Porter] {from} 의 {what} {items.Count}개를 보냈습니다. ({days}일 안에 받으세요)",
+                items,
+                days * 24 * 60 * 60,
+                null);
+        }
+        catch (Exception e)
+        {
+            logger.Error($"[ProfilePorter] 우편을 보내지 못했다: {e.Message}");
+            return Fail($"우편으로 보내지 못했습니다: {e.Message}");
+        }
 
         logger.Info($"[ProfilePorter] '{fileName}' 의 {plan.Items.Count}개를 "
-                    + $"{pmc.Info?.Nickname}({profileId}) 스태시에 들여왔다 — 원본은 그대로다.");
+                    + $"{pmc.Info?.Nickname}({profileId}) 에게 **우편으로** 보냈다({days}일 보관) — 원본은 그대로다.");
 
         return new PorterResult(true, null, fileName, plan.Items.Count, []);
     }

@@ -14,5 +14,8 @@
 
   // 들여오기 전에 받는 쪽 프로필을 백업한다. **끄는 것을 권하지 않는다** —
   // 들여오기는 되돌릴 수 없는 쓰기다(설계 §4.6).
-  "BackupBeforeImport": true
+  "BackupBeforeImport": true,
+
+  // 보낸 우편을 며칠 보관할지. **짧으면 못 받고 사라진다.** 1~365.
+  "MailStorageDays": 7
 }

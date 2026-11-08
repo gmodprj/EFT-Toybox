@@ -74,14 +74,7 @@ public class ProfilePorterRouter : StaticRouter
                         return ValueTask.FromResult(Json(jsonUtil, new { ok = false, reason = "그 프로필을 찾지 못했습니다." }));
                     }
 
-                    var stash = pmc.Inventory.Stash?.ToString();
-                    var floor = ProfileReader.ToPorterItems(pmc.Inventory.Items)
-                        .Where(i => string.Equals(i.ParentId, stash, StringComparison.Ordinal)
-                                    && string.Equals(i.SlotId, ExportSelection.StashSlot, StringComparison.Ordinal))
-                        .Select(i => new { id = i.Id, tpl = i.TemplateId })
-                        .ToList();
-
-                    return ValueTask.FromResult(Json(jsonUtil, new { ok = true, items = floor }));
+                    return ValueTask.FromResult(Json(jsonUtil, new { ok = true, items = profiles.StashFloor(pmc) }));
                 }),
 
             // 내보낸 파일 목록.
