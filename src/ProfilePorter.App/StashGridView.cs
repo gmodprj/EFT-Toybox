@@ -1,6 +1,5 @@
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -10,11 +9,11 @@ namespace ProfilePorter.App;
 /// <summary>
 /// 스태시를 **인게임과 같은 격자**로 그린다.
 ///
-/// 목록으로 그리면 "리그 ×1" 한 줄이 1칸짜리 탄약과 똑같아 보여, 무엇이 얼마나 자리를 차지하는지
-/// 알 수 없다. 게임 화면과 같은 모양이면 고르는 사람이 자기 스태시를 **그대로 알아본다.**
+/// 목록으로 그리면 1칸짜리 탄약과 큰 리그가 똑같아 보여, 무엇이 얼마나 자리를 차지하는지 알 수
+/// 없다. 게임 화면과 같은 모양이면 고르는 사람이 자기 스태시를 **그대로 알아본다.**
 ///
-/// 아이콘은 쓰지 않는다 — 받아 오려면 밖으로 나가는 통신이 필요하고(AirdropCaller 가 그 길을
-/// 열어 두었지만 여기서는 범위 밖이다), 이름과 개수만으로도 칸은 알아볼 수 있다.
+/// 고르는 법은 셋이다 — 그냥 누르면 **그것 하나**, `Ctrl`·`Shift` 를 누른 채면 **더하고 빼기**,
+/// 빈 곳에서 **끌면 네모 안의 것 전부**.
 /// </summary>
 public sealed class StashGridView : ScrollViewer
 {
@@ -25,16 +24,36 @@ public sealed class StashGridView : ScrollViewer
     private readonly List<(StashRow row, Border box)> _boxes = [];
     private readonly HashSet<string> _selected = new(StringComparer.Ordinal);
 
+    private readonly Rectangle _lasso = new()
+    {
+        Stroke = new SolidColorBrush(Color.FromRgb(0xC8, 0xA0, 0x50)),
+        StrokeThickness = 1,
+        StrokeDashArray = [3, 2],
+        Fill = new SolidColorBrush(Color.FromArgb(0x30, 0xC8, 0xA0, 0x50)),
+        Visibility = Visibility.Collapsed,
+    };
+
+    private Point _dragFrom;
+    private bool _dragging;
+
     public StashGridView()
     {
         VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
-        HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+        HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
         Background = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x30));
         BorderThickness = new Thickness(0);
         Content = _canvas;
+
+        _canvas.Background = Brushes.Transparent; // 빈 곳에서도 마우스를 받으려면 칠이 있어야 한다
+        _canvas.MouseLeftButtonDown += OnCanvasDown;
+        _canvas.MouseMove += OnCanvasMove;
+        _canvas.MouseLeftButtonUp += OnCanvasUp;
     }
 
-    /// <summary>고른 것이 바뀌면 알린다. 창이 상태줄을 고치고 내보내기에 쓴다.</summary>
+    /// <summary>아이콘을 구해 오는 쪽. null 이면 이름만 그린다.</summary>
+    public IconService? Icons { get; set; }
+
+    /// <summary>고른 것이 바뀌면 알린다.</summary>
     public event Action? SelectionChanged;
 
     public IReadOnlyList<StashRow> SelectedRows =>
@@ -91,8 +110,7 @@ public sealed class StashGridView : ScrollViewer
         // 가려져 **누를 수 없게** 되는데, 이 순서면 작은 것이 늘 위에 남는다.
         //
         // 겹침은 실제로 생긴다: 서버가 주는 크기(`GetItemSize`)는 부착물까지 센 값이라
-        // 무기에는 맞지만 플레이트 캐리어처럼 **삽입물로 커지는** 것은 게임이 그리는 것보다
-        // 한 칸 크게 나온다(2026-11-08 실측: Siege-R 기본 4x4 → 받은 4x5).
+        // 무기에는 맞지만 삽입물로 커지는 방어구는 게임보다 한 칸 크게 나온다(설계 §16.2).
         foreach (var row in rows.OrderByDescending(r => Math.Max(1, r.W) * Math.Max(1, r.H)))
         {
             var box = MakeBox(row);
@@ -101,19 +119,58 @@ public sealed class StashGridView : ScrollViewer
             _canvas.Children.Add(box);
             _boxes.Add((row, box));
         }
+
+        _canvas.Children.Add(_lasso);
+        _ = LoadIconsAsync();
+    }
+
+    /// <summary>아이콘은 **그린 뒤에** 채운다. 받는 동안 격자가 멈춰 있으면 안 된다.</summary>
+    private async Task LoadIconsAsync()
+    {
+        if (Icons is null)
+        {
+            return;
+        }
+
+        foreach (var (row, box) in _boxes.ToList())
+        {
+            var icon = await Icons.GetAsync(row.Tpl, CancellationToken.None);
+            if (icon is null || box.Child is not Grid grid)
+            {
+                continue;
+            }
+
+            grid.Children.Insert(0, new Image
+            {
+                Source = icon,
+                Stretch = Stretch.Uniform,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(2),
+                IsHitTestVisible = false,
+            });
+        }
     }
 
     private Border MakeBox(StashRow row)
     {
-        var label = new TextBlock
+        // 아이콘이 깔리고 그 위에 글자가 얹힌다. 글자는 **아래쪽**에 둔다 — 아이콘의 생김새를
+        // 가리지 않으면서 무엇인지 읽히게 하려는 것이다.
+        var grid = new Grid();
+        grid.Children.Add(new TextBlock
         {
             Text = row.GridLabel,
             Foreground = new SolidColorBrush(Color.FromRgb(0xF2, 0xF2, 0xF2)),
-            FontSize = 11,
+            FontSize = 10,
             TextWrapping = TextWrapping.Wrap,
             TextTrimming = TextTrimming.CharacterEllipsis,
-            Margin = new Thickness(3, 2, 3, 2),
-        };
+            VerticalAlignment = VerticalAlignment.Bottom,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            TextAlignment = TextAlignment.Center,
+            Margin = new Thickness(2, 0, 2, 1),
+            Background = new SolidColorBrush(Color.FromArgb(0xB0, 0x1E, 0x1E, 0x1E)),
+            IsHitTestVisible = false,
+        });
 
         var box = new Border
         {
@@ -122,7 +179,7 @@ public sealed class StashGridView : ScrollViewer
             Background = new SolidColorBrush(Color.FromRgb(0x3A, 0x3A, 0x42)),
             BorderBrush = new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0x5E)),
             BorderThickness = new Thickness(1),
-            Child = label,
+            Child = grid,
             // 안에 든 것이 있으면 그 수를 마우스로 보여 준다 — 그것이 실제로 나가는 양이다.
             ToolTip = row.Contained > 0
                 ? $"{row.Name}  (안에 {row.Contained}개 — 모두 따라갑니다)"
@@ -132,14 +189,99 @@ public sealed class StashGridView : ScrollViewer
 
         box.MouseLeftButtonUp += (_, e) =>
         {
-            // 컨트롤을 누른 채 클릭하면 **더하고 뺀다**. 그냥 클릭하면 그것 하나만 고른다 —
-            // 인게임 격자와 같은 손놀림이다.
-            var additive = (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
-            Toggle(row.Id, additive);
+            if (_dragging)
+            {
+                return; // 끌던 중이면 캔버스 쪽이 처리한다
+            }
+
+            Toggle(row.Id, Additive());
             e.Handled = true;
         };
 
         return box;
+    }
+
+    /// <summary>`Ctrl` 이나 `Shift` 를 누르고 있으면 **더하고 빼기**다.</summary>
+    private static bool Additive() =>
+        (Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Shift)) != ModifierKeys.None;
+
+    private void OnCanvasDown(object sender, MouseButtonEventArgs e)
+    {
+        _dragFrom = e.GetPosition(_canvas);
+        _dragging = true;
+        _canvas.CaptureMouse();
+
+        Canvas.SetLeft(_lasso, _dragFrom.X);
+        Canvas.SetTop(_lasso, _dragFrom.Y);
+        _lasso.Width = 0;
+        _lasso.Height = 0;
+        _lasso.Visibility = Visibility.Visible;
+        Panel.SetZIndex(_lasso, 1000);
+    }
+
+    private void OnCanvasMove(object sender, MouseEventArgs e)
+    {
+        if (!_dragging)
+        {
+            return;
+        }
+
+        var now = e.GetPosition(_canvas);
+        Canvas.SetLeft(_lasso, Math.Min(_dragFrom.X, now.X));
+        Canvas.SetTop(_lasso, Math.Min(_dragFrom.Y, now.Y));
+        _lasso.Width = Math.Abs(now.X - _dragFrom.X);
+        _lasso.Height = Math.Abs(now.Y - _dragFrom.Y);
+    }
+
+    private void OnCanvasUp(object sender, MouseButtonEventArgs e)
+    {
+        if (!_dragging)
+        {
+            return;
+        }
+
+        _dragging = false;
+        _canvas.ReleaseMouseCapture();
+        _lasso.Visibility = Visibility.Collapsed;
+
+        var now = e.GetPosition(_canvas);
+        var box = new Rect(
+            Math.Min(_dragFrom.X, now.X), Math.Min(_dragFrom.Y, now.Y),
+            Math.Abs(now.X - _dragFrom.X), Math.Abs(now.Y - _dragFrom.Y));
+
+        // 끈 거리가 거의 없으면 **빈 곳을 누른 것**이다 — 고른 것을 푼다.
+        if (box.Width < 4 && box.Height < 4)
+        {
+            if (!Additive())
+            {
+                _selected.Clear();
+                Repaint();
+                SelectionChanged?.Invoke();
+            }
+
+            return;
+        }
+
+        if (!Additive())
+        {
+            _selected.Clear();
+        }
+
+        foreach (var (row, _) in _boxes)
+        {
+            var area = new Rect(
+                row.X * Cell, row.Y * Cell,
+                Math.Max(1, row.W) * Cell, Math.Max(1, row.H) * Cell);
+
+            // 네모에 **닿기만 해도** 고른다. 완전히 품어야 한다면 큰 물건을 고르기 어렵다.
+            if (box.IntersectsWith(area))
+            {
+                _selected.Add(row.Id);
+            }
+        }
+
+        Repaint();
+        SelectionChanged?.Invoke();
     }
 
     private void Toggle(string id, bool additive)
