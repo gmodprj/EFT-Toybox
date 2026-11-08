@@ -19,6 +19,12 @@ public record PorterExportRequest : IRequestData
     [JsonPropertyName("itemIds")] public List<string>? ItemIds { get; set; }
     [JsonPropertyName("name")] public string? Name { get; set; }
     [JsonPropertyName("note")] public string? Note { get; set; }
+
+    /// <summary>같은 이름이 있어도 덮어쓴다. **창이 사람에게 묻고 나서** 켠다.</summary>
+    [JsonPropertyName("overwrite")] public bool Overwrite { get; set; }
+
+    /// <summary>같은 이름이 있으면 `-2`·`-3` 을 붙여 새 이름으로 적는다.</summary>
+    [JsonPropertyName("rename")] public bool Rename { get; set; }
 }
 
 public record PorterImportRequest : IRequestData
@@ -74,7 +80,12 @@ public class ProfilePorterRouter : StaticRouter
                         return ValueTask.FromResult(Json(jsonUtil, new { ok = false, reason = "그 프로필을 찾지 못했습니다." }));
                     }
 
-                    return ValueTask.FromResult(Json(jsonUtil, new { ok = true, items = profiles.StashFloor(pmc) }));
+                    return ValueTask.FromResult(Json(jsonUtil, new
+                    {
+                        ok = true,
+                        grid = profiles.StashSize(pmc),
+                        items = profiles.StashFloor(pmc),
+                    }));
                 }),
 
             // 내보낸 파일 목록.
@@ -93,8 +104,8 @@ public class ProfilePorterRouter : StaticRouter
                     }
 
                     var result = string.Equals(info?.Kind, PorterBundle.KindLoadout, StringComparison.Ordinal)
-                        ? service.ExportLoadout(info?.ProfileId, info?.Name, info?.Note)
-                        : service.ExportStash(info?.ProfileId, info?.ItemIds, info?.Name, info?.Note);
+                        ? service.ExportLoadout(info?.ProfileId, info?.Name, info?.Note, info?.Overwrite ?? false, info?.Rename ?? false)
+                        : service.ExportStash(info?.ProfileId, info?.ItemIds, info?.Name, info?.Note, info?.Overwrite ?? false, info?.Rename ?? false);
 
                     return ValueTask.FromResult(Json(jsonUtil, result));
                 }),

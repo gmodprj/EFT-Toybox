@@ -22,6 +22,7 @@ public partial class MainWindow : Window
             return;
         }
 
+        StashGrid.SelectionChanged += StashGrid_SelectionChanged;
         _client = new ServerClient(_config.SptUrl, sessionId);
         Status($"서버에 묻는 중… (세션 {how})");
         _ = LoadAllAsync();
@@ -77,7 +78,7 @@ public partial class MainWindow : Window
     {
         if (_client is null || SourceProfiles.SelectedItem is not ProfileRow row) return;
 
-        StashItems.ItemsSource = null;
+        StashGrid.Clear();
         Status($"{row.Nickname} 의 스태시를 읽는 중…");
 
         try
@@ -89,8 +90,9 @@ public partial class MainWindow : Window
                 return;
             }
 
-            StashItems.ItemsSource = stash.Items;
-            Status($"{row.Nickname} 의 스태시 바닥 {stash.Items.Count}개. 내보낼 것을 고르세요(여러 개 됩니다).");
+            StashGrid.Draw(stash.Grid?.CellsH ?? 0, stash.Grid?.CellsV ?? 0, stash.Items);
+            Status($"{row.Nickname} 의 스태시 바닥 {stash.Items.Count}개. "
+                   + "칸을 눌러 고르세요 — Ctrl 을 누른 채 누르면 여러 개가 됩니다.");
         }
         catch (Exception ex)
         {
@@ -98,14 +100,18 @@ public partial class MainWindow : Window
         }
     }
 
-    private void StashItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void StashGrid_SelectionChanged()
     {
-        var picked = StashItems.SelectedItems.Count;
-        if (picked == 0) return;
+        var picked = StashGrid.SelectedRows;
+        if (picked.Count == 0)
+        {
+            Status("고른 것이 없습니다. 칸을 눌러 고르세요.");
+            return;
+        }
 
         // **안에 든 것까지 센 수**를 보여 준다 — 실제로 옮겨지는 양이 그것이다(설계 §9.1).
-        var total = StashItems.SelectedItems.OfType<StashRow>().Sum(r => 1 + r.Contained);
-        Status($"{picked}개를 골랐습니다 — 안에 든 것까지 {total}개가 나갑니다.");
+        var total = picked.Sum(r => 1 + r.Contained);
+        Status($"{picked.Count}개를 골랐습니다 — 안에 든 것까지 {total}개가 나갑니다.");
     }
 
     private void TargetProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateImportButton();
@@ -140,15 +146,15 @@ public partial class MainWindow : Window
             return;
         }
 
-        var ids = StashItems.SelectedItems.OfType<StashRow>().Select(r => r.Id).ToList();
+        var ids = StashGrid.SelectedRows.Select(r => r.Id).ToList();
         if (ids.Count == 0)
         {
             Status("내보낼 것을 하나도 고르지 않았습니다.", warn: true);
             return;
         }
 
-        await RunExportAsync(() => _client.ExportStashAsync(
-            row.ProfileId, ids, NameOrDefault(row.Nickname, "stash"), null, CancellationToken.None));
+        await RunExportAsync((overwrite, rename) => _client!.ExportStashAsync(
+            row.ProfileId, ids, TypedName(), null, overwrite, rename, CancellationToken.None));
     }
 
     private async void ExportLoadout_Click(object sender, RoutedEventArgs e)
@@ -161,16 +167,37 @@ public partial class MainWindow : Window
             return;
         }
 
-        await RunExportAsync(() => _client.ExportLoadoutAsync(
-            row.ProfileId, NameOrDefault(row.Nickname, "loadout"), null, CancellationToken.None));
+        await RunExportAsync((overwrite, rename) => _client!.ExportLoadoutAsync(
+            row.ProfileId, TypedName(), null, overwrite, rename, CancellationToken.None));
     }
 
-    private async Task RunExportAsync(Func<Task<PorterResultRow?>> call)
+    private async Task RunExportAsync(Func<bool, bool, Task<PorterResultRow?>> call)
     {
         SetBusy(true);
         try
         {
-            var result = await call();
+            var result = await call(false, false);
+
+            // 같은 이름이면 서버가 **덮지 않고 거절**한다. 그때만 사람에게 묻는다.
+            if (result is not null && !result.Ok
+                && string.Equals(result.Reason, ServerClient.NameTakenReason, StringComparison.Ordinal))
+            {
+                var answer = MessageBox.Show(
+                    $"'{ExportName.Text?.Trim()}' 은(는) 이미 있습니다.\n\n"
+                    + "[예] 덮어씁니다 — 먼저 있던 파일은 사라집니다.\n"
+                    + "[아니요] 뒤에 번호를 붙여 새 파일로 저장합니다.\n"
+                    + "[취소] 아무것도 하지 않습니다.",
+                    "같은 이름이 있습니다", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+
+                if (answer == MessageBoxResult.Cancel)
+                {
+                    Status("내보내지 않았습니다.");
+                    return;
+                }
+
+                result = await call(answer == MessageBoxResult.Yes, answer == MessageBoxResult.No);
+            }
+
             if (result is null || !result.Ok)
             {
                 Status(result?.Reason ?? "내보내지 못했습니다.", warn: true);
@@ -236,13 +263,14 @@ public partial class MainWindow : Window
 
     private async void Refresh_Click(object sender, RoutedEventArgs e) => await LoadAllAsync();
 
-    /// <summary>이름을 안 적었으면 프로필 이름과 시각으로 짓는다. 빈 이름으로 저장하지 않는다.</summary>
-    private string NameOrDefault(string nickname, string kind)
+    /// <summary>
+    /// 사람이 적은 이름. 비어 있으면 **null 을 보낸다** — 기본 이름은 서버가 짓는다
+    /// (`프로필명-종류-날짜_시각`). 창과 서버가 각자 짓게 두면 규칙이 둘로 갈린다.
+    /// </summary>
+    private string? TypedName()
     {
         var typed = ExportName.Text?.Trim();
-        return string.IsNullOrWhiteSpace(typed)
-            ? $"{nickname}-{kind}-{DateTime.Now:yyyyMMdd-HHmmss}"
-            : typed;
+        return string.IsNullOrWhiteSpace(typed) ? null : typed;
     }
 
     private void SetBusy(bool busy)
