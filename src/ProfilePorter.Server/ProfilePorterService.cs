@@ -36,7 +36,8 @@ public class ProfilePorterService(
     MailSendService mailSendService,
     ISptLogger<ProfilePorterService> logger)
 {
-    public PorterResult ExportStash(string? profileId, IReadOnlyList<string>? itemIds, string? name, string? note)
+    public PorterResult ExportStash(
+        string? profileId, IReadOnlyList<string>? itemIds, string? name, string? note, bool overwrite, bool rename)
     {
         var pmc = profiles.Pmc(profileId);
         if (pmc?.Inventory is null)
@@ -53,10 +54,10 @@ public class ProfilePorterService(
             return new PorterResult(false, plan.Reason, null, 0, plan.Skipped);
         }
 
-        return WriteFile(PorterBundle.KindStash, pmc.Info?.Nickname, profileId!, items, plan, itemIds!, name, note);
+        return WriteFile(PorterBundle.KindStash, pmc.Info?.Nickname, profileId!, items, plan, itemIds!, name, note, overwrite, rename);
     }
 
-    public PorterResult ExportLoadout(string? profileId, string? name, string? note)
+    public PorterResult ExportLoadout(string? profileId, string? name, string? note, bool overwrite, bool rename)
     {
         var pmc = profiles.Pmc(profileId);
         if (pmc?.Inventory is null)
@@ -81,7 +82,7 @@ public class ProfilePorterService(
             .Select(i => i.Id)
             .ToList();
 
-        return WriteFile(PorterBundle.KindLoadout, pmc.Info?.Nickname, profileId!, items, plan, roots, name, note);
+        return WriteFile(PorterBundle.KindLoadout, pmc.Info?.Nickname, profileId!, items, plan, roots, name, note, overwrite, rename);
     }
 
     /// <summary>
@@ -164,7 +165,9 @@ public class ProfilePorterService(
         ExportPlan plan,
         IReadOnlyList<string> rootIds,
         string? name,
-        string? note)
+        string? note,
+        bool overwrite,
+        bool rename)
     {
         var picked = plan.ItemIds.ToHashSet(StringComparer.Ordinal);
         var file = new PorterFile
@@ -178,10 +181,11 @@ public class ProfilePorterService(
             Items = items.Where(i => picked.Contains(i.Id)).Select(ToFileItem).ToList(),
         };
 
-        var written = files.Write(file, name);
+        var written = files.Write(file, name, overwrite, rename, out var refusal);
         if (written is null)
         {
-            return Fail("파일을 쓰지 못했습니다.");
+            // 같은 이름이라 거절한 것은 **실패가 아니라 물음**이다. 창이 사유를 보고 사람에게 묻는다.
+            return Fail(refusal ?? "파일을 쓰지 못했습니다.");
         }
 
         logger.Info($"[ProfilePorter] {file.FromNickname} 에서 {file.Items.Count}개를 "

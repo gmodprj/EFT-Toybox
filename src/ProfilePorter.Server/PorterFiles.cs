@@ -120,21 +120,76 @@ public class PorterFiles(ModHelper modHelper, ISptLogger<PorterFiles> logger)
         }
     }
 
-    /// <summary>파일로 적는다. 이름을 돌려준다.</summary>
-    public string? Write(PorterFile file, string? name)
+    /// <summary>같은 이름이 이미 있다는 뜻. 호출자가 사람에게 물을 수 있게 따로 알린다.</summary>
+    public const string NameTakenReason = "같은 이름의 파일이 이미 있습니다.";
+
+    /// <summary>
+    /// 파일로 적는다. 이름을 돌려준다.
+    ///
+    /// **덮어쓰지 않는다.** 같은 이름이 있으면 <see cref="NameTakenReason"/> 으로 거절한다 —
+    /// 내보낸 파일은 사람이 만든 것이고, 조용히 덮으면 앞의 것이 사라진 줄도 모른다.
+    /// 덮어쓰려면 <paramref name="overwrite"/> 를 켜야 하고, 그것은 창이 묻고 나서 켠다.
+    /// </summary>
+    /// <param name="rename">켜면 거절하는 대신 `-2`·`-3` 을 붙여 **빈 이름을 찾아** 적는다.</param>
+    public string? Write(PorterFile file, string? name, bool overwrite, bool rename, out string? refusal)
     {
-        var safe = Sanitize(name) ?? $"{file.Kind}-{DateTime.UtcNow:yyyyMMdd-HHmmss}";
+        refusal = null;
+        var safe = Sanitize(name) ?? DefaultName(file);
+
         try
         {
             Directory.CreateDirectory(Folder);
+
+            if (File.Exists(Path.Combine(Folder, safe + ".json")))
+            {
+                if (rename)
+                {
+                    safe = FreeName(safe);
+                }
+                else if (!overwrite)
+                {
+                    refusal = NameTakenReason;
+                    return null;
+                }
+            }
+
             File.WriteAllText(Path.Combine(Folder, safe + ".json"), JsonSerializer.Serialize(file, Options));
             return safe;
         }
         catch (Exception e)
         {
             logger.Error($"[ProfilePorter] 파일을 쓰지 못했다 {safe}.json — {e.Message}");
+            refusal = $"파일을 쓰지 못했습니다: {e.Message}";
             return null;
         }
+    }
+
+    /// <summary>
+    /// 이름을 안 적었을 때 쓰는 이름 — **보낸 프로필 + 날짜_시각**이다.
+    /// 시각은 사람이 보는 **현지 시각**으로 둔다. 파일 속 `createdUtc` 는 UTC 라 둘이 다르지만,
+    /// 이름은 사람이 목록에서 고르는 것이고 서버 로그와 맞출 값이 아니다.
+    /// </summary>
+    private static string DefaultName(PorterFile file)
+    {
+        var who = Sanitize(file.FromNickname) ?? "프로필";
+        var kind = string.Equals(file.Kind, PorterBundle.KindLoadout, StringComparison.Ordinal) ? "착용장비" : "스태시";
+        return $"{who}-{kind}-{DateTime.Now:yyyyMMdd_HHmmss}";
+    }
+
+    /// <summary>`이름-2`, `이름-3` … 으로 비어 있는 자리를 찾는다. AirdropCaller 의 프리셋 이전과 같은 꼴이다.</summary>
+    private string FreeName(string baseName)
+    {
+        for (var n = 2; n < 1000; n++)
+        {
+            var candidate = $"{baseName}-{n}";
+            if (!File.Exists(Path.Combine(Folder, candidate + ".json")))
+            {
+                return candidate;
+            }
+        }
+
+        // 999개까지 찼으면 시각을 붙인다. 여기서 포기하지는 않는다.
+        return $"{baseName}-{DateTime.Now:HHmmss}";
     }
 
     /// <summary>

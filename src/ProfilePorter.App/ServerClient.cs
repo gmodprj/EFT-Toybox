@@ -24,6 +24,14 @@ public sealed record StashRow
     [JsonPropertyName("name")] public string Name { get; init; } = string.Empty;
     [JsonPropertyName("stack")] public int Stack { get; init; }
     [JsonPropertyName("contained")] public int Contained { get; init; }
+    [JsonPropertyName("x")] public int X { get; init; }
+    [JsonPropertyName("y")] public int Y { get; init; }
+    [JsonPropertyName("w")] public int W { get; init; }
+    [JsonPropertyName("h")] public int H { get; init; }
+    [JsonPropertyName("rotated")] public bool Rotated { get; init; }
+
+    /// <summary>격자 칸 안에 적는 글. 좁으므로 이름과 묶음 수만 둔다.</summary>
+    public string GridLabel => Stack > 1 ? $"{Name}{Environment.NewLine}×{Stack}" : Name;
 
     /// <summary>목록 한 줄. **안에 든 것의 수를 보여 준다** — 그것이 실제로 옮겨지는 양이다.</summary>
     public string Display =>
@@ -51,10 +59,18 @@ public sealed record ProfilesResponse
     [JsonPropertyName("profiles")] public List<ProfileRow> Profiles { get; init; } = [];
 }
 
+/// <summary>스태시 격자의 칸 수. **서버가 DB 에서 읽어 준다** — 창이 지어내지 않는다.</summary>
+public sealed record StashGridSize
+{
+    [JsonPropertyName("cellsH")] public int CellsH { get; init; }
+    [JsonPropertyName("cellsV")] public int CellsV { get; init; }
+}
+
 public sealed record StashResponse
 {
     [JsonPropertyName("ok")] public bool Ok { get; init; }
     [JsonPropertyName("reason")] public string? Reason { get; init; }
+    [JsonPropertyName("grid")] public StashGridSize? Grid { get; init; }
     [JsonPropertyName("items")] public List<StashRow> Items { get; init; } = [];
 }
 
@@ -121,15 +137,23 @@ public sealed class ServerClient : IDisposable
     public Task<FilesResponse?> FilesAsync(CancellationToken ct) =>
         PostAsync<FilesResponse>("/profile-porter/files", null, ct);
 
+    /// <summary>이름을 비우면 서버가 **프로필명-종류-날짜_시각**으로 짓는다.</summary>
     public Task<PorterResultRow?> ExportStashAsync(
-        string profileId, IReadOnlyList<string> itemIds, string name, string? note, CancellationToken ct) =>
+        string profileId, IReadOnlyList<string> itemIds, string? name, string? note,
+        bool overwrite, bool rename, CancellationToken ct) =>
         PostAsync<PorterResultRow>(
-            "/profile-porter/export", new { profileId, kind = "stash", itemIds, name, note }, ct);
+            "/profile-porter/export",
+            new { profileId, kind = "stash", itemIds, name, note, overwrite, rename }, ct);
 
     public Task<PorterResultRow?> ExportLoadoutAsync(
-        string profileId, string name, string? note, CancellationToken ct) =>
+        string profileId, string? name, string? note,
+        bool overwrite, bool rename, CancellationToken ct) =>
         PostAsync<PorterResultRow>(
-            "/profile-porter/export", new { profileId, kind = "loadout", name, note }, ct);
+            "/profile-porter/export",
+            new { profileId, kind = "loadout", name, note, overwrite, rename }, ct);
+
+    /// <summary>같은 이름이라 거절당했는지. 서버가 이 말로 알려 준다.</summary>
+    public const string NameTakenReason = "같은 이름의 파일이 이미 있습니다.";
 
     public Task<PorterResultRow?> ImportAsync(string profileId, string fileName, CancellationToken ct) =>
         PostAsync<PorterResultRow>("/profile-porter/import", new { profileId, fileName }, ct);
