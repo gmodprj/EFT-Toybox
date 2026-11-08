@@ -5,7 +5,6 @@
 
 | 할 일 | 왜 미뤘나 | 손댈 자리 |
 | --- | --- | --- |
-| **ProfilePorter 가 격자 배치를 잃는다** — 내보낸 파일 형식에 `location` 이 없어, 컨테이너 안 아이템의 좌표·회전이 전부 떨어진다(실측: 스태시 파일 974개 중 916개가 컨테이너 안) | 2026-11-09 사용자 제보로 드러났다. 개수·`upd`·`slotId` 는 맞아 기존 관문 어느 것도 잡지 못했다 | [설계 §20](specs/2026-11-08-profile-porter-design.md) 에 고치는 자리와 시험 방향까지 적었다. `PorterFileItem` 에 `location` 을 `JsonElement?` 로 더하고, 담는 쪽이 `JsonElement`·`ItemLocation` 두 모양을 다 받게 한다 |
 | **레이드 중 `queue` 에 마른 조립(dry-run)** — 조립 결과만 보고 예약은 하지 않는 길 | 2026-11-08. 지금은 조립과 예약이 한 몸이라, 시험 삼아 쏘면 **그 레이드에 상자가 떨어진다**(실제로 떨어뜨렸다) | [AirdropCaller 설계 §20.4](specs/2026-10-28-airdrop-caller-design.md) |
 | **야시경·실드 휠의 남은 인게임 점검 3건** — ① 휠을 띄운 채(N 누른 상태) 죽거나 레이드를 끝냈을 때 입력이 잠기지 않고 아무 것도 여닫히지 않는지 ② 왼손에 나침반을 들고 N 을 눌렀을 때 UI Fixes 가 나침반을 치운 뒤 야시경이 여닫히고 휠이 뜨지 않는지 ③ 제스처 휠(`B`)이 멀쩡히 도는지. **머지 시점에 이 셋은 확인되지 않았다** | 2026-10-31, 사용자가 건너뛰고 머지하기로 정했다. ①은 코드상 `ShouldApplySelection` 으로 막아 두고 시험 4개로 묶었으나 게임에서 본 적은 없다. ②는 설계 §6-2 의 공존 경로이고 COTI 쪽(§7-9)은 역컴파일로 확인했지만 UI Fixes 경로는 못 봤다. ③은 우리가 제스처 휠을 건드리지 않게 만들었다는 전제의 확인이다 | 설계 §7 의 7·8·10 항. 레이드에서 셋 다 한 번에 볼 수 있다. ①이 틀리면 치명적이다(시점이 잠긴 채 레이드가 끝난다) — 그 경우 [GogglesPatch.cs](../src/GogglesWheel/GogglesPatch.cs) 의 `finally` 와 `LookBlocker.Release()` 를 먼저 본다 |
 | **제스처 명령 넷 — `SILENCE`·`KNIVES ONLY`·`SPREADOUT`·`GET BACK`** (메뉴 18개 중 처리하지 않는 마지막 넷. 지금은 `hideUnsupportedCommands` 를 켜면 숨고, 끄면 보이지만 포크는 아무것도 안 하고 바닐라 수신기가 받는다) | 2026-11-02 계획 3 은 교전 통제 손잡이가 이미 있는 셋(`FIRE`·`HOLD FIRE`·`TAKE COVER`)만 골랐다. 이 넷은 대응할 기존 AI 손잡이가 코드에 없다 — `SILENCE` 는 메뉴 목록에서 주석 처리돼 있고, `SPREADOUT` 은 팀원이 **말하기만**(트립와이어) 하며 명령으로는 처리되지 않고, `KNIVES ONLY`·`GET BACK` 은 클라이언트에 처리가 없다. 없는 AI 동작을 지어내지 않았다 | [`GestureCommandPolicy`](../src/SptTeamManager/shared/GestureCommandPolicy.cs) 의 `Translate`·`CommandGroupPhrases`(메뉴 목록의 유일한 출처 — 번역 없이 목록에만 넣으면 테스트가 걸린다, 번역 개수 3 고정), `AIBossPlayer.PhraseSaid`/`ApplyEngagementGesture`, `GestureMenuPatch`, `BotReceiverPhraseOverridePatch`(`ForkHandlesEngagementFor` 가 건너뛰는 조건). 처리하기 시작하면 바닐라 건너뛰기에 같은 조건이 걸리는지도 함께 본다 |
@@ -26,6 +25,7 @@
 
 | 할 일 | 어디에 들어갔나 |
 | --- | --- |
+| **ProfilePorter 가 격자 배치를 잃던 것** | 2026-11-09 고쳤다. `PorterItem`·`PorterFileItem`·`ToFileItem`·`ToSptItem`·`ImportPlanner` 다섯 자리에 `location` 을 그대로 싣는 길을 뚫었다. 실측: 다시 내보낸 두 파일에서 974/974 · 62/62 가 **글자까지** 같고, 우편 속 자손 5/5 도 같다. 관문 둘(단위 시험 + [tools/check-porter-location.mjs](../tools/check-porter-location.mjs)). 경위는 [설계 §21](specs/2026-11-08-profile-porter-design.md) |
 | **ProfilePorter 의 인게임 관문(P5)** | 2026-11-08 저녁에 사용자가 Wraith 로 1,361개 우편을 받았다. 2026-11-09 재측정: 중복 id 0 · 고아 0 · 보내는 쪽 id 재사용 0/1,557, 게임도 그 프로필을 멀쩡히 띄웠다(Level 14 → 16). 경위는 [설계 §19](specs/2026-11-08-profile-porter-design.md). **다만 §20 의 격자 배치 결함이 이때 드러났다** |
 | **편집기의 격자 배치** — 가방·리그 칸에 놓기 | 2026-11-06 확인. 계획 5 §6(최종 상태 제출)이 조작의 종류를 묻지 않게 하면서 열렸다. 증거는 Task E 화면 절반 **6번**("리그 칸·가방 칸에 탄창·의료품을 넣는다 → 저장된다")이고 1~10 이 2026-11-04 에 인게임 통과했다(WORKLOG "화면 절반 1~10 통과"). 이 줄이 적어 둔 "여분 탄창을 리그에 넣어 줄 수 없다" 가 그것으로 닫혔다 |
 | **편집이 수량을 바꾸게 하기** — 쪼개기·합치기 | 2026-11-06 확인. 같은 계획 5 §6-2 가 판정을 "id 집합" 에서 **"id 집합 + tpl 별 수량 합"** 으로 넓혀 열렸다. 증거는 화면 절반 **4·5번**(탄박스 열기, 탄 더미에서 50발만 떼어 탄창에 넣기)이고, 보존을 세 프로필에서 수치로 확인했다(STM-HANDOVER §2 "탄 한 톨도 안 줄었다") |

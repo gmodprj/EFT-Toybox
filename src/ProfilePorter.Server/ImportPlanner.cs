@@ -138,6 +138,11 @@ public static class ImportPlanner
                 // 뿌리는 어디에 놓일지 아직 모른다 — 자리 찾기가 채운다.
                 ParentId = isRoot ? null : idMap[item.ParentId!],
                 SlotId = isRoot ? null : item.SlotId,
+
+                // 자리도 같은 이유로 **뿌리만** 비운다. 보내는 쪽 스태시의 좌표를 그대로 들고
+                // 가면 받는 쪽의 남의 자리를 가리키게 된다. 컨테이너 **안**의 좌표는 상자를
+                // 기준으로 한 것이라 그대로 들고 간다 — 그것을 잃은 것이 설계 §20 의 결함이다.
+                Location = isRoot ? null : item.Location,
             });
         }
 

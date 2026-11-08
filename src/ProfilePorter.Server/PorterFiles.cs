@@ -46,6 +46,17 @@ public sealed class PorterFileItem
     /// 위해서다 — 모양을 아는 척하면 모르는 필드가 조용히 떨어진다.
     /// </summary>
     [JsonPropertyName("upd")] public JsonElement? Upd { get; set; }
+
+    /// <summary>
+    /// 격자 안의 자리 — 칸에 놓인 것은 `{x, y, r}`, 슬롯에 꽂힌 것은 정수 색인이다.
+    ///
+    /// **2026-11-09 에 더했다.** 이 필드가 없던 동안 내보낸 파일 넷에서 좌표가 **100% 떨어졌고**
+    /// (원본에 있던 1,130개 → 파일에 0개), 받은 쪽에서 가방·리그 안의 배치와 회전이 깨졌다
+    /// (설계 §20). 개수·<c>upd</c>·<c>slotId</c> 는 다 맞았기 때문에 어느 관문도 잡지 못했다.
+    ///
+    /// <c>upd</c> 와 같은 이유로 <see cref="JsonElement"/> 다 — **해석하지 않는다.**
+    /// </summary>
+    [JsonPropertyName("location")] public JsonElement? Location { get; set; }
 }
 
 /// <summary>

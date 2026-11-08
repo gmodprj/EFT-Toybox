@@ -113,7 +113,7 @@ public class ProfilePorterService(
         var bundle = new PorterBundle(
             file.Kind,
             file.RootIds,
-            file.Items.Select(i => new PorterItem(i.Id, i.ParentId, i.SlotId, i.TemplateId, i.Upd)).ToList());
+            file.Items.Select(i => new PorterItem(i.Id, i.ParentId, i.SlotId, i.TemplateId, i.Upd, i.Location)).ToList());
 
         var plan = ImportPlanner.Plan(bundle, () => new MongoId().ToString());
         if (!plan.Accepted)
@@ -239,6 +239,16 @@ public class ProfilePorterService(
             // 다르면 담을 때와 적을 때의 모양이 갈린다(빈 필드가 여기서 들어와 거기서 빠진다).
             var other => JsonSerializer.SerializeToElement(other, PorterFiles.Options),
         },
+
+        // `Location` 도 **같은 식으로 그대로** 담는다. 읽어 온 프로필에서는 `JsonElement`,
+        // 서버가 만든 것은 `ItemLocation` 이라(§5-3) 두 모양을 다 받아야 한다 —
+        // `as ItemLocation` 만 쓰면 읽기 경로에서 조용히 null 이 되어 §20 의 결함이 돌아온다.
+        Location = item.Location switch
+        {
+            null => null,
+            JsonElement element => element,
+            var other => JsonSerializer.SerializeToElement(other, PorterFiles.Options),
+        },
     };
 
     /// <summary>
@@ -275,6 +285,12 @@ public class ProfilePorterService(
             ParentId = item.ParentId,
             SlotId = item.SlotId,
             Upd = upd,
+
+            // **해석하지 않고 그대로 꽂는다.** `Item.Location` 은 `object` 이고, 프로필을 읽어
+            // 온 아이템은 서버 자신도 `JsonElement` 로 들고 있다(§5-3) — 그 모양이 프로필에
+            // 다시 적힐 때 `{x, y, r}` 로 그대로 나간다. `ItemLocation` 으로 한 번 돌리면
+            // 우리가 뜻을 모르는 `rotation` 같은 필드가 조용히 떨어진다.
+            Location = item.Location,
         };
     }
 
