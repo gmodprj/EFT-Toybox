@@ -184,16 +184,23 @@ import 는 원본을 **남긴 채** 베끼는 일이므로 이 두 검사에 정
 
 ```
 src/ProfilePorter.Server/      net10.0, SPT 서버 모드
-  ModMetadata.cs
-  ProfilePorterRouter.cs       /profile-porter/{profiles,export,import,preview}
-  ProfileReader.cs             프로필 읽기(읽기 전용). 디스크가 진실이다
-  ExportBuilder.cs             고른 id → 자손까지 훑어 파일 꾸러미로
-  ImportPlanner.cs             id 재매김 + 자리 찾기. 거절 사유를 말로 돌려준다
-  PorterFiles.cs               내보낸 파일 읽기·쓰기(`porter/` 폴더)
-src/ProfilePorter.Tests/       ImportPlanner·ExportBuilder 단위 테스트
-src/ProfilePorter.App/         net10.0 WPF — 왼쪽 프로필·오른쪽 프로필·가운데 파일 목록
-tools/install-profileporter.ps1
+  PorterBundle.cs              자료형(PorterItem·PorterBundle). 순수          [P2 ✓]
+  ExportSelection.cs           고른 id → 자손 수집 + 빼는 규칙. 순수           [P2 ✓]
+  ImportPlanner.cs             꾸러미 검사 + id 재매김. 순수                  [P2 ✓]
+  ModMetadata.cs                                                            [P3]
+  ProfilePorterRouter.cs       /profile-porter/{profiles,export,import,preview} [P3]
+  ProfileReader.cs             프로필 읽기(읽기 전용). 디스크가 진실이다        [P3]
+  StashPlacer.cs               자리 찾기. **서버 DB 를 본다**(§9.3)            [P3]
+  PorterFiles.cs               내보낸 파일 읽기·쓰기(`porter/` 폴더)           [P3]
+src/ProfilePorter.Tests/       net8.0 xunit — 순수 소스를 **파일 링크**로 컴파일  [P2 ✓]
+src/ProfilePorter.App/         net10.0 WPF — 왼쪽 프로필·오른쪽 프로필·가운데 파일 [P4]
+tools/install-profileporter.ps1                                              [P3]
 ```
+
+**순수한 것과 SPT 를 쓰는 것을 파일로 가른다.** 테스트 프로젝트는 `SptTeamManager.Tests` 와
+같은 방식으로 순수 소스를 **한 줄씩 링크**한다(와일드카드 금지). 그래야 나중에 Server 에 SPT 를
+쓰는 파일이 생겨도 **조용히 딸려 들어오지 않는다.** 별도 Core 프로젝트는 두지 않는다 — 이
+저장소에 선례가 둘 다 있는데, 링크 쪽이 더 가볍다.
 
 **플러그인(BepInEx)은 만들지 않는다.** 레이드 중에 할 일이 없다 — 이것이 AirdropCaller 와
 가장 다른 점이다.
@@ -307,3 +314,45 @@ Talon         199    82       82     0     99       1       0      5
 | 다른 설치본으로 들고 나가기 | 그대로 **범위 밖** |
 
 남은 P1 거리는 없다. **다음은 P2(순수 판정 + 테스트)** 다.
+
+## 10. P2 — 순수 판정과 시험 (2026-11-08)
+
+`PorterBundle`·`ExportSelection`·`ImportPlanner` 셋이고 전부 **순수**다 — SPT 타입도, 프로필
+파일도, DB 도 건드리지 않는다. 시험 **20건**이 붙었다(`dotnet test src/ProfilePorter.Tests`).
+
+### 10.1 판정이 지키는 것
+
+| 자리 | 규칙 |
+| --- | --- |
+| `ExportSelection.PlanStash` | 스태시 바닥에 놓인 것만 고를 수 있다. 가방을 고르면 **안의 것이 따라간다** |
+| | 막힌 종류가 **안에** 들어 있으면 **뿌리째 거절**한다 — 안에서만 빼면 "잃어버렸다" 로 읽힌다 |
+| | 상한은 **자손까지 센 수**(`MaxItems = 2048`). §9.1 이 그렇게 정하게 했다 |
+| `ExportSelection.PlanLoadout` | 보안 컨테이너는 **통째로** 빼고, 몇 개를 뺐는지 말한다 |
+| `ImportPlanner.Plan` | **id 를 전부 새로 매긴다**. 뿌리의 자리는 비워 둔다(자리 찾기가 채운다) |
+| | 부모가 꾸러미 밖을 가리키면 거절. 뿌리에서 닿지 않는 것이 있어도 거절 |
+| | `upd` 는 **손대지 않고 그대로** 간다 — 시험이 `Assert.Same` 으로 본다 |
+
+### 10.2 값을 치른 것 — **통과만으로는 시험이 무엇을 지키는지 모른다**
+
+20건이 전부 녹색이었다. 그대로 넘기지 않고 **일부러 망가뜨려** 봤다.
+
+| 망가뜨린 것 | 바란 것 | 처음 받은 것 |
+| --- | --- | --- |
+| 부모가 꾸러미 밖인지 보는 검사를 통째로 들어냄 | 그 시험만 빨개진다 | **20건 전부 통과** |
+| 상한을 "자손까지" 에서 "고른 개수" 로 바꿈 | 그 시험만 빨개진다 | 그 시험만 빨개짐 ✓ |
+| id 재매김을 없애 옛 id 를 그대로 씀 | 빨개진다 | 3건이 빨개짐 ✓ |
+
+**첫 줄이 문제였다.** 그 꾸러미는 뒤따르는 "뿌리에서 닿지 않는다" 검사에도 걸리므로, 앞의
+검사를 들어내도 **여전히 거절**되어 시험이 녹색으로 남았다. 거절된다는 것만 보고 있었던 것이다.
+
+고친 것은 코드가 아니라 **시험**이다 — 이제 **어느 검사가 잡았는지**를 사유로 확인한다
+(`Assert.Contains("부모가 꾸러미 밖", plan.Reason)`). 고친 뒤 같은 돌연변이를 다시 넣으니
+그 시험 하나만 빨개졌다.
+
+> 겹치는 검사가 둘 있을 때, "거절되는가" 만 보는 시험은 **둘 중 하나를 지우는 것을 못 잡는다.**
+> 사유까지 봐야 한 검사가 한 시험에 묶인다.
+
+### 10.3 다음
+
+**P3(서버 라우트)**. 거기서 처음으로 SPT 를 쓴다 — 프로필 읽기, 자리 찾기(**서버 DB**, §9.3),
+백업, 쓰기. 순수한 것과 SPT 를 쓰는 것은 §6 대로 **파일로 가른다.**
