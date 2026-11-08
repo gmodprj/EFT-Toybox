@@ -86,8 +86,17 @@ public class StmRaidOutcomeService(
             // 레이드를 돈 것은 돈 것이다. 수치(사살·생존 초)는 다른 라우트로 와 버퍼에 담겨 있고,
             // 아직 안 왔으면 0 으로 쌓으며 그 사실을 로그가 말한다. 적립 쪽 예외는 그 안에서
             // 잡히므로 아래 삭제 경로는 영향을 받지 않는다.
-            var hadNumbers = tallyBuffer.TryTakeNumbers(sessionId, accountId, out var kills, out var raidSeconds);
+            var hadNumbers = tallyBuffer.TryTakeNumbers(
+                sessionId, accountId, out var kills, out var raidSeconds, out var experience, out var skills);
             tallyService.Apply(sessionId, raidId, accountId, escaped, kills, raidSeconds, hadNumbers);
+
+            // A5-3. 수치 보고가 **먼저** 와 담겨 있던 판이면 경험치·스킬도 그 보고에 들어 있다.
+            // 실측으로는 늘 반대 순서였지만(생사가 먼저), 이 길이 없으면 그 순서가 뒤집힌 판의
+            // 성장이 영원히 안 쌓인다. 성장 쪽 예외는 그 안에서 잡힌다.
+            if (hadNumbers)
+            {
+                tallyService.ApplyGrowth(sessionId, raidId, accountId, experience, skills);
+            }
 
             // **2026-11-07 실측 — 이쪽이 먼저 처리된다**(그 판 네 명 모두 수치가 없었다). 그래서
             // 수치 없이 쌓았을 때는 이 판의 레이드 id 를 남겨 둔다. 뒤늦게 오는 수치 보고가

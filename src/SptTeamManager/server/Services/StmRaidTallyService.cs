@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using pitTeam.Server.Models;
 using pitTeam.Shared;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Enums;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Servers;
 
 namespace pitTeam.Server.Services;
@@ -33,6 +37,7 @@ public class StmRaidTallyService(
     StmProfileMemberResolver resolver,
     StmRaidReceiptStore receipts,
     SaveServer saveServer,
+    GlobalTable globalTable,
     ISptLogger<StmRaidTallyService> logger)
 {
     private const string TallyAction = "accrue-raid-tally";
@@ -48,6 +53,12 @@ public class StmRaidTallyService(
     // 같은 접미사를 쓰면 수치가 "이미 적립된 판" 으로 걸러져 영원히 안 쌓인다.
     private const string NumbersAction = "accrue-raid-numbers";
     private const string NumbersRaidSuffix = "#tally-nums";
+
+    // A5-3 — 경험치·스킬의 영수증. 같은 이유로 **세 번째** 열쇠 공간이다(설계 §4-1).
+    // 경험치와 스킬은 한 영수증으로 묶는다 - 같은 항목으로 같이 오고, 하나만 쌓이는 중간 상태를
+    // 만들 이유가 없다.
+    private const string GrowthAction = "accrue-raid-growth";
+    private const string GrowthRaidSuffix = "#tally-xp";
 
     // 열거된 다섯 열쇠만 쓴다. 표에 없는 것은 만들지 않는다 - 없는 열쇠를 프로필에 넣으면
     // 게임이나 다른 모드가 그것을 어떻게 읽을지 모른다(2026-10-28 에 `Ammo` 클래스 정의 노드에
@@ -214,6 +225,238 @@ public class StmRaidTallyService(
         {
             logger.Error($"[STM] 전적 적립(수치): 프로필 팀원 '{accountId}'(세션 '{sessionId}', 레이드 '{raidId}') 처리에 실패했다: {ex}");
         }
+    }
+
+    // A5-3 — 경험치와 스킬. 수치(ApplyNumbers)와 **같은 보고**로 오지만 영수증 열쇠 공간이 따로라
+    // 한쪽이 다른 쪽을 걸러내지 않는다(설계 §4-1).
+    //
+    // 이것은 STM 이 런처 프로필의 **레벨**을 건드리는 첫 코드다. 지키는 것은 A4 와 같은 셋(예약 먼저 /
+    // 저장 가능한 프로필인지 먼저 / 쓴 뒤 다시 읽어 확인)이고, 더해서 **표가 없으면 아무것도 쓰지
+    // 않는다** - 경험치만 올리고 레벨을 못 세면 Level 과 Experience 가 어긋난 채 저장된다.
+    // 판정은 전부 RaidGrowthPolicy(순수·시험 20건)의 몫이고 이 메서드는 기계만 가진다.
+    public void ApplyGrowth(MongoId sessionId, string? raidId, string? accountId, double experience,
+        IReadOnlyList<FriendlyTeammateSkillProgressRequest>? skills)
+    {
+        try
+        {
+            if (!resolver.TryResolve(sessionId, accountId, out var member, out var unavailableReason) || member == null)
+            {
+                if (!string.IsNullOrWhiteSpace(unavailableReason))
+                {
+                    logger.Warning($"[STM] 성장 적립: 프로필 팀원 '{accountId}'(세션 '{sessionId}')을 읽을 수 없어({unavailableReason}) 적립하지 않는다.");
+                }
+
+                return;
+            }
+
+            var profileId = new MongoId(member.ProfileId);
+
+            if (saveServer.IsProfileInvalidOrUnloadable(profileId))
+            {
+                logger.Error($"[STM] 성장 적립: 프로필 '{member.ProfileId}'(레이드 '{raidId}')이 손상/적재 불가로 표시돼 있어 저장되지 않는다. 적립하지 않고 영수증도 남기지 않는다.");
+                return;
+            }
+
+            var pmc = member.Pmc;
+            if (pmc?.Info == null)
+            {
+                logger.Error($"[STM] 성장 적립: 프로필 '{member.ProfileId}'의 Info 를 읽을 수 없어 적립하지 않는다.");
+                return;
+            }
+
+            // 표를 **먼저** 본다. 없으면 영수증도 쓰지 않는다 - 다음 기동에서 다시 해 볼 수 있게.
+            var table = ExperienceTable();
+            if (table.Count == 0)
+            {
+                logger.Error($"[STM] 성장 적립: 경험치 표를 읽을 수 없어 레벨을 셀 수 없다(프로필 '{member.ProfileId}', 레이드 '{raidId}'). 적립하지 않고 영수증도 남기지 않는다.");
+                return;
+            }
+
+            var gains = ToSkillGains(skills);
+            var current = CurrentSkills(pmc);
+            long beforeExperience = pmc.Info.Experience ?? 0;
+            int beforeLevel = pmc.Info.Level ?? 1;
+
+            var plan = RaidGrowthPolicy.Decide(
+                new RaidGrowth(member.ProfileId, experience, gains), beforeExperience, beforeLevel, current, table);
+
+            // 쌓을 것이 없으면 영수증도 쓰지 않는다 - 진짜 수치가 더 늦게 오면 그때 쌓을 수 있어야 한다.
+            if (!plan.Accepted)
+            {
+                logger.Info($"[STM] 성장 적립: '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}') - {plan.Reason} 적립하지 않는다.");
+                return;
+            }
+
+            // 프로필의 경험치 칸은 int 다(SPT 모델). 표의 끝(레벨 79)이 8,100만이라 닿을 일이 없지만,
+            // 넘는 값을 깎아 넣으면 레벨과 어긋난다 - 그래서 넘으면 아무것도 쓰지 않는다.
+            if (plan.NewExperience > int.MaxValue)
+            {
+                logger.Error($"[STM] 성장 적립: 경험치 {plan.NewExperience} 가 프로필이 담을 수 있는 범위를 넘는다(프로필 '{member.ProfileId}', 레이드 '{raidId}'). 적립하지 않는다.");
+                return;
+            }
+
+            var growthRaidId = string.IsNullOrWhiteSpace(raidId) ? null : raidId!.Trim() + GrowthRaidSuffix;
+            if (!RaidReceiptKeyPolicy.IsUsableKey(growthRaidId, member.ProfileId))
+            {
+                logger.Error($"[STM] 성장 적립: '{member.Nickname}'(프로필 '{member.ProfileId}')의 레이드 식별자가 비어 있어(raidId '{raidId}') 멱등을 지킬 수 없다. 적립하지 않는다.");
+                return;
+            }
+
+            if (!receipts.TryReserve(sessionId, growthRaidId, member.ProfileId, GrowthAction))
+            {
+                logger.Info($"[STM] 성장 적립: '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}')의 성장은 이미 쌓인 판이라 다시 쌓지 않는다.");
+                return;
+            }
+
+            pmc.Info.Experience = (int)plan.NewExperience;
+            pmc.Info.Level = plan.NewLevel;
+            WriteSkills(pmc, plan.SkillWrites);
+
+            var elapsedMs = saveServer.SaveProfileAsync(profileId).GetAwaiter().GetResult();
+            logger.Info(
+                $"[STM] 성장 적립: '{member.Nickname}'(프로필 '{member.ProfileId}', 레이드 '{raidId}') 경험치 +{plan.ExperienceDelta} " +
+                $"({beforeExperience} → {plan.NewExperience}), 레벨 {beforeLevel} → {plan.NewLevel}, " +
+                $"스킬 {plan.SkillWrites.Count}개. 저장했다({elapsedMs}ms).");
+
+            VerifyGrowthApplied(member, profileId, raidId, plan);
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 성장 적립: 프로필 팀원 '{accountId}'(세션 '{sessionId}', 레이드 '{raidId}') 처리에 실패했다: {ex}");
+        }
+    }
+
+    // 적립 뒤 다시 읽어 **기대값과 같은지** 본다. VerifyApplied 와 같은 성질이다(SaveServer 가
+    // 방금 고친 객체를 돌려주므로 "쓰기가 반영됐나" 를 잡고 저장 실패는 못 잡는다 - 저장 실패는
+    // 위에서 던져 catch 로 간다).
+    private void VerifyGrowthApplied(StmResolvedMember member, MongoId profileId, string? raidId, GrowthPlan plan)
+    {
+        var reread = saveServer.GetProfile(profileId)?.CharacterData?.PmcData;
+        if (reread?.Info == null)
+        {
+            logger.Error($"[STM] 성장 적립 확인 실패: 프로필 '{member.ProfileId}'(레이드 '{raidId}')를 다시 읽을 수 없었다. 영수증이 남아 있으므로 다시 시도하지 않는다 - 프로필을 직접 확인하라.");
+            return;
+        }
+
+        long experience = reread.Info.Experience ?? 0;
+        int level = reread.Info.Level ?? 0;
+        if (experience != plan.NewExperience || level != plan.NewLevel)
+        {
+            logger.Error(
+                $"[STM] 성장 적립 확인 실패: 프로필 '{member.ProfileId}'(레이드 '{raidId}') - 기대 경험치 {plan.NewExperience}/레벨 {plan.NewLevel} 인데 " +
+                $"{experience}/{level} 이다. 영수증이 남아 있으므로 다시 시도하지 않는다 - 프로필을 직접 확인하라.");
+            return;
+        }
+
+        // 스킬은 **하나라도** 어긋나면 소리를 낸다. 0~5,100 을 벗어난 값이 들어가면 게임이 어떻게
+        // 읽을지 모른다.
+        var written = reread.Skills?.Common ?? [];
+        var mismatched = plan.SkillWrites
+            .Where(w => !written.Any(s => string.Equals(s.Id.ToString(), w.Id, StringComparison.OrdinalIgnoreCase)
+                                          && Math.Abs(s.Progress - w.Progress) < 0.005))
+            .Select(w => w.Id)
+            .ToList();
+        if (mismatched.Count > 0)
+        {
+            logger.Error(
+                $"[STM] 성장 적립 확인 실패: 프로필 '{member.ProfileId}'(레이드 '{raidId}') - 스킬 {mismatched.Count}개가 기대와 다르다 " +
+                $"({string.Join(", ", mismatched)}). 프로필을 직접 확인하라.");
+            return;
+        }
+
+        logger.Info(
+            $"[STM] 성장 적립 확인: 프로필 '{member.ProfileId}'(레이드 '{raidId}') - 경험치 {experience} / 레벨 {level} / 스킬 {plan.SkillWrites.Count}개가 기대와 같다.");
+    }
+
+    // globals 의 exp_table 을 **단계별 값**으로 낸다(누적이 아니다 - 정책이 누적을 센다).
+    // 읽을 수 없으면 빈 목록이고, 호출자가 그때 아무것도 쓰지 않는다.
+    private IReadOnlyList<long> ExperienceTable()
+    {
+        try
+        {
+            var table = globalTable?.Configuration?.Exp?.Level?.ExperienceTable;
+            if (table == null) return [];
+            return table.Select(row => (long)(row?.Experience ?? 0)).ToList();
+        }
+        catch (Exception ex)
+        {
+            logger.Error($"[STM] 성장 적립: 경험치 표를 읽다 실패했다: {ex.Message}");
+            return [];
+        }
+    }
+
+    // 지금 프로필의 스킬. 정책은 문자열 id 로 다루고(순수하게 두려고 SPT 열거를 모른다),
+    // 쓸 때 다시 열거로 돌린다.
+    private static IReadOnlyList<SkillState> CurrentSkills(PmcData pmc) =>
+        (pmc.Skills?.Common ?? []).Select(s => new SkillState(s.Id.ToString(), s.Progress)).ToList();
+
+    // 요청의 Id 는 문자열로도 숫자로도 온다(PIT 의 TryParseSkillType 과 같은 규칙). 정의 밖 값은
+    // 버린다 - 없는 스킬을 프로필에 만들지 않는다. delta 는 PointsEarnedDuringSession 이다(설계 §2-4).
+    private static IReadOnlyList<SkillGain> ToSkillGains(IReadOnlyList<FriendlyTeammateSkillProgressRequest>? skills)
+    {
+        if (skills == null || skills.Count == 0) return [];
+
+        var gains = new List<SkillGain>(skills.Count);
+        foreach (var skill in skills)
+        {
+            if (skill == null) continue;
+            if (!TryParseSkillType(skill.Id, out var skillType)) continue;
+            gains.Add(new SkillGain(skillType.ToString(), skill.PointsEarnedDuringSession));
+        }
+
+        return gains;
+    }
+
+    private static bool TryParseSkillType(JsonElement idValue, out SkillTypes skillType)
+    {
+        skillType = default;
+
+        if (idValue.ValueKind == JsonValueKind.String)
+        {
+            var raw = idValue.GetString();
+            return !string.IsNullOrWhiteSpace(raw) && Enum.TryParse(raw, ignoreCase: true, out skillType);
+        }
+
+        if (idValue.ValueKind == JsonValueKind.Number && idValue.TryGetInt32(out var numeric))
+        {
+            skillType = (SkillTypes)numeric;
+            return Enum.IsDefined(skillType);
+        }
+
+        return false;
+    }
+
+    // 정책이 낸 **최종값**을 그 줄에 쓴다. 없는 줄은 만들고, 있는 줄은 Progress 만 바꾼다 -
+    // 다른 필드(PointsEarnedDuringSession·LastAccess)는 그 프로필의 것이라 건드리지 않는다.
+    private static void WriteSkills(PmcData pmc, IReadOnlyList<SkillWrite> writes)
+    {
+        if (writes.Count == 0) return;
+
+        pmc.Skills ??= new Skills();
+        pmc.Skills.Common ??= [];
+        var common = pmc.Skills.Common.ToList();
+
+        foreach (var write in writes)
+        {
+            if (!Enum.TryParse(write.Id, ignoreCase: true, out SkillTypes skillType)) continue;
+
+            var existing = common.FirstOrDefault(s => s.Id == skillType);
+            if (existing != null)
+            {
+                existing.Progress = write.Progress;
+                continue;
+            }
+
+            common.Add(new CommonSkill
+            {
+                Id = skillType,
+                Progress = write.Progress,
+                PointsEarnedDuringSession = 0,
+                LastAccess = 0,
+            });
+        }
+
+        pmc.Skills.Common = common;
     }
 
     // 쓴 값을 SaveServer 에서 다시 읽어 본다. 닿는 범위를 분명히 해 둔다 - SaveServer 는 방금 고친
