@@ -255,8 +255,13 @@ public partial class MainWindow : Window
                 return;
             }
 
+            // 서버가 고친 것(잠금 풀기 등)은 **말해 준다.** 조용히 바뀌면 사람이 모른다.
+            var said = result.Skipped.Count == 0
+                ? string.Empty
+                : "  " + string.Join(" / ", result.Skipped);
+
             Status($"{target.Nickname} 에게 {result.Count}개를 우편으로 보냈습니다 — "
-                   + "게임 안 우편함에서 받으세요. 받기 전에는 그 프로필의 재산이 아닙니다.");
+                   + "게임 안 우편함에서 받으세요. 받기 전에는 그 프로필의 재산이 아닙니다." + said);
         }
         catch (Exception ex)
         {
