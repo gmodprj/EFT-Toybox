@@ -500,10 +500,16 @@ public class FriendlyTeammateMatchCallbacks(
                     if (tallyBuffer.TryTakeRaid(sessionId, entry.Aid, out var pendingRaidId))
                     {
                         tallyService.ApplyNumbers(sessionId, pendingRaidId, entry.Aid, entry.KillCount, entry.RaidSeconds);
+
+                        // A5-3. 수치와 **같은 보고**이고 영수증 열쇠 공간만 다르다. 성장 쪽이 실패해도
+                        // 수치 적립은 이미 끝나 있다(두 호출이 서로를 막지 않는다).
+                        tallyService.ApplyGrowth(sessionId, pendingRaidId, entry.Aid, entry.BotExperienceSession, entry.Skills);
                     }
                     else
                     {
-                        tallyBuffer.RecordNumbers(sessionId, entry.Aid, entry.KillCount, entry.RaidSeconds);
+                        tallyBuffer.RecordNumbers(
+                            sessionId, entry.Aid, entry.KillCount, entry.RaidSeconds,
+                            entry.BotExperienceSession, entry.Skills);
                     }
                 }
 

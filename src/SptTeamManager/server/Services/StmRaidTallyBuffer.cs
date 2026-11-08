@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using pitTeam.Server.Models;
 using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Common;
@@ -26,7 +27,14 @@ namespace pitTeam.Server.Services;
 public class StmRaidTallyBuffer(ISptLogger<StmRaidTallyBuffer> logger)
 {
     // 한 판의 수치. 담길 때의 시각을 함께 들고 있어 묵은 것을 버린다.
-    private sealed record Half(int Kills, int RaidSeconds, DateTimeOffset At);
+    // A5-3 부터 **경험치·스킬도 같이** 담는다 — 같은 보고(followerprogress)로 오므로 따로 담으면
+    // 두 짝이 어긋날 수 있다. 쓰는 쪽은 여전히 둘이다(수치는 ApplyNumbers, 성장은 ApplyGrowth).
+    private sealed record Half(
+        int Kills,
+        int RaidSeconds,
+        double Experience,
+        IReadOnlyList<FriendlyTeammateSkillProgressRequest>? Skills,
+        DateTimeOffset At);
 
     // 세션+aid 가 열쇠다. 한 세션에서 레이드 종료는 한 번에 하나뿐이므로 레이드 id 는 필요 없다
     // (그리고 수치 쪽 payload 에는 그 값이 아예 없다).
@@ -50,7 +58,8 @@ public class StmRaidTallyBuffer(ISptLogger<StmRaidTallyBuffer> logger)
     // 서버가 돌아가는 동안 메모리를 먹는 길을 막는다.
     private const int MaxPending = 64;
 
-    public void RecordNumbers(MongoId sessionId, string? accountId, int kills, int raidSeconds)
+    public void RecordNumbers(MongoId sessionId, string? accountId, int kills, int raidSeconds,
+        double experience = 0, IReadOnlyList<FriendlyTeammateSkillProgressRequest>? skills = null)
     {
         if (string.IsNullOrWhiteSpace(accountId)) return;
 
@@ -65,16 +74,22 @@ public class StmRaidTallyBuffer(ISptLogger<StmRaidTallyBuffer> logger)
         lock (sync)
         {
             DropStale();
-            pending[Key(sessionId, accountId)] = new Half(kills, raidSeconds, DateTimeOffset.UtcNow);
+            pending[Key(sessionId, accountId)] = new Half(kills, raidSeconds, experience, skills, DateTimeOffset.UtcNow);
         }
     }
 
     // 생사 쪽이 부를 때. 담긴 수치가 있으면 꺼내 주고 비운다(한 판에 한 번만 쓰인다).
     // 없으면 (0, 0, false) - 호출자는 그래도 적립하고 로그에 그렇게 적는다.
-    public bool TryTakeNumbers(MongoId sessionId, string? accountId, out int kills, out int raidSeconds)
+    public bool TryTakeNumbers(MongoId sessionId, string? accountId, out int kills, out int raidSeconds) =>
+        TryTakeNumbers(sessionId, accountId, out kills, out raidSeconds, out _, out _);
+
+    public bool TryTakeNumbers(MongoId sessionId, string? accountId, out int kills, out int raidSeconds,
+        out double experience, out IReadOnlyList<FriendlyTeammateSkillProgressRequest>? skills)
     {
         kills = 0;
         raidSeconds = 0;
+        experience = 0;
+        skills = null;
         if (string.IsNullOrWhiteSpace(accountId)) return false;
 
         lock (sync)
@@ -85,6 +100,8 @@ public class StmRaidTallyBuffer(ISptLogger<StmRaidTallyBuffer> logger)
             pending.Remove(key);
             kills = half.Kills;
             raidSeconds = half.RaidSeconds;
+            experience = half.Experience;
+            skills = half.Skills;
             return true;
         }
     }
