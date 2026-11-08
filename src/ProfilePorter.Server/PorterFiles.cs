@@ -11,6 +11,13 @@ namespace ProfilePorter.Server;
 /// <summary>파일 하나의 머리글. 알맹이는 <see cref="PorterBundle"/> 이다(설계 §4.1).</summary>
 public sealed class PorterFile
 {
+    /// <summary>
+    /// 파일 이름(확장자 없이). **파일에는 적히지 않고** 목록을 만들 때 채운다 — 이름은 폴더가
+    /// 가진 사실이지 파일 속 내용이 아니고, 사람이 파일을 옮기거나 바꿔 둘 수 있다.
+    /// 창은 이 값으로 들여올 파일을 지목한다.
+    /// </summary>
+    [JsonPropertyName("fileName")] public string FileName { get; set; } = string.Empty;
+
     [JsonPropertyName("format")] public string Format { get; set; } = CurrentFormat;
     [JsonPropertyName("kind")] public string Kind { get; set; } = PorterBundle.KindStash;
     [JsonPropertyName("createdUtc")] public string CreatedUtc { get; set; } = string.Empty;
@@ -78,11 +85,17 @@ public class PorterFiles(ModHelper modHelper, ISptLogger<PorterFiles> logger)
 
         foreach (var path in Directory.GetFiles(Folder, "*.json").OrderBy(p => p, StringComparer.OrdinalIgnoreCase))
         {
-            var file = Read(Path.GetFileNameWithoutExtension(path));
-            if (file is not null)
+            var name = Path.GetFileNameWithoutExtension(path);
+            var file = Read(name);
+            if (file is null)
             {
-                files.Add(file);
+                continue;
             }
+
+            // 이름은 **폴더가 가진 사실**이다. 파일 속 값이 무엇이든 여기서 덮는다 —
+            // 그래야 창이 지목한 이름으로 서버가 같은 파일을 연다.
+            file.FileName = name;
+            files.Add(file);
         }
 
         return files;

@@ -24,9 +24,16 @@ public class Config
     public List<string> BlockedTemplateIds { get; set; } = [];
 
     /// <summary>
-    /// 들여오기 전에 받는 쪽 프로필을 백업할지. **기본은 켜짐**이고, 끄는 것을 권하지 않는다.
-    /// 들여오기는 되돌릴 수 없는 쓰기다(설계 §4.6).
+    /// 보내기 전에 받는 쪽 프로필을 백업할지. **기본은 켜짐**이고, 끄는 것을 권하지 않는다.
+    /// 우편도 프로필(`DialogueRecords`)에 쓰인다(설계 §4.6·§14.3).
     /// </summary>
     [JsonPropertyName("BackupBeforeImport")]
     public bool BackupBeforeImport { get; set; } = true;
+
+    /// <summary>
+    /// 보낸 우편을 며칠 동안 보관할지(설계 §14.2). **짧으면 못 받고 사라진다.**
+    /// 1~365 로 자른다.
+    /// </summary>
+    [JsonPropertyName("MailStorageDays")]
+    public int MailStorageDays { get; set; } = 7;
 }
