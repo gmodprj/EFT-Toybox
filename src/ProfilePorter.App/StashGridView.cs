@@ -33,8 +33,12 @@ public sealed class StashGridView : ScrollViewer
         Visibility = Visibility.Collapsed,
     };
 
+    private readonly Dictionary<string, TextBlock> _names = new(StringComparer.Ordinal);
+
     private Point _dragFrom;
     private bool _dragging;
+    private double _gridWidth;
+    private double _gridHeight;
 
     public StashGridView()
     {
@@ -48,6 +52,22 @@ public sealed class StashGridView : ScrollViewer
         _canvas.MouseLeftButtonDown += OnCanvasDown;
         _canvas.MouseMove += OnCanvasMove;
         _canvas.MouseLeftButtonUp += OnCanvasUp;
+
+        // 창을 넓히면 캔버스도 넓힌다 — 그러지 않으면 늘어난 여백이 캔버스 밖이라
+        // 거기서 시작한 끌기를 못 받는다.
+        SizeChanged += (_, _) => StretchCanvas();
+    }
+
+    /// <summary>캔버스를 격자와 보이는 영역 중 **큰 쪽**에 맞춘다.</summary>
+    private void StretchCanvas()
+    {
+        if (_gridWidth <= 0)
+        {
+            return;
+        }
+
+        _canvas.Width = Math.Max(_gridWidth, ViewportWidth > 0 ? ViewportWidth : ActualWidth);
+        _canvas.Height = Math.Max(_gridHeight, ViewportHeight > 0 ? ViewportHeight : ActualHeight);
     }
 
     /// <summary>아이콘을 구해 오는 쪽. null 이면 이름만 그린다.</summary>
@@ -59,10 +79,32 @@ public sealed class StashGridView : ScrollViewer
     public IReadOnlyList<StashRow> SelectedRows =>
         _boxes.Where(b => _selected.Contains(b.row.Id)).Select(b => b.row).ToList();
 
+    /// <summary>격자에 있는 것을 **전부** 고른다.</summary>
+    public void SelectAll()
+    {
+        _selected.Clear();
+        foreach (var (row, _) in _boxes)
+        {
+            _selected.Add(row.Id);
+        }
+
+        Repaint();
+        SelectionChanged?.Invoke();
+    }
+
+    /// <summary>고른 것을 모두 푼다. 격자는 그대로 둔다.</summary>
+    public void SelectNone()
+    {
+        _selected.Clear();
+        Repaint();
+        SelectionChanged?.Invoke();
+    }
+
     public void Clear()
     {
         _canvas.Children.Clear();
         _boxes.Clear();
+        _names.Clear();
         _selected.Clear();
         SelectionChanged?.Invoke();
     }
@@ -84,8 +126,13 @@ public sealed class StashGridView : ScrollViewer
             return;
         }
 
-        _canvas.Width = cellsH * Cell + 1;
-        _canvas.Height = cellsV * Cell + 1;
+        _gridWidth = cellsH * Cell + 1;
+        _gridHeight = cellsV * Cell + 1;
+
+        // 캔버스를 **격자보다 넓게** 잡는다. 격자 폭에 딱 맞추면 그 오른쪽 여백은 캔버스가
+        // 아니어서, 거기서 시작한 끌기가 아무 일도 하지 않는다(2026-11-08 사용자 제보).
+        // 창이 넓어지면 `SizeChanged` 가 다시 늘린다.
+        StretchCanvas();
 
         var line = new SolidColorBrush(Color.FromRgb(0x3A, 0x3A, 0x3C));
         for (var x = 0; x <= cellsH; x++)
@@ -146,31 +193,56 @@ public sealed class StashGridView : ScrollViewer
                 Stretch = Stretch.Uniform,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(2),
+                Margin = new Thickness(1),
                 IsHitTestVisible = false,
             });
+
+            // 아이콘이 왔으니 이름은 치운다 — 좁은 칸에서는 둘이 겹쳐 둘 다 안 보인다.
+            if (_names.TryGetValue(row.Id, out var label))
+            {
+                label.Visibility = Visibility.Collapsed;
+            }
         }
     }
 
     private Border MakeBox(StashRow row)
     {
-        // 아이콘이 깔리고 그 위에 글자가 얹힌다. 글자는 **아래쪽**에 둔다 — 아이콘의 생김새를
-        // 가리지 않으면서 무엇인지 읽히게 하려는 것이다.
+        // **아이콘이 오면 이름을 치운다.** 1칸이 46px 밖에 안 되어 이름이 아이콘을 덮어 버린다.
+        // 이름은 툴팁으로 돌리고, 칸에는 아이콘과 **묶음 수**만 남긴다 — 인게임과 같은 모양이다.
+        // 아이콘을 못 구한 것만 이름을 그대로 둔다(빈 칸을 그리면 무엇인지 알 수 없다).
         var grid = new Grid();
-        grid.Children.Add(new TextBlock
+
+        var name = new TextBlock
         {
-            Text = row.GridLabel,
+            Text = row.Name,
             Foreground = new SolidColorBrush(Color.FromRgb(0xF2, 0xF2, 0xF2)),
             FontSize = 10,
             TextWrapping = TextWrapping.Wrap,
             TextTrimming = TextTrimming.CharacterEllipsis,
-            VerticalAlignment = VerticalAlignment.Bottom,
+            VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
             TextAlignment = TextAlignment.Center,
-            Margin = new Thickness(2, 0, 2, 1),
-            Background = new SolidColorBrush(Color.FromArgb(0xB0, 0x1E, 0x1E, 0x1E)),
+            Margin = new Thickness(2),
             IsHitTestVisible = false,
-        });
+        };
+        grid.Children.Add(name);
+        _names[row.Id] = name;
+
+        if (row.Stack > 1)
+        {
+            // 묶음 수는 인게임처럼 **오른쪽 아래**에 작게. 아이콘이 와도 이것은 남는다.
+            grid.Children.Add(new TextBlock
+            {
+                Text = "×" + row.Stack,
+                Foreground = new SolidColorBrush(Color.FromRgb(0xE0, 0xD0, 0xA0)),
+                FontSize = 10,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 0, 2, 1),
+                Background = new SolidColorBrush(Color.FromArgb(0xC0, 0x1E, 0x1E, 0x1E)),
+                IsHitTestVisible = false,
+            });
+        }
 
         var box = new Border
         {

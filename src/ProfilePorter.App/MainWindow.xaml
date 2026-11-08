@@ -73,9 +73,20 @@
             <TextBox x:Name="ExportName" Width="150" />
           </StackPanel>
 
-          <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,6,0,0">
-            <Button x:Name="ExportStashButton" Content="고른 것 내보내기" Click="ExportStash_Click" />
-            <Button x:Name="ExportLoadoutButton" Content="착용장비" Click="ExportLoadout_Click" />
+          <!--
+            고르는 것과 내보내는 것을 **줄로 나눈다.** 한 줄에 섞여 있으면 "착용장비" 가
+            고르기 단추처럼 읽힌다 — 그것은 고른 것과 **무관하게** 입은 것을 내보낸다.
+          -->
+          <StackPanel Grid.Row="4" Margin="0,6,0,0">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+              <Button x:Name="SelectAllButton" Content="스태시 전체선택" Click="SelectAll_Click" />
+              <Button x:Name="SelectNoneButton" Content="선택 취소" Click="SelectNone_Click" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <Button x:Name="ExportStashButton" Content="고른 것 내보내기" Click="ExportStash_Click" />
+              <Button x:Name="ExportLoadoutButton" Content="착용장비 내보내기" Click="ExportLoadout_Click"
+                      ToolTip="고른 것과 상관없이, 그 프로필이 입고 있는 장비 전체를 내보냅니다(보안 컨테이너는 뺍니다)." />
+            </StackPanel>
           </StackPanel>
         </Grid>
       </Border>

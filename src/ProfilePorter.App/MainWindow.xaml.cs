@@ -139,6 +139,10 @@ public partial class MainWindow : Window
                           + "스태시에 바로 꽂지 않습니다 — 게임 안 우편함에서 받으세요.";
     }
 
+    private void SelectAll_Click(object sender, RoutedEventArgs e) => StashGrid.SelectAll();
+
+    private void SelectNone_Click(object sender, RoutedEventArgs e) => StashGrid.SelectNone();
+
     private async void ExportStash_Click(object sender, RoutedEventArgs e)
     {
         if (_client is null) return;
@@ -278,6 +282,8 @@ public partial class MainWindow : Window
 
     private void SetBusy(bool busy)
     {
+        SelectAllButton.IsEnabled = !busy;
+        SelectNoneButton.IsEnabled = !busy;
         ExportStashButton.IsEnabled = !busy;
         ExportLoadoutButton.IsEnabled = !busy;
         ImportButton.IsEnabled = !busy && Files.SelectedItem is not null && TargetProfiles.SelectedItem is not null;
