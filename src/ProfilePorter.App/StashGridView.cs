@@ -20,6 +20,9 @@ public sealed class StashGridView : ScrollViewer
     /// <summary>칸 하나의 픽셀 크기. 인게임 비율(정사각)과 같게 둔다.</summary>
     private const int Cell = 46;
 
+    /// <summary>바깥에서 격자 크기를 셈할 때 쓴다(세부 보기 창이 칸 수에 맞춰 높이를 잡는다).</summary>
+    public const int CellSize = Cell;
+
     private readonly Canvas _canvas = new();
     private readonly List<(StashRow row, Border box)> _boxes = [];
     private readonly HashSet<string> _selected = new(StringComparer.Ordinal);

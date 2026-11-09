@@ -102,8 +102,14 @@ public sealed record DetailNode
 
     public bool IsContainer => Kind == "container";
 
+    /// <summary>
+    /// 나무 한 줄의 글. 자리 이름은 **뜻이 있을 때만** 앞에 붙인다 — 스태시 바닥은 전부
+    /// `hideout`, 상자 안은 전부 `main` 이라, 그대로 붙이면 모든 줄이 "스태시 — " 로 시작한다.
+    /// </summary>
     public string Display =>
-        (string.IsNullOrEmpty(SlotName) ? Name : $"{SlotName} — {Name}")
+        (string.IsNullOrEmpty(SlotName) || SlotName is "스태시" or "안쪽"
+            ? Name
+            : $"{SlotName} — {Name}")
         + (Contained > 0 ? $"  ({Contained})" : string.Empty);
 }
 

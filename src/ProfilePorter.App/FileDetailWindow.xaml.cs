@@ -31,7 +31,7 @@ public partial class FileDetailWindow : Window
     private readonly IconService? _icons;
     private readonly string _fileName;
 
-    public FileDetailWindow(ServerClient client, IconService? icons, string fileName)
+    public FileDetailWindow(ServerClient client, IconService? icons, string fileName, string? startAt = null)
     {
         InitializeComponent();
 
@@ -42,7 +42,8 @@ public partial class FileDetailWindow : Window
         HeaderText.Text = fileName;
         Title = $"내보낸 파일 보기 — {fileName}";
 
-        _ = LoadAsync(null);
+        // `startAt` 은 개발용 스크린샷(`--shot`)이 상자 안을 바로 찍을 때만 쓴다.
+        _ = LoadAsync(startAt);
     }
 
     /// <summary>그 자리를 서버에 묻고 그린다. <paramref name="containerId"/> 가 null 이면 뿌리.</summary>
@@ -189,11 +190,21 @@ public partial class FileDetailWindow : Window
                 break;
 
             default:
+                // **격자들을 가로로 흘린다.** 리그 하나에 격자가 열한 개다 — 세로로만 쌓으면
+                // 한 주머니를 보려고 한참 굴려야 한다.
+                var wrap = new WrapPanel { Margin = new Thickness(0, 0, 0, 8) };
+                var n = 0;
+
                 foreach (var grid in view.Grids)
                 {
-                    ViewHost.Children.Add(Label($"{(string.IsNullOrEmpty(grid.GridName) ? grid.Name : grid.GridName)} — {grid.Rows.Count}개"));
-                    ViewHost.Children.Add(Grid(grid.CellsH, grid.CellsV, grid.Rows));
+                    n++;
+                    var block = new StackPanel { Margin = new Thickness(0, 0, 10, 10) };
+                    block.Children.Add(Label($"{GridTitle(grid, n)} — {grid.Rows.Count}개"));
+                    block.Children.Add(Grid(grid.CellsH, grid.CellsV, grid.Rows));
+                    wrap.Children.Add(block);
                 }
+
+                ViewHost.Children.Add(wrap);
 
                 if (view.Slots.Count > 0)
                 {
@@ -215,21 +226,53 @@ public partial class FileDetailWindow : Window
             : "안쪽을 보고 있습니다. 왼쪽 나무로 다른 자리를 고를 수 있습니다.";
     }
 
+    /// <summary>
+    /// 격자 하나. **칸 수에 꼭 맞춘다** — 높이를 고정하면 2x3 짜리 주머니가 420px 짜리 빈 판을
+    /// 차지하고 자기 스크롤바까지 달고 나온다(2026-11-09 실측 화면에서 그렇게 나왔다).
+    /// 굴리는 것은 바깥 하나로 족하다.
+    /// </summary>
     private UIElement Grid(int cellsH, int cellsV, List<StashRow> rows)
     {
         var grid = new StashGridView
         {
             ReadOnly = true,
             Icons = _icons,
-            Height = Math.Min(420, Math.Max(120, (cellsV + 1) * 46)),
-            Margin = new Thickness(0, 0, 0, 10),
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(0, 0, 0, 4),
         };
+
+        if (cellsH > 0 && cellsV > 0)
+        {
+            grid.Width = cellsH * StashGridView.CellSize + 2;
+            grid.Height = cellsV * StashGridView.CellSize + 2;
+        }
 
         grid.Draw(cellsH, cellsV, rows);
         return grid;
     }
 
-    /// <summary>인게임 장비 화면과 같은 자리에 칸을 놓는다(설계 §4.3).</summary>
+    /// <summary>
+    /// 격자 이름. DB 가 주는 이름은 `GridView (1)` 같은 **인게임 표시 이름**이라 한국어 화면에서
+    /// 겉돈다. 아는 이름(`main`)은 사전이 옮기고, 모르는 것은 **몇 번째 칸인지**로 적는다.
+    /// </summary>
+    private static string GridTitle(DetailGridRow grid, int ordinal)
+    {
+        if (!string.IsNullOrEmpty(grid.GridName) && grid.GridName != grid.Name)
+        {
+            return grid.GridName;
+        }
+
+        return $"칸 {ordinal}";
+    }
+
+    /// <summary>
+    /// 인게임 장비 화면과 같은 자리에 칸을 놓는다(설계 §4.3).
+    ///
+    /// 세 칸짜리 줄을 쌓되, **무기 두 자루는 두 칸을 차지한다** — 게임에서도 그 자리가 넓다.
+    /// </summary>
     private UIElement LoadoutBoard(List<DetailSlotRow> slots)
     {
         var board = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
@@ -241,7 +284,8 @@ public partial class FileDetailWindow : Window
             foreach (var slotId in row)
             {
                 var found = slots.FirstOrDefault(s => s.SlotId == slotId);
-                line.Children.Add(SlotCard(slotId, found));
+                var wide = row.Length == 2 && slotId == row[0];
+                line.Children.Add(SlotCard(slotId, found, wide));
             }
 
             board.Children.Add(line);
@@ -258,7 +302,7 @@ public partial class FileDetailWindow : Window
         return board;
     }
 
-    private UIElement SlotCard(string slotId, DetailSlotRow? row)
+    private UIElement SlotCard(string slotId, DetailSlotRow? row, bool wide = false)
     {
         var text = new TextBlock
         {
@@ -295,10 +339,38 @@ public partial class FileDetailWindow : Window
             });
         }
 
+        // **그림을 넣는다.** 글자만 있으면 인게임 장비 화면과 전혀 달라 보인다(사용자 제보).
+        var body = new DockPanel { LastChildFill = true };
+        var picture = new Image
+        {
+            Width = 64,
+            Height = 64,
+            Stretch = Stretch.Uniform,
+            Margin = new Thickness(0, 0, 6, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        DockPanel.SetDock(picture, Dock.Left);
+        body.Children.Add(picture);
+        body.Children.Add(text);
+
+        if (row is not null && _icons is not null)
+        {
+            // 그린 뒤에 채운다 — 받는 동안 판이 멈춰 있으면 안 된다.
+            _ = Task.Run(async () =>
+            {
+                var icon = await _icons.GetAsync(row.Tpl, CancellationToken.None);
+                if (icon is not null)
+                {
+                    await Dispatcher.InvokeAsync(() => picture.Source = icon);
+                }
+            });
+        }
+
         var card = new Border
         {
-            Width = 196,
-            MinHeight = 64,
+            Width = wide ? 398 : 196,
+            MinHeight = 84,
             Margin = new Thickness(0, 0, 6, 6),
             Padding = new Thickness(6),
             Background = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x30)),
@@ -306,7 +378,7 @@ public partial class FileDetailWindow : Window
                 ? Color.FromRgb(0xC8, 0xA0, 0x50)
                 : Color.FromRgb(0x50, 0x50, 0x55)),
             BorderThickness = new Thickness(1),
-            Child = text,
+            Child = body,
         };
 
         // **안이 있는 칸은 눌린다**(설계 §4.3). 나무로도 갈 수 있지만, 장비 화면에서 리그를
