@@ -160,7 +160,7 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
 ### 3-2. 묶음과 순서
 
 의존 관계와 위험으로 가른다. **묶음을 끝낼 때마다 기동해 보고 다음 묶음으로 넘어간다.**
-**U-A 는 2026-11-09 에 끝났다 — 결과는 §4.**
+**U-A·U-B 는 2026-11-09 에 끝났다 — 결과는 §4.**
 
 | 묶음 | 모드 | 왜 이 순서인가 | 내려받을 양 |
 | --- | --- | --- | --- |
@@ -231,6 +231,38 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
   다음 기동에서 `N plugins to load` 가 **245 로 유지**되고 `[Fatal` 이 0 인지 봐야 한다.
   `Armorer ... offers insurance but is not listed` 경고는 **업데이트 전부터 있던 것**이다(같은
   날 앞 기동들에도 찍혀 있다).
+
+### U-B — 끝났다 (2026-11-09)
+
+Quest Codex 를 먼저, Briefing 을 뒤에 올렸다(의존 방향). 받은 양 **3.3MB**, 설치 파일 **108개**.
+
+| id | 모드 | 올린 버전 | 설치 파일 |
+| --- | --- | --- | --- |
+| 3054 | Quest Codex | 1.11.1 → **1.12.0** | 95 → **96** |
+| 3158 | Briefing | 1.1.0 → **1.2.0** | 12 (그대로) |
+
+- **Quest Codex 1.12.0 이 게임 쪽 플러그인을 새로 들고 왔다** —
+  `BepInEx\plugins\QuestCodex.Overlay\QuestCodex.Overlay.dll`. 그래서 이 모드의 위치가
+  `서버` 에서 **`게임+서버`** 로 바뀌었고, **다음 게임 기동에서 플러그인 수가 245 → 246 으로
+  늘어야 맞다.** 줄면 되돌리는 것이 기준이지만 **이번에는 느는 것이 정상**이다.
+- 웹 자산 이름이 해시째 바뀌었다(`main-BptEaV9o.css`·`main-DkP2dusw.js` →
+  `main-CxYgGp9M.css`·`main-BQtV9iGb.js`). 묶음 빌드라 당연한 변화다.
+- **기록에 없는 캐시를 치웠다** — `QuestCodex\cache\loot-data.json`·`warm-langs.json` 은 모드가
+  만든 것이라 기록에 없고 새 압축에도 없어 지워지지 않는다. 판이 바뀌면 묵은 캐시가 맞지
+  않을 수 있어 `backup/before-update-2026-11-09-ub/3054-cache/` 로 옮겼다. 새 판이 **7.9초에
+  다시 만들었다.**
+- **1.12.0 은 기동할 때 카탈로그를 더 만들지 않는다.** 1.11.1 은 시작 직후
+  `catalog warm-up started` 를 찍었는데 이번 기동에는 그 줄이 없다. 없어진 것이 아니라
+  **첫 요청에 만든다** — `/questcodex/api/catalog` 를 불러 **200 / 10,097,351B / 15.9초**,
+  `/questcodex/api/profiles` 는 **200 / 1,610B / 0.02초**로 답했고 그 뒤 캐시가 생겼다.
+  카탈로그 경고도 `vanillaSnapshotMismatch=1 · questZoneNotFound=76 · missingLocale=2 ·
+  danglingPrereq=1 · exitPositionMissing=4` 로 **업데이트 전과 같은 숫자**다.
+- **U8 실측** — 기록 검사 `OK — 0/0`(줄 13999 → 14000, 모드 304 그대로). 서버 기동
+  `불러옴` **174줄 / 거부 0**, `[Error]` **49줄 = `Could not add` 48(고유 id 48) + bundle 1**,
+  `cannot import quest` 1 로 기준선과 같다. 로그가 `모드 QuestCodex 버전 1.12.0 ... 불러옴` 과
+  `Mod QuestCodex has a wwwroot, mapping to /questcodex/` 를 찍었다.
+- Briefing 은 게임 전용이라 서버 로그에 줄이 없다 — **게임 기동에서 봐야 한다**(`Briefing.Core.dll`
+  은 플러그인 속성이 없는 라이브러리라 0 으로 세는 것이 정상이다).
 
 ## 5. 다시 재는 법
 
