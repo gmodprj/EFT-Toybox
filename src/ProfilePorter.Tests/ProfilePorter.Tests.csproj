@@ -24,8 +24,10 @@
     <Compile Include="..\ProfilePorter.Server\PorterBundle.cs" Link="Server\PorterBundle.cs" />
     <Compile Include="..\ProfilePorter.Server\ExportSelection.cs" Link="Server\ExportSelection.cs" />
     <Compile Include="..\ProfilePorter.Server\ImportPlanner.cs" Link="Server\ImportPlanner.cs" />
+    <Compile Include="..\ProfilePorter.Server\DetailPlanner.cs" Link="Server\DetailPlanner.cs" />
     <Compile Include="ExportSelectionTests.cs" />
     <Compile Include="ImportPlannerTests.cs" />
+    <Compile Include="DetailPlannerTests.cs" />
     <Compile Include="RoundTripTests.cs" />
   </ItemGroup>
 
