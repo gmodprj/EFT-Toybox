@@ -370,7 +370,7 @@
 | [WTT Halloween Masks](https://sp-mod.com/mod/2401) | 2.0.0 | 게임+서버 | **결속** | 15 | `stage10-L-2401-HalloweenMasks` |
 | [Skills Extended](https://sp-mod.com/mod/2383) | 3.1.4 | 게임+서버 | **결속** | 95 | `stage10-L-2383-SkillsExtended` |
 | [Russian Special Forces Pack](https://sp-mod.com/mod/3035) | 2.0.1 | 서버 | **결속** | 135 | `stage10-L-3035-RussianSFPack` |
-| [Epic's All in One](https://sp-mod.com/mod/1263) | 5.0.2 | 서버 | **결속** | 632 | `stage10-L-1263-EpicAllInOne` |
+| [Epic's All in One](https://sp-mod.com/mod/1263) | 5.0.3 | 서버 | **결속** | 632 | `update-1263-5.0.3` |
 | [ECOT - Eukyre's Consortium of Things](https://sp-mod.com/mod/2195) | 2.0.1 | 서버 | **결속** | 259 | `stage10-L-2195-ECOT` |
 | [DynamicMaps Extended](https://sp-mod.com/mod/3097) | 2.5.2 | 게임 | - | 201 | `stage10-M-3097-DynamicMapsExtended` |
 | [Manimal's 1.0 Labs Office Backport](https://sp-mod.com/mod/2937) | 2.0.0 | 게임+서버 | - | 7 | `stage10-M-2937-LabsOfficeBackport` |
