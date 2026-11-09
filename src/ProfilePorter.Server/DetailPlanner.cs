@@ -146,6 +146,126 @@ public static class DetailPlanner
         return (h, v);
     }
 
+    /// <summary>
+    /// 자리 하나를 그릴 때 **고를 수 있는 크기 둘** — 조립 크기(부착물까지)와 기본 크기.
+    /// </summary>
+    public sealed record SizeChoice(
+        string Id, int X, int Y, int AssembledW, int AssembledH, int BaseW, int BaseH);
+
+    /// <summary>고른 크기. <see cref="Shrunk"/> 면 겹침을 피하려고 물러난 것이다.</summary>
+    public sealed record FittedSize(int W, int H, bool Shrunk);
+
+    /// <summary>
+    /// 겹치지 않게 크기를 고른다.
+    ///
+    /// **왜 필요한가** — 조립 크기는 지금 DB 가 말하는 값이고, 좌표는 **그때 놓았던 자리**다.
+    /// 모드가 아이템이나 부착물을 바꾸면 둘이 어긋나, 큰 쪽으로 그리면 옆 것을 덮어 버린다
+    /// (2026-11-09 사용자 제보: "아이템이 겹쳐보임"). 덮는 대신 **물러난다** —
+    /// 조립 크기 → 기본 크기 → 빈 자리만큼. 그래서 **아무것도 숨지 않는다.**
+    ///
+    /// 위에서 아래로, 왼쪽에서 오른쪽으로 놓는다(사람이 읽는 차례). 먼저 놓인 것이 자리를 지킨다.
+    /// </summary>
+    public static Dictionary<string, FittedSize> FitSizes(IReadOnlyList<SizeChoice> choices)
+    {
+        var taken = new HashSet<(int, int)>();
+        var result = new Dictionary<string, FittedSize>(StringComparer.Ordinal);
+
+        bool Free(int x, int y, int w, int h)
+        {
+            for (var dx = 0; dx < w; dx++)
+            {
+                for (var dy = 0; dy < h; dy++)
+                {
+                    if (taken.Contains((x + dx, y + dy))) return false;
+                }
+            }
+
+            return true;
+        }
+
+        var list = (choices ?? []).OrderBy(c => c.Y).ThenBy(c => c.X).ToList();
+
+        // **남의 자리 머리를 덮지 않는다.** 다른 물건이 시작하는 칸까지 뻗으면, 큰 쪽이 작은
+        // 쪽을 가려 버린다. 그 칸 앞에서 멈춘다 — 먼저 놓인 것이든 나중 것이든 똑같이.
+        var origins = list.Select(c => (c.X, c.Y)).ToHashSet();
+
+        foreach (var c in list)
+        {
+            var w = Math.Max(1, c.AssembledW);
+            var h = Math.Max(1, c.AssembledH);
+
+            for (var dx = 1; dx < w; dx++)
+            {
+                if (origins.Contains((c.X + dx, c.Y)) || !Free(c.X + dx, c.Y, 1, 1))
+                {
+                    w = dx;
+                    break;
+                }
+            }
+
+            for (var dy = 1; dy < h; dy++)
+            {
+                var blocked = false;
+                for (var dx = 0; dx < w; dx++)
+                {
+                    if (origins.Contains((c.X + dx, c.Y + dy)) || !Free(c.X + dx, c.Y + dy, 1, 1))
+                    {
+                        blocked = true;
+                        break;
+                    }
+                }
+
+                if (blocked)
+                {
+                    h = dy;
+                    break;
+                }
+            }
+
+            for (var dx = 0; dx < w; dx++)
+            {
+                for (var dy = 0; dy < h; dy++)
+                {
+                    taken.Add((c.X + dx, c.Y + dy));
+                }
+            }
+
+            result[c.Id] = new FittedSize(w, h, w != c.AssembledW || h != c.AssembledH);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 두 번 이상 차지된 칸의 수.
+    ///
+    /// **격자가 겹치는 것은 우리가 잘못 그려서가 아니다.** 모드가 아이템 크기를 바꾸면,
+    /// 그때 그 자리에 놓았던 것과 **지금 DB 가 말하는 크기**가 어긋난다(2026-11-09 실측:
+    /// 1,361개 중 두 칸. 원본 프로필의 좌표만으로는 겹침이 0건이었다). 숨기지 않고 세어서
+    /// 사람에게 "왜 겹쳐 보이는지" 를 말해 준다.
+    /// </summary>
+    public static int CountOverlaps(IEnumerable<(int x, int y, int w, int h)> rows)
+    {
+        var taken = new HashSet<(int, int)>();
+        var n = 0;
+
+        foreach (var (x, y, w, h) in rows ?? [])
+        {
+            for (var dx = 0; dx < w; dx++)
+            {
+                for (var dy = 0; dy < h; dy++)
+                {
+                    if (!taken.Add((x + dx, y + dy)))
+                    {
+                        n++;
+                    }
+                }
+            }
+        }
+
+        return n;
+    }
+
     private static DetailLoose Loose(PorterItem item, string why) =>
         new(item.Id, item.TemplateId, StackOf(item), 0, why);
 

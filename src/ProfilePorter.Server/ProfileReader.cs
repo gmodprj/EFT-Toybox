@@ -36,7 +36,20 @@ public sealed record StashEntry(
     [property: JsonPropertyName("y")] int Y,
     [property: JsonPropertyName("w")] int W,
     [property: JsonPropertyName("h")] int H,
-    [property: JsonPropertyName("rotated")] bool Rotated);
+    [property: JsonPropertyName("rotated")] bool Rotated,
+
+    /// <summary>
+    /// 안이 있는 것(격자나 슬롯을 가진 tpl)인가. **비어 있어도 참**이다 — 비었는지 보려고
+    /// 눌러 보는 것도 되짚어 보기의 일부다(2026-11-09 제보: 빈 상자가 안 열렸다).
+    /// </summary>
+    [property: JsonPropertyName("container")] bool Container = false,
+
+    /// <summary>
+    /// 부착물이 붙어 **크기가 달라진** 것인가. 받아 오는 그림은 그 tpl 의 **기본** 아이콘이라
+    /// 조립된 총을 보여 주지 못한다 — 조립 안 된 그림을 큰 칸에 띄우면 거짓이 된다.
+    /// 그래서 이런 칸에는 **그림을 그리지 않고 이름만** 쓴다(2026-11-09 사용자 결정).
+    /// </summary>
+    [property: JsonPropertyName("assembled")] bool Assembled = false);
 
 /// <summary>스태시 격자 자체의 크기. 서버 DB 가 정한다(§9.3 — 파일로 재면 틀린다).</summary>
 public sealed record StashGrid(
@@ -319,6 +332,30 @@ public class ProfileReader(
         {
             logger.Warning($"[ProfilePorter] {tpl} 는 아이템 id 모양이 아니라 1x1 로 둔다: {e.Message}");
             return (1, 1);
+        }
+    }
+
+    /// <summary>
+    /// **부착물까지 합친** 실제 차지 칸. 총처럼 조립되는 것은 tpl 기본 크기로 그리면 1칸짜리로
+    /// 쪼그라든다(2026-11-09 사용자 제보: "총기가 온전한 구성으로 보이지 않음").
+    ///
+    /// **상자에는 쓰면 안 된다** — 그때는 안에 든 것까지 더해 38x4 같은 값이 나온다(앞 설계
+    /// §5-4). 부르는 쪽이 격자를 가진 tpl 인지 보고 가른다.
+    /// </summary>
+    public (int w, int h) SizeOfAssembled(IEnumerable<Item> subtree, string rootId, (int w, int h) fallback)
+    {
+        try
+        {
+            var size = itemHelper.GetItemSize(subtree.ToList(), new MongoId(rootId));
+            var w = (int)(size?.Width ?? 0);
+            var h = (int)(size?.Height ?? 0);
+
+            return w > 0 && h > 0 ? (w, h) : fallback;
+        }
+        catch (Exception e)
+        {
+            logger.Warning($"[ProfilePorter] {rootId} 의 조립 크기를 재지 못해 기본 크기로 둔다: {e.Message}");
+            return fallback;
         }
     }
 

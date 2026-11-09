@@ -31,7 +31,10 @@ public partial class FileDetailWindow : Window
     private readonly IconService? _icons;
     private readonly string _fileName;
 
-    public FileDetailWindow(ServerClient client, IconService? icons, string fileName)
+    /// <summary>지금까지 들어온 길. 첫 칸은 늘 뿌리(파일 자체)다.</summary>
+    private readonly List<(string? Id, string Name)> _path = [];
+
+    public FileDetailWindow(ServerClient client, IconService? icons, string fileName, string? startAt = null)
     {
         InitializeComponent();
 
@@ -42,12 +45,20 @@ public partial class FileDetailWindow : Window
         HeaderText.Text = fileName;
         Title = $"내보낸 파일 보기 — {fileName}";
 
-        _ = LoadAsync(null);
+        // `startAt` 은 개발용 스크린샷(`--shot`)이 상자 안을 바로 찍을 때만 쓴다.
+        _ = LoadAsync(startAt);
     }
 
-    /// <summary>그 자리를 서버에 묻고 그린다. <paramref name="containerId"/> 가 null 이면 뿌리.</summary>
-    private async Task LoadAsync(string? containerId)
+    /// <summary>
+    /// 그 자리를 서버에 묻고 그린다. <paramref name="containerId"/> 가 null 이면 뿌리.
+    ///
+    /// <paramref name="name"/> 은 경로 막대에 적을 이름이다. 길에 **이미 있는 자리**로 가면
+    /// 거기까지만 남기고 뒤를 자른다 — 그래야 들어갔다 나왔다 해도 길이 늘어지지 않는다.
+    /// </summary>
+    private async Task LoadAsync(string? containerId, string? name = null)
     {
+        Remember(containerId, name);
+
         try
         {
             StatusText.Text = "읽는 중…";
@@ -69,6 +80,77 @@ public partial class FileDetailWindow : Window
         {
             StatusText.Text = $"세부 내용을 읽지 못했습니다 — {e.Message}";
             StatusText.Foreground = Brushes.IndianRed;
+        }
+    }
+
+    /// <summary>경로를 갱신하고 막대를 다시 그린다.</summary>
+    private void Remember(string? containerId, string? name)
+    {
+        if (containerId is null)
+        {
+            _path.Clear();
+            _path.Add((null, "파일 전체"));
+        }
+        else
+        {
+            var already = _path.FindIndex(p => p.Id == containerId);
+            if (already >= 0)
+            {
+                _path.RemoveRange(already + 1, _path.Count - already - 1);
+            }
+            else
+            {
+                if (_path.Count == 0)
+                {
+                    _path.Add((null, "파일 전체"));
+                }
+
+                _path.Add((containerId, string.IsNullOrWhiteSpace(name) ? "상자" : name!));
+            }
+        }
+
+        Breadcrumb.Children.Clear();
+
+        for (var i = 0; i < _path.Count; i++)
+        {
+            var step = _path[i];
+            var last = i == _path.Count - 1;
+
+            if (i > 0)
+            {
+                Breadcrumb.Children.Add(new TextBlock
+                {
+                    Text = " › ",
+                    Foreground = new SolidColorBrush(Color.FromRgb(0x80, 0x80, 0x88)),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+            }
+
+            if (last)
+            {
+                // 지금 보고 있는 자리는 누를 것이 없다.
+                Breadcrumb.Children.Add(new TextBlock
+                {
+                    Text = step.Name,
+                    Foreground = Brushes.White,
+                    FontWeight = FontWeights.Bold,
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+                continue;
+            }
+
+            var back = new TextBlock
+            {
+                Text = step.Name,
+                Foreground = new SolidColorBrush(Color.FromRgb(0xC8, 0xA0, 0x50)),
+                VerticalAlignment = VerticalAlignment.Center,
+                Cursor = System.Windows.Input.Cursors.Hand,
+                TextDecorations = TextDecorations.Underline,
+            };
+
+            var target = step.Id;
+            back.MouseLeftButtonUp += async (_, _) => await LoadAsync(target, step.Name);
+            Breadcrumb.Children.Add(back);
         }
     }
 
@@ -100,6 +182,15 @@ public partial class FileDetailWindow : Window
         foreach (var node in nodes)
         {
             Tree.Items.Add(MakeNode(node));
+        }
+
+        // **상자 하나짜리 파일은 그 안을 바로 연다.** 뿌리만 보여 주면 상자 한 칸과 빈 격자가
+        // 전부라 "아무것도 안 나온다" 로 읽힌다(2026-11-09 사용자 제보). 되짚어 보려고 여는
+        // 창이니, 볼 것이 한 군데뿐이면 거기까지 데려다준다.
+        if (nodes.Count == 1 && nodes[0].IsContainer && Tree.Items[0] is TreeViewItem only)
+        {
+            only.IsExpanded = true;
+            only.IsSelected = true;
         }
     }
 
@@ -167,7 +258,7 @@ public partial class FileDetailWindow : Window
             return;
         }
 
-        await LoadAsync(node.Id);
+        await LoadAsync(node.Id, node.Name);
     }
 
     private void DrawView(DetailResponse detail)
@@ -189,11 +280,21 @@ public partial class FileDetailWindow : Window
                 break;
 
             default:
+                // **격자들을 가로로 흘린다.** 리그 하나에 격자가 열한 개다 — 세로로만 쌓으면
+                // 한 주머니를 보려고 한참 굴려야 한다.
+                var wrap = new WrapPanel { Margin = new Thickness(0, 0, 0, 8) };
+                var n = 0;
+
                 foreach (var grid in view.Grids)
                 {
-                    ViewHost.Children.Add(Label($"{(string.IsNullOrEmpty(grid.GridName) ? grid.Name : grid.GridName)} — {grid.Rows.Count}개"));
-                    ViewHost.Children.Add(Grid(grid.CellsH, grid.CellsV, grid.Rows));
+                    n++;
+                    var block = new StackPanel { Margin = new Thickness(0, 0, 10, 10) };
+                    block.Children.Add(Label($"{GridTitle(grid, n)} — {grid.Rows.Count}개"));
+                    block.Children.Add(Grid(grid.CellsH, grid.CellsV, grid.Rows));
+                    wrap.Children.Add(block);
                 }
+
+                ViewHost.Children.Add(wrap);
 
                 if (view.Slots.Count > 0)
                 {
@@ -215,21 +316,67 @@ public partial class FileDetailWindow : Window
             : "안쪽을 보고 있습니다. 왼쪽 나무로 다른 자리를 고를 수 있습니다.";
     }
 
+    /// <summary>
+    /// 격자 하나. **칸 수에 꼭 맞춘다** — 높이를 고정하면 2x3 짜리 주머니가 420px 짜리 빈 판을
+    /// 차지하고 자기 스크롤바까지 달고 나온다(2026-11-09 실측 화면에서 그렇게 나왔다).
+    /// 굴리는 것은 바깥 하나로 족하다.
+    /// </summary>
     private UIElement Grid(int cellsH, int cellsV, List<StashRow> rows)
     {
         var grid = new StashGridView
         {
             ReadOnly = true,
             Icons = _icons,
-            Height = Math.Min(420, Math.Max(120, (cellsV + 1) * 46)),
-            Margin = new Thickness(0, 0, 0, 10),
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(0, 0, 0, 4),
+        };
+
+        if (cellsH > 0 && cellsV > 0)
+        {
+            grid.Width = cellsH * StashGridView.CellSize + 2;
+            grid.Height = cellsV * StashGridView.CellSize + 2;
+        }
+
+        // **칸을 눌러 그 안으로 들어간다.** 안이 있는 것만 — 나머지는 상태줄에 이름만 적는다.
+        grid.ItemOpened += async row =>
+        {
+            if (row.Container)
+            {
+                await LoadAsync(row.Id, row.Name);
+            }
+            else
+            {
+                StatusText.Text = row.Display;
+                StatusText.Foreground = Brushes.White;
+            }
         };
 
         grid.Draw(cellsH, cellsV, rows);
         return grid;
     }
 
-    /// <summary>인게임 장비 화면과 같은 자리에 칸을 놓는다(설계 §4.3).</summary>
+    /// <summary>
+    /// 격자 이름. DB 가 주는 이름은 `GridView (1)` 같은 **인게임 표시 이름**이라 한국어 화면에서
+    /// 겉돈다. 아는 이름(`main`)은 사전이 옮기고, 모르는 것은 **몇 번째 칸인지**로 적는다.
+    /// </summary>
+    private static string GridTitle(DetailGridRow grid, int ordinal)
+    {
+        if (!string.IsNullOrEmpty(grid.GridName) && grid.GridName != grid.Name)
+        {
+            return grid.GridName;
+        }
+
+        return $"칸 {ordinal}";
+    }
+
+    /// <summary>
+    /// 인게임 장비 화면과 같은 자리에 칸을 놓는다(설계 §4.3).
+    ///
+    /// 세 칸짜리 줄을 쌓되, **무기 두 자루는 두 칸을 차지한다** — 게임에서도 그 자리가 넓다.
+    /// </summary>
     private UIElement LoadoutBoard(List<DetailSlotRow> slots)
     {
         var board = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
@@ -241,7 +388,8 @@ public partial class FileDetailWindow : Window
             foreach (var slotId in row)
             {
                 var found = slots.FirstOrDefault(s => s.SlotId == slotId);
-                line.Children.Add(SlotCard(slotId, found));
+                var wide = row.Length == 2 && slotId == row[0];
+                line.Children.Add(SlotCard(slotId, found, wide));
             }
 
             board.Children.Add(line);
@@ -258,7 +406,7 @@ public partial class FileDetailWindow : Window
         return board;
     }
 
-    private UIElement SlotCard(string slotId, DetailSlotRow? row)
+    private UIElement SlotCard(string slotId, DetailSlotRow? row, bool wide = false)
     {
         var text = new TextBlock
         {
@@ -295,10 +443,38 @@ public partial class FileDetailWindow : Window
             });
         }
 
+        // **그림을 넣는다.** 글자만 있으면 인게임 장비 화면과 전혀 달라 보인다(사용자 제보).
+        var body = new DockPanel { LastChildFill = true };
+        var picture = new Image
+        {
+            Width = 64,
+            Height = 64,
+            Stretch = Stretch.Uniform,
+            Margin = new Thickness(0, 0, 6, 0),
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        DockPanel.SetDock(picture, Dock.Left);
+        body.Children.Add(picture);
+        body.Children.Add(text);
+
+        if (row is not null && _icons is not null)
+        {
+            // 그린 뒤에 채운다 — 받는 동안 판이 멈춰 있으면 안 된다.
+            _ = Task.Run(async () =>
+            {
+                var icon = await _icons.GetAsync(row.Tpl, CancellationToken.None);
+                if (icon is not null)
+                {
+                    await Dispatcher.InvokeAsync(() => picture.Source = icon);
+                }
+            });
+        }
+
         var card = new Border
         {
-            Width = 196,
-            MinHeight = 64,
+            Width = wide ? 398 : 196,
+            MinHeight = 84,
             Margin = new Thickness(0, 0, 6, 6),
             Padding = new Thickness(6),
             Background = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x30)),
@@ -306,7 +482,7 @@ public partial class FileDetailWindow : Window
                 ? Color.FromRgb(0xC8, 0xA0, 0x50)
                 : Color.FromRgb(0x50, 0x50, 0x55)),
             BorderThickness = new Thickness(1),
-            Child = text,
+            Child = body,
         };
 
         // **안이 있는 칸은 눌린다**(설계 §4.3). 나무로도 갈 수 있지만, 장비 화면에서 리그를
@@ -314,7 +490,7 @@ public partial class FileDetailWindow : Window
         if (hasInside)
         {
             card.Cursor = System.Windows.Input.Cursors.Hand;
-            card.MouseLeftButtonUp += async (_, _) => await LoadAsync(row!.Id);
+            card.MouseLeftButtonUp += async (_, _) => await LoadAsync(row!.Id, row.Name);
         }
 
         return card;

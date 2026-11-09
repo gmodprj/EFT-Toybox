@@ -20,6 +20,9 @@ public sealed class StashGridView : ScrollViewer
     /// <summary>칸 하나의 픽셀 크기. 인게임 비율(정사각)과 같게 둔다.</summary>
     private const int Cell = 46;
 
+    /// <summary>바깥에서 격자 크기를 셈할 때 쓴다(세부 보기 창이 칸 수에 맞춰 높이를 잡는다).</summary>
+    public const int CellSize = Cell;
+
     private readonly Canvas _canvas = new();
     private readonly List<(StashRow row, Border box)> _boxes = [];
     private readonly HashSet<string> _selected = new(StringComparer.Ordinal);
@@ -81,6 +84,12 @@ public sealed class StashGridView : ScrollViewer
 
     /// <summary>고른 것이 바뀌면 알린다.</summary>
     public event Action? SelectionChanged;
+
+    /// <summary>
+    /// 읽기 전용일 때 **칸을 누르면** 알린다. 세부 보기 창이 그 상자 안으로 들어가는 데 쓴다 —
+    /// 나무로만 들어갈 수 있으면 상자 속 상자로 내려가는 길이 사실상 없다(2026-11-09 제보).
+    /// </summary>
+    public event Action<StashRow>? ItemOpened;
 
     public IReadOnlyList<StashRow> SelectedRows =>
         _boxes.Where(b => _selected.Contains(b.row.Id)).Select(b => b.row).ToList();
@@ -187,6 +196,14 @@ public sealed class StashGridView : ScrollViewer
 
         foreach (var (row, box) in _boxes.ToList())
         {
+            // **조립된 것은 그림을 그리지 않는다**(2026-11-09 사용자 결정). 받아 오는 그림은
+            // 그 tpl 의 기본 아이콘이라, 부착물이 붙어 모습도 칸도 달라진 총을 띄우면
+            // **조립 안 된 총**을 보여 주는 거짓이 된다. 이름만 쓴다.
+            if (row.Assembled)
+            {
+                continue;
+            }
+
             var icon = await Icons.GetAsync(row.Tpl, CancellationToken.None);
             if (icon is null || box.Child is not Grid grid)
             {
@@ -204,11 +221,42 @@ public sealed class StashGridView : ScrollViewer
             });
 
             // 아이콘이 왔으니 이름은 치운다 — 좁은 칸에서는 둘이 겹쳐 둘 다 안 보인다.
+            //
+            // **다만 칸보다 그림이 많이 작으면 이름을 남긴다.** 받아 오는 그림은 그 tpl 의
+            // **기본** 아이콘이라, 부착물까지 합쳐 길어진 총의 칸(5x2 따위)을 채우지 못한다.
+            // 그때 이름까지 지우면 큰 칸에 작은 그림 하나만 떠 있어 무엇인지 알 수 없다
+            // (2026-11-09 사용자 제보).
             if (_names.TryGetValue(row.Id, out var label))
             {
-                label.Visibility = Visibility.Collapsed;
+                label.Visibility = Covers(icon, row) ? Visibility.Collapsed : Visibility.Visible;
+
+                if (label.Visibility == Visibility.Visible)
+                {
+                    // 그림 위에 겹치지 않게 아래쪽으로 내린다.
+                    label.VerticalAlignment = VerticalAlignment.Bottom;
+                    label.Background = new SolidColorBrush(Color.FromArgb(0xB0, 0x2D, 0x2D, 0x30));
+                }
             }
         }
+    }
+
+    /// <summary>
+    /// 그 그림이 칸을 **웬만큼 채우는가**(넓이의 절반 이상). 비율을 지키며 줄인 크기로 잰다.
+    /// </summary>
+    private static bool Covers(ImageSource icon, StashRow row)
+    {
+        var cellW = Math.Max(1, row.W) * Cell;
+        var cellH = Math.Max(1, row.H) * Cell;
+
+        if (icon.Width <= 0 || icon.Height <= 0)
+        {
+            return true;
+        }
+
+        var scale = Math.Min(cellW / icon.Width, cellH / icon.Height);
+        var drawn = icon.Width * scale * icon.Height * scale;
+
+        return drawn >= cellW * cellH * 0.5;
     }
 
     private Border MakeBox(StashRow row)
@@ -302,6 +350,13 @@ public sealed class StashGridView : ScrollViewer
     {
         if (ReadOnly)
         {
+            // 읽기 전용에서는 고르지 않는다. 대신 **누른 칸**을 알린다(상자면 그 안으로 간다).
+            var hit = HitTest(e.GetPosition(_canvas));
+            if (hit is not null)
+            {
+                ItemOpened?.Invoke(hit);
+            }
+
             return;
         }
 

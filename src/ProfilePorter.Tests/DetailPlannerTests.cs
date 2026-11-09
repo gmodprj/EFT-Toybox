@@ -122,6 +122,47 @@ public class DetailPlannerTests
     }
 
     [Fact]
+    public void 겹치면_작은_크기로_물러나_그린다()
+    {
+        // 조립 크기(5x2)가 맞아도 그때 놓인 자리와 어긋나면 옆 것을 덮는다. 덮는 대신
+        // **기본 크기**로 물러나고, 그래도 안 되면 빈 자리만큼만 그린다. 아무것도 숨지 않는다.
+        var fitted = DetailPlanner.FitSizes(
+        [
+            new DetailPlanner.SizeChoice("a", 0, 0, 5, 2, 4, 2),
+            new DetailPlanner.SizeChoice("b", 4, 0, 2, 2, 2, 2),
+        ]);
+
+        Assert.Equal((4, 2), (fitted["a"].W, fitted["a"].H)); // 조립 5칸 → 기본 4칸으로 물러났다
+        Assert.Equal((2, 2), (fitted["b"].W, fitted["b"].H)); // 뒤엣것은 그대로
+        Assert.True(fitted["a"].Shrunk);
+        Assert.False(fitted["b"].Shrunk);
+    }
+
+    [Fact]
+    public void 물러나도_겹치면_빈_자리만큼만_그린다()
+    {
+        var fitted = DetailPlanner.FitSizes(
+        [
+            new DetailPlanner.SizeChoice("big", 0, 0, 3, 1, 3, 1),
+            new DetailPlanner.SizeChoice("small", 1, 0, 1, 1, 1, 1),
+        ]);
+
+        Assert.Equal(1, fitted["big"].W); // 1칸까지 줄여서라도 자리를 비운다
+        Assert.Equal((1, 1), (fitted["small"].W, fitted["small"].H));
+    }
+
+    [Fact]
+    public void 겹치는_칸을_센다()
+    {
+        // 모드가 아이템 크기를 바꾸면, **그때 놓은 자리**와 **지금 DB 크기**가 어긋나 겹친다.
+        // 숨기지 않고 세어서 사람에게 말해 준다.
+        Assert.Equal(0, DetailPlanner.CountOverlaps([(0, 0, 2, 2), (2, 0, 1, 1), (0, 2, 2, 1)]));
+
+        // 4x4 와 2x2 가 한 칸에서 만난다.
+        Assert.Equal(1, DetailPlanner.CountOverlaps([(0, 0, 2, 2), (1, 1, 2, 2)]));
+    }
+
+    [Fact]
     public void 뿌리에서_닿지_않는_항목을_찾아낸다()
     {
         // 뿌리에도 없고 부모가 파일 안에 없으면, 창은 그 id 를 **알 길이 없어** 지목할 수도 없다.

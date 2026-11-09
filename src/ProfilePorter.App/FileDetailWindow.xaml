@@ -38,7 +38,18 @@
       <Border Grid.Column="0" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
               BorderThickness="1" Padding="6">
         <TreeView x:Name="Tree" Background="Transparent" BorderThickness="0"
-                  SelectedItemChanged="Tree_SelectedItemChanged" />
+                  SelectedItemChanged="Tree_SelectedItemChanged">
+          <!--
+            고른 줄의 기본 선택색은 **흰 칸**이라 어두운 창에서 글자가 사라진다
+            (2026-11-09 실측 화면: 고른 줄이 빈 흰 네모로 보였다).
+          -->
+          <TreeView.Resources>
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#3A3A3C" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#3A3A3C" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="White" />
+          </TreeView.Resources>
+        </TreeView>
       </Border>
 
       <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch"
@@ -47,9 +58,28 @@
       <!-- 오른쪽 — 그 자리의 모습. 격자·슬롯 판·목록이 쌓인다. -->
       <Border Grid.Column="2" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
               BorderThickness="1" Padding="6">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-          <StackPanel x:Name="ViewHost" />
-        </ScrollViewer>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <!--
+            경로 막대 — 어디까지 들어왔는지 보이고, 눌러서 **돌아 나온다**.
+            이것이 없으면 상자에 들어간 뒤 나올 길이 없다(2026-11-09 사용자 제보).
+          -->
+          <StackPanel Grid.Row="0" x:Name="Breadcrumb" Orientation="Horizontal"
+                      Margin="0,0,0,6" />
+
+          <!--
+            가로도 굴린다 — 열 수가 많은 상자(아이템 케이스는 14칸까지 간다)가 판보다 넓으면
+            오른쪽 끝이 **잘려서 안 보인다**(2026-11-09 실측 화면에서 그렇게 나왔다).
+          -->
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Auto">
+            <StackPanel x:Name="ViewHost" />
+          </ScrollViewer>
+        </Grid>
       </Border>
     </Grid>
 

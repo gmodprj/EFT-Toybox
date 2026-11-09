@@ -30,6 +30,12 @@ public sealed record StashRow
     [JsonPropertyName("h")] public int H { get; init; }
     [JsonPropertyName("rotated")] public bool Rotated { get; init; }
 
+    /// <summary>안이 있는 것인가. **비어 있어도 참** — 비었는지 보려고 눌러 보는 것도 되짚어 보기다.</summary>
+    [JsonPropertyName("container")] public bool Container { get; init; }
+
+    /// <summary>부착물이 붙어 크기가 달라진 것. **그림을 그리지 않는다** — 기본 아이콘은 조립된 모습이 아니다.</summary>
+    [JsonPropertyName("assembled")] public bool Assembled { get; init; }
+
     /// <summary>격자 칸 안에 적는 글. 좁으므로 이름과 묶음 수만 둔다.</summary>
     public string GridLabel => Stack > 1 ? $"{Name}{Environment.NewLine}×{Stack}" : Name;
 
@@ -102,8 +108,14 @@ public sealed record DetailNode
 
     public bool IsContainer => Kind == "container";
 
+    /// <summary>
+    /// 나무 한 줄의 글. 자리 이름은 **뜻이 있을 때만** 앞에 붙인다 — 스태시 바닥은 전부
+    /// `hideout`, 상자 안은 전부 `main` 이라, 그대로 붙이면 모든 줄이 "스태시 — " 로 시작한다.
+    /// </summary>
     public string Display =>
-        (string.IsNullOrEmpty(SlotName) ? Name : $"{SlotName} — {Name}")
+        (string.IsNullOrEmpty(SlotName) || SlotName is "스태시" or "안쪽"
+            ? Name
+            : $"{SlotName} — {Name}")
         + (Contained > 0 ? $"  ({Contained})" : string.Empty);
 }
 

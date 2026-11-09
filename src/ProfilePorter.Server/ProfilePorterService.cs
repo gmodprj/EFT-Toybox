@@ -327,6 +327,9 @@ public class ProfilePorterService(
             .Select(i => new PorterItem(i.Id, i.ParentId, i.SlotId, i.TemplateId, i.Upd, i.Location))
             .ToList();
         var bundle = new PorterBundle(file.Kind, file.RootIds, items);
+        var byId = items
+            .GroupBy(i => i.Id, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
         var byParent = items
             .Where(i => !string.IsNullOrEmpty(i.ParentId))
             .GroupBy(i => i.ParentId!, StringComparer.Ordinal)
@@ -397,16 +400,28 @@ public class ProfilePorterService(
         {
             var placed = children.Where(c => c.Location is not null).ToList();
             var missing = children.Count - placed.Count;
-            var rows = placed.Select(c => Row(c, byParent, Facts)).ToList();
+            var rows = Fit(placed.Select(c => Row(c, byParent, Facts, byId)).ToList(), byId, Facts, notices);
 
-            var (profileH, profileV) = profiles.StashCellsOf(file.FromProfileId);
-            if (profileH == 0)
+            // **고른 것만 담긴 파일이다.** 보낸 사람 스태시의 절대 좌표를 그대로 그리면,
+            // 뿌리 하나짜리 파일이 10x80 짜리 **빈 판**으로 보인다(2026-11-09 사용자 제보:
+            // "다 안나옴"). 서로의 자리 관계는 지키되 **쓰는 자리로 당겨서** 그린다.
+            var shiftX = rows.Count > 0 ? rows.Min(r => r.X) : 0;
+            var shiftY = rows.Count > 0 ? rows.Min(r => r.Y) : 0;
+
+            if (shiftX > 0 || shiftY > 0)
             {
-                notices.Add("보낸 프로필을 찾지 못해 격자를 좌표의 테두리로 잡았습니다.");
+                rows = rows.Select(r => r with { X = r.X - shiftX, Y = r.Y - shiftY }).ToList();
             }
 
             var (cellsH, cellsV) = DetailPlanner.StashCells(
-                profileH, profileV, rows.Select(r => (r.X, r.Y, r.W, r.H)));
+                0, 0, rows.Select(r => (r.X, r.Y, r.W, r.H)));
+
+            // 보낸 프로필의 스태시보다 넓어질 수는 없다 — 넓으면 우리 셈이 틀린 것이다.
+            var (profileH, _) = profiles.StashCellsOf(file.FromProfileId);
+            if (profileH > 0 && cellsH > profileH)
+            {
+                cellsH = profileH;
+            }
 
             if (missing > 0)
             {
@@ -419,6 +434,8 @@ public class ProfilePorterService(
             {
                 notices.Add($"뿌리에 매달려 있지 않은 것 {lost.Count}개를 따로 모았습니다.");
             }
+
+            AddOverlapNotice(rows.Select(r => (r.X, r.Y, r.W, r.H)), notices);
 
             view = new
             {
@@ -453,7 +470,8 @@ public class ProfilePorterService(
                 kind = "container",
                 grids = place.Grids.Select(g =>
                 {
-                    var gridRows = g.Rows.Select(r => Row(r, byParent, Facts)).ToList();
+                    var gridRows = Fit(g.Rows.Select(r => Row(r, byParent, Facts, byId)).ToList(), byId, Facts, notices);
+                    AddOverlapNotice(gridRows.Select(r => (r.X, r.Y, r.W, r.H)), notices);
 
                     // 상자 격자도 **큰 쪽**을 쓴다(설계 §7-5). DB 가 준 칸 수보다 큰 좌표가 있으면
                     // 그대로 그렸을 때 그 물건이 격자 밖이라 **스크롤로도 닿지 않는다.**
@@ -492,26 +510,148 @@ public class ProfilePorterService(
         };
     }
 
+    /// <summary>
+    /// 한 격자에 놓인 것들의 크기를 **겹치지 않게** 다시 고른다(설계 §9). 조립 크기가 그때의
+    /// 자리와 어긋나면 남의 머리 칸 앞에서 멈춘다 — 덮지 않으니 아무것도 숨지 않는다.
+    /// </summary>
+    private List<StashEntry> Fit(
+        List<StashEntry> rows,
+        IReadOnlyDictionary<string, PorterItem> byId,
+        Func<string, TplFacts> facts,
+        List<string> notices)
+    {
+        if (rows.Count < 2)
+        {
+            return rows;
+        }
+
+        var fitted = DetailPlanner.FitSizes(rows.Select(r =>
+        {
+            var (bw, bh) = facts(r.Tpl).Size;
+            var (baseW, baseH) = r.Rotated ? (bh, bw) : (bw, bh);
+            return new DetailPlanner.SizeChoice(r.Id, r.X, r.Y, r.W, r.H, baseW, baseH);
+        }).ToList());
+
+        var shrunk = 0;
+        var result = rows.Select(r =>
+        {
+            if (!fitted.TryGetValue(r.Id, out var size))
+            {
+                return r;
+            }
+
+            if (size.Shrunk)
+            {
+                shrunk++;
+            }
+
+            return r with { W = size.W, H = size.H };
+        }).ToList();
+
+        if (shrunk > 0)
+        {
+            notices.Add($"{shrunk}개는 옆 것을 덮지 않도록 작게 그렸습니다 — 모드가 아이템이나 "
+                        + "부착물 크기를 바꾼 뒤에도 물건은 놓였던 자리에 그대로 있어서입니다.");
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 겹치는 칸이 있으면 **왜 그런지**를 적어 준다. 겹침은 우리가 잘못 그려서가 아니라,
+    /// 모드가 아이템 크기를 바꿔 **놓을 때의 크기와 지금 크기가 어긋나서** 생긴다.
+    /// 말해 주지 않으면 사람은 창이 깨진 줄로 읽는다(2026-11-09 사용자 제보).
+    /// </summary>
+    private static void AddOverlapNotice(IEnumerable<(int x, int y, int w, int h)> rows, List<string> notices)
+    {
+        var overlaps = DetailPlanner.CountOverlaps(rows);
+        if (overlaps == 0)
+        {
+            return;
+        }
+
+        notices.Add($"겹쳐 보이는 칸이 {overlaps}개 있습니다 — 모드가 아이템 크기를 바꾼 뒤에도 "
+                    + "물건은 놓였던 자리에 그대로 있어서입니다. 물건이 사라진 것은 아닙니다.");
+    }
+
     /// <summary>한 번의 세부 보기에서 **tpl 하나당 한 번만** 모으는 DB 지식.</summary>
     private sealed record TplFacts(
         string Name, (int w, int h) Size, IReadOnlyList<GridSpec> Grids, IReadOnlySet<string> Slots);
 
     private const string LostReason = "뿌리에 매달려 있지 않습니다";
 
-    private static StashEntry Row(
-        PorterItem item, Dictionary<string, List<string>> byParent, Func<string, TplFacts> facts)
+    private StashEntry Row(
+        PorterItem item,
+        Dictionary<string, List<string>> byParent,
+        Func<string, TplFacts> facts,
+        IReadOnlyDictionary<string, PorterItem>? all = null)
     {
         var (x, y, rotated) = ProfileReader.LocationOf(item.Location);
-        var (w, h) = facts(item.TemplateId).Size;
+        var known = facts(item.TemplateId);
+        var (w, h) = known.Size;
+
+        // **조립되는 것은 부착물까지 세어 그린다.** 상자는 그러면 안 된다(§5-4) — 상자는
+        // 안에 든 것까지 더해져 화면이 통째로 깨진다. 격자를 가졌는지로 가른다.
+        var assembled = false;
+
+        if (known.Grids.Count == 0 && all is not null && byParent.ContainsKey(item.Id))
+        {
+            var subtree = Subtree(item.Id, byParent, all);
+            if (subtree.Count > 1)
+            {
+                var (aw, ah) = profiles.SizeOfAssembled(subtree, item.Id, (w, h));
+
+                // 크기가 달라졌다면 **그 tpl 의 기본 그림으로는 보여 줄 수 없는 모습**이다.
+                assembled = aw != w || ah != h;
+                (w, h) = (aw, ah);
+            }
+        }
+
         var (cw, ch) = rotated ? (h, w) : (w, h);
 
         return new StashEntry(
             item.Id,
             item.TemplateId,
-            facts(item.TemplateId).Name,
+            known.Name,
             StackOf(item),
             Descendants(item.Id, byParent),
-            x, y, cw, ch, rotated);
+            x, y, cw, ch, rotated,
+            known.Grids.Count > 0 || known.Slots.Count > 0,
+            assembled);
+    }
+
+    /// <summary>그 아이템과 자손 전부를 SPT 아이템으로 바꾼다. 조립 크기를 재는 데만 쓴다.</summary>
+    private static List<Item> Subtree(
+        string id,
+        Dictionary<string, List<string>> byParent,
+        IReadOnlyDictionary<string, PorterItem> all)
+    {
+        var list = new List<Item>();
+        var queue = new Queue<string>();
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        queue.Enqueue(id);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            if (!seen.Add(current) || !all.TryGetValue(current, out var porter))
+            {
+                continue;
+            }
+
+            var ignored = 0;
+            list.Add(ToSptItem(porter, ref ignored));
+
+            if (byParent.TryGetValue(current, out var kids))
+            {
+                foreach (var kid in kids)
+                {
+                    queue.Enqueue(kid);
+                }
+            }
+        }
+
+        return list;
     }
 
     private static object Slot(
