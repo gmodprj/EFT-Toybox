@@ -327,6 +327,34 @@ Quest Codex 를 먼저, Briefing 을 뒤에 올렸다(의존 방향). 받은 양
 - **남은 것**: 레이드로 MSGA 를 확인하고 나서 Epic's AIO 를 넣는다. 압축은
   `downloads/update-2026-11-09-ud/`, 해제본은 `extracted/update-2026-11-09-ud/` 에 그대로 있다.
 
+### 게임 쪽 확인 — U-A·U-B·U-C·MSGA 한꺼번에 (2026-11-09 17:17 기동)
+
+`E:\Spt\BepInEx\LogOutput.log`(17:50 기준, 417,995B)을 쟀다. **레이드를 돌고 나온 기동**이다 —
+`Game started` · `LocationScene` · `Raid end` 가 찍혀 있다.
+
+| 재는 것 | 값 | 판정 |
+| --- | --- | --- |
+| `N plugins to load` | **246** | **예상대로** (245 + `QuestCodex.Overlay`) |
+| `Loading [` 줄 | **246** | 수가 맞는다 |
+| `Chainloader startup complete` | 1 | 끝까지 돌았다 |
+| `[Fatal` | **0** | — |
+| `[Error` | **2** | 둘 다 **알려진 것** |
+
+`[Error` 두 줄은 ① `[DirectReload] Patch FAILED to enable: FikaHostReloadMirror`(Fika 미설치라
+걸 대상이 없다 — 1.4.1 에서도 같다), ② `[COTI] Per-frame state update failed:
+ArgumentOutOfRangeException`(기준선에 있던 ECOTI 건)이다. **새 오류는 없다.**
+
+올라온 것을 이름으로 확인했다 — `Loading [` 에 `QuestCodex`, `Briefing`,
+`CompatibilityHighlighter`, `StashFilter`, `Configuration Manager`, `BiC`, `WebOverlay`,
+`Direct Reload`, `RepairMaxDurability`, `UltimateFlea` 가 있고, 이름이 다른 둘도 찾았다 —
+**`Loading [Realistic Insurance (client) 0.2.3]`**, **`Loading [makeshotgunsgreatagain 1.20.0]`**.
+새 모드 관련 `[Warning` 0줄, 번들·리소스를 못 찾은 줄 0줄이다.
+
+> **오류가 2줄인 것을 좋아진 것으로 읽지 않는다.** 기준선의 깊은 레이드 기동은 9줄이었고
+> 그중 SAIN 6 · STM 2 는 특정 상황에서만 나온다. 이번에 안 나온 것은 **아직 안 나온 것**이다.
+
+이것으로 **U-A·U-B·U-C 는 서버·게임 양쪽에서 닫혔고**, U-D 의 MSGA 도 레이드까지 지났다.
+
 ## 5. 다시 재는 법
 
 ```
