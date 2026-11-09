@@ -133,6 +133,7 @@ public class SptKoreanLocale(
         var sameAlready = 0;
         var overwroteKorean = 0;
         var skippedKorean = 0;
+        var keptDecoration = 0;
 
         foreach (var (name, file) in dicts)
         {
@@ -150,9 +151,12 @@ public class SptKoreanLocale(
                     continue;
                 }
 
+                // 다른 모드가 덧댄 꾸밈(색 태그·● 표시)은 두고 글자만 바꾼다. 꾸밈이 없으면 그대로다.
+                var value = exists && config.PreserveDecoration ? Decorate(current, korean) : korean;
+
                 if (exists)
                 {
-                    if (string.Equals(current, korean, StringComparison.Ordinal))
+                    if (string.Equals(current, value, StringComparison.Ordinal))
                     {
                         sameAlready++;
                         continue;
@@ -170,12 +174,17 @@ public class SptKoreanLocale(
                     }
                 }
 
-                target[key] = korean;
+                if (!string.Equals(value, korean, StringComparison.Ordinal))
+                {
+                    keptDecoration++;
+                }
+
+                target[key] = value;
                 applied++;
 
                 if (config.Debug)
                 {
-                    logger.Info($"[SptKoreanLocale] {key}: \"{current}\" → \"{korean}\"");
+                    logger.Info($"[SptKoreanLocale] {key}: \"{current}\" → \"{value}\"");
                 }
             }
         }
@@ -187,7 +196,8 @@ public class SptKoreanLocale(
         var summary =
             $"[SptKoreanLocale] locale '{config.Locale}' 항목 {target.Count}개 가운데 {applied}개를 한국어로 바꿨다"
             + $" (사전 {dicts.Count}개 / 항목 {entryCount}개, 이미 같던 것 {sameAlready}개"
-            + $", 일부러 영문으로 둔 것 {keptCount}개, 적용 {run}번째).";
+            + $", 일부러 영문으로 둔 것 {keptCount}개, 적용 {run}번째)"
+            + (keptDecoration > 0 ? $" — 그중 {keptDecoration}개는 다른 모드가 붙인 꾸밈을 그대로 두고 글자만 바꿨다." : ".");
 
         if (run == 1)
         {
@@ -298,6 +308,113 @@ public class SptKoreanLocale(
             logger.Warning($"[SptKoreanLocale] 결과 파일을 내놓지 못했다 — {ex.Message}");
         }
     }
+
+    /// <summary>
+    /// 지금 값에 붙어 있는 <b>꾸밈을 그대로 두고 가운데 글자만</b> 우리 값으로 갈아 끼운다.
+    /// <para>
+    /// 꾸밈은 두 겹이다 — 겉의 서식 태그(<c>&lt;b&gt;</c>·<c>&lt;color=…&gt;</c>)와, 그 안쪽 양끝에 붙는
+    /// 표시(● 같은 글머리). 둘 다 다른 모드가 붙인 것이라 우리가 지울 것이 아니다. 태그가
+    /// 짝이 맞지 않거나 가운데에 글자가 없으면 <b>손대지 않고</b> 우리 값을 그대로 돌려준다 —
+    /// 모르는 모양을 추측해 고치지 않는다.
+    /// </para>
+    /// </summary>
+    internal static string Decorate(string? current, string korean)
+    {
+        if (string.IsNullOrEmpty(current))
+        {
+            return korean;
+        }
+
+        // 1) 맨 앞의 여는 태그를 이름째 모은다.
+        var open = 0;
+        var openNames = new List<string>();
+        while (open < current.Length && current[open] == '<')
+        {
+            var end = current.IndexOf('>', open);
+            if (end < 0)
+            {
+                return korean;                      // 닫히지 않은 태그 — 모르는 모양이다
+            }
+
+            var tag = current.AsSpan(open + 1, end - open - 1);
+            if (tag.StartsWith("/"))
+            {
+                break;                              // 여는 태그가 아니다
+            }
+
+            var eq = tag.IndexOf('=');
+            openNames.Add((eq < 0 ? tag : tag[..eq]).ToString());
+            open = end + 1;
+        }
+
+        // 2) 맨 뒤의 닫는 태그는 **앞에서 연 것과 짝이 맞는 만큼만** 떼어 낸다.
+        //    여는 태그가 없는데 닫는 태그만 떼면(우리 사전 값이 제 태그를 들고 있는 경우가 있다)
+        //    같은 태그가 두 번 붙는다 — 2026-11-09 에 BTR 대사 4줄이 그렇게 겹쳤다.
+        var close = current.Length;
+        // 바깥쪽부터 짝을 맞춘다 — `<b><color=…>글자</color></b>` 의 맨 뒤 닫는 태그는 `</b>`,
+        // 즉 **맨 앞에서 연 것**과 짝이다.
+        for (var depth = 0; depth < openNames.Count; depth++)
+        {
+            if (close <= open || current[close - 1] != '>')
+            {
+                break;
+            }
+
+            var start = current.LastIndexOf('<', close - 1);
+            if (start < open)
+            {
+                break;
+            }
+
+            var tag = current.AsSpan(start + 1, close - start - 2);
+            if (!tag.StartsWith("/") || !tag[1..].SequenceEqual(openNames[depth]))
+            {
+                break;                              // 짝이 아니다 — 거기서 멈춘다
+            }
+
+            close = start;
+        }
+
+        if (close == current.Length)
+        {
+            open = 0;                               // 겉을 감싼 짝이 없다 — 꾸밈으로 보지 않는다
+            openNames.Clear();
+        }
+
+        if (open == 0 && close == current.Length)
+        {
+            return korean;                          // 꾸밈이 없다 — 통째로 바꾼다
+        }
+
+        var core = current.AsSpan(open, close - open);
+
+        // 안쪽 양끝의 표시(● 와 그 옆 공백)를 떼어 둔다.
+        var lead = 0;
+        while (lead < core.Length && IsMarker(core[lead]))
+        {
+            lead++;
+        }
+
+        var trail = core.Length;
+        while (trail > lead && IsMarker(core[trail - 1]))
+        {
+            trail--;
+        }
+
+        if (trail <= lead)
+        {
+            return korean;                          // 가운데에 글자가 없다
+        }
+
+        // string.Concat 의 다섯 인수 꼴은 object 받이로 가므로 span 을 그대로 넘길 수 없다.
+        return current[..open]
+            + core[..lead].ToString()
+            + korean
+            + core[trail..].ToString()
+            + current[close..];
+    }
+
+    private static bool IsMarker(char c) => c is '●' or '◆' or '★' or ' ' or '\t';
 
     private static bool HasKorean(string? value)
     {

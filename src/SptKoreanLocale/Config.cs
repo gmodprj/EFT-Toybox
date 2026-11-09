@@ -33,6 +33,24 @@ public class Config
     [JsonPropertyName("skipAlreadyKorean")]
     public bool SkipAlreadyKorean { get; set; }
 
+    /// <summary>
+    /// 참(기본)이면 지금 값에 붙어 있는 <b>꾸밈을 그대로 두고 글자만</b> 바꾼다.
+    /// <para>
+    /// 아이템 이름·약칭에는 다른 모드가 색 태그(<c>&lt;b&gt;&lt;color=#RRGGBB&gt;…&lt;/color&gt;&lt;/b&gt;</c>)와
+    /// ● 같은 표시를 덧댄다. 바닐라 한국어 이름에도 똑같이 붙는다 — 실측:
+    /// <c>5447a9cd… Name</c> = <c>&lt;b&gt;&lt;color=#FFFFFF&gt;Colt M4A1 5.56x45 돌격소총  ●&lt;/color&gt;&lt;/b&gt;</c>.
+    /// 우리 변환기는 <b>맨 끝에 돌기 때문에</b> 값을 통째로 쓰면 그 꾸밈이 사라져, 사전에 적은
+    /// 아이템만 색과 ● 가 없어 인벤토리에서 따로 보인다(2026-11-09 실측).
+    /// </para>
+    /// <para>
+    /// 그래서 겉의 태그와 양끝 표시를 떼어 두고 가운데 글자만 우리 값으로 갈아 끼운 뒤 다시 붙인다.
+    /// 사전에 색을 박아 넣는 길도 있지만, 그러면 그 모드가 아이템마다 계산하는 <b>등급 색을 우리가
+    /// 고정</b>해 버린다. 꾸밈이 없는 열쇠(퀘스트 이름·목표 등)는 이 설정과 무관하게 그대로 바뀐다.
+    /// </para>
+    /// </summary>
+    [JsonPropertyName("preserveDecoration")]
+    public bool PreserveDecoration { get; set; } = true;
+
     /// <summary>항목 하나하나를 로그에 적는다.</summary>
     [JsonPropertyName("debug")]
     public bool Debug { get; set; }
