@@ -1,0 +1,14 @@
+2844__UltimateFlea-1.3.1	BepInEx\plugins\UltimateFlea\UltimateFlea.Client.dll
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\UltimateFlea.deps.json
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\UltimateFlea.dll
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\config\economy.json
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\config\events.json
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\config\levels.json
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\config\mod.json
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\config\pool.json
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\config\pricing.json
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\config\trends.json
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\wwwroot\app.css
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\wwwroot\app.html
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\wwwroot\app.js
+2844__UltimateFlea-1.3.1	SPT_Runtime\user\mods\UltimateFlea\wwwroot\index.html
