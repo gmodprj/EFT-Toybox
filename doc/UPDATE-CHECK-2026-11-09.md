@@ -160,7 +160,7 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
 ### 3-2. 묶음과 순서
 
 의존 관계와 위험으로 가른다. **묶음을 끝낼 때마다 기동해 보고 다음 묶음으로 넘어간다.**
-**U-A·U-B 는 2026-11-09 에 끝났다 — 결과는 §4.**
+**U-A·U-B·U-C 는 2026-11-09 에 끝났다 — 결과는 §4.**
 
 | 묶음 | 모드 | 왜 이 순서인가 | 내려받을 양 |
 | --- | --- | --- | --- |
@@ -263,6 +263,40 @@ Quest Codex 를 먼저, Briefing 을 뒤에 올렸다(의존 방향). 받은 양
   `Mod QuestCodex has a wwwroot, mapping to /questcodex/` 를 찍었다.
 - Briefing 은 게임 전용이라 서버 로그에 줄이 없다 — **게임 기동에서 봐야 한다**(`Briefing.Core.dll`
   은 플러그인 속성이 없는 라이브러리라 0 으로 세는 것이 정상이다).
+
+### U-C — 끝났다 (2026-11-09)
+
+**결속 둘이라 프로필을 먼저 받아 두고**(`backup/profiles-before-update-2026-11-09/`, 11개 9.2MB)
+**하나씩** 넣고 그때마다 테스트 서버를 돌렸다. 받은 양 **224KB**.
+
+| id | 모드 | 올린 버전 | 설치 파일 | 기동 |
+| --- | --- | --- | --- | --- |
+| 1305 | Repair Max Durability | 2.2.0 → **2.2.1** | 3 (그대로) | `SERVER STARTED in 174s` |
+| 2844 | Ultimate Flea | 1.2.0 → **1.3.1** | 11 → **14** | `SERVER STARTED in 171s` |
+
+- **압축 뿌리에 섞여 온 `README.txt` 를 치웠다.** Ultimate Flea 1.3.1 의 압축에는 설치 경로가
+  아닌 `README.txt` 가 뿌리에 있어, 그대로 넣으면 **`E:\Spt\README.txt`** 가 생긴다. 설치 전에
+  `backup/before-update-2026-11-09-uc/2844-stray/` 로 옮겼다(설치본에 그 이름은 없었다).
+- **Ultimate Flea 가 웹 화면을 들고 왔다** — `wwwroot/` 4개가 새로 들어오고 로그가
+  `Mod UltimateFlea has a wwwroot, mapping to /ultimateflea/` 를 찍었다. 서버 포트(6969) 안이다.
+- **`data\economy_state.json` 은 되돌리지 않았다.** 모드가 쓰는 상태 파일이고 새 압축에는 없어
+  지워졌는데, 1.3.1 이 기동에서 **스스로 다시 만들었다**(1,221,770B → 890,571B). 판이 바뀌며
+  모양이 달라진 것으로 보여 옛 것을 덮지 않았다 —
+  `backup/before-update-2026-11-09-uc/2844/.../economy_state.json` 에 남겨 뒀다.
+- 1305 도 `config/config.json` 을 함께 싣는데, 업데이트 전 설정이 **원본과 같았으므로**(md5 대조)
+  돌려놓을 것이 없었다.
+- **프로필을 백업과 맞댔다.** 11개 전부 **바이트 수가 같고, 다른 곳은
+  `spt.migrations.TraderGenPocketMigration` 시각 한 곳뿐**이다(보기: 1794207819 → 1794208505).
+  서버가 시작할 때마다 다시 쓰는 값이라 **결속 모드 둘이 프로필을 건드리지 않았다**는 뜻이다.
+- **U8 실측** — 기록 검사 `OK — 0/0`(줄 14000 → 14003, 모드 304 그대로). 두 기동 모두
+  `불러옴` **174줄 / 거부 0**, `Could not add` 48(고유 id 48) · bundle 1 · quest 1 로 기준선과
+  같다. 로그가 `RepairMaxDurability 버전 2.2.1 ... 불러옴` · `[RepairMaxDurability] Loaded
+  successfully` · `UltimateFlea 버전 1.3.1 ... 불러옴` · `[UltimateFlea] Trade hooks enabled.` 를
+  찍었다.
+- 설치 스크립트가 이번에는 **다른 모드가 만든 파일을 기록하지 않았다** — 출력에
+  `OTHERMOD ... (다른 모드가 만든 파일 — 기록하지 않음)` 가 19줄 찍혔다(ORBIT·ETT·SIM·Raid
+  Review 것). [기록 오기](install-records/README-removed-stale-lines-2026-11-06.md) 가 더 생기지
+  않는다.
 
 ## 5. 다시 재는 법
 

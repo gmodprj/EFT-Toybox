@@ -1,0 +1,9 @@
+{
+  "stage": "update-2026-11-09-uc",
+  "spt": "4.1.6",
+  "note": "업데이트 묶음 U-C — 결속 소형 2개. 프로필 백업(backup/profiles-before-update-2026-11-09/) 뒤에 하나씩 넣고 그때마다 기동한다. 계획은 UPDATE-CHECK-2026-11-09.md §3-2.",
+  "mods": [
+    { "group": "U-C", "id": 1305, "name": "Repair Max Durability", "version": "2.2.1", "size": 31300, "profileBinding": true, "link": "https://sp-mod.com/mod/download/1305/repair-max-durability/2.2.1" },
+    { "group": "U-C", "id": 2844, "name": "Ultimate Flea", "version": "1.3.1", "size": 192307, "profileBinding": true, "link": "https://sp-mod.com/mod/download/2844/ultimate-flea/1.3.1" }
+  ]
+}
