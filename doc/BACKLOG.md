@@ -25,6 +25,8 @@
 
 | 할 일 | 어디에 들어갔나 |
 | --- | --- |
+| **ProfilePorter 의 파일 지우기와 세부 보기** | 2026-11-09 끝냈다. 라우트 둘(`file-delete`·`file-detail`), 창의 단추 둘과 자식창(`FileDetailWindow`), 순수 판정 둘(`DetailPlanner`·`SlotNames`). 설계 [2026-11-09](specs/2026-11-09-porter-file-detail-design.md), 계획 [2026-11-09](plans/2026-11-09-porter-file-detail-plan.md). 라우트 실측은 설계 §8, 화면은 §9 |
+| **ProfilePorter 세부 보기 창의 화면** | 2026-11-09. 사용자가 열어 보고 제보한 여섯 가지를 전부 고쳤다 — 빈 판, 격자 높이, 들어가고 나오는 길, 조립 크기, 겹침, 아이콘. 화면에 관문이 없던 것은 `--shot` 스위치로 메웠다(설계 §9). **남은 Minor 여덟 가지는 사용자가 완료로 닫았다** — 빈 상자를 열면 오른쪽이 백지, 상자 안에서 "다시 내보내면 자리까지 들어옵니다" 문구가 안 나옴, 프로필 없음과 크기 못 읽음을 같은 말로 적음, 지우기 실패 뒤 목록을 다시 안 읽음, `DetailSlot`·`DetailLoose` 의 뜻 없는 `Stack`·`Contained`, 세부 보기가 파일 `format` 을 안 봄, 아이콘을 한 장씩 차례로 받음, 모드 아이템에 아이콘이 없는 것(고칠 수 없다) |
 | **ProfilePorter 가 격자 배치를 잃던 것** | 2026-11-09 고쳤다. `PorterItem`·`PorterFileItem`·`ToFileItem`·`ToSptItem`·`ImportPlanner` 다섯 자리에 `location` 을 그대로 싣는 길을 뚫었다. 실측: 다시 내보낸 두 파일에서 974/974 · 62/62 가 **글자까지** 같고, 우편 속 자손 5/5 도 같다. 관문 둘(단위 시험 + [tools/check-porter-location.mjs](../tools/check-porter-location.mjs)). 경위는 [설계 §21](specs/2026-11-08-profile-porter-design.md) |
 | **ProfilePorter 의 인게임 관문(P5)** | 2026-11-08 저녁에 사용자가 Wraith 로 1,361개 우편을 받았다. 2026-11-09 재측정: 중복 id 0 · 고아 0 · 보내는 쪽 id 재사용 0/1,557, 게임도 그 프로필을 멀쩡히 띄웠다(Level 14 → 16). 경위는 [설계 §19](specs/2026-11-08-profile-porter-design.md). **다만 §20 의 격자 배치 결함이 이때 드러났다** |
 | **편집기의 격자 배치** — 가방·리그 칸에 놓기 | 2026-11-06 확인. 계획 5 §6(최종 상태 제출)이 조작의 종류를 묻지 않게 하면서 열렸다. 증거는 Task E 화면 절반 **6번**("리그 칸·가방 칸에 탄창·의료품을 넣는다 → 저장된다")이고 1~10 이 2026-11-04 에 인게임 통과했다(WORKLOG "화면 절반 1~10 통과"). 이 줄이 적어 둔 "여분 탄창을 리그에 넣어 줄 수 없다" 가 그것으로 닫혔다 |
