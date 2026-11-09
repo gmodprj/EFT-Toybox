@@ -1,0 +1,24 @@
+[
+  {
+    "id": 3158,
+    "name": "Briefing",
+    "version": "1.2.0",
+    "file": "3158__Briefing-1.2.0.zip",
+    "bytes": 412561,
+    "expected": 412561,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3054,
+    "name": "Quest Codex",
+    "version": "1.12.0",
+    "file": "3054__QuestCodex-1.12.0.zip",
+    "bytes": 3059243,
+    "expected": 3059243,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

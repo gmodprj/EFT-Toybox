@@ -1,0 +1,9 @@
+{
+  "stage": "update-2026-11-09-ub",
+  "spt": "4.1.6",
+  "note": "업데이트 묶음 U-B — Quest Codex → Briefing. Briefing 이 Quest Codex 를 의존하므로 이 순서로 넣는다. 계획은 UPDATE-CHECK-2026-11-09.md §3-2.",
+  "mods": [
+    { "group": "U-B", "id": 3054, "name": "Quest Codex", "version": "1.12.0", "size": 3059243, "profileBinding": false, "link": "https://sp-mod.com/mod/download/3054/quest-codex/1.12.0" },
+    { "group": "U-B", "id": 3158, "name": "Briefing", "version": "1.2.0", "size": 412561, "profileBinding": false, "link": "https://sp-mod.com/mod/download/3158/briefing/1.2.0" }
+  ]
+}
