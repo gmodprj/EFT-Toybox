@@ -119,13 +119,90 @@ public partial class MainWindow : Window
 
     private void TargetProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateImportButton();
 
-    private void Files_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateImportButton();
+    private void Files_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateImportButton();
+        UpdateFileButtons();
+    }
+
+    /// <summary>
+    /// 못 읽는 파일은 **지우기만** 된다 — 세부 보기도 보내기도 열 수 없다(설계 §2.1).
+    /// </summary>
+    private void UpdateFileButtons()
+    {
+        var row = Files.SelectedItem as PorterFileRow;
+        DeleteButton.IsEnabled = row is not null;
+        DetailButton.IsEnabled = row is { Readable: true };
+    }
+
+    /// <summary>
+    /// 세부 보기 창을 띄운다. **본 창을 막지 않는다**(`Show`) — 열어 둔 채로 다른 파일을
+    /// 고를 수 있다. 아이콘은 **같은 인스턴스**를 넘겨 캐시를 두 번 받지 않는다.
+    /// </summary>
+    private void Detail_Click(object sender, RoutedEventArgs e)
+    {
+        if (_client is null || Files.SelectedItem is not PorterFileRow row) return;
+
+        if (!row.Readable)
+        {
+            Status("그 파일은 열지 못합니다 — 지우기만 됩니다.", warn: true);
+            return;
+        }
+
+        new FileDetailWindow(_client, _icons, row.FileName) { Owner = this }.Show();
+    }
+
+    private async void Delete_Click(object sender, RoutedEventArgs e)
+    {
+        if (_client is null || Files.SelectedItem is not PorterFileRow row) return;
+
+        // 되돌릴 수 없는 일이다. **한 번 묻는다** — 무엇이 사라지고 무엇이 남는지 함께 적는다.
+        var what = row.Readable
+            ? $"아이템 {row.Items.Count}개 · {row.CreatedUtc} (UTC)"
+            : "못 읽는 파일";
+
+        var answer = MessageBox.Show(
+            $"'{row.FileName}' 을 지웁니다.\n\n{what}\n\n"
+            + "되돌릴 수 없습니다.\n이미 보낸 우편과 받은 물건은 그대로 남습니다.",
+            "내보낸 파일 지우기",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+
+        if (answer != MessageBoxResult.Yes) return;
+
+        try
+        {
+            var result = await _client.DeleteFileAsync(row.FileName, CancellationToken.None);
+            if (result is null || !result.Ok)
+            {
+                // 서버가 준 사유를 **그대로** 적는다. 우리가 지어내지 않는다.
+                Status(result?.Reason ?? "지우지 못했습니다.", warn: true);
+                return;
+            }
+
+            await LoadFilesAsync();
+            Status($"'{row.FileName}' 을 지웠습니다.");
+        }
+        catch (Exception ex)
+        {
+            Status($"지우지 못했습니다 — {ex.Message}", warn: true);
+        }
+    }
 
     private void UpdateImportButton()
     {
-        var hasFile = Files.SelectedItem is PorterFileRow;
+        // **못 읽는 파일은 보낼 수 없다**(설계 §2.1). 서버가 거절해 주기는 하지만, 막아야 할
+        // 자리를 안 막고 거절에 기대면 "0개를 보냅니다" 라는 거짓 안내가 먼저 보인다.
+        var hasFile = Files.SelectedItem is PorterFileRow { Readable: true };
         var hasTarget = TargetProfiles.SelectedItem is ProfileRow;
         ImportButton.IsEnabled = hasFile && hasTarget;
+
+        if (Files.SelectedItem is PorterFileRow { Readable: false })
+        {
+            ImportHint.Text = "그 파일은 열지 못합니다 — 지우기만 됩니다.";
+            return;
+        }
 
         if (!hasFile || !hasTarget)
         {

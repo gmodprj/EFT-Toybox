@@ -294,5 +294,330 @@ public class ProfilePorterService(
         };
     }
 
+    /// <summary>
+    /// 내보낸 파일 하나를 지운다. 창이 **사람에게 묻고 나서** 부른다.
+    /// 지우는 것은 그 파일뿐이고, 이미 보낸 우편과 받은 물건은 그대로다.
+    /// </summary>
+    public PorterResult DeleteFile(string? fileName)
+    {
+        if (!files.Delete(fileName, out var refusal))
+        {
+            return Fail(refusal ?? "지우지 못했습니다.");
+        }
+
+        return new PorterResult(true, null, fileName, 0, []);
+    }
+
+    /// <summary>
+    /// 내보낸 파일의 **한 자리**를 세부 보기 화면 모양으로 돌려준다(설계 §4.2).
+    ///
+    /// 파일 전체를 한 번에 내보내지 않는다 — 1,361개짜리가 있어서, 고른 자리의 자식만 추린다.
+    /// 판정은 <see cref="DetailPlanner"/> 가 하고, 이름·크기·격자 칸 수처럼 **DB 가 아는 것**만
+    /// 여기서 붙인다.
+    /// </summary>
+    public object Detail(string? fileName, string? containerId)
+    {
+        var file = files.Read(fileName);
+        if (file is null)
+        {
+            return new { ok = false, reason = "그 파일을 열지 못했습니다." };
+        }
+
+        var items = file.Items
+            .Select(i => new PorterItem(i.Id, i.ParentId, i.SlotId, i.TemplateId, i.Upd, i.Location))
+            .ToList();
+        var bundle = new PorterBundle(file.Kind, file.RootIds, items);
+        var byParent = items
+            .Where(i => !string.IsNullOrEmpty(i.ParentId))
+            .GroupBy(i => i.ParentId!, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.Select(i => i.Id).ToList(), StringComparer.Ordinal);
+
+        var notices = new List<string>();
+        var atRoot = string.IsNullOrEmpty(containerId);
+        var rootIds = file.RootIds.ToHashSet(StringComparer.Ordinal);
+
+        var children = atRoot
+            ? items.Where(i => rootIds.Contains(i.Id)).ToList()
+            : DetailPlanner.ChildrenOf(bundle, containerId).ToList();
+
+        // **뿌리에서 끊긴 가지도 보여 준다.** 창은 그 id 를 알 길이 없어 지목할 수 없으므로,
+        // 여기서 올려 주지 않으면 사람은 그 물건이 애초에 없었다고 읽는다.
+        var lost = atRoot ? DetailPlanner.Unreachable(bundle) : [];
+
+        if (!atRoot && items.All(i => !string.Equals(i.Id, containerId, StringComparison.Ordinal)))
+        {
+            return new { ok = false, reason = "그 파일에 없는 자리입니다." };
+        }
+
+        // **tpl 하나당 DB 를 한 번만 묻는다.** 자식마다 `GetItem` 을 두세 번 하면 1,361개짜리
+        // 파일에서 한 번 펼칠 때마다 수백~천 번이 된다(설계 §3 의 "몇 초씩 멈추면 실패").
+        var facts = new Dictionary<string, TplFacts>(StringComparer.Ordinal);
+        TplFacts Facts(string tpl)
+        {
+            if (facts.TryGetValue(tpl, out var known)) return known;
+
+            var made = new TplFacts(
+                profiles.NameOf(tpl), profiles.SizeOf(tpl), profiles.GridsOf(tpl), profiles.SlotsOf(tpl));
+            facts[tpl] = made;
+            return made;
+        }
+
+        var tree = children
+            .Concat(lost)
+            .Select(c => new
+            {
+                id = c.Id,
+                tpl = c.TemplateId,
+                name = Facts(c.TemplateId).Name,
+                slotName = SlotNames.Korean(c.SlotId),
+                contained = Descendants(c.Id, byParent),
+                kind = Facts(c.TemplateId).Grids.Count > 0 || Facts(c.TemplateId).Slots.Count > 0
+                    ? "container"
+                    : "item",
+            })
+            .ToList();
+
+        object view;
+
+        if (atRoot && string.Equals(file.Kind, PorterBundle.KindLoadout, StringComparison.Ordinal))
+        {
+            view = new
+            {
+                kind = "loadout",
+                slots = children.Select(c => Slot(c.SlotId, c, byParent, Facts)).ToList(),
+                loose = lost.Select(c => Loose(c, LostReason, byParent, Facts)).ToList(),
+            };
+
+            if (lost.Count > 0)
+            {
+                notices.Add($"뿌리에 매달려 있지 않은 것 {lost.Count}개를 따로 모았습니다.");
+            }
+        }
+        else if (atRoot)
+        {
+            var placed = children.Where(c => c.Location is not null).ToList();
+            var missing = children.Count - placed.Count;
+            var rows = placed.Select(c => Row(c, byParent, Facts)).ToList();
+
+            var (profileH, profileV) = profiles.StashCellsOf(file.FromProfileId);
+            if (profileH == 0)
+            {
+                notices.Add("보낸 프로필을 찾지 못해 격자를 좌표의 테두리로 잡았습니다.");
+            }
+
+            var (cellsH, cellsV) = DetailPlanner.StashCells(
+                profileH, profileV, rows.Select(r => (r.X, r.Y, r.W, r.H)));
+
+            if (missing > 0)
+            {
+                notices.Add(missing == children.Count
+                    ? $"자리 정보가 없는 것 {missing}개는 아래에 모았습니다 — 2026-11-08 이전에 내보낸 파일입니다. 다시 내보내면 자리까지 들어옵니다."
+                    : $"자리 정보가 없는 것 {missing}개는 아래에 모았습니다.");
+            }
+
+            if (lost.Count > 0)
+            {
+                notices.Add($"뿌리에 매달려 있지 않은 것 {lost.Count}개를 따로 모았습니다.");
+            }
+
+            view = new
+            {
+                kind = "stash",
+                cellsH,
+                cellsV,
+                rows,
+                loose = children.Where(c => c.Location is null)
+                    .Select(c => Loose(c, "자리 정보가 없습니다", byParent, Facts))
+                    .Concat(lost.Select(c => Loose(c, LostReason, byParent, Facts)))
+                    .ToList(),
+            };
+        }
+        else
+        {
+            var container = items.First(i => string.Equals(i.Id, containerId, StringComparison.Ordinal));
+            var known = Facts(container.TemplateId);
+            var place = DetailPlanner.Place(children, known.Grids, known.Slots);
+
+            foreach (var slot in place.Slots.Where(s => !SlotNames.Knows(s.SlotId)))
+            {
+                logger.Info($"[ProfilePorter] 사전에 없는 슬롯 이름이다: {slot.SlotId}");
+            }
+
+            if (place.Loose.Count > 0)
+            {
+                notices.Add($"자리를 잡지 못한 것 {place.Loose.Count}개는 아래에 모았습니다.");
+            }
+
+            view = new
+            {
+                kind = "container",
+                grids = place.Grids.Select(g =>
+                {
+                    var gridRows = g.Rows.Select(r => Row(r, byParent, Facts)).ToList();
+
+                    // 상자 격자도 **큰 쪽**을 쓴다(설계 §7-5). DB 가 준 칸 수보다 큰 좌표가 있으면
+                    // 그대로 그렸을 때 그 물건이 격자 밖이라 **스크롤로도 닿지 않는다.**
+                    // 칸 수를 못 읽은 격자(0)도 여기서 테두리로 잡힌다.
+                    var (cellsH, cellsV) = DetailPlanner.StashCells(
+                        g.CellsH, g.CellsV, gridRows.Select(r => (r.X, r.Y, r.W, r.H)));
+
+                    return new
+                    {
+                        name = g.Name,
+                        gridName = SlotNames.Korean(g.Name),
+                        cellsH,
+                        cellsV,
+                        rows = gridRows,
+                    };
+                }).ToList(),
+                slots = place.Slots
+                    .Select(s => Slot(s.SlotId, items.First(i => i.Id == s.Id), byParent, Facts)).ToList(),
+                loose = place.Loose
+                    .Select(l => Loose(items.First(i => i.Id == l.Id), l.Why, byParent, Facts)).ToList(),
+            };
+        }
+
+        return new
+        {
+            ok = true,
+
+            // **파일이 아니라 폴더가 가진 사실이다.** `Read` 는 이름을 채우지 않는다(`List` 만
+            // 채운다) — 그대로 내보내면 빈 글자가 나간다(2026-11-09 실측에서 봤다).
+            fileName = string.IsNullOrEmpty(file.FileName) ? fileName : file.FileName,
+            kind = file.Kind,
+            containerId,
+            notices,
+            tree,
+            view,
+        };
+    }
+
+    /// <summary>한 번의 세부 보기에서 **tpl 하나당 한 번만** 모으는 DB 지식.</summary>
+    private sealed record TplFacts(
+        string Name, (int w, int h) Size, IReadOnlyList<GridSpec> Grids, IReadOnlySet<string> Slots);
+
+    private const string LostReason = "뿌리에 매달려 있지 않습니다";
+
+    private static StashEntry Row(
+        PorterItem item, Dictionary<string, List<string>> byParent, Func<string, TplFacts> facts)
+    {
+        var (x, y, rotated) = ProfileReader.LocationOf(item.Location);
+        var (w, h) = facts(item.TemplateId).Size;
+        var (cw, ch) = rotated ? (h, w) : (w, h);
+
+        return new StashEntry(
+            item.Id,
+            item.TemplateId,
+            facts(item.TemplateId).Name,
+            StackOf(item),
+            Descendants(item.Id, byParent),
+            x, y, cw, ch, rotated);
+    }
+
+    private static object Slot(
+        string? slotId, PorterItem item, Dictionary<string, List<string>> byParent, Func<string, TplFacts> facts) => new
+    {
+        slotId,
+        slotName = SlotNames.Korean(slotId),
+        id = item.Id,
+        tpl = item.TemplateId,
+        name = facts(item.TemplateId).Name,
+        stack = StackOf(item),
+        contained = Descendants(item.Id, byParent),
+        summary = Summary(item),
+    };
+
+    private static object Loose(
+        PorterItem item, string why, Dictionary<string, List<string>> byParent, Func<string, TplFacts> facts) => new
+    {
+        id = item.Id,
+        tpl = item.TemplateId,
+        name = facts(item.TemplateId).Name,
+        slotName = SlotNames.Korean(item.SlotId),
+        stack = StackOf(item),
+        contained = Descendants(item.Id, byParent),
+        summary = Summary(item),
+        why,
+    };
+
+    private static int Descendants(string id, Dictionary<string, List<string>> byParent)
+    {
+        var seen = new HashSet<string>(StringComparer.Ordinal) { id };
+        var queue = new Queue<string>();
+        queue.Enqueue(id);
+        var n = 0;
+
+        while (queue.Count > 0)
+        {
+            if (!byParent.TryGetValue(queue.Dequeue(), out var kids)) continue;
+            foreach (var kid in kids)
+            {
+                if (!seen.Add(kid)) continue;
+                n++;
+                queue.Enqueue(kid);
+            }
+        }
+
+        return n;
+    }
+
+    /// <summary>묶음 수. `upd` 를 **읽기만** 한다.</summary>
+    private static int StackOf(PorterItem item) =>
+        item.Upd is JsonElement { ValueKind: JsonValueKind.Object } upd
+        && upd.TryGetProperty("StackObjectsCount", out var stack)
+        && stack.TryGetInt32(out var n) && n > 0 ? n : 1;
+
+    /// <summary>
+    /// 칸에 적을 짧은 글. **아는 것만 적는다** — 모르는 값은 지어내지 않는다.
+    /// 창이 `upd` 스키마를 알게 되지 않도록 여기서 만든다(설계 §7-4).
+    /// </summary>
+    private static string Summary(PorterItem item)
+    {
+        if (item.Upd is not JsonElement { ValueKind: JsonValueKind.Object } upd)
+        {
+            return string.Empty;
+        }
+
+        var parts = new List<string>();
+
+        if (upd.TryGetProperty("StackObjectsCount", out var stack)
+            && stack.TryGetInt32(out var n) && n > 1)
+        {
+            parts.Add($"×{n}");
+        }
+
+        if (upd.TryGetProperty("Repairable", out var repairable)
+            && repairable.ValueKind == JsonValueKind.Object
+            && repairable.TryGetProperty("Durability", out var dur)
+            && repairable.TryGetProperty("MaxDurability", out var max)
+            && dur.TryGetDouble(out var d) && max.TryGetDouble(out var m))
+        {
+            parts.Add($"내구 {Math.Round(d)}/{Math.Round(m)}");
+        }
+
+        if (upd.TryGetProperty("MedKit", out var med)
+            && med.ValueKind == JsonValueKind.Object
+            && med.TryGetProperty("HpResource", out var hp) && hp.TryGetDouble(out var hpv))
+        {
+            parts.Add($"잔량 {Math.Round(hpv)}");
+        }
+
+        if (upd.TryGetProperty("Resource", out var res)
+            && res.ValueKind == JsonValueKind.Object
+            && res.TryGetProperty("Value", out var rv) && rv.TryGetDouble(out var rvv))
+        {
+            parts.Add($"자원 {Math.Round(rvv)}");
+        }
+
+        if (upd.TryGetProperty("Key", out var key)
+            && key.ValueKind == JsonValueKind.Object
+            && key.TryGetProperty("NumberOfUsages", out var used) && used.TryGetInt32(out var usedN))
+        {
+            parts.Add($"사용 {usedN}회");
+        }
+
+        return string.Join(" · ", parts);
+    }
+
     private static PorterResult Fail(string reason) => new(false, reason, null, 0, []);
 }

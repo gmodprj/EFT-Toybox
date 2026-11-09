@@ -27,6 +27,13 @@ public sealed class PorterFile
     [JsonPropertyName("rootIds")] public List<string> RootIds { get; set; } = [];
     [JsonPropertyName("items")] public List<PorterFileItem> Items { get; set; } = [];
 
+    /// <summary>
+    /// 이 파일을 **열 수 있었는가**. 못 읽는 파일도 목록에는 오른다(설계 §2.1, 사용자 결정) —
+    /// 건너뛰면 가장 지우고 싶은 "잘못 만들어진 것" 이 창에 보이지 않아 지울 수가 없다.
+    /// 못 읽는 줄은 이름만 채워져 오고, 창은 **지우기만** 열어 준다.
+    /// </summary>
+    [JsonPropertyName("readable")] public bool Readable { get; set; } = true;
+
     public const string CurrentFormat = "profile-porter/1";
 }
 
@@ -100,6 +107,8 @@ public class PorterFiles(ModHelper modHelper, ISptLogger<PorterFiles> logger)
             var file = Read(name);
             if (file is null)
             {
+                // **건너뛰지 않는다.** 못 읽는 파일이야말로 사람이 지우고 싶은 것이다.
+                files.Add(new PorterFile { FileName = name, Readable = false });
                 continue;
             }
 
@@ -234,7 +243,53 @@ public class PorterFiles(ModHelper modHelper, ISptLogger<PorterFiles> logger)
         }
     }
 
-    private string? PathFor(string? name)
+    /// <summary>
+    /// 내보낸 파일 하나를 지운다. **`porter/` 안의 그 파일만** 지운다 —
+    /// `backups/` 와 프로필은 건드리지 않는다(설계 §5.1·§5.2).
+    ///
+    /// 이미 보낸 우편은 그대로 남는다. 그 말은 창이 사람에게 한다.
+    /// </summary>
+    public bool Delete(string? name, out string? refusal)
+    {
+        var path = PathFor(name);
+        if (path is null)
+        {
+            refusal = "파일 이름이 올바르지 않습니다.";
+            return false;
+        }
+
+        // **씻어서 글자가 바뀌면 거절한다.** `Sanitize` 는 못 쓰는 글자를 `_` 로 바꾸므로,
+        // `a:b` 를 지우라면 `a_b.json` 이 지워진다. 읽기에서는 "못 찾음" 으로 끝나던 것이
+        // 지우기에서는 **엉뚱한 파일을 지우는 일**이 된다.
+        if (!string.Equals(Sanitize(name), name, StringComparison.Ordinal))
+        {
+            refusal = "파일 이름이 올바르지 않습니다.";
+            return false;
+        }
+
+        if (!File.Exists(path))
+        {
+            refusal = "그 파일이 없습니다.";
+            return false;
+        }
+
+        try
+        {
+            File.Delete(path);
+        }
+        catch (Exception e)
+        {
+            // 쓰고 있는 중이면 잠겨 있다. 조용히 실패하지 않고 **사유로** 돌려준다.
+            refusal = $"지우지 못했습니다 — {e.Message}";
+            return false;
+        }
+
+        logger.Info($"[ProfilePorter] 내보낸 파일을 지웠다: {Path.GetFileName(path)}");
+        refusal = null;
+        return true;
+    }
+
+    internal string? PathFor(string? name)
     {
         var safe = Sanitize(name);
         return safe is null ? null : Path.Combine(Folder, safe + ".json");

@@ -251,6 +251,93 @@ public class ProfileReader(
     }
 
     /// <summary>짧은 이름 → 긴 이름 → 그래도 없으면 tpl. 빈 줄을 그리지 않는다.</summary>
+    /// <summary>
+    /// 그 tpl 이 가진 **격자들**. 상자 하나에 격자가 여럿이다(리그의 작은 주머니들) — 격자마다
+    /// 칸 수가 다르다. 이름은 DB 의 `_name` 이고 **프로필의 `slotId` 와 같은 글자**다.
+    /// </summary>
+    public IReadOnlyList<GridSpec> GridsOf(string? tpl)
+    {
+        if (string.IsNullOrWhiteSpace(tpl)) return [];
+
+        try
+        {
+            var found = itemHelper.GetItem(new MongoId(tpl));
+            var grids = found.Key ? found.Value?.Properties?.Grids : null;
+
+            return (grids ?? [])
+                .Where(g => !string.IsNullOrEmpty(g?.Name))
+                .Select(g => new GridSpec(
+                    g!.Name!,
+                    (int)(g.Properties?.CellsH ?? 0),
+                    (int)(g.Properties?.CellsV ?? 0)))
+                .ToList();
+        }
+        catch (Exception e)
+        {
+            logger.Warning($"[ProfilePorter] {tpl} 의 격자를 읽지 못했다: {e.Message}");
+            return [];
+        }
+    }
+
+    /// <summary>그 tpl 이 가진 **슬롯 이름들**. 플레이트·부착물이 꽂히는 자리다.</summary>
+    public IReadOnlySet<string> SlotsOf(string? tpl)
+    {
+        if (string.IsNullOrWhiteSpace(tpl)) return new HashSet<string>(StringComparer.Ordinal);
+
+        try
+        {
+            var found = itemHelper.GetItem(new MongoId(tpl));
+            var slots = found.Key ? found.Value?.Properties?.Slots : null;
+
+            return (slots ?? [])
+                .Where(s => !string.IsNullOrEmpty(s?.Name))
+                .Select(s => s!.Name!)
+                .ToHashSet(StringComparer.Ordinal);
+        }
+        catch (Exception e)
+        {
+            logger.Warning($"[ProfilePorter] {tpl} 의 슬롯을 읽지 못했다: {e.Message}");
+            return new HashSet<string>(StringComparer.Ordinal);
+        }
+    }
+
+    /// <summary>
+    /// 격자에서 차지하는 칸 — **tpl 기본 크기**다(설계 §5-4).
+    ///
+    /// `MongoId` 는 생김새가 틀리면 **던진다.** 손으로 고친 파일의 `_tpl` 하나가 라우트 전체를
+    /// 500 으로 만들지 않도록 try 안에서 만든다(`GridsOf`·`SlotsOf` 와 같은 규율).
+    /// </summary>
+    public (int w, int h) SizeOf(string? tpl)
+    {
+        if (string.IsNullOrWhiteSpace(tpl)) return (1, 1);
+
+        try
+        {
+            return SafeSize(new MongoId(tpl));
+        }
+        catch (Exception e)
+        {
+            logger.Warning($"[ProfilePorter] {tpl} 는 아이템 id 모양이 아니라 1x1 로 둔다: {e.Message}");
+            return (1, 1);
+        }
+    }
+
+    /// <summary>아이템 이름. 사전에 없으면 tpl 을 그대로 돌려준다.</summary>
+    public string NameOf(string tpl) => ResolveName(localeService.GetLocaleDb(), tpl);
+
+    /// <summary>그 프로필의 스태시 격자 칸 수. 프로필이 없으면 (0, 0) — 부르는 쪽이 테두리를 쓴다.</summary>
+    public (int cellsH, int cellsV) StashCellsOf(string? profileId)
+    {
+        var pmc = Pmc(profileId);
+        if (pmc is null) return (0, 0);
+
+        var grid = StashSize(pmc);
+        return (grid.CellsH, grid.CellsV);
+    }
+
+    /// <summary>격자 안의 자리를 읽는다 — 서버 밖(파일에서 온 `JsonElement`)도 받는다.</summary>
+    public static (int x, int y, bool rotated) LocationOf(object? location) => ReadLocation(location);
+
     private static string ResolveName(IDictionary<string, string>? locale, string tpl)
     {
         if (locale is not null && locale.TryGetValue($"{tpl} ShortName", out var shortName)
