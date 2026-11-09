@@ -33,6 +33,12 @@ public record PorterImportRequest : IRequestData
     [JsonPropertyName("fileName")] public string? FileName { get; set; }
 }
 
+/// <summary>내보낸 파일 하나를 지운다. 되돌릴 수 없으므로 **창이 사람에게 묻고** 부른다.</summary>
+public record PorterDeleteRequest : IRequestData
+{
+    [JsonPropertyName("fileName")] public string? FileName { get; set; }
+}
+
 /// <summary>세부 보기. <see cref="ContainerId"/> 를 비우면 그 파일의 **뿌리**를 본다.</summary>
 public record PorterDetailRequest : IRequestData
 {
@@ -115,6 +121,18 @@ public class ProfilePorterRouter : StaticRouter
                         : service.ExportStash(info?.ProfileId, info?.ItemIds, info?.Name, info?.Note, info?.Overwrite ?? false, info?.Rename ?? false);
 
                     return ValueTask.FromResult(Json(jsonUtil, result));
+                }),
+
+            new RouteAction<PorterDeleteRequest>(
+                "/profile-porter/file-delete",
+                (url, info, sessionId, output, ct) =>
+                {
+                    if (!Enabled(store, logger, out var off))
+                    {
+                        return ValueTask.FromResult(Json(jsonUtil, off!));
+                    }
+
+                    return ValueTask.FromResult(Json(jsonUtil, service.DeleteFile(info?.FileName)));
                 }),
 
             new RouteAction<PorterDetailRequest>(

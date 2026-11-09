@@ -295,6 +295,20 @@ public class ProfilePorterService(
     }
 
     /// <summary>
+    /// 내보낸 파일 하나를 지운다. 창이 **사람에게 묻고 나서** 부른다.
+    /// 지우는 것은 그 파일뿐이고, 이미 보낸 우편과 받은 물건은 그대로다.
+    /// </summary>
+    public PorterResult DeleteFile(string? fileName)
+    {
+        if (!files.Delete(fileName, out var refusal))
+        {
+            return Fail(refusal ?? "지우지 못했습니다.");
+        }
+
+        return new PorterResult(true, null, fileName, 0, []);
+    }
+
+    /// <summary>
     /// 내보낸 파일의 **한 자리**를 세부 보기 화면 모양으로 돌려준다(설계 §4.2).
     ///
     /// 파일 전체를 한 번에 내보내지 않는다 — 1,361개짜리가 있어서, 고른 자리의 자식만 추린다.
