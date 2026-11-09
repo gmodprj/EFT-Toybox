@@ -245,7 +245,7 @@
 | 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
 | --- | --- | --- | --- | --- | --- |
 | [More Energy Drinks](https://sp-mod.com/mod/1688) | 1.3.2 | 서버 | **결속** | 87 | `stage9-1688` |
-| [MoreBotsAPI](https://sp-mod.com/mod/2426) | 2.1.1 | 게임+서버 | - | 4 | `stage9-2426` |
+| [MoreBotsAPI](https://sp-mod.com/mod/2426) | 2.1.2 | 게임+서버 | - | 4 | `update-2426-2.1.2` |
 | [WTT - Content Backport](https://sp-mod.com/mod/2512) | 2.0.5 | 게임+서버 | **결속** | 1637 | `stage9-2512` |
 | [SAIN - Solarint's AI Modifications](https://sp-mod.com/mod/791) | 4.5.1 | 게임+서버 | - | 11 | `stage9-791` |
 | [ISB Aishi](https://sp-mod.com/mod/2478) | 2.0.4 | 게임+서버 | **결속** | 3659 | `stage9-2478` |
