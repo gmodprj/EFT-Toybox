@@ -196,6 +196,14 @@ public sealed class StashGridView : ScrollViewer
 
         foreach (var (row, box) in _boxes.ToList())
         {
+            // **조립된 것은 그림을 그리지 않는다**(2026-11-09 사용자 결정). 받아 오는 그림은
+            // 그 tpl 의 기본 아이콘이라, 부착물이 붙어 모습도 칸도 달라진 총을 띄우면
+            // **조립 안 된 총**을 보여 주는 거짓이 된다. 이름만 쓴다.
+            if (row.Assembled)
+            {
+                continue;
+            }
+
             var icon = await Icons.GetAsync(row.Tpl, CancellationToken.None);
             if (icon is null || box.Child is not Grid grid)
             {

@@ -592,12 +592,18 @@ public class ProfilePorterService(
 
         // **조립되는 것은 부착물까지 세어 그린다.** 상자는 그러면 안 된다(§5-4) — 상자는
         // 안에 든 것까지 더해져 화면이 통째로 깨진다. 격자를 가졌는지로 가른다.
+        var assembled = false;
+
         if (known.Grids.Count == 0 && all is not null && byParent.ContainsKey(item.Id))
         {
             var subtree = Subtree(item.Id, byParent, all);
             if (subtree.Count > 1)
             {
-                (w, h) = profiles.SizeOfAssembled(subtree, item.Id, (w, h));
+                var (aw, ah) = profiles.SizeOfAssembled(subtree, item.Id, (w, h));
+
+                // 크기가 달라졌다면 **그 tpl 의 기본 그림으로는 보여 줄 수 없는 모습**이다.
+                assembled = aw != w || ah != h;
+                (w, h) = (aw, ah);
             }
         }
 
@@ -610,7 +616,8 @@ public class ProfilePorterService(
             StackOf(item),
             Descendants(item.Id, byParent),
             x, y, cw, ch, rotated,
-            known.Grids.Count > 0 || known.Slots.Count > 0);
+            known.Grids.Count > 0 || known.Slots.Count > 0,
+            assembled);
     }
 
     /// <summary>그 아이템과 자손 전부를 SPT 아이템으로 바꾼다. 조립 크기를 재는 데만 쓴다.</summary>

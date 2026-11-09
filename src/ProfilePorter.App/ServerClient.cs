@@ -33,6 +33,9 @@ public sealed record StashRow
     /// <summary>안이 있는 것인가. **비어 있어도 참** — 비었는지 보려고 눌러 보는 것도 되짚어 보기다.</summary>
     [JsonPropertyName("container")] public bool Container { get; init; }
 
+    /// <summary>부착물이 붙어 크기가 달라진 것. **그림을 그리지 않는다** — 기본 아이콘은 조립된 모습이 아니다.</summary>
+    [JsonPropertyName("assembled")] public bool Assembled { get; init; }
+
     /// <summary>격자 칸 안에 적는 글. 좁으므로 이름과 묶음 수만 둔다.</summary>
     public string GridLabel => Stack > 1 ? $"{Name}{Environment.NewLine}×{Stack}" : Name;
 

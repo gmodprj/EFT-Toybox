@@ -42,7 +42,14 @@ public sealed record StashEntry(
     /// 안이 있는 것(격자나 슬롯을 가진 tpl)인가. **비어 있어도 참**이다 — 비었는지 보려고
     /// 눌러 보는 것도 되짚어 보기의 일부다(2026-11-09 제보: 빈 상자가 안 열렸다).
     /// </summary>
-    [property: JsonPropertyName("container")] bool Container = false);
+    [property: JsonPropertyName("container")] bool Container = false,
+
+    /// <summary>
+    /// 부착물이 붙어 **크기가 달라진** 것인가. 받아 오는 그림은 그 tpl 의 **기본** 아이콘이라
+    /// 조립된 총을 보여 주지 못한다 — 조립 안 된 그림을 큰 칸에 띄우면 거짓이 된다.
+    /// 그래서 이런 칸에는 **그림을 그리지 않고 이름만** 쓴다(2026-11-09 사용자 결정).
+    /// </summary>
+    [property: JsonPropertyName("assembled")] bool Assembled = false);
 
 /// <summary>스태시 격자 자체의 크기. 서버 DB 가 정한다(§9.3 — 파일로 재면 틀린다).</summary>
 public sealed record StashGrid(
