@@ -1,0 +1,8 @@
+{
+  "stage": "update-2026-11-09-uh",
+  "spt": "4.1.6",
+  "note": "업데이트 묶음 U-H — Arena Map Port 하나(5.0GB). 받는 곳은 pixeldrain.com 이고 한 줄기로 23MB/s 가 나온다(실측) — 끊어 받을 필요가 없다. 맵 포팅본이라 레이드를 들어가 봐야 확인된다. 계획은 UPDATE-CHECK-2026-11-09.md §3-2.",
+  "mods": [
+    { "group": "U-H", "id": 3166, "name": "Arena Map Port", "version": "0.5.0", "size": 5370649086, "profileBinding": false, "link": "https://sp-mod.com/mod/download/3166/arena-map-port/0.5.0" }
+  ]
+}
