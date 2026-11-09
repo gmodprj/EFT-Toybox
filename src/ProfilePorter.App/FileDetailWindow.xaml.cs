@@ -343,7 +343,7 @@ public partial class FileDetailWindow : Window
         // **칸을 눌러 그 안으로 들어간다.** 안이 있는 것만 — 나머지는 상태줄에 이름만 적는다.
         grid.ItemOpened += async row =>
         {
-            if (row.Contained > 0)
+            if (row.Container)
             {
                 await LoadAsync(row.Id, row.Name);
             }
