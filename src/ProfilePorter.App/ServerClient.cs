@@ -48,9 +48,16 @@ public sealed record PorterFileRow
     [JsonPropertyName("rootIds")] public List<string> RootIds { get; init; } = [];
     [JsonPropertyName("items")] public List<JsonElement> Items { get; init; } = [];
 
+    /// <summary>
+    /// 서버가 그 파일을 **열 수 있었는가**. 못 읽는 파일도 목록에 오른다 — 그래야 지울 수 있다.
+    /// </summary>
+    [JsonPropertyName("readable")] public bool Readable { get; init; } = true;
+
     public string Display =>
-        $"{FileName}   [{(Kind == "loadout" ? "한 벌" : "스태시")}]  {FromNickname} 에서 {Items.Count}개"
-        + (string.IsNullOrWhiteSpace(Note) ? string.Empty : $"   — {Note}");
+        Readable
+            ? $"{FileName}   [{(Kind == "loadout" ? "한 벌" : "스태시")}]  {FromNickname} 에서 {Items.Count}개"
+              + (string.IsNullOrWhiteSpace(Note) ? string.Empty : $"   — {Note}")
+            : $"{FileName}   (못 읽음 — 지우기만 됩니다)";
 }
 
 public sealed record ProfilesResponse
@@ -154,6 +161,10 @@ public sealed class ServerClient : IDisposable
 
     /// <summary>같은 이름이라 거절당했는지. 서버가 이 말로 알려 준다.</summary>
     public const string NameTakenReason = "같은 이름의 파일이 이미 있습니다.";
+
+    /// <summary>내보낸 파일 하나를 지운다. **창이 사람에게 묻고 나서** 부른다.</summary>
+    public Task<PorterResultRow?> DeleteFileAsync(string fileName, CancellationToken ct) =>
+        PostAsync<PorterResultRow>("/profile-porter/file-delete", new { fileName }, ct);
 
     public Task<PorterResultRow?> ImportAsync(string profileId, string fileName, CancellationToken ct) =>
         PostAsync<PorterResultRow>("/profile-porter/import", new { profileId, fileName }, ct);

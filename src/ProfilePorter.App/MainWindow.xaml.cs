@@ -119,7 +119,66 @@ public partial class MainWindow : Window
 
     private void TargetProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateImportButton();
 
-    private void Files_SelectionChanged(object sender, SelectionChangedEventArgs e) => UpdateImportButton();
+    private void Files_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateImportButton();
+        UpdateFileButtons();
+    }
+
+    /// <summary>
+    /// 못 읽는 파일은 **지우기만** 된다 — 세부 보기도 보내기도 열 수 없다(설계 §2.1).
+    /// </summary>
+    private void UpdateFileButtons()
+    {
+        var row = Files.SelectedItem as PorterFileRow;
+        DeleteButton.IsEnabled = row is not null;
+        DetailButton.IsEnabled = row is { Readable: true };
+    }
+
+    /// <summary>세부 보기 창을 띄운다. 창 자체는 Task 6 에서 만든다.</summary>
+    private void Detail_Click(object sender, RoutedEventArgs e)
+    {
+        if (Files.SelectedItem is not PorterFileRow row) return;
+        Status($"'{row.FileName}' 세부 보기는 아직 준비 중입니다.");
+    }
+
+    private async void Delete_Click(object sender, RoutedEventArgs e)
+    {
+        if (_client is null || Files.SelectedItem is not PorterFileRow row) return;
+
+        // 되돌릴 수 없는 일이다. **한 번 묻는다** — 무엇이 사라지고 무엇이 남는지 함께 적는다.
+        var what = row.Readable
+            ? $"아이템 {row.Items.Count}개 · {row.CreatedUtc} (UTC)"
+            : "못 읽는 파일";
+
+        var answer = MessageBox.Show(
+            $"'{row.FileName}' 을 지웁니다.\n\n{what}\n\n"
+            + "되돌릴 수 없습니다.\n이미 보낸 우편과 받은 물건은 그대로 남습니다.",
+            "내보낸 파일 지우기",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+
+        if (answer != MessageBoxResult.Yes) return;
+
+        try
+        {
+            var result = await _client.DeleteFileAsync(row.FileName, CancellationToken.None);
+            if (result is null || !result.Ok)
+            {
+                // 서버가 준 사유를 **그대로** 적는다. 우리가 지어내지 않는다.
+                Status(result?.Reason ?? "지우지 못했습니다.", warn: true);
+                return;
+            }
+
+            await LoadFilesAsync();
+            Status($"'{row.FileName}' 을 지웠습니다.");
+        }
+        catch (Exception ex)
+        {
+            Status($"지우지 못했습니다 — {ex.Message}", warn: true);
+        }
+    }
 
     private void UpdateImportButton()
     {

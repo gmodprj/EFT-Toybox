@@ -118,6 +118,14 @@
 
           <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,6,0,0">
             <Button Content="새로 읽기" Click="Refresh_Click" />
+            <Button x:Name="DetailButton" Content="세부 보기" Click="Detail_Click" IsEnabled="False"
+                    ToolTip="그 파일에 무엇이 들었는지 격자로 봅니다. 읽기만 합니다." />
+            <!--
+              지우는 것은 **그 파일 하나**다. 이미 보낸 우편과 받은 물건은 그대로 남는다 —
+              누르면 한 번 묻고, 그 말을 묻는 글에 적는다(설계 §5.1).
+            -->
+            <Button x:Name="DeleteButton" Content="지우기" Click="Delete_Click" IsEnabled="False"
+                    ToolTip="고른 파일을 지웁니다. 되돌릴 수 없습니다." />
             <TextBlock x:Name="FolderText" Foreground="{StaticResource Dim}" FontSize="11"
                        VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
           </StackPanel>
