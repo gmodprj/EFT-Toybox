@@ -1,0 +1,4 @@
+2426__MoreBotsAPI-2.1.2	BepInEx\patchers\MoreBotsPrepatch\MoreBotsPrepatch.dll
+2426__MoreBotsAPI-2.1.2	BepInEx\plugins\MoreBotsPlugin\MoreBotsPlugin.dll
+2426__MoreBotsAPI-2.1.2	SPT_Runtime\user\mods\MoreBotsServer\config.jsonc
+2426__MoreBotsAPI-2.1.2	SPT_Runtime\user\mods\MoreBotsServer\MoreBotsServer.dll

@@ -160,7 +160,7 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
 ### 3-2. 묶음과 순서
 
 의존 관계와 위험으로 가른다. **묶음을 끝낼 때마다 기동해 보고 다음 묶음으로 넘어간다.**
-**U-A부터 U-E 까지 2026-11-09 에 끝났다 — 결과는 §4. 남은 것은 U-F·U-G·U-H 다.**
+**U-A부터 U-E 까지 2026-11-09 에 끝났고 U-F 는 받는 중이다 — 결과는 §4. 남은 것은 U-G·U-H 다.**
 
 | 묶음 | 모드 | 왜 이 순서인가 | 내려받을 양 |
 | --- | --- | --- | --- |
@@ -390,11 +390,39 @@ ArgumentOutOfRangeException`(기준선에 있던 ECOTI 건)이다. **새 오류�
 
 이것으로 **U-A·U-B·U-C 는 서버·게임 양쪽에서 닫혔고**, U-D 의 MSGA 도 레이드까지 지났다.
 
+### U-F — 받는 중 (2026-11-09)
+
+ISB 셋. 의존 방향은 **MoreBotsAPI → ISB Aishi → ISB Special Forces** 다.
+
+| id | 모드 | 상태 | 기동 |
+| --- | --- | --- | --- |
+| 2426 | MoreBotsAPI | 2.1.1 → **2.1.2** 넣었다 (파일 4개) | `SERVER STARTED in 186s` |
+| 2478 | ISB Aishi | 2.0.4 → 2.0.7 **받는 중**(4.07GB) | — |
+| 2485 | ISB Special Forces | 2.0.1 → 2.0.4 **받아 뒀다**(782MB) | — |
+
+- **이 호스트는 한 줄기를 조여 놓는다.** ISB Aishi 는 Forge 에서
+  `isb-downloads.samc137.workers.dev`(Cloudflare Worker, LAX 엣지)로 307 된다. `download-stage.mjs`
+  가 한 줄기로 받으니 **33분에 8MB**(1.6KB/s)였다. 그런데 **`Accept-Ranges: bytes` 를 주고
+  Range 요청에 206 으로 답한다** — 한 줄기로 끊어 받으면 56KB/s, 여덟 줄기면 273KB/s 였다.
+- 그래서 [tools/download-ranged.mjs](../tools/download-ranged.mjs) 를 만들었다. 조각(기본 8MB)을
+  줄기(기본 12) 나눠 `.part` 의 제자리에 쓰고 `.state.json` 에 적는다 — **다시 돌리면 안 받은
+  조각만** 받는다. Range 를 안 받는 호스트면 조용히 한 줄기로 떨어지지 않고 **멈춘다**.
+  16줄기로 돌려 **260KB/s, 남은 시간 약 4시간**이다. 오래 걸리므로 **터미널 탭**에서 돌린다.
+- ISB SF 2.0.4 는 변화가 크다 — **새 경로 931개**(Chaos Insurgency 외형, Black Division 프리셋
+  다수, 읽는 음성 번들), 새 판에 없는 기록 7개(그중 `data\quest_truce.json`·`revenge.json`·
+  `spawn-progression.json` 은 모드가 쓰는 상태 파일이다).
+- 셋 다 **해제본 원본이 없어 수정 여부를 못 쟀던 것들**이라, 넣기 전에 기록된 파일을
+  `backup/before-update-uf/<id>/` 로 받아 둔다. 프로필도 받아 뒀다
+  (`backup/profiles-before-update-uf/`, ISB Aishi 가 결속이다).
+- **2485 를 넣은 뒤 자막 번역을 다시 올려야 한다** — `tools/install-plugin-locales.ps1`,
+  확인은 `node tools/check-plugin-locales.mjs`.
+
 ## 5. 다시 재는 법
 
 ```
 node tools/check-mod-updates.mjs             # 업데이트 있는 모드 (실패하면 종료 코드 1)
 node tools/check-installed-vs-extracted.mjs  # 설치 후 달라진 파일
+node tools/download-ranged.mjs <stage> <id>  # 한 줄기를 조이는 호스트에서 끊어 받기
 ```
 
 앞의 것은 Forge API 를 모드마다 한 번 부르므로 약 5분 걸린다. **종료 코드가 1 이면 조회 실패가
