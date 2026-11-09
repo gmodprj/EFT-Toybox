@@ -162,30 +162,80 @@ public class ProfileInventoryApplyPolicyTests
     }
 
     [Fact]
-    public void 편집기가_들고_있지_않던_아이템은_사라질_수_없다()
+    public void 편집기가_들고_있지_않던_아이템은_지우지_않고_그대로_둔다()
     {
         // 2026-11-03 실측 사고: 편집기가 EFT 역직렬화에 걸린 아이템을 건너뛰고 열렸고, 최종 상태를
         // 제출하자 **그 68개가 프로필에서 지워졌다**. 편집기가 보여 주지 않은 것은 플레이어가 버린
-        // 것일 수 없다 - 그래서 "들고 있던 목록" 밖의 손실은 거절한다.
+        // 것일 수 없다. 그래서 그것은 **지우지 않는다** - 호출자가 원래 자리에 그대로 붙인다.
+        //
+        // 한때 이것을 **거절**로 막았는데(저장 자체를 하지 않았다), 그러면 편집기가 못 읽는 아이템이
+        // 하나라도 있는 팀원은 **영영 저장할 수 없다**(2026-11-09 실측). 보존은 같은 것을 지키면서
+        // 편집을 막지는 않는다.
+        // 편집기가 탄박스를 못 실으면 그 안의 탄도 함께 못 싣는다 - 둘 다 제출본에 없다.
         var after = Before();
-        after.RemoveAll(i => i.Id == "box");
+        after.RemoveAll(i => i.Id == "box" || i.Id == "box-ammo");
 
-        var loadedWithoutBox = Before().Select(i => i.Id!).Where(id => id != "box").ToList();
+        var loadedWithoutBox = Before().Select(i => i.Id!).Where(id => id != "box" && id != "box-ammo").ToList();
         var verdict = ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, loadedWithoutBox);
 
-        Assert.False(verdict.Allowed);
-        Assert.Contains("box", verdict.Reason);
+        Assert.True(verdict.Allowed, verdict.Reason);
+        Assert.Contains("box", verdict.PreservedItemIds);
+        Assert.Contains("box-ammo", verdict.PreservedItemIds);
+        Assert.Empty(verdict.LostItemIds);
     }
 
     [Fact]
     public void 들고_있던_목록을_모르면_아무것도_잃지_않는다()
     {
-        // 닫힌 쪽. 목록이 없으면 "편집기가 뭘 들고 있었는지 모른다" 이고, 모르면 지우지 않는다.
+        // 닫힌 쪽. 목록이 없으면 "편집기가 뭘 들고 있었는지 모른다" 이고, 모르면 지우지 않는다 -
+        // 거절하는 것이 아니라 **전부 그대로 둔다**.
         var after = Before();
-        after.RemoveAll(i => i.Id == "box");
+        after.RemoveAll(i => i.Id == "box" || i.Id == "box-ammo");
 
-        Assert.False(ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, null).Allowed);
-        Assert.False(ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, new List<string>()).Allowed);
+        var unknown = ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, null);
+        Assert.True(unknown.Allowed, unknown.Reason);
+        Assert.Contains("box", unknown.PreservedItemIds);
+
+        var empty = ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, new List<string>());
+        Assert.True(empty.Allowed, empty.Reason);
+        Assert.Contains("box", empty.PreservedItemIds);
+    }
+
+    [Fact]
+    public void 편집기가_못_본_탄_더미는_자리만_옮긴_저장을_막지_않는다()
+    {
+        // 2026-11-09 실측. 탄창 'mag' 이 탄 더미를 둘(6발+4발) 들고 있는데 편집기는 첫 더미만 싣는다.
+        // 플레이어가 스태시 안에서 탄박스 자리만 옮기고 저장하면 편집기가 보낸 최종 상태에는 둘째
+        // 더미가 없다 - 그것 때문에 저장이 통째로 막히면 안 된다.
+        var before = Before();
+        before.Add(Item("mag-ammo-a", "tpl-ammo", "mag", "cartridges", 6));
+        before.Add(Item("mag-ammo-b", "tpl-ammo2", "mag", "cartridges", 4));
+
+        var loaded = before.Select(i => i.Id!).Where(id => id != "mag-ammo-b").ToList();
+
+        // 편집기가 보낸 것: 못 본 둘째 더미는 없고, 탄박스는 스태시 안에서 자리만 바뀌었다.
+        var after = before.Where(i => i.Id != "mag-ammo-b").ToList();
+
+        var verdict = ProfileInventoryApplyPolicy.Validate(before, after, Stash, Equip, loaded);
+
+        Assert.True(verdict.Allowed, verdict.Reason);
+        Assert.Equal(new[] { "mag-ammo-b" }, verdict.PreservedItemIds);
+        Assert.Empty(verdict.LostItemIds);
+    }
+
+    [Fact]
+    public void 못_본_아이템이_매달려_있던_것이_없어지면_거절한다()
+    {
+        // 보존은 **자리가 남아 있을 때만** 할 수 있다. 플레이어가 탄박스를 버렸는데 그 안의 탄 더미를
+        // 편집기가 못 봤다면 그 더미를 붙일 곳이 없다 - 고아를 만드느니 저장하지 않는다.
+        var after = Before();
+        after.RemoveAll(i => i.Id == "box" || i.Id == "box-ammo");
+
+        var loadedWithoutInner = Before().Select(i => i.Id!).Where(id => id != "box-ammo").ToList();
+        var verdict = ProfileInventoryApplyPolicy.Validate(Before(), after, Stash, Equip, loadedWithoutInner);
+
+        Assert.False(verdict.Allowed);
+        Assert.Contains("box-ammo", verdict.Reason);
     }
 
     [Fact]

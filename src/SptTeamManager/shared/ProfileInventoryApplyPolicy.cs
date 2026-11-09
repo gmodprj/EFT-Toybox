@@ -9,7 +9,9 @@ namespace pitTeam.Shared
 
     // Allowed == false 면 Reason 이 플레이어가 읽는 한 줄이다. LostItemIds 는 **사라지는** 아이템들이고,
     // 거절 사유가 아니라 호출자가 로그에 남길 사실이다(버리기·탄박스 소비는 정당한 조작이다).
-    public sealed record InventoryApplyVerdict(bool Allowed, string Reason, IReadOnlyList<string> LostItemIds);
+    // PreservedItemIds 는 **편집기가 보여 주지 않아 제출본에 없는** 아이템들이다 - 호출자는 그것을
+    // 원래 객체 그대로(원래 부모·자리·수량) 최종 목록에 다시 붙여야 한다. 지우면 안 된다.
+    public sealed record InventoryApplyVerdict(bool Allowed, string Reason, IReadOnlyList<string> LostItemIds, IReadOnlyList<string> PreservedItemIds);
 
     // 계획 5 Task B 의 판정. **조작의 종류를 세지 않는다** - 이동·나누기·합치기·열기·버리기를 하나씩
     // 열어 주는 방식은 셀 때마다 빠지고, 다음 패치에서 EFT 가 조작을 더하면 또 빠진다. 대신 최종 상태를
@@ -26,15 +28,24 @@ namespace pitTeam.Shared
     // 탄박스를 소비한다. 그러나 **편집기가 보여 주지도 않은 아이템**은 플레이어가 버린 것일 수 없다:
     // 2026-11-03 실측 사고에서 편집기가 EFT 역직렬화에 걸린 아이템을 건너뛰고 열렸고, 최종 상태를
     // 제출하자 그 68개가 프로필에서 지워졌다. 그래서 호출자는 **편집기가 열릴 때 실제로 들고 있던
-    // id 목록**(loadedItemIds)을 함께 준다: 그 목록 밖의 손실은 거절이고, 목록을 모르면(비면) 어떤
-    // 손실도 거절이다(닫힌 쪽). 허용된 손실의 id 는 전부 돌려주어 호출자가 로그에 남긴다.
+    // id 목록**(loadedItemIds)을 함께 준다. 허용된 손실의 id 는 전부 돌려주어 호출자가 로그에 남긴다.
+    //
+    // 그 목록 **밖**의 손실은 **거절이 아니라 보존**이다(PreservedItemIds). 한때 거절이었는데,
+    // 그러면 편집기가 못 읽는 아이템이 하나라도 있는 팀원은 **영영 저장할 수 없었다** - 2026-11-09
+    // 실측: Sarge 의 Mk18 탄창 하나가 탄 더미를 둘(6발 + 4발) 들고 있었고 편집기가 둘째 더미를
+    // 싣지 못해, 스태시 안에서 자리만 옮기는 저장까지 전부 막혔다. 지키려던 것은 "못 본 것을 지우지
+    // 않는다" 이지 "저장을 막는다" 가 아니다. 보존이 그것을 그대로 지키면서 편집을 막지 않는다.
+    // 목록을 모르면(비면) 손실 전부가 보존이다(닫힌 쪽 - 아무것도 지우지 않는다).
+    //
+    // 보존은 **붙일 자리가 남아 있을 때만** 할 수 있다. 못 본 아이템의 부모 사슬이 끊겼으면(부모를
+    // 플레이어가 버렸으면) 고아가 되므로 그때는 거절한다.
     public static class ProfileInventoryApplyPolicy
     {
         // 부모를 따라 올라갈 때의 걸음 제한. 손상된 트리(고리)에서 돌지 않게 한다.
         private const int MaxDepth = 64;
 
         private static InventoryApplyVerdict Reject(string reason)
-            => new InventoryApplyVerdict(false, reason, Array.Empty<string>());
+            => new InventoryApplyVerdict(false, reason, Array.Empty<string>(), Array.Empty<string>());
 
         public static InventoryApplyVerdict Validate(
             IReadOnlyList<InventoryItemState>? before,
@@ -126,10 +137,61 @@ namespace pitTeam.Shared
                 }
             }
 
+            // 제출본에 없는 아이템을 둘로 가른다: 편집기가 **들고 있던** 것의 손실은 플레이어가 버린
+            // 것(lost)이고, **보여 주지도 않은** 것의 손실은 손실이 아니라 보존(preserved)이다.
+            // 아래 검사들이 "없어졌다" 를 묻기 전에 먼저 가른다 - 보존되는 것은 없어지는 것이 아니다.
+            var loaded = new HashSet<string>(StringComparer.Ordinal);
+            if (loadedItemIds != null)
+            {
+                foreach (var id in loadedItemIds)
+                {
+                    if (!string.IsNullOrWhiteSpace(id)) loaded.Add(id!);
+                }
+            }
+
+            var preserved = new HashSet<string>(StringComparer.Ordinal);
+            var lost = new List<string>();
+            foreach (var item in before)
+            {
+                if (afterById.ContainsKey(item.Id!)) continue;
+                if (loaded.Contains(item.Id!)) lost.Add(item.Id!);
+                else preserved.Add(item.Id!);
+            }
+
+            // 보존은 붙일 자리가 남아 있을 때만 할 수 있다. 부모 사슬을 올라가 **제출본에 남은 부모**나
+            // 루트에 닿아야 한다(중간이 전부 보존되는 것은 함께 붙으므로 괜찮다).
+            foreach (var id in preserved)
+            {
+                var current = beforeById[id];
+                var anchored = false;
+                for (var steps = 0; steps < MaxDepth; steps++)
+                {
+                    var parentId = current.ParentId;
+                    if (string.IsNullOrWhiteSpace(parentId)) break;
+                    if (string.Equals(parentId, stashRoot, StringComparison.Ordinal)
+                        || string.Equals(parentId, equipmentRoot, StringComparison.Ordinal)
+                        || afterById.ContainsKey(parentId!))
+                    {
+                        anchored = true;
+                        break;
+                    }
+
+                    if (!preserved.Contains(parentId!)) break;
+                    if (!beforeById.TryGetValue(parentId!, out var parent)) break;
+                    current = parent;
+                }
+
+                if (!anchored)
+                {
+                    return Reject($"아이템 '{id}' 은(는) 편집기가 보여 주지 않은 것인데 그것이 들어 있던 자리가 없어져 저장하지 않습니다.");
+                }
+            }
+
             // 구조를 이루는 자리는 같은 id 가 같은 부모의 같은 자리에 그대로 있어야 한다.
             foreach (var item in before)
             {
                 if (!ProfileGearEditPolicy.IsStructuralSlot(item.SlotId)) continue;
+                if (preserved.Contains(item.Id!)) continue;
                 if (!afterById.TryGetValue(item.Id!, out var moved))
                 {
                     return Reject($"'{item.SlotId}' 의 아이템 '{item.Id}' 이(가) 없어졌습니다. 프로필에서 떼어낼 수 없는 자리라 저장하지 않습니다.");
@@ -164,29 +226,15 @@ namespace pitTeam.Shared
             var misplaced = CheckPlacements(before, after, afterById, slotFacts);
             if (misplaced != null) return Reject(misplaced);
 
-            // 사라지는 것: 편집기가 들고 있던 것만 허용한다. 무엇이 사라지는지는 돌려준다.
-            var loaded = new HashSet<string>(StringComparer.Ordinal);
-            if (loadedItemIds != null)
-            {
-                foreach (var id in loadedItemIds)
-                {
-                    if (!string.IsNullOrWhiteSpace(id)) loaded.Add(id!);
-                }
-            }
-
-            var lost = new List<string>();
+            // 사라지는 것(lost)과 그대로 두는 것(preserved)은 위에서 이미 갈랐다. 둘 다 돌려준다:
+            // 호출자는 lost 를 로그에 남기고, preserved 를 원래 객체 그대로 최종 목록에 다시 붙인다.
+            var preservedIds = new List<string>();
             foreach (var item in before)
             {
-                if (afterById.ContainsKey(item.Id!)) continue;
-                if (!loaded.Contains(item.Id!))
-                {
-                    return Reject($"아이템 '{item.Id}' 은(는) 편집기가 보여 주지 않은 것이라 지울 수 없습니다. 저장하지 않습니다.");
-                }
-
-                lost.Add(item.Id!);
+                if (preserved.Contains(item.Id!)) preservedIds.Add(item.Id!);
             }
 
-            return new InventoryApplyVerdict(true, string.Empty, lost);
+            return new InventoryApplyVerdict(true, string.Empty, lost, preservedIds);
         }
 
         // 제출된 자리가 적법한가. 어휘(슬롯·격자·필터·용량)의 집은 ProfileGearEditPolicy 하나이고
