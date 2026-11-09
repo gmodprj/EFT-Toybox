@@ -85,6 +85,12 @@ public sealed class StashGridView : ScrollViewer
     /// <summary>고른 것이 바뀌면 알린다.</summary>
     public event Action? SelectionChanged;
 
+    /// <summary>
+    /// 읽기 전용일 때 **칸을 누르면** 알린다. 세부 보기 창이 그 상자 안으로 들어가는 데 쓴다 —
+    /// 나무로만 들어갈 수 있으면 상자 속 상자로 내려가는 길이 사실상 없다(2026-11-09 제보).
+    /// </summary>
+    public event Action<StashRow>? ItemOpened;
+
     public IReadOnlyList<StashRow> SelectedRows =>
         _boxes.Where(b => _selected.Contains(b.row.Id)).Select(b => b.row).ToList();
 
@@ -305,6 +311,13 @@ public sealed class StashGridView : ScrollViewer
     {
         if (ReadOnly)
         {
+            // 읽기 전용에서는 고르지 않는다. 대신 **누른 칸**을 알린다(상자면 그 안으로 간다).
+            var hit = HitTest(e.GetPosition(_canvas));
+            if (hit is not null)
+            {
+                ItemOpened?.Invoke(hit);
+            }
+
             return;
         }
 

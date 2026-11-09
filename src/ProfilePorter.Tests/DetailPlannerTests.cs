@@ -122,6 +122,17 @@ public class DetailPlannerTests
     }
 
     [Fact]
+    public void 겹치는_칸을_센다()
+    {
+        // 모드가 아이템 크기를 바꾸면, **그때 놓은 자리**와 **지금 DB 크기**가 어긋나 겹친다.
+        // 숨기지 않고 세어서 사람에게 말해 준다.
+        Assert.Equal(0, DetailPlanner.CountOverlaps([(0, 0, 2, 2), (2, 0, 1, 1), (0, 2, 2, 1)]));
+
+        // 4x4 와 2x2 가 한 칸에서 만난다.
+        Assert.Equal(1, DetailPlanner.CountOverlaps([(0, 0, 2, 2), (1, 1, 2, 2)]));
+    }
+
+    [Fact]
     public void 뿌리에서_닿지_않는_항목을_찾아낸다()
     {
         // 뿌리에도 없고 부모가 파일 안에 없으면, 창은 그 id 를 **알 길이 없어** 지목할 수도 없다.

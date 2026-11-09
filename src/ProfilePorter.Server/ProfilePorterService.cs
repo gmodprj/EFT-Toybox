@@ -399,14 +399,26 @@ public class ProfilePorterService(
             var missing = children.Count - placed.Count;
             var rows = placed.Select(c => Row(c, byParent, Facts)).ToList();
 
-            var (profileH, profileV) = profiles.StashCellsOf(file.FromProfileId);
-            if (profileH == 0)
+            // **고른 것만 담긴 파일이다.** 보낸 사람 스태시의 절대 좌표를 그대로 그리면,
+            // 뿌리 하나짜리 파일이 10x80 짜리 **빈 판**으로 보인다(2026-11-09 사용자 제보:
+            // "다 안나옴"). 서로의 자리 관계는 지키되 **쓰는 자리로 당겨서** 그린다.
+            var shiftX = rows.Count > 0 ? rows.Min(r => r.X) : 0;
+            var shiftY = rows.Count > 0 ? rows.Min(r => r.Y) : 0;
+
+            if (shiftX > 0 || shiftY > 0)
             {
-                notices.Add("보낸 프로필을 찾지 못해 격자를 좌표의 테두리로 잡았습니다.");
+                rows = rows.Select(r => r with { X = r.X - shiftX, Y = r.Y - shiftY }).ToList();
             }
 
             var (cellsH, cellsV) = DetailPlanner.StashCells(
-                profileH, profileV, rows.Select(r => (r.X, r.Y, r.W, r.H)));
+                0, 0, rows.Select(r => (r.X, r.Y, r.W, r.H)));
+
+            // 보낸 프로필의 스태시보다 넓어질 수는 없다 — 넓으면 우리 셈이 틀린 것이다.
+            var (profileH, _) = profiles.StashCellsOf(file.FromProfileId);
+            if (profileH > 0 && cellsH > profileH)
+            {
+                cellsH = profileH;
+            }
 
             if (missing > 0)
             {
@@ -419,6 +431,8 @@ public class ProfilePorterService(
             {
                 notices.Add($"뿌리에 매달려 있지 않은 것 {lost.Count}개를 따로 모았습니다.");
             }
+
+            AddOverlapNotice(rows.Select(r => (r.X, r.Y, r.W, r.H)), notices);
 
             view = new
             {
@@ -454,6 +468,7 @@ public class ProfilePorterService(
                 grids = place.Grids.Select(g =>
                 {
                     var gridRows = g.Rows.Select(r => Row(r, byParent, Facts)).ToList();
+                    AddOverlapNotice(gridRows.Select(r => (r.X, r.Y, r.W, r.H)), notices);
 
                     // 상자 격자도 **큰 쪽**을 쓴다(설계 §7-5). DB 가 준 칸 수보다 큰 좌표가 있으면
                     // 그대로 그렸을 때 그 물건이 격자 밖이라 **스크롤로도 닿지 않는다.**
@@ -490,6 +505,23 @@ public class ProfilePorterService(
             tree,
             view,
         };
+    }
+
+    /// <summary>
+    /// 겹치는 칸이 있으면 **왜 그런지**를 적어 준다. 겹침은 우리가 잘못 그려서가 아니라,
+    /// 모드가 아이템 크기를 바꿔 **놓을 때의 크기와 지금 크기가 어긋나서** 생긴다.
+    /// 말해 주지 않으면 사람은 창이 깨진 줄로 읽는다(2026-11-09 사용자 제보).
+    /// </summary>
+    private static void AddOverlapNotice(IEnumerable<(int x, int y, int w, int h)> rows, List<string> notices)
+    {
+        var overlaps = DetailPlanner.CountOverlaps(rows);
+        if (overlaps == 0)
+        {
+            return;
+        }
+
+        notices.Add($"겹쳐 보이는 칸이 {overlaps}개 있습니다 — 모드가 아이템 크기를 바꾼 뒤에도 "
+                    + "물건은 놓였던 자리에 그대로 있어서입니다. 물건이 사라진 것은 아닙니다.");
     }
 
     /// <summary>한 번의 세부 보기에서 **tpl 하나당 한 번만** 모으는 DB 지식.</summary>

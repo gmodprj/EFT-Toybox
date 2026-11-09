@@ -31,6 +31,9 @@ public partial class FileDetailWindow : Window
     private readonly IconService? _icons;
     private readonly string _fileName;
 
+    /// <summary>지금까지 들어온 길. 첫 칸은 늘 뿌리(파일 자체)다.</summary>
+    private readonly List<(string? Id, string Name)> _path = [];
+
     public FileDetailWindow(ServerClient client, IconService? icons, string fileName, string? startAt = null)
     {
         InitializeComponent();
@@ -46,9 +49,16 @@ public partial class FileDetailWindow : Window
         _ = LoadAsync(startAt);
     }
 
-    /// <summary>그 자리를 서버에 묻고 그린다. <paramref name="containerId"/> 가 null 이면 뿌리.</summary>
-    private async Task LoadAsync(string? containerId)
+    /// <summary>
+    /// 그 자리를 서버에 묻고 그린다. <paramref name="containerId"/> 가 null 이면 뿌리.
+    ///
+    /// <paramref name="name"/> 은 경로 막대에 적을 이름이다. 길에 **이미 있는 자리**로 가면
+    /// 거기까지만 남기고 뒤를 자른다 — 그래야 들어갔다 나왔다 해도 길이 늘어지지 않는다.
+    /// </summary>
+    private async Task LoadAsync(string? containerId, string? name = null)
     {
+        Remember(containerId, name);
+
         try
         {
             StatusText.Text = "읽는 중…";
@@ -70,6 +80,77 @@ public partial class FileDetailWindow : Window
         {
             StatusText.Text = $"세부 내용을 읽지 못했습니다 — {e.Message}";
             StatusText.Foreground = Brushes.IndianRed;
+        }
+    }
+
+    /// <summary>경로를 갱신하고 막대를 다시 그린다.</summary>
+    private void Remember(string? containerId, string? name)
+    {
+        if (containerId is null)
+        {
+            _path.Clear();
+            _path.Add((null, "파일 전체"));
+        }
+        else
+        {
+            var already = _path.FindIndex(p => p.Id == containerId);
+            if (already >= 0)
+            {
+                _path.RemoveRange(already + 1, _path.Count - already - 1);
+            }
+            else
+            {
+                if (_path.Count == 0)
+                {
+                    _path.Add((null, "파일 전체"));
+                }
+
+                _path.Add((containerId, string.IsNullOrWhiteSpace(name) ? "상자" : name!));
+            }
+        }
+
+        Breadcrumb.Children.Clear();
+
+        for (var i = 0; i < _path.Count; i++)
+        {
+            var step = _path[i];
+            var last = i == _path.Count - 1;
+
+            if (i > 0)
+            {
+                Breadcrumb.Children.Add(new TextBlock
+                {
+                    Text = " › ",
+                    Foreground = new SolidColorBrush(Color.FromRgb(0x80, 0x80, 0x88)),
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+            }
+
+            if (last)
+            {
+                // 지금 보고 있는 자리는 누를 것이 없다.
+                Breadcrumb.Children.Add(new TextBlock
+                {
+                    Text = step.Name,
+                    Foreground = Brushes.White,
+                    FontWeight = FontWeights.Bold,
+                    VerticalAlignment = VerticalAlignment.Center,
+                });
+                continue;
+            }
+
+            var back = new TextBlock
+            {
+                Text = step.Name,
+                Foreground = new SolidColorBrush(Color.FromRgb(0xC8, 0xA0, 0x50)),
+                VerticalAlignment = VerticalAlignment.Center,
+                Cursor = System.Windows.Input.Cursors.Hand,
+                TextDecorations = TextDecorations.Underline,
+            };
+
+            var target = step.Id;
+            back.MouseLeftButtonUp += async (_, _) => await LoadAsync(target, step.Name);
+            Breadcrumb.Children.Add(back);
         }
     }
 
@@ -101,6 +182,15 @@ public partial class FileDetailWindow : Window
         foreach (var node in nodes)
         {
             Tree.Items.Add(MakeNode(node));
+        }
+
+        // **상자 하나짜리 파일은 그 안을 바로 연다.** 뿌리만 보여 주면 상자 한 칸과 빈 격자가
+        // 전부라 "아무것도 안 나온다" 로 읽힌다(2026-11-09 사용자 제보). 되짚어 보려고 여는
+        // 창이니, 볼 것이 한 군데뿐이면 거기까지 데려다준다.
+        if (nodes.Count == 1 && nodes[0].IsContainer && Tree.Items[0] is TreeViewItem only)
+        {
+            only.IsExpanded = true;
+            only.IsSelected = true;
         }
     }
 
@@ -168,7 +258,7 @@ public partial class FileDetailWindow : Window
             return;
         }
 
-        await LoadAsync(node.Id);
+        await LoadAsync(node.Id, node.Name);
     }
 
     private void DrawView(DetailResponse detail)
@@ -249,6 +339,20 @@ public partial class FileDetailWindow : Window
             grid.Width = cellsH * StashGridView.CellSize + 2;
             grid.Height = cellsV * StashGridView.CellSize + 2;
         }
+
+        // **칸을 눌러 그 안으로 들어간다.** 안이 있는 것만 — 나머지는 상태줄에 이름만 적는다.
+        grid.ItemOpened += async row =>
+        {
+            if (row.Contained > 0)
+            {
+                await LoadAsync(row.Id, row.Name);
+            }
+            else
+            {
+                StatusText.Text = row.Display;
+                StatusText.Foreground = Brushes.White;
+            }
+        };
 
         grid.Draw(cellsH, cellsV, rows);
         return grid;
@@ -386,7 +490,7 @@ public partial class FileDetailWindow : Window
         if (hasInside)
         {
             card.Cursor = System.Windows.Input.Cursors.Hand;
-            card.MouseLeftButtonUp += async (_, _) => await LoadAsync(row!.Id);
+            card.MouseLeftButtonUp += async (_, _) => await LoadAsync(row!.Id, row.Name);
         }
 
         return card;

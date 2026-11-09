@@ -146,6 +146,36 @@ public static class DetailPlanner
         return (h, v);
     }
 
+    /// <summary>
+    /// 두 번 이상 차지된 칸의 수.
+    ///
+    /// **격자가 겹치는 것은 우리가 잘못 그려서가 아니다.** 모드가 아이템 크기를 바꾸면,
+    /// 그때 그 자리에 놓았던 것과 **지금 DB 가 말하는 크기**가 어긋난다(2026-11-09 실측:
+    /// 1,361개 중 두 칸. 원본 프로필의 좌표만으로는 겹침이 0건이었다). 숨기지 않고 세어서
+    /// 사람에게 "왜 겹쳐 보이는지" 를 말해 준다.
+    /// </summary>
+    public static int CountOverlaps(IEnumerable<(int x, int y, int w, int h)> rows)
+    {
+        var taken = new HashSet<(int, int)>();
+        var n = 0;
+
+        foreach (var (x, y, w, h) in rows ?? [])
+        {
+            for (var dx = 0; dx < w; dx++)
+            {
+                for (var dy = 0; dy < h; dy++)
+                {
+                    if (!taken.Add((x + dx, y + dy)))
+                    {
+                        n++;
+                    }
+                }
+            }
+        }
+
+        return n;
+    }
+
     private static DetailLoose Loose(PorterItem item, string why) =>
         new(item.Id, item.TemplateId, StackOf(item), 0, why);
 
