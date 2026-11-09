@@ -462,6 +462,36 @@ ISB 셋. 의존 방향은 **MoreBotsAPI → ISB Aishi → ISB Special Forces** �
 - **U8 실측** — 기록 검사 `OK — 0/0`(모드 304 그대로). `불러옴` **174줄 / 거부 0**,
   `Could not add` 48(고유 id 48) · bundle 1 · quest 1 로 기준선과 같다.
 
+#### Arena 관문을 재 봤다 — `installPath` 는 먹지만 폴더가 진짜여야 한다
+
+SPT 설치본 안에 빈 폴더 `E:\Spt\ArenaStub` 를 만들고
+`SPT_Runtime\user\mods\ArenaMapPort\config\arena-install.json` 에
+`{"installPath": "E:/Spt/ArenaStub"}` 를 적어 기동했다(이 설정 파일은 **원래 없어서 새로
+만들었다**).
+
+| 재는 것 | 전(레지스트리) | 후(빈 폴더 지정) |
+| --- | --- | --- |
+| 로그 | `...not registered in the Windows registry (HKEY_LOCAL_MACHINE\...)` | **`E:\Spt\ArenaStub does not contain EscapeFromTarkovArena.exe`** |
+| `/arenamapport/status` 의 `gate.source` | — | **`override`**, `overrideFile: "used"` |
+| `gate.state` / `cause` | — | `not_verified` / **`not_arena_folder`** |
+| 맵 5개 | `not_registered` | `not_registered` (cause `gate`) |
+
+- **설정은 제대로 먹는다.** 메시지가 "레지스트리에 없다" 에서 "그 폴더에 exe 가 없다" 로
+  바뀌었고 상태 라우트가 `source: override` · `overrideFile: used` 로 답한다. 즉 **진짜 Arena
+  설치 폴더를 가리키면 레지스트리 없이도 통과하도록 만들어진 길이 맞다.**
+- **빈 폴더로는 통과하지 않는다.** 서버 DLL 문자열로 관문이 보는 것을 읽었다 —
+  ① 폴더가 있어야 하고, ② `EscapeFromTarkovArena.exe` 가 있어야 하고,
+  ③ 런처 매니페스트 **`ConsistencyInfo`** 가 있고 유효해야 하며(`Entries` 키,
+  `EscapeFromTarkovArena_Data\level` 로 시작하는 항목이 `minLevelEntries` 개 이상),
+  ④ `Uninstall.exe` 는 없어도 된다(`tolerated`).
+- `/arenamapport/status` 는 **zlib 로 눌려 온다** — `curl` 로 받아 `zlib.inflateSync` 해야 읽힌다
+  (`--compressed` 로는 안 풀린다).
+- **그 셋을 흉내 내는 짓은 하지 않았다.** exe 와 런처 매니페스트를 지어내는 것은 별개 유료
+  제품(EFT: Arena)의 **설치·소유 확인을 속이는 것**이다. Arena 를 가지고 있다면 이 설정에
+  **그 설치 폴더를 적으면** 된다 — 길이 열려 있는 것은 위에서 확인했다.
+- 지금 상태: 빈 폴더와 설정 파일은 그대로 두었다. 관문은 전과 같이 닫혀 있고 맵은 등록되지
+  않으며, 다른 모드에 영향은 없다(기동 `불러옴` 174줄 / 거부 0).
+
 ### 받는 순서 규칙 (2026-11-09, 사용자 결정)
 
 **느린 다운로드는 마지막까지 미룬다.** 호스트가 조여 놓은 것은 다른 일을 다 끝낸 뒤에 받는다.
