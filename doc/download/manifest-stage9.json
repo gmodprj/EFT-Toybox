@@ -83,12 +83,14 @@
       "group": "9-절차밖-이전",
       "id": 3156,
       "name": "GF2 Skin Pack",
-      "version": "1.0.0",
+      "version": "1.2.4",
       "profileBinding": false,
       "installedAt": "2026-10-25 18:46",
       "folders": [
         "SPT_Runtime\\user\\mods\\GF2 Skin Pack"
-      ]
+      ],
+      "size": 1200449725,
+      "link": "https://sp-mod.com/mod/download/3156/gf2-skin-pack/1.2.4"
     },
     {
       "group": "9-절차밖-이전",
