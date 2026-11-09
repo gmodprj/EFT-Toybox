@@ -213,11 +213,42 @@ public sealed class StashGridView : ScrollViewer
             });
 
             // 아이콘이 왔으니 이름은 치운다 — 좁은 칸에서는 둘이 겹쳐 둘 다 안 보인다.
+            //
+            // **다만 칸보다 그림이 많이 작으면 이름을 남긴다.** 받아 오는 그림은 그 tpl 의
+            // **기본** 아이콘이라, 부착물까지 합쳐 길어진 총의 칸(5x2 따위)을 채우지 못한다.
+            // 그때 이름까지 지우면 큰 칸에 작은 그림 하나만 떠 있어 무엇인지 알 수 없다
+            // (2026-11-09 사용자 제보).
             if (_names.TryGetValue(row.Id, out var label))
             {
-                label.Visibility = Visibility.Collapsed;
+                label.Visibility = Covers(icon, row) ? Visibility.Collapsed : Visibility.Visible;
+
+                if (label.Visibility == Visibility.Visible)
+                {
+                    // 그림 위에 겹치지 않게 아래쪽으로 내린다.
+                    label.VerticalAlignment = VerticalAlignment.Bottom;
+                    label.Background = new SolidColorBrush(Color.FromArgb(0xB0, 0x2D, 0x2D, 0x30));
+                }
             }
         }
+    }
+
+    /// <summary>
+    /// 그 그림이 칸을 **웬만큼 채우는가**(넓이의 절반 이상). 비율을 지키며 줄인 크기로 잰다.
+    /// </summary>
+    private static bool Covers(ImageSource icon, StashRow row)
+    {
+        var cellW = Math.Max(1, row.W) * Cell;
+        var cellH = Math.Max(1, row.H) * Cell;
+
+        if (icon.Width <= 0 || icon.Height <= 0)
+        {
+            return true;
+        }
+
+        var scale = Math.Min(cellW / icon.Width, cellH / icon.Height);
+        var drawn = icon.Width * scale * icon.Height * scale;
+
+        return drawn >= cellW * cellH * 0.5;
     }
 
     private Border MakeBox(StashRow row)
