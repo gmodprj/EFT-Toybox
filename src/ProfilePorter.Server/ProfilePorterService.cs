@@ -480,7 +480,10 @@ public class ProfilePorterService(
         return new
         {
             ok = true,
-            fileName = file.FileName,
+
+            // **파일이 아니라 폴더가 가진 사실이다.** `Read` 는 이름을 채우지 않는다(`List` 만
+            // 채운다) — 그대로 내보내면 빈 글자가 나간다(2026-11-09 실측에서 봤다).
+            fileName = string.IsNullOrEmpty(file.FileName) ? fileName : file.FileName,
             kind = file.Kind,
             containerId,
             notices,
