@@ -199,6 +199,17 @@ public class StmInventoryApplyService(
             finalItems.AddRange(applied);
             finalItems.AddRange(untouched);
 
+            // 두 트리 **안**인데도 편집기가 보여 주지 않은 아이템(EFT 가 싣지 못한 것)도 그대로 붙인다.
+            // 제출본에 없다는 이유로 지우면 안 된다 - 플레이어는 그것을 본 적이 없으므로 버릴 수도 없었다
+            // (2026-11-03 실측 사고). 원래 객체를 그대로 쓰므로 부모·자리·수량이 모두 그대로다.
+            var preservedCount = 0;
+            foreach (var id in verdict.PreservedItemIds)
+            {
+                if (!originalById.TryGetValue(id, out var kept)) continue;
+                finalItems.Add(kept);
+                preservedCount++;
+            }
+
             // 유일한 쓰기.
             liveInventory = inventory;
             liveProfileId = profileId;
@@ -217,7 +228,12 @@ public class StmInventoryApplyService(
             }
 
             var lost = verdict.LostItemIds.Count == 0 ? "없음" : string.Join(", ", verdict.LostItemIds);
-            logger.Info($"[STM] 인벤토리 저장: 프로필 '{member.ProfileId}'(aid {member.Aid}) 두 트리 {twoTrees.Count} → {applied.Count}개(두 트리 밖 {untouched.Count}개는 그대로), 새로 생긴 더미 {created}개, 사라진 아이템: {lost} ({elapsedMs}ms)");
+            logger.Info($"[STM] 인벤토리 저장: 프로필 '{member.ProfileId}'(aid {member.Aid}) 두 트리 {twoTrees.Count} → {applied.Count + preservedCount}개(두 트리 밖 {untouched.Count}개는 그대로), 새로 생긴 더미 {created}개, 사라진 아이템: {lost} ({elapsedMs}ms)");
+            if (preservedCount > 0)
+            {
+                // 편집기가 못 실은 아이템이 있다는 사실 자체가 진단거리다 - 무엇이었는지 남긴다.
+                logger.Warning($"[STM] 인벤토리 저장: 편집기가 보여 주지 않아 그대로 둔 아이템 {preservedCount}개: {string.Join(", ", verdict.PreservedItemIds.Select(id => originalById.TryGetValue(id, out var kept) ? $"{id}(tpl {kept.Template}, 부모 {kept.ParentId}, 자리 {kept.SlotId})" : id))}");
+            }
 
             bool flagged;
             try
