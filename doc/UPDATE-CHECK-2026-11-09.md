@@ -533,6 +533,29 @@ SPT 설치본 안에 빈 폴더 `E:\Spt\ArenaStub` 를 만들고
   `cause: "not_registered"` 다. 기동은 `불러옴` 174줄 / 거부 0, 오류 48(고유 48)/1/1 로 같다.
   모드 폴더에 남은 것은 설치 기록에 적힌 파일뿐이다(`banners`·`db`·`locales`·DLL·고지문).
 
+### 게임 쪽 확인 — 업데이트 20개를 다 올린 뒤 (2026-11-10 기동)
+
+| 재는 것 | 값 | 판정 |
+| --- | --- | --- |
+| `N plugins to load` | **246** | 11-09 기동과 같다(ISB 둘은 플러그인 수를 늘리지 않았다) |
+| `Loading [` 줄 | **246** | 수가 맞는다 |
+| `Chainloader startup complete` | 1 | 끝까지 돌았다 |
+| `[Fatal` | **0** | — |
+| `[Error` | **1** | 알려진 DirectReload+Fika 건뿐 |
+
+새 판으로 올라온 것을 이름·버전으로 확인했다 — `AishiMasterKeyFunction 2.0.7`,
+`ISB SOF Notifier 2.0.4`, `ISB SOF: Immersion Systems Plugin 2.0.4`, `ISB Special Forces 2.0.4`,
+`ECOTI 3.5.0`, `Realistic Insurance (client) 0.2.3`, `makeshotgunsgreatagain 1.20.0`,
+`Briefing 1.2.0`, `QuestCodex Overlay 1.12.0`, `UltimateFlea Client 1.3.1`,
+`RepairMaxDurabilityClient 2.2.1`.
+
+- **자막은 이 기동만으로 판정되지 않는다.** ISB 자막은 실험실 방송·무전이 나올 때 쓰이므로
+  메뉴에서는 로그에 아무 줄도 남지 않는다 — **레이드에서 봐야 한다.**
+- **아이템 이름·등급 색도 로그에 안 나온다.** 서버가 내려주는 값으로는 이미 확인했다(§4-1).
+  화면에서 한 번 보는 것이 남았다.
+- locale 항목이 **61,221 → 61,391**(+170)로 또 늘었다. ISB 둘의 새 콘텐츠가 들어온 몫이고,
+  §4-1 과 같은 성질(아이템 이름)이다. 우리 사전은 **8,086/8,089** 그대로 입혀진다.
+
 ### 받는 순서 규칙 (2026-11-09, 사용자 결정)
 
 **느린 다운로드는 마지막까지 미룬다.** 호스트가 조여 놓은 것은 다른 일을 다 끝낸 뒤에 받는다.
