@@ -556,6 +556,31 @@ SPT 설치본 안에 빈 폴더 `E:\Spt\ArenaStub` 를 만들고
 - locale 항목이 **61,221 → 61,391**(+170)로 또 늘었다. ISB 둘의 새 콘텐츠가 들어온 몫이고,
   §4-1 과 같은 성질(아이템 이름)이다. 우리 사전은 **8,086/8,089** 그대로 입혀진다.
 
+#### 레이드까지 돈 뒤 (아이스브레이커)
+
+사용자가 레이드를 돌고 나왔다(`LocationScene` 1 · `GameStarted` 17 · 맵은 아이스브레이커).
+
+| 재는 것 | 값 |
+| --- | --- |
+| `[Fatal` | **0** |
+| `[Error` | **4** — DirectReload(Fika, 알려진 것) · ECOTI per-frame(기준선) · **SPTBattleAmbience 1** · **Manimal-Icebreaker 1** |
+
+뒤의 둘은 **이번 업데이트와 무관하고 아이스브레이커 맵에서만 나는 것**이다.
+
+- `[SPTBattleAmbience] Couldnt find map config for location: icebreaker` — 그 모드에 포팅된
+  아이스브레이커용 설정이 없다. 두 모드 다 이번에 올린 20개에 들어 있지 않다.
+- `[Manimal-Icebreaker] [Firewall] SkillsExtended.Client.Skills's hook OnGameStartedPatch.Postfix
+  threw on the icebreaker — swallowed; only THAT mod's hook is skipped, later mods' hooks still r…`
+  — 아이스브레이커 모드가 **제 방화벽으로 Skills Extended 의 훅 하나만 건너뛰고 삼켰다**.
+  레이드는 그대로 진행됐다.
+- **처음 보는 줄이지만 "전에도 있었다" 고 적지 않는다.** 11-09 기동은 다른 맵이라 이 줄이 날
+  자리가 없었고, `BepInEx\LogOutput.log` 는 기동마다 덮여 옛 기록이 없다. `E:\Spt\Logs\` 의
+  EFT 자체 로그에는 모드 줄이 남지 않아 대조할 것이 없다. **아이스브레이커 특정 + 삼켜진 예외**
+  라는 것까지가 지금 잴 수 있는 전부다.
+- **자막은 이 레이드로도 확인되지 않았다.** `subtitle`·`C.A.S.S.I.E` 로 걸리는 줄이 **0** 이다 —
+  ISB 자막은 **실험실(ISB 미니랩)의 방송·무전**에서 쓰이므로 그 쪽을 돌아야 로그에 남는다.
+  설정은 `Subtitle Language = kr` 로 들어가 있고 사전은 222/222 다(§U-F).
+
 ### 받는 순서 규칙 (2026-11-09, 사용자 결정)
 
 **느린 다운로드는 마지막까지 미룬다.** 호스트가 조여 놓은 것은 다른 일을 다 끝낸 뒤에 받는다.
