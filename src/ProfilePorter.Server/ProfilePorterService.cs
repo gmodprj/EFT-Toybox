@@ -294,5 +294,260 @@ public class ProfilePorterService(
         };
     }
 
+    /// <summary>
+    /// 내보낸 파일의 **한 자리**를 세부 보기 화면 모양으로 돌려준다(설계 §4.2).
+    ///
+    /// 파일 전체를 한 번에 내보내지 않는다 — 1,361개짜리가 있어서, 고른 자리의 자식만 추린다.
+    /// 판정은 <see cref="DetailPlanner"/> 가 하고, 이름·크기·격자 칸 수처럼 **DB 가 아는 것**만
+    /// 여기서 붙인다.
+    /// </summary>
+    public object Detail(string? fileName, string? containerId)
+    {
+        var file = files.Read(fileName);
+        if (file is null)
+        {
+            return new { ok = false, reason = "그 파일을 열지 못했습니다." };
+        }
+
+        var items = file.Items
+            .Select(i => new PorterItem(i.Id, i.ParentId, i.SlotId, i.TemplateId, i.Upd, i.Location))
+            .ToList();
+        var bundle = new PorterBundle(file.Kind, file.RootIds, items);
+        var byParent = items
+            .Where(i => !string.IsNullOrEmpty(i.ParentId))
+            .GroupBy(i => i.ParentId!, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.Select(i => i.Id).ToList(), StringComparer.Ordinal);
+
+        var notices = new List<string>();
+        var atRoot = string.IsNullOrEmpty(containerId);
+
+        var children = atRoot
+            ? items.Where(i => file.RootIds.Any(r => string.Equals(r, i.Id, StringComparison.Ordinal))).ToList()
+            : DetailPlanner.ChildrenOf(bundle, containerId).ToList();
+
+        if (!atRoot && items.All(i => !string.Equals(i.Id, containerId, StringComparison.Ordinal)))
+        {
+            return new { ok = false, reason = "그 파일에 없는 자리입니다." };
+        }
+
+        var tree = children
+            .Select(c => new
+            {
+                id = c.Id,
+                tpl = c.TemplateId,
+                name = profiles.NameOf(c.TemplateId),
+                slotName = SlotNames.Korean(c.SlotId),
+                contained = Descendants(c.Id, byParent),
+                kind = profiles.GridsOf(c.TemplateId).Count > 0 || profiles.SlotsOf(c.TemplateId).Count > 0
+                    ? "container"
+                    : "item",
+            })
+            .ToList();
+
+        object view;
+
+        if (atRoot && string.Equals(file.Kind, PorterBundle.KindLoadout, StringComparison.Ordinal))
+        {
+            view = new
+            {
+                kind = "loadout",
+                slots = children.Select(c => Slot(c.SlotId, c, byParent)).ToList(),
+            };
+        }
+        else if (atRoot)
+        {
+            var placed = children.Where(c => c.Location is not null).ToList();
+            var missing = children.Count - placed.Count;
+            var rows = placed.Select(c => Row(c, byParent)).ToList();
+
+            var (profileH, profileV) = profiles.StashCellsOf(file.FromProfileId);
+            if (profileH == 0)
+            {
+                notices.Add("보낸 프로필을 찾지 못해 격자를 좌표의 테두리로 잡았습니다.");
+            }
+
+            var (cellsH, cellsV) = DetailPlanner.StashCells(
+                profileH, profileV, rows.Select(r => (r.X, r.Y, r.W, r.H)));
+
+            if (missing > 0)
+            {
+                notices.Add($"자리 정보가 없는 것 {missing}개는 아래에 모았습니다 — 2026-11-08 이전에 내보낸 파일입니다. 다시 내보내면 자리까지 들어옵니다.");
+            }
+
+            view = new
+            {
+                kind = "stash",
+                cellsH,
+                cellsV,
+                rows,
+                loose = children.Where(c => c.Location is null)
+                    .Select(c => Loose(c, "자리 정보가 없습니다", byParent)).ToList(),
+            };
+        }
+        else
+        {
+            var container = items.First(i => string.Equals(i.Id, containerId, StringComparison.Ordinal));
+            var grids = profiles.GridsOf(container.TemplateId);
+            var slotNames = profiles.SlotsOf(container.TemplateId);
+            var place = DetailPlanner.Place(children, grids, slotNames);
+
+            foreach (var slot in place.Slots.Where(s => !SlotNames.Knows(s.SlotId)))
+            {
+                logger.Info($"[ProfilePorter] 사전에 없는 슬롯 이름이다: {slot.SlotId}");
+            }
+
+            if (place.Loose.Count > 0)
+            {
+                notices.Add($"자리를 잡지 못한 것 {place.Loose.Count}개는 아래에 모았습니다.");
+            }
+
+            view = new
+            {
+                kind = "container",
+                grids = place.Grids.Select(g => new
+                {
+                    name = g.Name,
+                    gridName = SlotNames.Korean(g.Name),
+                    cellsH = g.CellsH,
+                    cellsV = g.CellsV,
+                    rows = g.Rows.Select(r => Row(r, byParent)).ToList(),
+                }).ToList(),
+                slots = place.Slots
+                    .Select(s => Slot(s.SlotId, items.First(i => i.Id == s.Id), byParent)).ToList(),
+                loose = place.Loose
+                    .Select(l => Loose(items.First(i => i.Id == l.Id), l.Why, byParent)).ToList(),
+            };
+        }
+
+        return new
+        {
+            ok = true,
+            fileName = file.FileName,
+            kind = file.Kind,
+            containerId,
+            notices,
+            tree,
+            view,
+        };
+    }
+
+    private StashEntry Row(PorterItem item, Dictionary<string, List<string>> byParent)
+    {
+        var (x, y, rotated) = ProfileReader.LocationOf(item.Location);
+        var (w, h) = profiles.SizeOf(item.TemplateId);
+        var (cw, ch) = rotated ? (h, w) : (w, h);
+
+        return new StashEntry(
+            item.Id,
+            item.TemplateId,
+            profiles.NameOf(item.TemplateId),
+            StackOf(item),
+            Descendants(item.Id, byParent),
+            x, y, cw, ch, rotated);
+    }
+
+    private object Slot(string? slotId, PorterItem item, Dictionary<string, List<string>> byParent) => new
+    {
+        slotId,
+        slotName = SlotNames.Korean(slotId),
+        id = item.Id,
+        tpl = item.TemplateId,
+        name = profiles.NameOf(item.TemplateId),
+        stack = StackOf(item),
+        contained = Descendants(item.Id, byParent),
+        summary = Summary(item),
+    };
+
+    private object Loose(PorterItem item, string why, Dictionary<string, List<string>> byParent) => new
+    {
+        id = item.Id,
+        tpl = item.TemplateId,
+        name = profiles.NameOf(item.TemplateId),
+        slotName = SlotNames.Korean(item.SlotId),
+        stack = StackOf(item),
+        contained = Descendants(item.Id, byParent),
+        summary = Summary(item),
+        why,
+    };
+
+    private static int Descendants(string id, Dictionary<string, List<string>> byParent)
+    {
+        var seen = new HashSet<string>(StringComparer.Ordinal) { id };
+        var queue = new Queue<string>();
+        queue.Enqueue(id);
+        var n = 0;
+
+        while (queue.Count > 0)
+        {
+            if (!byParent.TryGetValue(queue.Dequeue(), out var kids)) continue;
+            foreach (var kid in kids)
+            {
+                if (!seen.Add(kid)) continue;
+                n++;
+                queue.Enqueue(kid);
+            }
+        }
+
+        return n;
+    }
+
+    /// <summary>묶음 수. `upd` 를 **읽기만** 한다.</summary>
+    private static int StackOf(PorterItem item) =>
+        item.Upd is JsonElement { ValueKind: JsonValueKind.Object } upd
+        && upd.TryGetProperty("StackObjectsCount", out var stack)
+        && stack.TryGetInt32(out var n) && n > 0 ? n : 1;
+
+    /// <summary>
+    /// 칸에 적을 짧은 글. **아는 것만 적는다** — 모르는 값은 지어내지 않는다.
+    /// 창이 `upd` 스키마를 알게 되지 않도록 여기서 만든다(설계 §7-4).
+    /// </summary>
+    private static string Summary(PorterItem item)
+    {
+        if (item.Upd is not JsonElement { ValueKind: JsonValueKind.Object } upd)
+        {
+            return string.Empty;
+        }
+
+        var parts = new List<string>();
+
+        if (upd.TryGetProperty("StackObjectsCount", out var stack)
+            && stack.TryGetInt32(out var n) && n > 1)
+        {
+            parts.Add($"×{n}");
+        }
+
+        if (upd.TryGetProperty("Repairable", out var repairable)
+            && repairable.ValueKind == JsonValueKind.Object
+            && repairable.TryGetProperty("Durability", out var dur)
+            && repairable.TryGetProperty("MaxDurability", out var max)
+            && dur.TryGetDouble(out var d) && max.TryGetDouble(out var m))
+        {
+            parts.Add($"내구 {Math.Round(d)}/{Math.Round(m)}");
+        }
+
+        if (upd.TryGetProperty("MedKit", out var med)
+            && med.ValueKind == JsonValueKind.Object
+            && med.TryGetProperty("HpResource", out var hp) && hp.TryGetDouble(out var hpv))
+        {
+            parts.Add($"잔량 {Math.Round(hpv)}");
+        }
+
+        if (upd.TryGetProperty("Resource", out var res)
+            && res.ValueKind == JsonValueKind.Object
+            && res.TryGetProperty("Value", out var rv) && rv.TryGetDouble(out var rvv))
+        {
+            parts.Add($"자원 {Math.Round(rvv)}");
+        }
+
+        if (upd.TryGetProperty("Key", out var key)
+            && key.ValueKind == JsonValueKind.Object
+            && key.TryGetProperty("NumberOfUsages", out var used) && used.TryGetInt32(out var usedN))
+        {
+            parts.Add($"사용 {usedN}회");
+        }
+
+        return string.Join(" · ", parts);
+    }
+
     private static PorterResult Fail(string reason) => new(false, reason, null, 0, []);
 }

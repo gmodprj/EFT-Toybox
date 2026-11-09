@@ -33,6 +33,13 @@ public record PorterImportRequest : IRequestData
     [JsonPropertyName("fileName")] public string? FileName { get; set; }
 }
 
+/// <summary>세부 보기. <see cref="ContainerId"/> 를 비우면 그 파일의 **뿌리**를 본다.</summary>
+public record PorterDetailRequest : IRequestData
+{
+    [JsonPropertyName("fileName")] public string? FileName { get; set; }
+    [JsonPropertyName("containerId")] public string? ContainerId { get; set; }
+}
+
 /// <summary>
 /// `/profile-porter/*` 를 연다. 창(P4)이 부른다.
 ///
@@ -108,6 +115,19 @@ public class ProfilePorterRouter : StaticRouter
                         : service.ExportStash(info?.ProfileId, info?.ItemIds, info?.Name, info?.Note, info?.Overwrite ?? false, info?.Rename ?? false);
 
                     return ValueTask.FromResult(Json(jsonUtil, result));
+                }),
+
+            new RouteAction<PorterDetailRequest>(
+                "/profile-porter/file-detail",
+                (url, info, sessionId, output, ct) =>
+                {
+                    if (!Enabled(store, logger, out var off))
+                    {
+                        return ValueTask.FromResult(Json(jsonUtil, off!));
+                    }
+
+                    return ValueTask.FromResult(
+                        Json(jsonUtil, service.Detail(info?.FileName, info?.ContainerId)));
                 }),
 
             new RouteAction<PorterImportRequest>(
