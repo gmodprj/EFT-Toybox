@@ -1,0 +1,1 @@
+3095__IntegratedConfigurationManager-1.1.0	BepInEx\plugins\IntegratedConfigurationManager\IntegratedConfigurationManager.dll

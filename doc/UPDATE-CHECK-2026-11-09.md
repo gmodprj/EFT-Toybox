@@ -88,6 +88,7 @@ Forge 밖 4개(`VanillaTradersRework-Reloaded`(Nexus), `PortableTraders`(GitHub)
 | 505 Olympus | `MountOlympus\Modifiers\firearmMags.json` | 설치본에 없는 총기 12개를 빼 `AddMagazinesToFirearms` 가 중간에 멈추던 것을 고쳤다(1311줄 → 988줄) | [mod-patches/505-olympus-firearmMags.md](mod-patches/505-olympus-firearmMags.md), 원본·중간본이 같은 폴더에 있다 |
 | 755 The Blacklist | `platinum-theblacklist\Config\config.jsonc` | 제작자가 막아 둔 아이템 858건을 `customItemConfigs` 에 되살렸다(252줄 → 5402줄) | [mod-patches/theblacklist-restore-author-bans.md](mod-patches/theblacklist-restore-author-bans.md) + `theblacklist-restored-ids.json` |
 | 2667 PiP Disabler | `PiP-Disabler\custom_mesh_surgery_settings.json` | 모드가 인게임 저장 키로 쓰는 파일인데, 거기서 **배율 단계 이름으로 잘못 저장된 3개를 지웠다**(87 → 84) | [fixes/2026-10-30-pipdisabler-scope-misalign.md](fixes/2026-10-30-pipdisabler-scope-misalign.md), 보관본은 `backup/pip-disabler/` |
+| 2949 Realistic Insurance | `config\config.json` | **0.2.3 으로 올릴 때 돌려놓은 보험 설정 6개** — `baseReturnChancePercent` 의 pmc 65 · playerScav 55 · scav 80 · boss 55, `looterExtractedChancePercent` 25, `looterDiedBonusPercent` 50. 새 판이 더한 `timeRemaining` 은 기본값으로 뒀다 | 아래 §5, 업데이트 전 설정은 `backup/before-update-2026-11-09/2949/` |
 | 2485 ISB Special Forces | `ISBSpecialForces_Audios\Subtitles\locales\kr.json` | 무전·방송 자막 한국어 번역 | `tools/install-plugin-locales.ps1` 을 다시 돌린다 |
 | 2924 Advanced Stash Sorting | `locales\kr.json` | 정렬 창 번역 | 같음 |
 | 2500 Wishlist Extended | `locales\kr.json` | 위시리스트 번역 | 같음 |
@@ -108,7 +109,6 @@ Forge 밖 4개(`VanillaTradersRework-Reloaded`(Nexus), `PortableTraders`(GitHub)
 | 374 bluehead's AIO Trader | `data\assort_aio_trader.json` | 773B → **3,015KB**(상점 품목 생성) |
 | 1025 Painter | `db\assort.json` | 146줄 → 69줄 |
 | 2556 Repair Skill Extension | `buffs.jsonc` | 주석이 사라지고 값이 바뀌었다(`CommonBuffMinChanceValue` 0.25 → 0.75) |
-| 2949 Realistic Insurance | `config\config.json` | 72줄 → 61줄 |
 | 3025 Manimal Interchange | `BepInEx\config\com.manimal.interchange.cfg` | 3줄 → 28줄(첫 기동에 F12 항목이 펼쳐진 것) |
 | 2430 ODT's Item Info · 2554 Change Helmet Visor · 2650 Holster Everything · 3024 CaseTrader | 각 `config.json` | 1~7줄 |
 
@@ -160,6 +160,7 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
 ### 3-2. 묶음과 순서
 
 의존 관계와 위험으로 가른다. **묶음을 끝낼 때마다 기동해 보고 다음 묶음으로 넘어간다.**
+**U-A 는 2026-11-09 에 끝났다 — 결과는 §4.**
 
 | 묶음 | 모드 | 왜 이 순서인가 | 내려받을 양 |
 | --- | --- | --- | --- |
@@ -189,7 +190,49 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
 - **PIT 업스트림 1.1.1 머지** — STM 포크 쪽 일이고 모드 업데이트가 아니다.
 - **2-2 의 설정 차이** — 업데이트 대상이 아닌 모드는 건드리지 않는다.
 
-## 4. 다시 재는 법
+## 4. 진행 기록
+
+### U-A — 끝났다 (2026-11-09)
+
+작은 8개를 한 묶음으로 올렸다. 받은 양 **346KB**, 설치 파일 **18개**.
+
+| id | 모드 | 올린 버전 | 설치 파일 |
+| --- | --- | --- | --- |
+| 2859 | Compatibility Highlighter | 1.3.0 → **1.3.2** | 1 |
+| 2879 | WebOverlay | 1.11.0 → **1.12.0** | 7 |
+| 2907 | Stash Filter | 1.0.0 → **1.1.0** | 1 |
+| 2949 | Realistic Insurance | 0.2.1 → **0.2.3** | 3 (LICENSE·README 가 새 판에서 빠졌다) |
+| 3074 | Direct Reload & Painless Meds | 1.3.2 → **1.4.1** | 3 |
+| 3095 | Integrated Configuration Manager | 1.0.0 → **1.1.0** | 1 |
+| 3190 | BiC - Bind in Container | 1.0.1 → **1.0.2** | 1 |
+| 3194 | OpenBarters | 1.0.1 → **1.1.3** | 1 |
+
+- **U3 에서 새 경로는 0개**였다. 사라진 기록은 2949 의 `LICENSE`·`README.md` 둘뿐이라, 설치 기록
+  줄이 14001 → **13999** 로 줄었다. 모드 수는 304 로 그대로다.
+- **U4** 업데이트 전 20개 파일을 `backup/before-update-2026-11-09/<id>/` 로 받아 뒀다.
+  U-A 에 결속 모드가 없어 프로필 백업은 하지 않았다.
+- **U5** 기록 파일 7개는 `install-records/removed/*-before-update-2026-11-09.txt` 로 옮겼고,
+  `installed-batch3.txt` 는 **2859 한 줄만** 빼서 따로 남겼다(그 파일에는 다른 모드 6개의
+  기록이 함께 들어 있다 — 통째로 옮기면 멀쩡한 기록을 잃는다).
+- **U7 — 2949 의 보험 설정 6개를 돌려놨다.** 새 판이 `config/config.json` 을 함께 싣는데 그
+  값이 **0.2.1 의 기본값과 같다**(pmc 55 등). 지금 쓰던 값은 기본값이 아니었으므로(pmc 65 ·
+  playerScav 55 · scav 80 · boss 55 · 약탈자 탈출 25 · 못 나갔을 때 +50) 덮어쓰면 **설정이
+  기본으로 돌아갔을 것**이다. 돌려놓고, 새로 생긴 `timeRemaining` 은 기본값으로 뒀다.
+- **U8 실측** — 기록 검사 `OK — 0/0`. 서버 기동에서 `불러옴` **174줄 / 거부 0**(업데이트 전과
+  같다), `[Error]` **49줄 = `Could not add` 48(고유 id 48) + bundle 1** 로 기준선과 같고,
+  `cannot import quest` 1 도 같다. 두 모드가 새 버전으로 올라온 것을 로그가 직접 찍었다 —
+  `Realistic Insurance 버전 0.2.3 ... 불러옴`, `Direct Reload & Painless Meds 버전 1.4.1 ... 불러옴`.
+  **돌려놓은 설정도 로그가 확인해 준다** — `[RealisticInsurance] loaded - pmc 65% / playerScav 55%
+  / scav 80% / boss 55% / other 90%, looter extracts 25% (+50% when they don't)`.
+- `check-installed-vs-extracted.mjs` 를 다시 돌리면 **설정 아닌 차이는 여전히 0개**이고, 원본과
+  다른 모드는 13개로 같다(2949 는 §2-2 에서 **§2-1 로 옮겨 적었다** — 이제 우리가 일부러 넣은
+  값이다).
+- **아직 안 본 것: 게임 쪽.** 여덟 중 여섯이 클라이언트 플러그인인데 게임을 띄우지 않았다.
+  다음 기동에서 `N plugins to load` 가 **245 로 유지**되고 `[Fatal` 이 0 인지 봐야 한다.
+  `Armorer ... offers insurance but is not listed` 경고는 **업데이트 전부터 있던 것**이다(같은
+  날 앞 기동들에도 찍혀 있다).
+
+## 5. 다시 재는 법
 
 ```
 node tools/check-mod-updates.mjs             # 업데이트 있는 모드 (실패하면 종료 코드 1)

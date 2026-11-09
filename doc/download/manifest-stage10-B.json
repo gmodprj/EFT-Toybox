@@ -17,10 +17,10 @@
       "group": "10B-2",
       "id": 2879,
       "name": "WebOverlay",
-      "version": "1.11.0",
-      "size": 174334,
+      "version": "1.12.0",
+      "size": 179600,
       "profileBinding": false,
-      "link": "https://sp-mod.com/mod/download/2879/weboverlay/1.11.0"
+      "link": "https://sp-mod.com/mod/download/2879/weboverlay/1.12.0"
     },
     {
       "group": "10B-3",
@@ -62,10 +62,10 @@
       "group": "10B-7",
       "id": 3095,
       "name": "Integrated Configuration Manager",
-      "version": "1.0.0",
-      "size": 19827,
+      "version": "1.1.0",
+      "size": 25634,
       "profileBinding": false,
-      "link": "https://sp-mod.com/mod/download/3095/integrated-configuration-manager/1.0.0"
+      "link": "https://sp-mod.com/mod/download/3095/integrated-configuration-manager/1.1.0"
     }
   ]
 }

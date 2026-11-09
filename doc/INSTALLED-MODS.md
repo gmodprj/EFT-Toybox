@@ -3,7 +3,7 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **304개**, 설치 파일 **14001개** (자동 생성 설정 파일 포함)
+- 설치된 모드: **304개**, 설치 파일 **13999개** (자동 생성 설정 파일 포함)
 - **현재 로드 수 (2026-11-09 실측): 서버 모드 174개 / 게임 쪽 플러그인 245개 — 둘 다 실측이다.** 173 에서 174 가 된 것은 이 저장소에서 만든 `ProfilePorter.Server`(프로필 사이로 물건 베끼기, 2026-11-08 설치) 하나다 — 11-09 서버 로그의 기동 11회 **전부** `ModLoader: 총 174 개`, `불러옴` 174줄, 거부 0 이다. 그 전에 172 에서 173 이 된 것은 `SptKoreanLocale`(게임 DB locale 한글화) 이고, 173 은 10차 전체 완료(2026-11-06) 시점의 값이다. 같은 기동에서 서버 오류는 `Could not add` 48 · `Unable to add bundle` 1 · `cannot import quest` 1 로 기준선과 같다. **오래 떠 있는 기동에서는 같은 48줄이 되풀이된다** — 2026-11-09 의 마지막 기동(약 2시간)은 `Could not add` 가 144줄이었지만 **고유 id 는 48개로 같고**, 03:31·04:06·05:12(UTC)에 `ItemBaseClassService` 캐시가 다시 세워지며 세 번 찍힌 것이다. 줄 수가 아니라 **고유 id 수**로 본다. 게임 플러그인은 서버 모드라 그대로다. 3022 와 2866 이 플러그인 속성을 가진 클라이언트 DLL 을 하나씩 넣어 243 에서 2 늘었다(2866 이 함께 넣은 `PerfectCullingRuntime.dll` 은 플러그인 속성이 없어 0 으로 센다 — 넣은 DLL 2개 가운데 1만 센 것이 맞았다). 마지막 기동에서 `245 plugins to load` = `Loading [` 245줄, `Chainloader startup complete`, `[Error` 1줄 / `[Fatal` 0줄(알려진 DirectReload+Fika 건뿐). **다만 Better BepInEx 가 F12 창을 자기 메뉴로 갈아끼우면서 그 창에 붙어 있던 패치를 떼어 냈다** — 수는 줄지 않았지만 **로드된 것과 일하는 것은 다르다**. 그중 **한글화는 2026-11-05 에 고쳤다**(`SptKoreanConfig` 에 `BetterBepInExPatch` 를 더해 새 메뉴가 설정을 모으는 지점에 같은 번역을 다시 건다 — 커밋 f325eaa·1ff99da·446e22d, 설치본 DLL 11-05 16:35). **남은 것은 ASBP 뿐이고, 사용자가 2026-11-06 에 새 메뉴를 쓰기로 했다** — ASBP 는 하는 일이 없다. 경위는 `STAGE10-RESULT.md` 의 10-J 절
 - 레이드를 깊게 돈 기동(11-05 11:06)에서는 `[Error` 9줄이었고 **전부 기존 건**이다 — SAIN 6, 알려진 DirectReload 1, STM 의 LootPatrol 억제 예외가 두 줄로 찍힌 것 2. 메뉴까지만 돈 기동이 1줄인 것은 좋아진 것이 아니라 **아직 안 나온 것**이다
 - 10차 서버 모드 변화: 115(기준선) → 116(10-A) → 120(10-B) → 122(10-C, 150초) → 127(10-D, 144초) → 136(10-E, 159초 / 10-E2, 129초) → **135**(All Quests Checkmarks 제거) → **137**(10-F, 135초) → **138**(10-F2 ORBIT, 144초) → **145**(10-G, 전리품·경제 11개 중 서버 7, 135초. 플리마켓 생성 단계에서도 오류 없음) → **150**(10-H, 맵 7개를 하나씩. 141~162초, 7회 전부 정상 시작) → **151**(10-I1 중 Blackout, 144초) → **152**(10-I2 중 FogSix) → **153**(10-J 중 Raid Review, 147초) → **154**(10-J 중 Knight Mask Fix, 141초) → **155**(10-K 중 PityLoot) → **156**(10-K 중 Lacy 의 PvE Tweaks) → **157**(10-K 중 Quest Backport) → **167**(10-L, 결속 콘텐츠·대형 11개를 하나씩. 11회 전부 정상 시작이고 11개 중 10개가 서버 모드를 싣는다 — Deploy Screen Overhaul 만 게임 전용). 10-K 는 결속 소형 6개를 **하나씩** 넣었고 6회 전부 정상 시작했다(게임 전용 3개는 수가 그대로다). 이어 **169**(10-M, 대형 3개를 하나씩. DynamicMaps Extended 는 게임 전용이라 167 유지, Labs Office Backport 168, Arena Map Port 169. 3회 전부 정상 시작) → **170**(10-O 중 Manimal Interchange Expansion Backport, 201초) → **171**(10-O 중 Manimal Lighthouse Rework Backport, 198초. 앞의 것을 인터체인지 레이드로 확인한 뒤에 넣었다 — 계획이 못 박은 대로 모드마다 멈춘다) → **172**(10-O 의 마지막 MANIMAL ICEBREAKER BACKPORT, 165초. **이것으로 10차가 끝났다**). 10-O 의 세 모드 모두 기록 줄 수가 설치 파일 수와 같거나 서버가 만든 파일만큼만 많았고, 오류는 세 번 다 48/1/1 로 늘지 않았다. Raid Review 만 자체 포트(7828 WS / 7829 HTTP)를 열고 나머지 웹 화면은 모두 6969 안이다. 제거는 10-F 테스트 출력이 직접 찍었다 — `(Added 2 mods: ClassicMovement, Increase Climb Height; Removed 1 mods: All Quests Checkmarks)`. 시작 시간의 약 100초는 `[ItemInfo]` 하나가 쓴다. QuestCodex 는 서버 포트 안에 `/questcodex` 를 붙인다(별도 포트가 아니다)
@@ -37,7 +37,7 @@
 | [Chamber Ammo Info](https://sp-mod.com/mod/2553) | 1.1.0 | 게임 | - | 1 | `batch3` |
 | [BALL - Better Ammo Loading List](https://sp-mod.com/mod/2221) | 1.1.1 | 게임 | - | 1 | `batch3` |
 | [Continuous Load Ammo](https://sp-mod.com/mod/2112) | 1.2.0 | 게임 | - | 2 | `batch3` |
-| [Compatibility Highlighter](https://sp-mod.com/mod/2859) | 1.3.0 | 게임 | - | 1 | `batch3` |
+| [Compatibility Highlighter](https://sp-mod.com/mod/2859) | 1.3.2 | 게임 | - | 1 | `update-2859-1.3.2` |
 | [Colored Tracers](https://sp-mod.com/mod/2037) | 3.0.1 | 서버 | - | 3 | `batch3` |
 | [Trader Modding And Improved Weapon Building](https://sp-mod.com/mod/1283) | 2.1.2 | 게임+서버 | **결속** | 2 | `batch4` |
 | [Modding Stats Helper - by wara](https://sp-mod.com/mod/1300) | 1.2.0 | 게임 | **결속** | 1 | `batch4` |
@@ -89,7 +89,7 @@
 | [Auto Corpse Search](https://sp-mod.com/mod/2730) | 2.2.0 | 게임 | - | 1 | `stage5A-2730` |
 | [Discarder](https://sp-mod.com/mod/1745) | 5.0.0 | 게임 | - | 1 | `stage5A-1745` |
 | [Advanced Stash Sorting](https://sp-mod.com/mod/2924) | 1.0.6 | 게임 | - | 4 | `stage5A-2924` |
-| [Stash Filter](https://sp-mod.com/mod/2907) | 1.0.0 | 게임 | - | 1 | `stage5A-2907` |
+| [Stash Filter](https://sp-mod.com/mod/2907) | 1.1.0 | 게임 | - | 1 | `update-2907-1.1.0` |
 | [Linked Search In Stash](https://sp-mod.com/mod/2731) | 2.0.1 | 게임 | - | 1 | `stage5A-2731` |
 | [Raid Menu Cleanup Fix](https://sp-mod.com/mod/2733) | 2.0.0 | 게임 | - | 1 | `stage5A-2733` |
 | [Advanced Modding Lights](https://sp-mod.com/mod/3081) | 2.0.0 | 게임 | - | 1 | `stage5A-3081` |
@@ -110,7 +110,7 @@
 | [Flexible Builds](https://sp-mod.com/mod/2646) | 1.2.2 | 게임+서버 | - | 2 | `stage5B-2646` |
 | [Better Thermal & Night Vision](https://sp-mod.com/mod/2531) | 2.1.1 | 게임 | - | 3 | `stage5B-2531` |
 | [Magazine Check Interrupt](https://sp-mod.com/mod/2643) | 1.1.1 | 게임 | - | 4 | `stage5C-2643` |
-| [Direct Reload & Painless Meds](https://sp-mod.com/mod/3074) | 1.3.2 | 게임+서버 | - | 3 | `stage5C-3074` |
+| [Direct Reload & Painless Meds](https://sp-mod.com/mod/3074) | 1.4.1 | 게임+서버 | - | 3 | `update-3074-1.4.1` |
 | [Low Ammo Cue](https://sp-mod.com/mod/3046) | 1.0.0 | 게임 | - | 1 | `stage5C-3046` |
 | [BarterItemsStacks](https://sp-mod.com/mod/2480) | 1.4.3 | 게임+서버 | - | 5 | `stage5C-2480` |
 | [Cobra's Ammo Stack](https://sp-mod.com/mod/2840) | 1.1.0 | - | **결속** | 0 | **미설치** |
@@ -143,10 +143,10 @@
 | [BrightLasers](https://sp-mod.com/mod/1358) | 3.0.0 | 게임+서버 | - | 4 | `stage6A-1358` |
 | [No Barrel Shadow](https://sp-mod.com/mod/2780) | 2.0.1 | 게임 | **결속** | 2 | `stage6A-2780` |
 | [Vanguard](https://sp-mod.com/mod/2917) | 2.0.0 | 서버 | **결속** | 10 | `stage6A-2917` |
-| [OpenBarters](https://sp-mod.com/mod/3194) | 1.0.1 | 게임 | - | 1 | `stage6A-3194` |
+| [OpenBarters](https://sp-mod.com/mod/3194) | 1.1.3 | 게임 | - | 1 | `update-3194-1.1.3` |
 | [Moe-TradeMarker](https://sp-mod.com/mod/2736) | 1.2.6 | 게임+서버 | **결속** | 9 | `stage6A-2736` |
 | [Ref Rework](https://sp-mod.com/mod/3014) | 1.0.0 | 게임+서버 | - | 4 | `stage6A-3014` |
-| [Realistic Insurance](https://sp-mod.com/mod/2949) | 0.2.1 | 게임+서버 | - | 5 | `stage6A-2949` |
+| [Realistic Insurance](https://sp-mod.com/mod/2949) | 0.2.3 | 게임+서버 | - | 3 | `update-2949-0.2.3` |
 | [All Weapons Flea](https://sp-mod.com/mod/3200) | 1.0.1 | 서버 | - | 3 | `stage6A-3200` |
 | [NATO Quartermaster — Western Gear Trader, Presets & Quest Unlocks](https://sp-mod.com/mod/3030) | 1.1.3 | 서버 | **결속** | 4 | `stage6B-3030` |
 | [ECOTI - Enhanced Clip-On Thermal Imager](https://sp-mod.com/mod/2930) | 3.4.2 | 게임+서버 | **결속** | 71 | `stage6B-2930` |
@@ -209,7 +209,7 @@
 | [Foldables](https://sp-mod.com/mod/2422) | 1.1.1 | 게임+서버 | - | 8 | `stage7A-2422` |
 | [VisorEffectManager](https://sp-mod.com/mod/2429) | 1.1.0 | 게임 | - | 1 | `stage7A-2429` |
 | [Change Helmet Visor](https://sp-mod.com/mod/2554) | 3.0.0 | 게임+서버 | - | 5 | `stage7A-2554` |
-| [BiC - Bind in Container](https://sp-mod.com/mod/3190) | 1.0.1 | 게임 | - | 1 | `stage7A-3190` |
+| [BiC - Bind in Container](https://sp-mod.com/mod/3190) | 1.0.2 | 게임 | - | 1 | `update-3190-1.0.2` |
 | [Manimal's Quick Cancel](https://sp-mod.com/mod/2969) | 2.0.0 | 게임 | - | 1 | `stage7A-2969` |
 | [Quick Aim](https://sp-mod.com/mod/2985) | 1.0.0 | 게임 | - | 1 | `stage7A-2985` |
 | [All In Weapon: Unslotted](https://sp-mod.com/mod/2576) | 1.2.0 | - | - | 0 | **미설치** |
@@ -259,12 +259,12 @@
 | --- | --- | --- | --- | --- | --- |
 | [Easy Slot Filters](https://sp-mod.com/mod/2940) | 1.0.0 | 서버 | - | 2 | `stage10-A-2940-EasySlotFilters` |
 | [Effects Manager Framework](https://sp-mod.com/mod/3123) | 1.1.0 | 게임 | - | 1 | `stage10-B-3123-EffectsManagerFramework` |
-| [WebOverlay](https://sp-mod.com/mod/2879) | 1.11.0 | 게임 | - | 7 | `stage10-B-2879-WebOverlay` |
+| [WebOverlay](https://sp-mod.com/mod/2879) | 1.12.0 | 게임 | - | 7 | `update-2879-1.12.0` |
 | [Map Variants](https://sp-mod.com/mod/3040) | 1.1.0 | 게임+서버 | - | 8 | `stage10-B-3040-MapVariants` |
 | [Quest Codex](https://sp-mod.com/mod/3054) | 1.11.1 | 서버 | - | 95 | `stage10-B-3054-QuestCodex` |
 | [Item Property Backport](https://sp-mod.com/mod/2689) | 1.5.2 | 서버 | - | 6 | `stage10-B-2689-ItemPropertyBackport` |
 | [Hj's Mod Source](https://sp-mod.com/mod/3083) | 1.1.0 | 게임+서버 | - | 3 | `stage10-B-3083-HjsModSource` |
-| [Integrated Configuration Manager](https://sp-mod.com/mod/3095) | 1.0.0 | 게임 | - | 1 | `stage10-B-3095-IntegratedConfigurationManager` |
+| [Integrated Configuration Manager](https://sp-mod.com/mod/3095) | 1.1.0 | 게임 | - | 1 | `update-3095-1.1.0` |
 | [MergeConsumables](https://sp-mod.com/mod/1657) | 1.6.3 | 게임+서버 | - | 4 | `stage10-C-1657-MergeConsumables` |
 | [Continuous Healing](https://sp-mod.com/mod/1884) | 1.6.3 | 게임 | - | 2 | `stage10-C-1884-ContinuousHealing` |
 | [Healing Autocancel](https://sp-mod.com/mod/1274) | 5.0.1 | 게임 | - | 1 | `stage10-C-1274-HealingAutocancel` |

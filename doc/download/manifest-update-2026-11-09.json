@@ -1,0 +1,15 @@
+{
+  "stage": "update-2026-11-09",
+  "spt": "4.1.6",
+  "note": "업데이트 묶음 U-A — 의존 없고 1MB 이하인 작은 모드 8개. 계획은 UPDATE-CHECK-2026-11-09.md §3-2. 이 파일 이름은 manifest-stage<N> 꼴이 아니므로 gen-installed-mods.mjs 가 읽지 않는다(설치 버전은 각 모드가 들어 있는 단계 매니페스트에서 고친다).",
+  "mods": [
+    { "group": "U-A", "id": 2859, "name": "Compatibility Highlighter", "version": "1.3.2", "size": 10938, "profileBinding": false, "link": "https://sp-mod.com/mod/download/2859/compatibility-highlighter/1.3.2" },
+    { "group": "U-A", "id": 2879, "name": "WebOverlay", "version": "1.12.0", "size": 179600, "profileBinding": false, "link": "https://sp-mod.com/mod/download/2879/weboverlay/1.12.0" },
+    { "group": "U-A", "id": 2907, "name": "Stash Filter", "version": "1.1.0", "size": 24845, "profileBinding": false, "link": "https://sp-mod.com/mod/download/2907/stash-filter/1.1.0" },
+    { "group": "U-A", "id": 2949, "name": "Realistic Insurance", "version": "0.2.3", "size": 31836, "profileBinding": false, "link": "https://sp-mod.com/mod/download/2949/realistic-insurance/0.2.3" },
+    { "group": "U-A", "id": 3074, "name": "Direct Reload & Painless Meds", "version": "1.4.1", "size": 54436, "profileBinding": false, "link": "https://sp-mod.com/mod/download/3074/direct-reload-painless-meds/1.4.1" },
+    { "group": "U-A", "id": 3095, "name": "Integrated Configuration Manager", "version": "1.1.0", "size": 25634, "profileBinding": false, "link": "https://sp-mod.com/mod/download/3095/integrated-configuration-manager/1.1.0" },
+    { "group": "U-A", "id": 3190, "name": "BiC - Bind in Container", "version": "1.0.2", "size": 3297, "profileBinding": false, "link": "https://sp-mod.com/mod/download/3190/bic-bind-in-container/1.0.2" },
+    { "group": "U-A", "id": 3194, "name": "OpenBarters", "version": "1.1.3", "size": 15622, "profileBinding": false, "link": "https://sp-mod.com/mod/download/3194/openbarters/1.1.3" }
+  ]
+}
