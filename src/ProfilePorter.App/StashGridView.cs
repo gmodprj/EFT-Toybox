@@ -73,6 +73,12 @@ public sealed class StashGridView : ScrollViewer
     /// <summary>아이콘을 구해 오는 쪽. null 이면 이름만 그린다.</summary>
     public IconService? Icons { get; set; }
 
+    /// <summary>
+    /// 읽기 전용. 켜면 **고르기·끌기·올가미를 받지 않는다** — 세부 보기 창이 쓴다.
+    /// 그 창은 되짚어 보는 곳이지 고르는 곳이 아니다(설계 §2.2).
+    /// </summary>
+    public bool ReadOnly { get; set; }
+
     /// <summary>고른 것이 바뀌면 알린다.</summary>
     public event Action? SelectionChanged;
 
@@ -294,6 +300,11 @@ public sealed class StashGridView : ScrollViewer
 
     private void OnCanvasDown(object sender, MouseButtonEventArgs e)
     {
+        if (ReadOnly)
+        {
+            return;
+        }
+
         _dragFrom = e.GetPosition(_canvas);
         _dragging = true;
         _canvas.CaptureMouse();
@@ -308,7 +319,7 @@ public sealed class StashGridView : ScrollViewer
 
     private void OnCanvasMove(object sender, MouseEventArgs e)
     {
-        if (!_dragging)
+        if (ReadOnly || !_dragging)
         {
             return;
         }
@@ -322,7 +333,7 @@ public sealed class StashGridView : ScrollViewer
 
     private void OnCanvasUp(object sender, MouseButtonEventArgs e)
     {
-        if (!_dragging)
+        if (ReadOnly || !_dragging)
         {
             return;
         }

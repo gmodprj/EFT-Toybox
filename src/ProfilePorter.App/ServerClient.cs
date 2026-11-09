@@ -88,6 +88,79 @@ public sealed record FilesResponse
     [JsonPropertyName("files")] public List<PorterFileRow> Files { get; init; } = [];
 }
 
+/// <summary>나무의 한 줄. 고른 자리의 **직계 자식**이다.</summary>
+public sealed record DetailNode
+{
+    [JsonPropertyName("id")] public string Id { get; init; } = string.Empty;
+    [JsonPropertyName("tpl")] public string Tpl { get; init; } = string.Empty;
+    [JsonPropertyName("name")] public string Name { get; init; } = string.Empty;
+    [JsonPropertyName("slotName")] public string SlotName { get; init; } = string.Empty;
+    [JsonPropertyName("contained")] public int Contained { get; init; }
+
+    /// <summary>`container` 면 안으로 들어갈 수 있다.</summary>
+    [JsonPropertyName("kind")] public string Kind { get; init; } = "item";
+
+    public bool IsContainer => Kind == "container";
+
+    public string Display =>
+        (string.IsNullOrEmpty(SlotName) ? Name : $"{SlotName} — {Name}")
+        + (Contained > 0 ? $"  ({Contained})" : string.Empty);
+}
+
+/// <summary>슬롯에 꽂힌 것 한 줄. 좌표가 아니라 **슬롯 이름**으로 붙어 있다.</summary>
+public sealed record DetailSlotRow
+{
+    [JsonPropertyName("slotId")] public string? SlotId { get; init; }
+    [JsonPropertyName("slotName")] public string SlotName { get; init; } = string.Empty;
+    [JsonPropertyName("id")] public string Id { get; init; } = string.Empty;
+    [JsonPropertyName("tpl")] public string Tpl { get; init; } = string.Empty;
+    [JsonPropertyName("name")] public string Name { get; init; } = string.Empty;
+    [JsonPropertyName("stack")] public int Stack { get; init; }
+    [JsonPropertyName("contained")] public int Contained { get; init; }
+    [JsonPropertyName("summary")] public string Summary { get; init; } = string.Empty;
+    [JsonPropertyName("why")] public string? Why { get; init; }
+
+    public string Display =>
+        $"{Name}" + (Stack > 1 ? $" ×{Stack}" : string.Empty)
+        + (string.IsNullOrWhiteSpace(Summary) ? string.Empty : $"   {Summary}")
+        + (Contained > 0 ? $"   (안에 {Contained}개)" : string.Empty)
+        + (string.IsNullOrWhiteSpace(Why) ? string.Empty : $"   — {Why}");
+}
+
+/// <summary>상자 안의 격자 하나. 상자 하나에 격자가 여럿이다.</summary>
+public sealed record DetailGridRow
+{
+    [JsonPropertyName("name")] public string Name { get; init; } = string.Empty;
+    [JsonPropertyName("gridName")] public string GridName { get; init; } = string.Empty;
+    [JsonPropertyName("cellsH")] public int CellsH { get; init; }
+    [JsonPropertyName("cellsV")] public int CellsV { get; init; }
+    [JsonPropertyName("rows")] public List<StashRow> Rows { get; init; } = [];
+}
+
+public sealed record DetailView
+{
+    [JsonPropertyName("kind")] public string Kind { get; init; } = string.Empty;
+    [JsonPropertyName("cellsH")] public int CellsH { get; init; }
+    [JsonPropertyName("cellsV")] public int CellsV { get; init; }
+    [JsonPropertyName("rows")] public List<StashRow> Rows { get; init; } = [];
+    [JsonPropertyName("grids")] public List<DetailGridRow> Grids { get; init; } = [];
+    [JsonPropertyName("slots")] public List<DetailSlotRow> Slots { get; init; } = [];
+    [JsonPropertyName("loose")] public List<DetailSlotRow> Loose { get; init; } = [];
+}
+
+/// <summary>세부 보기 — **한 자리**씩 온다. 파일 전체를 한 번에 받지 않는다.</summary>
+public sealed record DetailResponse
+{
+    [JsonPropertyName("ok")] public bool Ok { get; init; }
+    [JsonPropertyName("reason")] public string? Reason { get; init; }
+    [JsonPropertyName("fileName")] public string? FileName { get; init; }
+    [JsonPropertyName("kind")] public string? Kind { get; init; }
+    [JsonPropertyName("containerId")] public string? ContainerId { get; init; }
+    [JsonPropertyName("notices")] public List<string> Notices { get; init; } = [];
+    [JsonPropertyName("tree")] public List<DetailNode> Tree { get; init; } = [];
+    [JsonPropertyName("view")] public DetailView? View { get; init; }
+}
+
 public sealed record PorterResultRow
 {
     [JsonPropertyName("ok")] public bool Ok { get; init; }
@@ -161,6 +234,10 @@ public sealed class ServerClient : IDisposable
 
     /// <summary>같은 이름이라 거절당했는지. 서버가 이 말로 알려 준다.</summary>
     public const string NameTakenReason = "같은 이름의 파일이 이미 있습니다.";
+
+    /// <summary>세부 보기 — `containerId` 를 비우면 그 파일의 **뿌리**를 본다.</summary>
+    public Task<DetailResponse?> DetailAsync(string fileName, string? containerId, CancellationToken ct) =>
+        PostAsync<DetailResponse>("/profile-porter/file-detail", new { fileName, containerId }, ct);
 
     /// <summary>내보낸 파일 하나를 지운다. **창이 사람에게 묻고 나서** 부른다.</summary>
     public Task<PorterResultRow?> DeleteFileAsync(string fileName, CancellationToken ct) =>

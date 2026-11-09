@@ -135,11 +135,21 @@ public partial class MainWindow : Window
         DetailButton.IsEnabled = row is { Readable: true };
     }
 
-    /// <summary>세부 보기 창을 띄운다. 창 자체는 Task 6 에서 만든다.</summary>
+    /// <summary>
+    /// 세부 보기 창을 띄운다. **본 창을 막지 않는다**(`Show`) — 열어 둔 채로 다른 파일을
+    /// 고를 수 있다. 아이콘은 **같은 인스턴스**를 넘겨 캐시를 두 번 받지 않는다.
+    /// </summary>
     private void Detail_Click(object sender, RoutedEventArgs e)
     {
-        if (Files.SelectedItem is not PorterFileRow row) return;
-        Status($"'{row.FileName}' 세부 보기는 아직 준비 중입니다.");
+        if (_client is null || Files.SelectedItem is not PorterFileRow row) return;
+
+        if (!row.Readable)
+        {
+            Status("그 파일은 열지 못합니다 — 지우기만 됩니다.", warn: true);
+            return;
+        }
+
+        new FileDetailWindow(_client, _icons, row.FileName) { Owner = this }.Show();
     }
 
     private async void Delete_Click(object sender, RoutedEventArgs e)
