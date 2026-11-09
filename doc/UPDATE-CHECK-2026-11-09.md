@@ -160,7 +160,7 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
 ### 3-2. 묶음과 순서
 
 의존 관계와 위험으로 가른다. **묶음을 끝낼 때마다 기동해 보고 다음 묶음으로 넘어간다.**
-**U-A부터 U-E 까지 2026-11-09 에 끝났고 U-F 는 받는 중이다 — 결과는 §4. 남은 것은 U-G·U-H 다.**
+**U-A부터 U-E 와 U-G 가 2026-11-09 에 끝났고 U-F 는 받는 중이다 — 결과는 §4. 남은 것은 U-H 다.**
 
 | 묶음 | 모드 | 왜 이 순서인가 | 내려받을 양 |
 | --- | --- | --- | --- |
@@ -416,6 +416,31 @@ ISB 셋. 의존 방향은 **MoreBotsAPI → ISB Aishi → ISB Special Forces** �
   (`backup/profiles-before-update-uf/`, ISB Aishi 가 결속이다).
 - **2485 를 넣은 뒤 자막 번역을 다시 올려야 한다** — `tools/install-plugin-locales.ps1`,
   확인은 `node tools/check-plugin-locales.mjs`.
+
+### U-G — 끝났다 (2026-11-09)
+
+| id | 모드 | 올린 버전 | 설치 파일 | 기동 |
+| --- | --- | --- | --- | --- |
+| 3156 | GF2 Skin Pack | 1.0.0 → **1.2.4** | 58 → **76** | `SERVER STARTED in 171s` |
+
+- **의존은 막힌 것이 아니었다.** 계획이 "GF2 가 1.0.8 을 요구하면 멈추고 판단한다" 로 적어 둔
+  자리인데, Forge 의존 해석(`/mods/dependencies?mods=3156:1.2.4`)에 **버전 제약이 없고**
+  `conflict: false` 다. 설치본의 WTT Head&Voice **1.1.0 은 서버 기동에서 정상 적재**된다
+  (`모드 WTT Head Voice Selector 버전 1.1.0 ... 불러옴`). 표기가 아니라 실측으로 판정했다.
+- **압축에 폴더가 한 겹 더 있었다.** 다른 모드는 압축 뿌리가 바로 `SPT_Runtime\...` 인데 이
+  압축은 `GF2_Skin_Pack_Full_SPT_4.1.6\SPT_Runtime\...` 이다. 그대로 풀면 설치 경로가 한 겹
+  어긋나 **76개 전부 "설치 경로가 아닌 파일"** 로 잡힌다. `tar.exe ... --strip-components=1` 로
+  다시 풀었다.
+- **서버는 버전을 1.0.0 으로 찍는다 — 틀린 설치가 아니다.** `GF2.SkinPack.dll` 이 **옛 것과
+  md5 가 같다**(9253914f…, 8,704B). 제작자가 어셈블리 버전을 올리지 않았고 이 판은 **내용만
+  바뀐 릴리스**다. 바뀐 것은 `bundles.json` 이 **52 → 72 항목**이고 의상·머리 번들이 20개
+  늘었다(igla_default·klukai_cerulean·mityl·Nikketa 등 12개를 폴더에서 확인했다).
+  판정은 로그의 버전 표기가 아니라 **파일로** 한다.
+- **9차 기록에 섞여 있던 임시 파일 2개가 사라졌다** — `.soppo_upper.bundle.h6E1gv`(32.8MB)와
+  `.makitto_head.bundle.alMG0a`(4.5MB). 압축을 풀다 끊긴 조각이 그대로 기록에 들어가 있던
+  것이고, 새 기록에는 없다(지금 그 폴더에 숨은 임시 파일 0개).
+- **U8 실측** — 기록 검사 `OK — 0/0`(모드 304 그대로). `불러옴` **174줄 / 거부 0**,
+  `Could not add` 48(고유 id 48) · bundle 1 · quest 1 로 기준선과 같다. 설치 파일 76개 2.7GB.
 
 ## 5. 다시 재는 법
 

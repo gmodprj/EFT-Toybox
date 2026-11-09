@@ -1,0 +1,8 @@
+{
+  "stage": "update-2026-11-09-ug",
+  "spt": "4.1.6",
+  "note": "업데이트 묶음 U-G — GF2 Skin Pack 하나. WTT Head&Voice(1277)를 의존하는데 설치본 1.1.0 이 Forge 최신 1.0.8 보다 높다. Forge 의존 해석에 버전 제약이 없고 conflict:false 라 막힌 것이 아니다(실측). 9차로 들어와 해제본 원본이 없어 수정 여부를 못 쟀으므로 넣기 전 기록된 파일을 백업한다. 계획은 UPDATE-CHECK-2026-11-09.md §3-2.",
+  "mods": [
+    { "group": "U-G", "id": 3156, "name": "GF2 Skin Pack", "version": "1.2.4", "size": 1200449725, "profileBinding": false, "link": "https://sp-mod.com/mod/download/3156/gf2-skin-pack/1.2.4" }
+  ]
+}
