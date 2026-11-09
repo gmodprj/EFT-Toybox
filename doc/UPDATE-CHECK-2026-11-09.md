@@ -160,7 +160,7 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
 ### 3-2. 묶음과 순서
 
 의존 관계와 위험으로 가른다. **묶음을 끝낼 때마다 기동해 보고 다음 묶음으로 넘어간다.**
-**U-A·U-B·U-C 는 2026-11-09 에 끝났다 — 결과는 §4.**
+**U-A·U-B·U-C 는 2026-11-09 에 끝났고 U-D 는 절반이다 — 결과는 §4.**
 
 | 묶음 | 모드 | 왜 이 순서인가 | 내려받을 양 |
 | --- | --- | --- | --- |
@@ -297,6 +297,35 @@ Quest Codex 를 먼저, Briefing 을 뒤에 올렸다(의존 방향). 받은 양
   `OTHERMOD ... (다른 모드가 만든 파일 — 기록하지 않음)` 가 19줄 찍혔다(ORBIT·ETT·SIM·Raid
   Review 것). [기록 오기](install-records/README-removed-stale-lines-2026-11-06.md) 가 더 생기지
   않는다.
+
+### U-D — 절반 (2026-11-09)
+
+둘 다 받아 뒀고 **MSGA 만 넣었다.** 계획이 "하나씩, 레이드까지 돌아 본 뒤 다음 것" 으로
+못 박아 둔 자리라, **레이드 확인은 사람 몫**이므로 Epic's AIO 는 넣지 않고 멈췄다.
+
+| id | 모드 | 상태 | 설치 파일 | 기동 |
+| --- | --- | --- | --- | --- |
+| 1453 | Make Shotguns Great Again! | 1.19.1 → **1.20.0** 넣었다 | 195 → **223** | `SERVER STARTED in 177s` |
+| 1263 | Epic's All in One | 5.0.2 → 5.0.3 **받아만 뒀다**(1.5GB) | 632 (경로 변화 0) | — |
+
+- **받는 길이 막혀 `gh` 로 돌아갔다.** `sp-mod.com/mod/download/1453/.../1.20.0` 은
+  `github.com/viniHNS/Make-Shotguns-Great-Again/releases/download/v1.20.0/...` 로 307 을
+  돌려주는데, 그 **github.com 주소가 504 Gateway Time-out** 이다 — `download-stage.mjs` 가
+  한 번, `redownload-mod.mjs` 가 네 번, 손으로 한 번, 모두 504 였다. 같은 묶음의 Epic's AIO 는
+  `release-assets.githubusercontent.com` 로 가서 **40초에 1.5GB** 를 받았다. 그래서
+  `gh release download v1.20.0 --repo viniHNS/Make-Shotguns-Great-Again` 으로 받았고
+  **바이트 수가 매니페스트와 정확히 같다**(436,552,891B). 받은 뒤 이름을 `1453__` 꼴로 맞췄다.
+- MSGA 1.20.0 은 파일이 **28개 늘었다** — ATI Omni 410 과 Iver Johnson Champion 쪽 번들·텍스처다.
+  콘텐츠가 늘어난 것이고 경로가 사라진 것은 없다.
+- Epic's AIO 5.0.3 은 **경로 집합이 5.0.2 와 똑같다**(632개, 새 경로 0 · 사라진 경로 0).
+- **U8 실측** — 기록 검사 `OK — 0/0`(모드 304 그대로). `불러옴` **174줄 / 거부 0**,
+  `Could not add` 48(고유 id 48) · `Unable to add bundle` **1**(알려진 `barrel_vpo215` 건뿐,
+  번들 28개가 늘었는데도 안 늘었다) · quest 1. 로그가
+  `모드 Make Shotguns Great Again 버전 1.20.0 ... 불러옴` 을 찍었다.
+- 프로필 11개를 `backup/profiles-before-update-2026-11-09-ud/` 와 맞대어 **마이그레이션 시각
+  한 곳만** 다른 것을 확인했다.
+- **남은 것**: 레이드로 MSGA 를 확인하고 나서 Epic's AIO 를 넣는다. 압축은
+  `downloads/update-2026-11-09-ud/`, 해제본은 `extracted/update-2026-11-09-ud/` 에 그대로 있다.
 
 ## 5. 다시 재는 법
 

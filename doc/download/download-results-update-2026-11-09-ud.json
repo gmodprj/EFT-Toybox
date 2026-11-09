@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1453,
+    "name": "Make Shotguns Great Again!",
+    "version": "1.20.0",
+    "error": "Error: HTTP 504"
+  },
+  {
+    "id": 1263,
+    "name": "Epic's All in One",
+    "version": "5.0.3",
+    "file": "1263__EpicRangeTime-Epic.s.All.In.One_v5.0.3.zip",
+    "bytes": 1582754683,
+    "expected": 1582754683,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 40
+  }
+]
