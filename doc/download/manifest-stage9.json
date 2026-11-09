@@ -58,26 +58,30 @@
       "group": "9-절차밖",
       "id": 2478,
       "name": "ISB Aishi",
-      "version": "2.0.4",
+      "version": "2.0.7",
       "profileBinding": true,
       "installedAt": "2026-10-27 21:12",
       "folders": [
         "SPT_Runtime\\user\\mods\\ISB-Aishi",
         "BepInEx\\plugins\\ISBAishiPlugin"
-      ]
+      ],
+      "size": 4371179965,
+      "link": "https://sp-mod.com/mod/download/2478/isb-aishi/2.0.7"
     },
     {
       "group": "9-절차밖",
       "id": 2485,
       "name": "ISB Special Forces",
-      "version": "2.0.1",
+      "version": "2.0.4",
       "profileBinding": false,
       "installedAt": "2026-10-27 21:49",
       "folders": [
         "SPT_Runtime\\user\\mods\\ISB-SpecialForces",
         "BepInEx\\plugins\\ISBSpecialForcesPlugin",
         "BepInEx\\patchers\\ISBSpecialForces.dll"
-      ]
+      ],
+      "size": 819708124,
+      "link": "https://sp-mod.com/mod/download/2485/isb-special-forces/2.0.4"
     },
     {
       "group": "9-절차밖-이전",
