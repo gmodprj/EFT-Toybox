@@ -8,7 +8,6 @@
 2221__BetterAmmoLoadingList_1.1.1	BepInEx\plugins\Kat.BetterAmmoLoadingList.dll
 2112__ozen.ContinuousLoadAmmo-1.2.0	BepInEx\plugins\ozen.ContinuousLoadAmmo\ozen.ContinuousLoadAmmo.dll
 2112__ozen.ContinuousLoadAmmo-1.2.0	BepInEx\plugins\ozen.ContinuousLoadAmmo\ozen.ContinuousLoadAmmo.pdb
-2859__CompatibilityHighlighterV1.3.0	BepInEx\plugins\CompatibilityHighlighter.dll
 2037__ColoredTracers.3.0.1	SPT_Runtime\user\mods\ColoredTracers\ColoredTracers.dll
 2037__ColoredTracers.3.0.1	SPT_Runtime\user\mods\ColoredTracers\config\defaultConfig.json
 2037__ColoredTracers.3.0.1	SPT_Runtime\user\mods\ColoredTracers\config\config.json
