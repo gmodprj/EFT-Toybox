@@ -42,7 +42,21 @@ public static class DetailPlanner
         IReadOnlyList<GridSpec> grids,
         IReadOnlySet<string> slotNames)
     {
-        var rows = grids.ToDictionary(g => g.Name, _ => new List<PorterItem>(), StringComparer.Ordinal);
+        // 같은 이름의 격자가 둘일 수 있다(모드 아이템이 `_name` 을 겹쳐 쓴다). **던지지 않는다** —
+        // 던지면 그 상자는 영영 못 연다. 첫 격자에 담고 나머지는 빈 격자로 그린다.
+        var rows = new Dictionary<string, List<PorterItem>>(StringComparer.Ordinal);
+        var lists = new List<List<PorterItem>>(grids.Count);
+
+        foreach (var grid in grids)
+        {
+            var list = new List<PorterItem>();
+            lists.Add(list);
+
+            if (!rows.ContainsKey(grid.Name))
+            {
+                rows[grid.Name] = list;
+            }
+        }
         var slots = new List<DetailSlot>();
         var loose = new List<DetailLoose>();
 
@@ -77,9 +91,29 @@ public static class DetailPlanner
         }
 
         return new DetailPlace(
-            grids.Select(g => new DetailGrid(g.Name, g.CellsH, g.CellsV, rows[g.Name])).ToList(),
+            grids.Select((g, i) => new DetailGrid(g.Name, g.CellsH, g.CellsV, lists[i])).ToList(),
             slots,
             loose);
+    }
+
+    /// <summary>
+    /// **뿌리에서 닿지 않는 가지의 머리들.** 뿌리 목록에도 없고 부모가 파일 안에도 없는 항목이다.
+    ///
+    /// 창은 그런 id 를 알 길이 없어 지목할 수도 없으므로, 서버가 먼저 찾아내 보여 주지 않으면
+    /// 사람은 **그 물건이 애초에 없었다고** 읽는다. 설계 §4.2 의 "자손은 어디로도 버려지지
+    /// 않는다" 는 뿌리에도 적용된다.
+    /// </summary>
+    public static IReadOnlyList<PorterItem> Unreachable(PorterBundle bundle)
+    {
+        var items = bundle?.Items ?? [];
+        var ids = items.Select(i => i.Id).ToHashSet(StringComparer.Ordinal);
+        var roots = (bundle?.RootIds ?? []).ToHashSet(StringComparer.Ordinal);
+
+        // 부모가 파일 안에 있으면 그 상자를 열어 볼 수 있다 — 끊긴 것은 **가지의 머리**뿐이다.
+        return items
+            .Where(i => !roots.Contains(i.Id))
+            .Where(i => i.ParentId is null || !ids.Contains(i.ParentId))
+            .ToList();
     }
 
     /// <summary>

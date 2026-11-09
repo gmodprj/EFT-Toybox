@@ -122,6 +122,40 @@ public class DetailPlannerTests
     }
 
     [Fact]
+    public void 뿌리에서_닿지_않는_항목을_찾아낸다()
+    {
+        // 뿌리에도 없고 부모가 파일 안에 없으면, 창은 그 id 를 **알 길이 없어** 지목할 수도 없다.
+        // 서버가 먼저 찾아내 보여 줘야 "없던 것" 으로 읽히지 않는다.
+        var bundle = new PorterBundle(
+            PorterBundle.KindStash,
+            ["bag"],
+            [
+                new PorterItem("bag", "old-stash", "hideout", "tpl-bag"),
+                new PorterItem("inside", "bag", "main", "tpl-thing"),
+                new PorterItem("orphan-box", "nowhere", "main", "tpl-box"),
+                new PorterItem("deep", "orphan-box", "main", "tpl-thing"),
+            ]);
+
+        var lost = DetailPlanner.Unreachable(bundle);
+
+        // 끊긴 **가지의 머리**만 돌려준다 — 그 아래는 그 상자를 열면 보인다.
+        Assert.Equal("orphan-box", Assert.Single(lost).Id);
+    }
+
+    [Fact]
+    public void 같은_이름_격자가_둘이어도_던지지_않는다()
+    {
+        // 모드 아이템이 `_name` 을 겹쳐 쓸 수 있다. 던지면 그 상자는 영영 못 연다.
+        List<PorterItem> children = [Child("a", "1", Spot(0, 0))];
+
+        var place = DetailPlanner.Place(
+            children, [new GridSpec("1", 2, 2), new GridSpec("1", 3, 3)], new HashSet<string>());
+
+        Assert.Equal("a", Assert.Single(place.Grids[0].Rows).Id);
+        Assert.Empty(place.Loose);
+    }
+
+    [Fact]
     public void 스태시_칸수는_현재크기와_테두리_중_큰_쪽이다()
     {
         // 칸 수는 돌고 있는 DB 가 정하고 그 사이 바뀐다. 작게 잡으면 큰 좌표의 물건이 격자 밖이다.

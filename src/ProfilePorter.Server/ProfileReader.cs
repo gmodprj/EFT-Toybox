@@ -301,9 +301,26 @@ public class ProfileReader(
         }
     }
 
-    /// <summary>격자에서 차지하는 칸 — **tpl 기본 크기**다(설계 §5-4).</summary>
-    public (int w, int h) SizeOf(string? tpl) =>
-        string.IsNullOrWhiteSpace(tpl) ? (1, 1) : SafeSize(new MongoId(tpl));
+    /// <summary>
+    /// 격자에서 차지하는 칸 — **tpl 기본 크기**다(설계 §5-4).
+    ///
+    /// `MongoId` 는 생김새가 틀리면 **던진다.** 손으로 고친 파일의 `_tpl` 하나가 라우트 전체를
+    /// 500 으로 만들지 않도록 try 안에서 만든다(`GridsOf`·`SlotsOf` 와 같은 규율).
+    /// </summary>
+    public (int w, int h) SizeOf(string? tpl)
+    {
+        if (string.IsNullOrWhiteSpace(tpl)) return (1, 1);
+
+        try
+        {
+            return SafeSize(new MongoId(tpl));
+        }
+        catch (Exception e)
+        {
+            logger.Warning($"[ProfilePorter] {tpl} 는 아이템 id 모양이 아니라 1x1 로 둔다: {e.Message}");
+            return (1, 1);
+        }
+    }
 
     /// <summary>아이템 이름. 사전에 없으면 tpl 을 그대로 돌려준다.</summary>
     public string NameOf(string tpl) => ResolveName(localeService.GetLocaleDb(), tpl);

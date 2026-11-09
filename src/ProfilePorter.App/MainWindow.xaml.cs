@@ -192,9 +192,17 @@ public partial class MainWindow : Window
 
     private void UpdateImportButton()
     {
-        var hasFile = Files.SelectedItem is PorterFileRow;
+        // **못 읽는 파일은 보낼 수 없다**(설계 §2.1). 서버가 거절해 주기는 하지만, 막아야 할
+        // 자리를 안 막고 거절에 기대면 "0개를 보냅니다" 라는 거짓 안내가 먼저 보인다.
+        var hasFile = Files.SelectedItem is PorterFileRow { Readable: true };
         var hasTarget = TargetProfiles.SelectedItem is ProfileRow;
         ImportButton.IsEnabled = hasFile && hasTarget;
+
+        if (Files.SelectedItem is PorterFileRow { Readable: false })
+        {
+            ImportHint.Text = "그 파일은 열지 못합니다 — 지우기만 됩니다.";
+            return;
+        }
 
         if (!hasFile || !hasTarget)
         {

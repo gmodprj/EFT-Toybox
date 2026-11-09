@@ -258,6 +258,15 @@ public class PorterFiles(ModHelper modHelper, ISptLogger<PorterFiles> logger)
             return false;
         }
 
+        // **씻어서 글자가 바뀌면 거절한다.** `Sanitize` 는 못 쓰는 글자를 `_` 로 바꾸므로,
+        // `a:b` 를 지우라면 `a_b.json` 이 지워진다. 읽기에서는 "못 찾음" 으로 끝나던 것이
+        // 지우기에서는 **엉뚱한 파일을 지우는 일**이 된다.
+        if (!string.Equals(Sanitize(name), name, StringComparison.Ordinal))
+        {
+            refusal = "파일 이름이 올바르지 않습니다.";
+            return false;
+        }
+
         if (!File.Exists(path))
         {
             refusal = "그 파일이 없습니다.";

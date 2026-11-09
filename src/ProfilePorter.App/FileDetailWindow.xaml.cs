@@ -21,10 +21,10 @@ public partial class FileDetailWindow : Window
     [
         ["Earpiece", "Headwear", "FaceCover"],
         ["ArmBand", "ArmorVest", "Eyewear"],
-        ["Dogtag", "TacticalVest", "Backpack"],
+        ["Dogtag"],
         ["FirstPrimaryWeapon", "Holster"],
         ["SecondPrimaryWeapon", "Scabbard"],
-        ["Pockets"],
+        ["Backpack", "TacticalVest", "Pockets"],
     ];
 
     private readonly ServerClient _client;
@@ -120,12 +120,30 @@ public partial class FileDetailWindow : Window
                 e.Handled = true;
                 if (item.Items.Count != 1 || item.Items[0] is not string) return;
 
-                var inside = await _client.DetailAsync(_fileName, node.Id, CancellationToken.None);
-                item.Items.Clear();
-
-                foreach (var child in inside?.Tree ?? [])
+                // **`async void` 는 던지면 앱을 죽인다.** 서버가 꺼져 있거나 500 이면
+                // `EnsureSuccessStatusCode` 가 던지고, 그 예외는 WPF 디스패처로 올라가
+                // 프로세스를 끝낸다. 여기서 받아 **창에만** 적는다.
+                try
                 {
-                    item.Items.Add(MakeNode(child));
+                    var inside = await _client.DetailAsync(_fileName, node.Id, CancellationToken.None);
+                    if (inside is null || !inside.Ok)
+                    {
+                        StatusText.Text = inside?.Reason ?? "그 안을 읽지 못했습니다.";
+                        StatusText.Foreground = Brushes.IndianRed;
+                        return;
+                    }
+
+                    item.Items.Clear();
+                    foreach (var child in inside.Tree)
+                    {
+                        item.Items.Add(MakeNode(child));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // 가짜 자식을 그대로 둔다 — 다시 펼쳐 볼 수 있어야 한다.
+                    StatusText.Text = $"그 안을 읽지 못했습니다 — {ex.Message}";
+                    StatusText.Foreground = Brushes.IndianRed;
                 }
             };
         }
@@ -135,10 +153,21 @@ public partial class FileDetailWindow : Window
 
     private async void Tree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
-        if (e.NewValue is TreeViewItem { Tag: DetailNode node })
+        if (e.NewValue is not TreeViewItem { Tag: DetailNode node })
         {
-            await LoadAsync(node.IsContainer ? node.Id : null);
+            return;
         }
+
+        if (!node.IsContainer)
+        {
+            // **아무것도 다시 읽지 않는다.** 뿌리를 다시 읽으면 나무가 통째로 다시 지어져
+            // 펼쳐 둔 것이 전부 접힌다 — 안쪽 아이템을 한 번 누른 사람이 처음으로 되돌아간다.
+            StatusText.Text = node.Display;
+            StatusText.Foreground = Brushes.White;
+            return;
+        }
+
+        await LoadAsync(node.Id);
     }
 
     private void DrawView(DetailResponse detail)
@@ -255,26 +284,40 @@ public partial class FileDetailWindow : Window
             });
         }
 
-        if (row is { Contained: > 0 })
+        var hasInside = row is { Contained: > 0 };
+
+        if (hasInside)
         {
             text.Inlines.Add(new System.Windows.Documents.LineBreak());
-            text.Inlines.Add(new System.Windows.Documents.Run($"안에 {row.Contained}개 — 왼쪽 나무에서 열어 보세요")
+            text.Inlines.Add(new System.Windows.Documents.Run($"안에 {row!.Contained}개 — 눌러서 열기")
             {
-                Foreground = new SolidColorBrush(Color.FromRgb(0xA0, 0xA0, 0xA8)),
+                Foreground = new SolidColorBrush(Color.FromRgb(0xC8, 0xA0, 0x50)),
             });
         }
 
-        return new Border
+        var card = new Border
         {
             Width = 196,
             MinHeight = 64,
             Margin = new Thickness(0, 0, 6, 6),
             Padding = new Thickness(6),
             Background = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x30)),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(0x50, 0x50, 0x55)),
+            BorderBrush = new SolidColorBrush(hasInside
+                ? Color.FromRgb(0xC8, 0xA0, 0x50)
+                : Color.FromRgb(0x50, 0x50, 0x55)),
             BorderThickness = new Thickness(1),
             Child = text,
         };
+
+        // **안이 있는 칸은 눌린다**(설계 §4.3). 나무로도 갈 수 있지만, 장비 화면에서 리그를
+        // 눌러 안을 보는 것이 사람이 먼저 하는 동작이다.
+        if (hasInside)
+        {
+            card.Cursor = System.Windows.Input.Cursors.Hand;
+            card.MouseLeftButtonUp += async (_, _) => await LoadAsync(row!.Id);
+        }
+
+        return card;
     }
 
     private static string SlotTitle(string slotId) => slotId switch

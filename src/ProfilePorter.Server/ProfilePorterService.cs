@@ -334,25 +334,44 @@ public class ProfilePorterService(
 
         var notices = new List<string>();
         var atRoot = string.IsNullOrEmpty(containerId);
+        var rootIds = file.RootIds.ToHashSet(StringComparer.Ordinal);
 
         var children = atRoot
-            ? items.Where(i => file.RootIds.Any(r => string.Equals(r, i.Id, StringComparison.Ordinal))).ToList()
+            ? items.Where(i => rootIds.Contains(i.Id)).ToList()
             : DetailPlanner.ChildrenOf(bundle, containerId).ToList();
+
+        // **뿌리에서 끊긴 가지도 보여 준다.** 창은 그 id 를 알 길이 없어 지목할 수 없으므로,
+        // 여기서 올려 주지 않으면 사람은 그 물건이 애초에 없었다고 읽는다.
+        var lost = atRoot ? DetailPlanner.Unreachable(bundle) : [];
 
         if (!atRoot && items.All(i => !string.Equals(i.Id, containerId, StringComparison.Ordinal)))
         {
             return new { ok = false, reason = "그 파일에 없는 자리입니다." };
         }
 
+        // **tpl 하나당 DB 를 한 번만 묻는다.** 자식마다 `GetItem` 을 두세 번 하면 1,361개짜리
+        // 파일에서 한 번 펼칠 때마다 수백~천 번이 된다(설계 §3 의 "몇 초씩 멈추면 실패").
+        var facts = new Dictionary<string, TplFacts>(StringComparer.Ordinal);
+        TplFacts Facts(string tpl)
+        {
+            if (facts.TryGetValue(tpl, out var known)) return known;
+
+            var made = new TplFacts(
+                profiles.NameOf(tpl), profiles.SizeOf(tpl), profiles.GridsOf(tpl), profiles.SlotsOf(tpl));
+            facts[tpl] = made;
+            return made;
+        }
+
         var tree = children
+            .Concat(lost)
             .Select(c => new
             {
                 id = c.Id,
                 tpl = c.TemplateId,
-                name = profiles.NameOf(c.TemplateId),
+                name = Facts(c.TemplateId).Name,
                 slotName = SlotNames.Korean(c.SlotId),
                 contained = Descendants(c.Id, byParent),
-                kind = profiles.GridsOf(c.TemplateId).Count > 0 || profiles.SlotsOf(c.TemplateId).Count > 0
+                kind = Facts(c.TemplateId).Grids.Count > 0 || Facts(c.TemplateId).Slots.Count > 0
                     ? "container"
                     : "item",
             })
@@ -365,14 +384,20 @@ public class ProfilePorterService(
             view = new
             {
                 kind = "loadout",
-                slots = children.Select(c => Slot(c.SlotId, c, byParent)).ToList(),
+                slots = children.Select(c => Slot(c.SlotId, c, byParent, Facts)).ToList(),
+                loose = lost.Select(c => Loose(c, LostReason, byParent, Facts)).ToList(),
             };
+
+            if (lost.Count > 0)
+            {
+                notices.Add($"뿌리에 매달려 있지 않은 것 {lost.Count}개를 따로 모았습니다.");
+            }
         }
         else if (atRoot)
         {
             var placed = children.Where(c => c.Location is not null).ToList();
             var missing = children.Count - placed.Count;
-            var rows = placed.Select(c => Row(c, byParent)).ToList();
+            var rows = placed.Select(c => Row(c, byParent, Facts)).ToList();
 
             var (profileH, profileV) = profiles.StashCellsOf(file.FromProfileId);
             if (profileH == 0)
@@ -385,7 +410,14 @@ public class ProfilePorterService(
 
             if (missing > 0)
             {
-                notices.Add($"자리 정보가 없는 것 {missing}개는 아래에 모았습니다 — 2026-11-08 이전에 내보낸 파일입니다. 다시 내보내면 자리까지 들어옵니다.");
+                notices.Add(missing == children.Count
+                    ? $"자리 정보가 없는 것 {missing}개는 아래에 모았습니다 — 2026-11-08 이전에 내보낸 파일입니다. 다시 내보내면 자리까지 들어옵니다."
+                    : $"자리 정보가 없는 것 {missing}개는 아래에 모았습니다.");
+            }
+
+            if (lost.Count > 0)
+            {
+                notices.Add($"뿌리에 매달려 있지 않은 것 {lost.Count}개를 따로 모았습니다.");
             }
 
             view = new
@@ -395,15 +427,16 @@ public class ProfilePorterService(
                 cellsV,
                 rows,
                 loose = children.Where(c => c.Location is null)
-                    .Select(c => Loose(c, "자리 정보가 없습니다", byParent)).ToList(),
+                    .Select(c => Loose(c, "자리 정보가 없습니다", byParent, Facts))
+                    .Concat(lost.Select(c => Loose(c, LostReason, byParent, Facts)))
+                    .ToList(),
             };
         }
         else
         {
             var container = items.First(i => string.Equals(i.Id, containerId, StringComparison.Ordinal));
-            var grids = profiles.GridsOf(container.TemplateId);
-            var slotNames = profiles.SlotsOf(container.TemplateId);
-            var place = DetailPlanner.Place(children, grids, slotNames);
+            var known = Facts(container.TemplateId);
+            var place = DetailPlanner.Place(children, known.Grids, known.Slots);
 
             foreach (var slot in place.Slots.Where(s => !SlotNames.Knows(s.SlotId)))
             {
@@ -418,18 +451,29 @@ public class ProfilePorterService(
             view = new
             {
                 kind = "container",
-                grids = place.Grids.Select(g => new
+                grids = place.Grids.Select(g =>
                 {
-                    name = g.Name,
-                    gridName = SlotNames.Korean(g.Name),
-                    cellsH = g.CellsH,
-                    cellsV = g.CellsV,
-                    rows = g.Rows.Select(r => Row(r, byParent)).ToList(),
+                    var gridRows = g.Rows.Select(r => Row(r, byParent, Facts)).ToList();
+
+                    // 상자 격자도 **큰 쪽**을 쓴다(설계 §7-5). DB 가 준 칸 수보다 큰 좌표가 있으면
+                    // 그대로 그렸을 때 그 물건이 격자 밖이라 **스크롤로도 닿지 않는다.**
+                    // 칸 수를 못 읽은 격자(0)도 여기서 테두리로 잡힌다.
+                    var (cellsH, cellsV) = DetailPlanner.StashCells(
+                        g.CellsH, g.CellsV, gridRows.Select(r => (r.X, r.Y, r.W, r.H)));
+
+                    return new
+                    {
+                        name = g.Name,
+                        gridName = SlotNames.Korean(g.Name),
+                        cellsH,
+                        cellsV,
+                        rows = gridRows,
+                    };
                 }).ToList(),
                 slots = place.Slots
-                    .Select(s => Slot(s.SlotId, items.First(i => i.Id == s.Id), byParent)).ToList(),
+                    .Select(s => Slot(s.SlotId, items.First(i => i.Id == s.Id), byParent, Facts)).ToList(),
                 loose = place.Loose
-                    .Select(l => Loose(items.First(i => i.Id == l.Id), l.Why, byParent)).ToList(),
+                    .Select(l => Loose(items.First(i => i.Id == l.Id), l.Why, byParent, Facts)).ToList(),
             };
         }
 
@@ -445,38 +489,47 @@ public class ProfilePorterService(
         };
     }
 
-    private StashEntry Row(PorterItem item, Dictionary<string, List<string>> byParent)
+    /// <summary>한 번의 세부 보기에서 **tpl 하나당 한 번만** 모으는 DB 지식.</summary>
+    private sealed record TplFacts(
+        string Name, (int w, int h) Size, IReadOnlyList<GridSpec> Grids, IReadOnlySet<string> Slots);
+
+    private const string LostReason = "뿌리에 매달려 있지 않습니다";
+
+    private static StashEntry Row(
+        PorterItem item, Dictionary<string, List<string>> byParent, Func<string, TplFacts> facts)
     {
         var (x, y, rotated) = ProfileReader.LocationOf(item.Location);
-        var (w, h) = profiles.SizeOf(item.TemplateId);
+        var (w, h) = facts(item.TemplateId).Size;
         var (cw, ch) = rotated ? (h, w) : (w, h);
 
         return new StashEntry(
             item.Id,
             item.TemplateId,
-            profiles.NameOf(item.TemplateId),
+            facts(item.TemplateId).Name,
             StackOf(item),
             Descendants(item.Id, byParent),
             x, y, cw, ch, rotated);
     }
 
-    private object Slot(string? slotId, PorterItem item, Dictionary<string, List<string>> byParent) => new
+    private static object Slot(
+        string? slotId, PorterItem item, Dictionary<string, List<string>> byParent, Func<string, TplFacts> facts) => new
     {
         slotId,
         slotName = SlotNames.Korean(slotId),
         id = item.Id,
         tpl = item.TemplateId,
-        name = profiles.NameOf(item.TemplateId),
+        name = facts(item.TemplateId).Name,
         stack = StackOf(item),
         contained = Descendants(item.Id, byParent),
         summary = Summary(item),
     };
 
-    private object Loose(PorterItem item, string why, Dictionary<string, List<string>> byParent) => new
+    private static object Loose(
+        PorterItem item, string why, Dictionary<string, List<string>> byParent, Func<string, TplFacts> facts) => new
     {
         id = item.Id,
         tpl = item.TemplateId,
-        name = profiles.NameOf(item.TemplateId),
+        name = facts(item.TemplateId).Name,
         slotName = SlotNames.Korean(item.SlotId),
         stack = StackOf(item),
         contained = Descendants(item.Id, byParent),
