@@ -1,0 +1,57 @@
+{
+  "coveragePatterns": [
+    "^(e4aff4a6ed02435103317634|ef21d7b5a73d86a57987cfa6|0a962b9a65639d5ada026e55|327d19b939bc4232f1f8c7c2|54534b29cf19897b371f1875|c7f783cb3866db96458ca10c|f65d2aefab923f285c028532|266ec98c200331dfdeb0a47c|9ac02387dd66dc9cef4f801d|d1c053a77e552938ec42f21f|ab59cea7510db6eb760f2553|9e62ca0c6d66c29b4609c5e9|6ad3016bab020957abb6ca3b|6ad408a96bf1f761d970a4ff|6ad5739462c39577194eedc5|6ad573a014ebd436fbd1dfda) (Name|ShortName)$"
+  ],
+
+  "comment": "2026-11-09 업데이트로 들어온 아이템 이름 16종(Name 16 + ShortName 16). Make Shotguns Great Again 1.20.0 의 ATI Omni Hybrid 7종·Iver Johnson Champion 5종, ECOTI 3.5.0 의 TR-1 라이저·TSR-1 스코프 링 4종이다. 아이템 이름은 원래 한글화 순서의 맨 끝이라(REVIEW-KOREAN-LOCALIZATION.md) 전체를 하지 않고 이 묶음만 적는다 — 다른 모드 아이템 5,900여 종은 영문 그대로다. coveragePatterns 를 이 16개 id 로 좁혀 둔 것은, 넓게 적으면 손대지 않은 수천 개가 '묶음에서 빠뜨림' 으로 잡히기 때문이다. 값에 색 태그와 ● 를 넣지 않는다 — 그건 다른 모드가 내려주기 전에 덧대는 꾸밈이고(바닐라 M4A1 도 같은 꾸밈이 붙는다), check-locale-dict 가 꾸밈을 벗겨 대조한다. ECOTI 의 약칭은 모델 코드라 keptAsIs 로 둔다.",
+
+  "entries": {
+    "e4aff4a6ed02435103317634 Name": "ATI Omni Hybrid Maxx .410 반자동 산탄총",
+    "e4aff4a6ed02435103317634 ShortName": "옴니 하이브리드",
+
+    "ef21d7b5a73d86a57987cfa6 Name": "ATI Omni Hybrid .410 상부 리시버",
+    "ef21d7b5a73d86a57987cfa6 ShortName": "옴니 .410 상부",
+
+    "0a962b9a65639d5ada026e55 Name": "ATI Omni Hybrid .410 470mm 총열",
+    "0a962b9a65639d5ada026e55 ShortName": "옴니 470mm",
+
+    "327d19b939bc4232f1f8c7c2 Name": "ATI Omni Hybrid .410 버드케이지 총구 장치",
+    "327d19b939bc4232f1f8c7c2 ShortName": "옴니 버드케이지",
+
+    "54534b29cf19897b371f1875 Name": "ATI Omni Hybrid 13인치 KeyMod 핸드가드",
+    "54534b29cf19897b371f1875 ShortName": "옴니 KeyMod 13\"",
+
+    "c7f783cb3866db96458ca10c Name": "ATI Omni Hybrid .410 5발 탄창",
+    "c7f783cb3866db96458ca10c ShortName": "옴니 5",
+
+    "f65d2aefab923f285c028532 Name": "ATI Omni Hybrid .410 15발 탄창",
+    "f65d2aefab923f285c028532 ShortName": "옴니 15",
+
+    "266ec98c200331dfdeb0a47c Name": "Iver Johnson Champion 12게이지 단발 산탄총",
+    "266ec98c200331dfdeb0a47c ShortName": "챔피언",
+
+    "9ac02387dd66dc9cef4f801d Name": "Iver Johnson Champion 12게이지 316mm 총열",
+    "9ac02387dd66dc9cef4f801d ShortName": "IJ 316mm",
+
+    "d1c053a77e552938ec42f21f Name": "Iver Johnson Champion 12게이지 706mm 총열",
+    "d1c053a77e552938ec42f21f ShortName": "IJ 706mm",
+
+    "ab59cea7510db6eb760f2553 Name": "Iver Johnson Champion 목재 개머리판",
+    "ab59cea7510db6eb760f2553 ShortName": "IJ 목재",
+
+    "9e62ca0c6d66c29b4609c5e9 Name": "Iver Johnson Champion 절단형 손잡이",
+    "9e62ca0c6d66c29b4609c5e9 ShortName": "IJ 손잡이",
+
+    "6ad3016bab020957abb6ca3b Name": "LennoxP90 TR-1 열화상 조준경 라이저",
+    "6ad408a96bf1f761d970a4ff Name": "LennoxP90 TR-1 열화상 조준경 라이저 (탄)",
+    "6ad5739462c39577194eedc5 Name": "LennoxP90 TSR-1 열화상 조준경 링 30mm",
+    "6ad573a014ebd436fbd1dfda Name": "LennoxP90 TSR-1 열화상 조준경 링 30mm (탄)"
+  },
+
+  "keptAsIs": {
+    "6ad3016bab020957abb6ca3b ShortName": "모델 코드다 — TR-1",
+    "6ad408a96bf1f761d970a4ff ShortName": "모델 코드다 — TR-1",
+    "6ad5739462c39577194eedc5 ShortName": "모델 코드다 — TSR-1",
+    "6ad573a014ebd436fbd1dfda ShortName": "모델 코드다 — TSR-1"
+  }
+}

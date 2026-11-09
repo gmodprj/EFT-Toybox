@@ -113,6 +113,14 @@ if (english) {
 // --- 대조 ----------------------------------------------------------------
 
 let ok = 0;
+// 다른 모드가 덧댄 꾸밈(색 태그·● 표시)을 벗긴다. 글자가 같은지만 보려는 것이다.
+const undecorate = (v) => String(v)
+    .replace(/<\/?(b|i|u)>/gi, '')
+    .replace(/<color=[^>]*>|<\/color>/gi, '')
+    .replace(/[●◆★]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+const decorated = [];
 const mismatched = [];
 const absent = [];
 const keptStillEnglish = [];
@@ -138,6 +146,12 @@ for (const { name, data } of dicts) {
     for (const [key, want] of Object.entries(entries)) {
         if (!(key in served)) { absent.push({ name, key, want }); continue; }
         if (served[key] === want) { ok++; continue; }
+        // 다른 모드가 내려주기 전에 **꾸밈을 덧대는** 열쇠가 있다. 아이템 이름·약칭이 그렇다 —
+        // 색 태그(`<b><color=#RRGGBB>…</color></b>`)와 ● 표시가 붙는데, 바닐라 한국어 이름에도
+        // 똑같이 붙는다(실측: `5447a9cd… Name` = `<b><color=#FFFFFF>Colt M4A1 … ●</color></b>`).
+        // 그러니 그것은 "우리 값이 안 먹었다" 가 아니다. 꾸밈을 벗겨 같으면 **적용된 것으로 세고**
+        // 따로 보고한다 — 사전에 색을 박아 넣으면 그 모드의 등급 색을 우리가 고정해 버린다.
+        if (undecorate(served[key]) === undecorate(want)) { ok++; decorated.push({ name, key, got: served[key] }); continue; }
         mismatched.push({ name, key, want, got: served[key] });
     }
 
@@ -195,6 +209,7 @@ console.log(`locale '${locale}' 항목 ${Object.keys(served).length}개 (서버 
 console.log(`사전 ${dicts.length}개 / 번역 항목 ${dictTotal}개 / 일부러 영문으로 둔 것 ${keptTotal}개`);
 console.log('');
 console.log(`  적용됨            ${ok}`);
+console.log(`    그중 꾸밈이 덧댐 ${decorated.length}  (다른 모드가 색·● 를 붙인 것. 글자는 우리 값이다)`);
 console.log(`  값이 다름         ${mismatched.length}`);
 console.log(`  열쇠가 없음       ${absent.length}`);
 console.log(`  유지 — 영문 그대로 ${keptStillEnglish.length}  (이것이 정상이다)`);
