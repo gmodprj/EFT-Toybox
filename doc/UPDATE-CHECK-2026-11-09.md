@@ -160,7 +160,7 @@ U8  확인한다     매니페스트 버전 고치기 → gen-installed-mods.mjs
 ### 3-2. 묶음과 순서
 
 의존 관계와 위험으로 가른다. **묶음을 끝낼 때마다 기동해 보고 다음 묶음으로 넘어간다.**
-**U-A·U-B·U-C 는 2026-11-09 에 끝났고 U-D 는 절반이다 — 결과는 §4.**
+**U-A·U-B·U-C·U-E 는 2026-11-09 에 끝났다 — 결과는 §4. U-D(ECOTI)는 아직이다.**
 
 | 묶음 | 모드 | 왜 이 순서인가 | 내려받을 양 |
 | --- | --- | --- | --- |
@@ -298,15 +298,18 @@ Quest Codex 를 먼저, Briefing 을 뒤에 올렸다(의존 방향). 받은 양
   Review 것). [기록 오기](install-records/README-removed-stale-lines-2026-11-06.md) 가 더 생기지
   않는다.
 
-### U-D — 절반 (2026-11-09)
+### U-E — 끝났다 (2026-11-09)
 
-둘 다 받아 뒀고 **MSGA 만 넣었다.** 계획이 "하나씩, 레이드까지 돌아 본 뒤 다음 것" 으로
-못 박아 둔 자리라, **레이드 확인은 사람 몫**이므로 Epic's AIO 는 넣지 않고 멈췄다.
+> **묶음 이름을 바로잡았다.** 이 작업을 처음에 "U-D" 로 적었는데, §3-2 의 U-D 는
+> **2930 ECOTI** 다. MSGA·Epic's AIO 는 **U-E** 다. **U-D(ECOTI, 32MB)는 아직 안 했다.**
 
-| id | 모드 | 상태 | 설치 파일 | 기동 |
+계획대로 **하나씩** 넣었다. MSGA 를 넣고 **레이드까지 돌아 본 뒤**(게임 쪽 확인 절) Epic's AIO 를
+넣었다. 받은 양 **1.9GB**.
+
+| id | 모드 | 올린 버전 | 설치 파일 | 기동 |
 | --- | --- | --- | --- | --- |
-| 1453 | Make Shotguns Great Again! | 1.19.1 → **1.20.0** 넣었다 | 195 → **223** | `SERVER STARTED in 177s` |
-| 1263 | Epic's All in One | 5.0.2 → 5.0.3 **받아만 뒀다**(1.5GB) | 632 (경로 변화 0) | — |
+| 1453 | Make Shotguns Great Again! | 1.19.1 → **1.20.0** | 195 → **223** | `SERVER STARTED in 177s` |
+| 1263 | Epic's All in One | 5.0.2 → **5.0.3** | 632 (경로 변화 0) | `SERVER STARTED in 186s` |
 
 - **받는 길이 막혀 `gh` 로 돌아갔다.** `sp-mod.com/mod/download/1453/.../1.20.0` 은
   `github.com/viniHNS/Make-Shotguns-Great-Again/releases/download/v1.20.0/...` 로 307 을
@@ -318,16 +321,24 @@ Quest Codex 를 먼저, Briefing 을 뒤에 올렸다(의존 방향). 받은 양
 - MSGA 1.20.0 은 파일이 **28개 늘었다** — ATI Omni 410 과 Iver Johnson Champion 쪽 번들·텍스처다.
   콘텐츠가 늘어난 것이고 경로가 사라진 것은 없다.
 - Epic's AIO 5.0.3 은 **경로 집합이 5.0.2 와 똑같다**(632개, 새 경로 0 · 사라진 경로 0).
-- **U8 실측** — 기록 검사 `OK — 0/0`(모드 304 그대로). `불러옴` **174줄 / 거부 0**,
+  지우고 나니 **빈 폴더 62개가 남았다** — 설치 스크립트가 압축의 빈 폴더까지 만들고
+  `*.dirs.txt` 에 따로 적기 때문이다. 파일이 아니라 덮어쓰기 검사에 걸리지 않는다.
+- **게임·서버를 끄고 넣었다**(사용자 허락). 게임은 `CloseMainWindow` → 확인 → 서버는
+  `tools/stop-spt-server.ps1`. 그 스크립트는 **게임이 돌고 있으면 아무것도 하지 않고 멈춘다**
+  (레이드 중 서버를 끊으면 그 판이 날아간다), 그래서 게임부터 껐다.
+- **레이드를 돈 뒤라 프로필을 새로 받아 뒀다** — `backup/profiles-before-update-1263/`.
+  앞의 U-E 백업과 견주니 **3개가 달라져 있었다**(한 프로필은 92,672B → 543,064B). 레이드
+  결과가 들어온 것이라, Epic's AIO 를 넣기 전 스냅샷은 **이 새 것**이어야 한다.
+- **U8 실측** — 기록 검사 `OK — 0/0`(모드 304 그대로). 두 기동 모두 `불러옴` **174줄 / 거부 0**,
   `Could not add` 48(고유 id 48) · `Unable to add bundle` **1**(알려진 `barrel_vpo215` 건뿐,
-  번들 28개가 늘었는데도 안 늘었다) · quest 1. 로그가
-  `모드 Make Shotguns Great Again 버전 1.20.0 ... 불러옴` 을 찍었다.
-- 프로필 11개를 `backup/profiles-before-update-2026-11-09-ud/` 와 맞대어 **마이그레이션 시각
-  한 곳만** 다른 것을 확인했다.
-- **남은 것**: 레이드로 MSGA 를 확인하고 나서 Epic's AIO 를 넣는다. 압축은
-  `downloads/update-2026-11-09-ud/`, 해제본은 `extracted/update-2026-11-09-ud/` 에 그대로 있다.
+  MSGA 번들이 28개 늘었는데도 안 늘었다) · quest 1. 로그가
+  `모드 Make Shotguns Great Again 버전 1.20.0 ... 불러옴` 과
+  `모드 Epic's All In One 버전 5.0.3 ... 불러옴`(함께 오는 `Vanguard 2.0.0` 도)을 찍었다.
+- 프로필을 각 단계의 백업과 맞대어 **마이그레이션 시각 한 곳만** 다른 것을 확인했다 —
+  MSGA 는 `profiles-before-update-2026-11-09-ud/`, Epic's AIO 는 `profiles-before-update-1263/`.
+- **남은 것**: Epic's AIO 는 게임에서 아직 못 봤다(다음 기동에서 플러그인 246 유지·`[Fatal` 0).
 
-### 게임 쪽 확인 — U-A·U-B·U-C·MSGA 한꺼번에 (2026-11-09 17:17 기동)
+### 게임 쪽 확인 — U-A·U-B·U-C 와 MSGA 한꺼번에 (2026-11-09 17:17 기동)
 
 `E:\Spt\BepInEx\LogOutput.log`(17:50 기준, 417,995B)을 쟀다. **레이드를 돌고 나온 기동**이다 —
 `Game started` · `LocationScene` · `Raid end` 가 찍혀 있다.
