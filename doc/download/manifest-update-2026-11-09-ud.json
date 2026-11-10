@@ -1,0 +1,9 @@
+{
+  "stage": "update-2026-11-09-ud",
+  "spt": "4.1.6",
+  "note": "업데이트 묶음 U-D — 결속 대형 2개. 둘 다 WTT CommonLib 를 의존한다. 하나씩 넣고 그때마다 기동하며, 계획이 못 박은 대로 레이드를 돌아 본 뒤 다음 것으로 간다. 계획은 UPDATE-CHECK-2026-11-09.md §3-2.",
+  "mods": [
+    { "group": "U-D", "id": 1453, "name": "Make Shotguns Great Again!", "version": "1.20.0", "size": 436552891, "profileBinding": true, "link": "https://sp-mod.com/mod/download/1453/make-shotguns-great-again/1.20.0" },
+    { "group": "U-D", "id": 1263, "name": "Epic's All in One", "version": "5.0.3", "size": 1582754683, "profileBinding": true, "link": "https://sp-mod.com/mod/download/1263/epics-all-in-one/5.0.3" }
+  ]
+}

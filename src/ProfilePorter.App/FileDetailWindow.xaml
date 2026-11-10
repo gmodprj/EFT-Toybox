@@ -1,0 +1,91 @@
+﻿<Window x:Class="ProfilePorter.App.FileDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ProfilePorter.App"
+        Title="내보낸 파일 보기"
+        Height="760" Width="1040"
+        Background="{StaticResource Bg}">
+  <!--
+    **읽기 전용 창이다.** 고르기·보내기·지우기를 두지 않는다 — 여기는 "예전에 내보낸 게 뭐가
+    들었는지" 를 되짚어 보는 곳이다(설계 §2.2).
+  -->
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <TextBlock Grid.Row="0" x:Name="HeaderText" FontWeight="Bold"
+               Foreground="{StaticResource Accent}" Margin="0,0,0,6" />
+
+    <!-- 알림 — 격자를 테두리로 잡았거나, 자리 정보가 없는 묵은 파일일 때. -->
+    <Border Grid.Row="1" x:Name="NoticeBox" Background="{StaticResource Panel}"
+            BorderBrush="{StaticResource Line}" BorderThickness="1" Padding="8,6"
+            Margin="0,0,0,6" Visibility="Collapsed">
+      <TextBlock x:Name="NoticeText" TextWrapping="Wrap" Foreground="#E0D0A0" />
+    </Border>
+
+    <Grid Grid.Row="2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*" MinWidth="220" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="2.4*" MinWidth="320" />
+      </Grid.ColumnDefinitions>
+
+      <!-- 왼쪽 — 나무. 펼칠 때 그 자리를 서버에 묻는다(한 겹씩). -->
+      <Border Grid.Column="0" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
+              BorderThickness="1" Padding="6">
+        <TreeView x:Name="Tree" Background="Transparent" BorderThickness="0"
+                  SelectedItemChanged="Tree_SelectedItemChanged">
+          <!--
+            고른 줄의 기본 선택색은 **흰 칸**이라 어두운 창에서 글자가 사라진다
+            (2026-11-09 실측 화면: 고른 줄이 빈 흰 네모로 보였다).
+          -->
+          <TreeView.Resources>
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#3A3A3C" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="White" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#3A3A3C" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="White" />
+          </TreeView.Resources>
+        </TreeView>
+      </Border>
+
+      <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch"
+                    Background="#3A3A3C" ShowsPreview="False" Cursor="SizeWE" />
+
+      <!-- 오른쪽 — 그 자리의 모습. 격자·슬롯 판·목록이 쌓인다. -->
+      <Border Grid.Column="2" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
+              BorderThickness="1" Padding="6">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <!--
+            경로 막대 — 어디까지 들어왔는지 보이고, 눌러서 **돌아 나온다**.
+            이것이 없으면 상자에 들어간 뒤 나올 길이 없다(2026-11-09 사용자 제보).
+          -->
+          <StackPanel Grid.Row="0" x:Name="Breadcrumb" Orientation="Horizontal"
+                      Margin="0,0,0,6" />
+
+          <!--
+            가로도 굴린다 — 열 수가 많은 상자(아이템 케이스는 14칸까지 간다)가 판보다 넓으면
+            오른쪽 끝이 **잘려서 안 보인다**(2026-11-09 실측 화면에서 그렇게 나왔다).
+          -->
+          <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                        HorizontalScrollBarVisibility="Auto">
+            <StackPanel x:Name="ViewHost" />
+          </ScrollViewer>
+        </Grid>
+      </Border>
+    </Grid>
+
+    <Border Grid.Row="3" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
+            BorderThickness="1" Padding="8,6" Margin="0,8,0,0">
+      <TextBlock x:Name="StatusText" TextWrapping="Wrap" Text="읽는 중…" />
+    </Border>
+  </Grid>
+</Window>

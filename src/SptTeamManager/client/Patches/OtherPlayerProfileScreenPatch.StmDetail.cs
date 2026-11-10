@@ -219,6 +219,8 @@ namespace pitTeam.Patches
                 ReplaceStmLoadoutDropdownWithEditButton(screen, profile, detail, panel, inventoryController, session, playerModelWindow);
                 // 그 아래 한 줄 더: 장비 꾸러미(계획 4). 못 만들어도 위의 줄은 그대로 선다.
                 CreateStmKitButton(screen, clone, parent, profile, detail, inventoryController, session);
+                // 계획 6 B3 — 스태시 교환(요청 2). 꾸러미 버튼 둘 다음 줄이다.
+                CreateStmStashTransferButton(screen, clone, parent, profile, detail);
 
                 StmControlRowRoot = clone.gameObject;
                 return true;

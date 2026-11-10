@@ -66,6 +66,22 @@ public class SlotCategoryRelax(
             RelaxChamberFilters(items, config);
         }
 
+        RunSlotPass(items, config, discovered, "");
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 칸 넓히기 한 판. <c>OnLoadAsync</c>(PostLoad)와 <see cref="LateSlotSweep"/>(맨 끝)이 같은 것을
+    /// 부른다 — 두 번 돌아도 <c>Filter</c> 가 집합이라 중복이 생기지 않는다(멱등).
+    ///
+    /// <paramref name="pass"/> 는 로그에 붙는 꼬리표다(늦은 쓸기면 "늦은 쓸기: ").
+    /// </summary>
+    internal (int Slots, int Added) RunSlotPass(
+        Dictionary<MongoId, TemplateItem> items,
+        Config config,
+        Dictionary<MongoId, string> discovered,
+        string pass)
+    {
         var openIds = new HashSet<MongoId>();
         var openNames = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (id, name) in discovered)
@@ -81,15 +97,19 @@ public class SlotCategoryRelax(
             .Where(kv => kv.Value && !discovered.Values.Contains(kv.Key, StringComparer.OrdinalIgnoreCase))
             .Select(kv => kv.Key)
             .ToList();
-        if (unknown.Count > 0)
+        if (unknown.Count > 0 && pass.Length == 0)
         {
             logger.Warning($"[SlotCategoryRelax] 이 설치본에 없는 분류 {unknown.Count}개: {string.Join(", ", unknown)}");
         }
 
         if (openIds.Count == 0)
         {
-            logger.Info($"[SlotCategoryRelax] 켠 분류가 없어 아무것도 바꾸지 않았다. 고를 수 있는 분류 {discovered.Count}종.");
-            return Task.CompletedTask;
+            if (pass.Length == 0)
+            {
+                logger.Info($"[SlotCategoryRelax] 켠 분류가 없어 아무것도 바꾸지 않았다. 고를 수 있는 분류 {discovered.Count}종.");
+            }
+
+            return (0, 0);
         }
 
         var byCategory = GroupByCategory(items, openIds);
@@ -97,12 +117,18 @@ public class SlotCategoryRelax(
             config.ExcludedSlotNames.Select(n => n.ToLowerInvariant()),
             StringComparer.Ordinal);
 
+        // 씨앗 분류: 아이템 id → 그 아이템의 칸에서 "이미 받고 있다" 로 쳐 줄 분류의 노드 id.
+        // 켜지지 않은 분류는 들어오지 않는다(스위치가 상위다) — 이름이 틀렸으면 경고를 낸다.
+        var seedsByItem = BuildSeeds(config, discovered, openIds, pass);
+
         var touchedSlots = 0;
         var addedEntries = 0;
 
-        foreach (var (_, template) in items)
+        foreach (var (templateId, template) in items)
         {
-            if (!OwnsRelevantSlots(items, template, config.IncludeAttachmentSlots))
+            var seeded = seedsByItem.TryGetValue(templateId, out var seedCategories);
+
+            if (!seeded && !OwnsRelevantSlots(items, template, config.IncludeAttachmentSlots))
             {
                 continue;
             }
@@ -128,6 +154,12 @@ public class SlotCategoryRelax(
                     {
                         present.Add(entry.Parent);
                     }
+                }
+
+                // 씨앗이 적힌 아이템은 그 분류를 "받고 있던 것" 으로 친다. 다른 아이템에는 닿지 않는다.
+                if (seeded)
+                {
+                    present.UnionWith(seedCategories!);
                 }
 
                 if (present.Count == 0)
@@ -162,10 +194,75 @@ public class SlotCategoryRelax(
         }
 
         logger.Info(
-            $"[SlotCategoryRelax] 고를 수 있는 분류 {discovered.Count}종 중 {openNames.Count}종을 켰다"
+            $"[SlotCategoryRelax] {pass}고를 수 있는 분류 {discovered.Count}종 중 {openNames.Count}종을 켰다"
             + $"({string.Join(", ", openNames)}). 칸 {touchedSlots}개에 항목 {addedEntries}개를 더했다.");
 
-        return Task.CompletedTask;
+        return (touchedSlots, addedEntries);
+    }
+
+    /// <summary>
+    /// <c>SeedCategories</c>(아이템 id → 분류 이름)를 아이템 id → 분류 노드 id 로 바꾼다.
+    ///
+    /// 켜지지 않은 분류와 이 설치본에 없는 분류는 **버리고 경고한다** — 조용히 무시하면 설정이
+    /// 듣지 않는 이유를 알 길이 없다.
+    /// </summary>
+    private Dictionary<MongoId, HashSet<MongoId>> BuildSeeds(
+        Config config,
+        Dictionary<MongoId, string> discovered,
+        HashSet<MongoId> openIds,
+        string pass)
+    {
+        var result = new Dictionary<MongoId, HashSet<MongoId>>();
+        if (config.SeedCategories.Count == 0)
+        {
+            return result;
+        }
+
+        // 분류 이름 → 노드 id. 켜진 것만 담는다.
+        var byName = new Dictionary<string, MongoId>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (id, name) in discovered)
+        {
+            if (openIds.Contains(id))
+            {
+                byName[name] = id;
+            }
+        }
+
+        foreach (var (itemId, names) in config.SeedCategories)
+        {
+            // MongoId 에는 TryParse 가 없다(4.1.6 어셈블리 실측). 아이템 id 는 24자리 16진수라
+            // 그 모양만 본다 — 모양이 아닌 것을 넣으면 생성자가 던져 서버 기동이 멈춘다.
+            if (itemId.Length != 24 || !itemId.All(Uri.IsHexDigit))
+            {
+                if (pass.Length == 0)
+                {
+                    logger.Warning($"[SlotCategoryRelax] 씨앗 분류: '{itemId}' 는 아이템 id 모양이 아니다. 건너뛴다.");
+                }
+
+                continue;
+            }
+
+            var ids = new HashSet<MongoId>();
+            foreach (var name in names)
+            {
+                if (byName.TryGetValue(name, out var node))
+                {
+                    ids.Add(node);
+                }
+                else if (pass.Length == 0)
+                {
+                    logger.Warning(
+                        $"[SlotCategoryRelax] 씨앗 분류: 아이템 '{itemId}' 의 '{name}' 은 꺼져 있거나 이 설치본에 없다. 그 분류는 넣지 않는다.");
+                }
+            }
+
+            if (ids.Count > 0)
+            {
+                result[new MongoId(itemId)] = ids;
+            }
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -290,7 +387,7 @@ public class SlotCategoryRelax(
     /// 더하는 쪽도 Mod 계열만 쓴다 — 조상 경로가 그 둘을 깔끔하게 가른다
     /// (Handguard &lt; MasterMod &lt; Mod, Ammo &lt; StackableItem).
     /// </summary>
-    private static Dictionary<MongoId, string> DiscoverCategories(
+    internal static Dictionary<MongoId, string> DiscoverCategories(
         Dictionary<MongoId, TemplateItem> items,
         bool includeAttachmentSlots)
     {

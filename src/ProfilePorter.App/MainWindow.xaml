@@ -1,0 +1,170 @@
+﻿<Window x:Class="ProfilePorter.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ProfilePorter.App"
+        Title="Profile Porter — 프로필 사이로 물건 베끼기"
+        Height="720" Width="1180"
+        Background="{StaticResource Bg}">
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <!-- 머리말 — 이 도구의 성격을 화면에서도 말해 둔다(설계 §2). -->
+    <Border Grid.Row="0" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
+            BorderThickness="1" Padding="10,7" Margin="0,0,0,8">
+      <StackPanel Orientation="Horizontal">
+        <TextBlock Text="이 도구는 물건을 " VerticalAlignment="Center" />
+        <TextBlock Text="늘립니다" FontWeight="Bold" Foreground="{StaticResource Accent}"
+                   VerticalAlignment="Center" />
+        <TextBlock Text=" — 내보내는 쪽은 그대로 남습니다. 받는 쪽에는 스태시에 바로 꽂지 않고 "
+                   VerticalAlignment="Center" />
+        <TextBlock Text="인게임 우편" FontWeight="Bold" Foreground="{StaticResource Accent}"
+                   VerticalAlignment="Center" />
+        <TextBlock Text=" 으로 보냅니다. 보내기 전에 그 프로필은 자동으로 백업됩니다."
+                   VerticalAlignment="Center" />
+      </StackPanel>
+    </Border>
+
+    <Grid Grid.Row="1">
+      <!--
+        기본 너비는 2 : 1.5 : 1 이다. 내보내는 쪽이 격자를 그리느라 가장 넓어야 하고,
+        받는 쪽은 프로필 목록뿐이라 가장 좁아도 된다.
+        가운데 띠(`GridSplitter`)를 끌어 사람이 다시 나눌 수 있다 — `MinWidth` 로 한 칸이
+        0 이 되는 것만 막는다.
+      -->
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="2*" MinWidth="260" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="1.5*" MinWidth="200" />
+        <ColumnDefinition Width="6" />
+        <ColumnDefinition Width="1*" MinWidth="160" />
+      </Grid.ColumnDefinitions>
+
+      <!-- 왼쪽 — 내보내는 쪽 -->
+      <Border Grid.Column="0" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
+              BorderThickness="1" Padding="8">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0" Text="내보내는 쪽" FontWeight="Bold"
+                     Foreground="{StaticResource Accent}" Margin="0,0,0,6" />
+          <ListBox Grid.Row="1" x:Name="SourceProfiles" Height="110"
+                   SelectionChanged="SourceProfiles_SelectionChanged" Margin="0,0,0,6" />
+
+          <!--
+            인게임과 같은 격자. 목록으로 그리면 1칸짜리 탄약과 큰 리그가 똑같아 보여,
+            무엇이 얼마나 자리를 차지하는지 알 수 없다.
+          -->
+          <Border Grid.Row="2" BorderBrush="{StaticResource Line}" BorderThickness="1">
+            <local:StashGridView x:Name="StashGrid" />
+          </Border>
+
+          <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,6,0,0">
+            <TextBlock Text="이름" VerticalAlignment="Center" Margin="0,0,6,0" />
+            <TextBox x:Name="ExportName" Width="150" />
+          </StackPanel>
+
+          <!--
+            고르는 것과 내보내는 것을 **줄로 나눈다.** 한 줄에 섞여 있으면 "착용장비" 가
+            고르기 단추처럼 읽힌다 — 그것은 고른 것과 **무관하게** 입은 것을 내보낸다.
+          -->
+          <StackPanel Grid.Row="4" Margin="0,6,0,0">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+              <Button x:Name="SelectAllButton" Content="스태시 전체선택" Click="SelectAll_Click" />
+              <Button x:Name="SelectNoneButton" Content="선택 취소" Click="SelectNone_Click" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <Button x:Name="ExportStashButton" Content="고른 것 내보내기" Click="ExportStash_Click" />
+              <Button x:Name="ExportLoadoutButton" Content="착용장비 내보내기" Click="ExportLoadout_Click"
+                      ToolTip="고른 것과 상관없이, 그 프로필이 입고 있는 장비 전체를 내보냅니다(보안 컨테이너는 뺍니다)." />
+            </StackPanel>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch"
+                    Background="#3A3A3C" ShowsPreview="False" Cursor="SizeWE"
+                    ToolTip="끌어서 너비를 바꿉니다" />
+
+      <!-- 가운데 — 내보낸 파일 -->
+      <Border Grid.Column="2" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
+              BorderThickness="1" Padding="8">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0" Text="내보낸 파일" FontWeight="Bold"
+                     Foreground="{StaticResource Accent}" Margin="0,0,0,6" />
+
+          <ListBox Grid.Row="1" x:Name="Files" SelectionChanged="Files_SelectionChanged">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding Display}" />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,6,0,0">
+            <Button Content="새로 읽기" Click="Refresh_Click" />
+            <Button x:Name="DetailButton" Content="세부 보기" Click="Detail_Click" IsEnabled="False"
+                    ToolTip="그 파일에 무엇이 들었는지 격자로 봅니다. 읽기만 합니다." />
+            <!--
+              지우는 것은 **그 파일 하나**다. 이미 보낸 우편과 받은 물건은 그대로 남는다 —
+              누르면 한 번 묻고, 그 말을 묻는 글에 적는다(설계 §5.1).
+            -->
+            <Button x:Name="DeleteButton" Content="지우기" Click="Delete_Click" IsEnabled="False"
+                    ToolTip="고른 파일을 지웁니다. 되돌릴 수 없습니다." />
+            <TextBlock x:Name="FolderText" Foreground="{StaticResource Dim}" FontSize="11"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Stretch"
+                    Background="#3A3A3C" ShowsPreview="False" Cursor="SizeWE"
+                    ToolTip="끌어서 너비를 바꿉니다" />
+
+      <!-- 오른쪽 — 받는 쪽 -->
+      <Border Grid.Column="4" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
+              BorderThickness="1" Padding="8">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0" Text="받는 쪽 (우편으로)" FontWeight="Bold"
+                     Foreground="{StaticResource Accent}" Margin="0,0,0,6" />
+          <ListBox Grid.Row="1" x:Name="TargetProfiles" SelectionChanged="TargetProfiles_SelectionChanged" />
+
+          <TextBlock Grid.Row="2" x:Name="ImportHint" Foreground="{StaticResource Dim}"
+                     TextWrapping="Wrap" Margin="0,6,0,0"
+                     Text="파일과 받는 프로필을 고르면 보낼 수 있습니다." />
+
+          <Button Grid.Row="3" x:Name="ImportButton" Content="우편으로 보내기" Click="Import_Click"
+                  HorizontalAlignment="Left" Margin="0,6,0,0" IsEnabled="False" />
+        </Grid>
+      </Border>
+    </Grid>
+
+    <!-- 상태줄 -->
+    <Border Grid.Row="2" Background="{StaticResource Panel}" BorderBrush="{StaticResource Line}"
+            BorderThickness="1" Padding="8,6" Margin="0,8,0,0">
+      <TextBlock x:Name="StatusText" TextWrapping="Wrap" Text="서버에 묻는 중…" />
+    </Border>
+  </Grid>
+</Window>

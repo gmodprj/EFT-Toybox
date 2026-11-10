@@ -1,0 +1,12 @@
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\briefing.bundle
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\Briefing.Client.dll
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\Briefing.Core.dll
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\LICENSE.md
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\THIRD_PARTY_NOTICES.md
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\lib\Briefing.Svg.bin
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\lib\Unity.InternalAPIEngineBridge.003.bin
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\lib\Unity.VectorGraphics.bin
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\LICENSES\Apache-2.0.txt
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\LICENSES\OFL-1.1-LiberationSans.txt
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\LICENSES\Unity-VectorGraphics-LICENSE.md
+3158__Briefing-1.2.0	BepInEx\plugins\Briefing\LICENSES\Unity-VectorGraphics-Third-Party-Notices.md

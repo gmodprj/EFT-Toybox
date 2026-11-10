@@ -33,6 +33,8 @@ public class FriendlyTeammateMatchCallbacks(
     // 요청 1-1 — PIT 의 경로에서 걸러낸 프로필 팀원의 **수치**(사살·생존 초)를 버리지 않고
     // 담아 둔다. 적립 자체는 레이드 id 를 들고 있는 생사 쪽이 한다(StmRaidTallyBuffer 참조).
     StmRaidTallyBuffer tallyBuffer,
+    // 뒤늦게 온 수치를 그 자리에서 쌓는다(2단계). 1단계가 담아 둔 레이드 id 가 있을 때만 부른다.
+    StmRaidTallyService tallyService,
     ICloner cloner,
     ISptLogger<FriendlyTeammateMatchCallbacks> logger
 )
@@ -483,11 +485,32 @@ public class FriendlyTeammateMatchCallbacks(
                 skipped++;
 
                 // 요청 1-1: PIT 에게 넘기지는 않지만 **수치는 버리지 않는다.** 클라이언트가 봇의
-                // SessionCounters 에서 센 값이고(client/Modules/BossPlayers.cs), 레이드 종료의 생사
-                // 보고가 이것을 꺼내 적립한다. 짝이 오지 않으면 버퍼에서 저절로 만료된다.
+                // SessionCounters 에서 센 값이다(client/Modules/BossPlayers.cs).
+                //
+                // **2026-11-07 실측 — 생사 쪽이 먼저다.** 그래서 두 길을 다 둔다:
+                //   담아 둔 레이드 id 가 있으면 = 1단계가 수치 없이 이미 쌓았다 → 여기서 수치만 쌓는다.
+                //   없으면                      = 생사가 아직 안 왔다 → 담아 두고 그쪽이 꺼내 쓴다.
+                // 어느 순서로 와도 한 번씩만 쌓인다(영수증의 열쇠 공간이 둘로 갈려 있다).
                 if (entry != null)
                 {
-                    tallyBuffer.RecordNumbers(sessionId, entry.Aid, entry.KillCount, entry.RaidSeconds);
+                    // 계획 6 A5-1 — **재는 것 먼저.** 경험치·스킬은 아직 쌓지 않는다(A5-3 의 일이다).
+                    // 여기서는 들어온 값을 그대로 로그로 남겨 세 숫자의 뜻을 실측한다.
+                    LogGrowthMaterials(sessionId, entry);
+
+                    if (tallyBuffer.TryTakeRaid(sessionId, entry.Aid, out var pendingRaidId))
+                    {
+                        tallyService.ApplyNumbers(sessionId, pendingRaidId, entry.Aid, entry.KillCount, entry.RaidSeconds);
+
+                        // A5-3. 수치와 **같은 보고**이고 영수증 열쇠 공간만 다르다. 성장 쪽이 실패해도
+                        // 수치 적립은 이미 끝나 있다(두 호출이 서로를 막지 않는다).
+                        tallyService.ApplyGrowth(sessionId, pendingRaidId, entry.Aid, entry.BotExperienceSession, entry.Skills);
+                    }
+                    else
+                    {
+                        tallyBuffer.RecordNumbers(
+                            sessionId, entry.Aid, entry.KillCount, entry.RaidSeconds,
+                            entry.BotExperienceSession, entry.Skills);
+                    }
                 }
 
                 continue;
@@ -503,6 +526,45 @@ public class FriendlyTeammateMatchCallbacks(
         }
 
         return kept;
+    }
+
+    // 계획 6 A5-1 의 산출물. 적립은 하지 않고 **들어온 값만** 적는다 —
+    // doc/specs/2026-11-08-stm-raid-xp-skills-design.md §4-3 이 "delta = PointsEarnedDuringSession" 을
+    // 전제로 삼았고, 이 로그가 그 전제를 실측으로 닫는다. 어셈블리에서 읽은 정의(같은 문서 §2-4):
+    //   Current  = 그 스킬의 누적 진행 점수(0~5100, 한 레벨 100). 클라이언트는 `Current - PointsEarned`
+    //              = **레이드 시작 시점의 값**을 보낸다.
+    //   Progress = Skill.ProgressValue = 레이드 중이면 PointsEarned 와 **같고**, 로비면
+    //              CalculateRealEarnedExpForLobby() 로 **단위가 달라진다**(레벨 경험치로 환산된 수).
+    //   PointsEarnedDuringSession = Skill.PointsEarned = 그 판에 번 진행 점수. **단위가 안 바뀐다.**
+    // 그래서 보는 것은 하나다 — 이 두 값이 실제로 같게 오는가(= 레이드 중에 보내는가).
+    private void LogGrowthMaterials(MongoId sessionId, FriendlyTeammateFollowerProgressRequest entry)
+    {
+        try
+        {
+            var skills = entry.Skills ?? [];
+            var moved = skills
+                .Where(s => s != null && (s.Current != 0 || s.Progress != 0 || s.PointsEarnedDuringSession != 0))
+                .ToList();
+
+            var mismatched = moved.Count(s => Math.Abs(s.Progress - s.PointsEarnedDuringSession) > 0.005);
+            logger.Info(
+                $"[STM] A5-1 측정: aid '{entry.Aid}'(세션 '{sessionId}') 경험치 {entry.BotExperienceSession:0.##}, " +
+                $"사살 {entry.KillCount}, 초 {entry.RaidSeconds}, 스킬 {skills.Count}개 중 값 있는 것 {moved.Count}개, " +
+                $"Progress≠PointsEarned {mismatched}개{(mismatched == 0 ? " (같다 = 레이드 중에 보냈다)" : " ★단위가 다를 수 있다")}");
+
+            // 스킬은 43개까지라 한 줄씩 적어도 로그가 넘치지 않는다. 값이 없는 것은 적지 않는다.
+            foreach (var skill in moved)
+            {
+                logger.Info(
+                    $"[STM] A5-1 측정:   Id {skill.Id} base {skill.Current:0.##} / Progress {skill.Progress:0.##} / " +
+                    $"PointsEarned {skill.PointsEarnedDuringSession:0.##}");
+            }
+        }
+        catch (Exception ex)
+        {
+            // 재는 것이 적립을 막아서는 안 된다.
+            logger.Warning($"[STM] A5-1 측정: aid '{entry.Aid}' 의 재료를 적다 실패했다(적립은 그대로 간다): {ex.Message}");
+        }
     }
 
     private bool ShouldSkipFollowerProgress(MongoId sessionId, FriendlyTeammateFollowerProgressRequest? entry)

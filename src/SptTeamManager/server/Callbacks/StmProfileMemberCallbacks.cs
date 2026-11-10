@@ -15,6 +15,8 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
     StmTransferJournal journal, StmGearEditService gearEdits, StmInventoryApplyService inventoryApply,
     StmGearBuildCatalog gearBuilds,
     StmGearKitQuoteService kitQuotes, StmGearKitPurchaseService kitPurchases,
+    // 계획 6 B2 — 플레이어 ↔ 팀원 스태시 전송(요청 2).
+    StmStashTransferService stashTransfers,
     ISptLogger<StmProfileMemberCallbacks> logger)
 {
     public ValueTask<string> List(string url, EmptyRequestData request, MongoId sessionId) =>
@@ -211,6 +213,33 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
         var message = string.IsNullOrWhiteSpace(refusalReason)
             ? "장비를 사지 못했습니다. 서버 로그를 확인하세요."
             : refusalReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 계획 6 B2. KitBuy 와 같은 모양으로 둔다 — 거절은 **오류 본문**으로 돌려보낸다. 빈 성공 본문으로
+    // 돌리면 화면이 "옮겼다" 로 읽고, 실제로는 아무것도 안 옮겨진 채 사람이 모른다.
+    public ValueTask<string> StashTransfer(string url, StmStashTransferRequest request, MongoId sessionId)
+    {
+        if (stashTransfers.TryTransfer(sessionId, request, out var moved, out var refusalReason) && moved != null)
+        {
+            return new ValueTask<string>(httpResponse.GetBody(moved));
+        }
+
+        var message = string.IsNullOrWhiteSpace(refusalReason)
+            ? "옮기지 못했습니다. 서버 로그를 확인하세요."
+            : refusalReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 계획 6 B3 의 조회. 양쪽 스태시의 바닥에 놓인 것과 이름.
+    public ValueTask<string> StashPair(string url, StmStashPairRequest request, MongoId sessionId)
+    {
+        if (stashTransfers.TryReadPair(sessionId, request, out var pair, out var refusalReason) && pair != null)
+        {
+            return new ValueTask<string>(httpResponse.GetBody(pair));
+        }
+
+        var message = string.IsNullOrWhiteSpace(refusalReason) ? "스태시를 읽지 못했습니다." : refusalReason!;
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }
 

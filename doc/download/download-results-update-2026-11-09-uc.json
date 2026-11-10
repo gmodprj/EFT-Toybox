@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1305,
+    "name": "Repair Max Durability",
+    "version": "2.2.1",
+    "file": "1305__egbog-RepairMaxDurability-2.2.1.zip",
+    "bytes": 31300,
+    "expected": 31300,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2844,
+    "name": "Ultimate Flea",
+    "version": "1.3.1",
+    "file": "2844__UltimateFlea-1.3.1.zip",
+    "bytes": 192307,
+    "expected": 192307,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

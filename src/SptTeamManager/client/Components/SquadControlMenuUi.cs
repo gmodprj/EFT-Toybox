@@ -49,6 +49,13 @@ namespace pitTeam.Components
         private const float RosterViewportTopInset = 44f;
         private const float RosterViewportBottomInset = 26f;
         private const float RosterHeightScreenRatio = 0.54f;
+
+        // 스크롤 없이 보여 주려는 최소 줄 수(사용자 요청: 세 줄까지는 스크롤이 나지 않게).
+        private const int MinVisibleRosterRows = 3;
+
+        // 그래도 화면을 넘기지는 않는다. 세 줄이 이 비율 안에 안 들어가는 작은 화면에서는
+        // 들어가는 만큼만 보이고 나머지는 스크롤이다 — 창이 화면 밖으로 나가는 것이 더 나쁘다.
+        private const float RosterHeightScreenRatioMax = 0.86f;
         private const float RosterShellToButtonGap = -14f;
         private const float RosterBlockVerticalOffset = -24f;
         private const float EmptyRosterButtonCenterY = -36f;

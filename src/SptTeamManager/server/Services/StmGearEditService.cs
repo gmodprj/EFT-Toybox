@@ -564,6 +564,117 @@ public class StmGearEditService(
     // 던지지 않는다: 실패는 false + 사람이 읽을 사유이고, 호출자가 전체를 취소한다(아직 아무것도 안 썼다).
     // 꾸러미 구매(계획 4 Task 3)도 헌 장비를 그 팀원 스태시로 돌릴 때 이 자리 찾기를 쓴다.
     // 격자 자리를 찾는 판정이 두 곳에 생기면 한쪽만 고쳐져 아이템이 겹쳐 놓인다.
+    // 이미 정해 둔 자리(`target.Location`)가 그 격자에서 **비어 있는가.** 끌어다 놓은 자리를 그대로
+    // 쓰려는 호출자를 위한 것이다(스태시 전송). 좌표를 지어내지 않고 `TryPlaceInContainer` 와 **같은
+    // 격자 지도**를 써서, 두 곳의 판정이 어긋나 아이템이 겹쳐 놓이는 일이 없게 한다.
+    internal bool IsContainerSpotFree(List<Item> items, Item target, string containerId, string gridName)
+    {
+        try
+        {
+            if (target?.Location is not ItemLocation location) return false;
+
+            var container = items.FirstOrDefault(i => i?.Id != null && string.Equals(i.Id.ToString(), containerId, StringComparison.Ordinal));
+            if (container == null) return false;
+
+            var found = itemHelper.GetItem(container.Template);
+            var grid = (found.Key ? found.Value?.Properties?.Grids : null)?
+                .FirstOrDefault(g => g?.Name != null && string.Equals(g.Name, gridName, StringComparison.OrdinalIgnoreCase));
+            if (grid?.Properties?.CellsH is not > 0 || grid.Properties.CellsV is not > 0) return false;
+
+            // 옮길 것 자신은 지도에서 뺀다 - 자기 자리를 자기가 막았다고 읽으면 안 된다.
+            var subtreeIds = WornGearLossPolicy.CollectSubtreeIds(ToWornGearItems(items), new[] { target.Id.ToString() });
+            var gridItems = items.Where(i => i?.Id != null
+                && !subtreeIds.Contains(i.Id.ToString())
+                && string.Equals(i.ParentId, containerId, StringComparison.Ordinal)
+                && string.Equals(i.SlotId, grid.Name, StringComparison.OrdinalIgnoreCase));
+
+            var map = inventoryHelper.GetContainerMap(grid.Properties.CellsH!.Value, grid.Properties.CellsV!.Value, gridItems, container.Id);
+
+            var size = itemHelper.GetItemSize(items, target.Id);
+            var width = size?.Width ?? 1;
+            var height = size?.Height ?? 1;
+            if (location.R is ItemRotation.Vertical)
+            {
+                (width, height) = (height, width);
+            }
+
+            // 좌표가 비어 있으면 "그 자리" 라고 할 것이 없다 — 빈 자리 찾기로 보낸다.
+            if (location.X is null || location.Y is null) return false;
+            var x0 = (int)location.X.Value;
+            var y0 = (int)location.Y.Value;
+            if (x0 < 0 || y0 < 0 || x0 + width > grid.Properties.CellsH!.Value || y0 + height > grid.Properties.CellsV!.Value)
+            {
+                return false;
+            }
+
+            for (var y = y0; y < y0 + height; y++)
+            {
+                for (var x = x0; x < x0 + width; x++)
+                {
+                    if (map[y, x] != 0) return false;   // 0 이 빈 칸이다(int 지도)
+                }
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.Warning($"[STM] 놓은 자리 검사가 실패했다(빈 자리 찾기로 간다): {ex.Message}");
+            return false;
+        }
+    }
+
+    // 빈 자리를 **거기서부터** 찾는다(격자 왼쪽 위가 아니라). 끌어다 놓을 때 화면이 보여 주는
+    // 녹색 덩어리가 놓은 칸에서 시작하므로, 나머지도 그 자리부터 채워야 본 대로 놓인다
+    // (2026-11-07 요청). 거기부터 훑고 끝까지 가면 처음으로 돌아와 나머지를 본다.
+    internal bool TryPlaceFrom(List<Item> items, Item target, string containerId, string gridName, int fromX, int fromY, out string failure)
+    {
+        failure = string.Empty;
+        try
+        {
+            var container = items.FirstOrDefault(i => i?.Id != null && string.Equals(i.Id.ToString(), containerId, StringComparison.Ordinal));
+            var found = container == null ? default : itemHelper.GetItem(container.Template);
+            var grid = (container != null && found.Key ? found.Value?.Properties?.Grids : null)?
+                .FirstOrDefault(g => g?.Name != null && string.Equals(g.Name, gridName, StringComparison.OrdinalIgnoreCase));
+            if (grid?.Properties?.CellsH is not > 0 || grid.Properties.CellsV is not > 0)
+            {
+                failure = $"'{gridName}' 격자의 크기를 읽지 못했다.";
+                return false;
+            }
+
+            var cellsH = grid.Properties.CellsH!.Value;
+            var cellsV = grid.Properties.CellsV!.Value;
+            var start = Math.Clamp(fromY, 0, cellsV - 1) * cellsH + Math.Clamp(fromX, 0, cellsH - 1);
+
+            for (var step = 0; step < cellsH * cellsV; step++)
+            {
+                var cell = (start + step) % (cellsH * cellsV);
+                target.ParentId = containerId;
+                target.SlotId = grid.Name;
+                target.Location = new ItemLocation
+                {
+                    X = cell % cellsH,
+                    Y = cell / cellsH,
+                    R = ItemRotation.Horizontal,
+                };
+
+                if (IsContainerSpotFree(items, target, containerId, grid.Name!))
+                {
+                    return true;
+                }
+            }
+
+            target.Location = null;
+            failure = $"'{grid.Name}' 격자에 빈 자리가 없다.";
+            return false;
+        }
+        catch (Exception ex)
+        {
+            failure = $"자리 찾기가 실패했다: {ex.Message}";
+            return false;
+        }
+    }
+
     internal bool TryPlaceInContainer(List<Item> items, Item target, string containerId, string gridName, out string failure)
     {
         failure = string.Empty;

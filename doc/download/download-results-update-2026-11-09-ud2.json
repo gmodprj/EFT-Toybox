@@ -1,0 +1,13 @@
+[
+  {
+    "id": 2930,
+    "name": "ECOTI - Enhanced Clip-On Thermal Imager",
+    "version": "3.5.0",
+    "file": "2930__COTI-3.5.0-spt4.1.7z",
+    "bytes": 33013868,
+    "expected": 33013868,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 3
+  }
+]
