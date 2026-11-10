@@ -4,6 +4,7 @@
   "comment": "봇 역할 이름(ScavRole/*). 킬 패널·시체 표시·지도 범주에 그대로 보인다. 설치본의 ScavRole 열쇠 33개 가운데 6개는 바닐라가 이미 한국어고(보스·경호원·저격수·레이더·로그·밀수업자), Sectant 는 바닐라도 '???' 라 그대로 둔다. 남은 26개 중 22개를 여기서 바꾸고 4개는 keptAsIs 에 둔다. 번역 규칙은 바닐라 한국어 locale 을 따른다 — 역할 낱말은 번역하고(Boss→보스, Guard→경호원, Sniper→저격수), 세력 약어는 그대로 둔다(바닐라도 USEC·BEAR·UNTAR 를 영문으로 둔다).",
 
   "entries": {
+    "ScavRole/chaosInsurgency": "카오스 인서전시",
     "ScavRole/ISBBoss": "ISB 보스",
     "ScavRole/ISBGuard": "ISB 경호원",
     "ScavRole/ISBSniper": "ISB 저격수",
