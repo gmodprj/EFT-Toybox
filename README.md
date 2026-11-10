@@ -80,3 +80,14 @@
 [doc/EXPORT-2026-11-10.md](doc/EXPORT-2026-11-10.md).
 
 Node 24, PowerShell 7 기준. Forge API는 인증 없이 읽기 전용.
+
+## 라이선스
+
+[MIT](LICENSE). **단, 직접 만든 것에만 적용된다.** 범위 밖은 [NOTICE](NOTICE)에 적었다.
+
+- `src/SptTeamManager/`·`src/SptTeamManager.Tests/`는 [PIT Fireteam](https://github.com/pitAlex/SPT-PitFireTeam)의
+  포크다. **업스트림은 라이선스 파일을 두지 않았다**(2026-11-10 확인) — 거기서 유래한
+  코드·이미지·소리의 권리는 원저작자에게 있고, 재배포 조건은 확인된 바 없다.
+- `doc/`의 모드 이름·버전·설명은 Forge 메타데이터를 옮겨 적은 것이다. 각 모드의 저작권은 그
+  제작자에게 있다. **이 저장소는 모드 파일 자체를 담지 않는다.**
+- Battlestate Games 및 SPT 프로젝트와 무관하다.
