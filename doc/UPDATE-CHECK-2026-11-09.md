@@ -577,9 +577,16 @@ SPT 설치본 안에 빈 폴더 `E:\Spt\ArenaStub` 를 만들고
   자리가 없었고, `BepInEx\LogOutput.log` 는 기동마다 덮여 옛 기록이 없다. `E:\Spt\Logs\` 의
   EFT 자체 로그에는 모드 줄이 남지 않아 대조할 것이 없다. **아이스브레이커 특정 + 삼켜진 예외**
   라는 것까지가 지금 잴 수 있는 전부다.
-- **자막은 이 레이드로도 확인되지 않았다.** `subtitle`·`C.A.S.S.I.E` 로 걸리는 줄이 **0** 이다 —
-  ISB 자막은 **실험실(ISB 미니랩)의 방송·무전**에서 쓰이므로 그 쪽을 돌아야 로그에 남는다.
-  설정은 `Subtitle Language = kr` 로 들어가 있고 사전은 222/222 다(§U-F).
+- **자막은 로그로 잴 수 없다 — 화면으로 확인했다.** `subtitle`·`C.A.S.S.I.E`·`announcement` 로
+  걸리는 줄이 **끝까지 0** 이다. 그 플러그인은 **자막을 로그에 적지 않는다**. 2026-11-10 에
+  사용자가 레이드에서 **한글로 떴다**고 확인했다 — 설정 `Subtitle Language = kr`,
+  사전 222/222, 설치본 동일(§U-F)까지 맞춰 둔 것이 화면에서 먹었다.
+  - 로그에 남는 것은 주변 사실뿐이다 — `ISB SOF: Immersion Systems Plugin v2.0.4 loaded.`,
+    `ISB Labs menu state: enabled=True, unlocked=False, …`, ISB 봇 사살
+    (`ISBSpecialForces kill: Zarnica/Fallen/Faust`). **실험실은 아직 안 열렸는데도**(unlocked=False)
+    자막이 떴으므로, 자막은 미니랩 전용이 아니라 **레이드 무전에서도** 나온다.
+  - 다음에 이 항목을 확인할 때 **로그를 뒤지는 데 시간을 쓰지 않는다.** 화면을 보는 것이
+    유일한 길이다.
 
 ### 받는 순서 규칙 (2026-11-09, 사용자 결정)
 
