@@ -1,7 +1,7 @@
-# 아이스브레이커 백포트가 그 맵이 아닌 곳에서 하는 일 둘을 멈춘다 (준비분)
+# 아이스브레이커 백포트가 그 맵이 아닌 곳에서 하는 일 둘을 멈춘다
 
 2026-11-11. 사용자가 **측정(A/B)을 건너뛰고 수정부터** 하기로 했다. 이 문서는 **무엇을 왜 어떻게
-가리는지**와, 아직 하지 않은 것을 적는다. 아직 **설치하지 않았다** — 빌드와 시험까지다.
+가리는지**와, 아직 하지 않은 것을 적는다. **설치는 같은 날 17:53 에 했다**(§5).
 
 - 발단: [REVIEWS-PERF-2026-11-11.md](../REVIEWS-PERF-2026-11-11.md) §1-A — 모드 페이지의 1.1.3 보고.
 - 우리 쪽 증거: [MEMORY-AUDIT-2026-11-11.md](../MEMORY-AUDIT-2026-11-11.md) — 한 기동에 2,367 → 6,696 MB, 관리 힙 바닥값 +670 MiB/47분.
@@ -73,12 +73,11 @@
 
 | 아직 안 한 것 | 메모 |
 | --- | --- |
-| **설치** | 스크립트를 돌리지 않았다. 설치본은 11-A(VRAM Cleaner) 이후 그대로다 |
 | 게임에서의 확인 | 기동 로그에 `걸었다: Manimal.Icebreaker.RenderEnvProbe:TickVanillaPerfCensus` 와 `…IcebreakerAcoustics:IcebreakerLoaded` 두 줄, 그리고 **`[PerfCensus]` 가 사라지는지**를 본다 |
 | 효과 측정 | 사용자 결정으로 **A/B 를 건너뛰었다.** 그래도 사후 비교는 공짜다 — `totalMemoryBeforeCleanUp` 의 처음·끝과 라이트하우스 `managedMiB` 바닥값을 11-11 값(2,367 → 6,696 MB / 바닥 4,868 → 5,539 MiB)과 견주면 된다 |
 | 제작자에게 보고 | 모드 페이지에 이미 같은 내용의 보고가 있다(1.1.3 기준). 우리 `lodGroups=58529` 를 덧붙일 수 있다 |
 
-## 4. 설치할 때
+## 4. 설치 방법
 
 ```powershell
 pwsh -File tools/install-icebreakeroffmapguard.ps1
@@ -90,3 +89,23 @@ pwsh -File tools/install-icebreakeroffmapguard.ps1
 `-Remove` 하나이고, 지워도 아이스브레이커 모드 자체는 손대지 않은 그대로다.
 
 **게임 플러그인 수는 1 늘어 247 → 248 이 된다**(11-A 의 VRAM Cleaner 가 247로 올린 뒤).
+
+## 5. 설치 실측 (2026-11-11 17:53)
+
+| 항목 | 값 |
+| --- | --- |
+| 넣은 것 | `BepInEx\plugins\IcebreakerOffMapGuard\IcebreakerOffMapGuard.dll` **10,752 B** |
+| 설치본 md5 | `c49ae741d40c2c87d8917b277c08f8e1` — 빌드 결과(`bin\Release`)와 **같다** |
+| 그때 떠 있던 것 | **서버만**(`SPT.Server`, 사용자가 돌리는 중). 게임·런처는 꺼져 있었다. 이 플러그인은 게임 전용이라 서버와 무관하고, **서버는 건드리지 않았다** |
+| 대상 모드 | `ManimalIcebreakerClient.dll` 제자리에 있다 — 스크립트가 없으면 경고하는데 나오지 않았다 |
+
+**아직 로드된 적은 없다.** `BepInEx\LogOutput.log` 의 수정 시각이 **15:01** 로 설치(17:53)보다 앞이다.
+다음 기동에서 볼 것 셋:
+
+1. `걸었다: Manimal.Icebreaker.RenderEnvProbe:TickVanillaPerfCensus`
+2. `걸었다: Manimal.Icebreaker.IcebreakerAcoustics:IcebreakerLoaded (씬 이벤트에서 버린다)`
+3. **`[PerfCensus]` 가 한 줄도 없어야 한다**(11-11 기동에는 셋 있었다). `못 찾았다: …` 경고가 나오면
+   모드 쪽 이름이 바뀐 것이므로 이 문서의 §1 표를 다시 확인한다.
+
+Forge 모드가 아니라 설치 기록(`doc/install-records/`)에는 들어가지 않는다 — 그래서
+`node tools/check-install-records.mjs` 의 숫자(305개 / 15,948줄)는 **그대로다**(설치 후 확인: `OK — 0/0`).

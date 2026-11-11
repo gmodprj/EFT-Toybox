@@ -56,7 +56,7 @@
 | [fixes/2026-10-28-olympus-missing-item-ids.md](fixes/2026-10-28-olympus-missing-item-ids.md) | **서버 오류 48건의 전말** — Olympus 가 만들지 않는 아이템 id 48개를 참조한다. 증거·배제한 후보·제작자 보고용 영문 정리와 id 48개 전체 |
 | [fixes/2026-10-27-pit-lootpatrol-nre.md](fixes/2026-10-27-pit-lootpatrol-nre.md) | PIT `LootPatrolLayer.GetDecision` NullReference 조사 + 제작자 보고용 영문 정리 |
 | [fixes/2026-11-05-aicoreagent-invalidcast.md](fixes/2026-11-05-aicoreagent-invalidcast.md) | **BigBrain 봇 업데이트에서 매 프레임 InvalidCast 4,524줄** — STM 을 Release 로 다시 깐 뒤 0줄이 됐지만 그때 변수를 둘 바꿔 **원인은 미확정**이다. 진단용 finalizer 를 어떻게 짰는지도 적었다 |
-| [fixes/2026-11-11-icebreaker-offmap-guard.md](fixes/2026-11-11-icebreaker-offmap-guard.md) | **아이스브레이커 백포트가 다른 맵에서도 하는 일 둘** — 60초마다 LOD 전수조사(`[PerfCensus]`, 우리 라이트하우스 58,529개)와 매 프레임 씬 이름 읽기. 설정으로는 못 끈다(`DevMode`·`DiagHotkeys` 꺼진 채로 돌았다). 밖에서 두 메서드만 가리는 플러그인 `src/IcebreakerOffMapGuard` — **빌드·시험까지 했고 아직 설치하지 않았다** |
+| [fixes/2026-11-11-icebreaker-offmap-guard.md](fixes/2026-11-11-icebreaker-offmap-guard.md) | **아이스브레이커 백포트가 다른 맵에서도 하는 일 둘** — 60초마다 LOD 전수조사(`[PerfCensus]`, 우리 라이트하우스 58,529개)와 매 프레임 씬 이름 읽기. 설정으로는 못 끈다(`DevMode`·`DiagHotkeys` 꺼진 채로 돌았다). 밖에서 두 메서드만 가리는 플러그인 `src/IcebreakerOffMapGuard` — **2026-11-11 17:53 설치, 게임 기동 확인은 다음 기동에** |
 | [fixes/2026-11-06-lighthouse-rework-load-stall.md](fixes/2026-11-06-lighthouse-rework-load-stall.md) | **리워크 라이트하우스 진입 로딩 멈춤** — 멈춘 자리(심장박동 정지)와 두 번의 메모리 실측. 1차는 남은 4,466 MB 에서 멈추고 2차는 **72 MB 에서 47분을 돌아**, 메모리 여유로 설명하려던 가설을 거뒀다. **원인 미확정** |
 | [fixes/2026-11-06-apply-inventory-accepts-overlap.md](fixes/2026-11-06-apply-inventory-accepts-overlap.md) | **`apply-inventory` 가 격자 겹침을 거절하지 않는다** — 실측과 되돌림(295개, 차이 0). 처음 "설계와 모순 아님" 으로 닫았다가 **계획 5 재작성에서 요건이 떨어져 나간 것**으로 정정한 경위도 적었다 |
 | [fixes/2026-11-05-raid-end-crash-mono.md](fixes/2026-11-05-raid-end-crash-mono.md) | 레이드 종료 후 게임 강제 종료 — 시각별 확인 사실과 좁히는 방법. **원인 미확정** |
@@ -107,8 +107,8 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 
 ## 직접 만든 모드 (`src/`)
 
-**19개**(테스트 프로젝트 제외). 그중 **자기 이름의 설치 자리를 가진 것이 13개**다 —
-`IcebreakerOffMapGuard` 는 자리를 가질 예정이지만 **아직 설치하지 않았다**(2026-11-11).
+**19개**(테스트 프로젝트 제외). 그중 **자기 이름의 설치 자리를 가진 것이 14개**다 —
+`IcebreakerOffMapGuard` 도 자기 자리를 가진다(2026-11-11 17:53 설치).
 `PluginLocales`·`ServerWebKorean` 은 자기 폴더 없이 **남의 모드 폴더와 서버 웹에 파일로** 들어가고,
 `CompatToggle` 은 지금 설치본에 없다.
 
@@ -121,7 +121,7 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 | `SptKoreanLocale` | 게임 DB locale 한글화 | [README](../src/SptKoreanLocale/README.md) · [범위 검토](REVIEW-KOREAN-LOCALIZATION.md) · [아이템 범위](specs/2026-11-06-item-locale-scope.md) · [계획](plans/2026-11-02-korean-localization-plan.md) |
 | `PluginLocales` | 모드 폴더에 넣는 한국어 locale 4개 | [README](../src/PluginLocales/README.md) |
 | `ServerWebKorean` | 서버 웹 설정창 한글 locale | [문서](SERVER-WEB-KOREAN.md) |
-| `IcebreakerOffMapGuard` | 아이스브레이커 백포트가 **다른 맵에서도** 하는 일 둘을 밖에서 가린다(LOD 전수조사·매 프레임 씬 이름 읽기). **아직 설치하지 않았다** | [경위·설계](fixes/2026-11-11-icebreaker-offmap-guard.md) |
+| `IcebreakerOffMapGuard` | 아이스브레이커 백포트가 **다른 맵에서도** 하는 일 둘을 밖에서 가린다(LOD 전수조사·매 프레임 씬 이름 읽기) | [경위·설계](fixes/2026-11-11-icebreaker-offmap-guard.md) |
 | `GogglesWheel` | 야시경·실드 휠 | [설계](specs/2026-10-30-goggles-wheel-design.md) · [계획](plans/2026-10-30-goggles-wheel-plan.md) |
 | `DynamicMapsFactionMarkers` | 지도에 세력 표시 | [설계](specs/2026-10-30-dynamicmaps-faction-markers-design.md) · [계획](plans/2026-10-30-dynamicmaps-faction-markers-plan.md) · [세력 조사](specs/2026-10-30-faction-identification-survey.md) |
 | `GridWindowScroll` | 가방·상자 창을 화면 안에 가둔다 | [README](../src/GridWindowScroll/README.md) |
