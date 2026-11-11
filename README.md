@@ -9,7 +9,7 @@
 - 작업 이력: [doc/WORKLOG.md](doc/WORKLOG.md) · 가장 최근 인계: [doc/HANDOVER-2026-11-10.md](doc/HANDOVER-2026-11-10.md)
 - 모드 추가·검증·되돌리기 절차: [doc/PROCEDURE.md](doc/PROCEDURE.md)
 - 설치본 추출·백업: [doc/EXPORT-2026-11-10.md](doc/EXPORT-2026-11-10.md)
-- 직접 만든 모드 18개: [doc/README.md](doc/README.md) 의 "직접 만든 모드" 절
+- 직접 만든 모드 19개: [doc/README.md](doc/README.md) 의 "직접 만든 모드" 절
 - **문서 색인: [doc/README.md](doc/README.md)** — 먼저 여기를 본다
 
 ## 구성
@@ -54,6 +54,7 @@
 | `tools/install-and-test.ps1` | 덮어쓰기 금지 설치 + 기록 + 테스트 서버 확인 |
 | `tools/gen-installed-mods.mjs` | 설치 기록으로 `doc/INSTALLED-MODS.md` 생성 |
 | `tools/install-koreanconfig.ps1` | 한글화 플러그인 빌드 결과와 사전 설치 |
+| `tools/install-icebreakeroffmapguard.ps1` | 아이스브레이커 off-map 가림 플러그인 설치 (`-Remove` 로 되돌림). 게임이 떠 있으면 멈춘다 |
 
 ### 검사 (끝낼 때마다 돌린다)
 
