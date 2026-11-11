@@ -3,13 +3,13 @@
 `E:\Spt`에 설치한 SPT 4.1.6(Single Player Tarkov) 모드의 관리 폴더. 모드를 **덮어쓰지 않고** 넣고,
 무엇이 어디로 들어갔는지 파일 단위로 적어 두고, 되돌릴 수 있게 하는 것이 목적이다.
 
-**2026-11-10 기준 모드 304개 / 설치 기록 15,947줄. 서버 모드 174개 · 게임 플러그인 246개(둘 다 실측).**
+**2026-11-11 기준 모드 305개 / 설치 기록 15,948줄. 서버 모드 174개 · 게임 플러그인 246개**(그 뒤 자체 플러그인 둘을 넣었고 게임을 켜지 않아 아직 재지 않았다 — 다음 기동에 248).
 
 - 설치된 모드: [doc/INSTALLED-MODS.md](doc/INSTALLED-MODS.md) (목록, 자동 생성), [doc/MODS-GUIDE.md](doc/MODS-GUIDE.md) (무엇을 하는 모드인지)
-- 작업 이력: [doc/WORKLOG.md](doc/WORKLOG.md) · 가장 최근 인계: [doc/HANDOVER-2026-11-10.md](doc/HANDOVER-2026-11-10.md)
+- 작업 이력: [doc/WORKLOG.md](doc/WORKLOG.md) · 가장 최근 인계: [doc/HANDOVER-2026-11-11.md](doc/HANDOVER-2026-11-11.md)
 - 모드 추가·검증·되돌리기 절차: [doc/PROCEDURE.md](doc/PROCEDURE.md)
 - 설치본 추출·백업: [doc/EXPORT-2026-11-10.md](doc/EXPORT-2026-11-10.md)
-- 직접 만든 모드 18개: [doc/README.md](doc/README.md) 의 "직접 만든 모드" 절
+- 직접 만든 모드 19개: [doc/README.md](doc/README.md) 의 "직접 만든 모드" 절
 - **문서 색인: [doc/README.md](doc/README.md)** — 먼저 여기를 본다
 
 ## 구성
@@ -44,6 +44,8 @@
 | 스크립트 | 용도 |
 | --- | --- |
 | `tools/search-mods.mjs` | Forge에서 이름·소개로 모드 검색 |
+| `tools/fetch-mod-comments.mjs` | 모드 페이지의 **댓글**을 읽어 성능·메모리 언급만 추린다 (API 에 리뷰 길이 없어 Livewire 컴포넌트를 직접 부른다) |
+| `tools/sweep-candidates.mjs` | 4.1.6 호환 목록 **전체**를 카테고리까지 받아 정규식으로 추리고 설치된 것을 뺀다 (키워드 검색이 놓치는 것을 센다) |
 | `tools/mod-detail.mjs` | 모드별 4.1.6 호환 버전·의존성·결속·설명 |
 | `tools/survey-candidates.mjs` | 후보 여러 개 일괄 조회 |
 | `tools/resolve-versions.mjs` | 후보의 호환 버전과 의존성 트리 |
@@ -52,6 +54,7 @@
 | `tools/install-and-test.ps1` | 덮어쓰기 금지 설치 + 기록 + 테스트 서버 확인 |
 | `tools/gen-installed-mods.mjs` | 설치 기록으로 `doc/INSTALLED-MODS.md` 생성 |
 | `tools/install-koreanconfig.ps1` | 한글화 플러그인 빌드 결과와 사전 설치 |
+| `tools/install-icebreakeroffmapguard.ps1` | 아이스브레이커 off-map 가림 플러그인 설치 (`-Remove` 로 되돌림). 게임이 떠 있으면 멈춘다 |
 
 ### 검사 (끝낼 때마다 돌린다)
 
