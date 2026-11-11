@@ -1,0 +1,1894 @@
+{
+  "fetchedAt": "2026-11-11T08:03:11.877Z",
+  "pages": 2,
+  "note": "성능·메모리 낱말이 걸린 댓글만 추렸다. 전체 수집본은 커밋하지 않는다(5,077건).",
+  "mods": [
+    {
+      "id": "1090",
+      "error": null,
+      "siteTotal": 21,
+      "fetched": 19,
+      "perfComments": [
+        {
+          "author": "rairaitheraichu",
+          "date": "Dec 21, 2024 at 4:47 AM",
+          "version": "",
+          "body": "Updated the mod page, I have tested this and it still functions perfectly fine on 3.10.x. Edit: Also works on 3.11.x"
+        }
+      ]
+    },
+    {
+      "id": "1342",
+      "error": null,
+      "siteTotal": 492,
+      "fetched": 32,
+      "perfComments": [
+        {
+          "author": "thisfkngletters",
+          "date": "",
+          "version": "v6.0.4",
+          "body": "Hi! I’m having a problem where my game freezes for several seconds when I open the Traders screen (when handing over items) and the Tasks screen. The freezes last from 1 second up to 7 seconds. I used Mod profiler to see what was causing it, and it points to UI Fixes. These are the parts it shows: QuestListItemPatch (when the task list loads) - freezes of 1 to 4 seconds HandoverPatch (when handing over items to a trader) - freezes of 6 to 7 seconds ShowIconsPatch - also uses a lot of time I have a lot of tasks active (including quests from mods), so maybe that makes it worse. Anything i can do to avoid this? thanks in advance!"
+        },
+        {
+          "author": "suto",
+          "date": "",
+          "version": "v6.0.4",
+          "body": "I have a problem when moving ammo with ctrl+click when multiple selected. Never had it before. Is there a setting i need to change? Spt is 4.1.6, UiFixes is 6.0.4 vid: https://gofile.io/d/8Kl9L6TK All clicks in video are done with ctrl. There is no empty/with ammo cells above in stash. When there are only full stacks of ammo - in moves everything perfectly. When there is one stack not full(either in stash(<- in that case first ctrl+click fills it, others do nothing) or in inventory) - goes like in vid."
+        },
+        {
+          "author": "nikita-tyan",
+          "date": "",
+          "version": "v6.0.4",
+          "body": "After the update, the game freezes for a couple of seconds when switching to merchant windows."
+        },
+        {
+          "author": "tyfon",
+          "date": "",
+          "version": "v6.0.4",
+          "body": "By “the update” I assume you mean UI Fixes 6.0.4 from a month ago? Nothing changed around merchant trading view, and I don’t see any freezes on my end. I’d look for other mods you might have installed, perhaps ones that add lots of custom items?"
+        },
+        {
+          "author": "nomad-35",
+          "date": "",
+          "version": "v6.0.4",
+          "body": "Tbh these lags don’t show up on the logs but it is trackable with modprofiler. Whenever I switch from trading to task page it lags, it also lags when I switch between traders in th task page. I send the CVS I got from the modprofiler tho? Btw I went back as 6.0.2 and still the problem is persistent."
+        },
+        {
+          "author": "tyfon",
+          "date": "",
+          "version": "v6.0.4",
+          "body": "If you’ve got modprofiler logs showing UIFixes is causing the lag, by all means send it along. The other guy claimed it happens only in 6.0.4 (though he never answered about downgrading) and I’ve seen no evidence so far this has anything to do with UI Fixes at all."
+        },
+        {
+          "author": "tyfon",
+          "date": "",
+          "version": "v6.0.4",
+          "body": "Oh, I see. Well maybe try running modprofiler like the other guy and see if it tells you where the lag is happening?"
+        }
+      ]
+    },
+    {
+      "id": "1431",
+      "error": null,
+      "siteTotal": 376,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "plat93",
+          "date": "",
+          "version": "v1.2.1",
+          "body": "Hello, it gives an error and all ui elements crash in raid. Game keeps running, but cant interract with anything. It goes randomly it seems, works for a while and then does this. [Error :DynamicMaps] Caught error while trying to close map [Error :DynamicMaps] Index was outside the bounds of the array. [Error :DynamicMaps] at (wrapper stelemref) System.Object.virt_stelemref_class_small_idepth(intptr,object) at DG.Tweening.Core.TweenManager.AddActiveTween (DG.Tweening.Tween t) [0x00052] in <4379fcb5ffcd422abdabe963856ef063>:0 at DG.Tweening.Core.TweenManager.GetTweener[T1,T2,TPlugOptions] () [0x0018f] in <4379fcb5ffcd422abdabe963856ef063>:0 at DG.Tweening.DOTween.ApplyTo[T1,T2,TPlugOptions] (DG.Tweening.Core.DOGetter 1[T] getter, DG.Tweening.Core.DOSetter 1[T] setter, T2 endValue, System.Single duration, DG.Tweening.Plugins.Core.ABSTweenPlugin 3[T1,T2,TPlugOptions] plugin) [0x00005] in <4379fcb5ffcd422abdabe963856ef063>:0 at DG.Tweening.DOTween.To (DG.Tweening.Core.DOGetter 1[T] getter, DG.Tweening.Core.DOSetter`1[T] setter, UnityEngine.Vector3 endValue, System.Single duration) [0x00000] in <4379fcb5ffcd422abdabe963856ef063>:0 at DG.Tweening.ShortcutExtensions.DOScale (UnityEngine.Transform target, UnityEngine.Vector3 endValue, System.Single duration) [0x0000d] in <4379fcb5ffcd422abdabe963856ef063>:0 at DynamicMaps.UI.Components.MapView.ApplyZoom (System.Single zoom, System.Single tweenTime) [0x00057] in <9afffefffdf24246a235bc7c2dd40fd0>:0 at DynamicMaps.UI.Components.MapView.ApplyMiniMapZoom () [0x00007] in <9afffefffdf24246a235bc7c2dd40fd0>:0 at DynamicMaps.UI.Components.MapPeekComponent.BeginMiniMap (System.Boolean playAnimation) [0x0002c] in <9afffefffdf24246a235bc7c2dd40fd0>:0 at DynamicMaps.UI.ModdedMapScreen.OnMapScreenClose () [0x00046] in <9afffefffdf24246a235bc7c2dd40fd0>:0 at DynamicMaps.Patches.MapScreenClosePatch.PatchPrefix () [0x00025] in <9afffefffdf24246a235bc7c2dd40fd0>:0"
+        }
+      ]
+    },
+    {
+      "id": "2521",
+      "error": null,
+      "siteTotal": 57,
+      "fetched": 17,
+      "perfComments": [
+        {
+          "author": "danut",
+          "date": "",
+          "version": "v3.1.0",
+          "body": "PSA for anyone having seemingly unknown stuttering every few seconds: DO NOT MISTAKENLY SET YOUR RADIUS TO 150m INSTEAD OF 15m AND PROCEED TO PUT IT ON ‘Always on’. That’s it."
+        },
+        {
+          "author": "angelbearting",
+          "date": "",
+          "version": "v3.1.0",
+          "body": "SPT Version: 4.1.6 Setup: Two separate PCs. One is Fika headless server, the other is game client. The headless server and client are connected via ethernet cable, latency is negligible. Mod list is identical on both server and client. I removed all other mods on both sides, leaving only AmandsSense and Dynamic Maps. I joined the raid hosted by the headless server. I waited for two AI bots to fight and kill each other. After they died, I travelled to their corpses. AmandsSense still cannot detect or highlight these bodies from AI-on-AI combat. Additional observations: All loot/item markers work perfectly fine all the time. Corpses killed by myself are highlighted normally by AmandsSense within this headless raid."
+        },
+        {
+          "author": "mrhooah",
+          "date": "",
+          "version": "",
+          "body": "Love the mod but I usually play with a extended raid time and towards the end of the raid 45-60min, I have to turn off the always on and anytime I double press to make it go I get a massive lag spike. Only happens in the last 15min of the raid no idea why,, have a decked out pc with a 5080 and 64gb ram and 24core processor with the game running on my 8 p cores and the server running on the rest. Soon as I turn sense to manual mode the lag stops and will only happen if I active even if nothing is in range to be highlighted, anyone else run into this or have a solution?"
+        }
+      ]
+    },
+    {
+      "id": "2430",
+      "error": null,
+      "siteTotal": 105,
+      "fetched": 22,
+      "perfComments": [
+        {
+          "author": "angelbearting",
+          "date": "",
+          "version": "v3.0.0",
+          "body": "Hi ODT, Thanks for the mod — it’s been a huge QOL improvement for me and my friends, so I made a Simplified Chinese (SPT locale ch ) version and wanted to share it back with you: https://github.com/wangbofan/ODT-ItemInfo-4.0-zh What’s in it: Full ch translation in config/translations.json (~84 keys), on top of the base translation by long120611, with a fair amount of proofreading and rewording. UserLocale defaults to ch out of the box. Hardcoded strings moved to translation keys — the advanced ammo block ( Damage , Penetration Power , Fragmentation Chance , Tracer , explosion stats, etc.), the GPU text in the Bitcoin production info and the best-trader None fallback now read from translations.json , so they can be translated instead of staying English. Two small bugs fixed while I was in there: Tracer: No was missing its leading newline, and Heavy blleding Delta was a typo ( bleeding ). SPT 4.1 port (this is the part you may care about most): the repo is currently built against 4.0.9, and on SPT 4.1.x it fails to load with Could not load type 'SPTarkov.Server.Core.Models.Spt.Mod.AbstractModMetadata' . On 4.1 AbstractModMetadata is gone (replaced by the IModMetadata interface), IOnLoad.OnLoad is now OnLoadAsync(CancellationToken) , and DatabaseService was split into the new DI tables ( TemplateTable , TradersTable , HideoutTable , LocaleTable , GlobalTable ). I ported the code accordingly and also fixed the ModHelper / ItemHelper / LocaleService namespaces and the logger usage. It compiles with net10.0 and loads cleanly on SPT 4.1.6 :"
+        }
+      ]
+    },
+    {
+      "id": "3011",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "daark",
+          "date": "",
+          "version": "v3.0.2",
+          "body": "Could you tell me which item caused this issue? I haven’t ran into this issue for the past month I’ve been using this version of the mod. Is this also a breaking issue (crashes your game, stops working, or breaks the client requiring a restart)? This could be a modded item issue, so that’s why I’m asking which item caused this."
+        },
+        {
+          "author": "nekofur",
+          "date": "",
+          "version": "v3.0.2",
+          "body": "Sorry, I don’t know which item caused it, but I can give you the logs. It didn’t cause any crashes. It’s just a new error I found in the logs after doing a routine AI-assisted review following a mod update/addition."
+        }
+      ]
+    },
+    {
+      "id": "2221",
+      "error": null,
+      "siteTotal": 15,
+      "fetched": 20,
+      "perfComments": [
+        {
+          "author": "mugnum",
+          "date": "Jul 20, 2025 at 11:56 AM",
+          "version": "",
+          "body": "Great idea! I’ve always had to load them one by one, then unload, check penetration properties and load again."
+        }
+      ]
+    },
+    {
+      "id": "2112",
+      "error": null,
+      "siteTotal": 86,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "ozen",
+          "date": "",
+          "version": "",
+          "body": "You can using other mods (like SVM) to change the load/unload speed multiplier"
+        },
+        {
+          "author": "jeka-346",
+          "date": "",
+          "version": "",
+          "body": "Please note that if I wanted to use SVM, I would have done so. BUT I like your mod, but it also has a drawback: in my opinion, the rate at which cartridges are ejected from the magazine is too slow. Otherwise, thank you for the modification."
+        }
+      ]
+    },
+    {
+      "id": "2739",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "sphericalmoth",
+          "date": "",
+          "version": "",
+          "body": "could you add the unload magazine boxes to the 4.0 build?"
+        },
+        {
+          "author": "12344",
+          "date": "",
+          "version": "",
+          "body": "Can the bullets in the gun barrel also be unloaded"
+        },
+        {
+          "author": "burningmaoam",
+          "date": "",
+          "version": "",
+          "body": "Feature Request: Unload all Ammo Packs with the same button :)"
+        },
+        {
+          "author": "naireem",
+          "date": "",
+          "version": "",
+          "body": "Can you make a mod that lets you unload/load the mags like in stash, but in raid?"
+        },
+        {
+          "author": "maschine",
+          "date": "",
+          "version": "",
+          "body": "Take a look at my GitHub repo UnloadAllMagazinesInventory if that’s what you are looking for i will release it here."
+        },
+        {
+          "author": "darezi",
+          "date": "",
+          "version": "",
+          "body": "Any chance to get the same button for inventory, for when you are in the raid to quickly unload all magazines that you looted., but not the ones that you keep in your vest, just the ones that are in the bags."
+        },
+        {
+          "author": "maschine",
+          "date": "",
+          "version": "",
+          "body": "That’s definitely possible, but I’m not sure if it fits the purpose of the mod. I’ve released a corresponding (standalone) version on my GitHub page (as UnloadAllMagazinesInventory) for now; let me know what you think. Alternatively, you can use the UIFIxes mod and its multiselect feature."
+        }
+      ]
+    },
+    {
+      "id": "1232",
+      "error": "댓글 탭 컴포넌트가 없다",
+      "siteTotal": null,
+      "fetched": 0,
+      "perfComments": []
+    },
+    {
+      "id": "1348",
+      "error": null,
+      "siteTotal": 136,
+      "fetched": 22,
+      "perfComments": [
+        {
+          "author": "agoelia",
+          "date": "",
+          "version": "",
+          "body": "Bug report for version 1.0.0 of the mod (SPT 4.0.13): Quest “Weapon Proficiency - LMGs” seems to not be working with a M249 SAW. The counter never goes up despite killing several PMCs. I get kill confirmations from the HUD mod so I am 100% sure. I’m also sure it is a weapon-specific issue because using an RPK instead works perfectly. Both guns are classified as “machine guns” by Tushonka so I don’t see why it shouldn’t work. The other Weapon Proficiency quests also seem to work just fine."
+        },
+        {
+          "author": "jeanpierre-maimo",
+          "date": "",
+          "version": "",
+          "body": "What should i do then? Any recommandation? Sorry to take your time man, i’m not an expert with this and my english skills isnt that perfect"
+        }
+      ]
+    },
+    {
+      "id": "1303",
+      "error": null,
+      "siteTotal": 23,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "veiledfury",
+          "date": "Jul 1, 2025 at 2:27 PM",
+          "version": "",
+          "body": "Perfect, thank you so much!"
+        },
+        {
+          "author": "veiledfury",
+          "date": "Jul 1, 2025 at 2:42 PM",
+          "version": "",
+          "body": "Found it, looks like buy_price_coef is what governs selling price (currency_coefficient affects repair it looks like). Changing “buy_price_coef”: 38, to “buy_price_coef”: 99, dropped the selling price of my test item from 17k RUB to 5oo RUB. Cheers! This works perfectly for me."
+        }
+      ]
+    },
+    {
+      "id": "1089",
+      "error": null,
+      "siteTotal": 43,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "tio-mutaco",
+          "date": "",
+          "version": "",
+          "body": "It’s working perfectly for me too."
+        },
+        {
+          "author": "mrdudez",
+          "date": "",
+          "version": "",
+          "body": "Great Mod! And yes, it´s working perfectly"
+        }
+      ]
+    },
+    {
+      "id": "2405",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 17,
+      "perfComments": [
+        {
+          "author": "xtht1guy",
+          "date": "",
+          "version": "",
+          "body": "Would it be possible to make it where you can right click while unloading a magazine? That way you can check if an unfamiliar ammo is worth unloading"
+        }
+      ]
+    },
+    {
+      "id": "2730",
+      "error": null,
+      "siteTotal": 11,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "apfaffman",
+          "date": "",
+          "version": "",
+          "body": "works as advertised. hard to break the muscle memory to search every time i check a container/corpse, but once i do this is like 30-50 saved clicks per raid!"
+        }
+      ]
+    },
+    {
+      "id": "2924",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 23,
+      "perfComments": [
+        {
+          "author": "xvotex",
+          "date": "",
+          "version": "",
+          "body": "Most likely, there simply isn’t enough physical space in the stash for separated sorting. I haven’t had any issues with separated mode on 4.0. I added this mode mostly for myself, since I play with the largest stash available. It’s far from optimal, but it makes the layout much easier to read visually. Adding a bunch more subcategories isn’t a problem, but it makes the sorting process more complicated. Separating every category in separated mode will spread items out as much as possible and take up a lot more stash space. Orientation adds another layer of conditions to the sorting process, which reduces sorting efficiency. This is exactly why the direction option (Asc/Desc) is disabled for size sorting, since sorting from smallest to largest is extremely inefficient. Adding orientation would most likely slow down the search for an optimal layout, and the resulting layout itself might also be less optimal. Sorting weapons is a massive pain in the ass… Because of their unusual sizes, I’ve rewritten the weapon sorting logic dozens of times, and it’s by far the slowest part of the sorting process."
+        }
+      ]
+    },
+    {
+      "id": "2733",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 6,
+      "perfComments": [
+        {
+          "author": "smokaye",
+          "date": "",
+          "version": "",
+          "body": "if i install this is it fine to keep the in game setting Automatic Ram Cleaner on?"
+        },
+        {
+          "author": "maschine",
+          "date": "",
+          "version": "",
+          "body": "Yes, you can keep “Automatic RAM Cleaner” on. The mod only affects the cleanup that runs when you open the escape menu during a raid."
+        }
+      ]
+    },
+    {
+      "id": "2667",
+      "error": null,
+      "siteTotal": 82,
+      "fetched": 36,
+      "perfComments": [
+        {
+          "author": "shuffle667",
+          "date": "",
+          "version": "v2.1.0",
+          "body": "Hello would this be compatible with Smoothie? Still new to modding and I could be wrong but would think that “Smoothie” and This mod wouldn’t be compatible due to smoothie rendering the game differently to save on performance."
+        },
+        {
+          "author": "sharkof2055",
+          "date": "",
+          "version": "v2.0.0",
+          "body": "Sorry, Ya I’m using Fontaines stances. Let me know if you need me to do anything. Im so close to perfection with these mods lol."
+        },
+        {
+          "author": "aoi-ponkotu",
+          "date": "",
+          "version": "v2.0.0",
+          "body": "it saved my pc from Burning down GPU while ADS with scopes.thanks god"
+        }
+      ]
+    },
+    {
+      "id": "3074",
+      "error": null,
+      "siteTotal": 15,
+      "fetched": 30,
+      "perfComments": [
+        {
+          "author": "cavok",
+          "date": "",
+          "version": "v1.4.1",
+          "body": "I didn’t specifically modify the AI behavior, so I can’t get the PIT Fireteam’s AI to perform “direct reloading.”"
+        },
+        {
+          "author": "txvicious-y5mmh",
+          "date": "",
+          "version": "v1.3.2",
+          "body": "Love your reload and meds mod, thanks for making it! With my reload times set almost to instant, I noticed a repeatable FPS dip from ~65 to 57 when reloading on Streets enough to feel a small hitch. I’ve been building a lightweight logging/performance monitoring mod for my personal Fika setup because apparently 93+ mods I’m constantly trying to figure out what caused what issue and got tired of agents saying they didn’t have client logs or what they needed, using that I was able to track down this issue. I used your 1.3.3 release on GitHub, agents (Claude + Codex) noticed the magazine refill moves ammo one round at a time, triggering inventory events for each round. That looked like a possible source of the hitch. I had my the agents build a Harmony patch using native stack transfers while keeping ammo selection and Fika item-ID handling. We also ran 27 automated test groups covering 700 randomized cases and verified all 13 Harmony hooks applied. After a few self-hosted runs, I no longer notice the hitch. Testing with friends is still pending, so I can’t say how it behaves on other setups yet. Happy to share the source, tests and findings if you’re interested! Didn’t see any GitHub issues, so wasn’t sure where best to send it plus I know some are adverse to AI code, happy to share whatever might be of interest you."
+        },
+        {
+          "author": "neckro16",
+          "date": "",
+          "version": "v1.3.2",
+          "body": "For people who use headless hosting on other pc/server paste whole mod including server and bepinex side on both pc’s idk why they both need both files but now it’s working like a dream and previously without those files server was causing stutters to players and player was causing ghost slots for server."
+        }
+      ]
+    },
+    {
+      "id": "2966",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "operator0",
+          "date": "",
+          "version": "",
+          "body": "you mean you dont like paying 230,000 rubles for the Glock you made for 90k,…lol, got rid of this mod and even got more frames when i did it, had to erase my whole profile i grinded 4 weeks for due to this mod throwing an error once i uninstalled it,..stay away!"
+        }
+      ]
+    },
+    {
+      "id": "3085",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 20,
+      "perfComments": [
+        {
+          "author": "balor1",
+          "date": "",
+          "version": "v1.1.0",
+          "body": "Could you remove ‘Factory cellars key’ for reward on ‘Reinforcement’ quest? it makes game crash"
+        },
+        {
+          "author": "zantetsukenar3",
+          "date": "",
+          "version": "v1.1.0",
+          "body": "Thanks for reporting! I’ve checked the code, and the Reinforcements quest doesn’t actually award that key, so I’m not sure the crash is related to Ledger. Could you confirm which versions of SPT and Ledger you’re using, and exactly when the crash happens? If possible, could you also share a screenshot of the quest rewards and your latest logs from BepInEx/LogOutput.log and user/logs? I can easily swap out any broken items if needs be but best make sure exactly what causes the crash first. Thanks!"
+        },
+        {
+          "author": "balor1",
+          "date": "",
+          "version": "v1.1.0",
+          "body": "Excuse me for not having answered your letter sooner. If you have checked and found no issues, it seems that other modes are the cause. The version I am using is SPT 4.1.6 and Ledger 1.1.0. When trying to claim quest completion rewards, a loading icon was spinning in the bottom right corner, RAM usage was boom, and the game freezed. The quest reward icon was a red skull, spinning loading marks with yellow 9999 number on it. When I reconnected, it showed that the quest had been completed. I’m sorry for wasting your time because of me."
+        },
+        {
+          "author": "operator0",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "I will try anything you invest time in since “Realistic dogtag names” this will fit perfectly right into my game, Im the guy that SLOWS mag reloading so as to make it “Realistic”…..lol, your mod was the cherry AND the Icing to my realistic battlefield simulation as i call it,…..Going to install this now!!"
+        }
+      ]
+    },
+    {
+      "id": "994",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "roguetech67",
+          "date": "Aug 3, 2023 at 5:54 PM",
+          "version": "",
+          "body": "@ DrakiaXYZ , works great. Can “slow” the walking speed by 5 levels. Any chance we can get some percentages on “increased” speed?"
+        }
+      ]
+    },
+    {
+      "id": "1988",
+      "error": null,
+      "siteTotal": 24,
+      "fetched": 12,
+      "perfComments": [
+        {
+          "author": "ssal-pt",
+          "date": "",
+          "version": "",
+          "body": "Hello. It’s been a while. It’s not a high priority, but I would like the sound to slow down along with the bullet time when firing in burst mode."
+        },
+        {
+          "author": "swiftduck",
+          "date": "",
+          "version": "",
+          "body": "Nice mod. I noticed some quirks. I dont mind them. This slows down some things but most things work in normal speed during the slowdown. Actors (including you) move in slow motion at the appropriate percentage of dilation specified in the BepInEx menu. SOME of your weapon animations slow down, most impactfully your manual cycling animations like bolt and lever actions. Turn speed is affected for you and bots. You move your gun slower. (they seem to as well but it matters less for them.) Rate of fire is not affected. You can set the dilation to .1 and mag dump a drum mag in less than a second (sort of) Item use is not affected. You can slow time and use up an entire grizzly before the scav gets around the corner. Projectile speeds are not affected. No neo shenanigans. Grenade timer is not affected. Throw a fused ‘nade with the dilation turned too far down and it will probably detonate in mid air right next to your face. ask me how i know this :D AI are only affected in that their movements are slowed. If they can move the gun to aim at you, they will mag dump you without regard to the time slow. They will ramp up their aim accuracy without regard to the slow time, too. It’s actually safer NOT to use the bullet time when caught out because you move slower but the bots don’t aim slower and the bullets dont move slower and the guns don’t fire slower. I did see a bot blow himself up with a grenade once. I did an entire raid in .1 dilation while having my morning coffee. weirdly chill experience. I died to a bot mag dump through a window from god knows how far away lol. This is very useful in short bursts for lining up long shots or head shots. You are in great danger if you stand in front of an aggressive bot and go slow-mo, though. It’s way less OP than i thought it would be and i now use it set at .4 just to give me a little edge in decisive shots. Great fun with this mod. Had a good time figuring out all the quirks of it."
+        },
+        {
+          "author": "ndrxw",
+          "date": "",
+          "version": "",
+          "body": "Created an account just to write this comment. Amazing mod. I could NOT play SPT without this. I have pretty low fps (around 50-60) and when I get into gunfights it’s almost impossible to shoot back because it drops to 20-30FPS. But with this mod it becomes playable and enjoyable."
+        },
+        {
+          "author": "randomheretic",
+          "date": "Dec 7, 2025 at 5:00 PM",
+          "version": "",
+          "body": "Hey, just wanted to say I absolutely love your work, it makes me feel like I’m playing F.E.A.R. I just have one have one question. I completely understand if it’s impossible with how the slowmo is handled, but would it be theoretically possible to make the slowmo work kinda like Sandevistan in Cyberpunk, where everything slows down but the player retains full speed? Just to be clear, I’m not expecting you to rework the mod, I’m just curious."
+        }
+      ]
+    },
+    {
+      "id": "1426",
+      "error": null,
+      "siteTotal": 13,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "dandicroc",
+          "date": "Dec 15, 2025 at 9:53 AM",
+          "version": "",
+          "body": "Hi! The shelter is loading endlessly if the Helicopter Crash Sites mod is installed."
+        }
+      ]
+    },
+    {
+      "id": "2736",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 8,
+      "perfComments": [
+        {
+          "author": "elmer-glue",
+          "date": "",
+          "version": "",
+          "body": "This mod causes a massive FPS spike when entering the inventory, FPS goes from 120 to 40 for about half a second. I’m guessing it’s because this mod checks everything in the inventory for the trader marker when entering it."
+        }
+      ]
+    },
+    {
+      "id": "3030",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 21,
+      "perfComments": [
+        {
+          "author": "5strmichael",
+          "date": "",
+          "version": "",
+          "body": "perfect, thank you for the feedback have fun. hit me with suggestions"
+        }
+      ]
+    },
+    {
+      "id": "2458",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "moji",
+          "date": "Nov 21, 2025 at 11:38 PM",
+          "version": "",
+          "body": "Thanks for updating with new configs! Perfect 👌"
+        }
+      ]
+    },
+    {
+      "id": "2650",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 24,
+      "perfComments": [
+        {
+          "author": "estek",
+          "date": "",
+          "version": "v2.0.0",
+          "body": "i’m having a freeze->crash like the other person was. i’ll put something (any non-pistol) in the holster slot, and when double clicking it to inspect and mousing over stuff(?) it’ll eventually freeze. i’ve had it recover one time, but that might’ve been a fluke. i’m using the newest compatibility highlighter and ui fixes. i also went ahead and tried to see if just disabling compatibility highlighter fixed it, and i thought it had, but a few more seconds of wiggling my mouse aimlessly and it did in fact still crash lol"
+        },
+        {
+          "author": "indefinity",
+          "date": "",
+          "version": "",
+          "body": "Game is crashing when I try to check shotguns/ar/bolt action/smgs (double click) on the holster slot. Like double click and then it infinitely loads then I need to end task the game. Pistols dont have any issues. Edit: Narrowed it down to an interaction with UI Fixes, if either one is active, no issues, if both are active it crashes. I can check on SMGs (with SVM allowing it) with UI Fixes."
+        },
+        {
+          "author": "yung",
+          "date": "",
+          "version": "",
+          "body": "Update: cause identified This was traced to CompatibilityHighlighter 1.2.0. Two of its ItemUiContext patches referenced an outdated E∗∗ field name and failed to apply. When combined with UI Fixes compatible-slot highlighting and HolsterEverything’s size limit, this could cause the game to hang. CompatibilityHighlighter 1.2.1 fixes those patches. No HolsterEverything update is required."
+        },
+        {
+          "author": "vossman93",
+          "date": "",
+          "version": "",
+          "body": "Perfect for the cut down shotguns that were sometimes hard to justify adding to other parts of your loadout."
+        }
+      ]
+    },
+    {
+      "id": "2556",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 14,
+      "perfComments": [
+        {
+          "author": "egbog",
+          "date": "",
+          "version": "",
+          "body": "Nice! More things to help level the painfully slow armor skills is always good"
+        }
+      ]
+    },
+    {
+      "id": "1305",
+      "error": null,
+      "siteTotal": 31,
+      "fetched": 28,
+      "perfComments": [
+        {
+          "author": "otto-reed",
+          "date": "",
+          "version": "",
+          "body": "Thanks! This is perfect for those who are nostalgic, especially for those who have added StatTrack mod. Can you add a item for armor?"
+        }
+      ]
+    },
+    {
+      "id": "3101",
+      "error": null,
+      "siteTotal": 18,
+      "fetched": 28,
+      "perfComments": [
+        {
+          "author": "steiner",
+          "date": "",
+          "version": "v0.1.0",
+          "body": "Everything’s perfect on its own But I’d like to point that adjustments made by “better thermals” won’t apply on the thermals latched on the MOM, other than that, you delivered like before 10/10"
+        }
+      ]
+    },
+    {
+      "id": "2434",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 37,
+      "perfComments": [
+        {
+          "author": "koelkastmagneet",
+          "date": "Nov 10, 2025 at 3:10 PM",
+          "version": "",
+          "body": "Only thing I noticed so far is that he also sells the euros for euros. From memory 1 euro costs 5 euro. The only thing I would have kept in roebel."
+        }
+      ]
+    },
+    {
+      "id": "2803",
+      "error": null,
+      "siteTotal": 20,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "greer0",
+          "date": "",
+          "version": "",
+          "body": "I’ve created 4 stims using Propital, Perfotoran, Trimadol and M.U.L.E. and they work and use the models and effects just fine. But when I try to make a custom stim with custom effects using the SJ12 as a base, the icon is loading and the model is an ERROR. There’s no obvious error logs when I start the server. Any ideas?"
+        }
+      ]
+    },
+    {
+      "id": "3113",
+      "error": null,
+      "siteTotal": 13,
+      "fetched": 34,
+      "perfComments": [
+        {
+          "author": "devilman22781-22",
+          "date": "",
+          "version": "v1.1.0",
+          "body": "luckily i’ve got both of them, but i consider 4.0.13 a masterpiece with more than 140 mods perfectly running for me! thanks a lot"
+        },
+        {
+          "author": "operator0",
+          "date": "",
+          "version": "v1.1.0",
+          "body": "Just got done with a garbage day at work,…But walked in to your comment and all of a sudden my night improved GREATLY,…THIS IS GOING TO BE EPIC, using it with the “trip wire mod” to build real world Military MOS characters in E∗∗ and am working on an “OED” style grunt and your timely and incredible change just gave him a new skill set!!! Thank you !!! You modders are like the “rebels of Tashonka”….LMFAO."
+        }
+      ]
+    },
+    {
+      "id": "2414",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 11,
+      "perfComments": [
+        {
+          "author": "majinojinn",
+          "date": "Nov 11, 2025 at 2:40 PM",
+          "version": "",
+          "body": "The amount of work in this is amazing! Cylinder animations are fantastic. It does seem to glitch sometimes when all six shots are fired in the reload animation, where the empties disappear and it goes straight to loading animation. I wouldn’t even call that a bug considering how much work went into it and it still successfully completes the reload animation and function perfectly well."
+        }
+      ]
+    },
+    {
+      "id": "1278",
+      "error": null,
+      "siteTotal": 332,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "yellownrj",
+          "date": "",
+          "version": "v2.1.1",
+          "body": "Hi! I’m having a similar issue. In response to https://…../client/items: No C# type for taxonomy node with id 680fce2ec7b9b222270f074c found. Node name: CustomContainerTemplate And I also came to the conclusion that this is a WTT Pack’n’Strap mod. I bought a WARTECH Warbelt Vector belt (Multicam) on the flea market, put it on, went into the hideout, and started moving extremely slowly. Before that, I played calmly for 10 days, but as soon as I bought this belt… If you go to your IP address in the browser and open the https://…./database section, you can see that item. Can someone tell me if it’s possible to delete this entry? I can’t find the ID I need in the files."
+        }
+      ]
+    },
+    {
+      "id": "1125",
+      "error": "page 403",
+      "siteTotal": null,
+      "fetched": 0,
+      "perfComments": []
+    },
+    {
+      "id": "1025",
+      "error": "page 404",
+      "siteTotal": null,
+      "fetched": 0,
+      "perfComments": []
+    },
+    {
+      "id": "2429",
+      "error": null,
+      "siteTotal": 14,
+      "fetched": 21,
+      "perfComments": [
+        {
+          "author": "shadowraptor",
+          "date": "Dec 19, 2025 at 12:05 PM",
+          "version": "",
+          "body": "Would you happen to know if anything like this exists for 3.11.4? Tried it on 4.0 and like it, but the game is far too unstable, laggy and buggy on that version, plus mods not functioning properly for some reason… Not trying to ask for a backport, just so you know…"
+        }
+      ]
+    },
+    {
+      "id": "2554",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 27,
+      "perfComments": [
+        {
+          "author": "dusher4",
+          "date": "",
+          "version": "",
+          "body": "This mod works perfectly, I just hope and pray you add the ability to remove the faceshield filter completely, as OP as it is. Can’t seem to find a mod that does that."
+        }
+      ]
+    },
+    {
+      "id": "3190",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 9,
+      "perfComments": [
+        {
+          "author": "andryi2509",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "Installed the mod today, added Propital to my secure container, hotkeyed it and I had already two game crashed in two games. I don’t remember SPT crashing on me ever. Will try again without the mod and report findings. EDIT: Also using Tyfon’s UI Fixes mod."
+        },
+        {
+          "author": "andryi2509",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Played a full long raid with the 1.0.1 version and no crashes so far"
+        },
+        {
+          "author": "jenny69",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "cool mod, but it it seems incompatible with UI fixes: If I swap a grizzly (with a hotkey) in my secure case with another grizzly that’s in another loot container (own backpack is fine, crates or dead bodies are not) it will make my game hang infinitely. edit: Just dragging my hotkeyed grizzly out of the secure case causes a hang as well, when I’m in a dead body"
+        }
+      ]
+    },
+    {
+      "id": "2576",
+      "error": null,
+      "siteTotal": 41,
+      "fetched": 19,
+      "perfComments": [
+        {
+          "author": "alfaz62",
+          "date": "",
+          "version": "v1.2.0",
+          "body": "Having an issue with the latest update realize conflicting with “Foldables” mod, when it worked before the update. The two mods worked perfectly until this update 1.2.0"
+        }
+      ]
+    },
+    {
+      "id": "1937",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 19,
+      "perfComments": [
+        {
+          "author": "acidphantasm",
+          "date": "Apr 13, 2025 at 5:22 AM",
+          "version": "",
+          "body": "This mod was made during 3.10 and primarily because I was tired of dying to grenades while testing my mods during development. 3.11 is perfectly playable in my experience so far. This mod isn’t meant for normal playthroughs, although nothing stops you from using it. Perhaps you would be interested in Dad Gamer Mode, as that is meant to alleviate the pain of death in a better manner."
+        },
+        {
+          "author": "steelenthunder",
+          "date": "Apr 13, 2025 at 11:11 PM",
+          "version": "",
+          "body": "See now that’s got me really confused because SPT and PVE play nothing alike. I just downloaded ‘Remove Boss Brains’ either yesterday or the day before that and it seems to be no different then my raids previously. It could be that my mods are not in the right order but I just highly doubt that is the case. I also dont think its only me that is having this problem. If you look at the comment section of Drakia’s new mod ‘Remove Boss Brains’ there are plenty of people complaining about the same issue. But again, it could be my mod order or something else that Im just not recognizing. This is the only update in which I didnt download the Load Order Editor because besides getting consistently face shot all my other mods and plugins seem to be running perfectly. (As far as I can tell) **Just got out of a factory raid and a PMC shot me 5 times directly in the face shield of my Altyn before I finally died. He hit me NOWHERE else.** Again, I appreciate you providing me with these links my friend!"
+        },
+        {
+          "author": "izzy-1979",
+          "date": "",
+          "version": "",
+          "body": "FWIW I’m using Dad Gamer Mode in 4.0.12 and it works perfectly. https://imgur.com/a/tZA1mXo"
+        }
+      ]
+    },
+    {
+      "id": "2953",
+      "error": null,
+      "siteTotal": 11,
+      "fetched": 24,
+      "perfComments": [
+        {
+          "author": "booger",
+          "date": "",
+          "version": "",
+          "body": "I’m sorry, I assumed that the ‘dad gamer mode’ included in this mod was a reference to the original dad gamer mod ( https://sp-mod.com/mod/1875/props-dad-gamer-mod-for-39 ) and I thought you’d know what I meant. I’m not completely sure how it was originally implemented but cod mode basically changed the game from having a limb health system to having a health pool like in a more casual FPS and combined that with configurable regenerating health on a delay, although it was set up so that you could turn the regen off by setting it to zero. I think the way the health pool worked was that every limb redirected to the thorax and nothing except the thorax could go below 1 point of health. It also had a toggle to remove fractures and bleeds in that mode. I thought that since most of this seems to be similar to how this mod works to begin with it might be something relatively easy to implement."
+        },
+        {
+          "author": "antigravpilot",
+          "date": "",
+          "version": "",
+          "body": "No. :) Have you tried Perfk_’s 4.0.7 release to see if it works for 4.0.13?"
+        }
+      ]
+    },
+    {
+      "id": "505",
+      "error": "댓글 탭 컴포넌트가 없다",
+      "siteTotal": null,
+      "fetched": 0,
+      "perfComments": []
+    },
+    {
+      "id": "827",
+      "error": "댓글 탭 컴포넌트가 없다",
+      "siteTotal": null,
+      "fetched": 0,
+      "perfComments": []
+    },
+    {
+      "id": "2709",
+      "error": null,
+      "siteTotal": 53,
+      "fetched": 50,
+      "perfComments": [
+        {
+          "author": "himesamanoyume",
+          "date": "",
+          "version": "v1.1.4",
+          "body": "A headless server acting as the host needs to perform AI computations, so it must be installed. For clients, whether installation is required depends on whether you need AI teammates. If you want AI teammates to join your squad, then you need to install it; if you have a friend playing online with you who doesn’t need AI teammates, then they can choose not to install it. You only need to configure it directly wherever you can see a configurable option, and Mcs will automatically synchronize the configuration."
+        },
+        {
+          "author": "angelbearting",
+          "date": "",
+          "version": "v1.1.4",
+          "body": "There are no errors at all. 我又开了一个战局，我针对一个落地的物品指名让他捡，就是不捡 - DateTime: 2026-09-20 22-28-51 - Mcs Version: 1.1.4.0 - E∗∗ Version: 0.16.9.5.40743 - SPT Version: SPT 4.1.6 - 731d7a - System: Windows 11 (10.0.26200) 64bit - CPU: 12th Gen Intel(R) Core(TM) i5-12600KF (16Core) - Memory: 16197 MB - GPU: AMD Radeon RX 6600 XT (8146 MB Memroy) - All Client Mod: Amands's Graphics(1.8.0), Configuration Manager(18.4), Classic Movement(1.1.3), SPT.Custom(4.1.6), SPT.Singleplayer(4.1.6), SPT.Core(4.1.6), SPT.Debugging(4.1.6), Fika.Core(2.4.3), Kaeno-TraderScrolling(4.0.0), Volcano汉化 <size=16px><b>DynamicMaps 动态地图</b></size>(1.2.1), Terkoiz.Skipper(1.1.5), Tyfon.WeaponCustomizer(4.0.0), ZGFueDkx-SkillDistribution(1.3.0), EternalCycleClient(1.4.0), DrakiaXYZ-BigBrain(1.5.0), 姫様の夢 MiyakoCarryService(1.1.4.0), 姫様の夢 MiyakoCarryServiceFika(1.1.4.0), DrakiaXYZ-SearchOpenContainers(1.5.0), Sense(3.1.0), DrakiaXYZ-Waypoints(1.9.0) - All Server Mod: - Raid Info: Non-Host - Vaild Trader Info: True - Total Exception: 0"
+        }
+      ]
+    },
+    {
+      "id": "1453",
+      "error": null,
+      "siteTotal": 83,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "yigit",
+          "date": "",
+          "version": "v1.18.1",
+          "body": "ahhhh okey at least still thank you for answering perfect mod have a perfect day"
+        }
+      ]
+    },
+    {
+      "id": "1688",
+      "error": null,
+      "siteTotal": 102,
+      "fetched": 21,
+      "perfComments": [
+        {
+          "author": "galen",
+          "date": "",
+          "version": "v1.3.2",
+          "body": "Oh okay! I was just so confused. i thought it was another mod or a horrible glitch. Just wanted to say i really enjoy this mod as well! its really well made and integrated. I think you could add it back in if you ever wanted, if you just added a “warning X percent chance to die if consumed”. I think the Obdolobos stim says something about “the negative effects are different each time” or something, then it has a red negative effect saying something like “Health -900”. The top of the item description in raid on the effects section…or in the item description. I did see on the C4 cans “it has deadly effects” or “warning this can have deadly effects” i just thought that was for immersion because they have that warning on them IRL from memory (heart failure) you could maybe add this effect back in but only if say someone drinks 3-4 within a certain time frame."
+        }
+      ]
+    },
+    {
+      "id": "2512",
+      "error": null,
+      "siteTotal": 671,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "govno-sosina",
+          "date": "",
+          "version": "v2.0.5",
+          "body": "I’ve run into a problem with errors popping up when trying to load the server. No matter what I try - disabling all the mods in the pack one by one, clean install, leaving only the essential mod, the errors still appear, and sometimes even more, as I remember. The errors themselves: Unable to randomise armor items 6a576f2105af50743903b74c Front_plate slot as it cannot be found, skipping Unable to randomise armor items 6a576f2105af50743903b74c Back_plate slot as it cannot be found, skipping Unable to randomise armor items 6a576f2105af50743903b74c Front_plate slot as it cannot be found, skipping The thing is, these errors are super annoying because they make my computer freeze when a raid is loading or almost immediately after it starts. And once my computer unfreezes, Discord or the browser complains about running out of memory. I honestly can’t understand how it’s even possible to eat up 15–16 GB of free RAM out of 32. Has anyone been able to fix this on their own, or do we just have to wait for a bug fix?"
+        }
+      ]
+    },
+    {
+      "id": "791",
+      "error": "댓글 탭 컴포넌트가 없다",
+      "siteTotal": null,
+      "fetched": 0,
+      "perfComments": []
+    },
+    {
+      "id": "2478",
+      "error": null,
+      "siteTotal": 141,
+      "fetched": 33,
+      "perfComments": [
+        {
+          "author": "sam-c-137",
+          "date": "",
+          "version": "v2.0.6",
+          "body": "Anyone getting the error “CUSTOM ITEM CREATION ERRORS FOR MOD: Aishi” This happens because I changed the locations of some of the folders where these items are stored; in other words, when you install the mod and simply replace the old files, both sets of folders end up in the installation directory at the same time. Perform a clean reinstallation (remove only the mod completely), and that should fix the issue."
+        },
+        {
+          "author": "arthur",
+          "date": "",
+          "version": "v2.0.6",
+          "body": "Yes, in the future, for all mod updates, we should perform a clean reinstallation instead of doing an overwrite update."
+        },
+        {
+          "author": "kn1ghtfury",
+          "date": "",
+          "version": "v2.0.6",
+          "body": "What could be more ‘helpful’ is if you include these golden words - Perform a clean reinstallation in each of your version update. This is such a great mod(combined with your other mod) but is plagued by 100s of errors in the server console and logs only because the file/folder structure changes."
+        },
+        {
+          "author": "xxxxtok",
+          "date": "",
+          "version": "v2.0.6",
+          "body": "5-Second Freezing Issue – Cause Identified I was experiencing a consistent freezing issue where my game would completely freeze for approximately 150 milliseconds (0.15 seconds) every 5 seconds. At first, I suspected that the periodic server requests to /ISB/spawn/progress and /Aishi/miniLabs/state were causing the freezes. I modified both DLLs to increase the request intervals from 5 seconds to 60 seconds, but unfortunately, this had no effect. The game continued to freeze every 5 seconds. After further investigation, I finally identified the actual cause. Cause of the Freezing Issue Item ID: a2c16b836b441dc953652bd6 Related Method: AishiKeys.AishiAnomalyS2.UnlockNearDoor() Suspected Problematic Code: UnityEngine.Resources.FindObjectsOfTypeAll() What appears to be happening: When this item is in the player’s inventory, the mod appears to scan Unity objects every 5 seconds to check for nearby doors. This operation seems to temporarily block the game’s main thread, causing a freeze of approximately 150 milliseconds every 5 seconds. I confirmed that removing this item from my inventory completely eliminated the periodic freezing. This strongly suggests that the object-scanning operation associated with this item is responsible for the issue. Possible Fix It might be possible to resolve this by optimizing the object search or caching the results instead of repeatedly calling Resources.FindObjectsOfTypeAll() every 5 seconds. Ideally, this would allow players to keep the item in their inventory and use its functionality without experiencing periodic freezes. I hope this information helps you identify and fix the issue!"
+        }
+      ]
+    },
+    {
+      "id": "2485",
+      "error": null,
+      "siteTotal": 143,
+      "fetched": 25,
+      "perfComments": [
+        {
+          "author": "castor",
+          "date": "",
+          "version": "v2.0.4",
+          "body": "In version 2.0.4, the game started crashing in my lab; I installed 2.0.3 and the crashes stopped. Am I the only one having this problem? And I’d really love to see a guide to the new events)"
+        },
+        {
+          "author": "sam-c-137",
+          "date": "",
+          "version": "v2.0.4",
+          "body": "How cool to see you here ^^. Well, it’s part of the plan—I just need to take a closer look at the integration because of the FPS. The ISB is already friendly if you’re doing the questline, but just the ISB vs. Black Div and CI might not be enough."
+        },
+        {
+          "author": "movingbowl",
+          "date": "",
+          "version": "v2.0.3",
+          "body": "ISB crashes my game after i load into the raid and check the mag or go into my inventory please look into this issue"
+        }
+      ]
+    },
+    {
+      "id": "3054",
+      "error": null,
+      "siteTotal": 16,
+      "fetched": 22,
+      "perfComments": [
+        {
+          "author": "viper-9",
+          "date": "",
+          "version": "v1.6.0",
+          "body": "Thanks! QuestCodex doesn’t keep its own copy of your character — it reads the profile live from the SPT server’s memory on every request, so a stale level usually means the page is looking at a different server or profile than the game. A few things to check: On the Progress page, open the profile dropdown at the top and make sure your current character is selected. Reload the page (Ctrl+F5) rather than only using the refresh button. The button refreshes progress, but not the profile list. Make sure the browser address (e.g. https://127.0.0.1:6969/questcodex ) points to the same server your game connects to. If you have more than one SPT folder, or an old SPT.Server window is still running, close the others and restart the server. If you play through Fika, the page needs to come from the host’s server. If it still shows level 28 after that, please let me know your SPT version and whether you use Fika or another multiplayer mod."
+        }
+      ]
+    },
+    {
+      "id": "3095",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 13,
+      "perfComments": [
+        {
+          "author": "terkoiz",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "installed it to stalker 2 and it crashes. fix it now P.S.: Teto better"
+        }
+      ]
+    },
+    {
+      "id": "1657",
+      "error": null,
+      "siteTotal": 58,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "sttyj6",
+          "date": "",
+          "version": "",
+          "body": "Hi apfaffman, I’m having the exact same issue. I’m only running Fika.Release.2.2.3, Fika.Headless.1.4.12, and Fika.Server.Release.2.2.1 with no other mods installed whatsoever, yet I’m encountering the identical error as you. After repeated testing, I found that the mod works perfectly fine in the stash, but as soon as I enter a raid, this error occurs and weapons cannot fire at all. Later I disabled the Fika plugin and ran the game purely in local mode, and all mod features worked flawlessly. This makes it abundantly clear that this error only happens when the Fika plugin is running. By the way, if you’re using version 2.2.3 of the Fika plugin, are you still experiencing this problem? I’m wondering if it’s just an issue on my end. Looking forward to your reply."
+        }
+      ]
+    },
+    {
+      "id": "1884",
+      "error": null,
+      "siteTotal": 72,
+      "fetched": 22,
+      "perfComments": [
+        {
+          "author": "handgrade",
+          "date": "",
+          "version": "",
+          "body": "Oh, there IS. In fact, it’s big, but not too much. It makes it so you heal not 1 limb, but after healing 1 limb, you heal all others… kinda like that. If you use slowmo mod and use stuff to heal your black part of body, you’ll notice that you can heal several black parts lmao"
+        }
+      ]
+    },
+    {
+      "id": "1274",
+      "error": null,
+      "siteTotal": 45,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "friedengineer",
+          "date": "",
+          "version": "",
+          "body": "I have also encountered this issue; the headless crashes immediately immediately after the raid starts with the following error: [Error :Fika.Headless] Exception caught during raid init: Object reference not set to an instance of an object [Error :Fika.Headless] System.NullReferenceException: Object reference not set to an instance of an object at ImprovedSelfcare.HealingAutoCancelPatch.PostFix () [0x00013] in <e38ea25c5a1c48b8859aa9b5a4fda899>:0 at (wrapper dynamic-method) EFT.GameWorld.DMD<EFT.GameWorld::OnGameStarted>(EFT.GameWorld) at Fika.Headless.Patches.GameMode.Headless_LocalGameCreator_Patch.CreateFikaGame (EFT.TarkovApplication instance, EFT.TimeAndWeatherSettings timeAndWeather, EFT.RaidSettings raidSettings, EFT.GameDateTime localGameDateTime, System.Single fixedDeltaTime, System.String backendUrl, MetricsEventsClass metricsEvents, EFT.GameWorld gameWorld, MainMenuControllerClass ___mainMenuController, CompositeDisposableClass compositeDisposableClass, BundleLockClass bundleLock) [0x0065b] in <ca192f18734f4a4f9581b1278f7e17da>:0 at (wrapper dynamic-method) EFT.TarkovApplication+Struct389.DMD<EFT.TarkovApplication+Struct389::MoveNext>(EFT.TarkovApplication/Struct389&) --- End of stack trace from previous location where exception was thrown --- at Fika.Headless.FikaHeadlessPlugin.BeginFikaStartRaid (Fika.Core.Networking.Models.Headless.StartHeadlessRequest request, ISession session, EFT.TarkovApplication tarkovApplication) [0x004d5] in <ca192f18734f4a4f9581b1278f7e17da>:0 I don’t think having this on the headless is really needed so I’ve just removed it. I have not noticed any issues using it on my local client while having the headless host raids so I’d still consider it “Fika compatible”, it’s just not headless compatible (and that’s the case for a number of other mods as well, so not a big deal in my book)"
+        }
+      ]
+    },
+    {
+      "id": "1298",
+      "error": "댓글 탭 컴포넌트가 없다",
+      "siteTotal": null,
+      "fetched": 0,
+      "perfComments": []
+    },
+    {
+      "id": "2698",
+      "error": null,
+      "siteTotal": 28,
+      "fetched": 42,
+      "perfComments": [
+        {
+          "author": "cosm1c-gam3r",
+          "date": "",
+          "version": "",
+          "body": "Same. I use many mods and also made my own tweaks in many places that now it feels like different game for me and is in my taste while If I go to official game to try and play I feel disgust. For example I use Fontaine FOV fix where I moved my gun position slightly down and to the screen center. It is more natural feel and in official game it is so far to the right and feels so damn unnatural to me. Also I did many tweaks to weapon recoil that feels for me very god and is not pea shooter simulator especially for dumbified pistol that nikki did for freaking unknown reason. And many high caliber weapons by default feels like shooting 9x19mm cartridges out of them… I made them kick like a mule xD SMGs are so s)()(t in vanilla that I feel like shooting full auto .22 caliber. All this BS gone in my tweaks. So many other things that I will not mention xD I also edited SAIN as it have some things that was not touched by mod creator as I think he did not even know about. For example making some bots on full auto almost laser alike no bullet spread. And trying to increase global recoil did bad things to those bots who had already bullet spread and have even more while those bots who had the values messed up start to have some recoil on full auto xD I already mentioned on other mod comment section that I did many tweaks to SAIN making scav no b)()(s to slap around like in vanilla game. I added many quests in questing bots. And on top of it all I made all bots quieter in terms of footsteps so now they are not heard from miles away! Like in BS vanilla game where all this idiotic design creates situations that ppl complain and insult each other for camping. DAMN no wonder if someone hears other person from so damn far away, he freezes to not reveal his position and if this noisy ADHD squirrel run practically into this camping (listening) person then it is execution time. Then such idiot goes to forums and cry about “rats” LOL. Nikki game become such BS in which in greed for income he dumbed down his project game to be for everybody and is just for nobody now. PPL still play it despite bugs, glitches, cheaters and then go and cry about cheaters and campers LOL. Smart ppl come to SPTushonka and make this game to their liking and dont need to deal with all the BS nikki boy served. And also having tons of features even easy QOL elements like mag repacking out of damn inventory. And like your mod. And like mod that makes EXFIL not automatic so we can loot stuff around it or fallen enemies etc. List goes on and on and nikki boy only adds things like T Coins to monetize his mutated tu77d that in old days was very good idea for a game."
+        }
+      ]
+    },
+    {
+      "id": "3103",
+      "error": null,
+      "siteTotal": 25,
+      "fetched": 24,
+      "perfComments": [
+        {
+          "author": "wy189",
+          "date": "",
+          "version": "v1.0.2",
+          "body": "In versions 1.0.2 and 0.5.2, the bug where the drawer’s title bar shifts slightly to the left still occurs during the first search after launching the game; however, it only happens once. To reproduce it, you have to carefully observe the title bar during that initial search. When I first encountered this bug, I thought I was hallucinating because it happened only that one time. This mod is incredibly helpful to players, so I would love to see it perfected—thank you for creating it."
+        },
+        {
+          "author": "gunlunqie",
+          "date": "",
+          "version": "v1.0.3",
+          "body": "huh，looks interesting!And May I ask……it caused any performance issues？"
+        }
+      ]
+    },
+    {
+      "id": "1775",
+      "error": null,
+      "siteTotal": 135,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "estek",
+          "date": "",
+          "version": "v1.3.0",
+          "body": "is it normal for this to run my gpu hotter than the actual game does? i will climb up to 72c on the main menu (in factory theme) from the like, 50c i’m normally sitting at in any other menu in the game, and up from the 61c-ish a raid puts me at."
+        },
+        {
+          "author": "bernardvi",
+          "date": "",
+          "version": "",
+          "body": "Only I have performance issues while I use this mod?"
+        },
+        {
+          "author": "moxopixel",
+          "date": "",
+          "version": "",
+          "body": "Is this for SPT 4.0 or 4.1? Do you use Factory theme? What are the actual performance issues?"
+        },
+        {
+          "author": "neksys",
+          "date": "",
+          "version": "",
+          "body": "I’m experiencing the same performance issue: switching from the stash to the menu causes the game to freeze for 5-8 seconds, constantly. It’s the default theme, without any modifications to the mod. SPT 4.1.2"
+        }
+      ]
+    },
+    {
+      "id": "3082",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 17,
+      "perfComments": [
+        {
+          "author": "nomad-35",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Yeah vultify’s. Maybe I’m bullshitting but his mod causes a lot of stutters for me so ı was wondering what’s different about your mod lol"
+        },
+        {
+          "author": "hj",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "I haven’t gotten any performance issues on my machine nor have i gotten any reports about it causing any performance related issues. I’ll say give it a shot incase you want a more live 1.0 experience :p"
+        },
+        {
+          "author": "nomad-35",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Nah your mod works fine but his causes stutters lol I do not know why."
+        }
+      ]
+    },
+    {
+      "id": "3007",
+      "error": null,
+      "siteTotal": 17,
+      "fetched": 26,
+      "perfComments": [
+        {
+          "author": "harmony",
+          "date": "",
+          "version": "",
+          "body": "Yes, I am aware of that, which is most likely due lazy caching for the cost of more performance. Apologies! Will find a workaround bit later"
+        }
+      ]
+    },
+    {
+      "id": "2025",
+      "error": null,
+      "siteTotal": 50,
+      "fetched": 23,
+      "perfComments": [
+        {
+          "author": "plat93",
+          "date": "",
+          "version": "v1.4.0",
+          "body": "Mine does the same, giving this error continuously. And my ui elements crash in game sometimes. Might be related."
+        },
+        {
+          "author": "luckzifer",
+          "date": "",
+          "version": "v1.4.0",
+          "body": "I removed the mod, and the game no longer crashes."
+        }
+      ]
+    },
+    {
+      "id": "2982",
+      "error": null,
+      "siteTotal": 17,
+      "fetched": 25,
+      "perfComments": [
+        {
+          "author": "gumbo",
+          "date": "",
+          "version": "",
+          "body": "I bumped my profile from prestige 2 to prestige 5 and used this/harry hideout with the reordered load and I experienced no issues at all other than a couple of profile hang-ups because I sped up upgrade time. Thanks for the newest update!"
+        }
+      ]
+    },
+    {
+      "id": "2932",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "wawrzul",
+          "date": "",
+          "version": "v0.3.1",
+          "body": "A nice and welcome mod. I only have one issue. After upgrading the shooting course to lvl 2, the new paper targets (added in lvl 2 course) that are hanging from the ceiling cause the dummies to hang on them after dying. The dummies reappear but still they are hung up on the hanging targets."
+        }
+      ]
+    },
+    {
+      "id": "2908",
+      "error": null,
+      "siteTotal": 19,
+      "fetched": 27,
+      "perfComments": [
+        {
+          "author": "kryptic-s01",
+          "date": "",
+          "version": "v1.1.1",
+          "body": "UPD: After doing a Google AI search it basically says as follows; “This error means that the Hideout Cat mod is throwing a glitch because it is looking for your PMC character in the hideout, but your character isn’t physically there (for example, you are currently in a raid, loading a screen, or sitting in the main menu). It continues to say; “The error specifically names HideoutCat.CatData.Cat.IsPlayerInTheWay(). Every frame, the cat’s AI pathfinding loop runs (FixedUpdate) and tries to check if you are blocking its path. Because you aren’t in the hideout, the game returns a NullReferenceException (it tried to read data from a player object that doesn’t currently exist in the scene).” Below this text it shows “How to fix it”; “You can safely ignore this: If your game is not crashing, this is just harmless log spam. The mod author forgot to add a simple check to stop the cat’s AI pathfinding logic when the player leaves the hideout.”"
+        },
+        {
+          "author": "kryptic-s01",
+          "date": "",
+          "version": "v1.1.1",
+          "body": "I removed Hideout Cat from my mod list and the log spam stops and my game also “feels” more responsive and not as stuttery anymore. Maybe the constant flow of exception throws was causing my game to micro-stutter or be slower than usual? I’m not sure but wondered if anyone else had the same thing."
+        },
+        {
+          "author": "shaw9",
+          "date": "",
+          "version": "v1.1.1",
+          "body": "Same problem… In the hideout the log fills with this exception, every FixedUpdate tick: NullReferenceException: Object reference not set to an instance of an object at HideoutCat.CatData.Cat.IsPlayerInTheWay () [0x00006] at HideoutCat.CatData.Cat.HandlePlayerInteraction () [0x000dd] at HideoutCat.CatData.Cat.FixedUpdate () [0x00055] It first appeared at 21:32:43 and was logged 13,161 times in about 4.5 minutes (until 21:37:07). The game then crashed about 9 seconds after the last one. The crash is a native Unity crash in Physics.SyncTransforms called from EFT.Player.ArmsLateUpdate. I can’t say for sure the cat caused it, but it was the only thing erroring right before."
+        }
+      ]
+    },
+    {
+      "id": "1437",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 19,
+      "perfComments": [
+        {
+          "author": "lieutenantdan76",
+          "date": "Dec 31, 2025 at 2:37 AM",
+          "version": "",
+          "body": "I’m on the latest SPT and the mod seems to function perfect but I’m receiving 0 points to strength and endurance each proc, possible conflict with another mod?"
+        }
+      ]
+    },
+    {
+      "id": "2144",
+      "error": null,
+      "siteTotal": 24,
+      "fetched": 25,
+      "perfComments": [
+        {
+          "author": "neitronus",
+          "date": "",
+          "version": "",
+          "body": "May not be obvious, so I had to find this out the hard way: This mod is Fika compatible, but you need to remove BepInEx folder from Fika-Headless. Do not load this mod’s clientside part on Fika-Headless. I’m not sure if the mod will work w/o it on raids hosted on Headless, but if it’s installed on headless it’ll just crash headless client upon entering a map."
+        },
+        {
+          "author": "milkybear",
+          "date": "",
+          "version": "",
+          "body": "this mod is conflict with Geko’s better progression i guess. when the countdown goes to zero, the game just crashed (wont crash without skill distribution), maybe the function of Level up from geko is incpmpatible with skill distribution?"
+        },
+        {
+          "author": "phosphor2411",
+          "date": "Dec 9, 2025 at 1:25 AM",
+          "version": "",
+          "body": "I am using Skills Extended with Skill Distribution, it works perfect. Thanks for creating this mod."
+        }
+      ]
+    },
+    {
+      "id": "1706",
+      "error": null,
+      "siteTotal": 58,
+      "fetched": 22,
+      "perfComments": [
+        {
+          "author": "devane",
+          "date": "",
+          "version": "",
+          "body": "Thanks for making this, it’s really perfect. Wanted to simulate the eventual growth to scav boss HP and this mod did it perfectly. Can’t believe I was relying on SVM and a notepad before this, amazing mod."
+        }
+      ]
+    },
+    {
+      "id": "2608",
+      "error": null,
+      "siteTotal": 11,
+      "fetched": 21,
+      "perfComments": [
+        {
+          "author": "elmer-glue",
+          "date": "",
+          "version": "",
+          "body": "PSA: This mod causes bots to have 0 stamina, making them slow to move while in combat. Took me quite a while to narrow this down…"
+        },
+        {
+          "author": "azllo",
+          "date": "",
+          "version": "",
+          "body": "Great mod ! would there be anyway to allow stamina regen while slow jogging ?"
+        },
+        {
+          "author": "estek",
+          "date": "",
+          "version": "",
+          "body": "I tested it a bunch and I think it was just a combo of my lizard brain seeing the identical animation speed and thinking it was the same, crossed with my weight limit generally already making the gap of 0.55x and 1x not so big. I think the animation fix you pushed should make it perfect. Great mod concept."
+        }
+      ]
+    },
+    {
+      "id": "2649",
+      "error": null,
+      "siteTotal": 84,
+      "fetched": 12,
+      "perfComments": [
+        {
+          "author": "parksy333",
+          "date": "",
+          "version": "",
+          "body": "Is there any way to configure the speed of climbing? As it stands now, it’s incredibly slow and with bot difficults/tweak mods that make them and gameplay faster/more difficult, it’s extra perilous climbing at such a slow pace. Loving the mod otherwise, totally worth dying 4 times before finally being able to reach the top of the giant antenna on Shoreline, lol."
+        }
+      ]
+    },
+    {
+      "id": "2639",
+      "error": null,
+      "siteTotal": 14,
+      "fetched": 25,
+      "perfComments": [
+        {
+          "author": "the-bungoolator",
+          "date": "",
+          "version": "",
+          "body": "This is perfect! I love all of your mods, thank you"
+        }
+      ]
+    },
+    {
+      "id": "2706",
+      "error": null,
+      "siteTotal": 209,
+      "fetched": 23,
+      "perfComments": [
+        {
+          "author": "chazut",
+          "date": "",
+          "version": "v3.1.0",
+          "body": "Thanks for the detailed feedback! I’ve noted both suggestions, chaining nearby rush objectives and adding proper no-go zones. For Custom (Loot), the bot needs to reach the rush point before the looting phase starts. The loot radius controls where it searches once there, so increasing it won’t help validate arrival. Check that the point is on reachable ground at the correct height/floor. I can’t confirm what’s causing your timeout from the description alone. Negative forces push bots away from an area, but even -10 doesn’t guarantee they’ll stay out. There isn’t a strict no-go zone option currently. Some orbiting between main tasks is intentional. Bots follow the Zone Editor forces while looking for a reasonably short path to a main objective. Repeatedly calculating long-distance paths is expensive and can cause stutters, so this is a performance tradeoff. There’s also a fallback that forces them toward a main objective after a period without progress."
+        }
+      ]
+    },
+    {
+      "id": "1619",
+      "error": null,
+      "siteTotal": 157,
+      "fetched": 17,
+      "perfComments": [
+        {
+          "author": "niceguy",
+          "date": "",
+          "version": "",
+          "body": "how to make marked rooms x2 loots only… so it wont lag the game?"
+        },
+        {
+          "author": "hagridbugrid",
+          "date": "",
+          "version": "",
+          "body": "Hello there! I’ve been using this mod since 2024, and yet I’ve managed to have several issues while playing with it at 4.1.3: when playing as a scav the loot spawn becomes standard as if mod is disabling (no other loot modifiers were used); when changing relative chance multiplier that no items spawn for any container from 1 to 0 loot simply stops to spawn in the containers (yet I clearly remember that this function was working perfect before and the items were appearing in every container when 1 was changed to 0)"
+        }
+      ]
+    },
+    {
+      "id": "1539",
+      "error": null,
+      "siteTotal": 30,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "operator0",
+          "date": "",
+          "version": "",
+          "body": "Got my problem sorted out, when i used the CONFIG FILE to change the chance it crashed due to profile error, when i used the “SIC” configuration utility it was completely fine ??????? Thank you!!! great MOD …"
+        }
+      ]
+    },
+    {
+      "id": "2207",
+      "error": null,
+      "siteTotal": 41,
+      "fetched": 20,
+      "perfComments": [
+        {
+          "author": "saki6665",
+          "date": "",
+          "version": "",
+          "body": "Sorry, I’m using machine translation here, so it might not get the point across perfectly. What I’m trying to say is, after I installed the mod, the game just keeps loading on the main screen and won’t let me in."
+        }
+      ]
+    },
+    {
+      "id": "3064",
+      "error": null,
+      "siteTotal": 11,
+      "fetched": 24,
+      "perfComments": [
+        {
+          "author": "ndrxw",
+          "date": "",
+          "version": "v1.1.0",
+          "body": "1.1.0 update brought exactly what I was missing from this mod. Thank you for making this! Perfect!"
+        }
+      ]
+    },
+    {
+      "id": "2342",
+      "error": null,
+      "siteTotal": 70,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "tacticaltoaster",
+          "date": "Oct 17, 2025 at 11:53 AM",
+          "version": "",
+          "body": "Waypoints is not necessary for 2.0.0. BigBrains is though! Known issue with 2.0.0 Starting the game for the first time after installing freezes when booting for a good minute or two before continuing. Seems to be related to how the client gets info from the server with SPT 4.0.0 and a change I had to make to the bot settings to get it to work on the server with my custom types. I’ll be looking into a proper fix for this, but for now just let your game load during the freeze and it should continue after a bit. This only happens the first time booting SPT after downloading the mod too."
+        },
+        {
+          "author": "zega",
+          "date": "Oct 8, 2025 at 10:39 PM",
+          "version": "",
+          "body": "i do to performance has been awful"
+        }
+      ]
+    },
+    {
+      "id": "2511",
+      "error": null,
+      "siteTotal": 288,
+      "fetched": 14,
+      "perfComments": [
+        {
+          "author": "tacticaltoaster",
+          "date": "",
+          "version": "",
+          "body": "If you were getting a crash with 1.1.2, try 1.1.3. It fixed a potential crash issue with ABPS and anything else that might modify certain bot spawns."
+        }
+      ]
+    },
+    {
+      "id": "3212",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 8,
+      "perfComments": [
+        {
+          "author": "valdin",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "The game keeps freezing when using your mod—it freezes even while averaging 150 FPS on any map—so I had to remove it :("
+        },
+        {
+          "author": "ripperhq",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Sorry about the freezing! I temporarily delisted the mod to investigate and managed to find the cause. I did test it before release, but mainly on less demanding maps for faster loading times, so I missed the issue. That’s on me. I’ve now released v1.0.1 with a performance hotfix, which I’ve also tested in-game. Please update to the latest version, and thanks for your patience!"
+        },
+        {
+          "author": "valdin",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "No problem at all, I imagine how much work it must take to create and optimize a mod. I didn’t mean to offend or belittle your mod… quite the opposite, I love casino mods and other things that make me spend money in T∗∗∗∗∗. I’m glad you’ve already made a fix and I’ll definitely test it."
+        },
+        {
+          "author": "mcpigery",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "Hey, Ripper! Love the mod, but I’ve noticed a pretty big hit on performance. I have about 160 mods installed, and no performance issues, but recently when installing Rippers Casino - by the way, GAMBLIN’ BABY!!!!!!! - my game stutters every second in raid without fail, and in my hideout. I noticed that issue when I first loaded into Customs, then again, and then I noticed it in hideout. And it turns out when uninstalling Rippers Casino, the micro stuttering every second goes away. Just wanted to bring that to your attention if a fix is possible, as I really like the mod! By the way, Reshala WILL make my money back, the cheapskate."
+        },
+        {
+          "author": "ripperhq",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Hey, thanks a lot for the detailed report and the kind words! :) I temporarily delisted the mod to investigate and managed to track down the cause of the stuttering. I had tested it before release, including raids, but mostly on less demanding maps because of the faster loading times. Unfortunately, I didn’t catch the issue. That’s on me! I’ve now released v1.0.1 with a performance hotfix and confirmed the stuttering is gone in my own testing. Please update to the latest version! Thanks again for your patience, and I hope Reshala finally pays out! :D"
+        },
+        {
+          "author": "mcpigery",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Good stuff! Seems the performance issue is fixed on all maps. And no problem at all, sometimes things slip through the cracks. I really like the mod! Thanks homie."
+        }
+      ]
+    },
+    {
+      "id": "2003",
+      "error": null,
+      "siteTotal": 189,
+      "fetched": 17,
+      "perfComments": [
+        {
+          "author": "foreiinas",
+          "date": "",
+          "version": "v3.0.0",
+          "body": "I have noticed, that on Streets map, when using your mods custom LOD settings, game crashes. I have set it at minimum values for a LOD settings to maybe help with a fps. When you play first Streets raid all is fine, but if you try again the second time to go Streets it crashes at countdown. It happened 3 times in a row, once I have disabled LOD setting, map loaded no problem two times in a row. Not sure about other maps LOD settings, and not sure if it is only at certain LOD values tho. I have only used it for Streets."
+        },
+        {
+          "author": "notdarkk",
+          "date": "",
+          "version": "",
+          "body": "bad frames no matter how i edit new version"
+        },
+        {
+          "author": "vipertech0911",
+          "date": "",
+          "version": "",
+          "body": "Not sure what the problem is. When I start a match now, as soon as the match making starts, there is an explosion behind my character that dumps my frames to less than one, my ingame raids are a slide show. I have a beast computer and have not messed with any ingame setting for the mod to make it run more particals"
+        }
+      ]
+    },
+    {
+      "id": "1621",
+      "error": null,
+      "siteTotal": 47,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "wolf-vantage",
+          "date": "",
+          "version": "",
+          "body": "I’m using this mod purely to get better performance, thanks to it’s shadow quality settings. GTX 1660 Super approved!"
+        },
+        {
+          "author": "rebellion",
+          "date": "",
+          "version": "",
+          "body": "Can I ask how you are getting better performance? Do you reduce the shadow quality settings? I am not too sure how to use this mod’s settings"
+        },
+        {
+          "author": "boba8828",
+          "date": "",
+          "version": "",
+          "body": "Great mod thanks, fix everything about shadows i didn t like. I play on a 5080 and enabling all the shadows tweaks i didnt feel like i lost fps and it makes the game look so much better i feel like this mod is mandatory on a good pc. Does so much more than fixing the flickering"
+        },
+        {
+          "author": "hellchickens",
+          "date": "Nov 4, 2025 at 12:50 AM",
+          "version": "",
+          "body": "Not sure how things are for fsr, but for dlss u don’t need it at all (at least when I tested), as there shall be used DLAA (at least worked for official client, never tried spt). Suppose fsr shall have its own AA algo or at least I sure that u can manually tune amd gpu driver options"
+        }
+      ]
+    },
+    {
+      "id": "2329",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "ciallomako",
+          "date": "",
+          "version": "",
+          "body": "Will this deal the slowdown in water under Reserve?"
+        },
+        {
+          "author": "prometheus",
+          "date": "Sep 28, 2025 at 9:11 PM",
+          "version": "",
+          "body": "Would it be possible to use thresholds instead of on/off? I don’t mind bushes and swamps in principle, but the 90% slowdown feels excessive, especially for small shrubs. I feel like 50% slowdown would be tolerable, but not sure if it’s way harder to change the value instead of disabling it entirely."
+        },
+        {
+          "author": "devraccoon",
+          "date": "Sep 29, 2025 at 5:16 AM",
+          "version": "",
+          "body": "I personally think that damage to the player is better than any form of slowdown. In real life running through a bush will hurt but it will not slow you down very significantly, at least not in the way we have it in T∗∗∗∗∗. As it works right now, it is in fact just disabled entirely (the value is still being changed). I don’t really have any will to bother figuring out a scale or ratio currently"
+        },
+        {
+          "author": "prometheus",
+          "date": "Oct 4, 2025 at 9:41 PM",
+          "version": "",
+          "body": "Honestly, I feel like the most intuitive thing would be if your inertia affected whether the slowdown happened - e.g. if I’m sprinting at full tilt, a bush isn’t gonna do anything to slow me down, but if I’m crouch-walking, it’d be a meaningful obstruction. Probably out of scope of this mod, though."
+        }
+      ]
+    },
+    {
+      "id": "2567",
+      "error": null,
+      "siteTotal": 31,
+      "fetched": 17,
+      "perfComments": [
+        {
+          "author": "rambo",
+          "date": "",
+          "version": "v4.0.0",
+          "body": "Damn this is beautiful! But it takes like 15-17 fps on my potato pc, too much for me))"
+        },
+        {
+          "author": "matsix",
+          "date": "",
+          "version": "v4.0.0",
+          "body": "There’s a lot of performance settings in the f12 menu. I would recommend trying to lower the primary steps. You can lower them a lot and still have good looking clouds."
+        }
+      ]
+    },
+    {
+      "id": "3099",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "cannie",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "On an ultrawide monitor at fov 65 ssr breaks at the edges of the screen. It gets culled I guess. This also happens with vanilla ssr, but it only becomes noticable with ssrSix. Doubt it can be fixed, but thought I would share"
+        },
+        {
+          "author": "zantetsukenar3",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "Looks really good - thanks! Love that we can fine-tune it to suit machine, etc. Performance great for me and looks excellent. I did have one random raid where the raindrops on the weapon were just randomly white, but just went back to normal the next raid and was nice for a change anyway, haha. Thanks!"
+        },
+        {
+          "author": "rambo",
+          "date": "",
+          "version": "v1.0.0",
+          "body": "Eats like 5-6 fps on lower-end machines"
+        }
+      ]
+    },
+    {
+      "id": "3100",
+      "error": null,
+      "siteTotal": null,
+      "fetched": 3,
+      "perfComments": [
+        {
+          "author": "mash",
+          "date": "",
+          "version": "v1.0.2",
+          "body": "This mod looks really good. But the performance hit I got on my 3060 12gb (probably only 10-15%, but I’m a stickler) was too great for the small difference this makes when you’re actually playing the game, so I ended up removing it. That being said, this is a great mod. If you have a better GPU than me and you just want the game to be as pretty as possible, definitely get this."
+        }
+      ]
+    },
+    {
+      "id": "3221",
+      "error": null,
+      "siteTotal": 31,
+      "fetched": 21,
+      "perfComments": [
+        {
+          "author": "scottish",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Causes Audio chopping for some reason (including my Youtube), i have a 5070 TI on default clock with a 9950X (NON 3D) cpu on default clock. turning some options off or fully turning mod off seems to fix it. and sometimes it works fine with it fully on on default settings, i’m really confused. i have no other graphical mods. but i do use the “Sense” mod for looting and that can make glowing text over loot."
+        },
+        {
+          "author": "blissnoise",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "It just works. Completely changes the game Edit: Had to add Icebreaker to the blacklist causes tons of lag."
+        },
+        {
+          "author": "raverman",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Works very well and looks better than amands graphics, I get more frames in streets with RT GI and shadows on wtf, still get stutters but with the bots on. thank you! t∗∗∗∗∗ always had underwhelming lighting."
+        },
+        {
+          "author": "matsix",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "The shadows are most likely why. The normal shadows are extremely heavy on the CPU especially on a maps like streets. RT shadows almost completely gets rid of the CPU cost of shadows."
+        },
+        {
+          "author": "raverman",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "Thank you for the insight, game looks modern now. Horribly optimized game fr, wonder what else is possible to shift cpu usage to gpu (minecraft java all over again)."
+        },
+        {
+          "author": "elisfy",
+          "date": "",
+          "version": "v1.0.1",
+          "body": "on install, nothing was visually different besides the game being darker, i tried to change the settings, but i couldnt get the same result as the video my specs cpu - intel 7 ultra 270k plus ram - 32gb ddr5 gpu - nvidia rtx 5070"
+        }
+      ]
+    },
+    {
+      "id": "1479",
+      "error": null,
+      "siteTotal": 153,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "faruk",
+          "date": "",
+          "version": "v1.7.0",
+          "body": "Really enjoying the replay tool for reviewing raids. One thing I noticed: playback can go faster than 1x, but there’s no way to go slower, like 0.5x or 0.25x. Death moments happen within a second or two, so a lot of the detail in those moments is hard to catch even watching at normal speed."
+        },
+        {
+          "author": "nathan",
+          "date": "",
+          "version": "v1.7.0",
+          "body": "Really would be helpful to slow the raid down. A bullet counter over the lines of bullets fired would be super helpful as well."
+        }
+      ]
+    },
+    {
+      "id": "2200",
+      "error": null,
+      "siteTotal": 30,
+      "fetched": 22,
+      "perfComments": [
+        {
+          "author": "nomadtribals",
+          "date": "",
+          "version": "v1.1.2",
+          "body": "Hi, I have been running this mod alongside Fontaine’s FOV fix. Works flawlessly except for at night using NVGS. When I come out of ADS, it acts like I have DLSS on (I don’t) and has a quick black flicker/freeze and then back to normal. Is it a compatibility issue or can I tweak something to fix it?"
+        },
+        {
+          "author": "rebellion",
+          "date": "",
+          "version": "",
+          "body": "I also need to know this. I installed this mainly to help in streets, and while I did gain ~10-20 fps when scoping in, I cannot stand the flickering that happens every time I click RMB. I didn’t bother trying to raise the quality as I figured that essentially would render the mod useless"
+        },
+        {
+          "author": "wolf-vantage",
+          "date": "",
+          "version": "",
+          "body": "Couldn’t play without this mod. Without it, my FPS would drop to 30-40s with PiP scopes, set at 70%, my FPS still drops, but almost never below 60. Life saver for old GPUs!"
+        },
+        {
+          "author": "fiodor",
+          "date": "",
+          "version": "",
+          "body": "It works fine, however the fps gain is minimal from my testing. Be sure to set the mod settings for your upscaler to a different mode than the one you have in your settings."
+        },
+        {
+          "author": "fiodor",
+          "date": "",
+          "version": "",
+          "body": "Sorry for you man but it does indeed work, find a place where you can see wires or a fence and compare the different presets, it works fine. However the FPS gain is marginal in raid since the cost is mostly CPU sided."
+        },
+        {
+          "author": "peznov369",
+          "date": "",
+          "version": "",
+          "body": "Do you need me to give some screenshots to prove what I’m saying? Perhaps it works with your computer configuration, but it does not work on mine. It’s important that the mod author understands clearly what I’m saying. If I am playing on 4k with FSR 3.0 active, then the image is absolutely identical regardless of the slider or the other mod settings. The second I disable FSR And instead use TAA or FXAA or no AA whatsoever, the slider has an obvious and extremely noticeable effect, and a significant impact on FPS. The fact that you are suggesting that you need to closely compare the presets by looking at a fence makes me think that in fact you are just seeing the placebo effect, because the effects are extremely aggressive and dramatic if you turn FSR off. The slider being at 100%, for example, literally turns everything outside of your scope to a near complete blur. That is what the mod can look like when it is properly working. If it doesn’t look like that for you when you set the slider to 100%, then it isn’t really working."
+        }
+      ]
+    },
+    {
+      "id": "1263",
+      "error": null,
+      "siteTotal": 412,
+      "fetched": 21,
+      "perfComments": [
+        {
+          "author": "epicrangetime",
+          "date": "",
+          "version": "v5.0.2",
+          "body": "The reason I did not do this is because that would introduce duplicate items, redundant items, and items that are textured inconsistently. The romeo9t does work perfectly fine, it just does not work via the build screen. That is the only place it doesn’t allow you to use it. I’m looking into that issue. But for now you can buy it from the trader or the flea market. Why didn’t you make any issues for any of this? I tell people to make issues in the PINNED COMMENT and you still do not read it. Also the meprolight literally has nothing to do with my mod."
+        }
+      ]
+    },
+    {
+      "id": "2195",
+      "error": null,
+      "siteTotal": 54,
+      "fetched": 18,
+      "perfComments": [
+        {
+          "author": "shadilay",
+          "date": "",
+          "version": "",
+          "body": "Is it possible for the MRGG-A will receive select-fire? Would make an already phenomenal rifle be perfect!"
+        }
+      ]
+    },
+    {
+      "id": "3097",
+      "error": null,
+      "siteTotal": 18,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "atman-cheater",
+          "date": "",
+          "version": "v2.0.0",
+          "body": "5 fps when use minimap on Woods, on e.g. Custom I have normal fps. What interesting is that when you just look at map by peak hotkey you get normal fps."
+        },
+        {
+          "author": "chinice",
+          "date": "",
+          "version": "v2.0.0",
+          "body": "Uh, could you provide some more general download sources? To be honest, its performance is terrible—I have to spend several hours just to download a single map. On SPT Forge, though, even wttcontent only takes me a few minutes to download. I hope you can improve the download experience in the next version."
+        }
+      ]
+    },
+    {
+      "id": "3025",
+      "error": null,
+      "siteTotal": 29,
+      "fetched": 16,
+      "perfComments": [
+        {
+          "author": "bay-harbour-enjoyer",
+          "date": "",
+          "version": "v1.0.8",
+          "body": "Howdy, thanks for the rework. Im reporting a performance cost that shows up on other maps, in case it’s easy to fix. I was playing on Streets and measured with Machine’s Mod Profiler, and this mod appeared quite a lot in the logs. What I found was that RoomGeometryPatch.Prefix (patching AudioRoomStorage.CheckPositionInsideRoom) being called very often, about 1,400 times per frame on average, up to about 4,800 in busy areas, albeit the profiler’s timing overhead may inflate the per-call cost, so I can’t say for sure how much it really costs. Thanks anyways :)"
+        },
+        {
+          "author": "alexgardien5",
+          "date": "",
+          "version": "v1.0.8",
+          "body": "2nd this. Getting FPS drop with this mod on. How did you fix this ?"
+        }
+      ]
+    },
+    {
+      "id": "3022",
+      "error": null,
+      "siteTotal": 47,
+      "fetched": 12,
+      "perfComments": [
+        {
+          "author": "nomad-35",
+          "date": "",
+          "version": "v1.0.7",
+          "body": "Anybody else gets massive FPS hits?"
+        },
+        {
+          "author": "faust-phantom",
+          "date": "",
+          "version": "v1.0.7",
+          "body": "I’m using SPT version 4.1.6. With Lighthouse version 1.0.7, the game crashes at 6% during map loading and displays the notification: “An error occurred while searching for a game; please try again later.”"
+        }
+      ]
+    },
+    {
+      "id": "2866",
+      "error": null,
+      "siteTotal": 240,
+      "fetched": 31,
+      "perfComments": [
+        {
+          "author": "manimal1920",
+          "date": "",
+          "version": "",
+          "body": "unfortunately im not going to be making a bunch of compatibility patches to make icebreaker compatible with a ton of different mods, as im only one person and cant/dont want to account for everything. I will ONLY be making changes that directly effect the mod/map itself. I will slowly put together a curated list of mods that are compatible with icebreaker, if modders want their mods to work with icebreaker they will have to create compatibility patches for themselves as of now and moving forward, icebreaker will ONLY be supported on relatively clean installs with the required dependencies and future list of tested/known working mods of course youre free to mess around and test mods for yourself as well. you can let me know what works and ill take a look and add it to the list"
+        },
+        {
+          "author": "ffloridamann",
+          "date": "",
+          "version": "v1.1.3",
+          "body": "OPTIMIZATION Thanks for Icebreaker, it’s a great map. I’ve been tracking down hitches in my SPT 4.1.6 install and found two small things in ManimalIcebreakerClient 1.1.3. They run on every map, not just Icebreaker. RenderEnvProbe is created on the first CameraManager.SetCamera and kept for the session, so it’s alive everywhere, the hideout included. The off-map PerfCensus causes a hitch during play. When you’re not on Icebreaker, RenderEnvProbe.Update calls TickVanillaPerfCensus(). About 60 s after you spawn on any other map (and in the hideout), it runs FindObjectsOfType<CullingGridContent>() and FindObjectsOfType<LODGroup>() and logs a [PerfCensus] warning. On Factory that found 24,518 LOD groups and caused a 53 ms frame in the middle of the raid. Could it run only when DiagHotkeys (or another debug option) is on? The off-map branch of RenderEnvProbe.Update runs every frame. Most of it is reset work that only needs to happen once, after leaving Icebreaker. It also calls IcebreakerAcoustics.IcebreakerLoaded() every frame, which reads every loaded scene’s name. That makes about 1.5 KB of garbage per frame on Factory. Doing the reset once when you leave the map, and checking for Icebreaker scenes on SceneManager.sceneLoaded / sceneUnloaded instead of every frame, would make the mod essentially free on other maps. For now I’m skipping the census locally with a one-method Harmony prefix, but a fix in the mod itself would help everyone. Happy to share timings if they’re useful. Thanks!"
+        }
+      ]
+    },
+    {
+      "id": "2173",
+      "error": null,
+      "siteTotal": 30,
+      "fetched": 15,
+      "perfComments": [
+        {
+          "author": "matsix",
+          "date": "Jun 7, 2025 at 8:25 PM",
+          "version": "",
+          "body": "Just to give an idea on how this can help, if you’re like me and you were ripped off by Nvidia with their low VRAM graphics card models like the 3080 10GB model… This can help quite a bit with avoiding VRAM maxing out and reducing VRAM induced stutters. It is especially helpful in the SPTVR mod I am also working on. In flatscreen t∗∗∗∗∗ I usually get around 8GB VRAM usage, using this reduces it down to 6-7. In SPTVR I end up capping it out often at 9.7GB and it starts spilling over to RAM causing stutters and just overall bad performance. With this mod, it goes from 9.7GB to 7-8GB. I have no idea what it’s clearing out and I also have no idea why this is NEVER ran in B∗∗‘s code. (EDIT: took a closer look and it looks like B∗∗ does run it occasionally but it seems like only after a raid) From what I can tell when searching about the method I’m running in here, it is common practice in Unity games to run this when loading new scenes."
+        },
+        {
+          "author": "alan-fr",
+          "date": "",
+          "version": "",
+          "body": "I ported this mod for the current 4.1x build and it works perfectly… if the author wants me to upload i can do it"
+        },
+        {
+          "author": "daark",
+          "date": "",
+          "version": "",
+          "body": "I didnt recompile VRAM Cleaner, rather bypassed the prepatch version mismatch lock. I provided a PR in the official SPT codebase for an opt-out for power users, but the current maintainers rejected the idea, thus I can’t teach you how, nor provide you that bypassed .dll, sorry."
+        },
+        {
+          "author": "jimmybrite",
+          "date": "",
+          "version": "",
+          "body": "This mod is a must if you’re running SPT on Linux with an Nvidia card. If I don’t use this mod my Vram maxes out on my 3070 and it’s a stutter mess."
+        }
+      ]
+    }
+  ]
+}

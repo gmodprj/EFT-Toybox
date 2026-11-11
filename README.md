@@ -44,6 +44,7 @@
 | 스크립트 | 용도 |
 | --- | --- |
 | `tools/search-mods.mjs` | Forge에서 이름·소개로 모드 검색 |
+| `tools/fetch-mod-comments.mjs` | 모드 페이지의 **댓글**을 읽어 성능·메모리 언급만 추린다 (API 에 리뷰 길이 없어 Livewire 컴포넌트를 직접 부른다) |
 | `tools/sweep-candidates.mjs` | 4.1.6 호환 목록 **전체**를 카테고리까지 받아 정규식으로 추리고 설치된 것을 뺀다 (키워드 검색이 놓치는 것을 센다) |
 | `tools/mod-detail.mjs` | 모드별 4.1.6 호환 버전·의존성·결속·설명 |
 | `tools/survey-candidates.mjs` | 후보 여러 개 일괄 조회 |
