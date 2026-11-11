@@ -41,6 +41,7 @@
 | [CANDIDATES-416.md](CANDIDATES-416.md) / [CANDIDATES-GUN-TRADER.md](CANDIDATES-GUN-TRADER.md) | 미설치 후보 136개 / 총기·상인 재조사 27개 |
 | [CANDIDATES-ATTACH-COMPAT.md](CANDIDATES-ATTACH-COMPAT.md) | `All In Weapon` 대신 **총기별로** 부착물 호환을 정하는 수단 — 후보 2개의 소스를 읽어 본 결과와, 직접 만드는 쪽의 셈 |
 | [CANDIDATES-LIST-127534.md](CANDIDATES-LIST-127534.md) | 공개 목록 "Encode's Mod List Vol. 1"(모드 215개)에서 **이 설치본에 없는 125개**를 분야별로 — 용량·결속·의존성 포함. 설치 불가 5개와 선행 모드가 막는 3개도 적었다 |
+| [REVIEWS-PERF-2026-11-11.md](REVIEWS-PERF-2026-11-11.md) | **설치 모드의 성능 관련 사용자 리뷰** — Forge 는 댓글 API 가 없어 Livewire 로 읽었다(모드 312개 / 댓글 5,077건 중 성능 언급 185건). 우리 로그로 교차검증된 Icebreaker `[PerfCensus]`·Interchange 프레임당 1,400회, 재현되지 않은 Hideout Cat, 이미 고쳐진 넷, 사라진 모드 둘 |
 | [MEMORY-AUDIT-2026-11-11.md](MEMORY-AUDIT-2026-11-11.md) | **메모리 실측** — 게임이 스스로 적는 `totalMemoryBeforeCleanUp` 로 한 기동(3시간 17분)에 2,367 → 6,696 MB 를 쟀다. 의심했다가 아닌 것으로 밝혀진 넷(airdrop heartbeat·Moe-TradeMarker·Wishlist 캐시·ReflectSix), 남는 의심 셋, 모드를 더하지 않고 고칠 거리, 다음 기동에서 할 A/B |
 | [CANDIDATES-PERF.md](CANDIDATES-PERF.md) | **성능·메모리 정리 후보 10개**(2026-11-11) — 4.1.6 호환 751개를 카테고리까지 훑어 추렸다. 이미 깔린 성능 모드 10종, 봇 쪽 셋의 겹침과 Smoothie×PiP Disabler 의 `✓½`, 4.1.6 버전이 없어 차단된 10개의 사유 |
 | [STAGE11-RESULT.md](STAGE11-RESULT.md) | **11차(성능·메모리) 결과** — 11-A VRAM Cleaner 1.1.0. 받은 바이트·md5·겹침·서버 시험(216초, 174 그대로)·기록 검사와, **아직 확인하지 못한 것**(게임 기동 전이라 플러그인 247 과 `VRAMCleaner loaded!` 미확인, F12 한 항목이 사전에 없음) |
