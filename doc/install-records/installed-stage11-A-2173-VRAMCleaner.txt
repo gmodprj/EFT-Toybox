@@ -1,0 +1,1 @@
+2173__VRAMCleaner	BepInEx\plugins\SPTVRAMCleaner.dll

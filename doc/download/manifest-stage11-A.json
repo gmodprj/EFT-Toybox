@@ -1,0 +1,17 @@
+{
+  "stage": "stage11-A",
+  "spt": "4.1.6",
+  "note": "11-A VRAM Cleaner(2173) 1.1.0. 메모리 실측(MEMORY-AUDIT-2026-11-11.md)에서 한 기동에 2,367 -> 6,696 MB 로 오르는 것을 보고 고른 첫 손잡이다. 후보 문서(CANDIDATES-PERF.md)의 권하는 순서에서 Mod Profiler 다음, Transit Ram Cleaner 앞이다 — 3KB 게임 전용 플러그인이고 결속 표시가 없어 되돌리기가 가장 쉽다. 레이드 시작 타이머가 끝난 뒤 쓰이지 않는 자산을 비운다. 설치 뒤 기대: BepInEx 플러그인 수 246 -> 247, 서버 모드 174 그대로(게임 전용). 겹침 의심은 낮지만(DLL 하나) 덮어쓰기 경고가 하나라도 나오면 멈춘다.",
+  "totalSize": 3201,
+  "mods": [
+    {
+      "group": "11A-1",
+      "id": 2173,
+      "name": "VRAM Cleaner",
+      "version": "1.1.0",
+      "size": 3201,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2173/vram-cleaner/1.1.0"
+    }
+  ]
+}
