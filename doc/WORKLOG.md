@@ -8660,3 +8660,38 @@ config file ("gdrive")` 로 죽었다. 그 셸에서 `Test-Path` 는 False 인�
 
 압축률은 **94.3%**, 내용이 이미 압축된 `.bundle`·`.dll` 이라 거의 줄지 않아
 `CompressionLevel.Fastest` 로 46 GB 를 13.4분(약 57 MB/s)에 묶었다.
+
+## 성능·메모리 — 재는 자리를 찾고, 원인에 이름을 붙였다 (2026-11-11)
+
+인계는 [HANDOVER-2026-11-11.md](HANDOVER-2026-11-11.md). 문서 넷이 들어갔다 —
+[CANDIDATES-PERF.md](CANDIDATES-PERF.md)(후보), [MEMORY-AUDIT-2026-11-11.md](MEMORY-AUDIT-2026-11-11.md)(실측),
+[STAGE11-RESULT.md](STAGE11-RESULT.md)(11-A 설치), [REVIEWS-PERF-2026-11-11.md](REVIEWS-PERF-2026-11-11.md)(남의 리뷰),
+그리고 수정 기록 [fixes/2026-11-11-icebreaker-offmap-guard.md](fixes/2026-11-11-icebreaker-offmap-guard.md).
+
+**메모리는 모드 없이 잴 수 있었다.** `bsgLogging.verbosity = 6` 이라 게임이 RAM 청소 직전 총량을
+`Logs/log_*/…application.log` 에 Debug 로 적는다. 11-11 기동(3시간 17분, 청소 14회)에
+**2,367 → 6,696 MB** 로 올라가고 청소해도 앞 수준으로 돌아오지 않았다. 라이트하우스 리워크가
+분당 적는 `managedMiB` 의 바닥값은 47분에 **+670 MiB** 였고 47줄 중 45줄이 `gen0 == fullGC` 였다.
+`collectedMemoryGB` 는 같은 필드에 `0.055` 와 `179.96` 이 들어오므로 **단위를 믿지 않는다.**
+
+**의심 넷은 아니었다.** `/airdrop-caller/heartbeat` 1,187건은 11,820초 ÷ 1,187 ≈ 10.0초로 우리
+idle 주기 그대로였고, Moe-TradeMarker 21초·Aishi 17초·NamePlate 57초도 과하지 않았다. Wishlist
+캐시 67회는 스태시 증가(623→700)를 따라간 것이고 ReflectSix 8,240은 누적 카운터다. 모드 폴링이
+메모리를 먹는다는 가설은 **틀렸다.**
+
+**원인에 이름이 붙은 것은 남의 리뷰에서였다.** Forge API 에는 댓글 길이 없어
+([`tools/fetch-mod-comments.mjs`](../tools/fetch-mod-comments.mjs)) Livewire 컴포넌트를 직접 불러
+모드 312개 / 댓글 5,077건을 읽었고, 그중 성능 언급 185건에서 **Icebreaker 1.1.3**(우리 버전)의
+off-map 작업 보고를 찾았다 — 매 프레임 씬 이름 읽기(프레임당 약 1.5 KB 쓰레기)와 60초쯤 뒤의 LOD
+전수조사. **우리 로그에 `[PerfCensus]` 가 셋 있었다**(Lighthouse `lodGroups=58529`, 보고 사례의 2.4배).
+`DevMode`·`DiagHotkeys` 가 둘 다 꺼진 기동이었다 — 설정으로는 못 끈다.
+
+그래서 **VRAM Cleaner 1.1.0**(11-A, 모드 304 → 305개)을 넣고, 아이스브레이커의 off-map 작업을
+밖에서 가리는 **[`src/IcebreakerOffMapGuard`](../src/IcebreakerOffMapGuard)** 를 만들어 넣었다.
+`TickVanillaPerfCensus` 는 건너뛰고, `IcebreakerLoaded` 는 **판정을 다시 구현하지 않고** 원본의 답을
+씬이 바뀔 때까지 기억한다. 11 MB 어셈블리를 참조하지 않고 이름으로 찾으며, 한쪽만 못 찾으면 경고를
+남긴다. 빌드 경고 0 / 오류 0, 시험 5개 통과. **게임을 켜지 않아 둘 다 아직 로드된 적은 없다.**
+
+곁딸린 수정 둘 — 생성기에 **11차 제목**이 없어 설치한 모드가 목록에서 빠지던 것을 고쳤고,
+기록된 "`Could not add` 고유 48" 이 기동마다 달라지는 값(11-09 48 / 11-10 58 / 11-11 54)임을
+적었다. 덤으로 **Painter(1025)·Tactical Gear Component(1125)가 Forge 에서 사라진 것**을 알게 됐다.
