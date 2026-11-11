@@ -41,6 +41,7 @@
 | [CANDIDATES-416.md](CANDIDATES-416.md) / [CANDIDATES-GUN-TRADER.md](CANDIDATES-GUN-TRADER.md) | 미설치 후보 136개 / 총기·상인 재조사 27개 |
 | [CANDIDATES-ATTACH-COMPAT.md](CANDIDATES-ATTACH-COMPAT.md) | `All In Weapon` 대신 **총기별로** 부착물 호환을 정하는 수단 — 후보 2개의 소스를 읽어 본 결과와, 직접 만드는 쪽의 셈 |
 | [CANDIDATES-LIST-127534.md](CANDIDATES-LIST-127534.md) | 공개 목록 "Encode's Mod List Vol. 1"(모드 215개)에서 **이 설치본에 없는 125개**를 분야별로 — 용량·결속·의존성 포함. 설치 불가 5개와 선행 모드가 막는 3개도 적었다 |
+| [CANDIDATES-PERF.md](CANDIDATES-PERF.md) | **성능·메모리 정리 후보 10개**(2026-11-11) — 4.1.6 호환 751개를 카테고리까지 훑어 추렸다. 이미 깔린 성능 모드 10종, 봇 쪽 셋의 겹침과 Smoothie×PiP Disabler 의 `✓½`, 4.1.6 버전이 없어 차단된 10개의 사유 |
 | [STAGE10-RESULT.md](STAGE10-RESULT.md) | 10차 단계별 **실측 결과** — 기준선, 10-A·10-B, 설치 후 게임 기동 확인. 플러그인 수가 왜 +4 인지(라이브러리 DLL·GUID 충돌), F12 한글화 위험, 다음 단계 판정 기준에 더할 것 |
 | [PLAN-STAGE10.md](PLAN-STAGE10.md) | 위 두 후보 문서를 **순차 설치·시험 계획**으로 묶은 것 — 설치 전 결정(10-0, 전부 끝남), 부착물 호환 단독 단계(10-A), 넣는 모드 121개를 17단계로. 단계마다 통과·멈춤 판정과 되돌리기를 적었다. 차수가 10인 이유는 생성기의 9차가 "절차 밖에서 들어온 것"에 이미 쓰여서다 |
 
