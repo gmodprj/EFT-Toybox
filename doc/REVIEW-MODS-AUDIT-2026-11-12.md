@@ -127,3 +127,42 @@
 3. **아이템 이름 한글화** — 17,512항목 중 어디부터 할지. 상인·플리에서 자주 보이는 것부터 고르는 셈이 필요하다.
 4. **가격표 넷의 값이 화면마다 다른지** — QuickSell·ShowMeTheMoney·UltimateFlea·TheBlacklist.
 5. **UltimateFlea 풀을 켤 때** TheBlacklist 와 부딪히는 아이템 수를 미리 세어 두기.
+
+---
+
+## 덧붙임 — 끊긴 부품 참조는 **누가 만들었나** (2026-11-12 21:00)
+
+§2 의 "집을 수 있는 거리 1번" 을 집었다. 모드를 하나씩 끄지 않고, **id 를 모드 파일에서 찾아**
+가렸다. 총기 칸에서 나온 **없는 id 13종**의 출처는 이렇다.
+
+| 출처 | id | 어디에 |
+| --- | --- | --- |
+| **WTT-Armory** (9종) | `6701ae47…` `6700c690…` `6700c695…` `6701ae8e…` `6701aea1…` | HK UMP 9x19 의 `mod_stock`·`mod_mount_000` |
+| | `679a76fc…` | AN-94 "Kirov's Custom" 의 `mod_pistol_grip` |
+| | `66a5465a…` `67a01e79…` `67a01e79…10f0` | IWI Tavor X95 4종의 `mod_foregrip`·`mod_sight_rear`·`mod_sight_front`, Patriot M4A1 의 `mod_sight_rear` |
+| **EukyreECOT** (2종) | `df1d3bfb…` | AKS-74UN 5.56x45 의 `mod_stock` — 그 총기를 만드는 `db/CustomItems/Weapon556Krink.json` 안에 적혀 있다 |
+| | `686a95d3…` | HK UMP .40 S&W 의 `mod_scope` |
+| **출처를 못 찾음** (2종) | `c6aa3fe8…` `cc857617…` | HK 416A5 **9종**(기본 + 변형 8)의 `mod_reciever` |
+
+- 두 모드 다 **자기 파일에 그 id 를 정의하지 않는다.** EukyreECOT 은 아이템 163개를 만드는데
+  그중에 없고, 필터에만 적어 둔다 — 다른 팩(또는 자기 옛 판)의 부품을 가리키는 **묵은 참조**다.
+- HK 416A5 의 둘은 어느 모드 파일에도 없다. 그 이름을 지은 쪽은
+  **DefinitiveWeaponVariants**(`Meta`·`Pay to Win`·`Black Market` 따위 변형 이름이 이 모드 파일에만 있다)이고,
+  변형은 **원본 총기의 필터를 그대로 베끼므로** 원본 HK 416A5 의 묵은 참조가 9배로 불어난 모양이다.
+  원본에 그 참조를 넣은 쪽은 아직 못 짚었다.
+- 서버가 적는 `does not exist in the item database` **53종** 중 모드 파일에 있는 것은
+  **EukyreECOT 의 3종뿐**이다. 나머지 50종은 파일에 없다 — 런타임에 만들어지는 참조다.
+
+### 그래서 어떻게 할 수 있나
+
+1. **그대로 둔다.** 게임은 없는 id 를 조용히 빼고 칸을 그린다 — 11-12 게임 로그에 템플릿 오류 0건.
+   값은 서버 기동 로그 554줄과, 그 묵은 참조가 가리키던 부품을 **쓸 수 없다**는 것뿐이다.
+2. **우리 쪽에서 쓸어낸다.** `OnLoadOrder.PostLoad` 에서 모든 칸 필터를 훑어 **DB 에 없는 id 를 빼는**
+   작은 서버 모드. 남의 모드 파일은 건드리지 않는다(업데이트에 날아가지 않는다).
+   SlotCategoryRelax·StackUnify 와 같은 자리·같은 방식이라 새로 배울 것이 없다.
+3. **제작자에게 알린다.** WTT-Armory 9종·EukyreECOT 2종은 그쪽 파일의 묵은 참조다.
+
+### 아직 못 본 것
+
+- `mod_scope` **17칸이 왜 줄었는지**(§2 표)는 그대로 열려 있다. 어느 모드가 조준경 하나를 빼는지
+  보려면 **서버를 다시 띄워** 바닐라와 한 번 더 견줘야 한다.
