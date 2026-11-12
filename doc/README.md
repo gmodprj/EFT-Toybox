@@ -1,7 +1,7 @@
 # 문서 색인
 
 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743).
-**2026-11-11 기준 모드 305개 / 설치 기록 15,948줄** + **직접 만든 것 19개**(`src/`, 테스트 프로젝트 제외. 그중 자기 이름의 설치 자리를 가진 것 15개 — 아래 "직접 만든 모드" 절). **서버 모드 174개**(11-11 설치 시험에서 실측), **게임 플러그인 248개**(2026-11-12 17:11 기동 로그에서 실측 — `248 plugins to load`. 11차에 넣은 `SPTVRAMCleaner`·`IcebreakerOffMapGuard` 둘이 들어와 246 → 248 이 됐다).
+**2026-11-11 기준 모드 305개 / 설치 기록 15,948줄** + **직접 만든 것 20개**(`src/`, 테스트 프로젝트 제외. 그중 자기 이름의 설치 자리를 가진 것 16개 — 아래 "직접 만든 모드" 절). **서버 모드 174개**(11-11 설치 시험에서 실측), **게임 플러그인 248개**(2026-11-12 17:11 기동 로그에서 실측 — `248 plugins to load`. 11차에 넣은 `SPTVRAMCleaner`·`IcebreakerOffMapGuard` 둘이 들어와 246 → 248 이 됐다).
 
 > **10차까지 끝났고, 11차(성능·메모리)가 11-A 하나 들어갔다.** 차수별 결과는 [STAGE10-RESULT.md](STAGE10-RESULT.md)·[STAGE11-RESULT.md](STAGE11-RESULT.md), 계획은 [PLAN-STAGE10.md](PLAN-STAGE10.md).
 > 가장 최근 세션 인계는 [HANDOVER-2026-11-11.md](HANDOVER-2026-11-11.md)(**성능·메모리** 한 줄기 — 게임이 스스로 적는 값으로 한 기동에 2,367 → 6,696 MB 를 쟀고, 남의 리뷰 185건 중 아이스브레이커 보고를 우리 로그의 `[PerfCensus]` 로 교차검증해 **off-map 작업을 가리는 플러그인을 만들어 넣었다**. VRAM Cleaner 설치로 11차를 시작했다). 그 앞은 [HANDOVER-2026-11-10.md](HANDOVER-2026-11-10.md)(외부 모드 업데이트 20개를 모두 올리고 서버·게임·레이드에서 쟀다. 설정·번역이 날아갈 자리 넷을 막았고 아이템 이름 한글화를 시작했다. 이어 **설치본 46 GB 와 프로필을 떠서 구글 드라이브에 올리고**, 이 저장소를 **처음으로 GitHub 원격에 올렸다**). 그 앞은 [HANDOVER-2026-11-09.md](HANDOVER-2026-11-09.md)(ProfilePorter 완료 — 파일 지우기·세부 보기 창, 격자 자리 결함, 창을 스스로 찍게 만든 `--shot`).
@@ -109,13 +109,13 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 
 ## 직접 만든 모드 (`src/`)
 
-**19개**(테스트 프로젝트 제외). 그중 **자기 이름의 설치 자리를 가진 것이 15개**다 —
+**20개**(테스트 프로젝트 제외). 그중 **자기 이름의 설치 자리를 가진 것이 16개**다 —
 2026-11-12 실측으로 `BepInEx\plugins\` 에 8개(AirdropCaller · AirdropProbe ·
 DynamicMapsFactionMarkers · GogglesWheel · GridWindowScroll · IcebreakerOffMapGuard ·
-SptKoreanConfig · SptTeamManager), `user\mods\` 에 9개(AirdropCaller · HelmetSlotUnion ·
+SptKoreanConfig · SptTeamManager), `user\mods\` 에 10개(AirdropCaller · HelmetSlotUnion ·
 ProfilePorter · ScavRaidWaves · SlotCategoryRelax · SptKoreanLocale ·
-SptTeamManager-ServerMod · StackUnify · WebConfigBridge)이고, AirdropCaller 와 STM 은
-양쪽에 걸쳐 있어 모드로는 15개다. `AirdropCaller.exe`·`ProfilePorter.exe` 는 설치본 루트에 선다.
+SptTeamManager-ServerMod · SlotFilterSweep · StackUnify · WebConfigBridge)이고, AirdropCaller 와 STM 은
+양쪽에 걸쳐 있어 모드로는 16개다. `AirdropCaller.exe`·`ProfilePorter.exe` 는 설치본 루트에 선다.
 `PluginLocales`·`ServerWebKorean` 은 자기 폴더 없이 **남의 모드 폴더와 서버 웹에 파일로** 들어가고,
 `CompatToggle` 은 지금 설치본에 없다.
 
@@ -135,6 +135,7 @@ SptTeamManager-ServerMod · StackUnify · WebConfigBridge)이고, AirdropCaller 
 | `GridWindowScroll` | 가방·상자 창을 화면 안에 가둔다 | [README](../src/GridWindowScroll/README.md) |
 | `StackUnify` | 최대 스택을 한 곳에서 정한다 | [README](../src/StackUnify/README.md) |
 | `HelmetSlotUnion`·`SlotCategoryRelax` | 슬롯 필터를 넓힌다(STM 편집기가 기댄다) | STM 인계 불변식 9 |
+| `SlotFilterSweep` | 칸 필터에서 **없는 부품 id** 를 걷어낸다(기본은 세기만) | [감사](REVIEW-MODS-AUDIT-2026-11-12.md) |
 | `ScavRaidWaves` | 스캐브 레이드 웨이브 | — |
 | `WebConfigBridge` | 서버 웹 설정 다리 | — |
 | `CompatToggle` | 호환 토글(**지금 설치본에 없다**) | [설계](specs/2026-10-26-compat-toggle-design.md) · [계획](plans/2026-10-26-compat-toggle-plan.md) |

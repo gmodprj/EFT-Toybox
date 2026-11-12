@@ -1,0 +1,27 @@
+{
+  // 칸 필터에 적혀 있지만 데이터베이스에 없는 부품 id 를 걷어낸다.
+  // 하는 일은 빼기뿐이다 — 없는 부품을 만들어 주지는 않는다.
+  "ModEnabled": true,
+
+  // 기본값은 **세기만 하고 지우지 않는 것**이다.
+  // 몇 개인지 로그와 dead-refs.json 으로 보고, 납득한 뒤에 true 로 켠다.
+  "Apply": false,
+
+  // 어디를 볼지
+  "IncludeSlots": true,
+  "IncludeChambers": true,
+  "IncludeCartridges": true,
+
+  // 표에 없어도 건드리지 않을 id. 우리(int.MaxValue)보다 늦게 아이템을 만드는 모드가
+  // 있을 때 그 부품을 지키는 자리다.
+  "KeepIds": [],
+
+  // 로그에 보여 줄 "가장 많이 나온 죽은 id" 개수
+  "TopIds": 10,
+
+  // 찾은 칸마다 한 줄씩. 조사할 때만 켠다.
+  "Debug": false,
+
+  // DLL 옆 dead-refs.json 으로 내놓는다
+  "WriteReport": true
+}
