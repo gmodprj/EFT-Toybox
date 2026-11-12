@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <!--
+    SPT 서버 어셈블리(net10.0)를 참조하지 않는다. 순수 판정 소스만 파일마다 한 줄씩 링크한다
+    (ProfilePorter.Tests 와 같은 방식). 와일드카드를 쓰지 않는 것은, Server 에 SPT 를 쓰는
+    파일이 생겼을 때 그것이 **조용히 딸려 들어오지 않게** 하려는 것이다.
+  -->
+  <ItemGroup>
+    <Compile Include="..\AirdropCaller.Server\QueueGate.cs" Link="Server\QueueGate.cs" />
+    <Compile Include="QueueGateTests.cs" />
+  </ItemGroup>
+
+</Project>

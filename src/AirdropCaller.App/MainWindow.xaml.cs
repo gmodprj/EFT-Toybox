@@ -471,6 +471,9 @@ public partial class MainWindow : Window
         }
 
         DropButton.IsEnabled = canDrop && _client is not null;
+
+        // 조립만 보는 길은 레이드·쿨다운·예약과 무관하다 — 담을 품목만 있으면 눌린다.
+        DryRunButton.IsEnabled = _items.Count > 0 && _client is not null;
     }
 
     // ── 프리셋 ─────────────────────────────────────────────────────────────
@@ -909,26 +912,65 @@ public partial class MainWindow : Window
                 return;
             }
 
-            // 조용히 버리지도, 조용히 고치지도 않는다. 둘을 **따로** 말한다 —
-            // 한데 묶었더니 "못 담은 것 1개" 라면서 정작 상자에는 들어 있었다.
-            var text = $"예약했다 — {result.Placed}개를 담았다.";
-            if (result.Attached > 0)
-            {
-                text += $" 방어판·부속 {result.Attached}개를 붙였다.";
-            }
-
-            if (result.Skipped.Count > 0)
-            {
-                text += $" 못 담은 것 {result.Skipped.Count}가지: {string.Join(", ", result.Skipped)}";
-            }
-
-            if (result.Adjusted.Count > 0)
-            {
-                text += $" 고친 것 {result.Adjusted.Count}가지: {string.Join(", ", result.Adjusted)}";
-            }
-
-            MessageLine.Text = text;
+            MessageLine.Text = Describe(result, "예약했다");
         });
+    }
+
+    /// <summary>
+    /// 조립만 해 본다 — 예약하지 않고, 쿨다운도 쓰지 않고, **아무것도 떨어지지 않는다**.
+    /// 2026-11-08 에 레이드 중 시험 삼아 쏜 예약이 18초 뒤 실물이 되어 떨어진 뒤로 생긴 길이다
+    /// (설계 §20.4). 그래서 게임이 꺼져 있어도 담기는지 미리 볼 수 있다.
+    /// </summary>
+    private async void OnDryRun(object sender, RoutedEventArgs e)
+    {
+        if (_client is null || _items.Count == 0)
+        {
+            return;
+        }
+
+        await Guard(async () =>
+        {
+            var result = await _client.QueueAsync(
+                null, SelectedIcon(), BuildSpecTree(), BigCrateBox.IsChecked == true, CancellationToken.None,
+                dryRun: true);
+
+            if (result?.Ok != true)
+            {
+                MessageLine.Text = result?.Reason ?? "조립해 보지 못했다.";
+                return;
+            }
+
+            // 서버가 dryRun 을 참으로 돌려줘야 예약이 아니라고 말할 수 있다. 참이 아니면
+            // **예약이 된 것**이므로 그렇게 말한다 — 떨어질 수 있다는 것을 숨기지 않는다.
+            MessageLine.Text = result.DryRun
+                ? Describe(result, "조립해 봤다") + " 예약하지 않았다 — 떨어지지 않는다."
+                : Describe(result, "예약됐다(마른 조립이 아니다)");
+        });
+    }
+
+    /// <summary>
+    /// 조립 결과를 한 줄로. 조용히 버리지도, 조용히 고치지도 않는다. 둘을 **따로** 말한다 —
+    /// 한데 묶었더니 "못 담은 것 1개" 라면서 정작 상자에는 들어 있었다.
+    /// </summary>
+    private static string Describe(QueueResponse result, string head)
+    {
+        var text = $"{head} — {result.Placed}개를 담았다.";
+        if (result.Attached > 0)
+        {
+            text += $" 방어판·부속 {result.Attached}개를 붙였다.";
+        }
+
+        if (result.Skipped.Count > 0)
+        {
+            text += $" 못 담은 것 {result.Skipped.Count}가지: {string.Join(", ", result.Skipped)}";
+        }
+
+        if (result.Adjusted.Count > 0)
+        {
+            text += $" 고친 것 {result.Adjusted.Count}가지: {string.Join(", ", result.Adjusted)}";
+        }
+
+        return text;
     }
 
     private async void OnCancel(object sender, RoutedEventArgs e)
