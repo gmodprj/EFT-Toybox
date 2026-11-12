@@ -6,7 +6,10 @@ param(
     [string]$SptDir = 'E:\Spt',
     [switch]$Remove,
     # 프리셋까지 싹 지운다. -Remove 는 프리셋을 남긴다.
-    [switch]$Purge
+    [switch]$Purge,
+    # 서버가 떠 있어도 넣는다. 돌고 있는 DLL 은 덮어쓸 수 없으므로 이름을 바꿔 치우고
+    # 새것을 넣는다 — **돌고 있는 서버는 옛 코드를 그대로 쓰고**, 새것은 다음 기동부터 돈다.
+    [switch]$AllowServerRunning
 )
 
 $ErrorActionPreference = 'Stop'
@@ -49,6 +52,22 @@ if (-not (Test-Path $dll)) {
 }
 
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
+
+# 서버가 떠 있으면 DLL 이 잠겨 **덮어쓰기가 실패한다**(깔린 줄 알고 넘어가는 것이 가장 나쁘다).
+$server = Get-Process -Name 'SPT.Server' -ErrorAction SilentlyContinue
+$inPlace = Join-Path $dest 'AirdropCaller.Server.dll'
+if ($server -and -not $AllowServerRunning) {
+    throw 'SPT 서버가 떠 있다. 끄고 다시 돌리거나 -AllowServerRunning 으로 돌려라 — 지금 그냥 복사하면 잠긴 DLL 때문에 설치되지 않는다.'
+}
+
+if ($server -and (Test-Path $inPlace)) {
+    # 지울 수는 없지만 이름은 바꿀 수 있다. 치워 두고 새것을 넣는다 —
+    # SPT 는 mods 폴더에서 .dll 만 읽으므로 치운 파일은 로드되지 않는다.
+    $parked = "$inPlace.locked-" + (Get-Date -Format 'yyyyMMdd-HHmmss')
+    Rename-Item -LiteralPath $inPlace -NewName (Split-Path $parked -Leaf)
+    "돌고 있는 DLL 을 치웠다: $parked  (지금 돌고 있는 서버는 옛 코드를 쓴다)"
+}
+
 Copy-Item $dll -Destination $dest -Force
 
 $destCfg = Join-Path $dest 'config.jsonc'

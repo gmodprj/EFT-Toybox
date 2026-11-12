@@ -76,6 +76,17 @@ public record QueueResponse
     public string? Reason { get; set; }
 
     /// <summary>
+    /// 상자 **자기 격자**에서 찬 칸 수. 안에 넣은 그릇의 속칸은 세지 않는다 —
+    /// 사람이 보고 싶은 것은 "이 상자에 더 들어가나" 다.
+    /// </summary>
+    [JsonPropertyName("cellsUsed")]
+    public int CellsUsed { get; set; }
+
+    /// <summary>상자 자기 격자의 칸 수 전부. 0 이면 칸 수를 모른다는 뜻이다.</summary>
+    [JsonPropertyName("cellsTotal")]
+    public int CellsTotal { get; set; }
+
+    /// <summary>
     /// 이 답이 **마른 조립**의 결과임. 참이면 <see cref="DropId"/> 는 없고 **아무것도 떨어지지 않는다** —
     /// 창이 "예약했다" 로 잘못 말하지 않게 답에도 적어 돌려준다.
     /// </summary>

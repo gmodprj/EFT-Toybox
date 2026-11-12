@@ -204,6 +204,12 @@ public record QueueResponse
     [JsonPropertyName("adjusted")] public List<string> Adjusted { get; set; } = [];
     [JsonPropertyName("reason")] public string? Reason { get; set; }
 
+    /// <summary>상자 자기 격자에서 찬 칸 수.</summary>
+    [JsonPropertyName("cellsUsed")] public int CellsUsed { get; set; }
+
+    /// <summary>상자 자기 격자의 칸 수 전부. 0 이면 모른다는 뜻이라 말하지 않는다.</summary>
+    [JsonPropertyName("cellsTotal")] public int CellsTotal { get; set; }
+
     /// <summary>
     /// 마른 조립의 답. 참이면 예약된 것이 없고 **아무것도 떨어지지 않는다** —
     /// 창이 "예약했다" 로 잘못 말하지 않게 서버가 적어 돌려준다.
