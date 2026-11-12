@@ -52,9 +52,12 @@ public class CrateBuilder(
     /// </summary>
     /// <param name="Placed">격자에 자리를 잡은 품목 수. 딸려 붙은 부속은 세지 않는다.</param>
     /// <param name="Attached">방어판·삽입물·헬멧 부속처럼 품목에 **붙은** 것의 수.</param>
+    /// <param name="CellsUsed">상자 **자기 격자**에서 찬 칸 수. 안에 넣은 그릇의 속칸은 세지 않는다.</param>
+    /// <param name="CellsTotal">상자 자기 격자의 칸 수 전부.</param>
     public record Result(
         GetAirdropLootResponse Response, int Placed, int Attached,
-        List<string> Skipped, List<string> Adjusted);
+        List<string> Skipped, List<string> Adjusted,
+        int CellsUsed, int CellsTotal);
 
     public Result? Build(string dropId, DropSpec spec)
     {
@@ -96,12 +99,18 @@ public class CrateBuilder(
 
         Place(spec.Items, crateSpots, items, skipped, adjusted, tally, depth: 0);
 
+        // 상자 자기 격자가 얼마나 찼나. 안에 넣은 그릇의 속칸은 세지 않는다 — 사람이
+        // 보고 싶은 것은 "이 상자에 더 들어가나" 다.
+        var (cellsUsed, cellsTotal) = GridUsage.Sum(crateSpots.Select(s => s.Map));
+
         return new Result(
             new GetAirdropLootResponse { Icon = icon, Container = items },
             tally.Placed,
             tally.Attached,
             Collapse(skipped),
-            Collapse(adjusted));
+            Collapse(adjusted),
+            cellsUsed,
+            cellsTotal);
     }
 
     /// <summary>

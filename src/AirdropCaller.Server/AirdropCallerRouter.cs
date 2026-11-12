@@ -456,6 +456,7 @@ public class AirdropCallerRouter : StaticRouter
         var attached = built.Attached > 0 ? $" (부속 {built.Attached}개 붙임)" : string.Empty;
         var size = spec.BigCrate ? " 큰" : string.Empty;
         logger.Info($"[AirdropCaller] 마른 조립 → {spec.Icon}{size} 상자에 {built.Placed}개{attached}"
+                    + $" · {GridUsage.Describe(built.CellsUsed, built.CellsTotal)}"
                     + " — 예약하지 않았다" + Note(built));
 
         return new QueueResponse
@@ -467,6 +468,8 @@ public class AirdropCallerRouter : StaticRouter
             Attached = built.Attached,
             Skipped = built.Skipped,
             Adjusted = built.Adjusted,
+            CellsUsed = built.CellsUsed,
+            CellsTotal = built.CellsTotal,
         };
     }
 
@@ -476,6 +479,7 @@ public class AirdropCallerRouter : StaticRouter
         var attached = built.Attached > 0 ? $" (부속 {built.Attached}개 붙임)" : string.Empty;
         var size = spec.BigCrate ? " 큰" : string.Empty;
         logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon}{size} 상자에 {built.Placed}개{attached}"
+                    + $" · {GridUsage.Describe(built.CellsUsed, built.CellsTotal)}"
                     + Note(built));
 
         return new QueueResponse
@@ -486,6 +490,8 @@ public class AirdropCallerRouter : StaticRouter
             Attached = built.Attached,
             Skipped = built.Skipped,
             Adjusted = built.Adjusted,
+            CellsUsed = built.CellsUsed,
+            CellsTotal = built.CellsTotal,
         };
     }
 }

@@ -955,6 +955,15 @@ public partial class MainWindow : Window
     private static string Describe(QueueResponse result, string head)
     {
         var text = $"{head} — {result.Placed}개를 담았다.";
+
+        // 얼마나 남았는지까지 말한다. 전에는 못 담는 일이 벌어진 **뒤에야** 알았다.
+        if (result.CellsTotal > 0)
+        {
+            var percent = (int)Math.Round(result.CellsUsed * 100.0 / result.CellsTotal,
+                MidpointRounding.AwayFromZero);
+            text += $" 칸 {result.CellsUsed}/{result.CellsTotal} ({percent}%).";
+        }
+
         if (result.Attached > 0)
         {
             text += $" 방어판·부속 {result.Attached}개를 붙였다.";

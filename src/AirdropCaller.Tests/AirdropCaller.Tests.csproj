@@ -22,7 +22,9 @@
   -->
   <ItemGroup>
     <Compile Include="..\AirdropCaller.Server\QueueGate.cs" Link="Server\QueueGate.cs" />
+    <Compile Include="..\AirdropCaller.Server\GridUsage.cs" Link="Server\GridUsage.cs" />
     <Compile Include="QueueGateTests.cs" />
+    <Compile Include="GridUsageTests.cs" />
   </ItemGroup>
 
 </Project>
