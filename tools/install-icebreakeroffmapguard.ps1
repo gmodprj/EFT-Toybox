@@ -5,7 +5,10 @@
 # 경위는 doc/fixes/2026-11-11-icebreaker-offmap-guard.md.
 param(
     [string]$SptDir = 'E:\Spt',
-    [switch]$Remove
+    [switch]$Remove,
+    # 게임이 떠 있어도 넣는다. 돌고 있는 DLL 은 지울 수 없으므로 이름을 바꿔 치우고 새것을 넣는다 —
+    # 돌고 있는 게임은 옛 코드를 그대로 쓰고, 새것은 다음 기동부터 돈다.
+    [switch]$AllowGameRunning
 )
 
 $ErrorActionPreference = 'Stop'
@@ -32,7 +35,18 @@ if (-not (Test-Path $dll)) { throw "빌드 결과가 없다: $dll  (먼저 dotne
 
 # 게임이 떠 있으면 DLL 이 잠겨 조용히 안 깔린다 — 먼저 멈춘다(끄지는 않는다).
 $game = Get-Process -Name EscapeFromTarkov -ErrorAction SilentlyContinue
-if ($game) { throw '게임이 떠 있다. 끄고 다시 돌려라 — 지금 복사하면 잠긴 DLL 때문에 설치되지 않는다.' }
+if ($game -and -not $AllowGameRunning) {
+    throw '게임이 떠 있다. 끄고 다시 돌리거나 -AllowGameRunning 으로 돌려라 — 지금 그냥 복사하면 잠긴 DLL 때문에 설치되지 않는다.'
+}
+
+# 잠긴 DLL 은 "나중에 반영" 이 아니라 안 깔린 것이다. 지울 수는 없지만 이름은 바꿀 수 있으므로
+# 치워 두고 새것을 넣는다. BepInEx 는 .dll 만 읽어 치운 파일을 무시한다.
+$dllInPlace = Join-Path $dest 'IcebreakerOffMapGuard.dll'
+if ($game -and (Test-Path $dllInPlace)) {
+    $parked = "$dllInPlace.locked-" + (Get-Date -Format 'yyyyMMdd-HHmmss')
+    Rename-Item -LiteralPath $dllInPlace -NewName (Split-Path $parked -Leaf)
+    "돌고 있는 DLL 을 치웠다: $parked  (지금 돌고 있는 게임은 옛 코드를 쓴다)"
+}
 
 # 대상 모드가 없으면 플러그인은 아무것도 걸지 않는다. 사람이 알아채게 알린다.
 $target = Join-Path $SptDir 'BepInEx\plugins\ManimalIcebreaker\ManimalIcebreakerClient.dll'
