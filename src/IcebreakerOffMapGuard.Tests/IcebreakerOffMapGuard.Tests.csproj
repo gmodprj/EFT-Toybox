@@ -21,7 +21,9 @@
   -->
   <ItemGroup>
     <Compile Include="..\IcebreakerOffMapGuard\SceneMemo.cs" />
+    <Compile Include="..\IcebreakerOffMapGuard\ConfigKeys.cs" />
     <Compile Include="SceneMemoTests.cs" />
+    <Compile Include="ConfigKeysTests.cs" />
   </ItemGroup>
 
 </Project>

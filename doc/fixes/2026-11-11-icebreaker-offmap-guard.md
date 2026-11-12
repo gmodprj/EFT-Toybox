@@ -109,3 +109,58 @@ pwsh -File tools/install-icebreakeroffmapguard.ps1
 
 Forge 모드가 아니라 설치 기록(`doc/install-records/`)에는 들어가지 않는다 — 그래서
 `node tools/check-install-records.mjs` 의 숫자(305개 / 15,948줄)는 **그대로다**(설치 후 확인: `OK — 0/0`).
+
+## 6. 첫 기동에서 **걸리지 않았다** — 열쇠의 홑따옴표 (2026-11-12)
+
+위 §5 의 "다음 기동에서 볼 것 셋" 은 **셋 다 실패**였다. 2026-11-12 기동 로그
+(`BepInEx\LogOutput.log`, 17:11 기동, `248 plugins to load`)에서:
+
+| 봐야 했던 것 | 실제 |
+| --- | --- |
+| `걸었다: …TickVanillaPerfCensus` | **없다** |
+| `걸었다: …IcebreakerLoaded` | **없다** |
+| `[PerfCensus]` 한 줄도 없어야 | **3회** — bigmap(lodGroups 68,028) · hideout(1,109) · Sandbox_high(40,559) |
+
+`Loading [Icebreaker Off-Map Guard 0.1.0]` 뒤로 이 플러그인이 적은 줄이 **하나도 없다**.
+소스는 어느 길로 가도 "걸었다"·"못 찾았다"·"걸 것이 없다" 중 하나를 적으므로, `Awake` 가
+**로그에 닿기 전에 터진 것**이다. 설치본 DLL 은 빌드본과 md5 가 같았으니 설치 사고가 아니다.
+
+### 원인
+
+`BepInEx\config\spt.icebreakeroffmapguard.cfg` 에 설정이 **셋 중 하나만**(`Skip vanilla perf census`)
+적혀 있었다 — 두 번째 `Config.Bind` 에서 멈춘 모양이다. 그 열쇠가
+`Cache 'is Icebreaker loaded'` 였고, **BepInEx 는 구역·열쇠에 홑따옴표를 금지한다.**
+설치본 `BepInEx\core\BepInEx.dll` 을 직접 불러 재었다:
+
+```text
+[General] / [Skip vanilla perf census]        → OK
+[General] / [Cache 'is Icebreaker loaded']    → ArgumentException
+    Cannot use any of the following characters in section and key names: = \n \t \ " ' [ ] (Parameter 'key')
+```
+
+설치본 `.cfg` 190개를 훑어도 열쇠에 홑따옴표를 쓴 것은 하나도 없다(남의 모드도 안 쓴다).
+F12 창에 항목이 하나만 뜨고 아무것도 안 가려지는 모양이 그래서 나왔다.
+
+### 조치 (2026-11-12 19:07)
+
+1. 열쇠 이름을 `Cache the is-Icebreaker-loaded answer` 로 바꿨다. 설명문은 그대로다 —
+   금지 문자는 **구역·열쇠에만** 걸린다.
+2. 이름 셋을 `src/IcebreakerOffMapGuard/ConfigKeys.cs` 한곳에 모으고,
+   `ConfigKeysTests` 가 금지 문자 여덟 개를 지킨다(실제로 터진 그 이름을 반례로 박아 뒀다).
+   테스트는 BepInEx 를 참조하지 않아 금지 목록을 베껴 두고, 그 목록이 실제와 같은지는
+   위처럼 설치본 어셈블리로 따로 쟀다. 시험 16개 전부 통과.
+3. `Awake` 를 `try/catch` 로 감쌌다. 다시 터지더라도 **`[Error]` 한 줄은 남는다** —
+   이번에는 조용히 쉬어서 "깔렸는데 안 돈다" 를 하루 동안 몰랐다.
+4. 다시 빌드해 넣었다. **11,776 B / md5 `1f2b3a85c99cc3cfde2133a2bc399b24`** — 빌드 결과와 같다.
+   그때 게임이 떠 있어(17:11 기동) DLL 이 잠겨 있었으므로, 설치 스크립트에
+   `-AllowGameRunning` 을 더해 **돌고 있는 DLL 을 이름만 바꿔 치우고**(`.dll.locked-20261112-190828`)
+   새것을 넣었다. 돌고 있는 게임은 옛 코드를 그대로 쓴다. **게임도 서버도 끄지 않았다.**
+
+### 아직 확인하지 못한 것
+
+- 다음 게임 기동에서 §5 의 셋(걸었다 두 줄 + `[PerfCensus]` 0회). **지금 돌고 있는 게임에서는
+  확인되지 않는다** — 옛 DLL 이 메모리에 올라가 있다.
+- 치워 둔 `IcebreakerOffMapGuard.dll.locked-20261112-190828` 은 게임이 꺼진 뒤에 지운다
+  (BepInEx 는 `.dll` 만 읽으므로 둬도 로드되지 않는다).
+- 새 `.cfg` 는 다음 기동에 다시 쓰인다. 그때 F12 항목이 **셋** 보여야 하고,
+  `node tools/check-lang-coverage.mjs` 의 "사전 파일 없음" 한 줄(항목 1개 → 3개)도 그때 다시 센다.
