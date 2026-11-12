@@ -1,0 +1,13 @@
+{
+  "guid": "com.viper.questcodex",
+  "name": "퀘스트 도감 (QuestCodex Overlay)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Open QuestCodex": {
+      "name": "퀘스트 도감 열기",
+      "desc": "퀘스트 도감을 열고 닫는다. Anvil-WebOverlay 가 깔려 있으면 게임 위에 창으로 띄우고, 없으면 기본 웹 브라우저로 연다."
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "guid": "com.zloymolodoy.ultimateflea",
+  "name": "플리마켓 경제 확장 (UltimateFlea)",
+  "sections": {
+    "Selling": "판매"
+  },
+  "settings": {
+    "Selling/QuickListFromStash": {
+      "name": "보관함에서 바로 올리기",
+      "desc": "보관함에서 아이템을 오른쪽 눌렀을 때 'UltimateFlea: List' 를 함께 띄우고, 고르면 플리마켓에 곧바로 매물로 올린다."
+    }
+  }
+}

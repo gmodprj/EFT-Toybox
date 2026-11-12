@@ -8695,3 +8695,27 @@ off-map 작업 보고를 찾았다 — 매 프레임 씬 이름 읽기(프레임
 곁딸린 수정 둘 — 생성기에 **11차 제목**이 없어 설치한 모드가 목록에서 빠지던 것을 고쳤고,
 기록된 "`Could not add` 고유 48" 이 기동마다 달라지는 값(11-09 48 / 11-10 58 / 11-11 54)임을
 적었다. 덤으로 **Painter(1025)·Tactical Gear Component(1125)가 Forge 에서 사라진 것**을 알게 됐다.
+
+## F12 한글화의 마지막 19항목 (2026-11-13)
+
+[다섯 갈래 조사](REVIEW-FIVE-ASKS-2026-11-13.md) §1(가)가 센 구멍을 메웠다. `check-lang-coverage.mjs`
+기준 **5,136 / 5,150** 이던 것이 **5,155 / 5,155** 가 됐고, "사전이 없는데 번역이 필요한 모드" 도
+**3개 → 0개**다.
+
+기존 사전 넷에 14항목을 더했다 — ECOTI 의 `Colour` **섹션 하나와 그 아래 9항목**(고글 부착기·총기
+라이저·열영상 조준경 테의 열 색 · 지정 색 · 무지개 속도)과 `Image/Glass Reflection Brightness`,
+DynamicMaps Extended 의 `Detected - chaosInsurgency` 와 `Group with - chaosInsurgency`,
+BiC 의 `Bind in secure container and pouches`, Direct Reload 의 `取消也退耐久 (Refund Durability On Cancel)`.
+
+새 사전 셋을 만들어 5항목을 덮었다 — `com.viper.questcodex`(1) · `com.zloymolodoy.ultimateflea`(1) ·
+**우리 `spt.icebreakeroffmapguard`(3)**. 마지막 것은 11-12 감사가 "다음 기동에 `.cfg` 가 생긴다" 고
+적어 둔 그것이고, 실제로 11-12 21:38 에 생겨 이제 덮을 수 있었다. 항목 분모가 5,150 → 5,155 로 는 것은
+이 세 사전의 5항목이 분모에 들어왔기 때문이다.
+
+- 사전은 **원문 cfg 의 순서 그대로** 끼워 넣었다(사전 파일이 그 순서를 따르고 있었다).
+- 설명은 cfg 의 원문 주석을 옮긴 것이고, 중국어·영어가 함께 적힌 Direct Reload 는 영어 쪽을 따랐다.
+- 설치는 `tools/install-koreanconfig.ps1`. **DLL 은 바뀌지 않았다**(JSON 만 고쳤으므로 F12 를 다시 열면
+  반영된다). 설치본 7개 파일을 md5 로 소스와 대조해 같은 것을 확인했고, `gen-installed-mods.mjs` 가
+  사전 수를 185 → 188 로 다시 적었다(새 셋). `check-install-records.mjs` 는 `OK — 0/0`.
+- **게임 화면에서 본 적은 없다.** 관문은 `check-lang-coverage.mjs` 뿐이고, F12 를 열어 ECOTI 의 `열 색`
+  섹션이 한글로 뜨는지는 다음 기동에서 본다.
