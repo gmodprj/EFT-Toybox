@@ -45,6 +45,10 @@
       "name": "색 묶음 판",
       "desc": "색 묶음을 옮긴 내부 판 번호다. 직접 바꾼 색은 그대로 남는다."
     },
+    "Faction Colours/Detected - chaosInsurgency": {
+      "name": "카오스 인서전시 색",
+      "desc": "이 소속의 병사·보스·추종자에게 쓸 한 가지 색이다. RGB 만 쓰고 층에 따른 불투명도는 DynamicMaps 가 정한다."
+    },
     "Faction Grouping (Optional)/Group with - ISBAssassin": {
       "name": "ISBAssassin 묶기",
       "desc": "Automatic 이면 ISB 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
@@ -140,6 +144,10 @@
     "Faction Grouping (Optional)/Group with - bossuntarofficer": {
       "name": "bossuntarofficer 묶기",
       "desc": "Automatic 이면 UNTAR 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
+    },
+    "Faction Grouping (Optional)/Group with - chaosInsurgency": {
+      "name": "chaosInsurgency 묶기",
+      "desc": "Automatic 이면 카오스 인서전시 색을 쓴다. 다른 묶음을 고르면 그 색을 함께 쓰고, DynamicMaps default 로 두면 이 역할을 건드리지 않는다. 색만 바뀌며 팀·AI·보스 아이콘은 그대로다."
     },
     "Faction Grouping (Optional)/Group with - followeruntar": {
       "name": "followeruntar 묶기",
