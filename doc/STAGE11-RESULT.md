@@ -37,7 +37,8 @@
 
 ### 아직 확인하지 못한 것
 
-- `IcebreakerOffMapGuard` 는 **11-12 기동에서 아무것도 가리지 못했다** — F12 열쇠의 홑따옴표로 `Awake` 가 터졌다. 19:07 에 고쳐 다시 넣었고, 걸렸는지는 **다음 기동**에서 본다. 경위는 [fixes/2026-11-11-icebreaker-offmap-guard.md](fixes/2026-11-11-icebreaker-offmap-guard.md) §6
+- ~~`IcebreakerOffMapGuard` 는 11-12 17:11 기동에서 아무것도 가리지 못했다~~ **21:36 기동에서 걸렸다** — hideout 에서 `[PerfCensus]` 0회(지난 기동 3회). 아래는 그때의 기록이다.
+- `IcebreakerOffMapGuard` 는 **11-12 17:11 기동에서 아무것도 가리지 못했다** — F12 열쇠의 홑따옴표로 `Awake` 가 터졌다. 19:07 에 고쳐 다시 넣었고, 걸렸는지는 **다음 기동**에서 본다. 경위는 [fixes/2026-11-11-icebreaker-offmap-guard.md](fixes/2026-11-11-icebreaker-offmap-guard.md) §6
 
 ### 다음 기동에서 할 A/B
 

@@ -164,3 +164,38 @@ F12 창에 항목이 하나만 뜨고 아무것도 안 가려지는 모양이 �
   (BepInEx 는 `.dll` 만 읽으므로 둬도 로드되지 않는다).
 - 새 `.cfg` 는 다음 기동에 다시 쓰인다. 그때 F12 항목이 **셋** 보여야 하고,
   `node tools/check-lang-coverage.mjs` 의 "사전 파일 없음" 한 줄(항목 1개 → 3개)도 그때 다시 센다.
+
+## 7. 인게임에서 확인됐다 (2026-11-12 21:55~21:59)
+
+§6 의 조치 뒤 첫 게임 기동(21:36). **§5 가 적어 둔 셋이 모두 뒤집혔다.**
+
+| 봐야 했던 것 | 11-12 17:11 기동 | 11-12 21:36 기동 |
+| --- | --- | --- |
+| `걸었다: …TickVanillaPerfCensus` | 없음 | **나왔다** |
+| `걸었다: …IcebreakerLoaded (씬 이벤트에서 버린다)` | 없음 | **나왔다** |
+| `[PerfCensus]` | **3회**(bigmap·hideout·Sandbox_high) | **0회** |
+
+곁들인 증거 — `BepInEx\config\spt.icebreakeroffmapguard.cfg` 의 설정이 **1개에서 3개**로 늘었다.
+홑따옴표 때문에 두 번째 바인드에서 터지던 것이 풀렸다는 뜻이다.
+
+```text
+Skip vanilla perf census = true
+Cache the is-Icebreaker-loaded answer = true     ← 지난 기동에는 이 줄이 없었다
+Log a line every 60 s = false
+```
+
+**어느 맵인지까지 확정했다.** 조사는 맵 진입 약 60초 뒤에 도는 것이라 로비에서 0회인 것은
+증거가 되지 않는다. 그래서 돌고 있는 서버에게 게임이 보고한 상태를 물었다:
+
+```text
+게임 연결: true | 레이드 중: true | 맵: hideout
+```
+
+`hideout` 은 지난 기동에서 `[PerfCensus] map=hideout … lodGroups=1109` 가 찍혔던 바로 그 맵이다.
+진입 21:55:27, 확인 21:58~21:59 — **60초 문턱을 세 배 넘겨도 한 줄도 나오지 않았다.**
+
+이번 기동의 BepInEx 오류는 1건인데 `Direct Reload` 가 Fika 를 못 찾는 것으로, 이 설치본에
+Fika 가 없어 나는 묵은 줄이다(가드와 무관).
+
+**남은 것**: 라이트하우스·Interchange 같은 큰 맵에서도 0회인지는 그 맵에 들어가 봐야 한다.
+조사 자체가 맵마다 한 번씩 도는 것이라 같은 결과가 나올 것으로 보지만, 잰 것은 hideout 뿐이다.
