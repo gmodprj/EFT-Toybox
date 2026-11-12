@@ -75,7 +75,7 @@ public class HelmetSlotUnion(
         }
         else
         {
-            UnionHelmetSlots(helmets, config, excludedSlots);
+            UnionHelmetSlots(helmets, config, excludedSlots, items);
 
             if (config.RemoveAttachmentConflicts || config.RemoveAllConflictsOnAttachments)
             {
@@ -103,9 +103,22 @@ public class HelmetSlotUnion(
         return Task.CompletedTask;
     }
 
-    /// <summary>같은 이름의 칸을 헬멧 전체에서 모아 그 합집합을 각 칸에 돌려준다.</summary>
-    private void UnionHelmetSlots(List<TemplateItem> helmets, Config config, HashSet<string> excludedSlots)
+    /// <summary>
+    /// 같은 이름의 칸을 헬멧 전체에서 모아 그 합집합을 각 칸에 돌려준다.
+    ///
+    /// 모을 때 **표에 없는 id 는 담지 않는다**(<see cref="PoolPolicy"/>). 2026-11-12 실측에서
+    /// 어느 헬멧 하나의 죽은 참조가 이 합집합을 타고 헬멧 174칸으로 퍼져 있었다 —
+    /// 넓히는 일은 그대로 하고, 없는 것만 빼고 담는다.
+    /// </summary>
+    private void UnionHelmetSlots(
+        List<TemplateItem> helmets,
+        Config config,
+        HashSet<string> excludedSlots,
+        Dictionary<MongoId, TemplateItem> items)
     {
+        var known = new HashSet<string>(items.Keys.Select(k => k.ToString()!), StringComparer.Ordinal);
+        var skippedDead = 0;
+
         // 1차: 칸 이름별로 쓸 수 있는 파츠를 모은다.
         var union = new Dictionary<string, HashSet<MongoId>>(StringComparer.Ordinal);
         foreach (var helmet in helmets)
@@ -122,7 +135,19 @@ public class HelmetSlotUnion(
 
             foreach (var filter in Filters(slot))
             {
-                if (filter.Filter is { } existing) pool.UnionWith(existing);
+                if (filter.Filter is not { } existing) continue;
+
+                foreach (var id in existing)
+                {
+                    if (PoolPolicy.ShouldPool(id.ToString(), known, config.SkipDeadIds))
+                    {
+                        pool.Add(id);
+                    }
+                    else
+                    {
+                        skippedDead++;
+                    }
+                }
             }
         }
 
@@ -159,6 +184,7 @@ public class HelmetSlotUnion(
         logger.Success(
             $"[HelmetSlotUnion] 헬멧 {helmets.Count}종, 칸 묶음 {union.Count}개. "
                 + $"{changedSlots}개 칸에 항목 {addedEntries}개를 더했다."
+                + PoolPolicy.Describe(skippedDead)
         );
     }
 
