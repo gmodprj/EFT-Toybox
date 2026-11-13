@@ -24,6 +24,7 @@
     <Compile Include="../shared/GearBuildPlanPolicy.cs" Link="Shared/GearBuildPlanPolicy.cs" />
     <Compile Include="../shared/GearBuildQuotePolicy.cs" Link="Shared/GearBuildQuotePolicy.cs" />
     <Compile Include="../shared/GearKitPurchasePolicy.cs" Link="Shared/GearKitPurchasePolicy.cs" />
+    <Compile Include="../shared/GearBuildSavePolicy.cs" Link="Shared/GearBuildSavePolicy.cs" />
     <Compile Include="../shared/RaidOutcomePolicy.cs" Link="Shared/RaidOutcomePolicy.cs" />
     <Compile Include="../shared/RaidTallyPolicy.cs" Link="Shared/RaidTallyPolicy.cs" />
     <Compile Include="../shared/RaidGrowthPolicy.cs" Link="Shared/RaidGrowthPolicy.cs" />

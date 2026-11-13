@@ -106,6 +106,12 @@ namespace pitTeam.Patches
         private const string StmEditorGearTitleFormat = "{0} 의 장비";
         private const string StmEditorCancelText = "취소";
         private const string StmEditorSaveText = "저장";
+
+        // 2026-11-13 사용자 요청 — 지금 입고 있는 것을 그 팀원의 장비 꾸러미로 담는다.
+        private const string StmBuildSaveRoute = "/stm/members/build-save";
+        private const string StmEditorBuildSaveText = "꾸러미로 저장";
+        private const string StmEditorBuildSavingText = "저장한 뒤 꾸러미로 담는 중입니다...";
+        private const string StmEditorBuildSaveFailedToast = "꾸러미로 담지 못했습니다";
         private const string StmEditorOpenFailedToast = "장비 편집을 열지 못했습니다";
         private const string StmEditorStashFailedToast = "이 팀원의 스태시를 읽지 못했습니다";
         private const string StmEditorSaveFailedToast = "장비를 저장하지 못했습니다";
@@ -584,6 +590,22 @@ namespace pitTeam.Patches
                 cancelRect.pivot = new Vector2(1f, 0f);
                 cancelRect.anchoredPosition = new Vector2(-212f, 18f);
                 cancelRect.localScale = Vector3.one * 0.9f;
+            }
+
+            // 꾸러미 단추는 취소 **왼쪽**에 둔다. 저장이 오른쪽 끝이고, 그 둘 사이에 끼우면
+            // 누르려던 것을 잘못 누른다(저장과 꾸러미는 하는 일이 다르다).
+            DefaultUIButton buildSaveButton = CreateOverlayButton(buttonTemplate, panel.transform, Vector2.zero, new Vector2(210f, 36f));
+            buildSaveButton.name = "pitFireTeam_LoadoutEditorBuildSaveButton";
+            buildSaveButton.SetRawText(StmEditorBuildSaveText, 20);
+            buildSaveButton.OnClick.RemoveAllListeners();
+            buildSaveButton.OnClick.AddListener(() => SaveStmGearEditAsBuild(screen, profile, detail, inventoryController, session, playerModelWindow));
+            if (buildSaveButton.transform is RectTransform buildRect)
+            {
+                buildRect.anchorMin = new Vector2(1f, 0f);
+                buildRect.anchorMax = new Vector2(1f, 0f);
+                buildRect.pivot = new Vector2(1f, 0f);
+                buildRect.anchoredPosition = new Vector2(-400f, 18f);
+                buildRect.localScale = Vector3.one * 0.9f;
             }
 
             DefaultUIButton saveButton = CreateOverlayButton(buttonTemplate, panel.transform, Vector2.zero, new Vector2(180f, 36f));
@@ -1299,6 +1321,83 @@ namespace pitTeam.Patches
             public string Message;
             public int Saved;
             public string LayoutNote = string.Empty;
+        }
+
+        /// <summary>
+        /// 저장한 뒤 **지금 입고 있는 것을 그 팀원의 장비 꾸러미로 담는다**(2026-11-13 사용자 요청).
+        ///
+        /// 순서가 중요하다 — 담는 것은 서버가 **프로필에 저장된 장비**를 읽어서 한다. 편집 중인
+        /// 변경을 담으려면 먼저 저장돼 있어야 하므로, 이 단추는 저장을 끝낸 뒤에만 담는다
+        /// (사용자 결정: "저장하고 담는다").
+        ///
+        /// 저장이 거절되거나 결과를 모르면 **담지 않는다.** 그 경우 사유는 저장 쪽이 말한다 —
+        /// 쓰이지 않은 편집을 꾸러미로 남기면 화면과 프로필이 어긋난다.
+        /// </summary>
+        private static async void SaveStmGearEditAsBuild(
+            OtherPlayerProfileScreen screen,
+            ResultProfile profile,
+            StmProfileDetailWire detail,
+            InventoryController inventoryController,
+            EFT.IEftSession session,
+            InventoryPlayerModelWithStatsWindow playerModelWindow)
+        {
+            if (StmGearEditSaving || StmGearEditOpening) return;
+            StmGearEditSaving = true;
+            SetLoadoutEditorBusy(true);
+            try
+            {
+                SetStmGearEditStatus(StmEditorBuildSavingText);
+
+                StmSaveVerdict verdict = await DecideStmSaveAsync(profile, detail);
+
+                // 바뀐 것이 없으면 저장할 것도 없다 — 그대로 담는다(이미 저장된 상태가 곧 담을 것이다).
+                if (verdict.Kind != StmSaveKind.Confirmed && verdict.Kind != StmSaveKind.NoChange)
+                {
+                    DeliverStmSaveVerdict(verdict, screen, profile, inventoryController, session, playerModelWindow);
+                    return;
+                }
+
+                string body = JsonConvert.SerializeObject(new
+                {
+                    aid = profile?.AccountId,
+                    profileId = detail?.ProfileId,
+                });
+                string json = await Task.Run(() => RequestHandler.PostJson(StmBuildSaveRoute, body));
+
+                string failure = ReadStmCloseFailure(json, StmEditorBuildSaveFailedToast);
+                if (failure != null)
+                {
+                    SetStmGearEditStatus(failure);
+                    AddTeammateCreationFlow.ShowToast(failure);
+                    return;
+                }
+
+                StmGearBuildSaveResultWire saved = DeserializeBodySuccess<StmGearBuildSaveResultWire>(json)?.data;
+                string what = saved == null
+                    ? "꾸러미로 담았습니다."
+                    : $"꾸러미로 담았습니다 — '{saved.Name}' (아이템 {saved.ItemCount}개).";
+                SetStmGearEditStatus(what);
+                AddTeammateCreationFlow.ShowToast(what);
+                pitFireTeam.Log.LogInfo($"[STM] 꾸러미로 담았다: {what}");
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogError("[STM] 꾸러미로 담다 실패했다.");
+                pitFireTeam.Log.LogError(ex);
+                SetStmGearEditStatus(ex.Message ?? StmEditorBuildSaveFailedToast);
+            }
+            finally
+            {
+                StmGearEditSaving = false;
+                SetLoadoutEditorBusy(false);
+            }
+        }
+
+        internal class StmGearBuildSaveResultWire
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public int ItemCount { get; set; }
         }
 
         private static async void SaveStmGearEdit(
