@@ -281,7 +281,8 @@ namespace GridWindowScroll
             content.anchorMin = content.anchorMax = content.pivot = new Vector2(0f, 1f);
             content.anchoredPosition = Vector2.zero;
 
-            var scroll = go.AddComponent<ScrollRect>();
+            // 평범한 ScrollRect 가 아니다 — 보조키를 누른 드래그는 UI Fixes 의 다중 선택에 넘긴다.
+            var scroll = go.AddComponent<ModifierAwareScrollRect>();
             scroll.content = content;
             scroll.viewport = viewport;
             scroll.movementType = ScrollRect.MovementType.Clamped;
