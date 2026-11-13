@@ -158,6 +158,11 @@ public class FriendlyTeammateStaticRouter(JsonUtil jsonUtil, FriendlyTeammateCal
                 "/stm/members/builds",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.GearBuilds(url, info, sessionId))
             ),
+            // 2026-11-13 — 편집기에서 지금 입고 있는 것을 그 팀원의 장비 빌드로 담는다.
+            new RouteAction<StmGearBuildSaveRequest>(
+                "/stm/members/build-save",
+                async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.GearBuildSave(url, info, sessionId))
+            ),
             new RouteAction<StmGearKitQuoteRequest>(
                 "/stm/members/kit-quote",
                 async (url, info, sessionId, output, cancellationToken) => await FriendlyModeRequestGate.Run(() => stmMembers.KitQuote(url, info, sessionId))

@@ -203,6 +203,18 @@ public record QueueResponse
     /// <summary>담기는 했는데 적어 낸 대로는 아닌 것(묶음을 깎았다 등).</summary>
     [JsonPropertyName("adjusted")] public List<string> Adjusted { get; set; } = [];
     [JsonPropertyName("reason")] public string? Reason { get; set; }
+
+    /// <summary>상자 자기 격자에서 찬 칸 수.</summary>
+    [JsonPropertyName("cellsUsed")] public int CellsUsed { get; set; }
+
+    /// <summary>상자 자기 격자의 칸 수 전부. 0 이면 모른다는 뜻이라 말하지 않는다.</summary>
+    [JsonPropertyName("cellsTotal")] public int CellsTotal { get; set; }
+
+    /// <summary>
+    /// 마른 조립의 답. 참이면 예약된 것이 없고 **아무것도 떨어지지 않는다** —
+    /// 창이 "예약했다" 로 잘못 말하지 않게 서버가 적어 돌려준다.
+    /// </summary>
+    [JsonPropertyName("dryRun")] public bool DryRun { get; set; }
 }
 
 /// <summary>지금 입고 있는 것을 뽑은 결과. 서버 `ExtractResponse` 와 짝이다(설계 §18).</summary>
@@ -358,9 +370,14 @@ public sealed class ServerClient : IDisposable
         string tpl, string? fill, Dictionary<string, string>? slots, CancellationToken ct) =>
         PostAsync<SlotListResponse>("/airdrop-caller/slots", new { tpl, fill, slots }, ct);
 
+    /// <param name="dryRun">
+    /// 참이면 **조립만** 한다 — 예약하지 않고 쿨다운도 쓰지 않으므로 게임이 꺼져 있어도
+    /// 담기는지 미리 볼 수 있다. 답의 <c>DryRun</c> 이 참으로 돌아온다.
+    /// </param>
     public Task<QueueResponse?> QueueAsync(
-        string? presetId, string icon, List<ItemSpec> items, bool bigCrate, CancellationToken ct) =>
-        PostAsync<QueueResponse>("/airdrop-caller/queue", new { presetId, icon, items, bigCrate }, ct);
+        string? presetId, string icon, List<ItemSpec> items, bool bigCrate, CancellationToken ct,
+        bool dryRun = false) =>
+        PostAsync<QueueResponse>("/airdrop-caller/queue", new { presetId, icon, items, bigCrate, dryRun }, ct);
 
     /// <summary>지금 입고 있는 것을 프리셋으로 뽑는다(설계 §18). 저장은 하지 않는다.</summary>
     public Task<ExtractResponse?> ExtractAsync(string? name, CancellationToken ct) =>

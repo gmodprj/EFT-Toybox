@@ -332,26 +332,28 @@ public class AirdropCallerRouter : StaticRouter
             CooldownSeconds = cooldown,
         };
 
-        state.BlockedBy = WhyBlocked(config, state);
+        state.BlockedBy = QueueGate.WhyBlocked(GateState(config, state));
         state.CanQueue = state.BlockedBy is null;
         return state;
     }
 
     /// <summary>
-    /// 못 누르는 이유를 문장으로 돌려준다. 아무 일도 안 일어나는데 이유를 모르는 것이
-    /// 가장 나쁘다 — 외부 창은 이 문장을 그대로 띄운다.
+    /// 빗장 판정에 넘기는 값만 추린다 — 판정 자체는 <see cref="QueueGate"/> 에 있고
+    /// 거기만 시험이 본다.
     /// </summary>
-    private static string? WhyBlocked(Config config, StateResponse s)
+    private static QueueGateState GateState(Config config, StateResponse s)
     {
-        if (!config.ModEnabled) return "모드가 설정에서 꺼져 있다.";
-        if (!s.GameConnected) return "게임이 안 켜져 있다.";
-        if (!s.InRaid) return "레이드 중이 아니다.";
-        if (!s.CanSummon) return "이 맵에서는 보급기가 뜨지 않는다.";
-        if (s.AvailablePoints <= 0) return "쓸 수 있는 보급 지점이 없다.";
-        if (s.CrateInFlight) return "상자가 아직 하늘에 있다.";
-        if (s.HasPending) return "이미 예약된 드롭이 있다.";
-        if (s.CooldownSeconds > 0) return $"쿨다운 {s.CooldownSeconds}초 남았다.";
-        return null;
+        return new QueueGateState
+        {
+            ModEnabled = config.ModEnabled,
+            GameConnected = s.GameConnected,
+            InRaid = s.InRaid,
+            CanSummon = s.CanSummon,
+            AvailablePoints = s.AvailablePoints,
+            CrateInFlight = s.CrateInFlight,
+            HasPending = s.HasPending,
+            CooldownSeconds = s.CooldownSeconds,
+        };
     }
 
     private static QueueResponse HandleQueue(
@@ -365,9 +367,12 @@ public class AirdropCallerRouter : StaticRouter
         QueueRequest request)
     {
         var state = BuildState(config, queue, raidState);
-        if (state.BlockedBy is not null)
+
+        // 마른 조립은 예약을 지키려고 있는 빗장을 건너뛴다 — 예약을 하지 않으니 지킬 것이 없다.
+        var blocked = QueueGate.WhyBlocked(GateState(config, state), request.DryRun);
+        if (blocked is not null)
         {
-            return new QueueResponse { Ok = false, Reason = state.BlockedBy };
+            return new QueueResponse { Ok = false, Reason = blocked, DryRun = request.DryRun };
         }
 
         var icon = request.Icon;
@@ -390,7 +395,7 @@ public class AirdropCallerRouter : StaticRouter
 
         if (items is null || items.Count == 0)
         {
-            return new QueueResponse { Ok = false, Reason = "담을 품목이 없다." };
+            return new QueueResponse { Ok = false, Reason = "담을 품목이 없다.", DryRun = request.DryRun };
         }
 
         var spec = new DropSpec
@@ -401,10 +406,15 @@ public class AirdropCallerRouter : StaticRouter
         };
 
         // 조립을 **지금** 끝낸다. 전리품 요청은 상자가 생기자마자 날아온다(착지 때가 아니다).
-        var built = crateBuilder.Build("(예약)", spec);
+        var built = crateBuilder.Build(request.DryRun ? "(마른 조립)" : "(예약)", spec);
         if (built is null)
         {
-            return new QueueResponse { Ok = false, Reason = $"상자 종류 '{spec.Icon}' 을 모른다." };
+            return new QueueResponse
+            {
+                Ok = false,
+                Reason = $"상자 종류 '{spec.Icon}' 을 모른다.",
+                DryRun = request.DryRun,
+            };
         }
 
         if (built.Placed == 0)
@@ -414,7 +424,14 @@ public class AirdropCallerRouter : StaticRouter
                 Ok = false,
                 Reason = "하나도 담기지 않았다 — 품목이 상자 격자에 안 들어간다.",
                 Skipped = built.Skipped,
+                DryRun = request.DryRun,
             };
+        }
+
+        // 여기서 멈춘다 — 조립 결과만 돌려주고 큐에는 넣지 않는다. 쿨다운도 건드리지 않는다.
+        if (request.DryRun)
+        {
+            return DryRunDone(logger, spec, built);
         }
 
         var cooldown = TimeSpan.FromSeconds(Math.Max(0, config.CooldownSeconds));
@@ -429,12 +446,40 @@ public class AirdropCallerRouter : StaticRouter
         };
     }
 
+    /// <summary>
+    /// 마른 조립의 답. <c>DropId</c> 를 **주지 않는다** — 플러그인이 꺼내 갈 것이 없다는 뜻이고,
+    /// 창은 <c>dryRun</c> 을 보고 "떨어지지 않는다" 고 말한다.
+    /// </summary>
+    private static QueueResponse DryRunDone(
+        ISptLogger<AirdropCallerRouter> logger, DropSpec spec, CrateBuilder.Result built)
+    {
+        var attached = built.Attached > 0 ? $" (부속 {built.Attached}개 붙임)" : string.Empty;
+        var size = spec.BigCrate ? " 큰" : string.Empty;
+        logger.Info($"[AirdropCaller] 마른 조립 → {spec.Icon}{size} 상자에 {built.Placed}개{attached}"
+                    + $" · {GridUsage.Describe(built.CellsUsed, built.CellsTotal)}"
+                    + " — 예약하지 않았다" + Note(built));
+
+        return new QueueResponse
+        {
+            Ok = true,
+            DryRun = true,
+            DropId = null,
+            Placed = built.Placed,
+            Attached = built.Attached,
+            Skipped = built.Skipped,
+            Adjusted = built.Adjusted,
+            CellsUsed = built.CellsUsed,
+            CellsTotal = built.CellsTotal,
+        };
+    }
+
     private static QueueResponse Accepted(
         ISptLogger<AirdropCallerRouter> logger, string dropId, DropSpec spec, CrateBuilder.Result built)
     {
         var attached = built.Attached > 0 ? $" (부속 {built.Attached}개 붙임)" : string.Empty;
         var size = spec.BigCrate ? " 큰" : string.Empty;
         logger.Info($"[AirdropCaller] 드롭 예약 {dropId} → {spec.Icon}{size} 상자에 {built.Placed}개{attached}"
+                    + $" · {GridUsage.Describe(built.CellsUsed, built.CellsTotal)}"
                     + Note(built));
 
         return new QueueResponse
@@ -445,6 +490,8 @@ public class AirdropCallerRouter : StaticRouter
             Attached = built.Attached,
             Skipped = built.Skipped,
             Adjusted = built.Adjusted,
+            CellsUsed = built.CellsUsed,
+            CellsTotal = built.CellsTotal,
         };
     }
 }

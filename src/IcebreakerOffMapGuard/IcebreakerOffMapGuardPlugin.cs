@@ -44,13 +44,27 @@ namespace IcebreakerOffMapGuard
         {
             _log = Logger;
 
-            _skipCensus = Config.Bind("General", "Skip vanilla perf census", true,
+            // 설정·패치가 터져도 로그 한 줄은 남아야 한다 — 2026-11-11 설치본은 두 번째 바인드에서
+            // 터져 아무 줄도 남기지 못했고, 그래서 "깔렸는데 안 돈다" 를 하루 동안 몰랐다.
+            try
+            {
+                Setup();
+            }
+            catch (Exception e)
+            {
+                _log.LogError($"설정·패치 중에 터졌다 — 아무것도 가리지 못한다: {e}");
+            }
+        }
+
+        private void Setup()
+        {
+            _skipCensus = Config.Bind(ConfigKeys.Section, ConfigKeys.SkipCensus, true,
                 "Skip RenderEnvProbe.TickVanillaPerfCensus(). It only measures: about 60 s after you spawn on a map that is not Icebreaker it walks every CullingGridContent and LODGroup and logs one [PerfCensus] warning. Measured here: 58529 LOD groups on Lighthouse. Off = the mod's own behaviour.");
 
-            _cacheLoaded = Config.Bind("General", "Cache 'is Icebreaker loaded'", true,
+            _cacheLoaded = Config.Bind(ConfigKeys.Section, ConfigKeys.CacheLoaded, true,
                 "Remember the answer of IcebreakerAcoustics.IcebreakerLoaded() until a scene is loaded or unloaded. The mod calls it every frame from RenderEnvProbe.Update and it reads the name of every loaded scene. The answer itself is still the mod's own - this only stops asking the same question every frame.");
 
-            _report = Config.Bind("General", "Log a line every 60 s", false,
+            _report = Config.Bind(ConfigKeys.Section, ConfigKeys.Report, false,
                 "Write how many calls were served from the cache and how many censuses were skipped. For the before/after measurement only - leave it off for normal play.");
 
             var harmony = new Harmony(PluginGuid);

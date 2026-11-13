@@ -337,7 +337,146 @@ public partial class MainWindow : Window
             await RunSearchAsync();
         };
 
+        RestoreLayout();
+        Closing += (_, _) => SaveLayout();
+
         Loaded += async (_, _) => await LoadListsAsync();
+    }
+
+    // ── 창 모양 기억하기 (2026-11-13 요청) ─────────────────────────────────
+    //
+    // 끌어 맞춘 창 크기·자리, 세 칸의 너비, 품목 표의 칸 너비를 닫을 때 적고 열 때 되돌린다.
+    // 적는 자리는 설정 파일 하나(`airdrop-caller.config.json` 의 `layout`)다.
+
+    /// <summary>찍는 길(`--shot`)에서는 적지 않는다. 그 창은 화면 밖에 띄운다.</summary>
+    internal static bool SuppressLayoutSave;
+
+    private void RestoreLayout()
+    {
+        var layout = _config.Layout;
+        if (layout is null || !layout.HasAnything) return;
+
+        try
+        {
+            if (layout.Width >= MinWidth) Width = layout.Width;
+            if (layout.Height >= MinHeight) Height = layout.Height;
+
+            // 자리는 **화면 안일 때만** 되돌린다. 모니터를 떼어 냈으면 보이지 않는 곳에 뜬다.
+            if (!double.IsNaN(layout.Left) && !double.IsNaN(layout.Top) && OnAnyScreen(layout.Left, layout.Top))
+            {
+                WindowStartupLocation = WindowStartupLocation.Manual;
+                Left = layout.Left;
+                Top = layout.Top;
+            }
+
+            if (TryParseGridLength(layout.PresetColumn, out var preset)) PresetColumn.Width = preset;
+            if (TryParseGridLength(layout.SearchColumn, out var search)) SearchColumn.Width = search;
+
+            foreach (var pair in layout.ItemColumns)
+            {
+                if (!int.TryParse(pair.Key, out var index)) continue;
+                if (index < 0 || index >= ItemGrid.Columns.Count) continue;
+                if (TryParseDataGridLength(pair.Value, out var width)) ItemGrid.Columns[index].Width = width;
+            }
+
+            // 최대화는 크기를 되돌린 **뒤에** 건다 — 사람이 되돌리면 위의 크기로 돌아간다.
+            if (layout.Maximized) WindowState = WindowState.Maximized;
+        }
+        catch
+        {
+            // 기억한 모양 하나 때문에 창이 안 뜨면 안 된다. XAML 기본값으로 둔다.
+        }
+    }
+
+    private void SaveLayout()
+    {
+        if (SuppressLayoutSave) return;
+
+        try
+        {
+            var layout = _config.Layout ??= new WindowLayout();
+            layout.Maximized = WindowState == WindowState.Maximized;
+
+            // 최대화·최소화 중에는 그때의 크기가 아니라 **되돌렸을 때의 크기**를 적는다.
+            var bounds = WindowState == WindowState.Normal
+                ? new Rect(Left, Top, ActualWidth, ActualHeight)
+                : RestoreBounds;
+            if (bounds.Width > 0 && bounds.Height > 0)
+            {
+                layout.Width = bounds.Width;
+                layout.Height = bounds.Height;
+                layout.Left = bounds.Left;
+                layout.Top = bounds.Top;
+            }
+
+            layout.PresetColumn = PresetColumn.Width.ToString();
+            layout.SearchColumn = SearchColumn.Width.ToString();
+
+            layout.ItemColumns.Clear();
+            for (var i = 0; i < ItemGrid.Columns.Count; i++)
+            {
+                layout.ItemColumns[i.ToString()] = ItemGrid.Columns[i].Width.ToString();
+            }
+
+            _config.Save();
+        }
+        catch
+        {
+            // 모양을 못 적는다고 닫는 것을 막을 이유가 없다.
+        }
+    }
+
+    /// <summary>그 자리가 어느 모니터에든 걸쳐 있나. 창 왼위가 화면 밖이면 사람이 찾지 못한다.</summary>
+    private static bool OnAnyScreen(double left, double top)
+    {
+        var virtualLeft = SystemParameters.VirtualScreenLeft;
+        var virtualTop = SystemParameters.VirtualScreenTop;
+        return left >= virtualLeft - 8
+               && top >= virtualTop - 8
+               && left <= virtualLeft + SystemParameters.VirtualScreenWidth - 80
+               && top <= virtualTop + SystemParameters.VirtualScreenHeight - 40;
+    }
+
+    private static bool TryParseGridLength(string text, out GridLength value)
+    {
+        value = default;
+        if (string.IsNullOrWhiteSpace(text)) return false;
+
+        if (text.EndsWith("*", StringComparison.Ordinal))
+        {
+            var head = text[..^1];
+            if (head.Length == 0) { value = new GridLength(1, GridUnitType.Star); return true; }
+            if (!double.TryParse(head, out var stars) || stars <= 0) return false;
+            value = new GridLength(stars, GridUnitType.Star);
+            return true;
+        }
+
+        if (!double.TryParse(text, out var pixels) || pixels <= 0) return false;
+        value = new GridLength(pixels, GridUnitType.Pixel);
+        return true;
+    }
+
+    private static bool TryParseDataGridLength(string text, out DataGridLength value)
+    {
+        value = default;
+        if (string.IsNullOrWhiteSpace(text)) return false;
+
+        if (string.Equals(text, "Auto", StringComparison.OrdinalIgnoreCase)) { value = DataGridLength.Auto; return true; }
+        if (string.Equals(text, "SizeToCells", StringComparison.OrdinalIgnoreCase)) { value = DataGridLength.SizeToCells; return true; }
+        if (string.Equals(text, "SizeToHeader", StringComparison.OrdinalIgnoreCase)) { value = DataGridLength.SizeToHeader; return true; }
+
+        if (text.EndsWith("*", StringComparison.Ordinal))
+        {
+            var head = text[..^1];
+            if (head.Length == 0) { value = new DataGridLength(1, DataGridLengthUnitType.Star); return true; }
+            if (!double.TryParse(head, out var stars) || stars <= 0) return false;
+            value = new DataGridLength(stars, DataGridLengthUnitType.Star);
+            return true;
+        }
+
+        if (!double.TryParse(text, out var pixels) || pixels <= 0) return false;
+        value = new DataGridLength(pixels);
+        return true;
     }
 
     /// <summary>분류와 프리셋을 받아 온다. 성공해야 <see cref="_listsLoaded"/> 가 선다.</summary>
@@ -471,6 +610,9 @@ public partial class MainWindow : Window
         }
 
         DropButton.IsEnabled = canDrop && _client is not null;
+
+        // 조립만 보는 길은 레이드·쿨다운·예약과 무관하다 — 담을 품목만 있으면 눌린다.
+        DryRunButton.IsEnabled = _items.Count > 0 && _client is not null;
     }
 
     // ── 프리셋 ─────────────────────────────────────────────────────────────
@@ -909,26 +1051,74 @@ public partial class MainWindow : Window
                 return;
             }
 
-            // 조용히 버리지도, 조용히 고치지도 않는다. 둘을 **따로** 말한다 —
-            // 한데 묶었더니 "못 담은 것 1개" 라면서 정작 상자에는 들어 있었다.
-            var text = $"예약했다 — {result.Placed}개를 담았다.";
-            if (result.Attached > 0)
-            {
-                text += $" 방어판·부속 {result.Attached}개를 붙였다.";
-            }
-
-            if (result.Skipped.Count > 0)
-            {
-                text += $" 못 담은 것 {result.Skipped.Count}가지: {string.Join(", ", result.Skipped)}";
-            }
-
-            if (result.Adjusted.Count > 0)
-            {
-                text += $" 고친 것 {result.Adjusted.Count}가지: {string.Join(", ", result.Adjusted)}";
-            }
-
-            MessageLine.Text = text;
+            MessageLine.Text = Describe(result, "예약했다");
         });
+    }
+
+    /// <summary>
+    /// 조립만 해 본다 — 예약하지 않고, 쿨다운도 쓰지 않고, **아무것도 떨어지지 않는다**.
+    /// 2026-11-08 에 레이드 중 시험 삼아 쏜 예약이 18초 뒤 실물이 되어 떨어진 뒤로 생긴 길이다
+    /// (설계 §20.4). 그래서 게임이 꺼져 있어도 담기는지 미리 볼 수 있다.
+    /// </summary>
+    private async void OnDryRun(object sender, RoutedEventArgs e)
+    {
+        if (_client is null || _items.Count == 0)
+        {
+            return;
+        }
+
+        await Guard(async () =>
+        {
+            var result = await _client.QueueAsync(
+                null, SelectedIcon(), BuildSpecTree(), BigCrateBox.IsChecked == true, CancellationToken.None,
+                dryRun: true);
+
+            if (result?.Ok != true)
+            {
+                MessageLine.Text = result?.Reason ?? "조립해 보지 못했다.";
+                return;
+            }
+
+            // 서버가 dryRun 을 참으로 돌려줘야 예약이 아니라고 말할 수 있다. 참이 아니면
+            // **예약이 된 것**이므로 그렇게 말한다 — 떨어질 수 있다는 것을 숨기지 않는다.
+            MessageLine.Text = result.DryRun
+                ? Describe(result, "조립해 봤다") + " 예약하지 않았다 — 떨어지지 않는다."
+                : Describe(result, "예약됐다(마른 조립이 아니다)");
+        });
+    }
+
+    /// <summary>
+    /// 조립 결과를 한 줄로. 조용히 버리지도, 조용히 고치지도 않는다. 둘을 **따로** 말한다 —
+    /// 한데 묶었더니 "못 담은 것 1개" 라면서 정작 상자에는 들어 있었다.
+    /// </summary>
+    private static string Describe(QueueResponse result, string head)
+    {
+        var text = $"{head} — {result.Placed}개를 담았다.";
+
+        // 얼마나 남았는지까지 말한다. 전에는 못 담는 일이 벌어진 **뒤에야** 알았다.
+        if (result.CellsTotal > 0)
+        {
+            var percent = (int)Math.Round(result.CellsUsed * 100.0 / result.CellsTotal,
+                MidpointRounding.AwayFromZero);
+            text += $" 칸 {result.CellsUsed}/{result.CellsTotal} ({percent}%).";
+        }
+
+        if (result.Attached > 0)
+        {
+            text += $" 방어판·부속 {result.Attached}개를 붙였다.";
+        }
+
+        if (result.Skipped.Count > 0)
+        {
+            text += $" 못 담은 것 {result.Skipped.Count}가지: {string.Join(", ", result.Skipped)}";
+        }
+
+        if (result.Adjusted.Count > 0)
+        {
+            text += $" 고친 것 {result.Adjusted.Count}가지: {string.Join(", ", result.Adjusted)}";
+        }
+
+        return text;
     }
 
     private async void OnCancel(object sender, RoutedEventArgs e)

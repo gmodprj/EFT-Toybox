@@ -167,8 +167,32 @@ pwsh -File tools/install-helmetslotunion.ps1
 | 파일 | 내용 |
 | --- | --- |
 | `HelmetSlotUnion.cs` | `IOnLoad` 구현. 합집합을 모으고 되돌려 쓴다 |
+| `PoolPolicy.cs` | **합집합에 무엇을 담을지** — 표에 없는 id 를 거른다. SPT 를 참조하지 않아 시험이 이 파일만 링크한다 |
 | `ModMetadata.cs` | `IModMetadata` — 서버가 읽는 모드 정보 |
 | `Config.cs` | `config.jsonc` 를 담는 틀 |
 | `config.jsonc` | 기본 설정. 설치 스크립트가 함께 복사한다 |
 
 쓰는 서버 API 는 [Less Restricting Headwear](https://sp-mod.com/mod/922) 와 같다: `[Injectable]` + `IOnLoad.OnLoadAsync`, `TemplateTable.Items`, `ModHelper.GetJsonDataFromFile<T>`, `ISptLogger<T>`.
+
+## 표에 없는 id 는 담지 않는다 (`SkipDeadIds`, 2026-11-12)
+
+이 모드는 헬멧 칸 필터를 **합집합으로 모아 모든 헬멧에 돌려준다.** 그래서 어느 헬멧 하나에
+적혀 있던 **데이터베이스에 없는 부품 id** 까지 함께 모아 전체로 퍼뜨리고 있었다.
+
+실측(`SlotFilterSweep` 의 첫 보고서, 2026-11-12 21:12) — 설치본 전체의 죽은 참조 **733개** 중:
+
+| 죽은 id | 몇 칸 |
+| --- | --- |
+| `6782e590…` (헬멧 `mod_nvg`) | **174** |
+| `66bf757f…` 세 종 (헬멧 `mod_equipment_001`) | 각 **102** |
+| `4d434154…`·`672e37d1…` (헬멧 `mod_equipment_002`) | 각 45 |
+
+헬멧 하나에만 있던 묵은 참조가 이 합집합을 타고 174칸까지 불어난 것이다. 원래 적어 둔 쪽은
+남의 모드지만, **퍼뜨린 것은 우리**다.
+
+그래서 **모을 때 표에 없는 id 는 담지 않는다**(`SkipDeadIds`, 기본 켜짐). 넓히는 일 자체는
+그대로다 — 없는 것만 빼고 담는다. 버린 개수는 기동 로그 끝에 붙는다
+(`표에 없는 id N개는 담지 않았다`). 예전 동작으로 돌리려면 `false`.
+
+판정은 `PoolPolicy` 한 곳이고 시험 12개가 지킨다. 이미 필터에 적혀 있는 죽은 참조 자체를
+걷어내는 것은 이 모드의 일이 아니다 — 그것은 `SlotFilterSweep` 가 한다.

@@ -40,10 +40,17 @@ namespace pitTeam.Patches
         private const string StmTransferButtonText = "스태시 교환";
         private const string StmTransferTitleFormat = "스태시 교환 — {0}";
         private const string StmTransferSubtitle =
-            "반대쪽 스태시로 끌어다 놓으면 옮겨집니다. 여럿을 고른 채 끌면 한 번에 갑니다. 스태시 바닥에 놓인 것만 건넬 수 있고, 가방을 건네면 안에 든 것은 따라갑니다.";
+            "반대쪽 스태시로 끌어다 놓으면 옮겨집니다. 여럿을 고른 채 끌면 한 번에 갑니다. 가방·상자 안의 것도 건널 수 있고, 가방을 건네면 안에 든 것은 따라갑니다.";
         private const string StmTransferOpenFailedToast = "스태시 교환 화면을 열지 못했습니다";
         private const string StmTransferEmptySide = "(비어 있음)";
         private const string StmTransferNothingPicked = "건넬 것을 먼저 고르세요";
+
+        // 전송으로 보지 않는 드롭을 **조용히 두지 않는다**(2026-11-13 제보).
+        // 가방 안의 것은 그날 함께 열렸으므로, 이제 이 문구는 **스태시 밖의 것**에만 뜬다.
+        private const string StmTransferNotAtRootText =
+            "이 스태시에 들어 있는 것만 건널 수 있습니다.";
+        private const string StmTransferSameSideText =
+            "같은 쪽 안에서 옮기는 것은 이 창이 저장하지 않습니다 — 반대쪽으로 끌어야 건네집니다.";
 
         // 한 쪽에 한 번에 그리는 줄 수. 넘치면 쪽을 넘긴다 — 스크롤 부품을 새로 세우지 않는다.
         private const int StmTransferRowsPerPage = 12;
@@ -119,6 +126,12 @@ namespace pitTeam.Patches
             public int Picked { get; set; }
             public int Moved { get; set; }
             public bool ToTeammate { get; set; }
+
+            /// <summary>옮긴 것 전부(안에 든 것까지)의 id. 플레이어가 잃는 쪽일 때 지울 목록이다.</summary>
+            public string[] MovedIds { get; set; }
+
+            /// <summary>플레이어가 받는 쪽일 때, 그 아이템들이 플레이어 스태시에서 갖게 된 최종 모양.</summary>
+            public JsonType.FlatItem[] PlayerItems { get; set; }
         }
 
         // 상세 화면의 조작 줄에 한 칸을 더 단다. 꾸러미 버튼 둘(rowOffset 2·3) 다음이다.
@@ -659,6 +672,11 @@ namespace pitTeam.Patches
                 StmStashTransferResultWire moved = DeserializeBodySuccess<StmStashTransferResultWire>(json)?.data;
                 picked.Clear();
 
+                // **돌고 있는 게임에도 알려 준다.** 이 전송은 서버 쪽 프로필을 고치는데, 게임은
+                // 자기 메모리에 스태시 사본을 들고 있어 알려 주지 않으면 옮긴 뒤에도 보내는 쪽
+                // 가방에 그대로 보인다(2026-11-13 제보 — 디스크는 맞았고 화면만 묵었다).
+                bool pushed = TryPushStmTransferToRunningGame(moved);
+
                 // 결과는 **다시 받아** 그린다. 화면이 제 손으로 목록을 고치면 서버와 어긋난다.
                 if (await LoadStmTransferPairAsync())
                 {
@@ -679,7 +697,10 @@ namespace pitTeam.Patches
                 SetStmTransferStatus(moved == null
                     ? "옮겼습니다."
                     : (toTeammate ? "건넸습니다 — " : "가져왔습니다 — ")
-                        + "고른 " + moved.Picked + "개, 안에 든 것까지 " + moved.Moved + "개.");
+                        + "고른 " + moved.Picked + "개, 안에 든 것까지 " + moved.Moved + "개."
+                        // 게임에 밀어 넣지 못했으면 **숨기지 않는다.** 옮기기는 끝났지만 캐릭터
+                        // 화면에는 옛 모습이 남아 있고, 그것을 만지면 서버에 없는 물건을 가리킨다.
+                        + (pushed ? string.Empty : " 다만 게임 화면에는 다시 켜야 반영됩니다 — 그 전에는 만지지 마세요."));
             }
             catch (Exception ex)
             {
@@ -696,6 +717,74 @@ namespace pitTeam.Patches
         private static void SetStmTransferStatus(string text)
         {
             if (StmTransferStatusLabel != null) StmTransferStatusLabel.text = text ?? string.Empty;
+        }
+
+        /// <summary>
+        /// 전송 결과를 **돌고 있는 게임의 플레이어 인벤토리**에도 반영한다.
+        ///
+        /// 왜 필요한가 — 이 전송은 서버 쪽 프로필을 고친다. 게임은 자기 메모리에 스태시 사본을
+        /// 들고 있어서, 알려 주지 않으면 **옮긴 뒤에도 보내는 쪽 가방에 그대로 보인다**
+        /// (2026-11-13 제보. 디스크에서는 받는 쪽 1개 · 보내는 쪽 0개로 제대로 옮겨져 있었다).
+        /// 그 유령을 게임에서 쓰면 서버에 없는 물건을 가리키는 조작이 올라가므로, 보이는 것만의
+        /// 문제가 아니다.
+        ///
+        /// 길은 **보험이 쓰는 그것**이다(`OtherPlayerProfileScreenPatch.Insurance`) —
+        /// `ProfileUpdatesHandler.UpdateProfile` 에 `StashChangesResponse` 를 실어 보낸다.
+        /// 플레이어가 잃는 쪽이면 `del`, 받는 쪽이면 `new`(옮겨진 뒤의 부모·칸·좌표 그대로)다.
+        ///
+        /// **실패해도 전송 자체는 이미 끝나 있다.** 그래서 던지지 않고 거짓을 돌려주며, 부르는
+        /// 쪽이 "게임을 다시 켜야 보입니다" 를 덧붙인다 — 조용히 넘어가면 사용자가 유령을 만진다.
+        /// </summary>
+        private static bool TryPushStmTransferToRunningGame(StmStashTransferResultWire moved)
+        {
+            if (moved == null) return false;
+
+            try
+            {
+                Profile player = ActiveProfileSession?.Profile;
+                // **`OfflineInventoryController` 여야 한다** — `ProfileUpdatesHandler` 가 그 타입을 받는다.
+                OfflineInventoryController controller =
+                    ResolveActiveProfileInventoryControllerForBackendUpdate(player, ActiveProfileInventoryController)
+                        as OfflineInventoryController;
+                if (player?.Inventory == null || controller == null)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 돌고 있는 게임에 알리지 못했다 — 플레이어 인벤토리를 찾지 못했다.");
+                    return false;
+                }
+
+                JsonType.FlatItem[] added = moved.ToTeammate
+                    ? Array.Empty<JsonType.FlatItem>()
+                    : (moved.PlayerItems ?? Array.Empty<JsonType.FlatItem>());
+                JsonType.FlatItem[] removed = moved.ToTeammate
+                    ? CreateDeletedFlatItems(moved.MovedIds ?? Array.Empty<string>())
+                    : Array.Empty<JsonType.FlatItem>();
+
+                if (added.Length == 0 && removed.Length == 0)
+                {
+                    pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 서버가 반영할 목록을 주지 않았다(옛 서버 모드일 수 있다).");
+                    return false;
+                }
+
+                var updater = new EFT.ProfileUpdatesHandler(player, controller, null, ActiveProfileSession.RagFair);
+                ((EFT.IProfileUpdatesHandler)updater).UpdateProfile(new EFT.ProfileChanges
+                {
+                    Stash = new EFT.StashChangesResponse
+                    {
+                        @new = added,
+                        change = Array.Empty<JsonType.FlatItem>(),
+                        del = removed,
+                    },
+                });
+
+                pitFireTeam.Log.LogInfo(
+                    $"[STM] 스태시 교환: 돌고 있는 게임에 반영했다 — 더한 것 {added.Length}, 지운 것 {removed.Length}.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                pitFireTeam.Log.LogWarning("[STM] 스태시 교환: 돌고 있는 게임에 알리지 못했다: " + ex.Message);
+                return false;
+            }
         }
 
         // 한 쪽의 격자를 세운다. 장비 편집기의 길을 그대로 쓴다:
@@ -808,13 +897,50 @@ namespace pitTeam.Patches
             return false;
         }
 
-        // 그 스태시의 **바닥에 놓인 것**인가. 가방 안의 것을 따로 건네는 길은 열지 않는다(B1 정책).
+        /// <summary>
+        /// 전송으로 보지 않는 드롭이 **우리 창 안**에서 일어났으면, 이유를 적고 막는다.
+        ///
+        /// 막는 이유 — 그대로 두면 EFT 가 자기 컨트롤러 안에서 옮긴다. 그런데 이 창의 두 격자는
+        /// 서버가 준 목록으로 세운 **복제 프로필**이라 그 이동은 어디에도 저장되지 않는다. 화면에서는
+        /// 옮겨진 것처럼 보이다가 다음 새로 고침에 사라진다 — 조용히 틀린 그림을 보여 주는 쪽이
+        /// 아무것도 안 움직이는 쪽보다 나쁘다.
+        ///
+        /// 2026-11-13 제보가 이것이다: 가방 안의 것을 골라 끌어도 "반영이 안 된다". 서버 로그에
+        /// 전송 요청 자체가 없었다 — 정책대로 거른 것인데 **말해 주지 않아** 결함처럼 보였다.
+        /// </summary>
+        internal static bool StmTransferBlocksDrop(Component targetGrid, Item dragged)
+        {
+            if (!StmTransferGridsReady || StmTransferOverlayRoot == null) return false;
+            if (targetGrid == null || dragged?.Id == null) return false;
+
+            bool targetIsTeammate = StmTransferRightPanel != null && targetGrid.transform.IsChildOf(StmTransferRightPanel.transform);
+            bool targetIsPlayer = StmTransferLeftPanel != null && targetGrid.transform.IsChildOf(StmTransferLeftPanel.transform);
+            if (!targetIsTeammate && !targetIsPlayer) return false;   // 우리 창 밖이다 — 원래대로 둔다.
+
+            bool atRoot = StmTransferSideOwns(StmTransferPair?.Player, dragged.Id)
+                || StmTransferSideOwns(StmTransferPair?.Teammate, dragged.Id);
+
+            SetStmTransferStatus(atRoot ? StmTransferSameSideText : StmTransferNotAtRootText);
+            return true;
+        }
+
+        // 그 스태시 **안에 있는 것**인가. 깊이는 보지 않는다 — 가방 안의 것도 건널 수 있다
+        // (2026-11-13 에 열었다. 서버 판정은 StashTransferPolicy 가 조상을 따라 올라가 같은 것을 본다).
+        //
+        // **요약(`Items`)이 아니라 트리(`Tree`)를 본다.** 요약은 바닥에 놓인 것뿐이라, 창이 가방을
+        // 열어 보여 주는 것과 어긋났다 — 가방 안의 것을 골라 끌면 관문이 말없이 걸러 아무 일도
+        // 일어나지 않았다(fixes/2026-11-13-stash-transfer-silent-drops.md).
         private static bool StmTransferSideOwns(StmStashSideWire side, string itemId)
         {
-            if (side?.Items == null || string.IsNullOrEmpty(itemId)) return false;
-            foreach (StmStashEntryWire entry in side.Items)
+            if (side?.Tree == null || string.IsNullOrEmpty(itemId)) return false;
+
+            // 스태시 그 자체는 건널 것이 아니다(트리에 루트가 들어 있다).
+            if (string.Equals(side.StashRootId, itemId, StringComparison.Ordinal)) return false;
+
+            foreach (JsonType.FlatItem flat in side.Tree)
             {
-                if (string.Equals(entry?.Id, itemId, StringComparison.Ordinal)) return true;
+                if (flat == null) continue;
+                if (string.Equals(flat._id.ToString(), itemId, StringComparison.Ordinal)) return true;
             }
 
             return false;
@@ -885,6 +1011,13 @@ namespace pitTeam.Patches
         {
             try
             {
+                // **열어 둔 가방·상자 창을 먼저 닫는다.** 그 창들은 지금 지울 트리의 아이템을 들고
+                // 있어, 닫지 않으면 **옮긴 뒤에도 옛 내용을 그대로 보여 준다** — 보내는 쪽 가방에서
+                // 사라지지 않은 것처럼 보인다(2026-11-13 제보. 디스크에서는 제대로 옮겨졌고
+                // 받는 쪽 1개 · 보내는 쪽 0개였다 — 화면만 묵은 것이었다).
+                // 편집기가 같은 이유로 쓰는 그 길을 그대로 쓴다.
+                CloseLoadoutEditorChildWindows();
+
                 // 스크롤을 **기억했다가 되돌린다.** 격자를 새로 세우면 맨 위로 가는데, 옮길 때마다
                 // 보던 자리를 잃는다(2026-11-07 지적). 패널이 들고 있는 그 스크롤을 그대로 쓴다.
                 Vector2 leftScroll = ReadStmTransferScroll(StmTransferLeftPanel);

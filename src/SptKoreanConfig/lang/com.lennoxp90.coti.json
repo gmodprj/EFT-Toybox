@@ -2,12 +2,49 @@
   "guid": "com.lennoxp90.coti",
   "name": "열영상 부착기 (ECOTI)",
   "sections": {
+    "Colour": "열 색",
     "Controls": "조작",
     "Debug": "진단",
     "Image": "화면",
     "Power Sequence": "전원 동작"
   },
   "settings": {
+    "Colour/COTI Colour": {
+      "name": "고글 부착기 열 색",
+      "desc": "고글에 붙인 열영상 부착기가 열을 그릴 색이다. Default 는 야시경 관의 색을 그대로 따르고, Custom 은 아래 색을 쓴다. RainbowWave 는 무지개가 열 위를 흘러가고, RainbowStatic 은 한자리에 멈춘다."
+    },
+    "Colour/COTI Custom Colour": {
+      "name": "고글 부착기 지정 색",
+      "desc": "고글 부착기 열 색이 Custom 일 때 쓸 색이다. 열이 보이는 자리에서 야시경 자신의 색을 대신한다. 투명도는 무시한다 — 얼마나 진하게 그릴지는 '열 밝기 배율' 과 '열 세기' 가 정한다."
+    },
+    "Colour/COTI Rainbow Speed": {
+      "name": "고글 부착기 무지개 속도",
+      "desc": "고글 부착기 열 색이 RainbowWave 일 때 무지개가 열 위를 흘러가는 속도다. 초당 색이 한 바퀴 도는 횟수로 적는다."
+    },
+    "Colour/Thermal Riser Colour": {
+      "name": "총기 라이저 열 색",
+      "desc": "총기에 붙인 열영상 라이저가 열을 그릴 색이다. Default 는 흰색이 가장 뜨겁게 보이는 기본이고, Custom 은 아래 색을 쓴다. RainbowWave 는 무지개가 열 위를 흘러가고, RainbowStatic 은 한자리에 멈춘다."
+    },
+    "Colour/Thermal Riser Custom Colour": {
+      "name": "총기 라이저 지정 색",
+      "desc": "총기 라이저 열 색이 Custom 일 때 쓸 색이다. 열이 보이는 자리에서 야시경 자신의 색을 대신한다. 투명도는 무시한다 — 얼마나 진하게 그릴지는 '열 밝기 배율' 과 '열 세기' 가 정한다."
+    },
+    "Colour/Thermal Riser Rainbow Speed": {
+      "name": "총기 라이저 무지개 속도",
+      "desc": "총기 라이저 열 색이 RainbowWave 일 때 무지개가 열 위를 흘러가는 속도다. 초당 색이 한 바퀴 도는 횟수로 적는다."
+    },
+    "Colour/Thermal Scope Ring Colour": {
+      "name": "열영상 조준경 테 열 색",
+      "desc": "열영상 조준경 테가 열을 그릴 색이다. Default 는 흰색이 가장 뜨겁게 보이는 기본이고, Custom 은 아래 색을 쓴다. RainbowWave 는 무지개가 열 위를 흘러가고, RainbowStatic 은 한자리에 멈춘다."
+    },
+    "Colour/Thermal Scope Ring Custom Colour": {
+      "name": "열영상 조준경 테 지정 색",
+      "desc": "열영상 조준경 테 열 색이 Custom 일 때 쓸 색이다. 열이 보이는 자리에서 야시경 자신의 색을 대신한다. 투명도는 무시한다 — 얼마나 진하게 그릴지는 '열 밝기 배율' 과 '열 세기' 가 정한다."
+    },
+    "Colour/Thermal Scope Ring Rainbow Speed": {
+      "name": "열영상 조준경 테 무지개 속도",
+      "desc": "열영상 조준경 테 열 색이 RainbowWave 일 때 무지개가 열 위를 흘러가는 속도다. 초당 색이 한 바퀴 도는 횟수로 적는다."
+    },
     "Controls/Power Toggle": {
       "name": "고글 전원 키",
       "desc": "고글에 붙인 열영상 부착기를 야시경은 건드리지 않고 켜고 끈다. 총기용 열영상 라이저는 절대 건드리지 않으며, 그쪽은 따로 키가 있다. 보조키를 함께 두는 편이 좋다. 타르코프는 자기 단축키를 정확히 일치시켜 보지 않아서, N 하나만 두면 고글까지 같이 켜지고 꺼진다."
@@ -59,6 +96,10 @@
     "Image/Scope Glass Reflections": {
       "name": "조준경 유리도 반사",
       "desc": "유리 설정이 Reflections 일 때 배율 조준경의 앞·뒤 렌즈도 다른 유리처럼 열을 비춘다. 끄면 조준경 유리는 Plain 으로 남는다. 도트 사이트와 홀로그래픽 사이트는 유리로 보지 않는다."
+    },
+    "Image/Glass Reflection Brightness": {
+      "name": "유리 반사 밝기",
+      "desc": "유리 설정이 Reflections 일 때 반사를 얼마나 밝게 그릴지를, 비친 열 자신의 밝기에 대한 비율로 정한다. 값과 상관없이 같은 반사가 보이고 윤곽도 그려진다 — 낮추면 흐려지기만 한다."
     },
     "Image/Heat Brightness": {
       "name": "열 밝기 배율",

@@ -110,12 +110,20 @@ namespace pitTeam.Shared
                     return Refused($"원본 스태시에 없는 아이템이다('{id}').");
                 }
 
-                // **스태시 바닥에 놓인 것만** 건넨다. 입고 있는 것·총에 달린 것·가방 안의 것은
-                // 따로 고를 수 없다 — 가방째 건네면 안에 든 것은 따라간다.
-                if (!string.Equals(item.ParentId, rootId, StringComparison.Ordinal)
-                    || !string.Equals(item.SlotId, StashSlot, StringComparison.Ordinal))
+                // **스태시 안에 있는 것**이면 깊이와 무관하게 건넬 수 있다(2026-11-13 에 열었다).
+                // 입고 있는 것·총에 달린 것은 스태시 트리에 매달려 있지 않으므로 여전히 거절된다.
+                //
+                // 전에는 바닥(루트의 `hideout` 칸)에 놓인 것만 받았다. 그런데 창은 스태시 트리
+                // 전체를 그려 가방을 열 수 있었던 탓에, 가방 안의 것을 골라 끌면 판정이 말없이
+                // 걸러 **아무 일도 일어나지 않았다**(fixes/2026-11-13-stash-transfer-silent-drops.md).
+                if (string.Equals(id, rootId, StringComparison.Ordinal))
                 {
-                    return Refused($"스태시 바닥에 놓인 것만 건넬 수 있다('{id}').");
+                    return Refused("스태시 자체는 건널 수 없다.");
+                }
+
+                if (!IsInStash(id, sourceItems, rootId))
+                {
+                    return Refused($"스태시 안에 있는 것만 건넬 수 있다('{id}').");
                 }
 
                 if (blocked.Contains(item.TemplateId))
@@ -124,6 +132,21 @@ namespace pitTeam.Shared
                 }
 
                 picked.Add(id);
+            }
+
+            // 가방과 **그 안의 것**을 함께 고른 경우를 거절한다. 둘 다 받으면 고른 것마다 새 스태시
+            // 바닥에 자리를 잡으므로 안의 것이 가방에서 빠져나온다 — 고른 사람이 뜻한 바인지 알 수
+            // 없다. 조용히 한쪽을 버리지 않는다.
+            var pickedSet = new HashSet<string>(picked, StringComparer.Ordinal);
+            foreach (var id in picked)
+            {
+                foreach (var ancestor in Ancestors(id, sourceItems))
+                {
+                    if (pickedSet.Contains(ancestor))
+                    {
+                        return Refused($"담긴 것과 그것을 담은 것을 함께 골랐다('{id}' 는 '{ancestor}' 안에 있다).");
+                    }
+                }
             }
 
             // 안에 든 것까지 모은다. 이 목록이 빼는 쪽과 넣는 쪽 양쪽의 단위다.
@@ -138,6 +161,32 @@ namespace pitTeam.Shared
                 Accepted: true,
                 Reason: $"스태시 전송 — 고른 {picked.Count}개, 안에 든 것까지 {moving.Count}개.",
                 MovingItemIds: moving);
+        }
+
+        // 그 아이템이 스태시 트리에 매달려 있나. 부모를 따라 올라가 루트에 닿으면 참이다.
+        // **고리가 있어도 멈춘다**(손상된 프로필) — 본 것을 다시 보면 거짓으로 끝낸다.
+        private static bool IsInStash(string id, IReadOnlyDictionary<string, StashItem> items, string rootId)
+        {
+            foreach (var ancestor in Ancestors(id, items))
+            {
+                if (string.Equals(ancestor, rootId, StringComparison.Ordinal)) return true;
+            }
+
+            return false;
+        }
+
+        // 그 아이템의 조상들을 가까운 쪽부터. 고리를 만나면 멈춘다.
+        private static IEnumerable<string> Ancestors(string id, IReadOnlyDictionary<string, StashItem> items)
+        {
+            var seen = new HashSet<string>(StringComparer.Ordinal) { id };
+            var current = id;
+            while (items.TryGetValue(current, out var item) && !string.IsNullOrEmpty(item.ParentId))
+            {
+                var parent = item.ParentId!;
+                if (!seen.Add(parent)) yield break;
+                yield return parent;
+                current = parent;
+            }
         }
 
         // 고른 것과 그 자손 전부. 부모 → 자식 색인을 한 번 만들고 너비 우선으로 내려간다.

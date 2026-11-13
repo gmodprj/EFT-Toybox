@@ -50,6 +50,11 @@
   // ["helmet_top", "helmet_back"] 으로 적는다.
   "ExcludedSlotNames": [],
 
+  // 합집합을 모을 때 데이터베이스에 없는 id 는 담지 않는다.
+  // 2026-11-12 실측: 죽은 참조 하나가 이 합집합을 타고 헬멧 174칸으로 퍼져 있었다.
+  // 예전 동작으로 돌리려면 false.
+  "SkipDeadIds": true,
+
   // 건드리지 않을 헬멧 아이템 id. 예: ["5c0919b50db834001b7ce3b9"]
   "ExcludedHelmetIds": []
 }

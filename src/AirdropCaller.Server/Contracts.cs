@@ -29,6 +29,14 @@ public record QueueRequest : IRequestData
     /// <summary>큰 상자로 보낼지. <see cref="PresetId"/> 를 주면 프리셋에 적힌 값을 쓴다.</summary>
     [JsonPropertyName("bigCrate")]
     public bool BigCrate { get; set; }
+
+    /// <summary>
+    /// **마른 조립** — 조립해서 결과만 돌려주고 예약은 하지 않는다. 쿨다운도 쓰지 않는다.
+    /// 그래서 게임이 꺼져 있어도, 레이드 밖에서도 담기는지 미리 볼 수 있다.
+    /// 경위는 설계 §20.4(시험 삼아 쏜 예약이 18초 뒤 실물이 되어 떨어졌다).
+    /// </summary>
+    [JsonPropertyName("dryRun")]
+    public bool DryRun { get; set; }
 }
 
 public record QueueResponse
@@ -66,6 +74,24 @@ public record QueueResponse
     /// <summary>거절했을 때 그 이유를 사람이 읽는 문장으로.</summary>
     [JsonPropertyName("reason")]
     public string? Reason { get; set; }
+
+    /// <summary>
+    /// 상자 **자기 격자**에서 찬 칸 수. 안에 넣은 그릇의 속칸은 세지 않는다 —
+    /// 사람이 보고 싶은 것은 "이 상자에 더 들어가나" 다.
+    /// </summary>
+    [JsonPropertyName("cellsUsed")]
+    public int CellsUsed { get; set; }
+
+    /// <summary>상자 자기 격자의 칸 수 전부. 0 이면 칸 수를 모른다는 뜻이다.</summary>
+    [JsonPropertyName("cellsTotal")]
+    public int CellsTotal { get; set; }
+
+    /// <summary>
+    /// 이 답이 **마른 조립**의 결과임. 참이면 <see cref="DropId"/> 는 없고 **아무것도 떨어지지 않는다** —
+    /// 창이 "예약했다" 로 잘못 말하지 않게 답에도 적어 돌려준다.
+    /// </summary>
+    [JsonPropertyName("dryRun")]
+    public bool DryRun { get; set; }
 }
 
 public record StateResponse

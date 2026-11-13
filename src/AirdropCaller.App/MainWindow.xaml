@@ -10,11 +10,12 @@
     </Grid.RowDefinitions>
     <!-- 세 칸 사이에 손잡이를 둔다. 넓이는 쓰는 사람이 정한다. -->
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="210" MinWidth="120" />
+      <!-- 바깥 두 칸은 끌어 맞춘 너비를 기억한다(WindowLayout). 가운데는 남는 자리를 받는다. -->
+      <ColumnDefinition x:Name="PresetColumn" Width="210" MinWidth="120" />
       <ColumnDefinition Width="6" />
       <ColumnDefinition Width="*" MinWidth="240" />
       <ColumnDefinition Width="6" />
-      <ColumnDefinition Width="360" MinWidth="220" />
+      <ColumnDefinition x:Name="SearchColumn" Width="360" MinWidth="220" />
     </Grid.ColumnDefinitions>
 
     <!-- ① 프리셋 -->
@@ -217,6 +218,7 @@
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" VerticalAlignment="Center">
           <TextBlock x:Name="StateLine" Text="서버에 붙는 중…" FontSize="14" />
@@ -229,8 +231,13 @@
         <CheckBox Grid.Column="1" x:Name="TopmostBox" Content="항상 위" VerticalAlignment="Center"
                   Margin="0,0,14,0" Foreground="{StaticResource Dim}" Checked="OnTopmostChanged"
                   Unchecked="OnTopmostChanged" />
-        <Button Grid.Column="2" x:Name="CancelButton" Content="예약 취소" Click="OnCancel" IsEnabled="False" />
-        <Button Grid.Column="3" x:Name="DropButton" Content="떨어뜨리기" Click="OnDrop" IsEnabled="False"
+        <!-- 조립만 보는 길. 예약하지 않으니 레이드 밖에서도·게임이 꺼져 있어도 눌린다
+             (설계 §20.4 — 시험 삼아 쏜 예약이 18초 뒤 실물이 되어 떨어졌다). -->
+        <Button Grid.Column="2" x:Name="DryRunButton" Content="조립만 보기" Click="OnDryRun"
+                IsEnabled="False" Margin="0,0,8,0" Padding="12,8"
+                ToolTip="담기는지만 확인한다 — 예약하지 않고 아무것도 떨어지지 않는다." />
+        <Button Grid.Column="3" x:Name="CancelButton" Content="예약 취소" Click="OnCancel" IsEnabled="False" />
+        <Button Grid.Column="4" x:Name="DropButton" Content="떨어뜨리기" Click="OnDrop" IsEnabled="False"
                 FontSize="15" FontWeight="SemiBold" Padding="20,8" Margin="0"
                 Background="{StaticResource Accent}" Foreground="#1E1E1E" />
       </Grid>

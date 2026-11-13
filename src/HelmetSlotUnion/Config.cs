@@ -14,6 +14,16 @@ public class Config
     public bool Debug { get; set; }
 
     /// <summary>
+    /// 합집합을 모을 때 **데이터베이스에 없는 id 는 담지 않는다**.
+    ///
+    /// 2026-11-12 실측: 어느 헬멧 하나에 적혀 있던 죽은 참조가 이 합집합을 타고 헬멧
+    /// **174칸**으로 퍼져 있었다. 켜 두면 그런 복사가 생기지 않는다 — 넓히는 일 자체는 그대로다.
+    /// 예전 동작으로 돌리려면 false.
+    /// </summary>
+    [JsonPropertyName("SkipDeadIds")]
+    public bool SkipDeadIds { get; set; } = true;
+
+    /// <summary>
     /// mod_equipment 와 mod_equipment_000·001·002… 를 한 묶음으로 본다.
     /// 칸 번호가 헬멧마다 다른 뜻이라(FAST는 001이 헤드셋, 다른 헬멧은 측면 보호대) 기본은 꺼짐이다.
     /// </summary>

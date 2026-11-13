@@ -21,6 +21,7 @@ namespace GridWindowScroll
         internal static ConfigEntry<int> MaxColumns;
         internal static ConfigEntry<int> MaxRows;
         internal static ConfigEntry<float> WheelCells;
+        internal static ConfigEntry<bool> ModifierDragSelects;
         internal static ConfigEntry<bool> ShowScrollBars;
         internal static ConfigEntry<float> ScrollBarThickness;
         internal static ConfigEntry<bool> RememberPerContainer;
@@ -55,6 +56,11 @@ namespace GridWindowScroll
 
             RememberPerContainer = Config.Bind("일반", "상자별 크기 기억", true,
                 "모서리를 끌어 정한 칸 수를 상자 종류마다 따로 기억한다. 끄면 끌었을 때 위의 기본값이 바뀐다.");
+
+            ModifierDragSelects = Config.Bind("일반", "보조키 드래그는 스크롤하지 않기", true,
+                "Shift 나 Ctrl 을 누른 채 끌면 스크롤하지 않는다. UI Fixes 의 다중 선택이 같은 왼쪽 드래그를 쓰기 때문에, "
+                + "그것이 없으면 선택 상자와 스크롤이 함께 움직인다. 끄면 보조키와 상관없이 끌 때마다 스크롤한다. "
+                + "휠과 스크롤바는 이 설정과 무관하다.");
 
             ShowScrollBars = Config.Bind("일반", "스크롤바 보이기", true,
                 "스크롤이 필요한 쪽에만 가느다란 바가 붙는다. 꺼도 마우스 휠로 움직일 수 있다.");

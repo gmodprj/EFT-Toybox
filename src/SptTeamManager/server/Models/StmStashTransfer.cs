@@ -43,4 +43,20 @@ public record StmStashTransferResponse
     [JsonPropertyName("moved")] public int Moved { get; set; }
 
     [JsonPropertyName("toTeammate")] public bool ToTeammate { get; set; }
+
+    // --- 돌고 있는 게임에 알려 주기 위한 것 (2026-11-13) ---
+    //
+    // 전송은 **서버 쪽 프로필**을 고친다. 그런데 게임은 자기 메모리에 스태시 사본을 들고 있어,
+    // 알려 주지 않으면 옮긴 뒤에도 **보내는 쪽 가방에 그대로 보인다**(2026-11-13 제보 —
+    // 디스크는 맞았고 화면만 묵은 것이었다. fixes/2026-11-13-stash-transfer-silent-drops.md).
+    // 그래서 창이 `ProfileUpdatesHandler` 로 플레이어 쪽 변경을 밀어 넣을 수 있게 재료를 싣는다.
+
+    /// <summary>옮긴 것 전부(안에 든 것까지)의 id. 플레이어가 **잃는** 쪽일 때 지울 목록이다.</summary>
+    [JsonPropertyName("movedIds")] public List<string> MovedIds { get; set; } = [];
+
+    /// <summary>
+    /// 플레이어가 **받는** 쪽일 때, 옮겨진 아이템들이 플레이어 스태시에서 갖게 된 최종 모양
+    /// (부모·칸·좌표까지). 플레이어가 잃는 쪽이면 비어 있다.
+    /// </summary>
+    [JsonPropertyName("playerItems")] public List<SPTarkov.Server.Core.Models.Eft.Common.Tables.Item> PlayerItems { get; set; } = [];
 }

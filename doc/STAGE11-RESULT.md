@@ -24,13 +24,21 @@
 - `install-and-test.ps1` 이 시험 중 새로 생긴 파일 20개를 `OTHERMOD` 로 가려내 **이 모드 몫으로 적지 않았다**(ORBIT 의 zones 17개, ExpandedTaskText 캐시, RaidReview 로그, UltimateFlea 경제 상태). 설치 기록 오귀속을 막는 쪽으로 동작한 것이다.
 - 플러그인 locale 넷은 `node tools/check-plugin-locales.mjs` → 설치본과 같다.
 
+### 그 뒤 기동에서 재어진 것 (2026-11-12)
+
+11-12 17:11 기동(`BepInEx\LogOutput.log`)과 돌고 있는 서버(16:18 기동)로 위 셋을 다 쟀다.
+
+| 미확인이던 것 | 실측 |
+| --- | --- |
+| `247 plugins to load` | **`248 plugins to load`** — 247 이 아니다. VRAM Cleaner 뿐 아니라 `IcebreakerOffMapGuard`(11-11 17:53)까지 들어와 246 → 248 이다 |
+| `VRAMCleaner loaded!` | **나왔다** (`[Info :SPTVRAMCleaner-matsix] VRAMCleaner loaded!` + 패치 둘 `VRAMCleaner`·`VRAMCleanerReset`) |
+| F12 한 항목이 사전에 없다 | **그 항목 자체가 없다.** 기동 뒤에도 `BepInEx\config\` 에 이 모드의 `.cfg` 가 생기지 않았다 — 설정을 바인드하지 않는다. `check-lang-coverage.mjs` 는 그대로 **5,136/5,150** 이고 사전에 더할 줄이 없다. DLL 안의 문구는 F12 설정이 아니라 레이드 중 알림이다 |
+| `check-locale-dict.mjs kr` 미확인 | 켜져 있는 서버에게 물었다 — locale `kr` **61,391항목**, 우리 사전 **8,468/8,468 적용**, 값이 다름 0 · 열쇠 없음 0 · 묶음 누락 0. 꾸밈이 덧댄 142항목은 글자가 우리 값이다 |
+
 ### 아직 확인하지 못한 것
 
-- **게임에서 로드된 적이 없다.** `BepInEx\LogOutput.log` 의 수정 시각이 **15:01**, 설치는 **15:40** 이다. 다음 기동에서 봐야 하는 것 둘:
-  - `247 plugins to load` (246 → 247). 이 DLL 은 플러그인 속성이 있으므로 1 늘어야 한다.
-  - `VRAMCleaner loaded!` — DLL 안에 그 문구가 있어 **기동 로그로 확인된다**.
-- **F12 설정 한 항목이 아직 사전에 없다.** DLL 에 `ShowRaidStartInfo` 와 레이드 중 알림 문구(`Unused Assets have been unloaded - VRAM Usage cleaned`)가 들어 있다. `.cfg` 는 첫 기동에 생기므로, 그 뒤에 `node tools/check-lang-coverage.mjs`(지금 5,136/5,150)를 다시 돌려 한 줄을 더한다.
-- `node tools/check-locale-dict.mjs kr` 은 **서버가 꺼져 있어 묻지 못했다** — "통과" 가 아니라 **미확인**이다. 서버를 띄운 뒤 다시 센다.
+- ~~`IcebreakerOffMapGuard` 는 11-12 17:11 기동에서 아무것도 가리지 못했다~~ **21:36 기동에서 걸렸다** — hideout 에서 `[PerfCensus]` 0회(지난 기동 3회). 아래는 그때의 기록이다.
+- `IcebreakerOffMapGuard` 는 **11-12 17:11 기동에서 아무것도 가리지 못했다** — F12 열쇠의 홑따옴표로 `Awake` 가 터졌다. 19:07 에 고쳐 다시 넣었고, 걸렸는지는 **다음 기동**에서 본다. 경위는 [fixes/2026-11-11-icebreaker-offmap-guard.md](fixes/2026-11-11-icebreaker-offmap-guard.md) §6
 
 ### 다음 기동에서 할 A/B
 
