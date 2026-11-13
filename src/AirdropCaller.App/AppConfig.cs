@@ -62,6 +62,13 @@ public class AppConfig
     [JsonPropertyName("alwaysOnTop")]
     public bool AlwaysOnTop { get; set; }
 
+    /// <summary>
+    /// 사람이 끌어 맞춘 창 모양. 창을 닫을 때 적고 다음에 열 때 되돌린다
+    /// (2026-11-13 요청). 설정이 아니라 **그 사람이 쓰던 배치**다.
+    /// </summary>
+    [JsonPropertyName("layout")]
+    public WindowLayout Layout { get; set; } = new();
+
     private static readonly JsonSerializerOptions Options = new()
     {
         WriteIndented = true,

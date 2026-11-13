@@ -10,11 +10,12 @@
     </Grid.RowDefinitions>
     <!-- 세 칸 사이에 손잡이를 둔다. 넓이는 쓰는 사람이 정한다. -->
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="210" MinWidth="120" />
+      <!-- 바깥 두 칸은 끌어 맞춘 너비를 기억한다(WindowLayout). 가운데는 남는 자리를 받는다. -->
+      <ColumnDefinition x:Name="PresetColumn" Width="210" MinWidth="120" />
       <ColumnDefinition Width="6" />
       <ColumnDefinition Width="*" MinWidth="240" />
       <ColumnDefinition Width="6" />
-      <ColumnDefinition Width="360" MinWidth="220" />
+      <ColumnDefinition x:Name="SearchColumn" Width="360" MinWidth="220" />
     </Grid.ColumnDefinitions>
 
     <!-- ① 프리셋 -->

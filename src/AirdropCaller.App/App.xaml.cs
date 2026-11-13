@@ -28,6 +28,11 @@ public partial class App : Application
 
         // StartupUri 가 이미 띄운 창을 쓰지 않고 우리가 따로 띄운다 — 사람 화면에 번쩍이지 않게.
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+        // **찍는 길에서는 창 모양을 적지 않는다.** 이 창은 화면 밖(-4000,-4000)에 띄우므로,
+        // 닫으면서 그 자리를 적으면 다음에 사람이 열었을 때 창이 보이지 않는다.
+        // 이름을 다 적는다 — `MainWindow` 만 쓰면 `Application.MainWindow` **속성**으로 읽힌다.
+        AirdropCaller.App.MainWindow.SuppressLayoutSave = true;
         var seconds = e.Args.Length > 2 && double.TryParse(e.Args[2], out var s) ? s : 4;
         _ = ShotAsync(e.Args[1], seconds);
     }
