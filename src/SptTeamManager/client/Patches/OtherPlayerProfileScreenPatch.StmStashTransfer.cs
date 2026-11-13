@@ -40,15 +40,15 @@ namespace pitTeam.Patches
         private const string StmTransferButtonText = "스태시 교환";
         private const string StmTransferTitleFormat = "스태시 교환 — {0}";
         private const string StmTransferSubtitle =
-            "반대쪽 스태시로 끌어다 놓으면 옮겨집니다. 여럿을 고른 채 끌면 한 번에 갑니다. 스태시 바닥에 놓인 것만 건넬 수 있고, 가방을 건네면 안에 든 것은 따라갑니다.";
+            "반대쪽 스태시로 끌어다 놓으면 옮겨집니다. 여럿을 고른 채 끌면 한 번에 갑니다. 가방·상자 안의 것도 건널 수 있고, 가방을 건네면 안에 든 것은 따라갑니다.";
         private const string StmTransferOpenFailedToast = "스태시 교환 화면을 열지 못했습니다";
         private const string StmTransferEmptySide = "(비어 있음)";
         private const string StmTransferNothingPicked = "건넬 것을 먼저 고르세요";
 
-        // 전송으로 보지 않는 드롭을 **조용히 두지 않는다**(2026-11-13 제보). 가방 안의 것을 끌거나
-        // 같은 쪽에 떨어뜨리면 아무 일도 일어나지 않아, 정책이 결함처럼 보였다.
+        // 전송으로 보지 않는 드롭을 **조용히 두지 않는다**(2026-11-13 제보).
+        // 가방 안의 것은 그날 함께 열렸으므로, 이제 이 문구는 **스태시 밖의 것**에만 뜬다.
         private const string StmTransferNotAtRootText =
-            "가방·상자 안의 것은 따로 건널 수 없습니다 — 가방째 건네면 안에 든 것이 함께 갑니다.";
+            "이 스태시에 들어 있는 것만 건널 수 있습니다.";
         private const string StmTransferSameSideText =
             "같은 쪽 안에서 옮기는 것은 이 창이 저장하지 않습니다 — 반대쪽으로 끌어야 건네집니다.";
 
@@ -842,13 +842,23 @@ namespace pitTeam.Patches
             return true;
         }
 
-        // 그 스태시의 **바닥에 놓인 것**인가. 가방 안의 것을 따로 건네는 길은 열지 않는다(B1 정책).
+        // 그 스태시 **안에 있는 것**인가. 깊이는 보지 않는다 — 가방 안의 것도 건널 수 있다
+        // (2026-11-13 에 열었다. 서버 판정은 StashTransferPolicy 가 조상을 따라 올라가 같은 것을 본다).
+        //
+        // **요약(`Items`)이 아니라 트리(`Tree`)를 본다.** 요약은 바닥에 놓인 것뿐이라, 창이 가방을
+        // 열어 보여 주는 것과 어긋났다 — 가방 안의 것을 골라 끌면 관문이 말없이 걸러 아무 일도
+        // 일어나지 않았다(fixes/2026-11-13-stash-transfer-silent-drops.md).
         private static bool StmTransferSideOwns(StmStashSideWire side, string itemId)
         {
-            if (side?.Items == null || string.IsNullOrEmpty(itemId)) return false;
-            foreach (StmStashEntryWire entry in side.Items)
+            if (side?.Tree == null || string.IsNullOrEmpty(itemId)) return false;
+
+            // 스태시 그 자체는 건널 것이 아니다(트리에 루트가 들어 있다).
+            if (string.Equals(side.StashRootId, itemId, StringComparison.Ordinal)) return false;
+
+            foreach (JsonType.FlatItem flat in side.Tree)
             {
-                if (string.Equals(entry?.Id, itemId, StringComparison.Ordinal)) return true;
+                if (flat == null) continue;
+                if (string.Equals(flat._id.ToString(), itemId, StringComparison.Ordinal)) return true;
             }
 
             return false;

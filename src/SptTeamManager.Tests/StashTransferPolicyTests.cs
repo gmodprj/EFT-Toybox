@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using pitTeam.Shared;
@@ -56,11 +57,49 @@ public class StashTransferPolicyTests
         Assert.Contains("in-bag-2", plan.MovingItemIds);
     }
 
+    // 2026-11-13 에 열었다 — 전에는 "바닥에 놓인 것" 만 건넬 수 있었다(B1 정책).
+    // 창은 스태시 트리 전체를 그려 가방을 열 수 있었는데 판정만 바닥을 고집해, 가방 안의 것을
+    // 골라 끌면 **아무 일도 일어나지 않았다**(fixes/2026-11-13-stash-transfer-silent-drops.md).
     [Fact]
-    public void 스태시_바닥에_없는_것은_거절한다()
+    public void 가방_안의_것도_따로_건넬_수_있다()
     {
-        Assert.False(Decide("worn").Accepted);        // 입고 있는 것
-        Assert.False(Decide("in-bag-1").Accepted);     // 가방 안의 것만 따로
+        var plan = Decide("in-bag-1");
+
+        Assert.True(plan.Accepted);
+        // 그 하나만 간다 — 가방도, 옆에 든 것도 따라가지 않는다.
+        Assert.Equal(new[] { "in-bag-1" }, plan.MovingItemIds);
+    }
+
+    [Fact]
+    public void 가방_안의_가방을_고르면_그_안의_것이_따라간다()
+    {
+        var items = Inventory();
+        items["inner-bag"] = new StashItem("inner-bag", "bag", "main", "tpl-bag");
+        items["in-inner"] = new StashItem("in-inner", "inner-bag", "main", "tpl-ammo");
+
+        var plan = StashTransferPolicy.Decide(
+            new StashTransferRequest(Src, Dst, ["inner-bag"]), items, Root, blockedTemplateIds: null);
+
+        Assert.True(plan.Accepted);
+        Assert.Equal(["in-inner", "inner-bag"], plan.MovingItemIds.OrderBy(id => id, StringComparer.Ordinal).ToArray());
+    }
+
+    [Fact]
+    public void 스태시_밖의_것은_거절한다()
+    {
+        // 입고 있는 것은 스태시 트리에 매달려 있지 않다 — 열린 뒤에도 그대로 거절이다.
+        Assert.False(Decide("worn").Accepted);
+    }
+
+    [Fact]
+    public void 가방과_그_안의_것을_함께_고르면_거절한다()
+    {
+        // 둘 다 받으면 안의 것이 가방에서 **빠져나와** 바닥에 놓인다 — 고른 사람이 뜻한 바인지
+        // 알 수 없다. 조용히 한쪽을 버리지 않고 거절한다.
+        var plan = Decide("bag", "in-bag-1");
+
+        Assert.False(plan.Accepted);
+        Assert.Contains("in-bag-1", plan.Reason);
     }
 
     [Fact]
