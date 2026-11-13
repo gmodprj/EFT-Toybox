@@ -89,7 +89,19 @@ public class StmGearBuildSaveService(
 
             // **값으로 베껴** 담는다. SaveServer 가 들고 있는 살아 있는 목록을 빌드에 꽂으면
             // 그 뒤의 편집이 빌드까지 바꾼다(불변식 1).
-            var copied = cloner.Clone(worn) ?? [];
+            // **장비 뿌리 자신도 함께 담는다.** 게임의 `EquipmentBuild` 는 받은 목록에서 뿌리를 찾아
+            // 트리를 세우므로, 자손만 주면 그 자리에서 `KeyNotFoundException` 이 난다 — 꾸러미 화면이
+            // 팀원 빌드를 싣다 실패하고 **플레이어 빌드로 되돌아간다**
+            // (2026-11-13 인게임 제보: "내 꾸러미가 보이고 선택도 안 된다").
+            var rootItem = pmc.Inventory.Items.FirstOrDefault(item =>
+                item != null && string.Equals(item.Id.ToString(), equipmentRoot.Value.ToString(), StringComparison.Ordinal));
+            if (rootItem == null)
+            {
+                refusalReason = "이 팀원의 장비 뿌리를 찾지 못해 담지 않습니다.";
+                return false;
+            }
+
+            var copied = cloner.Clone(worn.Prepend(rootItem).ToList()) ?? [];
 
             var build = new EquipmentBuild
             {
@@ -109,9 +121,9 @@ public class StmGearBuildSaveService(
             {
                 Id = build.Id.ToString(),
                 Name = plan.Name,
-                ItemCount = copied.Count,
+                ItemCount = worn.Count,
             };
-            logger.Info($"[STM] 꾸러미로 담았다: 팀원 '{member.ProfileId}' — '{plan.Name}', 아이템 {copied.Count}개.");
+            logger.Info($"[STM] 꾸러미로 담았다: 팀원 '{member.ProfileId}' — '{plan.Name}', 아이템 {worn.Count}개(장비 뿌리까지 {copied.Count}개를 담았다).");
             return true;
         }
         catch (Exception ex)
