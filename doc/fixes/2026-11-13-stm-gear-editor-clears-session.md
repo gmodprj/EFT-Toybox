@@ -48,12 +48,28 @@
 - `dotnet build client/pitFireTeam.csproj -c Release -p:BuildProjectReferences=false` → **경고 0 · 오류 0**
   (애드온까지 묶은 전체 빌드는 이 PC 에서 `MSB3644` 로 실패한다 — [BACKLOG](../BACKLOG.md) 의 알려진 항목).
 
-## 4. 아직 확인하지 못한 것
+## 4. 설치했다 (2026-11-13 11:11)
 
-- **인게임에서 다시 보지 않았다.** 제보 당시 게임이 돌고 있었고 **DLL 이 잠겨 설치할 수 없다**
-  (돌고 있는 DLL 은 덮어쓰기가 조용히 실패한다). 게임을 끄고 설치한 뒤,
-  같은 순서(장비 편집 → 나옴 → 스태시 교환)로 **격자가 바로 뜨는지**와 로그에 위 경고 두 줄이
-  **나지 않는지**를 본다.
+사용자가 게임을 껐고, 그래서 DLL 잠김 없이 넣었다. **바뀐 것은 클라이언트 DLL 하나뿐**이라
+그 파일만 바꿔 넣었다.
+
+| | |
+| --- | --- |
+| 넣은 것 | `BepInEx\plugins\SptTeamManager\SptTeamManager.dll` (2,874,880 B, md5 `6cf117c6…`) |
+| 빌드 | `client/bin/Release/net472` — **Release** 다(Debug 로 깔면 brain 예외가 쏟아진다) |
+| 대조 | 설치본과 빌드 결과의 md5 가 **같다**. 옛 판은 md5 `f90ca48f…`(11-09) |
+| 되돌리기 | `backup/stm-client-dll/SptTeamManager.dll.before-2026-11-13` 을 도로 덮는다 |
+| 검사 | `check-install-records.mjs` → `OK — 0/0`. `INSTALLED-MODS.md` 는 내용이 바뀌지 않았다(그 문서는 DLL 해시를 적지 않는다) |
+
+> **`tools/install-sptteammanager.ps1` 은 쓰지 못했다.** 그 스크립트는 **설치 전용**이라
+> 대상 파일이 하나라도 있으면 아무것도 복사하지 않고 중단한다. STM 은 이미 깔려 있으므로
+> 갱신에는 쓸 수 없다. 지금은 손으로 한 파일만 바꿔 넣었고, **갱신 길(`-Update` 류)이 없다는 것**은
+> 다음에 집을 거리다 — `install-airdropcaller-server.ps1` 이 `-AllowServerRunning` 으로 같은 문제를 푼 선례가 있다.
+
+## 5. 아직 확인하지 못한 것
+
+- **인게임에서 다시 보지 않았다.** 게임을 켜고 같은 순서(장비 편집 → 나옴 → 스태시 교환)로
+  **격자가 바로 뜨는지**와, 로그에 §1 의 경고 두 줄이 **나지 않는지**를 본다.
 - **같은 결함이 다른 것도 건드렸을 수 있다.** 비워지던 것은 세션만이 아니라
   `ActiveProfileInventoryController` 도였다. 장비 편집을 다녀온 뒤 같은 화면에서 여는 다른 것들
   (보험·기본 장비 프리셋·꾸러미)도 그동안 세션 없이 돌았을 수 있다 — 2026-11-02 에 "기본 장비
