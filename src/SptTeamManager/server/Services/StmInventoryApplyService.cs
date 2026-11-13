@@ -210,6 +210,36 @@ public class StmInventoryApplyService(
                 preservedCount++;
             }
 
+            // **쓰기 전에 최종 상태로 한 번 더 본다**(2026-11-13).
+            //
+            // 위의 판정은 **제출본**을 봤다. 그런데 실제로 쓰는 것은 제출본 + `PreservedItemIds`
+            // (편집기가 보여 주지 않아 제출본에 없던 것)다. 그래서 제출본에서 줄어든 것처럼 보이던
+            // 수가 보존으로 되돌아오면 **총량이 늘 수 있고**, 그것을 디스크 검사가 뒤늦게 잡아
+            // 쓰고 나서 되돌리게 된다(2026-11-13 제보: `12/70 AP-20 Slug` 680 → 700).
+            //
+            // 두 검사가 **같은 것을 보게** 맞춘다. 늦게 잡아 되돌리는 것보다 **아예 쓰지 않는 것**이 낫다.
+            var finalIndex = new Dictionary<string, Item>(StringComparer.Ordinal);
+            foreach (var item in finalItems)
+            {
+                if (item?.Id != null) finalIndex[item.Id.ToString()] = item;
+            }
+
+            var finalTwoTrees = new List<Item>();
+            foreach (var item in finalItems)
+            {
+                if (IsInTree(finalIndex, item, stashRootId!) || IsInTree(finalIndex, item, equipmentRootId!)) finalTwoTrees.Add(item);
+            }
+
+            var finalVerdict = ProfileInventoryApplyPolicy.Validate(
+                before, ToStates(finalTwoTrees), stashRootId!, equipmentRootId!, loadedItemIds, slotFacts);
+            if (!finalVerdict.Allowed)
+            {
+                LogConservationBreakdown(member.ProfileId, before, ToStates(finalTwoTrees), verdict.PreservedItemIds, originalById);
+                logger.Error($"[STM] 인벤토리 저장 거부(프로필 '{member.ProfileId}'): 쓸 최종 상태가 보존 판정을 통과하지 못했다: {finalVerdict.Reason} 아무것도 쓰지 않았다.");
+                rejectionReason = finalVerdict.Reason;
+                return false;
+            }
+
             // 유일한 쓰기.
             liveInventory = inventory;
             liveProfileId = profileId;
@@ -387,6 +417,74 @@ public class StmInventoryApplyService(
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// 보존 판정이 걸렸을 때 **무엇이 몇 개에서 몇 개가 됐는지**를 tpl 별로 적는다(2026-11-13).
+    ///
+    /// 사유 한 줄만으로는 "어디서 늘었나" 를 알 수 없었다 — 제출본에서 줄어든 것처럼 보이던 수가
+    /// `PreservedItemIds` 로 되돌아와 늘어나는 길이 있어서(위 "쓰기 전에 최종 상태로 한 번 더 본다"),
+    /// **보존된 것이 그 tpl 에 얼마나 보탰는지**를 함께 적어야 다음 재현에서 바로 짚인다.
+    /// </summary>
+    private void LogConservationBreakdown(
+        string profileId,
+        IReadOnlyList<InventoryItemState> before,
+        IReadOnlyList<InventoryItemState> after,
+        IReadOnlyList<string> preservedIds,
+        IReadOnlyDictionary<string, Item> originalById)
+    {
+        try
+        {
+            var beforeCounts = CountByTemplate(before);
+            var afterCounts = CountByTemplate(after);
+
+            var preserved = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var id in preservedIds)
+            {
+                if (!originalById.TryGetValue(id, out var item) || item?.Template == null) continue;
+                var tpl = item.Template.ToString();
+                preserved.TryGetValue(tpl, out var had);
+                preserved[tpl] = had + (int)(item.Upd?.StackObjectsCount ?? 1);
+            }
+
+            var templates = new HashSet<string>(beforeCounts.Keys, StringComparer.Ordinal);
+            templates.UnionWith(afterCounts.Keys);
+
+            var lines = new List<string>();
+            foreach (var tpl in templates)
+            {
+                beforeCounts.TryGetValue(tpl, out var was);
+                afterCounts.TryGetValue(tpl, out var now);
+                if (was == now) continue;
+                preserved.TryGetValue(tpl, out var kept);
+                lines.Add($"    {tpl}: {was} → {now} ({(now - was >= 0 ? "+" : string.Empty)}{now - was}){(kept > 0 ? $", 그중 보존된 것 {kept}" : string.Empty)}");
+            }
+
+            if (lines.Count == 0)
+            {
+                logger.Error($"[STM] 보존 내역(프로필 '{profileId}'): 수가 달라진 tpl 이 없다 — 자리나 구조 쪽 사유다.");
+                return;
+            }
+
+            logger.Error($"[STM] 보존 내역(프로필 '{profileId}') — 수가 달라진 tpl {lines.Count}종, 보존된 아이템 {preservedIds.Count}개:\n{string.Join("\n", lines)}");
+        }
+        catch (Exception ex)
+        {
+            logger.Warning($"[STM] 보존 내역을 적지 못했다: {ex.Message}");
+        }
+    }
+
+    private static Dictionary<string, int> CountByTemplate(IReadOnlyList<InventoryItemState> states)
+    {
+        var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (var state in states)
+        {
+            if (string.IsNullOrEmpty(state.TemplateId)) continue;
+            counts.TryGetValue(state.TemplateId, out var had);
+            counts[state.TemplateId] = had + Math.Max(1, state.StackCount);
+        }
+
+        return counts;
     }
 
     private static List<InventoryItemState> ToStates(IEnumerable<Item> items)
