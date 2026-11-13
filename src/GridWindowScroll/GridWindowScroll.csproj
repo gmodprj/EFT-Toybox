@@ -38,6 +38,11 @@
       <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <!-- Input.GetKey — 보조키를 누른 드래그를 가려내는 데 쓴다(ModifierAwareScrollRect). -->
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(SptDir)\EscapeFromTarkov_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>false</Private>
