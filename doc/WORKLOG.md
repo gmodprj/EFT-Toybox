@@ -8717,5 +8717,8 @@ BiC 의 `Bind in secure container and pouches`, Direct Reload 의 `取消也退�
 - 설치는 `tools/install-koreanconfig.ps1`. **DLL 은 바뀌지 않았다**(JSON 만 고쳤으므로 F12 를 다시 열면
   반영된다). 설치본 7개 파일을 md5 로 소스와 대조해 같은 것을 확인했고, `gen-installed-mods.mjs` 가
   사전 수를 185 → 188 로 다시 적었다(새 셋). `check-install-records.mjs` 는 `OK — 0/0`.
-- **게임 화면에서 본 적은 없다.** 관문은 `check-lang-coverage.mjs` 뿐이고, F12 를 열어 ECOTI 의 `열 색`
-  섹션이 한글로 뜨는지는 다음 기동에서 본다.
+- **화면으로 확인됐다 (2026-11-13).** 사용자가 F12 를 열어 ECOTI 의 **`열 색` 섹션이 한글로 뜨는 것**을
+  봤다. **덮개 수치만으로는 알 수 없는 자리다** — 사전이 100% 라도 그 글자가 화면에 닿는지는 별개다.
+  기동 로그도 같은 것을 말한다 —
+  `[F12 설정 한글화] 번역 사전 185개 모드 / 섹션 664 / 항목 5163 읽음` (11-13 09:12 기동,
+  설치 08:11~08:13 뒤다). 사전 수 185 가 `check-lang-coverage.mjs` 의 셈과 같다.
