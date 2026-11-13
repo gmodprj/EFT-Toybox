@@ -45,6 +45,10 @@ namespace pitTeam.Patches
         private const string StmTransferEmptySide = "(비어 있음)";
         private const string StmTransferNothingPicked = "건넬 것을 먼저 고르세요";
 
+        // 교환은 같은 프로필을 바꾼다 — 열려 있는 편집기가 든 것은 그 순간 묵는다.
+        private const string StmTransferEditorClosedToast =
+            "장비 편집을 닫았습니다 — 교환은 같은 팀원의 물건을 바꿉니다. 교환이 끝난 뒤 다시 여세요.";
+
         // 전송으로 보지 않는 드롭을 **조용히 두지 않는다**(2026-11-13 제보).
         // 가방 안의 것은 그날 함께 열렸으므로, 이제 이 문구는 **스태시 밖의 것**에만 뜬다.
         private const string StmTransferNotAtRootText =
@@ -173,6 +177,23 @@ namespace pitTeam.Patches
                 {
                     AddTeammateCreationFlow.ShowToast(StmTransferOpenFailedToast);
                     return;
+                }
+
+                // **열려 있는 장비 편집기를 먼저 닫는다**(2026-11-13).
+                //
+                // 둘은 같은 프로필을 바꾸는데 서로를 몰랐다. 편집기는 **열 때 받은 트리**를 기준선이자
+                // 제출본의 출처로 들고 있어서(`CaptureLoadoutEditorInitialState`), 그 사이에 교환이
+                // 같은 팀원의 물건을 바꾸면 편집기가 든 것이 **묵은 것**이 된다. 그 상태로 저장하면
+                // 보존 판정이 "없던 것이 생겼다"로 읽어 거절한다 — 2026-11-13 제보가 그것이다
+                // (산탄총을 탄창째 건넨 뒤 저장 → `12/70 AP-20 Slug` 680 → 700).
+                //
+                // 묵은 편집기를 그 자리에서 다시 채우는 길도 있지만, 그러면 **사람이 하던 편집이
+                // 조용히 사라진다.** 닫고 말해 주는 쪽을 고른다 — 다시 열면 바뀐 것이 보인다.
+                if (LoadoutEditorOverlayRoot != null && !StmGearEditSaving)
+                {
+                    CloseStmGearEditor();
+                    AddTeammateCreationFlow.ShowToast(StmTransferEditorClosedToast);
+                    pitFireTeam.Log.LogInfo("[STM] 스태시 교환: 열려 있던 장비 편집기를 닫았다(교환이 같은 프로필을 바꾼다).");
                 }
 
                 StmTransferAid = profile.AccountId;
