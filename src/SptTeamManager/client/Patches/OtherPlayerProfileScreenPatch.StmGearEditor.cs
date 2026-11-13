@@ -358,6 +358,16 @@ namespace pitTeam.Patches
             InventoryPlayerModelWithStatsWindow playerModelWindow)
         {
             if (StmGearEditOpening || StmGearEditSaving || LoadoutEditorOverlayRoot != null) return;
+
+            // **교환창이 떠 있으면 먼저 닫는다**(2026-11-13). 반대쪽(교환창을 열 때 편집기를 닫는 것)과
+            // 짝이고, 지키는 불변식은 하나다 — **둘은 동시에 열리지 않는다.** 둘 다 같은 프로필을
+            // 바꾸는데 서로를 모르므로, 겹쳐 두면 나중에 연 쪽이 **묵은 것**을 들고 저장하게 된다.
+            if (StmTransferOverlayRoot != null && !StmTransferBusy)
+            {
+                CloseStmTransferOverlay();
+                pitFireTeam.Log.LogInfo("[STM] 장비 편집: 열려 있던 스태시 교환 화면을 닫았다(둘은 같은 프로필을 바꾼다).");
+            }
+
             StmGearEditOpening = true;
             try
             {
