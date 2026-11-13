@@ -45,6 +45,13 @@ namespace pitTeam.Patches
         private const string StmTransferEmptySide = "(비어 있음)";
         private const string StmTransferNothingPicked = "건넬 것을 먼저 고르세요";
 
+        // 전송으로 보지 않는 드롭을 **조용히 두지 않는다**(2026-11-13 제보). 가방 안의 것을 끌거나
+        // 같은 쪽에 떨어뜨리면 아무 일도 일어나지 않아, 정책이 결함처럼 보였다.
+        private const string StmTransferNotAtRootText =
+            "가방·상자 안의 것은 따로 건널 수 없습니다 — 가방째 건네면 안에 든 것이 함께 갑니다.";
+        private const string StmTransferSameSideText =
+            "같은 쪽 안에서 옮기는 것은 이 창이 저장하지 않습니다 — 반대쪽으로 끌어야 건네집니다.";
+
         // 한 쪽에 한 번에 그리는 줄 수. 넘치면 쪽을 넘긴다 — 스크롤 부품을 새로 세우지 않는다.
         private const int StmTransferRowsPerPage = 12;
         private const float StmTransferRowHeight = 26f;
@@ -806,6 +813,33 @@ namespace pitTeam.Patches
             if (fromPlayer && targetIsTeammate) { toTeammate = true; return true; }
             if (fromTeammate && targetIsPlayer) { toTeammate = false; return true; }
             return false;
+        }
+
+        /// <summary>
+        /// 전송으로 보지 않는 드롭이 **우리 창 안**에서 일어났으면, 이유를 적고 막는다.
+        ///
+        /// 막는 이유 — 그대로 두면 EFT 가 자기 컨트롤러 안에서 옮긴다. 그런데 이 창의 두 격자는
+        /// 서버가 준 목록으로 세운 **복제 프로필**이라 그 이동은 어디에도 저장되지 않는다. 화면에서는
+        /// 옮겨진 것처럼 보이다가 다음 새로 고침에 사라진다 — 조용히 틀린 그림을 보여 주는 쪽이
+        /// 아무것도 안 움직이는 쪽보다 나쁘다.
+        ///
+        /// 2026-11-13 제보가 이것이다: 가방 안의 것을 골라 끌어도 "반영이 안 된다". 서버 로그에
+        /// 전송 요청 자체가 없었다 — 정책대로 거른 것인데 **말해 주지 않아** 결함처럼 보였다.
+        /// </summary>
+        internal static bool StmTransferBlocksDrop(Component targetGrid, Item dragged)
+        {
+            if (!StmTransferGridsReady || StmTransferOverlayRoot == null) return false;
+            if (targetGrid == null || dragged?.Id == null) return false;
+
+            bool targetIsTeammate = StmTransferRightPanel != null && targetGrid.transform.IsChildOf(StmTransferRightPanel.transform);
+            bool targetIsPlayer = StmTransferLeftPanel != null && targetGrid.transform.IsChildOf(StmTransferLeftPanel.transform);
+            if (!targetIsTeammate && !targetIsPlayer) return false;   // 우리 창 밖이다 — 원래대로 둔다.
+
+            bool atRoot = StmTransferSideOwns(StmTransferPair?.Player, dragged.Id)
+                || StmTransferSideOwns(StmTransferPair?.Teammate, dragged.Id);
+
+            SetStmTransferStatus(atRoot ? StmTransferSameSideText : StmTransferNotAtRootText);
+            return true;
         }
 
         // 그 스태시의 **바닥에 놓인 것**인가. 가방 안의 것을 따로 건네는 길은 열지 않는다(B1 정책).
