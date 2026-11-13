@@ -1798,8 +1798,15 @@ namespace pitTeam.Patches
             // 검색창이 편집기보다 오래 살아 사라진 지역 트리를 가리키지 않게 먼저 닫는다.
             CloseStmStashSearch();
             CloseLoadoutEditorOverlay();
-            ActiveProfileSession = null;
-            ActiveProfileInventoryController = null;
+
+            // **`ActiveProfileSession`·`ActiveProfileInventoryController` 를 여기서 비우지 않는다.**
+            // 편집기는 상세 화면 **위에 뜨는 덮개**이고, 그 둘은 화면의 것이다 — `TryApplyStmDetail` 이
+            // 화면을 세울 때 채우고(StmDetail §109~112), 화면이 닫힐 때 PIT 의 정리 코드
+            // (`ResetTeammateProfileUi`·Hide 후처리)가 비운다. 덮개를 닫으면서 비우면 **화면은 그대로인데
+            // 세션만 사라져**, 그 뒤 같은 화면에서 여는 것들이 세션 없이 돌아간다.
+            // 2026-11-13 인게임 제보가 그것이다 — 장비 편집에 들어갔다 나온 뒤 스태시 교환을 열면
+            // `스태시 교환: 세션이 비어 있어 격자를 세우지 못한다(목록으로 그린다)` 가 찍히고 옛 목록형이 떴다.
+            // 꾸러미 화면을 다녀오면 화면이 다시 서면서 세션이 채워져 격자가 돌아온다.
             StmGearEditStatusLabel = null;
         }
     }
