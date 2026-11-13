@@ -217,5 +217,5 @@ E:\Spt\SPT_Runtime\user\mods\UltimateFlea\config\levels.json   (파일 시각 11
 | 4 | **AirdropCaller 창의 잘리는 글자 넷** | §5-2 — 전부 XAML 폭·툴팁 수준이고 `--shot` 으로 전후를 견줄 수 있다 | `src/AirdropCaller.App/MainWindow.xaml` |
 | 5 | **ProfilePorter 메인 창에 `--shot` 을 낸다** | §5-3 — 관문이 없는 유일한 창이고, 전에 그 창에서 어긋남이 났다 | `src/ProfilePorter.App/App.xaml.cs`(인자 없는 `--shot <png>` 갈래) |
 | 6 | **인게임으로 닫히는 것 둘** (셋 중 하나는 닫혔다) | §2 부착 확인은 **2026-11-13 에 닫혔다**. 남은 것은 §3 가격표의 2·3단계와 §5-4 `조립만 보기` | 레이드 전에 `LogOutput.log` 를 따로 받아 둔다(기동마다 덮인다) |
-| 8 | ~~**STM 장비 편집기가 화면의 세션을 비우던 것**~~ **끝났다 (2026-11-13)** | 2026-11-13 제보로 드러났다. 덮개를 닫으며 화면의 `ActiveProfileSession` 까지 비워, 그 뒤 스태시 교환이 목록형으로 떨어졌다. 같은 화면의 다른 것들도 영향을 받았을 수 있다 | [fixes/2026-11-13-stm-gear-editor-clears-session.md](fixes/2026-11-13-stm-gear-editor-clears-session.md) — 설치·인게임 확인까지 끝났다. 남은 것은 `ActiveProfileInventoryController` 쪽(보험·기본 장비 프리셋) |
+| 8 | ~~**STM 장비 편집기가 화면의 세션을 비우던 것**~~ **끝났다 (2026-11-13)** | 2026-11-13 제보로 드러났다. 덮개를 닫으며 화면의 `ActiveProfileSession` 까지 비워, 그 뒤 스태시 교환이 목록형으로 떨어졌다. 그 화면에서 전역에 기댄 단추는 이것 하나였다 | [fixes/2026-11-13-stm-gear-editor-clears-session.md](fixes/2026-11-13-stm-gear-editor-clears-session.md) — 설치·인게임 확인까지 끝났다. 남은 확인은 없다(§5 바로잡음) |
 | 7 | `mod_scope` 를 누가 지웠는지 | §2 — `SkipDeadIds` 와 `SlotFilterSweep` 중 무엇인지. 사용에 지장은 없다 | 둘 중 하나를 끄고 서버만 다시 띄워 재면 한 번에 갈린다 |
