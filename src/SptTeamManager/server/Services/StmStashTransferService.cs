@@ -301,6 +301,10 @@ public class StmStashTransferService(
                 Picked = placed,
                 Moved = plan.MovingItemIds.Count,
                 ToTeammate = toTeammate,
+                // 돌고 있는 게임에 알려 줄 재료. 플레이어가 잃는 쪽이면 지울 id 만,
+                // 받는 쪽이면 **옮겨진 뒤의 모양**(부모·칸·좌표)까지 싣는다.
+                MovedIds = plan.MovingItemIds.ToList(),
+                PlayerItems = toTeammate ? [] : moving.ToList(),
             };
             logger.Info(
                 $"[STM] 스태시 전송 완료: {(toTeammate ? "플레이어 → 팀원" : "팀원 → 플레이어")} "
