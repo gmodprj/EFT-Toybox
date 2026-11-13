@@ -13,7 +13,7 @@ namespace pitTeam.Server.Callbacks;
 [Injectable]
 public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfileMemberStore store, StmProfileCatalog catalog,
     StmTransferJournal journal, StmGearEditService gearEdits, StmInventoryApplyService inventoryApply,
-    StmGearBuildCatalog gearBuilds,
+    StmGearBuildCatalog gearBuilds, StmGearBuildSaveService gearBuildSave,
     StmGearKitQuoteService kitQuotes, StmGearKitPurchaseService kitPurchases,
     // 계획 6 B2 — 플레이어 ↔ 팀원 스태시 전송(요청 2).
     StmStashTransferService stashTransfers,
@@ -153,6 +153,20 @@ public class StmProfileMemberCallbacks(HttpResponseUtil httpResponse, StmProfile
 
         var message = string.IsNullOrWhiteSpace(refusalReason)
             ? "빌드 목록을 읽지 못했습니다. 서버 로그를 확인하세요."
+            : refusalReason!;
+        return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
+    }
+
+    // 2026-11-13 사용자 요청 — 편집기의 "꾸러미로 저장". 쓰는 길이라 거절 사유를 그대로 돌려준다.
+    public ValueTask<string> GearBuildSave(string url, StmGearBuildSaveRequest request, MongoId sessionId)
+    {
+        if (gearBuildSave.TrySave(sessionId, request, out var saved, out var refusalReason) && saved != null)
+        {
+            return new ValueTask<string>(httpResponse.GetBody(saved));
+        }
+
+        var message = string.IsNullOrWhiteSpace(refusalReason)
+            ? "꾸러미로 담지 못했습니다. 서버 로그를 확인하세요."
             : refusalReason!;
         return new ValueTask<string>(httpResponse.GetBody<object?>(null, err: BackendErrorCodes.UnknownTradingError, errmsg: message));
     }
