@@ -39,6 +39,14 @@ namespace pitTeam.Patches
             {
                 if (!OtherPlayerProfileScreenPatch.StmTransferHandlesDrop(__instance, itemContext?.Item, out bool toTeammate))
                 {
+                    // 전송은 아니지만 **우리 창 안**이면 조용히 넘기지 않는다 — 이유를 적고 막는다.
+                    // 이 창의 격자는 복제 프로필이라, 원래 코드가 옮기면 저장되지 않는 이동이 화면에만 남는다.
+                    if (OtherPlayerProfileScreenPatch.StmTransferBlocksDrop(__instance, itemContext?.Item))
+                    {
+                        __result = Task.CompletedTask;
+                        return false;
+                    }
+
                     return true; // 우리 일이 아니다. 원래대로 돈다.
                 }
 
