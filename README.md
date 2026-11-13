@@ -6,7 +6,7 @@
 **2026-11-11 기준 모드 305개 / 설치 기록 15,948줄. 서버 모드 174개 · 게임 플러그인 246개**(그 뒤 자체 플러그인 둘을 넣었고 게임을 켜지 않아 아직 재지 않았다 — 다음 기동에 248).
 
 - 설치된 모드: [doc/INSTALLED-MODS.md](doc/INSTALLED-MODS.md) (목록, 자동 생성), [doc/MODS-GUIDE.md](doc/MODS-GUIDE.md) (무엇을 하는 모드인지)
-- 작업 이력: [doc/WORKLOG.md](doc/WORKLOG.md) · 가장 최근 인계: [doc/HANDOVER-2026-11-11.md](doc/HANDOVER-2026-11-11.md)
+- 작업 이력: [doc/WORKLOG.md](doc/WORKLOG.md) · 가장 최근 인계: [doc/HANDOVER-2026-11-13.md](doc/HANDOVER-2026-11-13.md)
 - 모드 추가·검증·되돌리기 절차: [doc/PROCEDURE.md](doc/PROCEDURE.md)
 - 설치본 추출·백업: [doc/EXPORT-2026-11-10.md](doc/EXPORT-2026-11-10.md)
 - 직접 만든 모드 19개: [doc/README.md](doc/README.md) 의 "직접 만든 모드" 절
