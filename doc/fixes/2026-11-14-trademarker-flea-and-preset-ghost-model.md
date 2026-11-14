@@ -183,3 +183,53 @@ problem that after a raid the menu background is blank and black."`(v1.3.0). 사
   ⓐ 레이드 뒤 게임을 다시 켜거나 ⓑ 그 모드를 빼는 것뿐이다(제작자에게 알릴 거리이기도 하다).
 - **꿈쩍도 하지 않으면** → 메뉴 모델이 아니다. 그때는 레이드가 두고 간 다른 것(전리품 미리보기 ·
   죽음 화면 · 맵 모드의 인물)으로 다시 좁힌다.
+
+### 답 — **죽음 화면이 띄운 "나를 죽인 놈" 의 모델**이다 (2026-11-14, 확정에 가깝다)
+
+사용자가 F12 로 재 보고 **셋을 한꺼번에 알려 줬다.**
+
+| 해 본 것 | 결과 | 읽는 법 |
+| --- | --- | --- |
+| 메뉴 모델 좌우 이동 | **안 움직인다** | 메뉴 환경 장면의 인물이 **아니다**(1775 는 무죄) |
+| 프리셋 총기 **휠 확대·축소** | **같이 커지고 작아진다** | 총기와 **같은 미리보기 장면·같은 카메라** 안에 있다 |
+| 프리셋 총기 **회전** | **따라 돌지 않는다** | 총기에 붙은 것이 아니라 **장면에 따로 놓인 객체**다 |
+
+그 장면에 사람 모델을 집어넣는 모드가 설치본에 하나 있다 —
+**[Combat Log](https://sp-mod.com/mod/3072) 1.0.0**(`maschine-CombatLog`). 설정에 이렇게 있다.
+
+```
+## Show the killer's native 3D model, equipment and level instead of your own
+Killer 3D model on death screen = true
+```
+
+**죽음 화면의 모델을 "내 캐릭터" 대신 "나를 죽인 놈" 으로 바꿔 끼우는 기능**이다. 그리고 그 화면이
+닫힌 뒤 그 모델이 **미리보기 장면에 남는다** — 그래서 프리셋·개조 화면마다 뒤에 비치고, 카메라를
+공유하니 확대·축소는 따라오고, 총기에 붙은 것이 아니니 회전은 따라오지 않는다.
+
+맞물리는 증거가 넷이다.
+
+1. **그 레이드에서 죽었다** — 게임 로그 `[CAS] HUD hidden (dead)`.
+2. **죽인 놈이 누구인지도 프로필에 있다** — `Stats.Eft.Aggressor` = **`Bradley`**(Savage).
+   같은 기동의 Raid Review 로그가 `Updating player Bradley ... type ISB SPECIAL FORCES|ISB` 라고 적었다.
+3. **그 봇의 차림이 사진과 맞는다** — ISB Special Forces 의 봇 프리셋은 `Earpiece` 슬롯에
+   **`5f60cd6cf2bcbb675b00dac6` = Walker's XCEL 500BT** 를 끼운다(헬멧에는 `mod_nvg` 도 붙는다 —
+   사진의 탄색 장치). **플레이어(Peltor ComTac VII)도 STM 팀원도 아닌 까닭**이 이것이다.
+4. **그 모드 스스로 그 기동에서 삐끗했다고 적었다** — 레이드 직후
+   `[Warning:maschine-CombatLog] CombatLog image rendering paused for this session: a game icon
+   request did not settle.`
+
+`CombatLogDeathScreenShowPatch` · `CombatLogKillListVictimShowPatch` 가 기동 때 걸리는 것도 확인했다
+(죽음 화면과 전적 목록의 **상대 모델**을 다루는 패치다). **3072 는 1.0.0 이 최신**이라 올려서
+고칠 수는 없고, Forge 댓글에도 아직 같은 제보는 없다.
+
+#### 고치는 길
+
+| 길 | 어떻게 | 값 |
+| --- | --- | --- |
+| **A. 그 기능만 끈다**(권함) | F12 → `maschine-CombatLog` → **`Killer 3D model on death screen` = false** | 죽음 화면이 바닐라(내 모델)로 돌아간다. 전투 기록·통계는 그대로 |
+| B. 그대로 쓰고 넘긴다 | 유령이 보이면 **게임만 다시 켠다** | 죽을 때마다 되풀이된다 |
+| C. 제작자에게 알린다 | 3072 에 제보(죽음 화면 모델이 미리보기 장면에 남는다) | 고쳐지면 A 를 되돌린다 |
+
+A 는 F12 에서 바로 먹으므로 **재시작이 필요 없다.** 설정 파일은
+`BepInEx\config\com.maschine.CombatLog.cfg` 다(게임이 떠 있을 때 손으로 고치면 종료할 때
+덮어쓰므로, **게임 안 F12 로** 바꾸는 것이 맞다).
