@@ -1,0 +1,24 @@
+[
+  {
+    "id": 2567,
+    "name": "CloudSix - Volumetric Clouds",
+    "version": "4.0.3",
+    "file": "2567__CloudSix_4.0.3.zip",
+    "bytes": 7795840,
+    "expected": 7795840,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2937,
+    "name": "Manimal's 1.0 Labs Office Backport",
+    "version": "2.0.1",
+    "file": "2937__Manimal-LabsBoiler-2.0.1.zip",
+    "bytes": 94290555,
+    "expected": 94290555,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 4
+  }
+]

@@ -1,0 +1,67 @@
+{
+  "stage": "update-2026-11-15-ua",
+  "spt": "4.1.6",
+  "note": "작고 독립 6개 — 전부 1MB 이하, 비결속. 한 묶음으로 넣고 한 번 기동한다.",
+  "mods": [
+    {
+      "group": "U-A",
+      "id": 3083,
+      "name": "Hj's Mod Source",
+      "version": "1.2.0",
+      "size": 43824,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3083/hjs-mod-source/1.2.0",
+      "from": "1.1.0"
+    },
+    {
+      "group": "U-A",
+      "id": 3082,
+      "name": "Hj's Task Item Indicator",
+      "version": "1.0.2",
+      "size": 9071,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3082/hjs-task-item-indicator/1.0.2",
+      "from": "1.0.1"
+    },
+    {
+      "group": "U-A",
+      "id": 2550,
+      "name": "Bring Back Concussion",
+      "version": "1.2.2",
+      "size": 12632,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2550/bring-back-concussion/1.2.2",
+      "from": "1.2.1"
+    },
+    {
+      "group": "U-A",
+      "id": 3207,
+      "name": "Better BepInEx",
+      "version": "1.0.4",
+      "size": 62862,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3207/better-bepinex/1.0.4",
+      "from": "1.0.3"
+    },
+    {
+      "group": "U-A",
+      "id": 3099,
+      "name": "ReflectSix",
+      "version": "1.0.2",
+      "size": 304161,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3099/reflectsix/1.0.2",
+      "from": "1.0.1"
+    },
+    {
+      "group": "U-A",
+      "id": 2706,
+      "name": "ORBIT 3.0",
+      "version": "3.1.1",
+      "size": 850896,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2706/orbit-30/3.1.1",
+      "from": "3.1.0"
+    }
+  ]
+}

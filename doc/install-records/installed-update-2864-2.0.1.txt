@@ -1,0 +1,12 @@
+﻿2864__Manimal-CSGas-2.0.1	BepInEx\plugins\CSGas\CSGasClient.dll
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\bundles.json
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\CSGasServer.dll
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\bundles\cough_animation.bundle
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\bundles\csgas_fx.bundle
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\bundles\weapon_grenade_m8230_container_manimal.bundle
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\bundles\weapon_grenade_rde68_yellow_hell26_container_manimal.bundle
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\bundles\weapon_grenade_rde78_green_hell26_container_manimal.bundle
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\config\gas_masks.json
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\db\CustomBuffs\cs_gas_buffs.json
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\db\CustomItems\cs_gas_grenade.json
+2864__Manimal-CSGas-2.0.1	SPT_Runtime\user\mods\CSGasServer\db\CustomItems\rda_gas_grenades.json

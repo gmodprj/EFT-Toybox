@@ -1,0 +1,17 @@
+{
+  "stage": "update-2026-11-15-ub",
+  "spt": "4.1.6",
+  "note": "공용 라이브러리 — WTT CommonLib. 다른 WTT 모드가 의존하므로 먼저 올린다.",
+  "mods": [
+    {
+      "group": "U-B",
+      "id": 2310,
+      "name": "WTT - CommonLib",
+      "version": "3.0.7",
+      "size": 251999,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2310/wtt-commonlib/3.0.7",
+      "from": "3.0.6"
+    }
+  ]
+}
