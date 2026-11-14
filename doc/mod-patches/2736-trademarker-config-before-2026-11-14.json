@@ -1,0 +1,10 @@
+{
+  "marking": {
+    "enabled": true,
+    "disabledTraderIds": []
+  },
+  "ragfairRestriction": {
+    "enabled": true,
+    "disabledTraderIds": []
+  }
+}

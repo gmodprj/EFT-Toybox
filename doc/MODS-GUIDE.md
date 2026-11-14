@@ -176,7 +176,7 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Hide Locked Flea](https://sp-mod.com/mod/3152) | 1.0.0 | 5차 | 게임+서버 | 플레아에서 잠긴(구매 불가) 매물을 숨기는 필터를 넣는다. |
 | [Refined Flea Offer List](https://sp-mod.com/mod/2623) | 1.2.0 | 5차 | 게임 | 플레아 카테고리 목록에서 아이템별 최저가만 보여 준다. |
 | [Quick Trader Load Times](https://github.com/JoelHauser/QuickTraderLoadTimes) | 1.0.0 | 6차 | 게임+서버 | **Forge 밖**(GitHub·MIT). 상인 화면과 플레아가 뜨는 속도를 끌어올린다 — 한 프레임에 칸 하나씩 그리던 것을 프레임 예산 안에서 여러 개씩, 상인을 바꿀 때 스태시를 한 프레임에 다시 그리던 것을 여러 프레임에 나눠서. 상인이 늘어난 지금 체감이 가장 큰 쪽이다. |
-| [Moe-TradeMarker](https://sp-mod.com/mod/2736) | 1.2.6 | 6차 | 게임+서버 | **결속** 상인에게서 산 물건에 배지를 붙여 전리품과 구분한다. 원하면 그 물건의 플레아 재판매를 막는다(기본 켜짐). QuickSell 연동. |
+| [Moe-TradeMarker](https://sp-mod.com/mod/2736) | 1.2.6 | 6차 | 게임+서버 | **결속** 상인에게서 산 물건에 배지를 붙여 전리품과 구분한다. 원하면 그 물건의 플레아 재판매를 막는다(기본 켜짐). QuickSell 연동. **2026-11-14: AIOTrader 를 재판매 금지에서 뺐다** — 그 상인이 DB 전부를 팔아 사실상 플리 판매가 막혀 있었다(`config.json` 의 `ragfairRestriction.disabledTraderIds`, 기록은 [mod-patches](mod-patches/2736-trademarker-aiotrader-flea-exception.md)). |
 | [OpenBarters](https://sp-mod.com/mod/3194) | 1.0.1 | 6차 | 게임 | 물물교환 대금을 요구 품목 대신 **상인이 사주는 아무 아이템**으로 치른다(합산 가치가 요구치를 넘으면 성립). |
 | [All Weapons Flea](https://sp-mod.com/mod/3200) | 1.0.1 | 6차 | 서버 | 상인 전용이던 총기를 플레아에서 사고팔 수 있게 한다(무기 238종, BSG 제한 33개 해제). 총기 파츠를 모으는 데 직접 도움이 된다. |
 | [Ref Rework](https://sp-mod.com/mod/3014) | 1.0.0 | 6차 | 게임+서버 | 도그태그와 레가 메달을 Ref에 팔아 GP 코인으로 바꾼다. 레벨이 높은 태그일수록 비싸다. **Ledger와 도그태그 용처가 겹치므로** 게임에서 보고 한쪽을 끄는 편이 낫다. |
