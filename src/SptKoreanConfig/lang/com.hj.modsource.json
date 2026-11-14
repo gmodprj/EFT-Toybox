@@ -2,7 +2,8 @@
   "guid": "com.hj.modsource",
   "name": "물건 출처 모드 (Mod Source)",
   "sections": {
-    "General": "일반"
+    "General": "일반",
+    "Handbook": "도감"
   },
   "settings": {
     "General/debugLogging": {
@@ -12,6 +13,10 @@
     "General/showLowConfidence": {
       "name": "확실하지 않은 추측도 보이기",
       "desc": "물건의 내부 이름이 설치된 모드의 GUID 나 어셈블리 이름과 맞는 것만으로 한 추측도 보인다. 그것은 일부 모드가 따르는 관례일 뿐 규칙이 아니고, 복제한 물건이 원래 모드의 이름을 그대로 들고 있을 수 있으므로 기본으로 꺼져 있다. 보일 때는 뒤에 ? 가 붙는다."
+    },
+    "Handbook/alwaysScrollModNames": {
+      "name": "모드 이름 항상 흘리기",
+      "desc": "도감의 모드 거르개에서 이름이 길어 잘리는 것을 마우스를 올렸을 때만이 아니라 늘 흘려 보여 준다."
     }
   }
 }
