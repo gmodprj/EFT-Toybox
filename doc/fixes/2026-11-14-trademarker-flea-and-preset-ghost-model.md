@@ -226,7 +226,13 @@ Killer 3D model on death screen = true
 
 | 길 | 어떻게 | 값 |
 | --- | --- | --- |
-| **A. 그 기능만 끈다**(권함) | F12 → `maschine-CombatLog` → **`Killer 3D model on death screen` = false** | 죽음 화면이 바닐라(내 모델)로 돌아간다. 전투 기록·통계는 그대로 |
+| **A. 그 기능만 끈다**(권함) | F12 → **`전투 기록 (Combat Log)`** → **`레이드 뒤 화면`** → **`사망 화면에 가해자 모델`** = 끔 | 죽음 화면이 바닐라(내 모델)로 돌아간다. 전투 기록·통계는 그대로 |
+
+> **F12 에서 `maschine-CombatLog` 로는 안 찾아진다.** 우리 `SptKoreanConfig` 가 이름까지 한글로
+> 바꾸므로, 검색창에는 **`전투 기록`** 또는 **`가해자`** 를 넣는다. 영문 이름과 한글 이름의 짝은
+> `src/SptKoreanConfig/lang/com.maschine.CombatLog.json` 에 있다(`Killer 3D model on death screen`
+> → `사망 화면에 가해자 모델`). **다른 모드를 F12 에서 찾을 때도 같다** — 사전이 있는 모드는
+> 영문 GUID·영문 설정 이름으로 검색되지 않는다.
 | B. 그대로 쓰고 넘긴다 | 유령이 보이면 **게임만 다시 켠다** | 죽을 때마다 되풀이된다 |
 | C. 제작자에게 알린다 | 3072 에 제보(죽음 화면 모델이 미리보기 장면에 남는다) | 고쳐지면 A 를 되돌린다 |
 
