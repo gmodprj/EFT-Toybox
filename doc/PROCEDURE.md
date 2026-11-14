@@ -106,6 +106,8 @@
 | 게임 | `[Error][DirectReload] Patch FAILED to enable: FikaHostReloadMirror — Fika ObservedFirearmController not found` | 같은 이유. **Error 등급으로 찍히지만 정상**이다. Fika를 쓰지 않으면 이 패치는 걸 대상이 없다 |
 | 게임 | `WTT-ClientCommonLib [HideoutIcons]/[MarkTextures] No ... in manifest` | 해당 리소스를 쓰는 모드 없음 |
 | 게임 | `DanW-OpenSesame Cannot find translations for locale "xx"` | 번역 없는 언어는 영어 사용(한국어는 해당 없음) |
+| 게임 | `[Error][SPTBattleAmbience] Couldnt find map config for location: labyrinth`·`: icebreaker` | 포팅본 맵 둘에 `Assets\configs\maps\<맵>.json` 이 없다. 그 맵에서만 전투 소음이 빠지고 나머지는 그대로다(2026-11-14 실측) |
+| 게임 | `[Error][Manimal-Icebreaker] [Firewall] SkillsExtended.Client.Skills's hook ... threw on the icebreaker — swallowed` | Icebreaker 백포트가 제 방화벽으로 **일부러 삼킨 것**이다(그 모드의 훅만 건너뛰고 뒤의 훅은 돈다). 다만 그 맵에서는 Skills Extended 의 기동 훅이 안 돈다 |
 | 서버 | `[SVM] Initialization cancelled: Preset or/and Loader is not found` (Error 등급) | 프리셋 미생성. 지금은 해당 없음 |
 | 서버 | `[SVM] Remove backpack restrictions - empty filters ... Not an error` | SVM 배낭 제한 해제 옵션 안내 |
 | 서버 | `트레이더 638f541a29ffd1183d187f57 찾을 수 없음` | 가격 조회 시 임시 값 대체 |
