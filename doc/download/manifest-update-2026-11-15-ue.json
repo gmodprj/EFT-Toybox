@@ -1,0 +1,27 @@
+{
+  "stage": "update-2026-11-15-ue",
+  "spt": "4.1.6",
+  "note": "비결속 중형 둘.",
+  "mods": [
+    {
+      "group": "U-E",
+      "id": 2567,
+      "name": "CloudSix - Volumetric Clouds",
+      "version": "4.0.3",
+      "size": 7795840,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2567/cloudsix-volumetric-clouds/4.0.3",
+      "from": "4.0.2"
+    },
+    {
+      "group": "U-E",
+      "id": 2937,
+      "name": "Manimal's 1.0 Labs Office Backport",
+      "version": "2.0.1",
+      "size": 94290555,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2937/manimals-10-labs-office-backport/2.0.1",
+      "from": "2.0.0"
+    }
+  ]
+}

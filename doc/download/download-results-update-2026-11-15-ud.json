@@ -1,0 +1,24 @@
+[
+  {
+    "id": 2010,
+    "name": "Definitive Weapon Variants",
+    "version": "5.0.1",
+    "file": "2010__DefinitiveWeaponVariants.zip",
+    "bytes": 2684058,
+    "expected": 2684058,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  },
+  {
+    "id": 2419,
+    "name": "Amonya - Ammo Loving Trader & Quester",
+    "version": "2.2.1",
+    "file": "2419__Amonya.zip",
+    "bytes": 98457225,
+    "expected": 98457225,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 6
+  }
+]

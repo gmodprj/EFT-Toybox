@@ -1,0 +1,37 @@
+{
+  "stage": "update-2026-11-15-uc",
+  "spt": "4.1.6",
+  "note": "결속 소형 셋 — 하나씩. 2844 는 config/economy.json·levels.json 을 되입힌다(레벨 잠금 끈 상태).",
+  "mods": [
+    {
+      "group": "U-C",
+      "id": 2844,
+      "name": "Ultimate Flea",
+      "version": "1.3.2",
+      "size": 665795,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2844/ultimate-flea/1.3.2",
+      "from": "1.3.1"
+    },
+    {
+      "group": "U-C",
+      "id": 2930,
+      "name": "ECOTI - Enhanced Clip-On Thermal Imager",
+      "version": "3.5.1",
+      "size": 33014333,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2930/ecoti-enhanced-clip-on-thermal-imager/3.5.1",
+      "from": "3.5.0"
+    },
+    {
+      "group": "U-C",
+      "id": 2864,
+      "name": "Manimal's CS Gas",
+      "version": "2.0.1",
+      "size": 35367355,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2864/manimals-cs-gas/2.0.1",
+      "from": "2.0.0"
+    }
+  ]
+}
