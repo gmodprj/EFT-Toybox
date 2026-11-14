@@ -132,5 +132,54 @@ DLL·JSON 전부를 훑었다) — 게임이 들고 있는데 한국어 번역�
   "꾸미기 화면을 열지 않은 채" 조건과 맞아떨어진다.
 
 **다만 1순위(3069)를 확정한 것은 아니다.** 재시작으로 모든 후보가 함께 초기화됐기 때문이다.
-다음에 다시 보이면 **그 전에 연 화면**(캐릭터 꾸미기 · 머리/목소리 고르기 · 캐릭터 미리보기를
-끌어 돌린 적이 있는지)을 적어 두면 한 번에 갈린다.
+다음에 다시 보이면 **그 전에 연 화면**을 적어 두면 한 번에 갈린다.
+
+### 다시 나왔다 — 방아쇠는 **레이드**다 (2026-11-14 21:4x)
+
+사용자가 **아이스브레이커 레이드를 다녀온 뒤 같은 화면에서 재현**했다. 이것으로 앞의 세 후보
+(꾸미기 UI · 머리/목소리 · UI Fixes 미리보기)는 **전부 1순위에서 내려간다** — 그 셋은 해당 화면을
+열어야 움직이는데, 이번에는 레이드만 다녀왔다.
+
+#### 유령은 **플레이어도 팀원도 아니다**
+
+사진의 검은 덩어리에 **`WALKER'S XCEL`** 이 찍혀 있다(`5f60cd6cf2bcbb675b00dac6`
+Walker's XCEL 500BT). 그런데
+
+- 플레이어(Nomad)는 **Ops-Core FAST MT Super High Cut (White Tusk)** + **Peltor ComTac VII** 을
+  쓰고 있고, **오늘 저녁 프로필 백업 네 벌(21:01·21:14·21:32·21:39) 전부 같다** — 바뀐 적이 없다.
+- STM 팀원을 포함한 **프로필 11개 어디에도 XCEL 을 낀 캐릭터가 없다.**
+
+그러므로 **플레이어 모델의 잔상이 아니라 제3의 모델**이다 — 메뉴 환경 장면이 들고 있는
+장식용 인물(바닐라 메뉴 배경의 고정 모델)로 보인다.
+
+#### 레이드 뒤에 **메뉴 3D 장면을 놓친 모드가 하나 있다**
+
+그 기동의 게임 로그에서, 레이드가 시작된 자리(`[CAS] HUD shown (in-raid)`)부터 끝까지
+**한 모드만** 메뉴의 3D 장면을 못 찾는다고 **163줄** 적는다.
+
+```
+[Warning:MoxoPixel-MenuOverhaul] [Layout] EnvironmentUISceneFactory GameObject not found in Environment UI.
+[Warning:MoxoPixel-MenuOverhaul] [Layout] UpdateLayoutElements - Could not find environment objects.
+[Warning:MoxoPixel-MenuOverhaul] [Layout] DisableCameraMovement - Essential EnvironmentObjects not found.
+```
+
+**[WTT - Menu Overhaul](https://sp-mod.com/mod/1775) 1.3.0**(플러그인 이름 `MoxoPixel-MenuOverhaul`)이다.
+이 모드는 메인 메뉴의 **환경 UI 장면**(배경·카메라·사람 모델의 자리와 크기)을 손보는데,
+레이드를 다녀오면 그 장면이 다시 세워지면서 **모드가 자기 대상을 못 찾는다.** 그러면
+자리잡기(`UpdateLayoutElements`)도 카메라 고정(`DisableCameraMovement`)도 걸리지 않아,
+장면의 인물이 기본 자리·기본 크기로 남아 덮개 화면 위로 비친다 — 지금 증상과 맞는다.
+
+제작자 쪽에도 같은 계열의 제보가 있다 — Forge 댓글 `"Since your newest update i have the weird
+problem that after a raid the menu background is blank and black."`(v1.3.0). 사람 모델 크기가
+어긋나는 버그는 **제작자가 직접 인정**했다(`Enable Larger Player Model` 을 쓰지 말라고 답했다 —
+우리 설정은 이미 `false` 다). **1775 는 지금이 최신**이라 올려서 고칠 수는 없다.
+
+#### 가리는 법 (게임 안에서 10초, 재시작 없이)
+
+유령이 떠 있는 그 상태에서 **F12 → MoxoPixel-MenuOverhaul → `Position Player Model Horizontal`**
+를 좌우로 움직인다.
+
+- **유령이 따라 움직이면** → 메뉴 환경 장면의 인물이 맞다. **1775 가 범인이고**, 고치는 길은
+  ⓐ 레이드 뒤 게임을 다시 켜거나 ⓑ 그 모드를 빼는 것뿐이다(제작자에게 알릴 거리이기도 하다).
+- **꿈쩍도 하지 않으면** → 메뉴 모델이 아니다. 그때는 레이드가 두고 간 다른 것(전리품 미리보기 ·
+  죽음 화면 · 맵 모드의 인물)으로 다시 좁힌다.
