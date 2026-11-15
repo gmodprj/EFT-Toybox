@@ -1,0 +1,169 @@
+# 측정 — 프레스티지 이전 창고 (R1~R3)
+
+- 날짜: 2026-11-15
+- 설계: `doc/specs/2026-11-15-prestige-stash-relax-design.md` §6 의 세 가지를 잰 결과
+- 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
+- 도구: `ilspycmd` 11.2.0 (dotnet 전역 도구)
+
+**셋 가운데 둘이 코드로 끝났다 — 게임을 재볼 필요가 없었다.** 남은 하나(격자 상한)만 화면으로
+확인한다.
+
+| 측정 | 결과 | 어떻게 쟀나 |
+| --- | --- | --- |
+| **R1** 적용 순서 | **우리가 2540 보다 뒤다. 늘 그렇다** | SPT·2540 어셈블리 디컴파일 |
+| **R2** 필터 판정 | **분류 id 가 사슬 전체를 연다. 뿌리 `Item` 하나로 전부 열린다** | 클라이언트 어셈블리 디컴파일 |
+| **R3** 격자 상한 | **코드로는 답이 없다** — 격자는 칸 수대로 커지고 늘이지 않는다(칸 63px). 화면이 어디서 잘리는지는 봐야 안다 | 같음 |
+
+## R1 — 적용 순서: 우리가 뒤다
+
+SPT 4.1.6 은 `IOnLoad` 를 **두 단계로** 돌리고, 양쪽 다 `Injectable.TypePriority` **오름차순**이다
+(`SPTarkov.DI` 의 `orderby tRef.InjectableAttribute.TypePriority`).
+
+| 단계 | 어디 | 조건 |
+| --- | --- | --- |
+| 앞 | `SPT.Server.dll` 의 `RunPreSptLoadCallbacks` (웹 서버 기동 **전**) | `0 <= TypePriority < 200000` |
+| 뒤 | `SPTStartupHostedService.StartAsync` (번들 적재 뒤) | `TypePriority >= 200000` |
+
+그리고
+
+- **2540** 의 `ContentBackportPrestigesServer.OnLoad.PreSPTLoad` 는
+  `[Injectable(InjectionType.Singleton, int.MaxValue) { TypePriority = 100003 }]` 이다. IL 의
+  attribute 블롭이 `01 00 02 00 00 00 ff ff ff 7f 01 00 54 08 0c TypePriority a3 86 01 00` —
+  위치 인자로 `int.MaxValue` 를 주고 **이름 있는 `TypePriority` 로 0x186a3 = 100003 을 덮어쓴다**
+  (이름 있는 쪽이 생성자 뒤에 대입되므로 이쪽이 이긴다). 100003 < 200000 이므로 **앞 단계**다.
+- **우리**(`PrestigeStashRelax`)는 `[Injectable(InjectionType.Singleton, int.MaxValue)]` 이고
+  `TypePriority` 를 따로 안 주므로 `int.MaxValue` → **뒤 단계**다.
+
+→ **단계가 갈려 있어 순서가 뒤집힐 일이 없다.** 설계 §6-3 이 걱정한 "우리가 먼저 돌아 4단계
+원본을 뜨는" 일은 일어나지 않는다.
+
+덤으로, 2540 이 **리스트를 갈아끼우지 않는다**는 것도 확인했다.
+
+```csharp
+PrestigeElement val = databasePrestiges.Elements.FirstOrDefault(e => e.Id == prestige.Id);
+if (val != null) { int index = databasePrestiges.Elements.IndexOf(val); databasePrestiges.Elements[index] = prestige; }
+else databasePrestiges.Elements.Add(prestige);
+```
+
+제자리에서 바꾸고 모자란 것만 더한다(P5·P6). 그래도 스냅샷은 **id 를 열쇠로** 둔 그대로 간다 —
+3332 가 어떻게 할지는 아직 모른다.
+
+## R2 — 필터 판정: 분류가 사슬 전체를 연다
+
+클라이언트의 전송 화면은 `EFT.UI.PrestigeTransferItemsState` 이고, 품목 판정은 한 줄이다.
+
+```csharp
+if (!_stashConfig.Filters.Contains(context.Item.Template))   // 못 넣는다
+```
+
+`Filters` 는 `PrestigeTemplate.ItemsTransferConfig.TransferStashConfig.ItemFilter` 이고,
+
+```csharp
+public bool Contains(ItemTemplate item) {
+    if (_includedItems.Contains(item)) return !_excludedItems.Contains(item);
+    ...
+}
+```
+
+`_includedItems` · `_excludedItems` 는 `UnifiedHandbookEntities : GlobalConfiguration.TraderSettings.HandbookEntities` 다.
+**여기가 요점이다** — 그 생성자가 받은 id 목록을 `Items` 와 `Categories` **양쪽에 똑같이** 넣는다.
+
+```csharp
+public HandbookEntities(IReadOnlyCollection<MongoID> entities) { Items = entities; Categories = entities; }
+
+public virtual bool Contains(ItemTemplate itemTemplate) {
+    foreach (var item in Items)      if (item == itemTemplate._id) return true;
+    foreach (var category in Categories) if (itemTemplate.IsChildOf(category)) return true;
+    return false;
+}
+```
+
+그리고 `ItemTemplate.IsChildOf` 는 **부모 사슬을 뿌리까지 거슬러 간다**(자신은 빼고 `Parent`
+에서 시작한다).
+
+```csharp
+public bool IsChildOf(string parentTemplateId) {
+    ItemTemplate parent = Parent;
+    while (true) { if (parent != null) { if (parent._id == parentTemplateId) break; parent = parent.Parent; continue; } return false; }
+    return true;
+}
+```
+
+따라서 `includedItems` 에 적는 id 는 **모두 "그 아이템" 이면서 동시에 "그 분류의 모든 자손"** 이다.
+설계 §6-1 의 물음 둘이 한꺼번에 풀린다.
+
+- `Backpack`(`5448e53e4bdc2d60728b4567`) 하나로 **배낭 전부**가 열린다. 구체 id 를 펼쳐 넣는
+  대비책(설계 §6-1 의 "안 통하면")은 **필요 없다.**
+- 뿌리 `Item`(`54009119af1c881c07000029`) 하나로 **그 아래 전부**가 열린다. 게임의 거의 모든
+  템플릿이 그 사슬에 있다.
+- `excludedItems` 는 **빼기로 작동한다** — 여섯 단계 모두 비어 있으니, "전부 허용 + 몇 가지만
+  빼기" 가 쓸 수 있는 조합이다(설계 §8 의 그 자리).
+
+## R3 — 격자 상한: 코드로는 답이 없다
+
+격자는 설정값대로 그대로 만들어진다.
+
+```csharp
+_transferGrid = new ReferenceGrid("transferGrid", _stashConfig.Size.x, _stashConfig.Size.y,
+    canStretchVertically: false, canStretchHorizontally: false, Array.Empty<ItemFilter>(), stash, canAcceptItems: true);
+```
+
+- `Size` 는 `xCellCount` · `yCellCount` 를 그대로 받은 `Vector2Int` 다 — **가로 8 은 데이터가
+  그런 것일 뿐이고 코드가 막는 값이 아니다.**
+- `canStretchVertically: false` · `canStretchHorizontally: false` — 격자는 **늘어나지도 줄지도
+  않는다.** 칸 수가 곧 크기다.
+- 격자 자체에는 필터가 없다(`Array.Empty<ItemFilter>()`) — 품목 판정은 위의 `_stashConfig.Filters`
+  한 곳뿐이다.
+- 뷰(`ArenaEftItemTransferGridView : GridView`)는 `GridView.Show` 에서
+  `_rectTransform.sizeDelta = cellPixelSize` 로 **칸 수만큼 커진다**. **칸 하나는 63px** 이다
+  (`(value - x) * 63`). `GridView` 자체에는 스크롤이 없다 — 그래서 우리가 `GridWindowScroll` 을
+  만들었던 것이고, 그 모드는 `GridWindow.ShowContents` 를 잡으므로 **이 화면은 받쳐 주지 않는다.**
+
+남은 것은 **그 격자를 담은 화면이 어디서 잘리는지**이고, 그것은 Unity 프리팹의 레이아웃이라
+코드에 없다. `ObtainPrestigeScreen` 이 가진 수는 `RECT_WIDTH = 1920` · `OFFSET = 250` 뿐이다.
+→ **화면으로만 확인된다.** `isb-subtitles-leave-no-log` 와 같은 종류다.
+
+### 그래서 어떻게 재나
+
+설치본 설정을 **세로 +4** 로 두고 한 번 본다. 그러면 P1 8×7(56칸) … P6 8×12(96칸)이고,
+세로 12칸이면 `12 × 63 = 756px` 다. 잘리지 않으면 올리고, 잘리면 내린다. 한 번 보는 데
+서버 재시작이 한 번 드니 **사다리를 성급히 올리지 않는다.**
+
+## 지금 설치본에 들어 있는 것
+
+`E:\Spt\SPT_Runtime\user\mods\PrestigeStashRelax\` (DLL 26,112 bytes, 2026-11-15 20:55 빌드)
+
+| 설정 | 값 | 왜 |
+| --- | --- | --- |
+| `Apply` | **true** | R1·R2 가 끝났으므로 재기만 할 이유가 없다 |
+| `AllowBags` | **true** | 사용자가 첫 순위로 꼽은 것 — 가방·배낭·케이스 |
+| `AllowVest` | **true** | 조끼도 `ArmoredEquipment` 가 아니라 막혀 있었다 |
+| `YCellAdd` | **4** | R3 측정용 첫 칸. P1 8×7 … P6 8×12 |
+| `Debug` | true | 단계마다 한 줄씩 로그에 |
+| 나머지 | false | 돈·탄·열쇠·보안 컨테이너·전부 허용은 아직 안 켠다 |
+
+저장소의 기본 `config.jsonc` 는 `Apply: false` 그대로 둔다 — 새로 설치하는 사람이 모르는 채로
+값이 바뀌지 않게.
+
+## 반영 시점 — 서버를 다시 켜야 한다
+
+측정을 시작한 21:0x 시점에 **서버는 14:55 부터, 게임은 16:05 부터 돌고 있었다**(프로필
+`6adc2669…`(Nomad, 프레스티지 2)가 21:10 에 쓰였다 — 그때도 플레이 중이었다). 서버 모드는
+기동 때 한 번 도므로 **다시 켜야 반영된다.** 끄는 일은 하지 않았다 —
+`never-stop-server-or-game-unasked`. 파일만 넣었고(`-AllowServerRunning`), 지금 돌고 있는 서버는
+옛 상태 그대로다.
+
+다시 켠 뒤 볼 것:
+
+1. 서버 로그 `[PrestigeStashRelax] 프레스티지 단계 N개를 보았다.` → **6** 이어야 한다(4 면 R1 이
+   뒤집힌 것이다).
+2. `[PrestigeStashRelax] 6단계에 적용했다.`
+3. `user\mods\PrestigeStashRelax\prestige-stash-report.json` 의 `before` / `after`
+4. 게임에서 프레스티지 화면 → 전송 화면: 격자가 잘리지 않는지, **가방이 끌리는지**
+
+### 측정 중 바로잡은 것
+
+처음에 Git Bash 에서 `tasklist.exe /FO CSV` 로 기동 여부를 보고 **"둘 다 꺼져 있다"고 잘못
+판정했다.** Git Bash 가 `/FO` 를 경로로 바꿔 먹어 출력이 비었던 것이다
+(`git-bash-eats-leading-slash-routes`). PowerShell 의 `Get-Process` 로 다시 재서 둘 다 돌고 있는
+것을 확인했다. **기동 여부는 PowerShell 로 본다.**
