@@ -1,7 +1,7 @@
 # 설계 — 프레스티지 이전 창고의 크기와 품목 제한을 F12 에서 풀기 (PrestigeStashRelax)
 
 - 날짜: 2026-11-15
-- 상태: R0~R3 끝(8×12 는 안 잘린다). 분류만으로는 가방이 거부돼 CategoryExpander 를 더했고, 서버 재시작 뒤 다시 확인해야 한다. 내용물이 든 가방은 클라이언트가 박아 둔 규칙으로 못 넘긴다.
+- 상태: R0~R3 끝. 8×12 안 잘림, 필터는 CategoryExpander 로 풀림(검사로 확인). 내용물이 든 가방을 막던 클라이언트 규칙은 **플러그인으로 뗐다**(PrestigeStashRelaxClient). 게임에서 끌어 보는 확인만 남았다.
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 전제: `Content Backport - Prestiges` 1.1.0(모드 2540) 설치됨 — P1~P6 이 들어와 있다.
 
@@ -236,8 +236,31 @@ F12 에서 값 바꿈
   뿌리까지** 거슬러 맞춘다. 그래서 `Backpack` 하나로 배낭 전부, 뿌리 `Item` 하나로 전부가 열린다.
   그런데 게임에서 배낭을 끌자 **필터 쪽 거부**(`UI/Trader/TransferLocked`)가 떴다 — 분류가 그 배낭에
   닿지 않았다. **펼쳐 넣는 대비책이 필요했다**(`CategoryExpander`, `ExpandCategories: true`).
-  그리고 둘째 관문을 놓쳤다 — `CompoundItem { IsEmpty: false }` 라서 **내용물이 든 가방은 필터와
-  무관하게 못 넘긴다.** `excludedItems` 는 빼기로 작동한다.
+  펼치기 뒤 `ProbeIds` 검사로 그 배낭 id 가 허용 목록에 들어간 것을 확인했다 — **필터는 풀렸다.**
+  그리고 둘째 관문을 놓쳤었다 — `CompoundItem { IsEmpty: false }` 라서 **내용물이 든 가방은 필터와
+  무관하게 거부된다.** 데이터로는 못 풀고 **플러그인으로 뗐다**(§5-6). `excludedItems` 는 빼기로
+  작동한다.
+
+### 5-6. 클라이언트 플러그인 — 박혀 있는 규칙을 뗀다
+
+서버 데이터로 풀 수 없는 관문이 하나 있다고 해서 **못 하는 것이 아니다.** 박혀 있는 규칙을 떼는
+것이 BepInEx 플러그인이 하는 일이고, 이 저장소의 `GogglesWheel` 은 아예 게임 코드의
+`FirstOrDefault()` 하나를 고치려고 만든 것이다.
+
+`src/PrestigeStashRelax.Plugin` → `PrestigeStashRelaxClient.dll`
+(`BepInEx\plugins\PrestigeStashRelax`).
+
+- 패치 대상: `EFT.UI.PrestigeTransferItemsState` 의
+  `EFT.InventoryLogic.SelectableItemContext.ISelectionContext.IsActive` (명시적 인터페이스 구현이라
+  IL 이름에 점이 들어간다 — IL 로 확정했다).
+- **Postfix** 다. 원본을 돌린 뒤 **거부 사유(`tooltip`)를 보고** 되돌린다. 그 문자열이 어느 규칙이
+  걸렸는지 알려 주므로 규칙을 하나씩 가려 끌 수 있다 — Prefix 로 건너뛰면 그 구분이 사라진다.
+- F12 「프레스티지 이전 창고 풀기」: 켜기 / **내용물이 든 가방도 넘기기**(기본 켬) / 품목 제한
+  무시(기본 끔) / 자세히 적기.
+- 메서드를 못 찾으면 **조용히 죽지 않고** 로그에 에러를 남기고 아무것도 패치하지 않는다.
+
+이것으로 §3 의 "가방에 채워 통째로" 가 선다 — 서버가 이미 `GetItemWithChildren` 으로 자식째 집어
+우편으로 보내고 아무 검사도 하지 않기 때문이다.
 
 ### 6-2. 격자를 얼마나 키울 수 있나
 

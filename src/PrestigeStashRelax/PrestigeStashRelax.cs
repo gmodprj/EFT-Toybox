@@ -130,7 +130,22 @@ public class PrestigeStashRelax(
             }
 
             Write(stash, planned);
-            after.Add(new StageReport(id, planned.XCellCount, planned.YCellCount, planned.IncludedItems.Count));
+            Dictionary<string, bool>? probe = null;
+            if (config.ProbeIds.Count > 0)
+            {
+                var finalSet = new HashSet<string>(planned.IncludedItems, StringComparer.Ordinal);
+                probe = config.ProbeIds.ToDictionary(x => x, x => finalSet.Contains(x), StringComparer.Ordinal);
+
+                foreach (var (probeId, hit) in probe)
+                {
+                    logger.Info($"[PrestigeStashRelax] {id}: 확인 {probeId} → {(hit ? "허용 목록에 있다" : "없다")}");
+                }
+            }
+
+            after.Add(new StageReport(id, planned.XCellCount, planned.YCellCount, planned.IncludedItems.Count)
+            {
+                Probe = probe,
+            });
 
             if (config.Debug)
             {
@@ -225,5 +240,11 @@ public class PrestigeStashRelax(
     }
 
     /// <summary>보고서 한 줄.</summary>
-    public sealed record StageReport(string Id, int X, int Y, int IncludedCount);
+    public sealed record StageReport(string Id, int X, int Y, int IncludedCount)
+    {
+        /// <summary>
+        /// <c>ProbeIds</c> 로 물어본 id 가 이 단계의 허용 목록에 들어갔는지. 물어보지 않았으면 비어 있다.
+        /// </summary>
+        public Dictionary<string, bool>? Probe { get; init; }
+    }
 }
