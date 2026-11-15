@@ -54,3 +54,54 @@
 - 제작자가 댓글에서 **`PLATE` 라는 모드와는 호환되지 않는다**고 직접 밝혔다(우리는 쓰지 않는다 —
   설치본의 비슷한 이름은 `Unrestricted Armor Plate`·`Name Plate` 로 다른 모드다).
 - 제작자가 **Claude Sonnet 으로 개발을 도왔다**고 페이지에 적어 두었다(판단 거리는 아니고 사실).
+
+## 4. 받아서 열어 봤다 (2026-11-15, 설치는 하지 않았다)
+
+`downloads/candidate-2026-11-15-armor/` · `extracted/candidate-2026-11-15-armor/`.
+**51KB 짜리 7z 에 DLL 둘뿐이고 설정 파일은 들어 있지 않다.**
+
+```
+BepinEx/plugins/ArmorTweaks.dll                        ← 'BepinEx' (소문자 e). 윈도는 대소문자를 안 가려 그대로 들어간다
+SPT_Runtime/user/mods/ArmorTweaks/ArmorTweaks.Server.dll
+```
+
+설치 경로 둘 다 **설치본에 없다 — 덮어쓸 것이 없다.**
+
+### 모듈은 따로 끌 수 있다 (물음에 대한 답)
+
+서버 DLL 안에 **처음 기동 때 만들 설정의 틀**이 그대로 들어 있다.
+
+```json
+{
+  "Modules": {
+    "ArmorRefurbishment": true,
+    "SoftArmorSwap": true
+  }
+}
+```
+
+- **서버 쪽 둘은 `config.json` 으로 끈다.** 우리에게 중요한 것 — **환급 키트(ArmorRefurbishment)만
+  꺼서** 설치본의 `Restore Armor Plates`(2973)·`Repair Max Durability`(1305)와 겹치지 않게 둘 수 있다.
+- **게임 쪽 둘(Armor Stacking · Armor Readout)은 F12 로 보인다.** 클라이언트 DLL 이
+  `ConfigEntry`·`ConfigFile`·`ConfigDescription` 을 쓰고(= BepInEx 설정), 로그 문구도
+  `Armor health readout enabled` / `… DISABLED: …` 로 켜고 끄는 길이 있다. **다만 항목 이름은
+  실제로 띄워 봐야 보인다** — 설정 파일이 압축에 없어서 지금은 못 센다.
+
+### 어떻게 여는가
+
+클라이언트 DLL 문자열이 방식을 그대로 보여 준다 — `<Locked>k__BackingField` · `SlotCtorPatch` ·
+`Unlocked insert slot …` · `Skipped locked slot …` · `not a built-in insert`. **칸의 `Locked` 를
+푸는 패치**이고, 못 찾으면 `SoftArmorSwap DISABLED: Slot.Locked backing field not found.` 로
+**스스로 꺼진다**(게임 판이 바뀌어도 조용히 깨지지 않는다는 뜻이라 좋은 신호다).
+
+무게·벌점도 문자열로 확인된다 — `speedPenaltyPercent` · `mousePenalty` ·
+`weaponErgonomicPenalty`, `Stock insert … kg (vanilla …)`, 그리고 조끼 자체 무게가 인서트 합보다
+가벼우면 **0 으로 깎는다**는 처리까지 있다.
+
+### 넣는다면
+
+1. 프로필 백업 → `install-and-test.ps1` 로 **이것만** 넣고 서버 시험(결속 모드다).
+2. 첫 기동 뒤 `SPT_Runtime\user\mods\ArmorTweaks\config.json` 에서 **`ArmorRefurbishment: false`**
+   로 둘지 정한다(2973·1305 와 역할이 겹친다).
+3. 게임을 띄워 F12 에서 **Armor Stacking** 을 켤지 정한다 — 그것만이 밸런스를 크게 바꾼다.
+4. `check-lang-coverage.mjs` 로 F12 항목이 는 만큼 사전을 채운다.
