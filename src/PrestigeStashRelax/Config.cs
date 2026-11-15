@@ -112,6 +112,16 @@ public class Config
     [JsonPropertyName("ExpandCategories")]
     public bool ExpandCategories { get; set; } = true;
 
+    /// <summary>
+    /// **확인용.** 여기 적은 아이템 id 가 적용 뒤 각 단계의 허용 목록에 들어갔는지 보고서에 적는다.
+    ///
+    /// 왜 — 화면만으로는 못 가린다. 전송 화면은 필터에 걸린 것과 "내용물이 든 가방"에 걸린 것을
+    /// 둘 다 빨간색으로 보여 주고, 말풍선을 봐야 구별된다. 게임을 띄우지 않고 **필터만** 재려는
+    /// 자리다.
+    /// </summary>
+    [JsonPropertyName("ProbeIds")]
+    public List<string> ProbeIds { get; set; } = [];
+
     /// <summary>단계마다 한 줄씩 로그에 적는다.</summary>
     [JsonPropertyName("Debug")]
     public bool Debug { get; set; }

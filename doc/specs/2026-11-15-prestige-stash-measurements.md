@@ -291,12 +291,67 @@ if (context.Item is CompoundItem { IsEmpty: false })       { tooltip = "UI/Prest
 화면에 뜬 것은 **앞의 것** — 즉 **필터가 거부했다.** 우리가 넣은 `Backpack` 분류가 그 배낭에
 닿지 않았다는 뜻이다.
 
-### 그리고 둘째 관문은 설계의 전제를 깬다
+### 둘째 관문 — 데이터로는 못 풀고, **플러그인으로 뗀다**
 
-`CompoundItem { IsEmpty: false }` — **내용물이 든 가방은 필터와 무관하게 못 넘긴다.** 클라이언트에
-박혀 있는 규칙이라 데이터로 풀 수 없다. 서버는 여전히 자식째 보내 주지만(`GetItemWithChildren`),
-**화면에서 고를 수가 없다.** 그러므로 "가방에 물건을 채워 통째로 넘긴다"는 **되지 않는다.** 빈
-가방만 넘어가고, 늘어난 칸은 **가방이 아니라 물건을 더 담는 데** 쓰인다.
+`CompoundItem { IsEmpty: false }` — **내용물이 든 가방은 필터와 무관하게 거부한다.** 클라이언트에
+박혀 있어 **데이터로는** 풀 수 없다.
+
+> **2026-11-16 정정.** 여기서 한 번 "그러므로 가방에 채워 통째로 넘기는 것은 되지 않는다"고
+> 적었다. **틀렸다.** 데이터로 못 푼다는 것과 못 한다는 것은 다르다 — 박혀 있는 규칙을 떼는 것이
+> 바로 BepInEx 플러그인이 하는 일이고, 이 저장소에 이미 그런 플러그인이 여럿 있다(GogglesWheel 은
+> 아예 게임 코드의 `FirstOrDefault()` 하나를 고치려고 만든 것이다). 사용자가 그 점을 짚었고,
+> 그래서 `PrestigeStashRelaxClient` 를 만들었다(§클라이언트 플러그인).
+
+서버는 받은 id 를 `GetItemWithChildren` 으로 **자식째** 집어 우편으로 보내고 **아무 검사도 하지
+않으므로**, 화면 쪽 관문만 떼면 안에 든 것이 그대로 따라온다.
+
+## 클라이언트 플러그인 — `PrestigeStashRelaxClient`
+
+패치 지점은 IL 로 확정했다.
+
+```
+instance bool EFT.InventoryLogic.SelectableItemContext.ISelectionContext.IsActive (...)
+```
+
+`AccessTools.Method(typeof(PrestigeTransferItemsState), "EFT.InventoryLogic.SelectableItemContext.ISelectionContext.IsActive")`
+로 잡힌다(명시적 인터페이스 구현이라 IL 의 이름에 점이 들어간다).
+
+**Prefix 로 건너뛰지 않고 Postfix 로 했다.** 원본을 그대로 돌린 뒤 **거부 사유(`tooltip`)를 보고**
+되돌린다 — 그 문자열이 어느 규칙이 걸렸는지 알려 주므로 규칙을 하나씩 가려 끌 수 있다. 건너뛰면
+그 구분이 사라진다.
+
+| F12 「프레스티지 이전 창고 풀기」 | 기본 | 떼는 규칙 |
+| --- | --- | --- |
+| 켜기 | 켬 | — |
+| **내용물이 든 가방도 넘기기** | **켬** | `UI/Prestige/NonEmptyContainerError` |
+| 품목 제한 무시 | 끔 | `UI/Trader/TransferLocked` (켜면 서버 허용 목록이 무의미해진다) |
+| 자세히 적기 | 끔 | — |
+
+메서드를 못 찾으면 **조용히 죽지 않고** 로그에 에러를 남기고 아무것도 패치하지 않는다.
+
+기동 확인(2026-11-16):
+
+```
+[Info   :   BepInEx] Loading [프레스티지 이전 창고 풀기 0.1.0]
+[Info   :프레스티지 이전 창고 풀기] [PrestigeStashRelax] 전송 화면 관문에 패치를 걸었다.
+```
+
+## 필터는 펼치기로 풀렸다 — 게임 없이 확인했다
+
+화면만으로는 두 관문이 **둘 다 빨간색**이라 못 가린다. 그래서 모드에 `ProbeIds` 를 넣어 **적용 뒤
+허용 목록에 그 id 가 들어갔는지**를 보고서에 적게 했다.
+
+```json
+"Probe": {
+  "668bc5cd834c88e06b08b928": true,   // WTT-Artem 6Sh118 (ALP) — 화면에서 거부됐던 그 배낭
+  "6673b1ac5cae0610f1079d71": true,
+  "5e4abc6786f77406812bd572": true    // 바닐라 6Sh118
+}
+```
+
+**셋 다 들어 있다.** 즉 펼치기(`ExpandCategories`)가 먹혔고, 두 번째 시험에서 남아 있던 빨간색은
+필터가 아니라 둘째 관문이었다 — Talon 의 그 배낭 두 인스턴스는 자식이 **22개·19개**로 둘 다 비어
+있지 않았다(프로필 실측).
 
 ### 왜 분류가 안 닿았나 — 아직 둘 중 하나다
 
