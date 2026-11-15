@@ -1,0 +1,11 @@
+3332__PrestigePerks-0.1.10	BepInEx\plugins\PrestigePerks\LICENSE.md
+3332__PrestigePerks-0.1.10	BepInEx\plugins\PrestigePerks\PrestigePerks.Client.dll
+3332__PrestigePerks-0.1.10	BepInEx\plugins\PrestigePerks\THIRD_PARTY_NOTICES.md
+3332__PrestigePerks-0.1.10	BepInEx\plugins\PrestigePerks\Locales\en.json
+3332__PrestigePerks-0.1.10	BepInEx\plugins\PrestigePerks\Locales\kr.json
+3332__PrestigePerks-0.1.10	SPT_Runtime\user\mods\PrestigePerks\bundles.json
+3332__PrestigePerks-0.1.10	SPT_Runtime\user\mods\PrestigePerks\LICENSE.md
+3332__PrestigePerks-0.1.10	SPT_Runtime\user\mods\PrestigePerks\PrestigePerks.dll
+3332__PrestigePerks-0.1.10	SPT_Runtime\user\mods\PrestigePerks\THIRD_PARTY_NOTICES.md
+3332__PrestigePerks-0.1.10	SPT_Runtime\user\mods\PrestigePerks\bundles\prestige_coin.bundle
+3332__PrestigePerks-0.1.10	SPT_Runtime\user\mods\PrestigePerks\config\config.json
