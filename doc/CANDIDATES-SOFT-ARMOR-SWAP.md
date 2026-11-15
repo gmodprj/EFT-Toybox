@@ -181,3 +181,39 @@ SPT_Runtime/user/mods/ArmorTweaks/ArmorTweaks.Server.dll
 세게 느껴지면 끄기 전에 **`층마다 더 깎는 관통력`(기본 0)** 을 먼저 보는 것이 낫다. 그 값이
 0 이면 겹침은 **게임의 기본 전달 계수**만 쓰고, 올리면 층마다 관통력을 더 깎는다 — 즉
 **지금 설정이 겹쳐 입기 중에서는 가장 약한 쪽**이다.
+
+## 8. 레이드를 돌고 난 실측 (2026-11-15 13:55)
+
+| 본 것 | 값 |
+| --- | --- |
+| 플러그인 | **250** 그대로 · **`[Fatal` 0** |
+| 게임 `[Error` | **2줄, 둘 다 아는 것** — ECOTI per-frame · DirectReload+Fika |
+| 서버 | `총 176 개` · 거부 0 · 번들 1 · quest 1 · `Could not add` **고유 52**(레이드를 돈 기동이라 48~58 범위 안) |
+| 서버 경고 | 전부 아는 갈래(`ItemBaseClassService` 72 · `ProfileMigration` 11 · `ItemHelper` 9 · QuestCodex 2 · WTT 1 · TraderHelper 1 · Ledger 1). **ArmorTweaks 발 오류·경고는 0** |
+| 프로필 | PMC **1550/1550** · 스캐브 **7011/7011** — 바꾼 값 그대로다 |
+
+### 모드가 레이드에서 실제로 일했다
+
+```
+[Armor Tweaks] Insert 657ba2eef58ba5a625010798 UHMWPE/Light zones[ParietalHead] = 0.084 kg
+[Armor Tweaks] Insert 657ba34b9ba22f103e08139b UHMWPE/Light zones[BackHead]     = 0.07 kg
+[Armor Tweaks] Armor health readout: Head 8 · Chest 4 · Stomach 6 · LeftArm 1 · RightArm 1 · LeftLeg 0 · RightLeg 0
+```
+
+인서트마다 **무게를 계산**하고 부위별 방어력을 **건강 화면에 띄웠다**. 다리가 0 인 것은 다리
+방어구 모드를 쓰지 않아 당연하다.
+
+### 알아 둘 줄 하나 — "조끼가 인서트보다 가볍다"
+
+```
+[Armor Tweaks] Armor 5ea05cf85ad9772e6624305d is lighter than its inserts (0.154 kg); own weight clamped to 0
+```
+
+`5ea05cf85ad9772e6624305d` 는 **Tac-Kek FAST MT helmet (Replica)** 다. 바닐라 무게가 인서트 합보다
+가벼워 **제 무게를 0 으로 깎았다**는 안내이고, DLL 문자열에서 미리 본 **모드의 안전장치**다.
+결함이 아니다 — 모드가 없을 때와 총 무게가 같아지도록 맞추는 처리다.
+
+### 남은 물음 — CloudSix 눈 적응
+
+`Eye adaptation: no new meter reading for 0.5 s - easing back to World Exposure` 가 **9줄** 찍혔다.
+11-15 업데이트 때 적어 둔 그 물음(4.0.2 에도 있었나)은 **여전히 미결**이다. 이 모드와는 무관하다.
