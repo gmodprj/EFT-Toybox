@@ -267,6 +267,51 @@ Talon 으로 `New Beginning` 을 넘기자 P1 이 열렸고, 전송 화면이 �
 "격자가 제 크기를 지킨다"는 뜻이지 8 로 묶는다는 뜻이 아니다). 세로로 충분하므로 당장 필요가
 없다.
 
+## R2 를 화면이 뒤집었다 — 분류만으로는 가방이 안 들어간다
+
+전송 화면에서 배낭을 끌자 **빨간 칸과 `Unavailable for transfer`** 가 떴다. 코드만 보고
+"`Backpack` 분류 하나면 배낭 전부가 열린다"고 단정한 §R2 의 결론이 **화면에서 뒤집혔다.**
+
+### 판정이 두 단계였다 — 하나를 놓쳤다
+
+`PrestigeTransferItemsState` 의 `ISelectionContext.IsActive` 가 둘을 본다.
+
+```csharp
+if (!_stashConfig.Filters.Contains(context.Item.Template)) { tooltip = "UI/Trader/TransferLocked"; return false; }
+if (context.Item is CompoundItem { IsEmpty: false })       { tooltip = "UI/Prestige/NonEmptyContainerError"; return false; }
+```
+
+로케일을 보면 어느 쪽이 걸렸는지 가려진다.
+
+| 키 | 글 |
+| --- | --- |
+| `UI/Trader/TransferLocked` | `<color=red>Unavailable for transfer</color>` |
+| `UI/Prestige/NonEmptyContainerError` | `You can't transfer a container containing items.` |
+
+화면에 뜬 것은 **앞의 것** — 즉 **필터가 거부했다.** 우리가 넣은 `Backpack` 분류가 그 배낭에
+닿지 않았다는 뜻이다.
+
+### 그리고 둘째 관문은 설계의 전제를 깬다
+
+`CompoundItem { IsEmpty: false }` — **내용물이 든 가방은 필터와 무관하게 못 넘긴다.** 클라이언트에
+박혀 있는 규칙이라 데이터로 풀 수 없다. 서버는 여전히 자식째 보내 주지만(`GetItemWithChildren`),
+**화면에서 고를 수가 없다.** 그러므로 "가방에 물건을 채워 통째로 넘긴다"는 **되지 않는다.** 빈
+가방만 넘어가고, 늘어난 칸은 **가방이 아니라 물건을 더 담는 데** 쓰인다.
+
+### 왜 분류가 안 닿았나 — 아직 둘 중 하나다
+
+1. 클라이언트가 분류(`IsChildOf`)를 실제로는 못 탄다.
+2. 그 배낭이 **모드가 넣은 것**이라 바닐라 `Backpack` 사슬에 없다. Talon 인벤토리의 템플릿 상당수가
+   SPT 기본 `items.json` 에 **없다**(모드 아이템이다).
+
+가리지 않고도 **둘 다 덮는 손이 있다 — 분류를 그 아래 구체 id 로 펼쳐서 함께 적는 것**이다.
+서버의 **살아 있는** 아이템 표에는 모드 아이템까지 들어 있으므로, 거기서 자손을 모으면 분류 판정에
+기대지 않는다. 설계 §6-1 이 "안 통하면"으로 적어 두었던 바로 그 대비책이고, 내가 코드만 보고
+"필요 없다"고 지운 것이 틀렸다.
+
+`CategoryExpander` 를 더해 `ExpandCategories: true` 로 두었다(시험 26개 통과). 뿌리 `Item` 은
+펼치지 않는다 — 1만 개가 된다.
+
 ## 처음에 세운 관문 (기록용)
 
 ### 그래서 R3 은 여기서 멈춘다

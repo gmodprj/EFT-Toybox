@@ -101,6 +101,17 @@ public class Config
     [JsonPropertyName("ReplaceFilter")]
     public bool ReplaceFilter { get; set; }
 
+    /// <summary>
+    /// 우리가 더한 **분류 id 를 그 아래 아이템 id 전부로 펼쳐서도** 적는다.
+    ///
+    /// 2026-11-15 실측에서 `Backpack` 분류만으로는 배낭이 거부됐다
+    /// (`UI/Trader/TransferLocked`). 원인이 클라이언트의 분류 판정인지 모드가 넣은 배낭의
+    /// 사슬인지는 아직 못 가렸고, **펼치기는 둘 다를 덮는다** — 서버의 살아 있는 아이템 표에는
+    /// 모드 아이템까지 들어 있다. 분류 id 자체도 함께 남긴다(손해가 없다).
+    /// </summary>
+    [JsonPropertyName("ExpandCategories")]
+    public bool ExpandCategories { get; set; } = true;
+
     /// <summary>단계마다 한 줄씩 로그에 적는다.</summary>
     [JsonPropertyName("Debug")]
     public bool Debug { get; set; }

@@ -1,7 +1,7 @@
 # 설계 — 프레스티지 이전 창고의 크기와 품목 제한을 F12 에서 풀기 (PrestigeStashRelax)
 
 - 날짜: 2026-11-15
-- 상태: 측정 R0~R3 끝. 8×12 가 화면에서 잘리지 않는 것까지 확인했다. 남은 것은 가방이 실제로 격자에 놓이는지 하나.
+- 상태: R0~R3 끝(8×12 는 안 잘린다). 분류만으로는 가방이 거부돼 CategoryExpander 를 더했고, 서버 재시작 뒤 다시 확인해야 한다. 내용물이 든 가방은 클라이언트가 박아 둔 규칙으로 못 넘긴다.
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 전제: `Content Backport - Prestiges` 1.1.0(모드 2540) 설치됨 — P1~P6 이 들어와 있다.
 
@@ -231,10 +231,13 @@ F12 에서 값 바꿈
   본다.
 - 안 통하면 분류 대신 **구체 id 를 펼쳐 넣는다** — `items.json` 에서 그 분류의 자손을 모아
   `includedItems` 에 쏟는다(수백 개가 되지만 데이터라 문제 없다). 그 펼치기는 서버 모드가 한다.
-- **결과(끝) — 거슬러 간다.** `ItemFilter.Contains` → `HandbookEntities.Contains` 가 id 목록을
+- **결과 — 코드로는 거슬러 가는데, 화면이 뒤집었다.** `ItemFilter.Contains` → `HandbookEntities.Contains` 가 id 목록을
   `Items` 와 `Categories` **양쪽으로** 보고, 분류 쪽은 `ItemTemplate.IsChildOf` 로 **부모 사슬을
   뿌리까지** 거슬러 맞춘다. 그래서 `Backpack` 하나로 배낭 전부, 뿌리 `Item` 하나로 전부가 열린다.
-  **펼쳐 넣는 대비책은 필요 없다.** `excludedItems` 는 빼기로 작동한다.
+  그런데 게임에서 배낭을 끌자 **필터 쪽 거부**(`UI/Trader/TransferLocked`)가 떴다 — 분류가 그 배낭에
+  닿지 않았다. **펼쳐 넣는 대비책이 필요했다**(`CategoryExpander`, `ExpandCategories: true`).
+  그리고 둘째 관문을 놓쳤다 — `CompoundItem { IsEmpty: false }` 라서 **내용물이 든 가방은 필터와
+  무관하게 못 넘긴다.** `excludedItems` 는 빼기로 작동한다.
 
 ### 6-2. 격자를 얼마나 키울 수 있나
 
