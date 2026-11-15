@@ -590,6 +590,14 @@ public class ProfilePorterService(
         var known = facts(item.TemplateId);
         var (w, h) = known.Size;
 
+        // 접힌 것은 좁다(§접힘). 파일에서 온 `upd` 도 같은 자로 본다 — 세부 보기 창이
+        // 스태시 창과 다른 크기를 그리면 같은 물건이 두 화면에서 다르게 보인다.
+        var folded = ProfileReader.FoldedOf(item.Upd);
+        if (folded)
+        {
+            (w, h) = profiles.FoldedSize(new MongoId(item.TemplateId), (w, h), true);
+        }
+
         // **조립되는 것은 부착물까지 세어 그린다.** 상자는 그러면 안 된다(§5-4) — 상자는
         // 안에 든 것까지 더해져 화면이 통째로 깨진다. 격자를 가졌는지로 가른다.
         var assembled = false;

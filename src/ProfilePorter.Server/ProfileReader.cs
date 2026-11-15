@@ -156,7 +156,7 @@ public class ProfileReader(
 
             // 크기는 **자손까지 본 실제 차지 칸**이다. 못 재면 1x1 로 둔다 — 격자에서 자리를
             // 조금 적게 차지해 보일 뿐, 그 때문에 무엇이 사라지지는 않는다.
-            var size = SafeSize(item.Template);
+            var size = FoldedSize(item.Template, SafeSize(item.Template), item.Upd?.Foldable?.Folded == true);
             var (x, y, rotated) = ReadLocation(item.Location);
             var (w, h) = rotated ? (size.h, size.w) : (size.w, size.h);
 
@@ -289,6 +289,56 @@ public class ProfileReader(
         {
             logger.Warning($"[ProfilePorter] {tpl} 의 격자를 읽지 못했다: {e.Message}");
             return [];
+        }
+    }
+
+    /// <summary>
+    /// **접힌 것은 좁아진다.** 개머리판을 접는 총도, 접는 새첼·배낭도 그렇다 —
+    /// tpl 의 `SizeReduceRight` 만큼 **가로가 준다**(접힘은 오른쪽으로만 줄어든다).
+    ///
+    /// 2026-11-15 제보의 정체다. `atlas_satchel` 은 tpl 로 3x3 인데 **접힌 채**(`upd.Foldable.Folded`)
+    /// 라 실제로는 2x3 이고, 세워 놓았으니 격자에서는 3x2 다. 접힘을 안 보던 때는 3x3 으로 그려
+    /// **아래 줄의 벨트 둘과 겹쳐 보였다.** 프로필 11개를 접힘까지 보고 다시 세니 겹침은 **0** 이다
+    /// (그 전에는 46짝으로 보였다). **게임은 겹쳐 놓을 수 없다** — 겹쳐 보이면 우리가 덜 본 것이다.
+    ///
+    /// `SizeReduceDown` 은 쓰지 않는다. 접히는 아이템들이 거기에 **음수**(= 늘어남)를 들고 있어
+    /// 그대로 빼면 오히려 커진다. SPT 자신도 접힘은 오른쪽만 본다.
+    /// </summary>
+    public (int w, int h) FoldedSize(MongoId tpl, (int w, int h) size, bool folded)
+    {
+        if (!folded) return size;
+
+        try
+        {
+            var found = itemHelper.GetItem(tpl);
+            var reduce = (int)((found.Key ? found.Value?.Properties?.SizeReduceRight : null) ?? 0);
+            return reduce > 0 ? (Math.Max(1, size.w - reduce), size.h) : size;
+        }
+        catch (Exception e)
+        {
+            logger.Warning($"[ProfilePorter] {tpl} 의 접힘 크기를 재지 못해 편 크기로 둔다: {e.Message}");
+            return size;
+        }
+    }
+
+    /// <summary>파일에서 온 `upd`(JsonElement 일 수 있다)가 **접힌 상태**인가.</summary>
+    public static bool FoldedOf(object? upd)
+    {
+        switch (upd)
+        {
+            case null:
+                return false;
+
+            case JsonElement e when e.ValueKind == JsonValueKind.Object:
+                if (!e.TryGetProperty("Foldable", out var foldable) || foldable.ValueKind != JsonValueKind.Object)
+                {
+                    return false;
+                }
+
+                return foldable.TryGetProperty("Folded", out var folded) && folded.ValueKind == JsonValueKind.True;
+
+            default:
+                return false;
         }
     }
 
