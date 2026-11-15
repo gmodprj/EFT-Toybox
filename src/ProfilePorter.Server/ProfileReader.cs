@@ -301,8 +301,15 @@ public class ProfileReader(
     /// **아래 줄의 벨트 둘과 겹쳐 보였다.** 프로필 11개를 접힘까지 보고 다시 세니 겹침은 **0** 이다
     /// (그 전에는 46짝으로 보였다). **게임은 겹쳐 놓을 수 없다** — 겹쳐 보이면 우리가 덜 본 것이다.
     ///
-    /// `SizeReduceDown` 은 쓰지 않는다. 접히는 아이템들이 거기에 **음수**(= 늘어남)를 들고 있어
-    /// 그대로 빼면 오히려 커진다. SPT 자신도 접힘은 오른쪽만 본다.
+    /// **가로·세로를 둘 다 줄인다** — `SizeReduceRight`·`SizeReduceDown`. 가로만 줄이면
+    /// `wartech_vest`(3×3, R2 D1) 같은 것이 1×3 으로 남아 옆엣것과 겹쳐 보인다.
+    ///
+    /// **음수는 무시한다.** 접힌다고 커지는 물건은 없다. 설치본 DB 에서 접히는 tpl 608개 가운데
+    /// 음수를 든 것은 `atlas_satchel`(D −1) **하나뿐**이고, 그 하나 때문에 세로가 늘어나면
+    /// 다시 겹쳐 보인다.
+    ///
+    /// 프로필 11개·바닥 896개로 규칙을 맞춰 봤다 — 접힘 무시 95칸 · 가로만 24칸 ·
+    /// **가로·세로 둘 다(음수 무시) 0칸**. 0 이 되는 규칙은 이것뿐이다.
     /// </summary>
     public (int w, int h) FoldedSize(MongoId tpl, (int w, int h) size, bool folded)
     {
@@ -310,15 +317,57 @@ public class ProfileReader(
 
         try
         {
-            var found = itemHelper.GetItem(tpl);
-            var reduce = (int)((found.Key ? found.Value?.Properties?.SizeReduceRight : null) ?? 0);
-            return reduce > 0 ? (Math.Max(1, size.w - reduce), size.h) : size;
+            var props = itemHelper.GetItem(tpl) is { Key: true } found ? found.Value?.Properties : null;
+            var right = (int)(props?.SizeReduceRight ?? 0);
+            var down = ReduceDown(props);
+
+            return (
+                right > 0 ? Math.Max(1, size.w - right) : size.w,
+                down > 0 ? Math.Max(1, size.h - down) : size.h);
         }
         catch (Exception e)
         {
             logger.Warning($"[ProfilePorter] {tpl} 의 접힘 크기를 재지 못해 편 크기로 둔다: {e.Message}");
             return size;
         }
+    }
+
+    /// <summary>
+    /// 접을 때 **세로로** 줄어드는 칸 수. SPT 의 `TemplateItemProperties` 에는 `SizeReduceRight`
+    /// 만 있고 `SizeReduceDown` 은 **없다** — 서버 모델이 들고 있지 않을 뿐, DB 에는 있다.
+    /// 그래서 읽히지 않은 나머지 속성 주머니(`JsonExtensionData`)에서 꺼낸다. 없으면 0 이다.
+    /// </summary>
+    private static int ReduceDown(object? propsOrTemplate)
+    {
+        try
+        {
+            var raw = Bag(propsOrTemplate) is { } direct ? direct : Bag(Nested(propsOrTemplate));
+            if (raw is null) return 0;
+
+            return raw switch
+            {
+                JsonElement e when e.ValueKind == JsonValueKind.Number && e.TryGetInt32(out var n) => n,
+                int i => i,
+                long l => (int)l,
+                double d => (int)d,
+                _ => 0,
+            };
+        }
+        catch
+        {
+            return 0;
+        }
+
+        // 읽히지 않은 속성 주머니에서 `SizeReduceDown` 을 꺼낸다. 주머니가 없으면 null.
+        static object? Bag(object? o)
+        {
+            if (o is null) return null;
+            var bag = o.GetType().GetProperty("ExtensionData")?.GetValue(o) as IDictionary<string, object?>;
+            return bag is not null && bag.TryGetValue("SizeReduceDown", out var v) ? v : null;
+        }
+
+        // `TemplateItem` 을 받았을 때 그 안의 `Properties` 로 한 번 더 들어간다.
+        static object? Nested(object? o) => o?.GetType().GetProperty("Properties")?.GetValue(o);
     }
 
     /// <summary>파일에서 온 `upd`(JsonElement 일 수 있다)가 **접힌 상태**인가.</summary>
