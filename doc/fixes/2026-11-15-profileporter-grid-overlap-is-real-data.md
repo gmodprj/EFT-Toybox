@@ -107,3 +107,5 @@ public (int w, int h) FoldedSize(MongoId tpl, (int w, int h) size, bool folded)
   규칙을 **전수로 맞춰** 0 이 되는 것을 확인하고서야 끝이다.
 - **모델에 없는 속성이 DB 에는 있다.** 서버가 읽어 들이지 않은 값은
   `JsonExtensionData` 주머니에 남는다 — 없는 셈 치기 전에 거기를 본다.
+
+> **화면으로도 확인됐다** — 사용자가 창을 열어 **프로필 전부 정상으로 보인다**고 했다(2026-11-15).
