@@ -1,0 +1,24 @@
+[
+  {
+    "id": 2687,
+    "name": "Sicc Case Fix",
+    "version": "2.0.0",
+    "file": "2687__SiccCaseFix.7z",
+    "bytes": 4478,
+    "expected": 4478,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3332,
+    "name": "Prestige Perks",
+    "version": "0.1.10",
+    "file": "3332__PrestigePerks-0.1.10.zip",
+    "bytes": 5068507,
+    "expected": 5068507,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]
