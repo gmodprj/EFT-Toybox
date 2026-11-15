@@ -1,0 +1,38 @@
+{
+  "guid": "kommie.armortweaks",
+  "name": "방어구 손질 (Armor Tweaks)",
+  "sections": {
+    "ArmorStacking": "겹쳐 입기",
+    "Modules": "모듈"
+  },
+  "settings": {
+    "ArmorStacking/ExtraAbsorption": {
+      "name": "층마다 더 깎는 관통력",
+      "desc": "뚫린 층 하나가 게임의 기본 전달 계수(CF) 위에 얼마나 더 관통력을 깎을지. 0 이면 바닐라 그대로, 100 이 가장 세다. 식은 `CF × (1 − 값/100 × R ÷ (R + 관통))` 이고, `R` 은 그 층의 지금 저항(방탄 등급 + 내구도), `관통` 은 그 층이 맞선 관통력이다."
+    },
+    "ArmorStacking/CarryToShot": {
+      "name": "깎인 관통력을 탄에 남긴다",
+      "desc": "방어구를 다 지난 뒤에도 깎인 관통력을 그 탄에 이어 둔다. 바닐라가 피해를 관통력에 비례시키므로 **뒤이은 피해도 함께 줄어든다.** 끄면 막힐 확률만 바뀐다."
+    },
+    "ArmorStacking/DebugLog": {
+      "name": "진단 기록",
+      "desc": "방어 판정마다 층의 종류·착용물·쓴 관통력·겹침 계수·결과를 로그에 적는다."
+    },
+    "Modules/ArmorStacking": {
+      "name": "겹쳐 입기",
+      "desc": "방탄복과 장갑 리그를 겹쳐 입고, 방탄판과 소프트 아머를 층으로 쌓는다. 탄이 리그판 → 리그 소프트 → 조끼판 → 조끼 소프트 순서로 지난다."
+    },
+    "Modules/SoftArmorSwap": {
+      "name": "소프트 아머 떼고 바꾸기",
+      "desc": "박혀 있던 소프트 아머와 헬멧 인서트를 떼고 바꿀 수 있게 한다. 벌점은 채운 칸 수에 비례하고 인서트에 무게가 생긴다. **서버 쪽에도 같은 손잡이가 있다**(`user\\mods\\ArmorTweaks\\config.json`)."
+    },
+    "Modules/ArmorRefurbishment": {
+      "name": "인서트 환급 키트",
+      "desc": "환급 키트를 장비에 끌어다 놓아 인서트를 공장 상태로 되돌린다. 인서트가 먼저 **고칠 수 있는 최대치까지 수리돼 있어야** 한다. **서버 쪽에도 같은 손잡이가 있다**(`config.json`)."
+    },
+    "Modules/ArmorHealthReadout": {
+      "name": "부위별 방어력 표시",
+      "desc": "소지품의 건강 화면에서 부위마다 체력 아래에 그 자리를 덮는 방어력 합계를 보여 준다."
+    }
+  }
+}

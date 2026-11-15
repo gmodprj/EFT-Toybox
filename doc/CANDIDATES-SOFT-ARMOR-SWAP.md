@@ -138,3 +138,33 @@ SPT_Runtime/user/mods/ArmorTweaks/ArmorTweaks.Server.dll
 - 그만큼 **F12 한글화에 구멍이 난다.** 게임을 한 번 띄운 뒤 `check-lang-coverage.mjs` 로 세고 채운다.
 - 인게임에서 볼 것: 보라색으로 잠겨 있던 인서트 칸이 **실제로 열리는지**, 뗐을 때 **무게와 벌점이
   줄어드는지**.
+
+## 6. 게임 쪽 실측 (2026-11-15 12:47)
+
+| 본 것 | 값 |
+| --- | --- |
+| 플러그인 | **250** (`Loading [` 250줄) — 249 에서 **예상대로 +1** |
+| 게임 오류 | **`[Fatal` 0 · `[Error` 1** (알려진 DirectReload+Fika) |
+| 서버(사용자 기동) | `총 176 개` · 거부 0 · 고유 48 · 번들 1 · `Armor Tweaks (Soft Armor Swap): 458 inserts named` |
+| 클라이언트 로그 | `Hooked ArmorComponent.ShotMatches and Player.ApplyShot` · `Armor health readout enabled` · `Armor Refurbishment Client loaded` |
+| **`SoftArmorSwap DISABLED`** | **0줄** — 잠금 푸는 패치가 걸렸다는 뜻이다(못 걸면 스스로 그 줄을 찍는다) |
+
+### F12 항목 일곱 — 모듈 넷을 전부 여기서 끈다
+
+`BepInEx\config\kommie.armortweaks.cfg` 가 생겼다.
+
+| 묶음 | 항목 | 기본값 |
+| --- | --- | --- |
+| `Modules` | **ArmorStacking** · **SoftArmorSwap** · **ArmorRefurbishment** · **ArmorHealthReadout** | 전부 `true` |
+| `ArmorStacking` | `ExtraAbsorption`(0~100) · `CarryToShot` · `DebugLog` | 0 · true · false |
+
+**앞서 "게임 쪽 둘은 F12 로 보인다" 고 적었던 것이 맞았고, 실제로는 넷 다 F12 에 있다.**
+서버 `config.json` 의 두 손잡이는 그와 **별도**다(설명에도 "서버 모드에 자기 스위치가 있다" 고
+적혀 있다) — 끄려면 **둘 다** 꺼야 확실하다.
+
+겹쳐 입기(`ArmorStacking`)만 밸런스를 크게 바꾸므로, 소프트 아머만 원하면 그 하나를 끄면 된다.
+
+### 한글화도 메웠다
+
+새 `.cfg` 가 192개째로 들어오며 **항목 7개가 사전 없이 떴다.** `kommie.armortweaks.json` 을 새로
+써서 **5,184/5,184**(사전 187개)로 돌려놨다. 사전만 덮었으므로 **F12 를 다시 열면 한글로 보인다**.
