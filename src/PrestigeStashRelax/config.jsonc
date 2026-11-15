@@ -1,0 +1,50 @@
+{
+  // 프레스티지 이전 창고(전송 창고)의 크기와 담을 수 있는 품목을 넓힌다.
+  // 근거와 측정 항목은 doc/specs/2026-11-15-prestige-stash-relax-design.md 에 있다.
+  "ModEnabled": true,
+
+  // 기본값은 **재기만 하고 고치지 않는 것**이다.
+  // 단계 수와 현재 값을 prestige-stash-report.json 으로 보고, 납득한 뒤에 true 로 켠다.
+  "Apply": false,
+
+  // 단계별 현재 값을 DLL 옆 prestige-stash-report.json 으로 내놓는다
+  "Report": true,
+
+  // ── 크기 ─────────────────────────────────────────────────────────────
+  // 가로 칸 수. 0 이면 원본 그대로(바닐라는 여섯 단계 모두 8).
+  // 화면이 8 보다 넓은 격자를 그리는지는 아직 안 재 봤다.
+  "XCellCount": 0,
+
+  // 원본 세로에 더할 칸 수. 단계차(P1 3 … P6 8)를 지키며 전체를 늘린다.
+  "YCellAdd": 0,
+
+  // 세로를 못 박는다. 0 이면 안 쓴다. YCellAdd 보다 뒤에 적용돼 이쪽이 이긴다.
+  "YCellCount": 0,
+
+  // ── 품목 ─────────────────────────────────────────────────────────────
+  // 가방·배낭. 켜면 **안에 든 것이 함께 넘어간다** — 이 모드의 요점이다.
+  "AllowBags": false,
+  "AllowVest": false,
+  "AllowSecureContainer": false,
+  "AllowMoney": false,
+  "AllowAmmo": false,
+  "AllowKeys": false,
+
+  // 무기·부품·방어 장비는 P3 이상에 이미 들어 있다. 아래는 P1·P2 에도 넣을 때만.
+  "AllowWeaponsEverywhere": false,
+  "AllowArmorEverywhere": false,
+
+  // 분류 사슬의 뿌리(Item) 하나를 넣어 전부 여는 시도. 통하는지는 측정 대상이다.
+  "AllowEverything": false,
+
+  // 직접 적는 분류·아이템 id
+  "ExtraIds": [],
+
+  // **측정용.** 원본 필터를 버리고 위에서 켠 것만 남긴다.
+  // "배낭만 넣었을 때 배낭이 실제로 끌리는가"를 가리려면 이것이 필요하다.
+  // 평소에는 false 로 둔다.
+  "ReplaceFilter": false,
+
+  // 단계마다 한 줄씩 로그에
+  "Debug": false
+}
