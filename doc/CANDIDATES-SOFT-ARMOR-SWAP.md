@@ -105,3 +105,36 @@ SPT_Runtime/user/mods/ArmorTweaks/ArmorTweaks.Server.dll
    로 둘지 정한다(2973·1305 와 역할이 겹친다).
 3. 게임을 띄워 F12 에서 **Armor Stacking** 을 켤지 정한다 — 그것만이 밸런스를 크게 바꾼다.
 4. `check-lang-coverage.mjs` 로 F12 항목이 는 만큼 사전을 채운다.
+
+## 5. 넣었다 — 12차 (2026-11-15)
+
+게임·서버가 모두 꺼져 있는 것을 확인하고 넣었다. 프로필 11개를 먼저 떠 뒀다
+(`backup/profiles-before-stage12-2026-11-15/`).
+
+| 항목 | 값 |
+| --- | --- |
+| 기록 | `installed-stage12-A-3355-ArmorTweaks.txt` — 파일 **2개** |
+| 서버 시험 | **`SERVER STARTED in 192s`** · `ModLoader: 총 176 개`(175 → **+1**) · 거부 0 · `Could not add` 고유 48 · 번들 1 |
+| 로그가 찍은 것 | `모드 Armor Tweaks 버전 1.0.0 (GUID: kommie.armortweaks)` · `ArmorRefurbishment: 2 kits added (2 trader offers)` · **`Armor Tweaks (Soft Armor Swap): 458 inserts named`** |
+| 만들어진 설정 | `SPT_Runtime\user\mods\ArmorTweaks\config.json` — `{"Modules":{"ArmorRefurbishment":true,"SoftArmorSwap":true}}` |
+
+**인서트 458개에 이름이 붙었다** — 잠금이 실제로 풀렸다는 뜻이다(Soft Armor Swap 이 일했다).
+
+환급 키트는 **켜 둔 채로 두었다.** 제작자가 설치본의 2973·1305 를 바탕으로 만들었다고 밝혔고
+역할도 갈린다(저쪽은 **탈착 방탄판**, 이쪽은 **소프트 아머·헬멧 인서트**). 겹치는 느낌이 들면
+`config.json` 에서 `"ArmorRefurbishment": false` 로 끄면 된다.
+
+### 도구도 손봤다
+
+`gen-installed-mods.mjs` 가 **11차까지만 찍고 있었다** — 단계 목록이 `['1'…'11']` 로 손으로 적혀
+있어 12차가 통째로 빠졌다. `'12'` 를 더하고 제목도 넣었다. 다음 단계를 열 때도 **두 곳을 같이
+고쳐야 한다**(`stageTitle` 과 이 목록).
+
+### 아직 안 본 것 — 게임 쪽
+
+- **플러그인 수가 249 → 250 으로 느는 것이 정상이다**(`ArmorTweaks.dll`).
+- F12 에 **Armor Stacking · Armor Readout** 항목이 생긴다. 켤지 끌지는 사용자가 정한다 —
+  **Stacking 만 밸런스를 크게 바꾼다**(조끼+장갑 리그 겹쳐 입기).
+- 그만큼 **F12 한글화에 구멍이 난다.** 게임을 한 번 띄운 뒤 `check-lang-coverage.mjs` 로 세고 채운다.
+- 인게임에서 볼 것: 보라색으로 잠겨 있던 인서트 칸이 **실제로 열리는지**, 뗐을 때 **무게와 벌점이
+  줄어드는지**.

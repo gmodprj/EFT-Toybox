@@ -148,6 +148,7 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Unrestricted Armor Plate](https://sp-mod.com/mod/1878) | 2.1.0 | 7차 | 서버 | 아무 방어판이나 아무 방탄 조끼·리그에 꽂을 수 있게 한다. |
 | [LMSP - Let Me Switch Plates](https://sp-mod.com/mod/2814) | 1.0.1 | 7차 | 게임 | 레이드 중에 방어구를 벗지 않고 방어판만 바꾼다. |
 | [Restore Armor Plates](https://sp-mod.com/mod/2973) | 1.0.2 | 7차 | 게임+서버 | **결속** 전용 키트로 방어판의 최대 내구도를 되돌린다. DLL 표기는 1.0.1. |
+| [Armor Tweaks and Additions](https://sp-mod.com/mod/3355) | 1.0.0 | 12차 | 게임+서버 | **결속** **고정으로 박혀 있던 소프트 아머 인서트를 떼고 바꾸게 한다**(조끼·리그·헬멧·모드 방어구). 벌점은 채운 칸 수에 비례하고 인서트에 무게가 생긴다. 모듈 넷 — `SoftArmorSwap`·`ArmorRefurbishment` 는 `user\mods\ArmorTweaks\config.json` 으로, `Armor Stacking`(조끼+장갑 리그 겹쳐 입기)·`Armor Readout` 은 F12 로 끈다. 조사는 [CANDIDATES-SOFT-ARMOR-SWAP.md](CANDIDATES-SOFT-ARMOR-SWAP.md) |
 | [Repair Skill Extension](https://sp-mod.com/mod/2556) | 1.4.1 | 7차 | 서버 | **결속** 수리 버프가 붙을 확률을 올리고 수리 스킬을 모든 방어구에 적용한다. |
 | [Black Exfil Revision](https://sp-mod.com/mod/2380) | 1.1.0 | 7차 | 서버 | **결속** Black Exfil 마스크에 페이스실드를 다시 달 수 있게 한다. |
 | [Change Helmet Visor](https://sp-mod.com/mod/2554) | 3.0.0 | 7차 | 게임+서버 | 페이스실드·바이저가 시야를 가리는 마스크를 바꾼다. **지금은 모두 `NoMask`** — 타길라 용접 마스크 3종·Altyn·Rys-T·Maska 2종의 가림이 사라진다. |

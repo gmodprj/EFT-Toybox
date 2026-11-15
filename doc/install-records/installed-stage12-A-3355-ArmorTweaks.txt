@@ -1,0 +1,2 @@
+﻿3355__ArmorTweaks_v1.0.0	BepinEx\plugins\ArmorTweaks.dll
+3355__ArmorTweaks_v1.0.0	SPT_Runtime\user\mods\ArmorTweaks\ArmorTweaks.Server.dll
