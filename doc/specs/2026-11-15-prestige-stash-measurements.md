@@ -329,12 +329,56 @@ instance bool EFT.InventoryLogic.SelectableItemContext.ISelectionContext.IsActiv
 
 메서드를 못 찾으면 **조용히 죽지 않고** 로그에 에러를 남기고 아무것도 패치하지 않는다.
 
-기동 확인(2026-11-16):
+### 관문은 **둘**이었다 — 클릭과 끌기가 다른 길로 간다
+
+첫 패치 뒤 실측: **클릭하면 넘어가는데 끌면 안 넘어갔다.**
+
+| 조작 | 지나는 곳 |
+| --- | --- |
+| 클릭 | `ISelectionContext.IsActive` → `SelectItem` → `_transferGrid.AddAnywhere` |
+| **끌기** | **`ArenaEftItemTransferGridView.CanAccept`** → `AcceptItem` |
+
+`CanAccept` 가 **같은 검사를 자기 복사본으로** 한 번 더 한다.
+
+```csharp
+if (Input.GetKey(KeyCode.LeftControl) || ...) { return false; }          // Ctrl 끌기는 스택 쪼개기
+if (!SourceContext.IsDropAvailable(itemContext)) { ... }                 // 여기는 IsActive 로 간다
+if (itemContext.Item is CompoundItem { IsEmpty: false })                 // ← 복사본
+    { operation = new NonEmptyCompoundItemError(); return false; }
+```
+
+**여기는 Postfix 로 못 고친다.** 거부되면 `operation` 이 오류로 채워져 나오고, 되돌리려면 원본이
+하던 `ItemManipulator.Move(..., simulate: true)` 를 우리가 다시 해야 해서 private 필드까지 흉내
+내야 한다. Prefix 로 건너뛰어도 같다.
+
+그래서 **Transpiler 로 `get_IsEmpty` 호출 하나의 반환값만** 뒤집었다.
+
+```
+IL_0054: callvirt instance bool CompoundItem::get_IsEmpty()
+IL_0059: brtrue.s IL_006d        // 비어 있으면 오류를 건너뛴다
+```
+
+그 자리에서 true 를 돌려주면 **그 검사만 빠지고 겹침·자리·소유권 판정은 원본 그대로** 돈다.
+주변 코드가 바뀌어도 그 호출만 있으면 붙는다. 호출을 못 찾으면 **조용히 지나가지 않고** 에러를
+남긴다 — "걸렸는데 안 듣는다"가 가장 나쁘다.
+
+### 기동 확인 (2026-11-16)
 
 ```
 [Info   :   BepInEx] Loading [프레스티지 이전 창고 풀기 0.1.0]
-[Info   :프레스티지 이전 창고 풀기] [PrestigeStashRelax] 전송 화면 관문에 패치를 걸었다.
+[PrestigeStashRelax] 클릭 경로(IsActive)에 패치를 걸었다.
+[PrestigeStashRelax] 끌기 경로에서 IsEmpty 검사 1곳을 비껴가게 했다.
+[PrestigeStashRelax] 끌기 경로(CanAccept)에 패치를 걸었다.
 ```
+
+가운데 줄이 판정 기준이다 — **패치가 걸린 것과 먹은 것은 다르다.** 그 줄은 Transpiler 가 실제로
+그 호출을 찾았을 때만 나온다. 관련 `[Error`·`[Fatal` 없음.
+
+### 결과 — **내용물이 든 배낭이 끌어서 들어갔다** ✔
+
+사용자 실측(2026-11-16). 클릭·끌기 두 경로 모두 통한다. 서버는 받은 id 를
+`GetItemWithChildren` 으로 자식째 집어 우편으로 보내므로 안에 든 것이 그대로 따라온다 — 그
+마지막 확인은 R6(실제 프레스티지)에서 한다.
 
 ## 필터는 펼치기로 풀렸다 — 게임 없이 확인했다
 
