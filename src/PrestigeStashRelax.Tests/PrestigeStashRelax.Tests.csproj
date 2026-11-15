@@ -24,7 +24,9 @@
     <Compile Include="..\PrestigeStashRelax\StashPlan.cs" Link="StashPlan.cs" />
     <Compile Include="..\PrestigeStashRelax\Config.cs" Link="Config.cs" />
     <Compile Include="..\PrestigeStashRelax\CategoryCatalog.cs" Link="CategoryCatalog.cs" />
+    <Compile Include="..\PrestigeStashRelax\CategoryExpander.cs" Link="CategoryExpander.cs" />
     <Compile Include="StashPlanTests.cs" />
+    <Compile Include="CategoryExpanderTests.cs" />
   </ItemGroup>
 
 </Project>

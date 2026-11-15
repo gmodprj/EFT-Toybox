@@ -73,6 +73,9 @@ public class PrestigeStashRelax(
         var before = new List<StageReport>();
         var after = new List<StageReport>();
 
+        // 아이템 표는 한 번만 훑는다 — 단계마다 다시 만들 이유가 없다.
+        var parentById = BuildParentMap();
+
         foreach (var element in elements)
         {
             var stash = element.TransferConfigs?.StashConfig;
@@ -100,6 +103,32 @@ public class PrestigeStashRelax(
             }
 
             var planned = StashPlan.Build(origin, config);
+
+            if (config.ExpandCategories && parentById.Count > 0)
+            {
+                // 우리가 더한 것만 펼친다. 바닐라가 적어 둔 203개는 건드리지 않는다.
+                var originIds = new HashSet<string>(origin.IncludedItems, StringComparer.Ordinal);
+                var addedIds = planned.IncludedItems.Where(id => !originIds.Contains(id)).ToList();
+                var expanded = CategoryExpander.Expand(parentById, addedIds);
+
+                if (expanded.Count > 0)
+                {
+                    var all = new List<string>(planned.IncludedItems);
+                    var seen = new HashSet<string>(all, StringComparer.Ordinal);
+                    foreach (var expandedId in expanded.Where(x => seen.Add(x)))
+                    {
+                        all.Add(expandedId);
+                    }
+
+                    planned = planned with { IncludedItems = all };
+
+                    if (config.Debug)
+                    {
+                        logger.Info($"[PrestigeStashRelax] {id}: 분류 {addedIds.Count}개를 펼쳐 {expanded.Count}개를 더했다.");
+                    }
+                }
+            }
+
             Write(stash, planned);
             after.Add(new StageReport(id, planned.XCellCount, planned.YCellCount, planned.IncludedItems.Count));
 
@@ -127,6 +156,32 @@ public class PrestigeStashRelax(
         }
 
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 살아 있는 아이템 표에서 id → 부모 id 만 뽑는다. **모드가 넣은 아이템까지 들어 있다** —
+    /// 바닐라 `items.json` 만 보면 모드 배낭을 놓친다.
+    /// </summary>
+    private Dictionary<string, string> BuildParentMap()
+    {
+        var items = templateTable.Items;
+        if (items is null || items.Count == 0)
+        {
+            logger.Warning("[PrestigeStashRelax] 아이템 표가 비어 있어 분류를 펼치지 못한다.");
+            return [];
+        }
+
+        var map = new Dictionary<string, string>(items.Count, StringComparer.Ordinal);
+        foreach (var (id, template) in items)
+        {
+            var parent = template?.Parent.ToString();
+            if (!string.IsNullOrEmpty(parent))
+            {
+                map[id.ToString()!] = parent;
+            }
+        }
+
+        return map;
     }
 
     private static StashShape Read(StashPrestigeConfig stash) =>
