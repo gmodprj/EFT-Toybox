@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -78,11 +80,31 @@ namespace PrestigeStashRelaxClient
                 return;
             }
 
-            new Harmony(PluginGuid).Patch(
+            var harmony = new Harmony(PluginGuid);
+
+            harmony.Patch(
                 target,
                 postfix: new HarmonyMethod(typeof(SelectionGate), nameof(SelectionGate.Postfix)));
 
-            Logger.LogInfo("[PrestigeStashRelax] 전송 화면 관문에 패치를 걸었다.");
+            Logger.LogInfo("[PrestigeStashRelax] 클릭 경로(IsActive)에 패치를 걸었다.");
+
+            // 끌기는 다른 경로다 — 격자 뷰가 **같은 검사를 자기 복사본으로** 한 번 더 한다.
+            var dragTarget = AccessTools.Method(
+                typeof(EFT.UI.ArenaEftItemTransferGridView),
+                nameof(EFT.UI.ArenaEftItemTransferGridView.CanAccept));
+
+            if (dragTarget == null)
+            {
+                Logger.LogError(
+                    "[PrestigeStashRelax] CanAccept 를 못 찾았다. 클릭은 되지만 끌기는 막힌 채로 둔다.");
+                return;
+            }
+
+            harmony.Patch(
+                dragTarget,
+                transpiler: new HarmonyMethod(typeof(DragGate), nameof(DragGate.Transpiler)));
+
+            Logger.LogInfo("[PrestigeStashRelax] 끌기 경로(CanAccept)에 패치를 걸었다.");
         }
     }
 
@@ -120,6 +142,78 @@ namespace PrestigeStashRelaxClient
             {
                 PrestigeStashRelaxPlugin.Log.LogInfo("[PrestigeStashRelax] 거부를 되돌렸다: " + reason);
             }
+        }
+    }
+
+    /// <summary>
+    /// **끌기** 경로의 관문.
+    ///
+    /// 클릭은 <c>IsActive</c> → <c>SelectItem</c> 으로 가지만, 끌어서 놓는 것은
+    /// <c>ArenaEftItemTransferGridView.CanAccept</c> 를 거친다. 그리고 그 메서드가 **같은 검사를
+    /// 자기 복사본으로** 한 번 더 한다(2026-11-16 실측 — 클릭은 넘어가는데 끌기는 안 넘어갔다).
+    ///
+    /// <code>
+    /// if (itemContext.Item is CompoundItem { IsEmpty: false }) { operation = new NonEmptyCompoundItemError(); return false; }
+    /// </code>
+    ///
+    /// Postfix 로는 못 고친다 — 거부되면 <c>operation</c> 이 오류로 채워져 나오는데, 되돌리려면
+    /// 원본이 하던 <c>ItemManipulator.Move(..., simulate: true)</c> 를 우리가 다시 해야 하고
+    /// 그러자면 private 필드까지 흉내 내야 한다. Prefix 로 건너뛰어도 마찬가지다.
+    ///
+    /// 그래서 **Transpiler** 로 `IsEmpty` 호출 **하나의 반환값만** 뒤집는다. IL 은
+    /// `callvirt get_IsEmpty` 다음이 `brtrue`(비어 있으면 오류를 건너뛴다)이므로, 그 자리에서
+    /// true 를 돌려주면 검사만 빠지고 나머지 판정(겹침·자리·소유권)은 **원본 그대로** 돈다.
+    /// 주변 코드가 바뀌어도 `get_IsEmpty` 호출만 있으면 붙는다.
+    /// </summary>
+    internal static class DragGate
+    {
+        /// <summary>원래 값이 "비어 있다"가 아니어도, 설정이 켜져 있으면 비어 있다고 답한다.</summary>
+        internal static bool RelaxEmpty(bool original)
+        {
+            return original
+                || (PrestigeStashRelaxPlugin.Enabled.Value
+                    && PrestigeStashRelaxPlugin.AllowNonEmptyContainers.Value);
+        }
+
+        internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var isEmpty = AccessTools.PropertyGetter(
+                typeof(EFT.InventoryLogic.CompoundItem),
+                nameof(EFT.InventoryLogic.CompoundItem.IsEmpty));
+            var relax = AccessTools.Method(typeof(DragGate), nameof(RelaxEmpty));
+
+            var code = new List<CodeInstruction>(instructions);
+
+            if (isEmpty == null || relax == null)
+            {
+                PrestigeStashRelaxPlugin.Log.LogError(
+                    "[PrestigeStashRelax] IsEmpty 를 못 찾았다. 끌기 경로는 바닐라 그대로 둔다.");
+                return code;
+            }
+
+            var patched = 0;
+            for (var i = code.Count - 1; i >= 0; i--)
+            {
+                if (code[i].Calls(isEmpty))
+                {
+                    code.Insert(i + 1, new CodeInstruction(OpCodes.Call, relax));
+                    patched++;
+                }
+            }
+
+            if (patched == 0)
+            {
+                // 조용히 지나가면 "걸렸는데 안 듣는다"가 되어 가장 나쁘다.
+                PrestigeStashRelaxPlugin.Log.LogError(
+                    "[PrestigeStashRelax] CanAccept 안에서 IsEmpty 호출을 못 찾았다. 끌기는 막힌 채로 둔다.");
+            }
+            else
+            {
+                PrestigeStashRelaxPlugin.Log.LogInfo(
+                    "[PrestigeStashRelax] 끌기 경로에서 IsEmpty 검사 " + patched + "곳을 비껴가게 했다.");
+            }
+
+            return code;
         }
     }
 }
