@@ -147,3 +147,32 @@ LeftArm 224/224 · RightArm 224/224 · LeftLeg 224/224 · RightLeg 224/224
 **물·기력은 그대로 갈라져 있다** — 프로필 `477/151`·`485/151`, 화면은 `/500`(SVM).
 `base_health` 는 체력만 다루고 물·기력은 `metabolism_per_skill`(스킬 1레벨당 +1)이 정하기
 때문이다. 맞추려면 그 손잡이를 따로 봐야 한다.
+
+## 스캐브도 맞췄다 (2026-11-15, 사용자 결정)
+
+PMC 와 똑같은 갈림이 스캐브에도 있었다. 지금 스캐브 프로필은 **37/87/72/63/68(합 458)** 인데,
+이것은 HPL 이 바닐라 440 에 레벨 5 몫(1증가분 = 머리·흉부·복부 +2, 팔다리 +3)을 더한 값이다 —
+**SVM 의 `Scav.Health = 999` 는 무시되고 있었다.**
+
+`SCAV.base_health` 를 **999** 로 바꿨다(증가량은 그대로).
+
+```diff
+   "SCAV": {
+     "base_health": {
+-      "thorax_health": 85, "stomach_health": 70, "head_health": 35,
+-      "left_arm_health": 60, "right_arm_health": 60, "left_leg_health": 65, "right_leg_health": 65
++      "thorax_health": 999, "stomach_health": 999, "head_health": 999,
++      "left_arm_health": 999, "right_arm_health": 999, "left_leg_health": 999, "right_leg_health": 999
+     },
+```
+
+스캐브 **레벨 5 · Health 스킬 0** 에서 다음 기동에 이렇게 된다.
+
+| 부위 | 전 | 후 |
+| --- | --- | --- |
+| 머리·흉부·복부 | 37 · 87 · 72 | **1,001** |
+| 양팔·양다리 | 63 · 68 | **1,002** |
+| 합계 | 458 | **7,011** |
+
+SVM 이 999 로 적어 둔 뜻(스캐브는 사실상 죽지 않는다)과 같은 방향이고, 레벨이 오르면 거기서 더 는다.
+고치기 전 설정은 `backup/mod-configs-before-healthbase-2026-11-15/1706-config-before-scav.json` 이다.
