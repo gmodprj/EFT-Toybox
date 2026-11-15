@@ -1,0 +1,16 @@
+{
+  "stage": "stage12",
+  "spt": "4.1.6",
+  "note": "12차 — 방어구 인서트. 고정 소프트 아머를 떼고 바꾸는 모드 하나(결속). 조사는 CANDIDATES-SOFT-ARMOR-SWAP.md",
+  "mods": [
+    {
+      "group": "12-A",
+      "id": 3355,
+      "name": "Armor Tweaks and Additions",
+      "version": "1.0.0",
+      "size": 51285,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/3355/armor-tweaks-and-additions/1.0.0"
+    }
+  ]
+}
