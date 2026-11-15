@@ -1,0 +1,27 @@
+{
+  "stage": "update-2026-11-15-ud",
+  "spt": "4.1.6",
+  "note": "결속 중형·메이저 — 하나씩. 2010 은 4.3.2→5.0.1 메이저다.",
+  "mods": [
+    {
+      "group": "U-D",
+      "id": 2419,
+      "name": "Amonya - Ammo Loving Trader & Quester",
+      "version": "2.2.1",
+      "size": 98457225,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2419/amonya-ammo-loving-trader-quester/2.2.1",
+      "from": "2.2.0"
+    },
+    {
+      "group": "U-D",
+      "id": 2010,
+      "name": "Definitive Weapon Variants",
+      "version": "5.0.1",
+      "size": 2684058,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2010/definitive-weapon-variants/5.0.1",
+      "from": "4.3.2"
+    }
+  ]
+}

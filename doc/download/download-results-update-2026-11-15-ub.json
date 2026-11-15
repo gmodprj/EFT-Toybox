@@ -1,0 +1,13 @@
+[
+  {
+    "id": 2310,
+    "name": "WTT - CommonLib",
+    "version": "3.0.7",
+    "file": "2310__WTT-CommonLib-v3.0.7.zip",
+    "bytes": 251999,
+    "expected": 251999,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 2
+  }
+]

@@ -148,6 +148,7 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Unrestricted Armor Plate](https://sp-mod.com/mod/1878) | 2.1.0 | 7차 | 서버 | 아무 방어판이나 아무 방탄 조끼·리그에 꽂을 수 있게 한다. |
 | [LMSP - Let Me Switch Plates](https://sp-mod.com/mod/2814) | 1.0.1 | 7차 | 게임 | 레이드 중에 방어구를 벗지 않고 방어판만 바꾼다. |
 | [Restore Armor Plates](https://sp-mod.com/mod/2973) | 1.0.2 | 7차 | 게임+서버 | **결속** 전용 키트로 방어판의 최대 내구도를 되돌린다. DLL 표기는 1.0.1. |
+| [Armor Tweaks and Additions](https://sp-mod.com/mod/3355) | 1.0.0 | 12차 | 게임+서버 | **결속** **고정으로 박혀 있던 소프트 아머 인서트를 떼고 바꾸게 한다**(조끼·리그·헬멧·모드 방어구). 벌점은 채운 칸 수에 비례하고 인서트에 무게가 생긴다. 모듈 넷 — `SoftArmorSwap`·`ArmorRefurbishment` 는 `user\mods\ArmorTweaks\config.json` 으로, `Armor Stacking`(조끼+장갑 리그 겹쳐 입기)·`Armor Readout` 은 F12 로 끈다. 조사는 [CANDIDATES-SOFT-ARMOR-SWAP.md](CANDIDATES-SOFT-ARMOR-SWAP.md) |
 | [Repair Skill Extension](https://sp-mod.com/mod/2556) | 1.4.1 | 7차 | 서버 | **결속** 수리 버프가 붙을 확률을 올리고 수리 스킬을 모든 방어구에 적용한다. |
 | [Black Exfil Revision](https://sp-mod.com/mod/2380) | 1.1.0 | 7차 | 서버 | **결속** Black Exfil 마스크에 페이스실드를 다시 달 수 있게 한다. |
 | [Change Helmet Visor](https://sp-mod.com/mod/2554) | 3.0.0 | 7차 | 게임+서버 | 페이스실드·바이저가 시야를 가리는 마스크를 바꾼다. **지금은 모두 `NoMask`** — 타길라 용접 마스크 3종·Altyn·Rys-T·Maska 2종의 가림이 사라진다. |
@@ -176,7 +177,7 @@ stage5-B의 조준경 관련이 여기 모여 있다. PiP Disabler는 성능, �
 | [Hide Locked Flea](https://sp-mod.com/mod/3152) | 1.0.0 | 5차 | 게임+서버 | 플레아에서 잠긴(구매 불가) 매물을 숨기는 필터를 넣는다. |
 | [Refined Flea Offer List](https://sp-mod.com/mod/2623) | 1.2.0 | 5차 | 게임 | 플레아 카테고리 목록에서 아이템별 최저가만 보여 준다. |
 | [Quick Trader Load Times](https://github.com/JoelHauser/QuickTraderLoadTimes) | 1.0.0 | 6차 | 게임+서버 | **Forge 밖**(GitHub·MIT). 상인 화면과 플레아가 뜨는 속도를 끌어올린다 — 한 프레임에 칸 하나씩 그리던 것을 프레임 예산 안에서 여러 개씩, 상인을 바꿀 때 스태시를 한 프레임에 다시 그리던 것을 여러 프레임에 나눠서. 상인이 늘어난 지금 체감이 가장 큰 쪽이다. |
-| [Moe-TradeMarker](https://sp-mod.com/mod/2736) | 1.2.6 | 6차 | 게임+서버 | **결속** 상인에게서 산 물건에 배지를 붙여 전리품과 구분한다. 원하면 그 물건의 플레아 재판매를 막는다(기본 켜짐). QuickSell 연동. |
+| [Moe-TradeMarker](https://sp-mod.com/mod/2736) | 1.2.6 | 6차 | 게임+서버 | **결속** 상인에게서 산 물건에 배지를 붙여 전리품과 구분한다. 원하면 그 물건의 플레아 재판매를 막는다(기본 켜짐). QuickSell 연동. **2026-11-14: AIOTrader 를 재판매 금지에서 뺐다** — 그 상인이 DB 전부를 팔아 사실상 플리 판매가 막혀 있었다(`config.json` 의 `ragfairRestriction.disabledTraderIds`, 기록은 [mod-patches](mod-patches/2736-trademarker-aiotrader-flea-exception.md)). |
 | [OpenBarters](https://sp-mod.com/mod/3194) | 1.0.1 | 6차 | 게임 | 물물교환 대금을 요구 품목 대신 **상인이 사주는 아무 아이템**으로 치른다(합산 가치가 요구치를 넘으면 성립). |
 | [All Weapons Flea](https://sp-mod.com/mod/3200) | 1.0.1 | 6차 | 서버 | 상인 전용이던 총기를 플레아에서 사고팔 수 있게 한다(무기 238종, BSG 제한 33개 해제). 총기 파츠를 모으는 데 직접 도움이 된다. |
 | [Ref Rework](https://sp-mod.com/mod/3014) | 1.0.0 | 6차 | 게임+서버 | 도그태그와 레가 메달을 Ref에 팔아 GP 코인으로 바꾼다. 레벨이 높은 태그일수록 비싸다. **Ledger와 도그태그 용처가 겹치므로** 게임에서 보고 한쪽을 끄는 편이 낫다. |
@@ -293,10 +294,10 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 - [Full Automatic Guns](https://sp-mod.com/mod/1972) (4.1.5)
 - [Holster Everything](https://sp-mod.com/mod/2650) (2.0.0)
 - [Jero Backpack](https://sp-mod.com/mod/2369) (4.1.1)
-- [Less Restricting Headwear](https://sp-mod.com/mod/922) (4.0.0)
+- [Less Restricting Headwear](https://sp-mod.com/mod/922) (4.0.0) — **2026-11-14: 제작자가 결속 표시를 뗐다**(Forge `shows_profile_binding_notice: false`)
 - [Limitless](https://sp-mod.com/mod/2175) (1.0.0)
 - [Magic Optic Mount](https://sp-mod.com/mod/3101) (0.1.0)
-- [Realistic Suppressors](https://sp-mod.com/mod/3171) (1.0.0)
+- [Realistic Suppressors](https://sp-mod.com/mod/3171) (1.0.0) — **2026-11-14: 제작자가 결속 표시를 뗐다**(Forge `shows_profile_binding_notice: false`)
 - [Repair Max Durability](https://sp-mod.com/mod/1305) (2.2.0)
 - [Repair Skill Extension](https://sp-mod.com/mod/2556) (1.4.1)
 - [Restore Armor Plates](https://sp-mod.com/mod/2973) (1.0.2)
@@ -305,6 +306,27 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 - [Ultimate Flea](https://sp-mod.com/mod/2844) (1.2.0)
 
 ## 알려진 충돌
+
+### 프리셋·개조 화면 뒤에 남의 캐릭터가 비치던 것 — Combat Log `사망 화면에 가해자 모델` (2026-11-15, 해결)
+
+**증상:** 레이드에서 **죽고 나오면**, 무기 프리셋·개조 화면 뒤에 **프리셋과 상관없는 사람 모델**
+(헬멧·헤드셋을 쓴 상반신)이 크게 비친다. 게임을 다시 켜면 사라졌다가 다음에 죽으면 또 생긴다.
+
+**원인:** [Combat Log](https://sp-mod.com/mod/3072) 의 **`사망 화면에 가해자 모델`**
+(`Killer 3D model on death screen`). 죽음 화면의 모델을 내 캐릭터 대신 **나를 죽인 쪽**으로
+바꿔 끼우는데, 그 화면이 닫힌 뒤 모델이 **미리보기 장면에 남는다.**
+
+**가린 방법:** 총기 모델을 **휠로 확대하면 같이 커지는데 회전에는 안 따라왔다** — 총기와 같은
+미리보기 카메라 안에, 총기와는 별개로 놓인 객체라는 뜻이다. 차림(Walker's XCEL 500BT)이 플레이어
+것도 STM 팀원 것도 아니고 **ISB 봇 프리셋의 것**이었으며, 프로필의 `Stats.Eft.Aggressor` 가
+그 레이드에서 나를 죽인 **ISB Special Forces 봇**을 가리켰다.
+
+**해결:** F12 → **`전투 기록 (Combat Log)`** → **`레이드 뒤 화면`** → **`사망 화면에 가해자 모델`**
+을 **끈다**. 끈 뒤 레이드에서 다시 죽어도 **유령이 나오지 않는 것을 확인했다**(2026-11-15).
+전투 기록·통계와 `사망 화면에 가해자 정보`(글자)는 그대로 쓸 수 있다.
+
+> 조사 본문은 [fixes/2026-11-14-trademarker-flea-and-preset-ghost-model.md](fixes/2026-11-14-trademarker-flea-and-preset-ghost-model.md) 다.
+> 제작자에게는 아직 알리지 않았다(3072 는 1.0.0 이 최신이다).
 
 ### R(장전)이 먹지 않던 것 — UI Fixes `Always Reload Magazines In-Place` (2026-10-28, 해결)
 

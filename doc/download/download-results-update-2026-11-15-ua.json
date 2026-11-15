@@ -1,0 +1,68 @@
+[
+  {
+    "id": 3082,
+    "name": "Hj's Task Item Indicator",
+    "version": "1.0.2",
+    "file": "3082__TaskItemIndicator.zip",
+    "bytes": 9071,
+    "expected": 9071,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2550,
+    "name": "Bring Back Concussion",
+    "version": "1.2.2",
+    "file": "2550__Bring_Back_Concussion_v1.2.2.7z",
+    "bytes": 12632,
+    "expected": 12632,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3083,
+    "name": "Hj's Mod Source",
+    "version": "1.2.0",
+    "file": "3083__ModSource.zip",
+    "bytes": 43824,
+    "expected": 43824,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3207,
+    "name": "Better BepInEx",
+    "version": "1.0.4",
+    "file": "3207__BetterBepInEx_V1.0.4.zip",
+    "bytes": 62862,
+    "expected": 62862,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 3099,
+    "name": "ReflectSix",
+    "version": "1.0.2",
+    "file": "3099__ReflectSix-1.0.2.zip",
+    "bytes": 304161,
+    "expected": 304161,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  },
+  {
+    "id": 2706,
+    "name": "ORBIT 3.0",
+    "version": "3.1.1",
+    "file": "2706__ORBIT-3.1.1.zip",
+    "bytes": 850896,
+    "expected": 850896,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 1
+  }
+]

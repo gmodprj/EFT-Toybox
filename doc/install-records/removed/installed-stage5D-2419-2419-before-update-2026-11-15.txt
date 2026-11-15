@@ -1,0 +1,279 @@
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\Amonya.dll
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\config\defaultConfig.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\config\defaultQuestConfig.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\01 Armor-cracking.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\02 Bloody.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\03 Heavy Duty.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\04 Anti-personnel.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\05 Full-auto.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\06 Railgun.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\07 Artillery.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\08 Mortar.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\09 Avada Kedavra.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\10 ProPlus.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\11 Hypersonic.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\12 Flamethrower.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\13 Close Quarters.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\14 Rubber Grenade.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\15 Sabot.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\16 Tazer.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\17 Ratshot.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\18 Laser.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\19 Ratshot Mk2.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\20 Heavy.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\21 Light.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\22 Mini-nuke.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\23 Cluster Bomb.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\24 Afterburner.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\25 Spiked.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\26 Mini-rocket.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\27 Lucky Shot.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\50_DefinitiveWeaponVariants.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\60_WTT-Backport.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\61_WTT-Armory.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\62_SaintDeerWeapons.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\01_Variants\63_Danger Blicky.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\02_Items\01_ArcaneRounds.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\02_Items\02_MagofHoldingT3.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\02_Items\03_MysticRounds.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\02_Items\04_MagofHoldingT2.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\02_Items\05_EldritchRounds.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\02_Items\06_MagofHoldingT1.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\02_Items\20_ClusterBombFragment.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\01_Introduction.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\02_545x39.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\03_556x45.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\04_762x39.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\05_762x51.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\06_300.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\07_68x51.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\08_762x54.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\09_338.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\10_366.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\11_127x55.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\12_9x39.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\13_9x19.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\14_762x25.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\15_9x18.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\16_9x21.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\17_357.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\18_45ACP.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\19_46x30.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\20_57x28.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\21_50AE.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\22_1270.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\23_2070.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\24_23x75.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\25_40x46.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\26_127x99.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\50_127x108.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\51_30x29.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\60_93x64.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\61_308ME.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\70_792x57.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\71_300WM.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\72_338Norma.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\73_408CT.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\74_25x59.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\75_44Magnum.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\90_58x42.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\03_Quests\91_20x1.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\04_Trader\base.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\05_Calibers\01_Default.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\05_Calibers\02_DefinitiveWeaponVariants.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\05_Calibers\03_WTT-Backport.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\05_Calibers\04_WTT-Armory.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\05_Calibers\05_SaintDeerWeapons.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\06_Locales\ch.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\06_Locales\en_lore.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\06_Locales\en.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\06_Locales\kr.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\06_Locales\pl_lore.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\06_Locales\pl.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\06_Locales\ru.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\07_Settings\01_WeaponsVanilla.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\07_Settings\02_WeaponsWTT-Backport.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\07_Settings\03_WeaponsWTT-Armory.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\07_Settings\04_WeaponsMassivesoft.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\99_Ids\01_IdDatabase.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\Amonya non-pony.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\Amonya.jpg
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\1270Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\1270Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\1270Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\1270Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\1270Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\1270Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\1270Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\1270Q8.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x108Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x108Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x108Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x55Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x55Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x55Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x55Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x99Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x99Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x99Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x99Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\127x99Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\2070Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\2070Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\2070Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\2070Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\2070Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\2070Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\2070Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\2070Q8.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\23x75Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\23x75Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\23x75Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\300Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\300Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\300Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\300Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\300Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\300Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\300Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\308MEQ1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\308MEQ2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\308MEQ3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\30x29Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\30x29Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\338Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\338Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\338Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\338Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\338Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\357Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\357Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\357Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\357Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\357Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\366Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\366Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\366Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\366Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\366Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\40x46Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\40x46Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\40x46Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\40x46Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\40x46Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\40x46Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\44MagnumQ1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\44MagnumQ2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\44MagnumQ3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\44MagnumQ4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\44MagnumQ5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\44MagnumQ6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\45ACPQ1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\45ACPQ2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\45ACPQ3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\45ACPQ4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\45ACPQ5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\45ACPQ6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\46x30Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\46x30Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\46x30Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\46x30Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\46x30Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\46x30Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\50AEQ1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\50AEQ2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\50AEQ3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\50AEQ4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\50AEQ5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\545x39Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\545x39Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\545x39Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\545x39Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\545x39Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\545x39Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\545x39Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\545x39Q8.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\556x45Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\556x45Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\556x45Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\556x45Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\556x45Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\556x45Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\556x45Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\556x45Q8.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\57x28Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\57x28Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\57x28Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\57x28Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\57x28Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\57x28Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\68x51Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\68x51Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\68x51Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x25Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x25Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x25Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x25Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x25Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x39Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x39Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x39Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x39Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x39Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x39Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x39Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x39Q8.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x51Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x51Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x51Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x51Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x51Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x51Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x51Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x51Q8.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x54Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x54Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x54Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x54Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x54Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x54Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x54Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\762x54Q8.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\93x64Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\93x64Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\93x64Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\93x64Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x18Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x18Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x18Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x18Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x18Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x18Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x18Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x19Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x19Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x19Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x19Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x19Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x19Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x19Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x19Q8.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x21Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x21Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x21Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x21Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x21Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x21Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x21Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x39Q1.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x39Q2.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x39Q3.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x39Q4.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x39Q5.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x39Q6.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\9x39Q7.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\Introduction.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\res\quests\IntroductionNP.png
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\config\config.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\config\questConfig.json
+2419__Amonya.2.2.0	SPT_Runtime\user\mods\Amonya\db\99_Ids\ids_2026-10-24_18-52-57.json

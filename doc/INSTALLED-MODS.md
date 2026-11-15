@@ -3,8 +3,8 @@
 > 자동 생성: `node tools/gen-installed-mods.mjs` (설치 기록·매니페스트 기반). 직접 고치지 말고 기록을 고친 뒤 다시 생성.
 
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
-- 설치된 모드: **305개**, 설치 파일 **15948개** (자동 생성 설정 파일 포함)
-- **현재 로드 수: 서버 모드 174개(2026-11-09 실측) / 게임 쪽 플러그인 246개(2026-11-10 실측) — 둘 다 실측이다.** 245 에서 246 이 된 것은 Quest Codex 1.12.0 이 들고 온 클라이언트 플러그인 `QuestCodex.Overlay` 하나다(업데이트 20개 가운데 플러그인 수를 바꾼 것은 이것뿐이다 — 경위는 `UPDATE-CHECK-2026-11-09.md`). 173 에서 174 가 된 것은 이 저장소에서 만든 `ProfilePorter.Server`(프로필 사이로 물건 베끼기, 2026-11-08 설치) 하나다 — 11-09 서버 로그의 기동 11회 **전부** `ModLoader: 총 174 개`, `불러옴` 174줄, 거부 0 이다. 그 전에 172 에서 173 이 된 것은 `SptKoreanLocale`(게임 DB locale 한글화) 이고, 173 은 10차 전체 완료(2026-11-06) 시점의 값이다. 같은 기동에서 서버 오류는 `Could not add` 48 · `Unable to add bundle` 1 · `cannot import quest` 1 로 기준선과 같다. **오래 떠 있는 기동에서는 같은 48줄이 되풀이된다** — 2026-11-09 의 마지막 기동(약 2시간)은 `Could not add` 가 144줄이었지만 **고유 id 는 48개로 같고**, 03:31·04:06·05:12(UTC)에 `ItemBaseClassService` 캐시가 다시 세워지며 세 번 찍힌 것이다. 줄 수가 아니라 **고유 id 수**로 본다. 다만 **고유 id 수도 고정값이 아니다** — 2026-11-11 실측 54개, 11-10 58개, 11-09 48개로 기동마다 다르다(그 기동에서 클라이언트가 무엇을 물어봤는지에 달렸다). 기준선으로 쓸 때는 **날짜를 함께** 적는다. 그리고 그 오류는 묶음으로 몰려 찍힌다 — 11-11 은 1,046줄이 12묶음(48·108·324줄)이었고, 묶음마다 `ItemBaseClassService` 가 캐시를 다시 세우려 든다(경위는 `MEMORY-AUDIT-2026-11-11.md`). 게임 플러그인은 서버 모드라 그대로다. 3022 와 2866 이 플러그인 속성을 가진 클라이언트 DLL 을 하나씩 넣어 243 에서 2 늘었다(2866 이 함께 넣은 `PerfectCullingRuntime.dll` 은 플러그인 속성이 없어 0 으로 센다 — 넣은 DLL 2개 가운데 1만 센 것이 맞았다). 마지막 기동에서 `245 plugins to load` = `Loading [` 245줄, `Chainloader startup complete`, `[Error` 1줄 / `[Fatal` 0줄(알려진 DirectReload+Fika 건뿐). **다만 Better BepInEx 가 F12 창을 자기 메뉴로 갈아끼우면서 그 창에 붙어 있던 패치를 떼어 냈다** — 수는 줄지 않았지만 **로드된 것과 일하는 것은 다르다**. 그중 **한글화는 2026-11-05 에 고쳤다**(`SptKoreanConfig` 에 `BetterBepInExPatch` 를 더해 새 메뉴가 설정을 모으는 지점에 같은 번역을 다시 건다 — 커밋 f325eaa·1ff99da·446e22d, 설치본 DLL 11-05 16:35). **남은 것은 ASBP 뿐이고, 사용자가 2026-11-06 에 새 메뉴를 쓰기로 했다** — ASBP 는 하는 일이 없다. 경위는 `STAGE10-RESULT.md` 의 10-J 절
+- 설치된 모드: **306개**, 설치 파일 **16144개** (자동 생성 설정 파일 포함)
+- **현재 로드 수: 서버 모드 175개 / 게임 쪽 플러그인 248개 — 둘 다 2026-11-14 실측이다.** 그날 기동은 `ModLoader: 총 175 개` 와 `Loading [` 248줄(거부 0)이다. 174 에서 175 가 된 것은 이 저장소에서 만든 `SlotFilterSweep`(2026-11-12 설치) 하나이고, 246 에서 248 이 된 것은 같은 저장소의 `IcebreakerOffMapGuard`(11-12)·`GridWindowScroll`(11-13) 둘이다 — 셋 다 기동 로그에서 이름으로 확인했다. 아래는 그 앞의 내력이다. 245 에서 246 이 된 것은 Quest Codex 1.12.0 이 들고 온 클라이언트 플러그인 `QuestCodex.Overlay` 하나다(업데이트 20개 가운데 플러그인 수를 바꾼 것은 이것뿐이다 — 경위는 `UPDATE-CHECK-2026-11-09.md`). 173 에서 174 가 된 것은 이 저장소에서 만든 `ProfilePorter.Server`(프로필 사이로 물건 베끼기, 2026-11-08 설치) 하나다 — 11-09 서버 로그의 기동 11회 **전부** `ModLoader: 총 174 개`, `불러옴` 174줄, 거부 0 이다. 그 전에 172 에서 173 이 된 것은 `SptKoreanLocale`(게임 DB locale 한글화) 이고, 173 은 10차 전체 완료(2026-11-06) 시점의 값이다. 같은 기동에서 서버 오류는 `Could not add` 48 · `Unable to add bundle` 1 · `cannot import quest` 1 로 기준선과 같다. **오래 떠 있는 기동에서는 같은 48줄이 되풀이된다** — 2026-11-09 의 마지막 기동(약 2시간)은 `Could not add` 가 144줄이었지만 **고유 id 는 48개로 같고**, 03:31·04:06·05:12(UTC)에 `ItemBaseClassService` 캐시가 다시 세워지며 세 번 찍힌 것이다. 줄 수가 아니라 **고유 id 수**로 본다. 다만 **고유 id 수도 고정값이 아니다** — 2026-11-11 실측 54개, 11-10 58개, 11-09 48개로 기동마다 다르다(그 기동에서 클라이언트가 무엇을 물어봤는지에 달렸다). 기준선으로 쓸 때는 **날짜를 함께** 적는다. 그리고 그 오류는 묶음으로 몰려 찍힌다 — 11-11 은 1,046줄이 12묶음(48·108·324줄)이었고, 묶음마다 `ItemBaseClassService` 가 캐시를 다시 세우려 든다(경위는 `MEMORY-AUDIT-2026-11-11.md`). 게임 플러그인은 서버 모드라 그대로다. 3022 와 2866 이 플러그인 속성을 가진 클라이언트 DLL 을 하나씩 넣어 243 에서 2 늘었다(2866 이 함께 넣은 `PerfectCullingRuntime.dll` 은 플러그인 속성이 없어 0 으로 센다 — 넣은 DLL 2개 가운데 1만 센 것이 맞았다). 마지막 기동에서 `245 plugins to load` = `Loading [` 245줄, `Chainloader startup complete`, `[Error` 1줄 / `[Fatal` 0줄(알려진 DirectReload+Fika 건뿐). **다만 Better BepInEx 가 F12 창을 자기 메뉴로 갈아끼우면서 그 창에 붙어 있던 패치를 떼어 냈다** — 수는 줄지 않았지만 **로드된 것과 일하는 것은 다르다**. 그중 **한글화는 2026-11-05 에 고쳤다**(`SptKoreanConfig` 에 `BetterBepInExPatch` 를 더해 새 메뉴가 설정을 모으는 지점에 같은 번역을 다시 건다 — 커밋 f325eaa·1ff99da·446e22d, 설치본 DLL 11-05 16:35). **남은 것은 ASBP 뿐이고, 사용자가 2026-11-06 에 새 메뉴를 쓰기로 했다** — ASBP 는 하는 일이 없다. 경위는 `STAGE10-RESULT.md` 의 10-J 절
 - 레이드를 깊게 돈 기동(11-05 11:06)에서는 `[Error` 9줄이었고 **전부 기존 건**이다 — SAIN 6, 알려진 DirectReload 1, STM 의 LootPatrol 억제 예외가 두 줄로 찍힌 것 2. 메뉴까지만 돈 기동이 1줄인 것은 좋아진 것이 아니라 **아직 안 나온 것**이다
 - 10차 서버 모드 변화: 115(기준선) → 116(10-A) → 120(10-B) → 122(10-C, 150초) → 127(10-D, 144초) → 136(10-E, 159초 / 10-E2, 129초) → **135**(All Quests Checkmarks 제거) → **137**(10-F, 135초) → **138**(10-F2 ORBIT, 144초) → **145**(10-G, 전리품·경제 11개 중 서버 7, 135초. 플리마켓 생성 단계에서도 오류 없음) → **150**(10-H, 맵 7개를 하나씩. 141~162초, 7회 전부 정상 시작) → **151**(10-I1 중 Blackout, 144초) → **152**(10-I2 중 FogSix) → **153**(10-J 중 Raid Review, 147초) → **154**(10-J 중 Knight Mask Fix, 141초) → **155**(10-K 중 PityLoot) → **156**(10-K 중 Lacy 의 PvE Tweaks) → **157**(10-K 중 Quest Backport) → **167**(10-L, 결속 콘텐츠·대형 11개를 하나씩. 11회 전부 정상 시작이고 11개 중 10개가 서버 모드를 싣는다 — Deploy Screen Overhaul 만 게임 전용). 10-K 는 결속 소형 6개를 **하나씩** 넣었고 6회 전부 정상 시작했다(게임 전용 3개는 수가 그대로다). 이어 **169**(10-M, 대형 3개를 하나씩. DynamicMaps Extended 는 게임 전용이라 167 유지, Labs Office Backport 168, Arena Map Port 169. 3회 전부 정상 시작) → **170**(10-O 중 Manimal Interchange Expansion Backport, 201초) → **171**(10-O 중 Manimal Lighthouse Rework Backport, 198초. 앞의 것을 인터체인지 레이드로 확인한 뒤에 넣었다 — 계획이 못 박은 대로 모드마다 멈춘다) → **172**(10-O 의 마지막 MANIMAL ICEBREAKER BACKPORT, 165초. **이것으로 10차가 끝났다**). 10-O 의 세 모드 모두 기록 줄 수가 설치 파일 수와 같거나 서버가 만든 파일만큼만 많았고, 오류는 세 번 다 48/1/1 로 늘지 않았다. Raid Review 만 자체 포트(7828 WS / 7829 HTTP)를 열고 나머지 웹 화면은 모두 6969 안이다. 제거는 10-F 테스트 출력이 직접 찍었다 — `(Added 2 mods: ClassicMovement, Increase Climb Height; Removed 1 mods: All Quests Checkmarks)`. 시작 시간의 약 100초는 `[ItemInfo]` 하나가 쓴다. QuestCodex 는 서버 포트 안에 `/questcodex` 를 붙인다(별도 포트가 아니다)
 - 10차 게임 플러그인 변화: 147(기준선) → 151(10-B) → 173(10-C·10-D) → 181(10-E·10-E2) → **191**(10-F) → **205**(10-G·10-H, 12:05 기동에서 실측) → **222**(10-I, 14:26 기동에서 실측. 16개가 넣은 플러그인 DLL 19개 중 라이브러리 2개를 뺀 17개이고, HollywoodFX 는 혼자 Janky-HollywoodFX·Janky-HollywoodGraphics 둘을 등록한다) → **228**(10-J, 16:33 기동에서 실측). → **232**(10-K, 17:23 기동에서 실측. 클라이언트 DLL 4개 — IOF·Item Preview QoL·TraumaCore·Quest Backport.Client — 가 전부 플러그인이라 예상치와 정확히 맞았다) → **239**(10-L, 19:03 기동에서 실측. 클라이언트 DLL 9개 가운데 Skills Extended 의 `.Client.API`·`.Common` 이 **플러그인 속성이 없어 0 으로 세어져** 7 증가다 — `Loading [Skills` 가 1줄뿐인 것으로 확인했다) → **242**(10-M) → **243**(10-O 중 3025, 2026-11-06 04:44 기동에서 실측) → **245**(10-O 끝, 2026-11-06 07:14 기동에서 실측. 3022·2866 이 하나씩 더했다). **넣은 DLL 수와 같지 않다.** ① 플러그인 속성이 없는 **라이브러리**는 0 으로 센다 — 지금까지 3건(Effects Manager Framework, `BriefingBriefing.Core.dll`, `tarkin-ladders	arkin.ladders.shared.dll`). ② DLL 하나가 플러그인 여러 개를 등록할 수 있다 — ICM 이 그렇고, 그중 `Configuration Manager` 는 SPT 자체의 `plugins/spt/ConfigurationManager` 와 **GUID 가 겹쳐 하나가 조용히 버려진다**(F12 한글화는 2026-11-05 확인 결과 멀쩡하다). ③ 겹침 검사가 `게임+서버` 로 분류한 모드도 클라이언트 DLL 을 싣는다 — 예상치는 `BepInExplugins*.dll` 기록 줄로 세야 한다. ④ **`-Fika` 가 붙은 DLL 은 이름으로 세지 않는다** — 플러그인 속성이 있으면 센다(`LootNetFika.dll` 은 올라왔고, 10-E 의 `AllQuestsCheckmarks-Fika.dll` 은 속성이 없어 안 올라왔다). `FixPluginTypesSerialization` 의 `Excluding ... references Fika.Core` 경고는 **직렬화 수정에서 뺀다**는 뜻이고 로드 여부와 무관하다
@@ -51,7 +51,7 @@
 | [Unload All Magazines](https://sp-mod.com/mod/2739) | 2.2.1 | 게임 | - | 1 | `stage2-A` |
 | [AmmoBox1x1](https://sp-mod.com/mod/2402) | 2.0.0 | 서버 | - | 1 | `stage2-A` |
 | [QuickSellFlea](https://sp-mod.com/mod/2407) | 1.4.5 | 게임 | - | 2 | `stage2-A` |
-| [WTT - CommonLib](https://sp-mod.com/mod/2310) | 3.0.6 | 게임+서버 | - | 6 | `stage2-B1-CommonLib` |
+| [WTT - CommonLib](https://sp-mod.com/mod/2310) | 3.0.7 | 게임+서버 | - | 6 | `update-2310-3.0.7` |
 | [WTT- Armory](https://sp-mod.com/mod/2246) | 3.0.0 | 게임+서버 | **결속** | 954 | `stage2-B2-Armory` |
 | [WTT- Artem](https://sp-mod.com/mod/1023) | 3.0.2 | 서버 | **결속** | 302 | `stage2-B3-Artem` |
 | [Server Value Modifier \[SVM\]](https://sp-mod.com/mod/236) | 2.2.3 | 서버+루트 | **결속** | 20 | `stage2-C` |
@@ -124,7 +124,7 @@
 | [CaseTrader — Buy any case](https://sp-mod.com/mod/3024) | 1.0.1 | 서버 | **결속** | 7 | `stage5D-3024` |
 | [PresetTrader](https://sp-mod.com/mod/2966) | 1.2.0 | 서버 | **결속** | 9 | `stage5D-2966` |
 | [Ledger](https://sp-mod.com/mod/3085) | 1.1.0 | 서버 | **결속** | 10 | `stage5D-3085` |
-| [Amonya - Ammo Loving Trader & Quester](https://sp-mod.com/mod/2419) | 2.2.0 | 서버 | **결속** | 280 | `stage5D-2419.dirs`, `stage5D-2419` |
+| [Amonya - Ammo Loving Trader & Quester](https://sp-mod.com/mod/2419) | 2.2.1 | 서버 | **결속** | 279 | `stage5D-2419`, `update-2419-2.2.1.dirs`, `update-2419-2.2.1` |
 | [Freecam](https://sp-mod.com/mod/164) | 1.4.8 | 게임 | - | 1 | `stage5E-164` |
 | [Cobra's SPT Explorer](https://sp-mod.com/mod/3009) | 1.0.0 | 게임+서버+루트 | - (치트 표시) | 20 | `stage5E-3009` |
 | [Set Speed - Set Player Speed with Hotkeys](https://sp-mod.com/mod/994) | 1.5.0 | 게임 | - | 1 | `stage5E-994` |
@@ -149,7 +149,7 @@
 | [Realistic Insurance](https://sp-mod.com/mod/2949) | 0.2.3 | 게임+서버 | - | 3 | `update-2949-0.2.3` |
 | [All Weapons Flea](https://sp-mod.com/mod/3200) | 1.0.1 | 서버 | - | 3 | `stage6A-3200` |
 | [NATO Quartermaster — Western Gear Trader, Presets & Quest Unlocks](https://sp-mod.com/mod/3030) | 1.1.3 | 서버 | **결속** | 4 | `stage6B-3030` |
-| [ECOTI - Enhanced Clip-On Thermal Imager](https://sp-mod.com/mod/2930) | 3.5.0 | 게임+서버 | **결속** | 56 | `update-2930-3.5.0` |
+| [ECOTI - Enhanced Clip-On Thermal Imager](https://sp-mod.com/mod/2930) | 3.5.1 | 게임+서버 | **결속** | 56 | `update-2930-3.5.1` |
 | [PortableTraders (GitHub)](https://github.com/wangbofan/SPT-PortableTraders) | 1.1.0 | 서버 | - | 2 | `stage6A-portabletraders` |
 | [Quick Trader Load Times (GitHub)](https://github.com/JoelHauser/QuickTraderLoadTimes) | 1.0.0 | 게임+서버 | - | 2 | `stage6A-quicktraderloadtimes` |
 
@@ -160,9 +160,9 @@
 | [Quick Sell](https://sp-mod.com/mod/2955) | 4.3.0 | 게임+서버 | - | 3 | `stage7B-2955` |
 | [Bela.s.Speedloader](https://sp-mod.com/mod/2458) | 1.2.4 | 서버 | - | 4 | `stage7B-2458` |
 | [Infinite Everything](https://sp-mod.com/mod/3108) | 2.5.3 | 게임+서버 | - | 4 | `stage7B-3108` |
-| [Less Restricting Headwear](https://sp-mod.com/mod/922) | 4.0.0 | 서버 | **결속** | 4 | `stage7C-922` |
+| [Less Restricting Headwear](https://sp-mod.com/mod/922) | 4.0.0 | 서버 | - | 4 | `stage7C-922` |
 | [BETTER ATTACHMENTS](https://sp-mod.com/mod/1939) | 4.1.5 | 서버 | **결속** | 4 | `stage7C-1939` |
-| [Definitive Weapon Variants](https://sp-mod.com/mod/2010) | 4.3.2 | 서버 | **결속** | 34 | `stage7C-2010` |
+| [Definitive Weapon Variants](https://sp-mod.com/mod/2010) | 5.0.1 | 게임+서버 | **결속** | 52 | `update-2010-5.0.1` |
 | [Canted Aiming](https://sp-mod.com/mod/2415) | 2.0.0 | 서버 | **결속** | 4 | `stage7C-2415` |
 | [Holster Everything](https://sp-mod.com/mod/2650) | 2.0.0 | 게임+서버 | **결속** | 7 | `stage7C-2650` |
 | [Black Exfil Revision](https://sp-mod.com/mod/2380) | 1.1.0 | 서버 | **결속** | 1 | `stage7C-2380` |
@@ -171,7 +171,7 @@
 | [Repair Skill Extension](https://sp-mod.com/mod/2556) | 1.4.1 | 서버 | **결속** | 2 | `stage7C-2556` |
 | [Repair Max Durability](https://sp-mod.com/mod/1305) | 2.2.1 | 게임+서버 | **결속** | 3 | `update-1305-2.2.1` |
 | [Cobra's Durability Tweaks](https://sp-mod.com/mod/3019) | 1.0.0 | 서버 | **결속** | 5 | `stage7C-3019` |
-| [Realistic Suppressors](https://sp-mod.com/mod/3171) | 1.0.0 | 서버 | **결속** | 3 | `stage7C-3171` |
+| [Realistic Suppressors](https://sp-mod.com/mod/3171) | 1.0.0 | 서버 | - | 3 | `stage7C-3171` |
 | [Full Automatic Guns](https://sp-mod.com/mod/1972) | 4.1.5 | 서버 | **결속** | 5 | `stage7C-1972` |
 | [ShrapnelFix](https://sp-mod.com/mod/3118) | 1.0.0 | 게임 | **결속** | 2 | `stage7C-3118` |
 | [Airburst](https://sp-mod.com/mod/2948) | 1.1.2 | 게임+서버 | **결속** | 7 | `stage7C-2948` |
@@ -182,7 +182,7 @@
 | [Equipment Is Eternal](https://sp-mod.com/mod/2897) | 1.2.0 | 서버 | **결속** | 2 | `stage7C-2897` |
 | [AmmoGen](https://sp-mod.com/mod/2777) | 2.4.0 | 게임+서버 | **결속** | 4 | `stage7C-2777` |
 | [Slimmer Magazines](https://sp-mod.com/mod/2373) | 2.0.0 | 서버 | **결속** | 1 | `stage7C-2373` |
-| [Ultimate Flea](https://sp-mod.com/mod/2844) | 1.3.1 | 게임+서버 | **결속** | 14 | `update-2844-1.3.1` |
+| [Ultimate Flea](https://sp-mod.com/mod/2844) | 1.3.2 | 게임+서버 | **결속** | 18 | `update-2844-1.3.1`, `update-2844-1.3.2` |
 | [AllGoodsTrader](https://sp-mod.com/mod/2648) | 2.0.0 | 서버 | **결속** | 12 | `stage7C-2648` |
 | [bluehead's AIO Trader](https://sp-mod.com/mod/374) | 5.3.1 | 서버 | **결속** | 10 | `stage7C-374` |
 | [ALL AMMO TRADER - UPDATED BY TILTUSHKIN](https://sp-mod.com/mod/1554) | 1.5.0 | 서버 | **결속** | 5 | `stage7C-1554` |
@@ -246,7 +246,7 @@
 | --- | --- | --- | --- | --- | --- |
 | [More Energy Drinks](https://sp-mod.com/mod/1688) | 1.3.2 | 서버 | **결속** | 87 | `stage9-1688` |
 | [MoreBotsAPI](https://sp-mod.com/mod/2426) | 2.1.2 | 게임+서버 | - | 4 | `update-2426-2.1.2` |
-| [WTT - Content Backport](https://sp-mod.com/mod/2512) | 2.0.5 | 게임+서버 | **결속** | 1637 | `stage9-2512` |
+| [WTT - Content Backport](https://sp-mod.com/mod/2512) | 2.0.7 | 게임+서버 | **결속** | 1773 | `update-2512-2.0.7` |
 | [SAIN - Solarint's AI Modifications](https://sp-mod.com/mod/791) | 4.5.1 | 게임+서버 | - | 11 | `stage9-791` |
 | [ISB Aishi](https://sp-mod.com/mod/2478) | 2.0.7 | 게임+서버 | **결속** | 3880 | `update-2478-2.0.7` |
 | [ISB Special Forces](https://sp-mod.com/mod/2485) | 2.0.4 | 게임+서버 | - | 3173 | `update-2485-2.0.4.dirs`, `update-2485-2.0.4` |
@@ -263,7 +263,7 @@
 | [Map Variants](https://sp-mod.com/mod/3040) | 1.1.0 | 게임+서버 | - | 8 | `stage10-B-3040-MapVariants` |
 | [Quest Codex](https://sp-mod.com/mod/3054) | 1.12.0 | 게임+서버 | - | 96 | `update-3054-1.12.0` |
 | [Item Property Backport](https://sp-mod.com/mod/2689) | 1.5.2 | 서버 | - | 6 | `stage10-B-2689-ItemPropertyBackport` |
-| [Hj's Mod Source](https://sp-mod.com/mod/3083) | 1.1.0 | 게임+서버 | - | 3 | `stage10-B-3083-HjsModSource` |
+| [Hj's Mod Source](https://sp-mod.com/mod/3083) | 1.2.0 | 게임+서버 | - | 3 | `update-3083-1.2.0` |
 | [Integrated Configuration Manager](https://sp-mod.com/mod/3095) | 1.1.0 | 게임 | - | 1 | `update-3095-1.1.0` |
 | [MergeConsumables](https://sp-mod.com/mod/1657) | 1.6.3 | 게임+서버 | - | 4 | `stage10-C-1657-MergeConsumables` |
 | [Continuous Healing](https://sp-mod.com/mod/1884) | 1.6.3 | 게임 | - | 2 | `stage10-C-1884-ContinuousHealing` |
@@ -279,7 +279,7 @@
 | [WTT - Menu Overhaul](https://sp-mod.com/mod/1775) | 1.3.0 | 게임 | - | 9 | `stage10-D-1775-WTTMenuOverhaul` |
 | [ImpactCue-UI-MOD](https://sp-mod.com/mod/3029) | 2.0.3 | 게임+서버 | - | 28 | `stage10-D-3029-ImpactCueUI` |
 | [Hj's Improved Customization UI](https://sp-mod.com/mod/3069) | 1.1.2 | 게임+서버 | - | 3 | `stage10-D-3069-HjsImprovedCustomizationUI` |
-| [Hj's Task Item Indicator](https://sp-mod.com/mod/3082) | 1.0.1 | 게임 | - | 1 | `stage10-D-3082-HjsTaskItemIndicator` |
+| [Hj's Task Item Indicator](https://sp-mod.com/mod/3082) | 1.0.2 | 게임 | - | 1 | `update-3082-1.0.2` |
 | [Hj's Task Turn in Indicator](https://sp-mod.com/mod/3071) | 1.0.0 | 게임 | - | 1 | `stage10-D-3071-HjsTaskTurnInIndicator` |
 | [Name Plate](https://sp-mod.com/mod/3131) | 1.1.0 | 게임+서버 | - | 248 | `stage10-D-3131-NamePlate` |
 | [Briefing](https://sp-mod.com/mod/3158) | 1.2.0 | 게임 | - | 12 | `update-3158-1.2.0` |
@@ -301,7 +301,7 @@
 | [Health Per Level](https://sp-mod.com/mod/1706) | 2.2.0 | 서버 | - | 4 | `stage10-E-1706-HealthPerLevel` |
 | [Fair Progression](https://sp-mod.com/mod/2652) | 1.1.0 | 서버 | - | 3 | `stage10-E-2652-FairProgression` |
 | [Broken Limbs Don't Heal](https://sp-mod.com/mod/3121) | 1.1.0 | 게임 | - | 2 | `stage10-E2-3121-BrokenLimbsDontHeal` |
-| [Bring Back Concussion](https://sp-mod.com/mod/2550) | 1.2.1 | 게임 | - | 1 | `stage10-F-2550-BringBackConcussion` |
+| [Bring Back Concussion](https://sp-mod.com/mod/2550) | 1.2.2 | 게임 | - | 1 | `update-2550-1.2.2` |
 | [CookingGrenades 4.1](https://sp-mod.com/mod/2951) | 1.4.4 | 게임 | - | 1 | `stage10-F-2951-CookingGrenades` |
 | [Inspectionless Malfunctions Reborn](https://sp-mod.com/mod/2992) | 1.0.0 | 게임 | - | 1 | `stage10-F-2992-InspectionlessMalfunctionsReborn` |
 | [Deminvincibility](https://sp-mod.com/mod/1117) | 2.2.0 | 게임 | - | 1 | `stage10-F-1117-Deminvincibility` |
@@ -313,7 +313,7 @@
 | [Auto Shoulder Swap](https://sp-mod.com/mod/2639) | 1.1.1 | 게임 | - | 1 | `stage10-F-2639-AutoShoulderSwap` |
 | [No Aim Swing](https://sp-mod.com/mod/2719) | 1.2.0 | 게임 | - | 1 | `stage10-F-2719-NoAimSwing` |
 | [Deadzone](https://sp-mod.com/mod/3067) | 1.2.0 | 게임 | - | 1 | `stage10-F-3067-Deadzone` |
-| [ORBIT 3.0](https://sp-mod.com/mod/2706) | 3.1.0 | 게임+서버 | - | 19 | `stage10-F2-2706-ORBIT` |
+| [ORBIT 3.0](https://sp-mod.com/mod/2706) | 3.1.1 | 게임+서버 | - | 19 | `stage10-F2-2706-ORBIT`, `update-2706-3.1.1` |
 | [Lots of Loot Redux](https://sp-mod.com/mod/1619) | 4.2.2 | 서버 | - | 5 | `stage10-G-1619-LotsOfLootRedux` |
 | [Rai's Hidden Caches](https://sp-mod.com/mod/1265) | 1.4.0 | 게임 | - | 1 | `stage10-G-1265-RaisHiddenCaches` |
 | [Bosses Have Lega Medals](https://sp-mod.com/mod/1539) | 2.1.0 | 서버 | - | 3 | `stage10-G-1539-BossesHaveLegaMedals` |
@@ -342,16 +342,16 @@
 | [BushWhacker - Standalone](https://sp-mod.com/mod/2329) | 1.7.0 | 게임 | - | 1 | `stage10-I1-2329-BushWhackerStandalone` |
 | [Battle Ambience](https://sp-mod.com/mod/2264) | 2.4.0 | 게임 | - | 51 | `stage10-I1-2264-BattleAmbience` |
 | [Music Extender](https://sp-mod.com/mod/2962) | 1.2.0 | 게임 | - | 3 | `stage10-I1-2962-MusicExtender.dirs`, `stage10-I1-2962-MusicExtender` |
-| [CloudSix - Volumetric Clouds](https://sp-mod.com/mod/2567) | 4.0.2 | 게임 | - | 2 | `stage10-I2-2567-CloudSix` |
+| [CloudSix - Volumetric Clouds](https://sp-mod.com/mod/2567) | 4.0.3 | 게임 | - | 2 | `update-2567-4.0.3` |
 | [FogSix](https://sp-mod.com/mod/3110) | 1.0.1 | 게임+서버 | - | 4 | `stage10-I2-3110-FogSix` |
-| [ReflectSix](https://sp-mod.com/mod/3099) | 1.0.1 | 게임 | - | 2 | `stage10-I2-3099-ReflectSix` |
+| [ReflectSix](https://sp-mod.com/mod/3099) | 1.0.2 | 게임 | - | 2 | `update-3099-1.0.2` |
 | [AOSix](https://sp-mod.com/mod/2569) | 2.0.1 | 게임 | - | 2 | `stage10-I2-2569-AOSix` |
 | [POMSix](https://sp-mod.com/mod/3100) | 1.0.2 | 게임 | - | 2 | `stage10-I2-3100-POMSix` |
 | [TraceSix - Full Raytracing and Voxel GI](https://sp-mod.com/mod/3221) | 1.0.1 | 게임 | - | 3 | `stage10-I2-3221-TraceSix` |
 | [Raid Review](https://sp-mod.com/mod/1479) | 1.10.0 | 게임+서버 | - | 17 | `stage10-J-1479-RaidReview` |
 | [Combat Log](https://sp-mod.com/mod/3072) | 1.0.0 | 게임 | - | 1 | `stage10-J-3072-CombatLog` |
 | [ASBP - Acid's Scalable BepinEx Panel](https://sp-mod.com/mod/2931) | 1.0.1 | 게임 | - | 2 | `stage10-J-2931-ASBP` |
-| [Better BepInEx](https://sp-mod.com/mod/3207) | 1.0.3 | 게임 | - | 1 | `stage10-J-3207-BetterBepInEx` |
+| [Better BepInEx](https://sp-mod.com/mod/3207) | 1.0.4 | 게임 | - | 1 | `update-3207-1.0.4` |
 | [Performance Scope](https://sp-mod.com/mod/3076) | 0.2.0 | 게임 | - | 1 | `stage10-J-3076-PerformanceScope` |
 | [Dynamic External Resolution Patch (DERP)](https://sp-mod.com/mod/2200) | 1.1.2 | 게임 | - | 1 | `stage10-J-2200-DERP` |
 | [Knight Mask Fix](https://sp-mod.com/mod/3109) | 1.0.0 | 서버 | - | 3 | `stage10-J-3109-KnightMaskFix` |
@@ -361,7 +361,7 @@
 | [TraumaCore](https://sp-mod.com/mod/2893) | 1.7.0 | 게임 | **결속** | 2 | `stage10-K-2893-TraumaCore` |
 | [Lacy's PvE Tweaks](https://sp-mod.com/mod/2395) | 1.3.2 | 서버 | **결속** | 3 | `stage10-K-2395-LacyPvETweaks` |
 | [Quest Backport](https://sp-mod.com/mod/3026) | 1.0.9 | 게임+서버 | **결속** | 293 | `stage10-K-3026-QuestBackport` |
-| [Manimal's CS Gas](https://sp-mod.com/mod/2864) | 2.0.0 | 게임+서버 | **결속** | 9 | `stage10-L-2864-ManimalCSGas` |
+| [Manimal's CS Gas](https://sp-mod.com/mod/2864) | 2.0.1 | 게임+서버 | **결속** | 12 | `update-2864-2.0.1` |
 | [Content Backport - Prestiges](https://sp-mod.com/mod/2540) | 1.1.0 | 게임+서버 | **결속** | 63 | `stage10-L-2540-Prestiges` |
 | [Strange Curios](https://sp-mod.com/mod/3059) | 1.1.0 | 게임+서버 | **결속** | 18 | `stage10-L-3059-StrangeCurios` |
 | [Borkel's Realistic Night Vision Goggles (NVGs and T-7)](https://sp-mod.com/mod/954) | 3.0.4 | 게임+서버 | **결속** | 102 | `stage10-L-954-BorkelRNVG` |
@@ -373,11 +373,11 @@
 | [Epic's All in One](https://sp-mod.com/mod/1263) | 5.0.3 | 서버 | **결속** | 632 | `update-1263-5.0.3` |
 | [ECOT - Eukyre's Consortium of Things](https://sp-mod.com/mod/2195) | 2.0.1 | 서버 | **결속** | 259 | `stage10-L-2195-ECOT` |
 | [DynamicMaps Extended](https://sp-mod.com/mod/3097) | 2.5.2 | 게임 | - | 201 | `stage10-M-3097-DynamicMapsExtended` |
-| [Manimal's 1.0 Labs Office Backport](https://sp-mod.com/mod/2937) | 2.0.0 | 게임+서버 | - | 7 | `stage10-M-2937-LabsOfficeBackport` |
-| [Arena Map Port](https://sp-mod.com/mod/3166) | 0.5.0 | 게임+서버 | - | 363 | `update-3166-0.5.0` |
-| [Manimal's 1.0 Interchange Expansion Backport](https://sp-mod.com/mod/3025) | 1.0.8 | 게임+서버 | - | 150 | `stage10-O-3025-InterchangeExpansion` |
+| [Manimal's 1.0 Labs Office Backport](https://sp-mod.com/mod/2937) | 2.0.1 | 게임+서버 | - | 7 | `update-2937-2.0.1` |
+| [Arena Map Port](https://sp-mod.com/mod/3166) | 0.6.0 | 게임+서버 | - | 400 | `update-3166-0.6.0` |
+| [Manimal's 1.0 Interchange Expansion Backport](https://sp-mod.com/mod/3025) | 1.0.10 | 게임+서버 | - | 147 | `stage10-O-3025-InterchangeExpansion`, `update-3025-1.0.10` |
 | [Manimal's 1.0 Lighthouse Rework Backport](https://sp-mod.com/mod/3022) | 1.0.7 | 게임+서버 | - | 50 | `stage10-O-3022-Lighthouse` |
-| [MANIMAL'S ICEBREAKER BACKPORT](https://sp-mod.com/mod/2866) | 1.1.3 | 게임+서버 | - | 95 | `stage10-O-2866-Icebreaker` |
+| [MANIMAL'S ICEBREAKER BACKPORT](https://sp-mod.com/mod/2866) | 1.2.4 | 게임+서버 | - | 95 | `update-2866-1.2.4` |
 
 ## 11차 — 성능·메모리 (후보는 `CANDIDATES-PERF.md`, 실측은 `MEMORY-AUDIT-2026-11-11.md`)
 
@@ -385,11 +385,17 @@
 | --- | --- | --- | --- | --- | --- |
 | [VRAM Cleaner](https://sp-mod.com/mod/2173) | 1.1.0 | 게임 | - | 1 | `stage11-A-2173-VRAMCleaner` |
 
+## 12차 — 방어구 인서트 (고정 소프트 아머를 떼고 바꾼다. 조사는 `CANDIDATES-SOFT-ARMOR-SWAP.md`)
+
+| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |
+| --- | --- | --- | --- | --- | --- |
+| [Armor Tweaks and Additions](https://sp-mod.com/mod/3355) | 1.0.0 | 게임+서버 | **결속** | 2 | `stage12-A-3355-ArmorTweaks` |
+
 ## 다른 경로로 설치된 것
 
 | 항목 | 위치 | 설치 주체 |
 | --- | --- | --- |
-| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | `BepInEx\plugins\SptKoreanConfig\` (DLL 1 + 번역 사전 188) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 `tools/install-koreanconfig.ps1`. Forge 모드가 아니라 설치 기록에 없다 |
+| SptKoreanConfig 0.1.0 (F12 설정 창 한글화) | `BepInEx\plugins\SptKoreanConfig\` (DLL 1 + 번역 사전 189) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanConfig](../src/SptKoreanConfig), 설치는 `tools/install-koreanconfig.ps1`. Forge 모드가 아니라 설치 기록에 없다 |
 | SptKoreanLocale 0.1.0 (게임 DB locale 한글화) | `SPT_Runtime\user\mods\SptKoreanLocale\` (DLL 1 + `config.jsonc` + 사전 19) | 이 저장소에서 직접 만든 것. 소스는 [../src/SptKoreanLocale](../src/SptKoreanLocale), 설치·제거는 `tools/install-koreanlocale.ps1` (`-Remove`). 서버가 내려주는 게임 locale(`kr`)의 값을 `lang/*.json` 사전으로 덮어쓴다 — **다른 모드의 파일은 건드리지 않는다**(업데이트에 날아간다). 지금 사전 항목은 8468개이고 지금까지 **봇 역할 이름 23개**(킬 패널·시체 표시·지도 범주), **BTR 대화 44개**, **아이템 이름 406개**(바닐라 28 · ISB 계열 378), **퀘스트 이름 1,243개**(목록·상인 화면·추적기·지도 표시), **퀘스트 목표 3,482개**(손으로 적은 목표 문구 2,816개를 펴낸 것 — 이 묶음은 전부 덮었다), **퀘스트·업적·치장 설명 1,526개**(머리말은 규칙으로 옮기고 본문은 바닐라 한국어를 되쓰거나 손으로 적는다 — 이 묶음도 전부 덮었다), **퀘스트 대사·메일 1,744개**(상인이 보내는 글과 플레이어의 짧은 대답)를 덮었다. 목표는 열쇠가 아니라 **문구 단위**로 적고(`src/SptKoreanLocale/lang-src/`) `tools/expand-locale-dict.mjs` 가 열쇠 사전으로 펴낸다. `OnLoadOrder.PostLoad` 여야 한다 — 모드가 만든 아이템·퀘스트의 열쇠는 그 모드가 돈 뒤에 생긴다. 사전에 **값을 직접 쓰면 날아간다** — 늦게 변환기를 등록하는 모드가 있으면 `LazyLoad` 캐시가 버려지고 파일에서 다시 세워진다(실측: 22항목을 쓴 뒤 60,398 → 61,125 항목으로 다시 세워져 전부 영문으로 돌아왔다). 그래서 `LazyLoad.AddTransformer` 로 **변환기를 등록**해 사전이 세워질 때마다 입힌다. 그 locale 이 없으면 서버가 조용히 `en` 을 돌려주므로, `en` 과 같은 인스턴스일 때는 **아무것도 하지 않는다**. 적용 여부는 `node tools/check-locale-dict.mjs` 가 켜져 있는 서버에게 물어 확인한다. 범위 검토는 [REVIEW-KOREAN-LOCALIZATION.md](REVIEW-KOREAN-LOCALIZATION.md). Forge 모드가 아니라 설치 기록에 없다 |
 | 모드 폴더 안의 한국어 locale 4개 (항목 338) | `BepInEx\plugins\…\locales\kr.json` 넷 — ISB 자막·Advanced Stash Sorting·Wishlist Extended·Loot In Vicinity | 이 저장소에서 만든 번역 파일. 사전은 [../src/PluginLocales](../src/PluginLocales), 설치·제거는 `tools/install-plugin-locales.ps1` (`-Remove`). 네 모드 모두 `locales/` 를 훑어 파일 이름을 locale 코드로 쓰고 **키마다 영어로 떨어지므로** 일부만 번역해도 된다(역컴파일 실측 — 근거는 manifest 의 `evidence`). 게임이 서버에 `/client/locale/kr` 을 요청하므로 코드는 `kr` 이다(서버 로그 실측). **모드 폴더 안이라 그 모드를 업데이트하면 날아간다** — 그때 설치 스크립트를 다시 돌린다. 원본과 맞는지와 설치본과 같은지는 `node tools/check-plugin-locales.mjs` 가 본다. Forge 모드가 아니라 설치 기록에 없다 |
 | HelmetSlotUnion 0.2.0 (헬멧 부착 칸 합집합 + 부착물 충돌 해제) | `SPT_Runtime\user\mods\HelmetSlotUnion\` (DLL 1 + `config.jsonc`) | 이 저장소에서 직접 만든 것. 소스는 [../src/HelmetSlotUnion](../src/HelmetSlotUnion), 설치는 `tools/install-helmetslotunion.ps1`. 헬멧은 칸 필터를 합집합으로 넓히고 파츠끼리의 `ConflictingItems` 를 지운다. 0.2.0 부터 **총기도** "동시에 장착할 수 없습니다" 를 지운다 — 총기 쪽은 칸 필터를 건드리지 않고(그건 SlotCategoryRelax 몫) 충돌 목록만 본다. 탄창·장전 손잡이는 구경 제한이라 그대로 둔다. Forge 모드가 아니라 설치 기록에 없다 |

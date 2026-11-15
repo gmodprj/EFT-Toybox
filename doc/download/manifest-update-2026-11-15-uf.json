@@ -1,0 +1,47 @@
+{
+  "stage": "update-2026-11-15-uf",
+  "spt": "4.1.6",
+  "note": "대형 넷 — 마지막. 2512 는 결속이고 해제본이 없어 설치본을 먼저 떠 둔다.",
+  "mods": [
+    {
+      "group": "U-F",
+      "id": 3025,
+      "name": "Manimal's 1.0 Interchange Expansion Backport",
+      "version": "1.0.10",
+      "size": 1509923549,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3025/manimals-10-interchange-expansion-backport/1.0.10",
+      "from": "1.0.8"
+    },
+    {
+      "group": "U-F",
+      "id": 2866,
+      "name": "MANIMAL'S ICEBREAKER BACKPORT",
+      "version": "1.2.4",
+      "size": 1713206495,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/2866/manimals-icebreaker-backport/1.2.4",
+      "from": "1.1.3"
+    },
+    {
+      "group": "U-F",
+      "id": 3166,
+      "name": "Arena Map Port",
+      "version": "0.6.0",
+      "size": 6348672857,
+      "profileBinding": false,
+      "link": "https://sp-mod.com/mod/download/3166/arena-map-port/0.6.0",
+      "from": "0.5.0"
+    },
+    {
+      "group": "U-F",
+      "id": 2512,
+      "name": "WTT - Content Backport",
+      "version": "2.0.7",
+      "size": 6695390161,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/2512/wtt-content-backport/2.0.7",
+      "from": "2.0.5"
+    }
+  ]
+}

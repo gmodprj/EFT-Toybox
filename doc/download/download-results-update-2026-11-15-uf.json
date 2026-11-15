@@ -1,0 +1,46 @@
+[
+  {
+    "id": 3025,
+    "name": "Manimal's 1.0 Interchange Expansion Backport",
+    "version": "1.0.10",
+    "file": "3025__Manimal-Interchange-1.0.10.zip",
+    "bytes": 1509923549,
+    "expected": 1509923549,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 68
+  },
+  {
+    "id": 2866,
+    "name": "MANIMAL'S ICEBREAKER BACKPORT",
+    "version": "1.2.4",
+    "file": "2866__Manimal-Icebreaker-1.2.4.zip",
+    "bytes": 1713206495,
+    "expected": 1713206495,
+    "sizeOk": true,
+    "host": "release-assets.githubusercontent.com",
+    "seconds": 78
+  },
+  {
+    "id": 3166,
+    "name": "Arena Map Port",
+    "version": "0.6.0",
+    "file": "3166__maschine-ArenaMapPort-0.6.0.zip",
+    "bytes": 6348672857,
+    "expected": 6348672857,
+    "sizeOk": true,
+    "host": "pixeldrain.com",
+    "seconds": 195
+  },
+  {
+    "id": 2512,
+    "name": "WTT - Content Backport",
+    "version": "2.0.7",
+    "file": "2512__WTT-ContentBackport-2.0.7.7z",
+    "bytes": 6695390161,
+    "expected": 6695390161,
+    "sizeOk": true,
+    "host": "downloads-backport.welcometotarkov.com",
+    "seconds": 260
+  }
+]

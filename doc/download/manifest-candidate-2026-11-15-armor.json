@@ -1,0 +1,16 @@
+{
+  "stage": "candidate-2026-11-15-armor",
+  "spt": "4.1.6",
+  "note": "후보 조사용 — 설치하지 않는다. 설정으로 모듈을 따로 끌 수 있는지 보려고 받는다.",
+  "mods": [
+    {
+      "group": "후보",
+      "id": 3355,
+      "name": "Armor Tweaks and Additions",
+      "version": "1.0.0",
+      "size": 51285,
+      "profileBinding": true,
+      "link": "https://sp-mod.com/mod/download/3355/armor-tweaks-and-additions/1.0.0"
+    }
+  ]
+}
