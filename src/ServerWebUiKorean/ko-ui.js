@@ -162,6 +162,16 @@
 
   var LETTER = /[A-Za-z]/;
 
+  // 번역은 없지만 그대로 두는 게 맞는 조각인가 — 사전의 null(원문 유지), 이미 한국어, 고유명사 규칙.
+  function settled(raw) {
+    var core = raw.replace(RICH, '').replace(/\s+/g, ' ').trim();
+    RICH.lastIndex = 0;
+    if (!core) return true;
+    if (/[가-힣]/.test(core)) return true;
+    if (lookup(core, 0) === KEEP) return true;
+    return NEVER.some(function (r) { return r.test(core); });
+  }
+
   // 한 요소 안의 이어진 텍스트 노드 묶음을 처리한다.
   function translateRun(run) {
     if (!run.length) return;
@@ -194,8 +204,18 @@
       return;
     }
 
-    // 글자 조각이 둘 이상인데 통째로 못 찾았다 — 낱개로 바꾸면 어순이 뒤집힌다. 원문으로 둔다.
-    for (var n = 0; n < run.length; n++) put(run[n], srcs[n], srcs[n]);
+    // 글자 조각이 둘 이상인데 통째로 못 찾았다. 조각이 **전부** 사전에 있으면 낱개로 바꾼다
+    // (QuestCodex 의 "아이템, 아이템, …" 목록은 조각마다 노드가 갈려 통째로는 영영 안 맞는다).
+    // 하나라도 빠지면 반쯤 한국어인 어순 뒤틀린 문장이 되니 원문으로 둔다.
+    var parts = [];
+    for (var p = 0; p < run.length; p++) {
+      if (!LETTER.test(srcs[p])) { parts.push(srcs[p]); continue; }
+      var got = translate(srcs[p], false);
+      if (got === null && settled(srcs[p])) got = srcs[p]; // 원문 유지(null)·이미 한국어는 바뀐 셈이다
+      if (got === null) { parts = null; break; }
+      parts.push(got);
+    }
+    for (var n = 0; n < run.length; n++) put(run[n], srcs[n], parts ? parts[n] : srcs[n]);
   }
 
   function processElement(el) {
