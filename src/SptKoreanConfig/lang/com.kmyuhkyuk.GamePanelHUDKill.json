@@ -59,7 +59,7 @@
     "Kill Color Settings/Kill Bear": { "name": "BEAR 처치", "desc": "BEAR 를 쓰러뜨렸을 때 쓸 색." },
     "Kill Color Settings/Kill Scav": { "name": "스캐브 처치", "desc": "스캐브를 쓰러뜨렸을 때 쓸 색." },
     "Kill Color Settings/Kill Boss": { "name": "보스 처치", "desc": "보스를 쓰러뜨렸을 때 쓸 색." },
-    "Kill Color Settings/Kill Follower": { "name": "호위 처치", "desc": "보스 호위를 쓰러뜨렸을 때 쓸 색." },
+    "Kill Color Settings/Kill Follower": { "name": "경호원 처치", "desc": "보스 경호원을 쓰러뜨렸을 때 쓸 색." },
     "Kill Color Settings/Bracket": { "name": "괄호", "desc": "묶음 괄호 기호에 쓸 색." },
     "Kill Color Settings/Exp": { "name": "획득 경험치", "desc": "경험치 알림 숫자에 쓸 색." },
 

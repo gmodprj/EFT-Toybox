@@ -723,7 +723,7 @@
     "When a bot is at, or above this power level, they will have the full percentage chance to be assigned this personality.": "봇의 전력 수준이 이 값 이상이면 이 성향이 배정될 확률이 온전히 걸린다.",
     "When a bot is at, or above this power level, they will start to have a chance to be assigned this personality.": "봇의 전력 수준이 이 값 이상이면 이 성향이 배정될 확률이 생기기 시작한다.",
     "When a member calls out that they killed an enemy, this is the chance the squad leader will acknowledge and confirm the kill with a compliment.": "분대원이 적을 잡았다고 외쳤을 때 분대장이 알아듣고 칭찬으로 확인해 줄 확률.",
-    "When at peace, Bosses and boss guards will talk to each other and be noisy. Revealing their location.": "평상시에 보스와 보스 호위가 서로 떠들어 시끄러워진다. 위치가 드러난다.",
+    "When at peace, Bosses and boss guards will talk to each other and be noisy. Revealing their location.": "평상시에 보스와 보스 경호원이 서로 떠들어 시끄러워진다. 위치가 드러난다.",
     "When at peace, The Goons will talk to each other and be noisy. Revealing their location.": "평상시에 구니즈가 서로 떠들어 시끄러워진다. 위치가 드러난다.",
     "When at peace, pmcs will talk to each other and be noisy. Revealing their location.": "평상시에 PMC 가 서로 떠들어 시끄러워진다. 위치가 드러난다.",
     "When at peace, raiders and rogues will talk to each other and be noisy. Revealing their location.": "평상시에 레이더와 로그가 서로 떠들어 시끄러워진다. 위치가 드러난다.",
