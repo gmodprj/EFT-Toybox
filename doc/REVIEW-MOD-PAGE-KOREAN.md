@@ -8,10 +8,13 @@
 | 대상 | 닿는가 | 방법 |
 | --- | --- | --- |
 | 카드 제목·설명 (15개) | **닿는다** | `ModPage` 싱글턴을 제자리에서 고친다. 남의 DLL 을 건드리지 않는다 |
-| 페이지 안쪽 — DWV | **닿는다** | `config/configSchema.json` 의 `DisplayName`·`Description` 312줄이 화면 문구다 |
-| 페이지 안쪽 — 나머지 11개 | **못 닿는다** | Razor 컴포넌트에 리터럴로 박혀 있다. 어셈블리 패치 외에 길이 없다 |
+| 페이지 안쪽 — Blazor 페이지 전부 | **닿는다** | 화면에서 바꾼다. 모든 페이지가 공통으로 부르는 스크립트에 번역기를 끼운다 — 6번 |
 | 페이지 안쪽 — QuestCodex | 이미 한국어 | 모드가 한국어를 들고 있다 |
-| 페이지 안쪽 — UltimateFlea | 닿지만 권하지 않는다 | 빌드된 SPA 번들(`wwwroot/app.js`) 안이다 |
+| 페이지 안쪽 — UltimateFlea | **아직 못 닿는다** | 자체 정적 HTML(`app.html`)이라 본체 호스트 스크립트를 안 부른다 |
+| `/isb` | **아직 못 닿는다** | 페이지가 거의 비어 온다. 따로 봐야 한다 |
+
+> 2026-11-16 갱신. 처음에는 "어셈블리 패치 외에 길이 없다"고 적었는데 **틀렸다.**
+> DLL 을 고치는 대신 **브라우저에서 바꾸면** 된다. 아래 2절의 "못 닿는다"는 *로케일 파일로는* 못 닿는다는 뜻이다.
 
 ## 1. 카드 글귀는 로케일을 거치지 않는다
 
@@ -159,3 +162,97 @@ OK — 15/15
 ```
 
 고친 방식: 읽는 쪽에서 `_` 로 시작하는 키와 객체가 아닌 값을 먼저 걸러 낸다. 주석 줄의 모양이 달라도 터지지 않는다.
+
+## 6. 페이지 안쪽 — 화면에서 바꾼다
+
+DLL 11개를 각각 패치하는 길은 버렸다. 모드가 업데이트될 때마다 다시 해야 하고, 분량도 감당이 안 된다.
+대신 **모든 페이지가 공통으로 부르는 자리에 번역기를 하나 끼웠다.**
+
+### 끼울 자리
+
+호스트 HTML 은 `SPTarkov.Server.Web.dll` 안에 리터럴로 박혀 있어 모드가 `<head>` 에 들어갈 수 없다.
+하지만 그 HTML 이 부르는 스크립트는 **디스크의 정적 파일**이다.
+
+```
+SPT_Data/wwwroot/_framework/blazor.web.js      ← 여기 끝에 로더 한 줄
+SPT_Data/wwwroot/SPTarkov.Server.Web/js/ko-ui.js    ← 번역기
+SPT_Data/wwwroot/SPTarkov.Server.Web/js/ko-ui.json  ← UI 사전(손으로 씀)
+SPT_Data/wwwroot/SPTarkov.Server.Web/js/ko-items.json ← 아이템 이름(자동 생성)
+```
+
+실측으로 확인한 것 둘:
+
+| 확인 | 결과 |
+| --- | --- |
+| `checks.dat` 가 wwwroot 를 검증하는가 | **아니다.** base64 안에 `configs/*` 데이터베이스 파일 경로만 있다 |
+| wwwroot 에 새 파일을 넣으면 재기동 없이 서빙되는가 | **된다.** 넣자마자 200 으로 받았다 |
+
+→ **사전을 고칠 때마다 서버를 다시 켤 필요가 없다.** 브라우저 새로고침이면 된다.
+
+### 압축본 함정
+
+`blazor.web.js` 옆에 `.br`·`.gz` 미리 압축본이 같이 있다. **원본만 고치면 브라우저는 압축본을 받아 가
+고친 것이 무시된다.** 설치 스크립트가 원본을 고친 뒤 압축본을 다시 만든다.
+
+### 번역기가 하는 일
+
+Blazor Server 는 웹소켓으로 DOM 을 계속 갈아 끼우므로 `MutationObserver` 로 따라간다.
+텍스트 노드와 `placeholder`·`title`·`aria-label`·`alt` 를 본다.
+
+- 앞뒤 공백은 살려 두고 가운데만 바꾼다 — 레이아웃이 흔들리지 않는다.
+- 숫자가 끼어 열쇠로 못 쓰는 문구는 **규칙**으로 바꾼다(`1-25 of 10,674` → `10,674개 중 1-25`).
+- 꼬리표가 붙은 것은 알맹이만 바꾼다(`#FireKlean gun lube ○`).
+- **MongoID·URL·`@핸들`·파일명은 건드리지 않는다.** 사람 이름도 사전에 넣지 않았다.
+- 사전에 없는 것은 `window.__ko.missing` 에 모아 둔다.
+
+### 수집 → 번역 → 확인
+
+```powershell
+node tools/dump-web-ui-strings.mjs out.json   # 23개 페이지를 실제로 렌더해 미번역을 긁는다
+node tools/gen-web-item-names.mjs             # 게임 로케일에서 아이템 이름 en→kr 을 뽑는다
+node tools/install-server-web-ui-korean.mjs   # 설치(--remove 로 제거)
+node tools/check-web-ui-korean.mjs /database  # 그 페이지가 실제로 어떻게 보이는지 찍어 본다
+```
+
+프리렌더만 봐서는 안 된다 — Blazor 는 웹소켓이 붙은 뒤에야 본문이 채워진다. 그래서 headless Chrome 을
+CDP 로 몰아 하이드레이션을 기다린 뒤 읽는다.
+
+### 지금까지 (2026-11-16)
+
+| | 미번역 |
+| --- | --- |
+| 처음 | 1,400 |
+| 지금 | **440** |
+
+0 이 된 페이지: `/tools`, `/status`, `/webconfigbridge`.
+거의 끝난 페이지: `/cci` 3, `/coti` 2, `/enablelabyrinth` 6, `/orbit` 6, `/configs` 8, `/definitive-weapon-variants/config` 8.
+
+남은 440 의 내역:
+
+| 무엇 | 개수 | 어떻게 할 것인가 |
+| --- | --- | --- |
+| 기여자·프로필 이름, 모드 id | 약 160 | **번역하지 않는다.** 바꾸면 안 되는 것들이다 |
+| 아이템·스킬 이름 | 약 120 | 서버 메모리의 로케일에서 뽑아야 한다 — 아래 |
+| 각 모드의 변경 이력 산문 | 약 30 | 모드가 업데이트되면 갈린다. 아직 안 했다 |
+| 치수(`3x8`·`1 x 1`) | 약 20 | 그대로 둔다 |
+| 그 밖 UI 문구 | 나머지 | 사전에 채워 간다 |
+
+### 아직 안 된 것
+
+1. **아이템 이름을 서버 메모리에서 뽑는 일.** 지금 `ko-items.json` 은 디스크의 `locales/global/*.json`
+   에서 만들어 2,778줄뿐이다. 서버는 런타임에 모드 아이템까지 합쳐 10,674개를 들고 있고,
+   `SptKoreanLocale` 이 kr 을 그 위에 또 고친다. 정확히 뽑으려면 서버 모드가 `LocaleTable` 을 읽어
+   내보내야 한다. 다만 `LazyLoad` 를 너무 일찍 풀면 뒤에 붙는 변환기와 엉키므로, 기동 중이 아니라
+   **요청 시점에** 뽑아야 한다.
+2. **`/ultimateflea/app.html`** — 자체 정적 HTML 이라 `blazor.web.js` 를 안 부른다. 그 파일에 따로
+   로더를 넣어야 하는데, 남의 모드 파일이라 설치 기록·백업을 갖춰야 한다.
+3. **`/isb`** — 렌더가 거의 비어 온다. 원인을 아직 안 봤다.
+4. 변경 이력 산문.
+
+### 되돌리기
+
+```powershell
+node tools/install-server-web-ui-korean.mjs --remove
+```
+
+로더를 떼고 번역기 파일을 지운다. 원본 `blazor.web.js` 는 `backup/server-web-ui-pre/` 에 떠 뒀다.
