@@ -255,26 +255,48 @@ CDP 로 몰아 하이드레이션을 기다린 뒤 읽는다.
 | | 미번역 |
 | --- | --- |
 | 처음 | 1,400 |
-| 1차 사전 | 440 |
-| 지금 | **472** (단, `/isb` 212 + `/ultimateflea` 251 이 새로 보이게 된 뒤의 수) |
+| 미들웨어로 바꾼 뒤(안 보이던 2개 페이지가 드러남) | 819 |
+| 지금 | **363** |
 
-숫자만 보면 늘었지만, 안 보이던 두 페이지 463개가 드러난 결과다. 그 둘은 각각 51 / 81 로 줄었다.
+**수만 보면 판단을 그르친다.** 사람 이름과 설정 키는 바꾸면 안 되는 것이라 영원히 줄지 않는다.
+`tools/classify-web-ui-missing.mjs` 가 종류별로 갈라 준다:
 
-페이지별 미번역: `/tools` 0, `/status` 0, `/cci` 0, `/webconfigbridge` 0, `/enablelabyrinth` 1,
-`/credentials` 1, `/coti` 2, `/orbit` 2, `/configs` 6, `/definitive-weapon-variants/config` 6,
-`/sain/presets` 7, `/` 14, `/theblacklist` 15, `/skills-extended` 16, `/profiles` 28, `/database` 29,
-`/lotsofloot` 34, `/bis` 44, `/questcodex` 45, `/isb` 51, `/jerobackpack` 63, `/thank-you` 67,
-`/ultimateflea` 81.
+```
+식별자 (ID·키·파일명)         16     ← 바꾸면 안 된다
+링크·버전                   13     ← 바꾸면 안 된다
+치수·수치 (3x8, 1 x 1)       32     ← 그대로가 맞다
+아이템 이름 (한글 이름 없음)    98     ← kr 로케일에도 영문뿐이다
+사람·모드 이름               158    ← 바꾸면 안 된다
+그 밖 (번역 후보)             46
+```
 
-남은 472 의 내역:
+**번역 후보 46개**가 남았고, 그마저도 대부분 SAIN 프리셋 이름(`Born Free`·`Death Wish`·
+`Silent Ops`…), 상인·프로필 이름(`Grampa Teems`·`Hideout Harry`), 아이템 이름이다.
+SAIN 프리셋 이름은 **일부러 두었다** — 이름을 바꾸면 SAIN 쪽 안내 글과 짝이 안 맞는다.
 
-| 무엇 | 어떻게 할 것인가 |
-| --- | --- |
-| 기여자·프로필 이름, 모드 id (약 160) | **번역하지 않는다.** 바꾸면 안 되는 것들이다 |
-| 한글 이름이 아예 없는 아이템 | kr 로케일에도 영문뿐이라 뽑을 것이 없다. `SptKoreanLocale` 소관 |
-| 각 모드의 변경 이력 산문 (약 30) | 모드가 업데이트되면 갈린다. 아직 안 했다 |
-| 대시보드가 만들어 내는 수치 문자열 | 규칙으로 잡히는 만큼만 잡았다 |
-| 그 밖 UI 문구 | 사전에 채워 간다 |
+페이지별 미번역: `/tools` 0, `/status` 0, `/cci` 0, `/enablelabyrinth` 0, `/webconfigbridge` 0,
+`/credentials` 1, `/coti` 2, `/configs` 2, `/orbit` 2, `/definitive-weapon-variants/config` 6,
+`/sain/presets` 7, `/theblacklist` 8, `/lotsofloot` 10, `/` 14, `/isb` 16, `/skills-extended` 16,
+`/profiles` 25, `/database` 29, `/ultimateflea` 30, `/bis` 44, `/questcodex` 44, `/jerobackpack` 63,
+`/thank-you` 67.
+
+> `/thank-you` 67 은 **전부 기여자 이름**이다. `/jerobackpack` 63 과 `/bis` 44 는 거의 전부
+> 배낭·물물교환 품목 이름이다. 즉 이 셋은 "덜 된 것"이 아니다.
+
+변경 이력 산문도 한국어로 나온다:
+
+```
+/theblacklist → … DisableBsgBlacklist 가 false 일 때 BSG 금지 목록이 적용되지 않던 문제를 고쳤다
+                   이 모드의 SIC 페이지 스타일 문제를 고쳤다
+                   개발 빌드에서 딸려 온 설정 변경을 되돌렸다
+```
+
+### 여기서 더 가려면
+
+남은 98개 아이템 이름은 **이 사전에 넣을 것이 아니다.** 넣으면 웹에서는 한국어인데 게임 안에서는
+영문인 채로 어긋난다. `src/SptKoreanLocale/lang/` 에 넣으면 게임과 웹이 **동시에** 잡힌다 —
+웹 쪽 아이템 사전이 그 결과를 그대로 받아 쓰기 때문이다(`/modcardkorean/item-names.json` 이
+런타임 kr 로케일에서 뽑는다). 별도 과제로 둔다.
 
 ### 되돌리기
 
