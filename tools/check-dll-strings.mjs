@@ -4,19 +4,21 @@
 //   node tools/check-dll-strings.mjs            모든 _dll-*.json
 //   node tools/check-dll-strings.mjs sain       이름에 sain 이 든 것만
 //   node tools/check-dll-strings.mjs --list X   X 사전이 고른 메서드 안의 영문 리터럴 중 사전에 없는 것도 보인다
+//   node tools/check-dll-strings.mjs --where X  공통 항목이 고른 메서드 여럿에 걸친 곳을 보인다(열쇠로 쓰는 곳이 섞였는지 본다)
 //
 // ilspycmd -il 로 IL 을 뽑아(캐시: %TEMP%\spt-dll-il) 각 원문이 "고른 메서드" 안에 ldstr 로 있는지 본다.
 // 게임이 쓰는 것과 같은 규칙이다 — 메서드 밖에만 있는 글자는 바뀌지 않는다.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 
 const SPT = process.env.SPT_DIR || 'E:\\Spt';
 const LANG = path.join(path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Za-z]:)/, '$1'), '..', 'src', 'SptKoreanConfig', 'lang');
 const CACHE = path.join(os.tmpdir(), 'spt-dll-il');
 const args = process.argv.slice(2);
 const listMode = args.includes('--list');
+const whereMode = args.includes('--where');
 const filter = args.filter(a => !a.startsWith('--'))[0];
 
 function findDll(asmName) {
@@ -41,8 +43,10 @@ function ilFor(dll) {
   const out = path.join(CACHE, `${path.basename(dll)}.${st.size}.${Math.floor(st.mtimeMs)}.il`);
   if (!fs.existsSync(out)) {
     const ilspy = path.join(os.homedir(), '.dotnet', 'tools', 'ilspycmd.cmd');
-    const text = execFileSync(ilspy, ['-il', '-r', path.join(SPT, 'EscapeFromTarkov_Data', 'Managed'), '-r', path.join(SPT, 'BepInEx', 'core'), '-r', path.join(SPT, 'BepInEx', 'plugins'), dll],
-      { maxBuffer: 1 << 30, encoding: 'utf8', shell: true, stdio: ['ignore', 'pipe', 'ignore'] });
+    // 콘솔 코드 페이지(cp949)로 받으면 —·✕ 같은 글자가 ? 로 깨진다. 65001 로 바꾸고 받는다.
+    const q = s => `"${s}"`;
+    const cmd = ['chcp 65001 >nul &&', q(ilspy), '-il', '-r', q(path.join(SPT, 'EscapeFromTarkov_Data', 'Managed')), '-r', q(path.join(SPT, 'BepInEx', 'core')), '-r', q(path.join(SPT, 'BepInEx', 'plugins')), q(dll)].join(' ');
+    const text = execSync(cmd, { maxBuffer: 1 << 30, encoding: 'utf8', shell: 'cmd.exe', stdio: ['ignore', 'pipe', 'ignore'] });
     fs.writeFileSync(out, text);
   }
   return fs.readFileSync(out, 'utf8');
@@ -109,6 +113,14 @@ for (const f of files) {
   for (const [k] of missing) console.log(`    고른 메서드 안에 없음: ${JSON.stringify(k)}`);
   for (const [k, v] of placeholders) console.log(`    자리표시자 어긋남: ${JSON.stringify(k)} → ${JSON.stringify(v)}`);
   for (const p of deadPats) console.log(`    맞는 메서드가 없는 패턴: ${p}`);
+  if (whereMode) {
+    // 공통 항목이 고른 메서드 여럿에 걸치면 어디어디인지 보인다 — 그중 하나가 열쇠로 쓰는 곳이면 methodStrings 로 좁힌다.
+    console.log('    -- 공통 항목이 여러 메서드에 걸친 것');
+    for (const [k] of Object.entries(j.strings || {})) {
+      const where = chosen.filter(([, s]) => s.has(k)).map(([m]) => m);
+      if (where.length > 1) console.log(`       ${JSON.stringify(k)}\n          ${where.join('\n          ')}`);
+    }
+  }
   if (listMode) {
     const known = new Set([...Object.keys(j.strings || {}), ...Object.values(j.methodStrings || {}).flatMap(m => Object.keys(m))]);
     const left = [...inChosen].filter(s => /[A-Za-z]{2}/.test(s) && !known.has(s));

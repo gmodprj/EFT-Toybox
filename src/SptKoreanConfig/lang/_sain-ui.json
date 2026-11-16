@@ -4,11 +4,15 @@
     "    Category: ": "    분류: ",
     " Preset selection is locked.": " 프리셋 선택이 잠겨 있다.",
     " [Modified]": " [고침]",
-    "[Modified] ": "[고침] ",
+    "' from server.": "' (서버에서 온 것).",
+    "' that changed during the raid.": "' 이 레이드 중에 바뀌었다.",
     "A New Player, terrified of everything.": "모든 것이 무서운 신입.",
     "A player who finds the balance between rat and chad, yin and yang. Will rat you out but can spring out at any moment.": "쥐새끼와 차드 사이, 음과 양의 균형을 찾은 자. 숨어서 노리다가도 언제든 튀어나올 수 있다.",
+    "A player who is more passive and afraid than usual. Will never seek out enemies and will hide in a closet until the scary thing goes away.": "평소보다 소극적이고 겁이 많다. 적을 찾아 나서지 않고 무서운 것이 사라질 때까지 벽장에 숨는다.",
     "A true alpha threat. Hyper Aggressive and typically wearing high tier equipment.": "진짜 최상위 위협. 극도로 공격적이고 보통 고급 장비를 걸치고 있다.",
     "Adds additional vision speed reduction to targets in a bot's peripheral vision.Scales with the angle from their look direction.": "봇의 주변 시야에 있는 표적에게 시야 속도를 더 깎는다. 보는 방향에서 벌어진 각도에 비례한다.",
+    "An Average Tarkov Enjoyer": "평범한 타르코프 애호가",
+    "An aggressive player. Typically wearing high tier equipment, and is more aggressive than usual.": "공격적인 플레이어. 보통 고급 장비를 걸쳤고 평소보다 더 공격적이다.",
     "Apply Values set below to Personalities. Saves edited values to the SPT server for preset '": "아래 값을 성향에 적용한다. 고친 값을 SPT 서버의 프리셋 '",
     "Apply Values set below to selected Bot Type. Saves edited values to the SAIN server for preset '": "아래 값을 고른 봇 종류에 적용한다. 고친 값을 SAIN 서버의 프리셋 '",
     "Bot Settings": "봇 설정",
@@ -17,6 +21,7 @@
     "Clear Selected Options in this Menu": "이 메뉴에서 고른 항목 지우기",
     "Clear all selected bot types": "고른 봇 종류를 모두 지운다",
     "Clear all selected difficulties": "고른 난이도를 모두 지운다",
+    "Dont change anything here unless you know exactly what you are doing. Changes here require game restart! Not all settings do what the name suggests.": "무엇을 하는지 정확히 알 때만 고친다. 여기서 바꾼 것은 게임을 다시 켜야 적용된다! 이름대로 동작하지 않는 설정도 있다.",
     "Edit at your own risk. Enable additional advanced config options here": "고치는 책임은 본인에게 있다. 여기서 고급 설정 항목을 더 켠다",
     "Global Settings": "전역 설정",
     "How much to randomize the distance that a bot thinks a sound originated from.": "봇이 소리가 났다고 생각하는 거리를 얼마나 흩을지.",
@@ -34,8 +39,8 @@
     "Select which difficulties you wish to modify.": "고치려는 난이도를 고르세요.",
     "Server preset '": "서버 프리셋 '",
     "The server has forced the preset '": "서버가 프리셋을 강제했다 '",
-    "' from server.": "' (서버에서 온 것).",
-    "' that changed during the raid.": "' 이 레이드 중에 바뀌었다.",
-    "Warning: The selected preset version is: [": "경고: 고른 프리셋의 버전은 ["
+    "This personality tends to sprint at their enemies, and will very frequently scream at everyone - Usually both at the same time. More Aggressive than Gigachads.": "적에게 내달리기 일쑤고 아무에게나 수시로 소리를 지른다 — 대개 둘을 동시에. 기가차드보다 더 공격적이다.",
+    "Warning: The selected preset version is: [": "경고: 고른 프리셋의 버전은 [",
+    "[Modified] ": "[고침] "
   }
 }
