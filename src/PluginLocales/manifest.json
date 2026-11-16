@@ -37,6 +37,17 @@
       "reference": "Softwyx-LootInVicinity/locales/en.json",
       "format": "flat",
       "evidence": "Softwyx-LootInVicinity.dll 역컴파일 — LocaleFileStore 가 locales/*.json 을 훑고 파일 이름을 ^[a-z]{2}([_-][a-z]{2})?$ 로 검사하므로 kr 이 통과한다. 키는 ^lootinvicinity_[a-z0-9_]+$ 여야 한다. MergeMissingKeys 가 en 에서 채우며 경고를 남기므로 전부 넣는다."
+    },
+    {
+      "name": "ImpactCue F10 설정 창",
+      "plugin": "ImpactCue-UI-MOD",
+      "source": "ImpactCue/ko-KR.json",
+      "dest": "ImpactCue-UI-MOD/locales/ko-KR.json",
+      "reference": "ImpactCue-UI-MOD/locales/en.json",
+      "format": "flat",
+      "allowExtraPrefixes": ["_category."],
+      "generatedBy": "node tools/gen-impactcue-ko.mjs (모드의 ko.json + ImpactCue/overrides.json). 모드를 업데이트하면 다시 만들고 다시 넣는다.",
+      "evidence": "ImpactCue-UI-MOD.dll 역컴파일 — LocalizationManager.ResolveLanguageCode 가 Language = Auto 일 때 CultureInfo.CurrentUICulture.Name(ko-KR) 파일을 TwoLetterISOLanguageName(ko) 보다 먼저 찾는다. 모드의 ko.json 은 덮지 않는다. Reload 는 en 을 깔고 그 위에 고른 파일을 얹는다. _category.* 는 en 에 없는 섹션도 GetCategoryName 이 찾으므로 일부러 더한다."
     }
   ],
 

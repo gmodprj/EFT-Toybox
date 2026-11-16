@@ -7,7 +7,7 @@
   "settings": {
     "General/Aim Overswing Strength": {
       "name": "조준 시작 흔들림 세기",
-      "desc": "무기가 무겁고 조작성이 낮을 때 조준을 시작하며 생기는 과도한 흔들림의 비율을 정한다."
+      "desc": "무기가 무겁고 인체 공학 수치가 낮을 때 조준을 시작하며 생기는 과도한 흔들림의 비율을 정한다."
     },
     "General/Holding Breath Sway Multiplier": {
       "name": "숨 참을 때 흔들림 배율",

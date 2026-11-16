@@ -68,7 +68,9 @@ for (const t of manifest.targets) {
     const theirs = flatten(rd(ref), t.format);
 
     const missing = [...theirs.map.keys()].filter(k => !ours.map.has(k));
-    const unknown = [...ours.map.keys()].filter(k => !theirs.map.has(k));
+    // allowExtraPrefixes: 원본에 없어도 일부러 더한 열쇠(예: ImpactCue 의 _category.*). 오타로 세지 않는다.
+    const extraOk = t.allowExtraPrefixes ?? [];
+    const unknown = [...ours.map.keys()].filter(k => !theirs.map.has(k) && !extraOk.some(p => k.startsWith(p)));
 
     const noKorean = [];
     const phMismatch = [];
@@ -113,7 +115,7 @@ for (const t of manifest.targets) {
 }
 
 if (bad === 0) {
-    console.log('OK — 네 사전 모두 원본과 맞고 설치본과 같다');
+    console.log(`OK — 사전 ${manifest.targets.length}개 모두 원본과 맞고 설치본과 같다`);
     process.exit(0);
 }
 console.log(`!  문제 ${bad}건`);

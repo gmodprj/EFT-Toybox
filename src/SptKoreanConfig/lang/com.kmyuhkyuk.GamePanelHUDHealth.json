@@ -17,7 +17,7 @@
 
     "Color Settings/Health": { "name": "체력", "desc": "체력 숫자에 쓸 색." },
     "Color Settings/Hydration": { "name": "수분", "desc": "수분 숫자에 쓸 색." },
-    "Color Settings/Energy": { "name": "기력", "desc": "기력 숫자에 쓸 색." },
+    "Color Settings/Energy": { "name": "에너지", "desc": "에너지 숫자에 쓸 색." },
     "Color Settings/Maximum": { "name": "최대치", "desc": "최대치 숫자에 쓸 색." },
     "Color Settings/Zeros": { "name": "앞자리 0", "desc": "자리를 채우는 앞쪽 0 에 쓸 색." },
     "Color Settings/Warning": { "name": "경고", "desc": "경고 기준 아래로 떨어졌을 때 쓸 색." },
@@ -31,7 +31,7 @@
 
     "Main Settings/Health HUD display": {
       "name": "체력 HUD 표시",
-      "desc": "체력·수분·기력을 화면에 띄운다."
+      "desc": "체력·수분·에너지를 화면에 띄운다."
     },
     "Main Settings/Buff Rate display": {
       "name": "변화량 표시",
@@ -52,6 +52,6 @@
 
     "Warning Rate Settings/Health": { "name": "체력 경고 기준", "desc": "이 비율 아래로 떨어지면 경고 색으로 바꾼다." },
     "Warning Rate Settings/Hydration": { "name": "수분 경고 기준", "desc": "이 비율 아래로 떨어지면 경고 색으로 바꾼다." },
-    "Warning Rate Settings/Energy": { "name": "기력 경고 기준", "desc": "이 비율 아래로 떨어지면 경고 색으로 바꾼다." }
+    "Warning Rate Settings/Energy": { "name": "에너지 경고 기준", "desc": "이 비율 아래로 떨어지면 경고 색으로 바꾼다." }
   }
 }

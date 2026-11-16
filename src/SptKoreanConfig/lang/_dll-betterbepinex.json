@@ -1,0 +1,164 @@
+{
+  "comment": "F12 새 메뉴(Better BepInEx 1.0.4) 창 틀의 글자. 모드 설정 항목은 각 모드 사전이 맡고, 여기는 제목·버튼·검색·안내문·상태줄만. 로그 문구·스크린숏 파일 이름·내부 페이지 열쇠(@changed 등)·숨김 섹션 이름(HIDDEN BY THE MOD'S AUTHOR, 다른 메서드가 같은 글자로 비교한다)은 넣지 않는다. 이어 붙는 문장은 methodStrings 로 메서드마다 어순을 맞춘다. MenuWindow::DrawRow 는 Harmony 가 다시 컴파일하지 못해(IL Compile Error, 2026-11-17 기동 로그) 빼 둔다 — 그 안의 '초기화' 버튼·'기본값으로' 도움말·그리기 실패 문구는 원문으로 남는다.",
+  "assembly": "BetterBepInEx",
+  "methods": [
+    "BetterBepInEx.MenuWindow::*",
+    "BetterBepInEx.SettingsModel::OptionText"
+  ],
+  "excludeMethods": [
+    "BetterBepInEx.MenuWindow::DrawRow"
+  ],
+  "strings": {
+    "Close (F12)": "닫기 (F12)",
+    "Search every setting   Ctrl+F": "모든 설정에서 찾기   Ctrl+F",
+    "Filter mods": "모드 거르기",
+    "Mod Settings": "모드 설정",
+    "Undo": "되돌리기",
+    "Redo": "다시 하기",
+    "Clear": "지우기",
+    "Show advanced": "고급 보기",
+    "List the settings, and the mods, that their authors mark as advanced or hide from the menu. They are tagged where they appear. Search always finds them.": "제작자가 고급으로 표시했거나 메뉴에서 숨긴 설정과 모드도 보인다. 보이는 자리에 꼬리표가 붙는다. 검색은 켜지 않아도 늘 찾는다.",
+    "Nothing to undo": "되돌릴 것이 없다",
+    "Nothing to redo": "다시 할 것이 없다",
+    "Press a key or combination...   Esc cancels": "키나 조합키를 누르세요...   Esc 는 취소",
+    "Not bound": "지정 안 됨",
+    "Unbind": "지정 해제",
+    "Click, then press the key or combination to bind": "누른 다음 지정할 키나 조합키를 누르세요",
+    "Click to change the color": "눌러서 색 바꾸기",
+    "Click to close": "눌러서 닫기",
+    "HIDDEN": "숨김",
+    "The mod's author keeps this setting off the menu, often to work around a conflict or another problem. Change it only if the author tells you to.": "제작자가 이 설정을 메뉴에서 뺐다. 대개 충돌이나 다른 문제를 피하려는 것이다. 제작자가 바꾸라고 할 때만 바꾼다.",
+    "The author keeps these off the menu, often to fix a conflict or another problem. They show here because Show advanced is on. Change one only if the author tells you to.": "제작자가 메뉴에서 뺀 설정들이다. 대개 충돌이나 다른 문제를 피하려는 것이다. 고급 보기가 켜져 있어 여기 보인다. 제작자가 바꾸라고 할 때만 바꾼다.",
+    "All  ": "전체  ",
+    "Changed  ": "바뀐 것  ",
+    "Favorite": "즐겨찾기됨",
+    "Listed under Favorites at the top of the mods list. Click to remove it.": "모드 목록 맨 위 즐겨찾기에 들어 있다. 누르면 뺀다.",
+    "Add to favorites": "즐겨찾기에 넣기",
+    "List this mod under Favorites at the top of the mods list": "이 모드를 모드 목록 맨 위 즐겨찾기에 넣는다",
+    "Website": "웹사이트",
+    "Open this mod's website": "이 모드의 웹사이트를 연다",
+    "Search this mod": "이 모드에서 찾기",
+    "Screenshot": "스크린숏",
+    "Save a picture of this mod's settings and copy it, ready to paste into Discord": "이 모드의 설정을 그림으로 저장하고 복사한다. Discord 에 바로 붙여 넣을 수 있다",
+    "No setting matches.": "맞는 설정이 없다.",
+    "Changed settings": "바뀐 설정",
+    "Keybinds": "단축키",
+    "FAVORITES": "즐겨찾기",
+    "MODS  ": "모드  ",
+    "All": "전체",
+    "Changed only": "바뀐 것만",
+    "Show hidden mods  ": "숨긴 모드 보기  ",
+    "Hide hidden mods  ": "숨긴 모드 감추기  ",
+    "No mod matches.": "맞는 모드가 없다.",
+    "No mod has a changed setting.": "바뀐 설정이 있는 모드가 없다.",
+    "OTHER": "기타",
+    "mods  ": "모드  ",
+    "settings  ": "설정  ",
+    "changed  ": "바뀜  ",
+    "Settings this list leaves out. Click to turn on Show advanced.": "이 목록이 빼놓은 설정. 누르면 고급 보기가 켜진다.",
+    "Reset mod": "모드 초기화",
+    "This mod's author hides all of its settings or marks them advanced. Turn on Show advanced, at the top of the menu, to see them.": "이 모드는 제작자가 설정을 모두 숨겼거나 고급으로 표시했다. 메뉴 위쪽의 고급 보기를 켜면 보인다.",
+    "Nothing here matches the filter.": "거르기에 맞는 것이 없다.",
+    "No setting in this mod matches the search.": "이 모드에는 검색에 맞는 설정이 없다.",
+    "This mod has no settings to change. It is listed so you can see everything that is loaded.": "이 모드는 바꿀 설정이 없다. 올라온 모드를 모두 볼 수 있게 목록에 둔다.",
+    "Search results": "검색 결과",
+    "Nothing matches. Every word has to appear in a mod's name, a setting's name, its section or its description.": "맞는 것이 없다. 모든 낱말이 모드 이름·설정 이름·섹션·설명 중 어딘가에 들어 있어야 한다.",
+    "Every setting that is not at its default, across all mods.": "모든 모드에서 기본값과 다른 설정.",
+    "Reset all": "모두 초기화",
+    "Every setting is at its default.": "모든 설정이 기본값이다.",
+    "Every key bound by a mod. Keys that more than one setting uses come first; every mod bound to one reacts to it.": "모드가 지정한 모든 키. 여러 설정이 함께 쓰는 키가 먼저 나온다 — 그 키를 쓰는 모드가 모두 반응한다.",
+    "Every key bound by a mod. No two settings share a key.": "모드가 지정한 모든 키. 겹치는 키는 없다.",
+    "No mod has a keybind setting.": "단축키 설정이 있는 모드가 없다.",
+    "ADVANCED": "고급",
+    "READ ONLY": "읽기 전용",
+    "Open the Keybinds page": "단축키 화면을 연다",
+    "off": "끔",
+    "on": "켬",
+    "nothing": "없음",
+    "empty": "빈 값",
+    "it could not be drawn (the BepInEx log has the error)": "그리지 못했다(오류는 BepInEx 로그에 있다)",
+    "nothing was saved": "저장된 것이 없다",
+    "it could not be drawn offscreen": "화면 밖에 그리지 못했다",
+    "it could not be saved (the BepInEx log has the error)": "저장하지 못했다(오류는 BepInEx 로그에 있다)",
+    "Default: ": "기본값: ",
+    "(empty)": "(비어 있음)",
+    "(none)": "(없음)",
+    "Left mouse": "마우스 왼쪽",
+    "Right mouse": "마우스 오른쪽",
+    "Middle mouse": "마우스 가운데",
+    "Mouse ": "마우스 "
+  },
+  "methodStrings": {
+    "BetterBepInEx.MenuWindow::UndoTip": {
+      "Undo ": "되돌리기: "
+    },
+    "BetterBepInEx.MenuWindow::RedoTip": {
+      "Redo ": "다시 하기: "
+    },
+    "BetterBepInEx.MenuWindow::Undo": {
+      "Undid ": "되돌렸다: "
+    },
+    "BetterBepInEx.MenuWindow::Redo": {
+      "Redid ": "다시 했다: "
+    },
+    "BetterBepInEx.MenuWindow::SearchSummary": {
+      " setting": "개 설정",
+      " settings": "개 설정",
+      " in ": " · 모드 ",
+      " mod": "개",
+      " mods": "개"
+    },
+    "BetterBepInEx.MenuWindow::ResetRows": {
+      "Reset ": "설정 ",
+      " setting": "개",
+      " settings": "개",
+      ". Ctrl+Z undoes it.": "를 초기화했다. Ctrl+Z 로 되돌린다."
+    },
+    "BetterBepInEx.MenuWindow::Confirm": {
+      "?": "개 초기화?"
+    },
+    "BetterBepInEx.MenuWindow::DrawPage": {
+      "Reset ": "설정 ",
+      "reset ": "초기화 — "
+    },
+    "BetterBepInEx.MenuWindow::DrawChanged": {
+      "Reset all ": "전체 설정 ",
+      "reset every mod": "모든 모드 초기화"
+    },
+    "BetterBepInEx.MenuWindow::DrawKeybinds": {
+      "   used by ": "   · 설정 ",
+      " settings": "개가 함께 쓴다"
+    },
+    "BetterBepInEx.MenuWindow::DrawTags": {
+      "Same key as ": "같은 키: ",
+      " more)": "개 더)"
+    },
+    "BetterBepInEx.MenuWindow::AdvancedChipLabel": {
+      " advanced": "개 고급"
+    },
+    "BetterBepInEx.MenuWindow::Update": {
+      "Kept ": "그대로 둠: ",
+      " is not one of the keys ": " 키는 ",
+      " accepts.": " 에서 쓸 수 없다.",
+      " is now ": " → "
+    },
+    "BetterBepInEx.MenuWindow::CommitEdit": {
+      "\" is not a valid value for ": "\" 는 맞는 값이 아니다 — "
+    },
+    "BetterBepInEx.MenuWindow::TakePendingSnapshot": {
+      "No screenshot: ": "스크린숏 실패: ",
+      "Saved as ": "그림 ",
+      " pictures in ": "장으로 저장했다: ",
+      ", opened for you.": " (폴더를 열었다)",
+      "Screenshot copied: paste it with Ctrl+V. Also saved in ": "스크린숏을 복사했다. Ctrl+V 로 붙여 넣는다. 저장 위치: ",
+      "Screenshot saved in ": "스크린숏 저장 위치: "
+    },
+    "BetterBepInEx.MenuWindow::LayoutSnapshot": {
+      " settings, ": "개 설정, ",
+      " setting, ": "개 설정, ",
+      "all at their defaults.": "모두 기본값이다.",
+      " changed from default (marked with a bar).": "개가 기본값과 다르다(막대로 표시).",
+      " advanced not shown.": "개 고급 항목은 빠졌다."
+    }
+  }
+}

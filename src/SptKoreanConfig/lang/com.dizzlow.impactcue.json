@@ -4,33 +4,33 @@
   "sections": {
     "00. Internal UI": "00. 내부 창 상태",
     "01. General": "01. 일반",
-    "02. Hit Marker": "02. 명중 표시",
-    "03. Floating Damage": "03. 떠오르는 피해 숫자",
+    "02. Hit Marker": "02. 명중 마커",
+    "03. Floating Damage": "03. 떠오르는 피해",
     "04. Kill Feed": "04. 처치 기록",
     "05. Kill Feed Layout": "05. 처치 기록 배치",
-    "06. Kill Feed Safe Area": "06. 처치 기록 여백",
-    "07. Kill Feed Animation": "07. 처치 기록 움직임",
-    "08. Kill Feed Elements": "08. 처치 기록 구성 요소",
+    "06. Kill Feed Safe Area": "06. 처치 기록 안전 영역",
+    "07. Kill Feed Animation": "07. 처치 기록 애니메이션",
+    "08. Kill Feed Elements": "08. 처치 기록 요소",
     "08.5 Weapon Icons": "08.5 무기 아이콘",
-    "08.6 Custom Faction Icons": "08.6 소속 아이콘 바꾸기",
-    "09. HUD Position": "09. 화면 표시 위치",
+    "08.6 Custom Faction Icons": "08.6 사용자 지정 진영 아이콘",
+    "09. HUD Position": "09. HUD 위치",
     "10. Advanced": "10. 고급",
     "11. Hit Sound": "11. 명중 소리",
     "11. Kill Sound": "11. 처치 소리",
     "12. Kill Effect": "12. 처치 효과",
-    "13. Compact HUD": "13. 간략 표시",
-    "13.10 Armor Zones": "13.10 방어구 부위",
-    "13.4 Default HUD": "13.4 기본 표시",
-    "13.4 Tactical Glass": "13.4 전술 유리",
-    "13.5 Current Weapon": "13.5 든 무기",
-    "13.6 Combat Strip": "13.6 전투 띠",
-    "13.7 Stamina HUD": "13.7 기력 표시",
-    "13.8 Vanilla HUD": "13.8 바닐라 표시",
-    "13.9 Magazine HUD": "13.9 탄창 표시",
+    "13. Compact HUD": "13. Compact HUD",
+    "13.10 Armor Zones": "13.10 방어구 상태",
+    "13.4 Default HUD": "13.4 기본 HUD",
+    "13.4 Tactical Glass": "13.4 Tactical Glass",
+    "13.5 Current Weapon": "13.5 현재 무기",
+    "13.6 Combat Strip": "13.6 Combat Strip",
+    "13.7 Stamina HUD": "13.7 스태미나 HUD",
+    "13.8 Vanilla HUD": "13.8 바닐라 HUD",
+    "13.9 Magazine HUD": "13.9 탄창 HUD",
     "14. Crosshair": "14. 조준점",
-    "15. Raid Compass": "15. 나침반",
-    "16. Raid Start": "16. 레이드 시작",
-    "17. BTR Passenger HUD": "17. BTR 탑승 표시",
+    "15. Raid Compass": "15. 레이드 나침반",
+    "16. Raid Start": "16. 레이드 시작 정보",
+    "17. BTR Passenger HUD": "17. BTR 탑승 HUD",
     "99. Internal": "99. 내부"
   },
   "settings": {
@@ -100,7 +100,7 @@
     },
     "02. Hit Marker/Show Hit Marker While Scoped": {
       "name": "조준 중 명중 마커 표시",
-      "desc": "비활성화하면 조준/스코프 사용 중 명중 마커만 숨깁니다. 플로팅 데미지는 독립적으로 표시됩니다."
+      "desc": "비활성화하면 조준/스코프 사용 중 명중 마커만 숨깁니다. 떠오르는 피해는 독립적으로 표시됩니다."
     },
     "02. Hit Marker/Style": {
       "name": "스타일",
@@ -127,12 +127,12 @@
       "desc": "1080p에서 마커와 화면 중앙 사이의 최종 간격입니다."
     },
     "02. Hit Marker/Use Kill Color": {
-      "name": "킬 색상 사용",
+      "name": "처치 색상 사용",
       "desc": "기록된 명중이 치명타일 때 별도의 색상을 사용합니다."
     },
     "02. Hit Marker/Kill Color": {
-      "name": "킬 색상",
-      "desc": "킬 색상 사용이 활성화되어 있을 때 치명타 명중 마커에 사용하는 색상입니다."
+      "name": "처치 색상",
+      "desc": "처치 색상 사용이 활성화되어 있을 때 치명타 명중 마커에 사용하는 색상입니다."
     },
     "02. Hit Marker/Use Headshot Color": {
       "name": "헤드샷 색상 사용",
@@ -143,7 +143,7 @@
       "desc": "헤드샷 색상 사용이 활성화되어 있을 때 머리 명중 마커에 사용하는 색상입니다."
     },
     "02. Hit Marker/Armor Hit Icon Enabled": {
-      "name": "아머 히트 아이콘 표시",
+      "name": "방어구 명중 아이콘 표시",
       "desc": "실제로 방어구에 접촉한 명중에만 방패 아이콘을 표시합니다. 막힘/도탄은 빨간색, 관통은 파란색이며 Flesh Hit에는 표시하지 않습니다."
     },
     "02. Hit Marker/Penetrated Armor Icon Enabled": {
@@ -151,20 +151,20 @@
       "desc": "방어구를 관통한 명중에 아이콘을 표시합니다. 꺼도 막힘 또는 도탄 방어구 명중 아이콘에는 영향을 주지 않습니다."
     },
     "02. Hit Marker/Blocked Armor Icon Enabled": {
-      "name": "방어된 방어구 아이콘 표시",
+      "name": "방어구 비관통 아이콘 표시",
       "desc": "방어구가 탄환을 막거나 도탄시킨 경우 방어구 아이콘을 표시합니다. 꺼도 방어구 관통 아이콘에는 영향을 주지 않습니다."
     },
     "02. Hit Marker/Armor Hit Icon Size": {
-      "name": "아머 히트 아이콘 크기",
-      "desc": "아머 접촉 아이콘의 크기를 조절합니다."
+      "name": "방어구 명중 아이콘 크기",
+      "desc": "방어구 접촉 아이콘의 크기를 조절합니다."
     },
     "02. Hit Marker/Armor Hit Icon Opacity": {
-      "name": "아머 히트 아이콘 투명도",
-      "desc": "아머 접촉 아이콘의 투명도를 조절합니다."
+      "name": "방어구 명중 아이콘 불투명도",
+      "desc": "방어구 접촉 아이콘의 불투명도를 조절합니다."
     },
     "02. Hit Marker/Armor Hit Icon Duration": {
-      "name": "아머 히트 아이콘 표시 시간",
-      "desc": "아머 접촉 아이콘이 표시되는 시간을 조절합니다."
+      "name": "방어구 명중 아이콘 표시 시간",
+      "desc": "방어구 접촉 아이콘이 표시되는 시간을 조절합니다."
     },
     "02. Hit Marker/Armor Hit Icon Motion Strength": {
       "name": "방어구 피격 아이콘 애니메이션 강도",
@@ -175,12 +175,12 @@
       "desc": "연속 방어구 명중을 하나의 완전자동 연사로 처리하는 시간 범위를 조절합니다."
     },
     "02. Hit Marker/Armor Hit Icon Offset X": {
-      "name": "아머 히트 아이콘 X 오프셋",
-      "desc": "1080p 기준으로 히트 마커 위치에서 가로 오프셋을 조절합니다."
+      "name": "방어구 명중 아이콘 X 오프셋",
+      "desc": "1080p 기준으로 명중 마커 위치에서 가로 오프셋을 조절합니다."
     },
     "02. Hit Marker/Armor Hit Icon Offset Y": {
-      "name": "아머 히트 아이콘 Y 오프셋",
-      "desc": "1080p 기준으로 히트 마커 위치에서 세로 오프셋을 조절합니다. 양수는 아래로 이동합니다."
+      "name": "방어구 명중 아이콘 Y 오프셋",
+      "desc": "1080p 기준으로 명중 마커 위치에서 세로 오프셋을 조절합니다. 양수는 아래로 이동합니다."
     },
     "02. Hit Marker/Armor Hit Icon Color": {
       "name": "방어구 관통 아이콘 색상",
@@ -191,40 +191,40 @@
       "desc": "방어구가 탄을 막거나 도탄시켰을 때 사용하는 빨간 계열 색상을 선택합니다."
     },
     "03. Floating Damage/Floating Damage Enabled": {
-      "name": "플로팅 데미지 활성화",
-      "desc": "명중 마커와 별개로 플로팅 데미지 숫자를 표시합니다."
+      "name": "떠오르는 피해 활성화",
+      "desc": "명중 마커와 별개로 떠오르는 피해 숫자를 표시합니다."
     },
     "03. Floating Damage/Color": {
       "name": "색상",
-      "desc": "일반 플로팅 데미지 색상입니다."
+      "desc": "일반 떠오르는 피해 색상입니다."
     },
     "03. Floating Damage/Headshot Color": {
       "name": "헤드샷 색상",
-      "desc": "머리 명중용 플로팅 데미지 색상입니다. 기본값은 흰색입니다."
+      "desc": "머리 명중용 떠오르는 피해 색상입니다. 기본값은 흰색입니다."
     },
     "03. Floating Damage/Font Size": {
       "name": "글꼴 크기",
-      "desc": "플로팅 데미지 텍스트 크기 배율입니다."
+      "desc": "떠오르는 피해 텍스트 크기 배율입니다."
     },
     "03. Floating Damage/Duration": {
       "name": "지속 시간",
-      "desc": "플로팅 데미지 표시 시간(초)입니다."
+      "desc": "떠오르는 피해 표시 시간(초)입니다."
     },
     "03. Floating Damage/Float Distance": {
       "name": "떠오르는 거리",
-      "desc": "1080p 기준 데미지 숫자가 위로 이동하는 화면 픽셀 거리입니다."
+      "desc": "1080p 기준 피해 숫자가 위로 이동하는 화면 픽셀 거리입니다."
     },
     "03. Floating Damage/Fade Out": {
       "name": "페이드 아웃",
-      "desc": "표시 시간이 끝나갈 때 데미지 숫자를 서서히 흐리게 합니다."
+      "desc": "표시 시간이 끝나갈 때 피해 숫자를 서서히 흐리게 합니다."
     },
     "03. Floating Damage/Show Decimal": {
       "name": "소수점 표시",
-      "desc": "반올림된 정수 데미지 대신 소수점 한 자리까지 표시합니다."
+      "desc": "반올림된 정수 피해 대신 소수점 한 자리까지 표시합니다."
     },
     "03. Floating Damage/Combine Rapid Hits": {
       "name": "빠른 연속 명중 합치기",
-      "desc": "같은 대상에 빠르게 연속으로 적중한 피해를 하나의 플로팅 숫자로 합칩니다."
+      "desc": "같은 대상에 빠르게 연속으로 적중한 피해를 하나의 떠오르는 숫자로 합칩니다."
     },
     "03. Floating Damage/Combine Window": {
       "name": "합치기 시간 창",
@@ -232,31 +232,31 @@
     },
     "03. Floating Damage/Prevent Overlap": {
       "name": "겹침 방지",
-      "desc": "활성 플로팅 데미지 라벨이 서로 겹치지 않도록 합니다."
+      "desc": "활성 떠오르는 피해 라벨이 서로 겹치지 않도록 합니다."
     },
     "03. Floating Damage/Damage Spread Pattern": {
-      "name": "데미지 분산 패턴",
+      "name": "피해 분산 패턴",
       "desc": "겹침 배치: Smart는 주변 빈 공간을 찾고, Alternating은 좌우로 펼치며, Vertical은 위로 쌓고, None은 충돌 재배치를 비활성화합니다."
     },
     "03. Floating Damage/Minimum Damage Separation": {
-      "name": "최소 데미지 간격",
-      "desc": "1080p에서 플로팅 데미지 겹침 방지에 사용하는 최소 추가 간격입니다."
+      "name": "최소 피해 간격",
+      "desc": "1080p에서 떠오르는 피해 겹침 방지에 사용하는 최소 추가 간격입니다."
     },
     "03. Floating Damage/Maximum Damage Offset": {
-      "name": "최대 데미지 오프셋",
-      "desc": "1080p에서 충돌 해소된 데미지 라벨이 의도한 위치에서 이동할 수 있는 최대 거리입니다."
+      "name": "최대 피해 오프셋",
+      "desc": "1080p에서 충돌 해소된 피해 라벨이 의도한 위치에서 이동할 수 있는 최대 거리입니다."
     },
     "04. Kill Feed/Kill Feed Enabled": {
-      "name": "킬 피드 활성화",
-      "desc": "프레임 없는 ImpactCue 킬 피드를 표시합니다."
+      "name": "처치 기록 활성화",
+      "desc": "프레임 없는 ImpactCue 처치 기록을 표시합니다."
     },
     "04. Kill Feed/Own Kills Only": {
-      "name": "내 킬만 표시",
-      "desc": "내 킬만 표시합니다. 비활성화하면 관찰된 킬 이벤트도 포함합니다."
+      "name": "내 처치만 표시",
+      "desc": "내 처치만 표시합니다. 비활성화하면 관찰된 처치 이벤트도 포함합니다."
     },
     "04. Kill Feed/Font / UI Size": {
       "name": "글꼴 / UI 크기",
-      "desc": "킬 피드 크기 배율입니다."
+      "desc": "처치 기록 크기 배율입니다."
     },
     "04. Kill Feed/Display Duration": {
       "name": "표시 시간",
@@ -264,7 +264,7 @@
     },
     "04. Kill Feed/Max Entries": {
       "name": "최대 항목 수",
-      "desc": "표시 가능한 킬 피드 항목의 최대 개수입니다."
+      "desc": "표시 가능한 처치 기록 항목의 최대 개수입니다."
     },
     "04. Kill Feed/Fade Duration": {
       "name": "페이드 시간",
@@ -280,7 +280,7 @@
     },
     "04. Kill Feed/Color Victim Name By Faction": {
       "name": "피해자 이름 유형별 색상",
-      "desc": "빠른 식별을 위해 피해자 이름을 유형별로 색상 구분합니다. USEC, BEAR, SCAV, Boss, Follower, Rogue, Raider, Cultist를 각각 설정하며 그 외에는 Victim Name Color를 사용합니다."
+      "desc": "빠른 식별을 위해 피해자 이름을 유형별로 색상 구분합니다. USEC, BEAR, 스캐브, 보스, 경호원, 로그, 레이더, 교단원을 각각 설정하며 그 외에는 희생자 이름 색상을 사용합니다."
     },
     "04. Kill Feed/USEC Victim Color": {
       "name": "USEC 피해자 이름 색상",
@@ -291,32 +291,32 @@
       "desc": "진영 색상이 켜져 있을 때 BEAR 피해자 이름에 적용할 색상입니다."
     },
     "04. Kill Feed/SCAV Victim Color": {
-      "name": "SCAV 피해자 이름 색상",
-      "desc": "진영 색상이 켜져 있을 때 SCAV 피해자 이름에 적용할 색상입니다."
+      "name": "스캐브 피해자 이름 색상",
+      "desc": "진영 색상이 켜져 있을 때 스캐브 피해자 이름에 적용할 색상입니다."
     },
     "04. Kill Feed/Boss Victim Color": {
-      "name": "Boss 피해자 색상",
-      "desc": "유형별 색상 사용 시 주요 Boss 피해자 이름에 사용할 색상입니다."
+      "name": "보스 피해자 색상",
+      "desc": "유형별 색상 사용 시 주요 보스 피해자 이름에 사용할 색상입니다."
     },
     "04. Kill Feed/Follower Victim Color": {
-      "name": "Follower 피해자 색상",
-      "desc": "유형별 색상 사용 시 Boss Follower 및 Guard 피해자 이름에 사용할 색상입니다."
+      "name": "경호원 피해자 색상",
+      "desc": "유형별 색상 사용 시 보스 경호원 및 경호원 피해자 이름에 사용할 색상입니다."
     },
     "04. Kill Feed/Rogue Victim Color": {
-      "name": "Rogue 피해자 색상",
-      "desc": "유형별 색상 사용 시 Rogue 피해자 이름에 사용할 색상입니다."
+      "name": "로그 피해자 색상",
+      "desc": "유형별 색상 사용 시 로그 피해자 이름에 사용할 색상입니다."
     },
     "04. Kill Feed/Raider Victim Color": {
-      "name": "Raider 피해자 색상",
-      "desc": "유형별 색상 사용 시 Raider 피해자 이름에 사용할 색상입니다."
+      "name": "레이더 피해자 색상",
+      "desc": "유형별 색상 사용 시 레이더 피해자 이름에 사용할 색상입니다."
     },
     "04. Kill Feed/Cultist Victim Color": {
-      "name": "Cultist 피해자 색상",
-      "desc": "유형별 색상 사용 시 Cultist 피해자 이름에 사용할 색상입니다."
+      "name": "교단원 피해자 색상",
+      "desc": "유형별 색상 사용 시 교단원 피해자 이름에 사용할 색상입니다."
     },
     "04. Kill Feed/Distance Color": {
       "name": "거리 색상",
-      "desc": "킬 거리 색상입니다."
+      "desc": "처치 거리 색상입니다."
     },
     "04. Kill Feed/Weapon Name Color": {
       "name": "무기 이름 색상",
@@ -324,51 +324,51 @@
     },
     "04. Kill Feed/Headshot Marker Color": {
       "name": "헤드샷 마커 색상",
-      "desc": "헤드샷 전용 킬 피드 마커 색상입니다."
+      "desc": "헤드샷 전용 처치 기록 마커 색상입니다."
     },
     "04. Kill Feed/Font Family": {
       "name": "글꼴",
-      "desc": "킬 피드 텍스트 전용 글꼴입니다. 설치된 글꼴은 시작할 때 검색합니다."
+      "desc": "처치 기록 텍스트 전용 글꼴입니다. 설치된 글꼴은 시작할 때 검색합니다."
     },
     "05. Kill Feed Layout/Kill Feed Anchor": {
-      "name": "킬 피드 앵커",
-      "desc": "킬 피드의 화면 앵커입니다. Custom은 고급 Custom Kill Feed X/Y 값을 사용합니다."
+      "name": "처치 기록 기준점",
+      "desc": "처치 기록의 화면 기준점입니다. Custom은 고급 사용자 지정 처치 기록 X/Y 값을 사용합니다."
     },
     "05. Kill Feed Layout/Kill Feed Offset X": {
-      "name": "킬 피드 X 오프셋",
-      "desc": "1080p에서 선택한 앵커 기준 가로 픽셀 오프셋입니다."
+      "name": "처치 기록 X 오프셋",
+      "desc": "1080p에서 선택한 기준점 기준 가로 픽셀 오프셋입니다."
     },
     "05. Kill Feed Layout/Kill Feed Offset Y": {
-      "name": "킬 피드 Y 오프셋",
-      "desc": "1080p에서 선택한 앵커 기준 세로 픽셀 오프셋입니다. 기본값은 안전 영역 앵커보다 32px 아래입니다."
+      "name": "처치 기록 Y 오프셋",
+      "desc": "1080p에서 선택한 기준점 기준 세로 픽셀 오프셋입니다. 기본값은 안전 영역 기준점보다 32px 아래입니다."
     },
     "05. Kill Feed Layout/Kill Feed Header": {
-      "name": "킬 피드 헤더",
+      "name": "처치 기록 헤더",
       "desc": "KILL FEED 헤더 표시 방식: Hidden, EditModeOnly 또는 Always."
     },
     "05. Kill Feed Layout/Kill Feed Header Spacing": {
-      "name": "킬 피드 헤더 간격",
+      "name": "처치 기록 헤더 간격",
       "desc": "1080p에서 KILL FEED 헤더와 첫 항목 사이의 세로 간격입니다."
     },
     "05. Kill Feed Layout/Kill Feed Entry Spacing": {
-      "name": "킬 피드 항목 간격",
-      "desc": "1080p에서 킬 피드 줄 사이의 세로 간격입니다."
+      "name": "처치 기록 항목 간격",
+      "desc": "1080p에서 처치 기록 줄 사이의 세로 간격입니다."
     },
     "05. Kill Feed Layout/Kill Feed Element Spacing": {
-      "name": "킬 피드 요소 간격",
+      "name": "처치 기록 요소 간격",
       "desc": "1080p에서 킬러, 무기, 희생자, 거리, 헤드샷 요소 사이의 가로 간격입니다."
     },
     "05. Kill Feed Layout/Independent Kill Feed Element Layout": {
-      "name": "킬 피드 요소 개별 배치",
-      "desc": "HUD 편집 모드에서 킬 피드의 이름·진영 아이콘·무기·거리·헤드샷 표시를 각각 이동하고 크기를 변경합니다."
+      "name": "처치 기록 요소 개별 배치",
+      "desc": "HUD 편집 모드에서 처치 기록의 이름·진영 아이콘·무기·거리·헤드샷 표시를 각각 이동하고 크기를 변경합니다."
     },
     "05. Kill Feed Layout/Reset Kill Feed Element Layout": {
-      "name": "킬 피드 요소 레이아웃 초기화",
-      "desc": "모든 킬 피드 개별 요소의 오프셋과 크기를 기본 행 레이아웃으로 되돌립니다."
+      "name": "처치 기록 요소 배치 초기화",
+      "desc": "모든 처치 기록 개별 요소의 오프셋과 크기를 기본 행 배치로 되돌립니다."
     },
     "06. Kill Feed Safe Area/Use Safe Area": {
       "name": "안전 영역 사용",
-      "desc": "앵커된 킬 피드가 설정 가능한 화면 가장자리 여백 안에 있도록 합니다."
+      "desc": "기준점에 맞춘 처치 기록이 설정 가능한 화면 가장자리 여백 안에 있도록 합니다."
     },
     "06. Kill Feed Safe Area/Safe Margin Top": {
       "name": "상단 안전 여백",
@@ -436,23 +436,23 @@
     },
     "08. Kill Feed Elements/Show Distance": {
       "name": "거리 표시",
-      "desc": "가능한 경우 킬 거리를 미터 단위로 표시합니다."
+      "desc": "가능한 경우 처치 거리를 미터 단위로 표시합니다."
     },
     "08. Kill Feed Elements/Show Headshot Marker": {
       "name": "헤드샷 마커 표시",
-      "desc": "헤드샷 킬일 때만 작은 빨간 헤드샷 마커를 표시합니다."
+      "desc": "헤드샷 처치일 때만 작은 빨간 헤드샷 마커를 표시합니다."
     },
     "08. Kill Feed Elements/Show Faction Icon": {
       "name": "진영 아이콘 표시",
-      "desc": "킬러와 희생자 이름 옆에 USEC / BEAR / SCAV 대분류 식별 표시를 보여 줍니다. 현재 로드된 EFT 에셋에서 표시를 찾으며, BOSS 등급은 대신 별도 별 아이콘을 사용합니다."
+      "desc": "킬러와 희생자 이름 옆에 USEC / BEAR / 스캐브 대분류 식별 표시를 보여 줍니다. 현재 로드된 EFT 에셋에서 표시를 찾으며, BOSS 등급은 대신 별도 별 아이콘을 사용합니다."
     },
     "08. Kill Feed Elements/Faction Icon Color": {
       "name": "진영 아이콘 색상",
-      "desc": "USEC / BEAR / SCAV 표시의 색조입니다."
+      "desc": "USEC / BEAR / 스캐브 표시의 색조입니다."
     },
     "08. Kill Feed Elements/Faction Icon Size": {
       "name": "진영 아이콘 크기",
-      "desc": "1080p 기준 USEC / BEAR / SCAV 표시의 픽셀 크기입니다."
+      "desc": "1080p 기준 USEC / BEAR / 스캐브 표시의 픽셀 크기입니다."
     },
     "08. Kill Feed Elements/Faction Icon Opacity": {
       "name": "진영 아이콘 불투명도",
@@ -460,7 +460,7 @@
     },
     "08. Kill Feed Elements/Show Boss Icon": {
       "name": "보스 아이콘 표시",
-      "desc": "Black Division과 보스 경호원/추종자를 포함한 모든 BOSS 등급 항목에 공통 오각별을 표시합니다."
+      "desc": "블랙 디비전과 보스 경호원/추종자를 포함한 모든 BOSS 등급 항목에 공통 오각별을 표시합니다."
     },
     "08. Kill Feed Elements/Boss Star Color": {
       "name": "보스 별 색상",
@@ -471,36 +471,36 @@
       "desc": "전체 HUD 불투명도가 적용되기 전 BOSS 별의 불투명도입니다."
     },
     "08. Kill Feed Elements/Boss Star Glow": {
-      "name": "보스 별 글로우",
-      "desc": "BOSS 별 뒤에 은은한 빨간 글로우를 그립니다."
+      "name": "보스 별 발광",
+      "desc": "BOSS 별 뒤에 은은한 빨간 발광을 그립니다."
     },
     "08. Kill Feed Elements/Boss Star Glow Strength": {
-      "name": "보스 별 글로우 강도",
-      "desc": "글로우 강도입니다. 별이 눈부시지 않으면서 읽기 쉽게 유지되도록 의도적으로 낮게 설정됩니다."
+      "name": "보스 별 발광 강도",
+      "desc": "발광 강도입니다. 별이 눈부시지 않으면서 읽기 쉽게 유지되도록 의도적으로 낮게 설정됩니다."
     },
     "08. Kill Feed Elements/Own Kill Logo Enabled": {
-      "name": "내 킬 로고 — 활성화",
+      "name": "내 처치 로고 — 활성화",
       "desc": "자신이 처치한 적에 한해 킬러 진영 아이콘을 사용자 지정 로고로 바꿉니다."
     },
     "08. Kill Feed Elements/Own Kill Logo Preset": {
-      "name": "내 킬 로고 — 프리셋",
-      "desc": "Choose a built-in logo or Custom Image."
+      "name": "내 처치 로고 — 프리셋",
+      "desc": "내장 로고나 사용자 지정 이미지를 고릅니다."
     },
     "08. Kill Feed Elements/Own Kill Logo File": {
-      "name": "내 킬 로고 — 파일",
+      "name": "내 처치 로고 — 파일",
       "desc": "KillFeedLogos 폴더에서 이미지를 선택합니다. 새 이미지를 추가한 뒤 재시작하세요."
     },
     "08. Kill Feed Elements/Own Kill Logo Opacity": {
-      "name": "내 킬 로고 — 불투명도",
-      "desc": "자신의 킬에 사용할 로고의 불투명도입니다."
+      "name": "내 처치 로고 — 불투명도",
+      "desc": "자신의 처치에 사용할 로고의 불투명도입니다."
     },
     "08. Kill Feed Elements/Own Kill Logo Color": {
-      "name": "내 킬 로고 — 색상",
+      "name": "내 처치 로고 — 색상",
       "desc": "로고에 적용할 색상입니다. 흰색은 이미지 원래 색상을 보존합니다."
     },
     "08.5 Weapon Icons/Weapon Icon Enabled": {
       "name": "무기 아이콘 — 활성화",
-      "desc": "내장 아이콘이 있으면 킬 피드의 무기 이름 옆에 흰색 무기 실루엣을 표시합니다."
+      "desc": "내장 아이콘이 있으면 처치 기록의 무기 이름 옆에 흰색 무기 실루엣을 표시합니다."
     },
     "08.5 Weapon Icons/Show Weapon Name": {
       "name": "무기 이름 표시",
@@ -528,7 +528,7 @@
     },
     "08.6 Custom Faction Icons/Custom Faction Icons Enabled": {
       "name": "사용자 지정 진영 아이콘",
-      "desc": "킬 피드에 사용자 지정 PNG를 사용합니다. 없거나 잘못된 이미지는 기존 아이콘으로 표시합니다."
+      "desc": "처치 기록에 사용자 지정 PNG를 사용합니다. 없거나 잘못된 이미지는 기존 아이콘으로 표시합니다."
     },
     "08.6 Custom Faction Icons/Preserve PNG Colors": {
       "name": "PNG 원본 색상 유지",
@@ -547,24 +547,24 @@
       "desc": "FactionIcons 목록에서 선택적으로 BEAR PNG를 고릅니다. 미선택, 파일 없음 또는 로드 실패 시 공통 PMC 이미지, 그다음 기존 BEAR 아이콘을 사용합니다. USEC/BEAR에서 「기본값」은 선택된 공용 PMC PNG를 먼저 사용하고, 그다음 기본 진영 아이콘으로 폴백합니다."
     },
     "08.6 Custom Faction Icons/Scav Icon File": {
-      "name": "Scav 아이콘 파일",
-      "desc": "FactionIcons 목록에서 Scav 계열 PNG를 선택합니다. 보스가 아닌 Raider/Rogue/Cultist도 포함됩니다. 실패 시 기존 아이콘을 사용합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
+      "name": "스캐브 아이콘 파일",
+      "desc": "FactionIcons 목록에서 스캐브 계열 PNG를 선택합니다. 보스가 아닌 레이더/로그/교단원도 포함됩니다. 실패 시 기존 아이콘을 사용합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
     },
     "08.6 Custom Faction Icons/Guard Icon File": {
-      "name": "Guard 아이콘 파일",
-      "desc": "FactionIcons 목록에서 보스 경호원/추종자용 PNG를 선택합니다. PMC 팀원은 PMC를 유지하고, 이름이 있는 보스는 Boss 이미지를 사용합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
+      "name": "경호원 아이콘 파일",
+      "desc": "FactionIcons 목록에서 보스 경호원/추종자용 PNG를 선택합니다. PMC 팀원은 PMC를 유지하고, 이름이 있는 보스는 보스 이미지를 사용합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
     },
     "08.6 Custom Faction Icons/Boss Icon File": {
-      "name": "Boss 아이콘 파일",
-      "desc": "FactionIcons 목록에서 공통 보스 PNG를 선택합니다. Killa/Tagilla와 Black Division 보스도 포함됩니다. 실패 시 기존 보스 아이콘을 유지합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
+      "name": "보스 아이콘 파일",
+      "desc": "FactionIcons 목록에서 공통 보스 PNG를 선택합니다. Killa/Tagilla와 블랙 디비전 보스도 포함됩니다. 실패 시 기존 보스 아이콘을 유지합니다. 「기본값」을 선택하면 ImpactCue 기본 아이콘을 사용합니다."
     },
     "09. HUD Position/Custom Kill Feed X": {
-      "name": "사용자 지정 킬 피드 X",
-      "desc": "Kill Feed Anchor = Custom일 때만 사용하는 킬 피드 가로 위치입니다."
+      "name": "사용자 지정 처치 기록 X",
+      "desc": "처치 기록 기준점 = Custom일 때만 사용하는 처치 기록 가로 위치입니다."
     },
     "09. HUD Position/Custom Kill Feed Y": {
-      "name": "사용자 지정 킬 피드 Y",
-      "desc": "Kill Feed Anchor = Custom일 때만 사용하는 킬 피드 세로 위치입니다."
+      "name": "사용자 지정 처치 기록 Y",
+      "desc": "처치 기록 기준점 = Custom일 때만 사용하는 처치 기록 세로 위치입니다."
     },
     "09. HUD Position/Hit Marker X": {
       "name": "명중 마커 X",
@@ -575,12 +575,12 @@
       "desc": "명중 마커의 세로 위치입니다. 0 = 위, 1 = 아래."
     },
     "09. HUD Position/Floating Damage X": {
-      "name": "플로팅 데미지 X",
-      "desc": "플로팅 데미지의 가로 원점입니다. 0 = 왼쪽, 1 = 오른쪽."
+      "name": "떠오르는 피해 X",
+      "desc": "떠오르는 피해의 가로 원점입니다. 0 = 왼쪽, 1 = 오른쪽."
     },
     "09. HUD Position/Floating Damage Y": {
-      "name": "플로팅 데미지 Y",
-      "desc": "플로팅 데미지의 세로 원점입니다. 0 = 위, 1 = 아래."
+      "name": "떠오르는 피해 Y",
+      "desc": "떠오르는 피해의 세로 원점입니다. 0 = 위, 1 = 아래."
     },
     "09. HUD Position/Compact HUD X": {
       "name": "간소화 HUD X",
@@ -608,7 +608,7 @@
     },
     "09. HUD Position/Safe Area Snap": {
       "name": "안전 영역 스냅",
-      "desc": "킬 피드를 드래그할 때 설정된 안전 영역 가장자리에 가까워지면 스냅합니다."
+      "desc": "처치 기록을 드래그할 때 설정된 안전 영역 가장자리에 가까워지면 스냅합니다."
     },
     "09. HUD Position/Editor Center Crosshair": {
       "name": "편집 중앙 십자선",
@@ -627,16 +627,16 @@
       "desc": "HUD 요소를 드래그하는 동안 요소의 가장자리와 중앙을 지나는 정렬 가이드를 표시합니다."
     },
     "09. HUD Position/Reset Kill Feed Position": {
-      "name": "킬 피드 위치 초기화",
-      "desc": "킬 피드 위치/앵커만 초기화합니다."
+      "name": "처치 기록 위치 초기화",
+      "desc": "처치 기록 위치/기준점만 초기화합니다."
     },
     "09. HUD Position/Reset Hit Marker Position": {
       "name": "명중 마커 위치 초기화",
       "desc": "명중 마커 위치만 초기화합니다."
     },
     "09. HUD Position/Reset Floating Damage Position": {
-      "name": "플로팅 데미지 위치 초기화",
-      "desc": "플로팅 데미지 위치만 초기화합니다."
+      "name": "떠오르는 피해 위치 초기화",
+      "desc": "떠오르는 피해 위치만 초기화합니다."
     },
     "09. HUD Position/Reset Compact HUD Position": {
       "name": "Compact HUD 위치 초기화",
@@ -651,8 +651,8 @@
       "desc": "모든 ImpactCue HUD 위치를 기본값으로 초기화합니다."
     },
     "10. Advanced/Maximum Damage Numbers": {
-      "name": "최대 데미지 숫자",
-      "desc": "동시에 활성 상태로 유지할 플로팅 데미지 라벨의 최대 개수입니다. 낮은 값은 화면 혼잡을 줄이고 빠른 연속 명중 시 UI 작업량을 약간 줄입니다."
+      "name": "최대 피해 숫자",
+      "desc": "동시에 활성 상태로 유지할 떠오르는 피해 라벨의 최대 개수입니다. 낮은 값은 화면 혼잡을 줄이고 빠른 연속 명중 시 UI 작업량을 약간 줄입니다."
     },
     "10. Advanced/UI Animation FPS Independent": {
       "name": "UI 애니메이션 FPS 독립",
@@ -671,15 +671,15 @@
       "desc": "현재 SPT/EFT ExfiltrationController, 필드/속성/메서드 목록과 감지된 Transit 기록을 ImpactCue-Runtime-Audit.txt에 기록합니다."
     },
     "11. Hit Sound/Hit Sound Enabled": {
-      "name": "명중 사운드 활성화",
+      "name": "명중 소리 활성화",
       "desc": "자신의 탄환 명중 시 확인음을 재생합니다. 육체, 방어구, 머리 명중에 서로 다른 프리셋을 사용할 수 있습니다."
     },
     "11. Hit Sound/Master Volume": {
-      "name": "마스터 볼륨",
-      "desc": "모든 명중 사운드 범주에 적용되는 전체 볼륨 배율입니다."
+      "name": "마스터 음량",
+      "desc": "모든 명중 소리 범주에 적용되는 전체 음량 배율입니다."
     },
     "11. Hit Sound/Body Hit Sound Enabled": {
-      "name": "육체 명중 사운드 활성화",
+      "name": "육체 명중 소리 활성화",
       "desc": "EFT가 실제 육체/HP 피해를 기록하고 방어구 피해가 없으며 머리 명중이 아닐 때만 육체 명중음을 재생합니다."
     },
     "11. Hit Sound/Body Hit Preset": {
@@ -687,44 +687,44 @@
       "desc": "육체 명중에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG 파일을 선택합니다."
     },
     "11. Hit Sound/Body Hit Volume": {
-      "name": "육체 명중 볼륨",
-      "desc": "마스터 볼륨 적용 전 육체 명중 사운드의 볼륨입니다."
+      "name": "육체 명중 음량",
+      "desc": "마스터 음량 적용 전 육체 명중 소리의 음량입니다."
     },
     "11. Hit Sound/Flesh Hit Pitch Offset": {
       "name": "육체 명중 피치 오프셋",
-      "desc": "육체 명중 사운드에만 적용되는 피치 보정입니다."
+      "desc": "육체 명중 소리에만 적용되는 피치 보정입니다."
     },
     "11. Hit Sound/Armor Hit Sound Enabled": {
-      "name": "방어구 명중 사운드 활성화",
-      "desc": "EFT가 실제 방어구 피해를 기록하면 전용 사운드를 사용합니다. 같은 탄환이 HP 피해도 주면 방어구 사운드가 우선됩니다."
+      "name": "방어구 명중 소리 활성화",
+      "desc": "EFT가 실제 방어구 피해를 기록하면 전용 소리를 사용합니다. 같은 탄환이 HP 피해도 주면 방어구 소리가 우선됩니다."
     },
     "11. Hit Sound/Armor Hit Preset": {
       "name": "방어구 명중 프리셋",
       "desc": "방어구 명중에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG 파일을 선택합니다."
     },
     "11. Hit Sound/Armor Hit Volume": {
-      "name": "방어구 명중 볼륨",
-      "desc": "마스터 볼륨 적용 전 방어구 명중 사운드의 볼륨입니다."
+      "name": "방어구 명중 음량",
+      "desc": "마스터 음량 적용 전 방어구 명중 소리의 음량입니다."
     },
     "11. Hit Sound/Armor Hit Pitch Offset": {
       "name": "방어구 명중 피치 오프셋",
-      "desc": "방어구 명중 사운드에만 적용되는 피치 보정입니다."
+      "desc": "방어구 명중 소리에만 적용되는 피치 보정입니다."
     },
     "11. Hit Sound/Head Hit Sound Enabled": {
-      "name": "머리 명중 사운드 활성화",
-      "desc": "실제 HP 피해가 있고 방어구 피해가 없는 비치명적 머리 명중에 별도 사운드를 사용합니다."
+      "name": "머리 명중 소리 활성화",
+      "desc": "실제 HP 피해가 있고 방어구 피해가 없는 비치명적 머리 명중에 별도 소리를 사용합니다."
     },
     "11. Hit Sound/Head Hit Preset": {
       "name": "머리 명중 프리셋",
       "desc": "방어구에 맞지 않은 머리 명중에 사용할 내장 프리셋 또는 Custom WAV / MP3 / OGG 파일을 선택합니다."
     },
     "11. Hit Sound/Head Hit Volume": {
-      "name": "머리 명중 볼륨",
-      "desc": "마스터 볼륨 적용 전 머리 명중 사운드의 볼륨입니다."
+      "name": "머리 명중 음량",
+      "desc": "마스터 음량 적용 전 머리 명중 소리의 음량입니다."
     },
     "11. Hit Sound/Base Pitch": {
       "name": "기본 피치",
-      "desc": "육체, 방어구, 머리 명중 사운드에 적용되는 전체 재생 피치입니다."
+      "desc": "육체, 방어구, 머리 명중 소리에 적용되는 전체 재생 피치입니다."
     },
     "11. Hit Sound/Random Pitch Variation": {
       "name": "무작위 피치 변화",
@@ -732,7 +732,7 @@
     },
     "11. Hit Sound/Head Hit Pitch Offset": {
       "name": "머리 명중 피치 오프셋",
-      "desc": "머리 명중 사운드에만 적용되는 피치 보정입니다."
+      "desc": "머리 명중 소리에만 적용되는 피치 보정입니다."
     },
     "11. Hit Sound/Stereo Pan": {
       "name": "스테레오 팬",
@@ -744,67 +744,67 @@
     },
     "11. Hit Sound/Minimum Interval": {
       "name": "최소 간격",
-      "desc": "명중 사운드 사이의 최소 시간입니다. 산탄총이나 연사 시 과도한 중첩을 줄입니다."
+      "desc": "명중 소리 사이의 최소 시간입니다. 산탄총이나 연사 시 과도한 중첩을 줄입니다."
     },
     "11. Hit Sound/Mute While Scoped": {
       "name": "조준 중 음소거",
       "desc": "조준/스코프 사용 중에는 명중 확인음을 재생하지 않습니다."
     },
     "11. Kill Sound/Kill Sound Enabled": {
-      "name": "킬 사운드 활성화",
-      "desc": "내장 프리셋 또는 사용자 WAV / MP3 / OGG 파일로 킬 확인 사운드를 재생합니다."
+      "name": "처치 소리 활성화",
+      "desc": "내장 프리셋 또는 사용자 WAV / MP3 / OGG 파일로 처치 확인 소리를 재생합니다."
     },
     "11. Kill Sound/Master Volume": {
-      "name": "마스터 볼륨",
-      "desc": "모든 킬 사운드 범주에 적용되는 전체 볼륨 배율입니다."
+      "name": "마스터 음량",
+      "desc": "모든 처치 소리 범주에 적용되는 전체 음량 배율입니다."
     },
     "11. Kill Sound/Normal Kill Preset": {
-      "name": "일반 킬 프리셋",
-      "desc": "일반 킬에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
+      "name": "일반 처치 프리셋",
+      "desc": "일반 처치에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
     },
     "11. Kill Sound/Normal Kill Volume": {
-      "name": "일반 킬 볼륨",
-      "desc": "Master Volume 적용 전 일반 킬의 볼륨입니다."
+      "name": "일반 처치 음량",
+      "desc": "마스터 음량 적용 전 일반 처치의 음량입니다."
     },
     "11. Kill Sound/Headshot Kill Sound Enabled": {
-      "name": "헤드샷 킬 사운드 활성화",
+      "name": "헤드샷 처치 소리 활성화",
       "desc": "치명타가 헤드샷일 때 전용 헤드샷 프리셋을 사용합니다. 비활성화하면 Normal Kill 프리셋을 대신 사용합니다."
     },
     "11. Kill Sound/Headshot Kill Preset": {
-      "name": "헤드샷 킬 프리셋",
-      "desc": "헤드샷 킬에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
+      "name": "헤드샷 처치 프리셋",
+      "desc": "헤드샷 처치에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
     },
     "11. Kill Sound/Headshot Kill Volume": {
-      "name": "헤드샷 킬 볼륨",
-      "desc": "Master Volume 적용 전 헤드샷 킬의 볼륨입니다."
+      "name": "헤드샷 처치 음량",
+      "desc": "마스터 음량 적용 전 헤드샷 처치의 음량입니다."
     },
     "11. Kill Sound/Boss Kill Sound Enabled": {
-      "name": "보스 킬 사운드 활성화",
-      "desc": "BOSS 등급, 보스 경호원/추종자 및 Black Division 킬에 전용 BOSS 프리셋을 사용합니다. BOSS와 Headshot이 동시에 적용되면 BOSS가 우선합니다."
+      "name": "보스 처치 소리 활성화",
+      "desc": "BOSS 등급, 보스 경호원/추종자 및 블랙 디비전 처치에 전용 BOSS 프리셋을 사용합니다. BOSS와 Headshot이 동시에 적용되면 BOSS가 우선합니다."
     },
     "11. Kill Sound/Boss Kill Preset": {
-      "name": "보스 킬 프리셋",
-      "desc": "BOSS/Black Division 킬에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
+      "name": "보스 처치 프리셋",
+      "desc": "BOSS/블랙 디비전 처치에 사용할 내장 프리셋 또는 sounds 폴더의 Custom WAV / MP3 / OGG를 선택합니다."
     },
     "11. Kill Sound/Boss Kill Volume": {
-      "name": "보스 킬 볼륨",
-      "desc": "Master Volume 적용 전 BOSS/Black Division 킬의 볼륨입니다."
+      "name": "보스 처치 음량",
+      "desc": "마스터 음량 적용 전 BOSS/블랙 디비전 처치의 음량입니다."
     },
     "11. Kill Sound/Base Pitch": {
       "name": "기본 피치",
-      "desc": "세 가지 킬 사운드 범주 모두에 적용되는 전체 재생 피치입니다."
+      "desc": "세 가지 처치 소리 범주 모두에 적용되는 전체 재생 피치입니다."
     },
     "11. Kill Sound/Random Pitch Variation": {
       "name": "랜덤 피치 변화",
-      "desc": "반복 킬이 덜 기계적으로 들리도록 킬마다 약간의 랜덤 피치 변화를 적용합니다."
+      "desc": "반복 처치가 덜 기계적으로 들리도록 처치마다 약간의 랜덤 피치 변화를 적용합니다."
     },
     "11. Kill Sound/Headshot Pitch Offset": {
       "name": "헤드샷 피치 오프셋",
-      "desc": "헤드샷 킬 사운드에만 추가되는 선택적 피치 조정입니다. 선택한 프리셋을 그대로 들으려면 0을 사용하세요."
+      "desc": "헤드샷 처치 소리에만 추가되는 선택적 피치 조정입니다. 선택한 프리셋을 그대로 들으려면 0을 사용하세요."
     },
     "11. Kill Sound/Boss Pitch Offset": {
       "name": "보스 피치 오프셋",
-      "desc": "BOSS 킬 사운드에만 추가되는 선택적 피치 조정입니다. 선택한 프리셋을 그대로 들으려면 0을 사용하세요."
+      "desc": "BOSS 처치 소리에만 추가되는 선택적 피치 조정입니다. 선택한 프리셋을 그대로 들으려면 0을 사용하세요."
     },
     "11. Kill Sound/Stereo Pan": {
       "name": "스테레오 팬",
@@ -812,35 +812,35 @@
     },
     "11. Kill Sound/Playback Delay": {
       "name": "재생 지연",
-      "desc": "킬 확인과 사운드 재생 사이의 지연 시간(초)입니다."
+      "desc": "처치 확인과 소리 재생 사이의 지연 시간(초)입니다."
     },
     "11. Kill Sound/Minimum Interval": {
       "name": "최소 간격",
-      "desc": "킬 사운드 사이의 최소 시간입니다. 빠른 멀티킬에서 거친 사운드 중첩을 방지합니다."
+      "desc": "처치 소리 사이의 최소 시간입니다. 빠른 멀티처치에서 거친 소리 중첩을 방지합니다."
     },
     "11. Kill Sound/Mute While Scoped": {
       "name": "조준 중 음소거",
-      "desc": "치명타가 조준/스코프 상태에서 발사된 경우 킬 사운드를 억제합니다."
+      "desc": "치명타가 조준/스코프 상태에서 발사된 경우 처치 소리를 억제합니다."
     },
     "11. Kill Sound/Preview Normal Sound": {
-      "name": "일반 사운드 미리듣기",
-      "desc": "현재 Master/Normal 볼륨 및 피치 설정으로 선택한 Normal Kill 프리셋을 즉시 재생합니다. Kill Sound Enabled가 꺼져 있어도 작동합니다."
+      "name": "일반 소리 미리 듣기",
+      "desc": "현재 Master/Normal 음량 및 피치 설정으로 선택한 Normal Kill 프리셋을 즉시 재생합니다. 처치 소리 활성화가 꺼져 있어도 작동합니다."
     },
     "11. Kill Sound/Preview Headshot Sound": {
-      "name": "헤드샷 사운드 미리듣기",
-      "desc": "현재 Master/Headshot 볼륨 및 피치 설정으로 선택한 Headshot Kill 프리셋을 즉시 재생합니다. Headshot Kill Sound가 꺼져 있어도 작동합니다."
+      "name": "헤드샷 소리 미리 듣기",
+      "desc": "현재 Master/Headshot 음량 및 피치 설정으로 선택한 Headshot Kill 프리셋을 즉시 재생합니다. Headshot Kill Sound가 꺼져 있어도 작동합니다."
     },
     "11. Kill Sound/Preview Boss Sound": {
-      "name": "보스 사운드 미리듣기",
-      "desc": "현재 Master/BOSS 볼륨 및 피치 설정으로 선택한 BOSS Kill 프리셋을 즉시 재생합니다. Boss Kill Sound가 꺼져 있어도 작동합니다."
+      "name": "보스 소리 미리 듣기",
+      "desc": "현재 Master/BOSS 음량 및 피치 설정으로 선택한 BOSS Kill 프리셋을 즉시 재생합니다. 보스 Kill Sound가 꺼져 있어도 작동합니다."
     },
     "11. Kill Sound/Stop Sound Preview": {
-      "name": "사운드 미리듣기 중지",
-      "desc": "현재 재생 중인 킬 사운드 샘플을 중지합니다."
+      "name": "소리 미리 듣기 중지",
+      "desc": "현재 재생 중인 처치 소리 샘플을 중지합니다."
     },
     "12. Kill Effect/Kill Effect Enabled": {
-      "name": "킬 효과 활성화",
-      "desc": "내 킬에 대해 화면 중앙에 짧은 킬 확인 효과를 표시합니다."
+      "name": "처치 효과 활성화",
+      "desc": "내 처치에 대해 화면 중앙에 짧은 처치 확인 효과를 표시합니다."
     },
     "12. Kill Effect/Effect Preset": {
       "name": "효과 프리셋",
@@ -848,35 +848,35 @@
     },
     "12. Kill Effect/Duration": {
       "name": "지속 시간",
-      "desc": "킬 효과 표시 시간(초)입니다."
+      "desc": "처치 효과 표시 시간(초)입니다."
     },
     "12. Kill Effect/Size": {
       "name": "크기",
-      "desc": "킬 효과 크기 배율입니다."
+      "desc": "처치 효과 크기 배율입니다."
     },
     "12. Kill Effect/Opacity": {
       "name": "불투명도",
-      "desc": "전체 HUD 불투명도가 적용되기 전 킬 효과의 불투명도입니다."
+      "desc": "전체 HUD 불투명도가 적용되기 전 처치 효과의 불투명도입니다."
     },
     "12. Kill Effect/Use Preset Color": {
       "name": "프리셋 색상 사용",
-      "desc": "선택한 효과 프리셋에 맞춘 색상을 사용합니다. Custom Color를 사용하려면 비활성화하세요."
+      "desc": "선택한 효과 프리셋에 맞춘 색상을 사용합니다. 사용자 지정 색상을 사용하려면 비활성화하세요."
     },
     "12. Kill Effect/Custom Color": {
       "name": "사용자 지정 색상",
-      "desc": "Use Preset Color가 비활성화되어 있을 때 사용하는 사용자 지정 효과 색상입니다."
+      "desc": "프리셋 색상 사용이 비활성화되어 있을 때 사용하는 사용자 지정 효과 색상입니다."
     },
     "12. Kill Effect/Glow Enabled": {
-      "name": "글로우 활성화",
-      "desc": "주요 킬 효과 뒤에 부드러운 글로우를 그립니다."
+      "name": "발광 활성화",
+      "desc": "주요 처치 효과 뒤에 부드러운 발광을 그립니다."
     },
     "12. Kill Effect/Glow Strength": {
-      "name": "글로우 강도",
-      "desc": "글로우 강도입니다. 기본값은 절제되어 있습니다."
+      "name": "발광 강도",
+      "desc": "발광 강도입니다. 기본값은 절제되어 있습니다."
     },
     "12. Kill Effect/Screen Flash Enabled": {
       "name": "화면 플래시 활성화",
-      "desc": "킬 시 매우 짧은 전체 화면 색상 플래시를 추가합니다."
+      "desc": "처치 시 매우 짧은 전체 화면 색상 플래시를 추가합니다."
     },
     "12. Kill Effect/Screen Flash Strength": {
       "name": "화면 플래시 강도",
@@ -884,15 +884,15 @@
     },
     "12. Kill Effect/Headshot Accent": {
       "name": "헤드샷 강조",
-      "desc": "헤드샷 킬 효과를 약간 더 날카롭고 밝게 만듭니다."
+      "desc": "헤드샷 처치 효과를 약간 더 날카롭고 밝게 만듭니다."
     },
     "12. Kill Effect/Boss Accent": {
       "name": "보스 강조",
-      "desc": "BOSS 등급 및 Black Division 킬에 절제된 빨간 강조와 더 강한 펄스를 사용합니다."
+      "desc": "BOSS 등급 및 블랙 디비전 처치에 절제된 빨간 강조와 더 강한 펄스를 사용합니다."
     },
     "12. Kill Effect/Show While Scoped": {
       "name": "조준 중 표시",
-      "desc": "치명타를 조준/스코프 상태에서 발사했을 때 킬 효과를 표시합니다."
+      "desc": "치명타를 조준/스코프 상태에서 발사했을 때 처치 효과를 표시합니다."
     },
     "12. Kill Effect/Follow Hit Marker Position": {
       "name": "명중 마커 위치 따라가기",
@@ -900,15 +900,15 @@
     },
     "12. Kill Effect/Custom X": {
       "name": "사용자 지정 X",
-      "desc": "Follow Hit Marker Position이 비활성화되어 있을 때 사용하는 가로 위치입니다."
+      "desc": "명중 마커 위치 따라가기가 비활성화되어 있을 때 사용하는 가로 위치입니다."
     },
     "12. Kill Effect/Custom Y": {
       "name": "사용자 지정 Y",
-      "desc": "Follow Hit Marker Position이 비활성화되어 있을 때 사용하는 세로 위치입니다."
+      "desc": "명중 마커 위치 따라가기가 비활성화되어 있을 때 사용하는 세로 위치입니다."
     },
     "12. Kill Effect/Preview Kill Effect": {
-      "name": "킬 효과 미리보기",
-      "desc": "설정된 위치에서 선택한 킬 효과를 미리 봅니다."
+      "name": "처치 효과 미리보기",
+      "desc": "설정된 위치에서 선택한 처치 효과를 미리 봅니다."
     },
     "13. Compact HUD/Compact HUD Enabled": {
       "name": "Compact HUD 활성화",
@@ -924,19 +924,19 @@
     },
     "13. Compact HUD/Independent Element Layout": {
       "name": "요소 개별 배치",
-      "desc": "켜면 HUD 편집 모드에서 Tactical HUD 요소를 각각 이동·확대할 수 있습니다. 끌어서 이동하고 휠로 크기를 바꿉니다."
+      "desc": "켜면 HUD 편집 모드에서 전술 HUD 요소를 각각 이동·확대할 수 있습니다. 끌어서 이동하고 휠로 크기를 바꿉니다."
     },
     "13. Compact HUD/Reset Individual Element Layout": {
       "name": "개별 배치 초기화",
-      "desc": "개별 Tactical HUD 요소의 위치와 크기를 기본값으로 초기화합니다."
+      "desc": "개별 전술 HUD 요소의 위치와 크기를 기본값으로 초기화합니다."
     },
     "13. Compact HUD/Show Health": {
-      "name": "Health HUD 표시",
-      "desc": "Health HUD 전체의 마스터 표시 설정입니다."
+      "name": "체력 HUD 표시",
+      "desc": "체력 HUD 전체의 마스터 표시 설정입니다."
     },
     "13. Compact HUD/Show Health Bar": {
-      "name": "Health Bar 표시",
-      "desc": "Health HUD의 체력 바를 표시합니다."
+      "name": "체력 막대 표시",
+      "desc": "체력 HUD의 체력 바를 표시합니다."
     },
     "13. Compact HUD/Show Health Logo": {
       "name": "체력 로고 표시",
@@ -948,7 +948,7 @@
     },
     "13. Compact HUD/Show Only When Health Is Reduced": {
       "name": "체력이 감소했을 때만 표시",
-      "desc": "활성화하면 체력이 최대일 때 Health HUD를 숨기고, 회복 중을 포함해 현재 체력이 최대치보다 낮은 동안에만 표시합니다."
+      "desc": "활성화하면 체력이 최대일 때 체력 HUD를 숨기고, 회복 중을 포함해 현재 체력이 최대치보다 낮은 동안에만 표시합니다."
     },
     "13. Compact HUD/Show Energy": {
       "name": "에너지 표시",
@@ -972,7 +972,7 @@
     },
     "13. Compact HUD/Low Ammo Warning": {
       "name": "탄약 부족 경고",
-      "desc": "탄창 잔탄이 설정한 비율 아래로 내려가면 Tactical HUD의 탄약 수를 빨간색으로 표시합니다."
+      "desc": "탄창 잔탄이 설정한 비율 아래로 내려가면 전술 HUD의 탄약 수를 빨간색으로 표시합니다."
     },
     "13. Compact HUD/Low Ammo Threshold (%)": {
       "name": "탄약 부족 기준 (%)",
@@ -983,8 +983,8 @@
       "desc": "잔탄이 기준 아래인 동안 발사할 때마다 짧은 경고음을 재생합니다."
     },
     "13. Compact HUD/Low Ammo Warning Volume": {
-      "name": "탄약 부족 경고음 볼륨",
-      "desc": "탄약 부족 경고음의 볼륨입니다."
+      "name": "탄약 부족 경고음 음량",
+      "desc": "탄약 부족 경고음의 음량입니다."
     },
     "13. Compact HUD/Show Fire Mode": {
       "name": "사격 모드 표시",
@@ -1004,7 +1004,7 @@
     },
     "13. Compact HUD/Show Only When Holding Breath": {
       "name": "숨 참는 동안만 표시",
-      "desc": "활성화하면 로컬 플레이어가 숨을 참고 있는 동안에만 Breath Bar를 표시합니다. 비활성화하면 Tactical HUD가 표시되는 동안 Breath Bar를 계속 표시합니다."
+      "desc": "활성화하면 로컬 플레이어가 숨을 참고 있는 동안에만 Breath Bar를 표시합니다. 비활성화하면 전술 HUD가 표시되는 동안 Breath Bar를 계속 표시합니다."
     },
     "13. Compact HUD/Show Weapon Name": {
       "name": "무기 이름 표시",
@@ -1456,7 +1456,7 @@
     },
     "13.7 Stamina HUD/Show Stamina Bar": {
       "name": "스태미나 바 표시",
-      "desc": "Show the stamina bar."
+      "desc": "스태미나 막대를 표시합니다."
     },
     "13.7 Stamina HUD/Show Stamina Number": {
       "name": "스태미나 수치 표시",
@@ -1579,7 +1579,7 @@
       "desc": "전역 HUD 불투명도가 적용되기 전의 탄창 HUD 불투명도입니다."
     },
     "13.9 Magazine HUD/Reset Magazine HUD Layout": {
-      "name": "탄창 HUD 레이아웃 초기화",
+      "name": "탄창 HUD 배치 초기화",
       "desc": "Magazine HUD의 위치·크기·개별 텍스트 오프셋을 기본값으로 초기화합니다."
     },
     "13.9 Magazine HUD/Maximum Visible Magazines": {
@@ -1627,8 +1627,8 @@
       "desc": "전체 HUD 불투명도가 적용되기 전의 조준점 불투명도입니다."
     },
     "14. Crosshair/Scale": {
-      "name": "크로스헤어 크기",
-      "desc": "크로스헤어 전체 크기를 조절합니다. 0.20 = 20%, 1.00 = 100%, 4.00 = 400%. 내장 프리셋, 수동 모양, 사용자 이미지에 모두 적용됩니다."
+      "name": "조준점 크기",
+      "desc": "조준점 전체 크기를 조절합니다. 0.20 = 20%, 1.00 = 100%, 4.00 = 400%. 내장 프리셋, 수동 모양, 사용자 이미지에 모두 적용됩니다."
     },
     "14. Crosshair/Rotation": {
       "name": "회전",
@@ -1719,7 +1719,7 @@
       "desc": "레이드 나침반의 시각 디자인을 선택합니다. Classic은 직선 방향 테이프, Arc는 곡선형 전술 HUD, FocusRail은 레일을 최소화하고 조준 중인 마커에만 상세 정보를 펼칩니다."
     },
     "15. Raid Compass/Auto Flip Vertical Layout": {
-      "name": "수직 레이아웃 자동 뒤집기",
+      "name": "수직 배치 자동 뒤집기",
       "desc": "HUD가 화면 하단에 위치하면 마커 정보를 나침반 위로 자동 이동합니다. 편집 모드에서 드래그하면 즉시 갱신됩니다."
     },
     "15. Raid Compass/Manual Info Side": {
@@ -2039,8 +2039,8 @@
       "desc": "고른 머리 명중 소리를 지금 설정한 크기·높이로 틀어 본다."
     },
     "11. Hit Sound/Stop Hit Sound Preview": {
-      "name": "미리듣기 멈추기",
-      "desc": "지금 나오는 미리듣기 소리를 멈춘다."
+      "name": "미리 듣기 멈추기",
+      "desc": "지금 나오는 미리 듣기 소리를 멈춘다."
     },
     "13. Compact HUD/Preset": {
       "name": "배치 고르기",

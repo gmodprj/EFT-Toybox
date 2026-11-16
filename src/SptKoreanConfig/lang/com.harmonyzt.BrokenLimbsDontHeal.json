@@ -10,7 +10,7 @@
   "settings": {
     "Arms/Arm Fracture Penalty": {
       "name": "팔 골절 불이익",
-      "desc": "붙인 팔 골절이 남아 있는 동안 조작성 불이익을 준다."
+      "desc": "붙인 팔 골절이 남아 있는 동안 인체 공학 불이익을 준다."
     },
     "Arms/Arm Fracture Ergonomics Penalty": {
       "name": "팔 골절 불이익(%)",

@@ -3,7 +3,7 @@
   "name": "권총집에 아무거나 (Holster Everything)",
   "sections": {
     "General (Restart Server)": "일반 (서버 재시작)",
-    "Holster Handling (Apply Immediately)": "조작성 (즉시 적용)",
+    "Holster Handling (Apply Immediately)": "권총집 조작 (즉시 적용)",
     "Holster Size (Apply Immediately)": "크기 제한 (즉시 적용)",
     "Weapon Categories (Restart Server)": "총기 분류 (서버 재시작)"
   },
@@ -13,20 +13,20 @@
       "desc": "켜면 모든 총기 분류를 권총집 칸에 넣을 수 있다."
     },
     "Holster Handling (Apply Immediately)/Enable Handling Penalty": {
-      "name": "조작성 손해 사용",
-      "desc": "켜면 권총집에 넣은 총이 지금 손에 든 총의 조작성을 떨어뜨린다."
+      "name": "인체 공학 손해 사용",
+      "desc": "켜면 권총집에 넣은 총이 지금 손에 든 총의 인체 공학 수치를 떨어뜨린다."
     },
     "Holster Handling (Apply Immediately)/Limit Additional Weapons Only": {
       "name": "추가 분류에만 적용",
-      "desc": "켜면 조작성 손해를 이 모드로 늘린 총기 분류에만 적용한다."
+      "desc": "켜면 인체 공학 손해를 이 모드로 늘린 총기 분류에만 적용한다."
     },
     "Holster Handling (Apply Immediately)/Handling Ergo Penalty": {
-      "name": "조작성 감소량",
-      "desc": "권총집의 총이 조작을 방해할 때 깎는 조작성 수치."
+      "name": "인체 공학 감소량",
+      "desc": "권총집의 총이 조작을 방해할 때 깎는 인체 공학 수치."
     },
     "Holster Handling (Apply Immediately)/Include Non-Foldable Weapons": {
       "name": "접히지 않는 총기도 포함",
-      "desc": "켜면 개머리판이 접히지 않는 총도 조작성 손해를 일으킬 수 있다."
+      "desc": "켜면 개머리판이 접히지 않는 총도 인체 공학 손해를 일으킬 수 있다."
     },
     "Holster Size (Apply Immediately)/Enable Size Limit": {
       "name": "크기 제한 사용",

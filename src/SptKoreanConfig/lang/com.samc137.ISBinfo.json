@@ -21,11 +21,11 @@
     },
     "Settings for the ISB SOF Notifier plugin/Enable Commander Alert": {
       "name": "지휘관 경고",
-      "desc": "ISB 지휘관과 호위가 나를 사냥하러 투입되면 따로 경고를 띄운다. 끄면 이 경고만 빠지고 보통 알림은 그대로다."
+      "desc": "ISB 지휘관과 경호원이 나를 사냥하러 투입되면 따로 경고를 띄운다. 끄면 이 경고만 빠지고 보통 알림은 그대로다."
     },
     "Settings for the ISB SOF Notifier plugin/Enable Commander KIA notification": {
       "name": "지휘관 사살 알림",
-      "desc": "ISB 지휘관이나 호위가 쓰러지면 보통 철수 알림과 별도로 알려 준다."
+      "desc": "ISB 지휘관이나 경호원이 쓰러지면 보통 철수 알림과 별도로 알려 준다."
     }
   }
 }

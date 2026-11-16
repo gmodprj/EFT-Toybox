@@ -15,11 +15,14 @@ namespace SptKoreanConfig
     /// F12(ConfigurationManager) 창과, 깔려 있으면 SAIN 편집기에 보이는 글자만 한글로 바꾼다.
     /// 다른 모드의 파일은 건드리지 않고, 설정 값과 .cfg·프리셋 파일도 그대로 둔다.
     /// </summary>
-    [BepInPlugin(PluginGuid, "F12 설정 한글화", "0.2.0")]
+    [BepInPlugin(PluginGuid, "F12 설정 한글화", "0.3.0")]
     [BepInDependency(CmGuid, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(SainGuid, BepInDependency.DependencyFlags.SoftDependency)]
     // Better BepInEx 가 깔려 있으면 그보다 뒤에 올라와야 그 어셈블리를 찾아 패치할 수 있다.
     [BepInDependency(BetterBepInExPatch.Guid, BepInDependency.DependencyFlags.SoftDependency)]
+    // lang/_dll-*.json 이 고치는 모드들. 어셈블리가 먼저 올라와 있어야 메서드를 찾는다.
+    [BepInDependency("com.maschine.ScopeRangefinder", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.tylevo.fieldattachments", BepInDependency.DependencyFlags.SoftDependency)]
     public class KoreanConfigPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.koreanconfig";
@@ -76,6 +79,10 @@ namespace SptKoreanConfig
                 Log.LogInfo($"SAIN 창 UI 한글화 — 사전 {SainDictionary.UiStrings.Count}개, 메서드 {SainUiStringPatch.PatchedMethods}개, 문자열 {SainUiStringPatch.ReplacedLiterals}개 교체");
                 SainUiStringPatch.LogUnused();
             }
+
+            // 다른 모드 창의 글자(Better BepInEx 새 메뉴, SAIN 프리셋 화면, F8 편집기들).
+            // 사전마다 고를 메서드를 적어 그 안의 리터럴만 바꾼다.
+            DllStringPatch.LoadAndPatch(langDir, harmony);
         }
     }
 
@@ -169,6 +176,10 @@ namespace SptKoreanConfig
         /// </summary>
         private static readonly HashSet<SettingEntryBase> Done = new HashSet<SettingEntryBase>();
 
+        /// <summary>사전에 없다고 이미 로그에 적은 항목("GUID | 섹션 | 키"). 같은 줄을 되풀이하지 않는다.</summary>
+        private static readonly HashSet<string> MissingLogged = new HashSet<string>(StringComparer.Ordinal);
+        private const int MissingLogLimit = 200;
+
         internal static void ApplyToEntries(IEnumerable<SettingEntryBase> entries, string where)
         {
             if (entries == null) return;
@@ -222,6 +233,10 @@ namespace SptKoreanConfig
                 else
                 {
                     missing++;
+                    // 어느 항목이 빠졌는지 한 번씩 적어 둔다 — 수만 있으면 .cfg 가 없는 모드 몫을 찾을 길이 없다.
+                    var id = $"{guid ?? "?"} | {srcSection ?? "?"} | {srcKey ?? "?"}";
+                    if (MissingLogged.Add(id) && MissingLogged.Count <= MissingLogLimit)
+                        KoreanConfigPlugin.Log.LogInfo($"  사전에 없음: {id}");
                     if (mark && !string.IsNullOrEmpty(setting.DispName) && !setting.DispName.StartsWith("·"))
                         DispNameField.SetValue(setting, "· " + setting.DispName);
                 }
