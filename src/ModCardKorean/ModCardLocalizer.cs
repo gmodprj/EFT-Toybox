@@ -125,10 +125,18 @@ public class ModCardLocalizer(
             return null;
         }
 
-        var parsed = JsonSerializer.Deserialize<Dictionary<string, CardText>>(
+        // '_' 로 시작하는 키는 주석 줄이다. 모양이 달라도 터지지 않게 먼저 걸러 낸다.
+        var raw = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(
             File.ReadAllText(path),
             ReadOptions
         );
+
+        var parsed = raw
+            ?.Where(entry => !entry.Key.StartsWith('_') && entry.Value.ValueKind == JsonValueKind.Object)
+            .ToDictionary(
+                entry => entry.Key,
+                entry => entry.Value.Deserialize<CardText>(ReadOptions) ?? new CardText()
+            );
 
         if (parsed is null || parsed.Count == 0)
         {
