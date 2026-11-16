@@ -1,5 +1,5 @@
 {
-  "comment": "F6 SAIN 편집기에서 _sain-ui.json 이 못 넣던 짧은 글자들. _sain-ui.json 은 SAIN 어셈블리 전체에서 바꾸므로 'Search'(전투 레이어 이름으로도 쓴다)·'Name'(BigBrain 레이어 찾기)처럼 열쇠로도 쓰이는 낱말을 넣을 수 없었다. 여기서는 편집기 메서드 안에서만 바꾼다. 새 프리셋 입력칸의 기본 글자(Enter Name Here 등)는 그대로 프리셋 이름이 되므로 넣지 않는다. 'None'·'Default' 는 사전 열쇠로도 쓰여 넣지 않는다.",
+  "comment": "F6 SAIN 편집기에서 _sain-ui.json 이 못 넣던 짧은 글자들. _sain-ui.json 은 SAIN 어셈블리 전체에서 바꾸므로 'Search'(전투 레이어 이름으로도 쓴다)·'Name'(BigBrain 레이어 찾기)처럼 열쇠로도 쓰이는 낱말을 넣을 수 없었다. 여기서는 편집기 메서드 안에서만 바꾼다. 새 프리셋 입력칸의 기본 글자(Enter Name Here 등)는 그대로 프리셋 이름이 되므로 넣지 않는다. 'None'·'Default' 는 사전 열쇠로도 쓰여 넣지 않는다. 탭 이름·툴팁은 EditTabsClass 의 정적 생성자에 있어, SAIN 이 먼저 올라오면 이미 초기화돼 있다 — _sain-ui 에도 있지만 여기 다시 적어 DllStringPatch 의 정적 필드 단계가 바꾸게 한다.",
   "assembly": "SAIN",
   "methods": [
     "SAIN.Editor.EditTabsClass::.cctor",
@@ -92,6 +92,10 @@
     "MinAngle": "최소 각도",
     "MaxAngle": "최대 각도",
     "VerticalModifier": "수직 배수",
-    "Modify the stealth value that certain pieces of equipment provide.": "장비마다 주는 은신 값을 고친다."
+    "Modify the stealth value that certain pieces of equipment provide.": "장비마다 주는 은신 값을 고친다.",
+    "Bot Settings": "봇 설정",
+    "Select preset and modify global SAIN settings.": "프리셋을 고르고 SAIN 전역 설정을 고친다.",
+    "Modify Individual Personality settings for how they are assigned to bots, and what each personality does for a bot's behavior.": "성향별 설정을 고친다. 각 성향이 봇에게 어떻게 배정되는지, 그 성향이 봇 행동에 무엇을 하는지를 정한다.",
+    "Edit at your own risk. Enable additional advanced config options here": "고치는 책임은 본인에게 있다. 여기서 고급 설정 항목을 더 켠다"
   }
 }

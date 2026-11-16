@@ -93,3 +93,31 @@ SPT 설치 위치가 다르면 `-p:SptDir=...` / `-SptDir ...` 로 넘긴다.
 ```
 pwsh -File tools/check-ui-strings.ps1
 ```
+
+## 다른 모드 창의 글자 (`lang/_dll-*.json`)
+
+F12 새 메뉴(Better BepInEx), F6 SAIN 편집기, F8 Scope Rangefinder 편집기, F8/Alt Field Attachments 오버레이의 글자는
+각 모드 DLL 안의 리터럴이다. `DllStringPatch.cs` 가 사전마다 **고른 메서드 안의** 문자열 상수만 바꾼다
+(`_ui.json`·`_sain-ui.json` 은 어셈블리 전체를 바꾸므로 열쇠로도 쓰이는 짧은 낱말을 넣을 수 없었다).
+
+```json
+{
+  "assembly": "BetterBepInEx",
+  "methods": ["BetterBepInEx.MenuWindow::*"],
+  "excludeMethods": ["BetterBepInEx.MenuWindow::DrawRow"],
+  "strings": { "Mod Settings": "모드 설정" },
+  "methodStrings": {
+    "BetterBepInEx.MenuWindow::ResetRows": { "Reset ": "설정 ", " settings": "개", ". Ctrl+Z undoes it.": "를 초기화했다. Ctrl+Z 로 되돌린다." }
+  }
+}
+```
+
+- `methods`·`excludeMethods`·`methodStrings` 의 열쇠는 `네임스페이스.타입::메서드`, 중첩 타입은 `/`·`+`, `*` 는 아무 글자.
+- `methodStrings` 는 이어 붙이는 문장처럼 메서드마다 어순을 달리해야 할 때 쓴다.
+- **정적 생성자(`.cctor`)의 글자**는 그 모드가 우리보다 먼저 올라오면 이미 초기화돼 있다. 패치 뒤에 그 타입의 정적 필드
+  (문자열·문자열 배열·GUIContent, 컬렉션 안 객체의 문자열 필드)를 사전대로 다시 쓴다.
+- "쓰임"은 패치가 끝까지 성공했거나(일반 메서드) 정적 필드 값을 실제로 바꿨을 때(`.cctor`)만 센다. 기동 로그의
+  `안 쓰임:` 줄이 원문 어긋남이다. 패치 실패 줄이 나오면 그 메서드를 `excludeMethods` 에 넣는다.
+- 게임 없이 확인: `node tools/check-dll-strings.mjs` (`--list` 사전에 없는 영문 리터럴, `--where` 여러 메서드에 걸친 공통 항목 —
+  그중 열쇠로 쓰는 곳이 섞였으면 `methodStrings` 로 좁힌다).
+- DLL 패치라 **고친 뒤에는 게임을 다시 켜야 한다.**

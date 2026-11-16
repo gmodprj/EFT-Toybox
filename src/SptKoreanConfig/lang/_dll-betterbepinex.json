@@ -1,9 +1,12 @@
 {
-  "comment": "F12 새 메뉴(Better BepInEx 1.0.4) 창 틀의 글자. 모드 설정 항목은 각 모드 사전이 맡고, 여기는 제목·버튼·검색·안내문·상태줄만. 로그 문구·스크린숏 파일 이름·내부 페이지 열쇠(@changed 등)·숨김 섹션 이름(HIDDEN BY THE MOD'S AUTHOR, 다른 메서드가 같은 글자로 비교한다)은 넣지 않는다. 이어 붙는 문장은 methodStrings 로 메서드마다 어순을 맞춘다.",
+  "comment": "F12 새 메뉴(Better BepInEx 1.0.4) 창 틀의 글자. 모드 설정 항목은 각 모드 사전이 맡고, 여기는 제목·버튼·검색·안내문·상태줄만. 로그 문구·스크린숏 파일 이름·내부 페이지 열쇠(@changed 등)·숨김 섹션 이름(HIDDEN BY THE MOD'S AUTHOR, 다른 메서드가 같은 글자로 비교한다)은 넣지 않는다. 이어 붙는 문장은 methodStrings 로 메서드마다 어순을 맞춘다. MenuWindow::DrawRow 는 Harmony 가 다시 컴파일하지 못해(IL Compile Error, 2026-11-17 기동 로그) 빼 둔다 — 그 안의 '초기화' 버튼·'기본값으로' 도움말·그리기 실패 문구는 원문으로 남는다.",
   "assembly": "BetterBepInEx",
   "methods": [
     "BetterBepInEx.MenuWindow::*",
     "BetterBepInEx.SettingsModel::OptionText"
+  ],
+  "excludeMethods": [
+    "BetterBepInEx.MenuWindow::DrawRow"
   ],
   "strings": {
     "Close (F12)": "닫기 (F12)",
@@ -37,7 +40,6 @@
     "Search this mod": "이 모드에서 찾기",
     "Screenshot": "스크린숏",
     "Save a picture of this mod's settings and copy it, ready to paste into Discord": "이 모드의 설정을 그림으로 저장하고 복사한다. Discord 에 바로 붙여 넣을 수 있다",
-
     "No setting matches.": "맞는 설정이 없다.",
     "Changed settings": "바뀐 설정",
     "Keybinds": "단축키",
@@ -67,9 +69,6 @@
     "Every key bound by a mod. Keys that more than one setting uses come first; every mod bound to one reacts to it.": "모드가 지정한 모든 키. 여러 설정이 함께 쓰는 키가 먼저 나온다 — 그 키를 쓰는 모드가 모두 반응한다.",
     "Every key bound by a mod. No two settings share a key.": "모드가 지정한 모든 키. 겹치는 키는 없다.",
     "No mod has a keybind setting.": "단축키 설정이 있는 모드가 없다.",
-    "Reset": "초기화",
-    "Back to ": "기본값으로: ",
-    "This setting failed to draw. The BepInEx log has the error.": "이 설정을 그리지 못했다. 오류는 BepInEx 로그에 있다.",
     "ADVANCED": "고급",
     "READ ONLY": "읽기 전용",
     "Open the Keybinds page": "단축키 화면을 연다",
@@ -90,10 +89,18 @@
     "Mouse ": "마우스 "
   },
   "methodStrings": {
-    "BetterBepInEx.MenuWindow::UndoTip": { "Undo ": "되돌리기: " },
-    "BetterBepInEx.MenuWindow::RedoTip": { "Redo ": "다시 하기: " },
-    "BetterBepInEx.MenuWindow::Undo": { "Undid ": "되돌렸다: " },
-    "BetterBepInEx.MenuWindow::Redo": { "Redid ": "다시 했다: " },
+    "BetterBepInEx.MenuWindow::UndoTip": {
+      "Undo ": "되돌리기: "
+    },
+    "BetterBepInEx.MenuWindow::RedoTip": {
+      "Redo ": "다시 하기: "
+    },
+    "BetterBepInEx.MenuWindow::Undo": {
+      "Undid ": "되돌렸다: "
+    },
+    "BetterBepInEx.MenuWindow::Redo": {
+      "Redid ": "다시 했다: "
+    },
     "BetterBepInEx.MenuWindow::SearchSummary": {
       " setting": "개 설정",
       " settings": "개 설정",
@@ -107,7 +114,9 @@
       " settings": "개",
       ". Ctrl+Z undoes it.": "를 초기화했다. Ctrl+Z 로 되돌린다."
     },
-    "BetterBepInEx.MenuWindow::Confirm": { "?": "개 초기화?" },
+    "BetterBepInEx.MenuWindow::Confirm": {
+      "?": "개 초기화?"
+    },
     "BetterBepInEx.MenuWindow::DrawPage": {
       "Reset ": "설정 ",
       "reset ": "초기화 — "
@@ -124,14 +133,18 @@
       "Same key as ": "같은 키: ",
       " more)": "개 더)"
     },
-    "BetterBepInEx.MenuWindow::AdvancedChipLabel": { " advanced": "개 고급" },
+    "BetterBepInEx.MenuWindow::AdvancedChipLabel": {
+      " advanced": "개 고급"
+    },
     "BetterBepInEx.MenuWindow::Update": {
       "Kept ": "그대로 둠: ",
       " is not one of the keys ": " 키는 ",
       " accepts.": " 에서 쓸 수 없다.",
       " is now ": " → "
     },
-    "BetterBepInEx.MenuWindow::CommitEdit": { "\" is not a valid value for ": "\" 는 맞는 값이 아니다 — " },
+    "BetterBepInEx.MenuWindow::CommitEdit": {
+      "\" is not a valid value for ": "\" 는 맞는 값이 아니다 — "
+    },
     "BetterBepInEx.MenuWindow::TakePendingSnapshot": {
       "No screenshot: ": "스크린숏 실패: ",
       "Saved as ": "그림 ",

@@ -85,7 +85,8 @@ for (const f of files) {
   if (!dll) { console.log(`!  ${f}: ${j.assembly}.dll 을 찾지 못했다`); bad++; continue; }
   const byMethod = literalsByMethod(ilFor(dll));
   const pats = j.methods.map(toRegex);
-  const chosen = [...byMethod].filter(([m]) => pats.some(r => r.test(m)));
+  const excl = (j.excludeMethods || []).map(toRegex);
+  const chosen = [...byMethod].filter(([m]) => pats.some(r => r.test(m)) && !excl.some(r => r.test(m)));
   const inChosen = new Set(chosen.flatMap(([, s]) => [...s]));
   const strings = Object.entries(j.strings || {}).filter(([k, v]) => k && v);
   const missing = strings.filter(([k]) => !inChosen.has(k));
@@ -93,7 +94,7 @@ for (const f of files) {
   const overrides = Object.entries(j.methodStrings || {});
   for (const [p, map] of overrides) {
     const r = toRegex(p);
-    const lits = new Set([...byMethod].filter(([m]) => r.test(m)).flatMap(([, s]) => [...s]));
+    const lits = new Set([...byMethod].filter(([m]) => r.test(m) && !excl.some(x => x.test(m))).flatMap(([, s]) => [...s]));
     for (const [k, v] of Object.entries(map)) {
       if (!k || !v) continue;
       strings.push([`${p} ‖ ${k}`, v, k]);

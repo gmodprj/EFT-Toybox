@@ -65,9 +65,15 @@ F12 사전의 이름·섹션 7,000여 줄을 영문 낱말별로 묶어 한국�
 | 모드 | 원문 | 지금 | 고칠 말 | 까닭 |
 | --- | --- | --- | --- | --- |
 | ImpactCue | Armor Hit Icon Opacity | 아머 히트 아이콘 **투명도** | 방어구 명중 아이콘 불투명도 | Opacity 는 불투명도. 값이 클수록 진하다 |
-| ImpactCue | Armor Hit Icon Color | **방어구 관통** 아이콘 색상 | 방어구 명중 아이콘 색상 | 관통/비관통은 따로 있다(Blocked 쪽이 비관통) |
-| Dynamic Maps | BTR marker color | BTR | BTR 표식 색 | 같은 섹션의 다른 항목은 이름이 대상만 적혀도 섹션이 "표식 색"이라 읽히지만, 이 항목만 원문과 같아 미번역처럼 보인다 → 섹션 관례 확인 후 정리 |
-| Trauma Core | Scav Hitboxes / Scav Systems | 봇 피격 부위 / 봇 적용 | 확인 필요 | 설명을 보고 정한다 |
+| ImpactCue | Blocked Armor Icon Enabled | **방어된** 방어구 아이콘 표시 | 방어구 비관통 아이콘 표시 | 같은 Blocked 를 색상 항목은 "비관통"으로 옮겼다 |
+| ImpactCue · GamePanelHUD · ISB · SAIN | Energy / Stamina | **기력** (두 뜻) | Energy → 에너지, Stamina → 스태미나 | 한 낱말이 모드마다 다른 뜻이었다. 공식 kr 은 에너지·스태미나 |
+
+**처음에 오역으로 적었다가 거둔 것** (실측으로 정정):
+
+- ImpactCue `Armor Hit Icon Color` → "방어구 관통 아이콘 색상": 열쇠만 보고 오역이라 했는데, 모드가 화면에 쓰는 영문 이름이
+  **"Penetrated Armor Icon Color"** 다. 관통이 맞다.
+- Dynamic Maps `BTR marker color` → "BTR": 같은 섹션("6. 표시 색상")의 다른 항목도 모두 대상 이름만 적는 관례다(스캐브·보스…). 둔다.
+- Trauma Core `Scav Hitboxes/Systems` → "봇 …": 설명이 AI 전체에 걸리는 설정이라 "봇"이 뜻에 맞다. 둔다.
 
 ### 3-2. 남은 영문 — 공식 한국어가 있다
 
@@ -76,9 +82,10 @@ F12 사전의 이름·섹션 7,000여 줄을 영문 낱말별로 묶어 한국�
 | ImpactCue | Boss 피해자 색상 · Boss 아이콘 파일 | 보스 … |
 | ImpactCue | Scav 아이콘 파일 · SCAV 피해자 이름 색상 | 스캐브 … |
 | ImpactCue | Health HUD 표시 · Health Bar 표시 | 체력 HUD 표시 · 체력 막대 표시 |
-| ImpactCue | Compact HUD 활성화 · Compact HUD 위치 초기화 | 간이 HUD … (F10 ko 와 맞춘다) |
+| ImpactCue | Follower·Guard·Rogue·Raider·Cultist 피해자 색상 | 경호원·로그·레이더·교단원 (퀘스트 목표 사전과 같게) |
 
-`Transit`(공식도 영문)·탄약/수류탄 이름·`Arc`·`Focus Rail`(나침반 표시 방식 이름)은 고유명으로 둔다.
+`Transit`(공식도 영문)·탄약/수류탄 이름·`Arc`·`Focus Rail`(나침반 표시 방식 이름)과 ImpactCue 의 기능 이름
+(`Compact HUD`·`Combat Strip`·`Tactical Glass` — 모드 번역자가 F10 에서 일부러 영문으로 둔 것)은 고유명으로 둔다.
 
 ### 3-3. 같은 말 다른 번역
 
@@ -131,4 +138,76 @@ JSON 열쇠로 쓴다. 그래서 새 패치는 **사전마다 바꿀 메서드�
 
 ## 5. 진행 기록
 
-(고칠 때마다 아래에 덧붙인다)
+### 5-1. 고친 것 (계획 #1~#9)
+
+| # | 메뉴 | 결과 | 확인 |
+| --- | --- | --- | --- |
+| 1 | 공통 | `DllStringPatch` — `lang/_dll-*.json` 이 고른 메서드 안의 리터럴만 바꾼다. `methodStrings`(메서드마다 어순), `excludeMethods`, 이미 초기화된 정적 필드 다시 쓰기(5-3) | `node tools/check-dll-strings.mjs` (게임 없이 IL 대조, `--list`·`--where`) |
+| 2 | F12 | `_dll-betterbepinex.json` **117항목** — 제목·검색·사이드바·상태줄·초기화 확인·스크린숏 문구 | 117/117 |
+| 3 | F12 | `com.viper.prestigeperks.json` 11항목 | `check-lang-coverage` **5195/5195** |
+| 4 | F12 | 런타임 "사전에 없음" 항목을 `GUID \| 섹션 \| 키` 로 로그에 한 번씩 적는다 | 다음 기동 로그에서 본다 |
+| 5 | F12 | 기력 두 뜻 분리, 스태미너·기운→스태미나, 스태시→창고, 조작성(ergo)→인체 공학, 호위→경호원. 받침 바뀐 곳 조사 고침 | 용어 분포 다시 셈: Stamina 16/16 스태미나, Stash 창고 5(나머지 2는 은닉처·퀘스트 보관함), Boss 25/25 |
+| 6 | F6 | `_dll-sain.json` 68항목(프리셋 화면·검색·저장·삭제 확인·탭) + `_sain-ui.json` 성향 설명 4·경고 1 | 68/68 |
+| 7 | F8 | `_dll-scoperangefinder.json` 90항목 — F12 사전 용어와 같게 | 90/90 |
+| 8 | F8 | `_dll-fieldattachments.json` 150항목 — 공식 kr 부착물 칸 이름 | 150/150 |
+| 9 | F10 | `locales/ko-KR.json` 1,309열쇠 — 미번역 43 채움, 용어 227곳, 설명 속 영문 설정 이름 12곳. F12 ImpactCue 사전 이름 80·설명 120·섹션 19 를 같은 값으로 | `check-plugin-locales` OK, `gen-impactcue-ko --check` 두 번째 실행 0건(멱등) |
+
+### 5-2. 위험해서 범위를 좁힌 것
+
+`--where` 로 공통 항목이 여러 메서드에 걸친 곳을 보니, 화면 글자와 같은 리터럴을 **열쇠로 쓰는 메서드**가 섞여 있었다.
+어셈블리 전체를 바꾸는 예전 방식이었다면 그 기능이 깨졌다.
+
+| 모드 | 글자 | 열쇠로 쓰는 곳 | 조치 |
+| --- | --- | --- | --- |
+| Field Attachments | `Ergonomics`·`Weight` | `WeaponComparisonReader` 가 리플렉션 속성 이름으로 | 비교 패널(`BuildComparisonUi`)에서만 |
+| Field Attachments | `None` | 열거형 이름 | 쓸 수 없는 부품 팝업에서만 |
+| Field Attachments | `POSE FAULT` | `Plugin` 이 `StartsWith` 로 비교 | 넣지 않음 |
+| Scope Rangefinder | `OffsetX`·`Scale`·`Anchor` | 프리셋 변환의 JSON 열쇠 | 편집기 메서드에서만 |
+| SAIN | `Search`·`Name` | 전투 레이어 이름·BigBrain 레이어 찾기 | 편집기 메서드에서만 |
+| SAIN | `Enter Name Here` 등 | 그대로 새 프리셋 이름이 된다 | 넣지 않음 |
+| Better BepInEx | `HIDDEN BY THE MOD'S AUTHOR` | 다른 메서드가 같은 글자로 섹션을 비교 | 넣지 않음 |
+
+### 5-3. 게임을 켜서 본 것 (08:13 기동, 0.3.0 첫 판)
+
+기동 로그(`LogOutput.log` 08:13):
+
+```
+[Info   :ImpactCue-UI-MOD] ImpactCue locale: ko-KR (…\ImpactCue-UI-MOD\locales)
+[Warning:F12 설정 한글화]   BetterBepInEx.MenuWindow::DrawRow 패치 실패 — IL Compile Error (unknown location)
+[Info   :F12 설정 한글화] _dll-betterbepinex.json — BetterBepInEx: 사전 120개, 메서드 32개, 쓰인 항목 120개
+[Info   :F12 설정 한글화] _dll-fieldattachments.json … 쓰인 항목 150개 / _dll-sain.json … 64개 / _dll-scoperangefinder.json … 90개
+```
+
+화면(스크린숏으로 직접 봄):
+
+| 화면 | 한국어로 나온 것 | 영문으로 남은 것 |
+| --- | --- | --- |
+| 메인 메뉴 | Field Attachments 안내("STANCE OVERHAUL 없음"·"Forge 에서 보기"·"넘기기") — uGUI 기본 글꼴로도 한글이 그려진다 | — |
+| F12 | 바뀐 설정·단축키·모드 189·전체·숨긴 모드 보기·모드 초기화·상태줄(모드/설정/바뀜) | **Mod Settings·Show advanced·Undo·Redo·Filter mods·Add to favorites·Screenshot·Search this mod·All** |
+| F10 | 처치 기록·전술 HUD·명중 소리·처치 소리·마스터 음량·육체 명중 음량 | 기능 고유명(의도) |
+| F6 | 편집기 제목·고급 설정: [끔]·찾기·지우기·저장하고 내보내기·설정 분류 | **Home·Bot Settings·Personalities·Equipment Stealth·Advanced Options·Save All Changes** |
+
+**보고 두 가지가 거짓말을 했다.**
+
+1. **`DrawRow` 는 패치가 실패했는데 그 안의 항목을 "쓰였다"고 셌다.** 트랜스파일러는 돌았고 다시 컴파일에서 떨어졌다.
+   → 패치가 끝까지 성공한 뒤에만 "쓰임"으로 확정하게 고쳤다. `DrawRow` 는 Harmony 가 다시 컴파일하지 못하므로
+   `excludeMethods` 로 빼고 그 안의 세 글자(초기화 버튼·"기본값으로" 도움말·그리기 실패 문구)는 원문으로 둔다.
+2. **영문으로 남은 것은 모두 정적 생성자(`.cctor`)의 글자였다.** Better BepInEx·SAIN 이 우리보다 먼저 올라와 정적 필드가
+   이미 초기화된 뒤라, IL 을 고쳐도 화면이 바뀌지 않는다. 그런데 로그는 "사용됨"이라 했다 — **이전 세션부터 `_sain-ui.json` 의
+   "Bot Settings" 도 같은 이유로 한 번도 한국어로 나온 적이 없다.**
+   → 패치 뒤에 그 타입의 정적 필드(문자열·문자열 배열·GUIContent, 컬렉션 안 객체의 문자열 필드 한 단계)를 사전대로 다시 쓰고,
+   `.cctor` 항목은 **실제로 필드 값을 바꿨거나 값이 이미 한글일 때만** "쓰임"으로 센다.
+
+교훈은 이 프로젝트가 이미 적어 둔 것과 같다 — "덮개 100%는 화면이 한글이라는 뜻이 아니다". 이번에는 **"사전 항목이 쓰였다"도 화면이
+아니다**: 정적 생성자 글자는 패치 시점보다 먼저 굳는다.
+
+### 5-4. 남은 것
+
+| 무엇 | 왜 |
+| --- | --- |
+| 5-3 의 고친 판(정적 필드 다시 쓰기·DrawRow 제외)을 **게임에 아직 넣지 못했다** | 게임이 켜져 있어 DLL 이 잠겨 있다. 게임을 끄고 `tools/install-koreanconfig.ps1` → 다시 켜서 F12·F6 를 본다 |
+| F8 두 편집기를 화면으로 보지 않았다 | Scope Rangefinder 편집기·부착물 메뉴는 레이드 안에서 열린다 |
+| 런타임 "사전에 없음" 목록 | F12 를 연 뒤 로그에 찍힌다. 새 판에서 본다 |
+| Better BepInEx 자기 설정의 선택지 이름(글꼴·테마·정렬 18개) | `[Description]` 속성이라 리터럴 바꾸기로 안 된다 |
+| Scope Rangefinder 열거형 값(Meters·MOA …) | `ToString()` 이라 리터럴 바꾸기로 안 된다 |
+| Better BepInEx 창 안 "Nothing to undo" 첫 표시 | 인스턴스 생성자 글자. 첫 되돌리기 뒤로는 바뀐 글자가 나온다 |
