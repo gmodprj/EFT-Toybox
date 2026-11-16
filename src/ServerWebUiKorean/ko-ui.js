@@ -125,6 +125,9 @@
 
     var out = lookup(core, 0);
     if (out === KEEP) return null;
+    // 규칙이 캡처를 하나도 못 바꿔 원문 그대로 돌려줬다면 번역된 게 아니다.
+    // "번역됨"으로 치면 미번역 목록에서 빠져 구멍이 가려진다.
+    if (out === core) out = null;
     if (out !== null) {
       if (applied[core] === undefined) applied[core] = out;
       return lead + out + tail;

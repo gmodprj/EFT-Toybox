@@ -53,8 +53,8 @@ for(let i=0;i<40&&!(window.__ko&&window.__ko.size);i++) await sleep(250);
 await sleep(4500); if(!window.__ko) return {error:'no translator'}; window.__ko.rescan(); await sleep(300);
 const pages={}; const seen=new Set(); const queue=[location.pathname]; const prev=new Set();
 const BAD=/reset|delete|remove|wipe|logout|export|download|import|apply|create|save|reload|discard|restart|저장|되돌리기|다시 읽기|삭제|초기화|적용|만들기|버리기|지우기|내보내기|들여오기|복제/i;
-const links=()=>[...document.querySelectorAll('a[href]')].map(x=>{try{return new URL(x.getAttribute('href'),location.href)}catch{return null}}).filter(u=>u&&u.origin===location.origin&&(base==='/'?false:u.pathname.startsWith(base))&&!BAD.test(u.pathname)&&!/\.(js|css|png|json|zip)$/i.test(u.pathname)).map(u=>u.pathname+u.hash);
-const grab=(key)=>{document.querySelectorAll('details').forEach(d=>d.open=true); window.__ko.rescan(); const now=window.__ko.missing.map(m=>m.text); const nw=now.filter(s=>!prev.has(s)); now.forEach(s=>prev.add(s)); const f=nw.filter(s=>!/[○●]\s*$/.test(s)); if(f.length||!pages[key]) pages[key]={missing:f};};
+const links=()=>[...document.querySelectorAll('a[href]')].map(x=>{try{return new URL(x.getAttribute('href'),location.href)}catch{return null}}).filter(u=>u&&u.origin===location.origin&&(base==='/'?false:u.pathname.startsWith(base))&&!BAD.test(u.pathname)&&!/\\.(js|css|png|json|zip)$/i.test(u.pathname)).map(u=>u.pathname+u.hash);
+const grab=(key)=>{document.querySelectorAll('details').forEach(d=>d.open=true); window.__ko.rescan(); const now=window.__ko.missing.map(m=>m.text); const nw=now.filter(s=>!prev.has(s)); now.forEach(s=>prev.add(s)); const f=nw.filter(s=>!/[○●]\\s*$/.test(s)); if(f.length||!pages[key]) pages[key]={missing:f};};
 let first=true;
 while(queue.length&&seen.size<cap){
  const p=queue.shift(); if(seen.has(p))continue; seen.add(p);
@@ -75,7 +75,7 @@ for(let i=0;i<40&&!(window.__ko&&window.__ko.size);i++) await sleep(250);
 await sleep(4000); if(!window.__ko) return {error:'no translator'};
 const BAD=/저장|되돌리기|다시 읽기|삭제|초기화|적용|만들기|버리기|지우기|내보내기|들여오기|Save|Reset|Delete|Create|Remove/i;
 const prev=new Set(); const pages={};
-const grab=(k)=>{window.__ko.rescan(); const now=window.__ko.missing.map(m=>m.text); const nw=now.filter(s=>!prev.has(s)); now.forEach(s=>prev.add(s)); const f=nw.filter(s=>!/[○●]\s*$/.test(s)); if(f.length||!pages[k]) pages[k]={missing:f};};
+const grab=(k)=>{window.__ko.rescan(); const now=window.__ko.missing.map(m=>m.text); const nw=now.filter(s=>!prev.has(s)); now.forEach(s=>prev.add(s)); const f=nw.filter(s=>!/[○●]\\s*$/.test(s)); if(f.length||!pages[k]) pages[k]={missing:f};};
 for(const p of paths){ if(p!==location.pathname) window.Blazor.navigateTo(p); await sleep(4000); grab(p);
  for(const t of [...document.querySelectorAll('[role=tab]')]){ if(BAD.test(t.innerText))continue; t.click(); await sleep(900); grab(p+'#tab:'+t.innerText.trim().slice(0,25)); } }
 return {pages, seen:paths, capped:false, applied: window.__ko.applied};
