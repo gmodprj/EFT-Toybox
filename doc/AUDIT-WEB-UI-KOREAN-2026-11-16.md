@@ -333,6 +333,12 @@ QuestCodex 에 남은 202건은 웹이 아니라 **게임 locale 의 몫**이다
 낱말 단독 항목을 patch 14 로 더했다. ISB 미번역 110 → 98. 남은 `Black Division Dogtag — …`·`Dogtag BEAR — Black Division …` 은
 인식표 이름(공식 kr 도 영문)이라 둔다.
 
-**반영 상태.** 번역기와 웹 사전은 넣었다(새로고침으로 반영). 아이템 사전은 `tools/install-koreanlocale.ps1` 로 깔고
-서버를 다시 켜야 나온다 — 작업 때 게임이 켜져 있어 아직 깔지 않았다. 깐 뒤 `node tools/check-locale-dict.mjs` 가
-`값 다름 0` 이어야 하고(깔기 전에는 269건이 다름으로 나온다), QuestCodex 를 다시 점검한다.
+**반영 상태 — 끝(2026-11-16 20:12 재기동).** 게임을 끈 뒤 `tools/install-koreanlocale.ps1` 로 깔고 서버를 다시 켰다.
+`check-locale-dict`: **OK — 8737/8737 적용, 빠뜨린 열쇠 0**(questcodex 사전 269건 포함). QuestCodex 미번역 **285 → 120**,
+사전 대상 175 중 남은 것은 일부러 영문으로 둔 `14-4 KORD SSD` 하나다.
+
+**번역기를 고치자 새로 드러난 것.** 합쳐진 문자열 안에 숨어 있던 아이템 이름이 낱개로 보이게 됐다 — locale 열쇠가 있는
+미번역 50개(배낭·총기·탄창·플래시 드라이브 등, 예: `Mystery Ranch Blackjack 50 backpack (USEC Intelligence Support Bureau)`,
+`Magnum Research Desert Eagle L5 .50 AE pistol`). 이번 202건에는 없던 것이라 넣지 않았다. 그중 하나라도 사전에 없으면
+그 목록 줄은 전부 원문으로 남는다(위 규칙) — ISB 배낭 목록처럼 여러 이름이 붙은 줄이 아직 남는 이유다. 나머지 70개는
+상인·모드·프리셋 이름과 `· PMC` 탈출구처럼 번역하지 않는 것이다.
