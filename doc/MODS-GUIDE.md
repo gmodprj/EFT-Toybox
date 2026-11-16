@@ -307,6 +307,29 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 
 ## 알려진 충돌
 
+### 프레스티지에서 넘긴 물건이 오지 않던 것 — Prestige Perks 가 코인으로 바꾼다 (2026-11-16, 해결)
+
+**증상:** 이전 창고에 가방을 담아 프레스티지했는데 **새 시작 우편에 아무것도 없다.**
+
+**원인:** [Prestige Perks](https://sp-mod.com/mod/3332) 가 **설계상** 그렇게 동작한다. 그 모드는
+`PrestigeHelper.ProcessPendingPrestige` 에 Harmony Prefix 를 걸고 그 안에서 `prestige.Items` 를
+**빈 목록으로 갈아치운 뒤** 담았던 것을 **프레스티지 코인으로 환산**한다. 버그가 아니라 의도이고,
+`config.json` 에 **끄는 항목이 없다.**
+
+실측(2026-11-16): 가방 하나에 든 **2,001개(122억 루블)**가 **코인 1,039개**가 되고
+**121,075개어치가 환산 상한에 걸려 버려졌다.** 상한은 전송 창고의 **칸 수**로 정해지므로,
+`PrestigeStashRelax` 로 넓힌 96칸이 **코인 상한을 키우는 데** 쓰이고 있었다.
+
+**해결:** 이 저장소의 **`PrestigeTransferKeep`**(서버 모드)가 밖에서 되돌린다. 같은 메서드에
+Prefix 를 둘 걸어 3332 를 사이에 두고 — `Priority.First` 로 목록을 떠 두고 `Priority.Last` 로
+도로 끼운다. 전송분 코인 우편은 막는다(물건까지 받으면 두 번 받는 셈이고, `SuppressCoinMail` 로
+끌 수 있다). **보스·금고 코인은 그대로**라 퍽을 살 길은 남는다.
+
+> **3332 는 되돌린 뒤에도 `vanilla transfer mail suppressed` 를 계속 적는다.** 자기가 비웠다고
+> 믿고 적는 줄이고 되돌리기는 그 뒤에 일어난다 — **판정은 그 줄이 아니라 우편 내용으로 한다.**
+
+조사·고침 본문은 [fixes/2026-11-16-prestige-perks-eats-transfer.md](fixes/2026-11-16-prestige-perks-eats-transfer.md) 다.
+
 ### 프리셋·개조 화면 뒤에 남의 캐릭터가 비치던 것 — Combat Log `사망 화면에 가해자 모델` (2026-11-15, 해결)
 
 **증상:** 레이드에서 **죽고 나오면**, 무기 프리셋·개조 화면 뒤에 **프리셋과 상관없는 사람 모델**
