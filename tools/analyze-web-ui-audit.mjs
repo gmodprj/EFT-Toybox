@@ -35,7 +35,7 @@ console.log(`| 모드 | 화면 | 미번역 | ${names.join(' | ')} |`);
 console.log(`| --- | ---: | ---: | ${names.map(() => '---:').join(' | ')} |`);
 console.log(rows.join('\n'));
 console.log(`| **합계** | | **${Object.values(totals).reduce((a, b) => a + b, 0)}** | ${names.map((n) => totals[n]).join(' | ')} |`);
-console.log('\n화면 수 뒤의 + 는 크롤러 상한(80)에 걸렸다는 뜻이다.');
+console.log('\n화면 수 뒤의 + 는 크롤러 상한(150)에 걸렸다는 뜻이다.');
 
 // 2~4. 적용된 번역 전체
 const applied = {};

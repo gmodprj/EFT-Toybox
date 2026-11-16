@@ -181,3 +181,37 @@ QuestCodex 상인 목록에서 CaseTrader 모드의 상인 `Case` 가 **"케이�
 
 사전 50건, 카드 설명 2건, 본체 로케일 1건(`상인 물건` → `상인 아이템`)을 고쳤다. 이후 점검에서 나온 충돌 3건
 (`SECTION`·`Loot settings`·`Case`)과 Vanilla 표기(바닐라)를 더 고쳤다.
+
+### C. 모드별 채우기 — 진행
+
+패치 파일로 나눠 넣는다(`src/ServerWebUiKorean/patches/NN-*.json`). `tools/merge-web-ui-dict.mjs` 가 합치면서
+**이미 있는 열쇠를 다른 값으로 덮으면 알린다** — 용어가 갈리는 곳이라 조용히 바꾸지 않는다.
+
+| 차 | 모드 | 번역 후보 전 → 후 | 남은 것 |
+| --- | --- | --- | --- |
+| 1 | CCI · Enable Labyrinth · BIS · 본체 | 76·9·2·17 → 0 | 모드·프로필 이름, 공식 kr 도 영문인 아이템 |
+| 2 | Web Config Bridge · The Blacklist · Lots of Loot · jerobackpack | 37·47·70·73 → 0 | 모드 이름·버전, 아이템 이름, 치수 |
+| 3 | SAIN · ECOTI | 86·91 → 0 | SAIN 프리셋 이름(일부러), 튜브 식별자·좌표·메시 이름 |
+| 4 | UltimateFlea | 167 → 0 | 설정 키(`wipe.enabled`)·열거값(`live`, `exact`)·패키지 이름 |
+| 5 | DWV | 192 → 0 | 상인·모드 이름. 품질 등급 이름은 "원문 유지" 표시 |
+| 6 | ISB | 254 → 0 | 세력·부대·봇 종류 고유명, 인식표 이름(공식 kr 도 영문) |
+| 7 | ORBIT | 516 → 0 | 단위 값(80 m), 구역·세력 식별자 |
+
+#### 채우면서 찾은 것
+
+- **같은 낱말, 페이지마다 다른 뜻** — `Scope` 는 Blacklist 에서 "대상 범위", ECOTI 에서 "조준경". `Key` 는 DWV 키-값 표에서
+  "키", 다른 데서는 "열쇠". `Charge`·`Mount` 는 WCB 슬롯 분류 이름. → 전역값과 페이지별 예외(`_scoped`)로 나눴다.
+  ECOTI 의 방향 낱말(Back, Left, Top), ORBIT 의 한 낱말 라벨(Base, Floor, Boss)도 그 페이지에서만 바꾼다.
+- **고유명을 번역했던 것** — 앞서 `Black Division` 을 "흑색 사단"으로 넣었다. 공식 표기가 없는 ISB 모드의 세력 이름이라
+  `Chaos Insurgency`·`White Tusk` 처럼 원문으로 되돌렸다. `Case`(CaseTrader 상인)도 같은 이유로 뗐다.
+- **분류기의 맹점** — 한 낱말 영어를 모두 "사람·모드 이름"으로 넣어, `Rewards`·`Repeatable`·`Keycards`·`Hotspots` 같은
+  진짜 라벨이 후보에서 빠졌다. `tools/list-web-ui-names.mjs` 로 모드마다 그 갈래를 사람이 훑는다.
+
+#### 채우면서 찾은 번역기 버그
+
+| 버그 | 증상 | 고침 |
+| --- | --- | --- |
+| 규칙이 원문을 돌려주면 "번역됨"으로 쳤다 | 일반 규칙(`$1 ×$2`)이 캡처를 못 바꿔도 미번역 목록에서 빠져 구멍이 가려졌다 | 결과가 원문과 같으면 미번역 |
+| 앞의 일반 규칙에서 멈췄다 | `Day 0, Multiplier: ×1.8` 처럼 **이미 규칙이 있는 문장**이 안 바뀌었다 | 결과가 원문과 같으면 다음 규칙으로 |
+| SVG `<style>` 을 못 걸렀다 | ORBIT 지도의 CSS(`#orbit-rush-canvas * { … }`)가 번역 대상으로 잡혔다. SVG 안에서는 tagName 이 소문자다 | 대소문자 무시 비교 |
+| 점검 도구 주입 정규식 | 셸 heredoc 이 `\` 를 `\` 로 줄여 템플릿 문자열 안의 `\s` 가 `s` 가 됐다 | Edit 로 직접 고침. 이후 정규식 든 파일은 셸로 쓰지 않는다 |

@@ -153,7 +153,7 @@ try {
     await send('Page.navigate', { url: BASE + path });
     await sleep(1500);
     const t0 = Date.now();
-    const v = await run(send, CRAWL, 80);
+    const v = await run(send, CRAWL, 150);
     if (v.error) {
       console.log(`${mod.padEnd(28)} ${v.error}`);
       result[mod] = v;
