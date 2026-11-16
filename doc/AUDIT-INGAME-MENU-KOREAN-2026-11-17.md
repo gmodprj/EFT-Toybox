@@ -201,13 +201,40 @@ JSON 열쇠로 쓴다. 그래서 새 패치는 **사전마다 바꿀 메서드�
 교훈은 이 프로젝트가 이미 적어 둔 것과 같다 — "덮개 100%는 화면이 한글이라는 뜻이 아니다". 이번에는 **"사전 항목이 쓰였다"도 화면이
 아니다**: 정적 생성자 글자는 패치 시점보다 먼저 굳는다.
 
-### 5-4. 남은 것
+### 5-4. 고친 판으로 다시 켜서 본 것 (08:22 기동)
+
+사용자 허락을 받고 게임을 껐다 켰다. 설치본 DLL md5 = 빌드(5a57dfd4…).
+
+```
+[Info   :F12 설정 한글화]   BetterBepInEx.MenuWindow: 이미 초기화된 정적 필드의 글자 29개를 바꿨다
+[Info   :F12 설정 한글화]   SAIN.Editor.EditTabsClass: 이미 초기화된 정적 필드의 글자 20개를 바꿨다
+[Info   :F12 설정 한글화]   SAIN.Editor.SAINEditor: 이미 초기화된 정적 필드의 글자 1개를 바꿨다
+[Info   :F12 설정 한글화] _dll-betterbepinex.json — … 쓰인 항목 117개 / 항목 전부 사용됨
+[Warning:F12 설정 한글화]     안 쓰임: "Save all changes to the SAIN server mod for preset '"
+[Info   :F12 설정 한글화] 한글 적용(새 메뉴) — 항목 4575/4612, 섹션 613종, 사전에 없음 37
+```
+
+- 패치 실패 줄이 사라졌다(DrawRow 제외).
+- SAIN 의 안 쓰임 1개는 이번에 고친 집계가 **정직하게** 잡은 것이다 — 정적 생성자에서 프리셋 이름과 이어 붙은 툴팁이라 통째로 맞지 않고,
+  화면에서는 SAIN 이 곧바로 "저장 안 한 값 목록"으로 덮어쓴다. 사전에서 뺐다.
+- **"사전에 없음" 48 → 37, 처음으로 목록이 보인다.** 36개는 원문이 이미 한국어인 우리 모드(AirdropCaller·AirdropProbe·GridWindowScroll·
+  GogglesWheel·DynamicMapsFactionMarkers·PrestigeStashRelax·SptKoreanConfig 자신)라 정상이다. 나머지 1개는
+  `com.rairai.hiddencaches.eft | Color | (빈 키)` — 이름이 빈 설정이다.
+
+화면(스크린숏):
+
+| 화면 | 결과 |
+| --- | --- |
+| F12 | 모드 설정·모든 설정에서 찾기 Ctrl+F·고급 보기·되돌리기·다시 하기·닫기 (F12)·모드 거르기·즐겨찾기에 넣기·스크린숏·모드 초기화·이 모드에서 찾기·전체 — **창 틀 전부 한국어** |
+| F6 | 처음·봇 설정·성향·장비 은신·고급 옵션·변경 모두 저장·고급 설정: [끔]·찾기·지우기·저장하고 내보내기 — **전부 한국어** |
+
+### 5-5. 남은 것
 
 | 무엇 | 왜 |
 | --- | --- |
-| 5-3 의 고친 판(정적 필드 다시 쓰기·DrawRow 제외)을 **게임에 아직 넣지 못했다** | 게임이 켜져 있어 DLL 이 잠겨 있다. 게임을 끄고 `tools/install-koreanconfig.ps1` → 다시 켜서 F12·F6 를 본다 |
-| F8 두 편집기를 화면으로 보지 않았다 | Scope Rangefinder 편집기·부착물 메뉴는 레이드 안에서 열린다 |
-| 런타임 "사전에 없음" 목록 | F12 를 연 뒤 로그에 찍힌다. 새 판에서 본다 |
+| F8 두 편집기를 화면으로 보지 않았다 | Scope Rangefinder 편집기·부착물 메뉴는 레이드 안에서 열린다. 기동 로그로는 90/90·150/150 이 바뀌었다 |
+| Hidden Caches 의 이름 빈 설정 1개 | 키가 빈 문자열이다. 화면에서 무엇으로 보이는지 보고 정한다 |
+| 로딩 중 DWV 알림("DWV: UI-Fixes blocks required mod_core changes…") 영문 | 메뉴가 아니라 알림이다. 이번 범위 밖 |
 | Better BepInEx 자기 설정의 선택지 이름(글꼴·테마·정렬 18개) | `[Description]` 속성이라 리터럴 바꾸기로 안 된다 |
 | Scope Rangefinder 열거형 값(Meters·MOA …) | `ToString()` 이라 리터럴 바꾸기로 안 된다 |
 | Better BepInEx 창 안 "Nothing to undo" 첫 표시 | 인스턴스 생성자 글자. 첫 되돌리기 뒤로는 바뀐 글자가 나온다 |
