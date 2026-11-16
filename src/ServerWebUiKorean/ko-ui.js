@@ -56,9 +56,15 @@
   // 번역 대상 속성. 화면에 글자로 보이는 것만.
   var ATTRS = ['placeholder', 'title', 'aria-label', 'alt'];
 
+  // SVG 안의 요소는 tagName 이 소문자다(<style> → "style"). 대문자로만 비교하면
+  // SVG 의 <style> 이 빠져나가 CSS 가 번역 대상으로 잡힌다(ORBIT 지도에서 실측).
+  function isSkipTag(el) {
+    return !!SKIP_TAGS[String(el.tagName).toUpperCase()];
+  }
+
   function skippedElement(el) {
     for (; el; el = el.parentElement) {
-      if (SKIP_TAGS[el.tagName]) return true;
+      if (isSkipTag(el)) return true;
       if (el.isContentEditable) return true;
     }
     return false;
@@ -219,7 +225,7 @@
     processElement(root);
     var it = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, {
       acceptNode: function (n) {
-        return SKIP_TAGS[n.tagName] || n.isContentEditable ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+        return isSkipTag(n) || n.isContentEditable ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
       },
     });
     var n;

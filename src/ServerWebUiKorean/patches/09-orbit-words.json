@@ -1,0 +1,22 @@
+{
+  "_comment": "C 단계 7차(C) — ORBIT 의 한 낱말 라벨. 다른 화면에서 다른 뜻이 될 수 있어 ORBIT 페이지에서만.",
+  "scoped": {
+    "/orbit": {
+      "Bloodhound": "블러드하운드", "Bloodhounds": "블러드하운드",
+      "Boss": "보스", "Follower": "부하", "Goons": "군즈",
+      "Raider": "레이더", "Rogue": "로그",
+      "Scav": "스캐브", "Scavs": "스캐브",
+      "PlayerScav": "플레이어 스캐브", "PlayerScavs": "플레이어 스캐브",
+      "Cultist": "컬티스트", "Cultists": "컬티스트",
+      "Reset": "되돌리기",
+      "Aggressive": "공격적", "Average": "보통", "Cautious": "신중",
+      "Extracts": "탈출구", "Hotspots": "요충지",
+      "Marked": "표식", "Sniper": "저격", "Spawn": "스폰",
+      "Operations": "작전", "Author": "제작자", "Description": "설명",
+      "Export": "내보내기", "Import": "들여오기",
+      "Base": "바닥층", "Floor": "층", "Underground": "지하",
+      "Movement": "이동", "Objectives": "목표", "Distances": "거리",
+      "Limiter": "제한기", "Suppressed": "소음기 있음", "Unsuppressed": "소음기 없음"
+    }
+  }
+}

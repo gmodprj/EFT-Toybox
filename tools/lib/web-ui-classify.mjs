@@ -17,7 +17,12 @@ export const BUCKETS = [
     /^[a-z]+[A-Z]\w*$/, // camelCase 설정 키
   ]],
   ['링크·버전', [/^https?:/, /^v?\d+\.\d+(\.\d+)?$/, /^(GitHub|sp-mod|VirusTotal|HTTP|en|spt|SPT)$/]],
-  ['치수·수치', [/^\d+\s*[xX]\s*\d+$/, /^[-+0-9.,xX×%\s|:/]+$/]],
+  ['치수·수치', [
+    /^\d+\s*[xX]\s*\d+$/,
+    /^[-+0-9.,xX×%\s|:/]+$/,
+    /^[\d.,]+\s?(m|ms|kg|cm|mm)$/, // 단위 값(80 m, 50 ms) — 그대로가 맞다
+    /^[\d.,]+-[\d.,]+\s?m$/, // 거리 구간(100-150m)
+  ]],
   ['아이템 이름', [
     /[○●]\s*$/,
     /\b(backpack|Pack|bag|Satchel|figurine|textbook|magazine|barrel|box|wrench|drill|torch|tablets|board|stick|components|converter|materials|notes|Medal|kit|handwheel|survey maps|flash drive|sledgehammer|riser|scope ring|imager|sight)\b/i,
