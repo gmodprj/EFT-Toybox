@@ -9,8 +9,12 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $src = Join-Path $PSScriptRoot '..\src\ModCardKorean' | Resolve-Path
+$ui = Join-Path $PSScriptRoot '..\src\ServerWebUiKorean' | Resolve-Path
 $dll = Join-Path $src 'bin\Release\ModCardKorean.dll'
 $dict = Join-Path $src 'mod-cards.ko.json'
+
+# 화면 번역기와 그 사전. 모드가 자기 폴더에서 읽어 /modcardkorean/ 으로 내놓는다.
+$uiFiles = @((Join-Path $ui 'ko-ui.js'), (Join-Path $ui 'ko-ui.json'))
 
 $dest = Join-Path $SptDir 'SPT_Runtime\user\mods\ModCardKorean'
 $destDll = Join-Path $dest 'ModCardKorean.dll'
@@ -36,12 +40,18 @@ if ((Test-Path $destDll) -and -not $Force) {
     throw "이미 있다: $destDll  — 덮어쓰려면 -Force 를 붙여라."
 }
 
+foreach ($f in $uiFiles) {
+    if (-not (Test-Path $f)) { throw "번역기 파일이 없다: $f" }
+}
+
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
 Copy-Item $dll -Destination $destDll -Force
 Copy-Item $dict -Destination $destDict -Force
+foreach ($f in $uiFiles) { Copy-Item $f -Destination $dest -Force }
 
 "설치됨:"
-foreach ($f in @($destDll, $destDict)) {
+$installed = @($destDll, $destDict) + ($uiFiles | ForEach-Object { Join-Path $dest (Split-Path $_ -Leaf) })
+foreach ($f in $installed) {
     "  {0,-60} {1,8:N0} bytes" -f $f, (Get-Item $f).Length
 }
 "서버를 다시 켠 뒤 node tools/check-mod-card-locale.mjs 로 확인하라."

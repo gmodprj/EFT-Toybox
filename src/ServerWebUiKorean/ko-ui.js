@@ -12,7 +12,7 @@
 (function () {
   'use strict';
 
-  var DICT_URL = '/SPTarkov.Server.Web/js/ko-ui.json';
+  var DICT_URL = '/modcardkorean/ko-ui.json';
 
   var dict = Object.create(null);
   var rules = []; // [정규식, 바꿀 꼴] — 숫자가 끼어 열쇠로 못 쓰는 문구용
@@ -198,10 +198,15 @@
         if (k.charAt(0) === '_') continue;
         dict[k] = j[k];
       }
-      // 아이템 이름은 분량이 커서 따로 받는다. 없거나 실패해도 UI 번역은 돈다.
-      return fetch('/SPTarkov.Server.Web/js/ko-items.json', { cache: 'no-store' })
+      // 아이템 이름은 따로 받는다. 없거나 실패해도 UI 번역은 돈다.
+      //
+      // 먼저 ModCardKorean 의 라우트에 묻는다 — 서버 메모리의 로케일에서 그 자리에서 뽑으므로
+      // 모드가 만든 아이템까지 들어 있고, SptKoreanLocale 의 번역도 반영돼 있다.
+      // 그 모드가 없으면 디스크 로케일로 만들어 둔 파일로 물러선다(모드 아이템은 빠진다).
+      return fetch('/modcardkorean/item-names.json', { cache: 'no-store' })
         .then(function (r) {
-          return r.ok ? r.json() : {};
+          if (r.ok) return r.json();
+          throw new Error('no route');
         })
         .catch(function () {
           return {};
