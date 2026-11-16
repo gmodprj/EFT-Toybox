@@ -1,0 +1,49 @@
+{
+  "_comment": "서버 웹 첫 화면 '모드 페이지' 카드 글귀. 키는 카드가 가리키는 경로(ModPage.HomePage)다. 모드 이름은 고유명이라 바꾸지 않고 설명만 한국어로 쓴다. 사전에 없는 모드는 원문 그대로 남는다.",
+
+  "/bis": {
+    "description": "물물교환 품목이 한 칸에 얼마나 겹쳐 쌓이는지 정한다"
+  },
+  "/cci": {
+    "description": "컬티스트 서클의 제물 결과와 시간을 설정한다"
+  },
+  "/definitive-weapon-variants/config": {
+    "description": "총기 변형과 전리품, 변형 코어, 다른 모드와의 연동을 설정한다"
+  },
+  "/coti": {
+    "description": "클립온 열상 조준경 ECOTI 를 설정한다"
+  },
+  "/enablelabyrinth": {
+    "description": "라비린스 맵을 켜고 그 동작을 설정한다"
+  },
+  "/isb": {
+    "description": "스폰과 편성, 정전·격리 돌파 이벤트, 인식표 등을 설정한다"
+  },
+  "/jerobackpack": {
+    "description": "배낭의 격자 크기와 개별 지정, 제외 목록을 설정한다"
+  },
+  "/lotsofloot": {
+    "description": "전리품 생성과 프리셋, 지역별 전리품을 설정한다"
+  },
+  "/orbit": {
+    "description": "ORBIT 을 설정한다"
+  },
+  "/questcodex": {
+    "description": "이 서버에 올라온 모든 퀘스트의 도감과 진행 현황"
+  },
+  "/sain/presets": {
+    "description": "SAIN 의 여러 설정을 브라우저에서 고친다"
+  },
+  "/skills-extended": {
+    "description": "Skills Extended 의 웹 설정 화면"
+  },
+  "/theblacklist": {
+    "description": "플리마켓 금지 품목을 풀고 가격을 다시 맞춘다"
+  },
+  "/ultimateflea/app.html": {
+    "description": "플리마켓 설정과 경제 현황판, 빠른 등록 기능"
+  },
+  "/webconfigbridge": {
+    "description": "자체 편집 수단이 없는 서버 모드의 설정을 고친다"
+  }
+}

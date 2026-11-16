@@ -144,7 +144,7 @@ Copy-Item "E:\Spt_Mods\backup\server-web-locale-pre-20261026-090624\en.json" `
 
 | 페이지 | 결과 |
 | --- | --- |
-| `/` 랜딩 | 한국어. 모드 카드 문구는 각 모드가 제공하는 값이라 영어로 남는다(본체 소관 아님) |
+| `/` 랜딩 | 한국어. 모드 카드 문구는 각 모드가 제공하는 값이라 이 파일로는 닿지 않는다 → 별도 모드로 해결했다. `doc/REVIEW-MOD-PAGE-KOREAN.md` 참고 |
 | `/configs` 설정 편집기 | 한국어. 목록의 `Airdrop`·`airdrop.json` 등은 설정 이름/파일명이라 원문이 맞다 |
 | `/credentials` 사용자 계정 | 한국어 |
 | `/tools` 도구 | 한국어 |
