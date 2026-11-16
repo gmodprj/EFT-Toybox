@@ -1,0 +1,54 @@
+{
+  "guid": "com.viper.prestigeperks",
+  "name": "프레스티지 특전 (PrestigePerks)",
+  "sections": {
+    "Active perk": "액티브 특전",
+    "Developer": "개발자"
+  },
+  "settings": {
+    "Active perk/Use key": {
+      "name": "사용 키",
+      "desc": "레이드 중 액티브 특전을 쓰는 키. 서버 설정 activePerks.enabled 가 false 면 액티브 특전은 꺼져 있다."
+    },
+    "Active perk/Sonar brightness (naked eye)": {
+      "name": "음파 탐지 밝기 (맨눈)",
+      "desc": "야시경·열상 없이 볼 때 음파 탐지 잔상의 밝기."
+    },
+    "Active perk/Sonar brightness (night vision)": {
+      "name": "음파 탐지 밝기 (야시경)",
+      "desc": "야시경을 켰을 때 음파 탐지 잔상의 밝기."
+    },
+    "Active perk/Sonar brightness (thermal)": {
+      "name": "음파 탐지 밝기 (열상)",
+      "desc": "열상 조준경이나 열상 고글을 썼을 때 음파 탐지 잔상의 밝기."
+    },
+    "Active perk/Sonar wave ring": {
+      "name": "음파 탐지 파동 고리",
+      "desc": "음파 탐지 파동을 발 높이의 고리로 보여 준다. 끄면 잔상만 남는다."
+    },
+    "Developer/Developer mode": {
+      "name": "개발자 모드",
+      "desc": "시험용. 프레스티지 채팅 명령(코인·특전·등급)과 [dev] 진단 로그를 켠다. 서버에 바로 적용된다. 시험 설정을 보려면 고급 보기를 켠다."
+    },
+    "Developer/Active perk test": {
+      "name": "액티브 특전 시험",
+      "desc": "개발자 모드 전용. 다음 레이드를 액티브 칸의 특전 대신 이 특전으로 시작한다(slot = 액티브 칸 그대로). 레이드 중에는 초기화 키로 바꾼다."
+    },
+    "Developer/Active perk test tier": {
+      "name": "액티브 특전 시험 등급",
+      "desc": "개발자 모드 전용. 다음 레이드에서 쓸 액티브 특전의 등급(0 = 서버가 정한 등급). 레이드 중에는 초기화 키로 바꾼다."
+    },
+    "Developer/Active perk reset key": {
+      "name": "액티브 특전 초기화 키",
+      "desc": "개발자 모드 전용. 레이드 중 돌고 있는 효과를 끝내고, 시험 특전·등급이 바뀌었으면 그것으로 바꾸고, 아니면 사용 기록과 재사용 대기시간을 지운다."
+    },
+    "Developer/Mark key": {
+      "name": "표시 키",
+      "desc": "개발자 모드 전용. 스크린숏을 찍고 액티브 특전 상태를 한 줄로 로그에 남긴다([active][MARK])."
+    },
+    "Developer/Bleed key": {
+      "name": "출혈 키",
+      "desc": "개발자 모드 전용. 레이드 중 가벼운 출혈을 걸고, 다시 누르면 심한 출혈로, 또 누르면 다시 가벼운 출혈로 바꾼다. 출혈 차단 효과가 켜져 있으면 아무 일도 없다."
+    }
+  }
+}
