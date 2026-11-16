@@ -1,96 +1,342 @@
 {
   "_comment": "서버 웹 화면에 남은 영문 → 한국어. 열쇠는 화면에 보이는 문자열 그대로(앞뒤 공백 제외). '_' 로 시작하는 열쇠는 건너뛴다. 아이템 이름은 ko-items.json 이 따로 맡는다. 사람 이름·URL·파일명·MongoID 는 일부러 넣지 않는다 — 바꾸면 안 되는 것들이다. 미번역은 화면에서 window.__ko.missing 으로 모은다.",
-
   "_rules": [
-    ["^Remove follower (\\d+)$", "부하 $1 지우기"],
-    ["^Today ([\\d.]+), ×([\\d.]+)$", "오늘 $1, ×$2"],
-    ["^Top (\\d+) by pressure$", "압력 상위 $1"],
-    ["^(.+) \\((\\d+) properties\\)$", "$1 (속성 $2개)"],
-    ["^Ranked bar chart of ([\\d,]+) items\\.$", "품목 $1개를 순위로 매긴 막대 그래프."],
-    ["^Ranked bar chart of ([\\d,]+) categories by average price factor\\.$", "분류 $1개를 평균 가격 계수 순으로 매긴 막대 그래프."],
-    ["^Diverging bar chart of ([\\d,]+) items above and below base price\\.$", "기준가 위아래 품목 $1개의 양방향 막대 그래프."],
-    ["^Histogram of ([\\d,]+) items across ([\\d,]+) price-factor buckets\\.$", "품목 $1개를 가격 계수 $2구간으로 나눈 히스토그램."],
-    ["^Scatter plot of ([\\d,]+) items by demand minus supply against price factor\\.$", "품목 $1개를 (수요−공급) 대 가격 계수로 찍은 산점도."],
-    ["^Line chart of daily flea buys and sells over ([\\d,]+) days\\. ([\\d,]+) buys and ([\\d,]+) sells in total\\.$", "$1일간 플리마켓 일별 구매·판매 꺾은선 그래프. 합계 구매 $2, 판매 $3."],
-    ["^Line chart of the early-wipe price multiplier over ([\\d,]+) wipe days\\.$", "와이프 초기 가격 배수를 $1일에 걸쳐 그린 꺾은선 그래프."],
-    ["^Timeline of ([\\d,]+) configured market events over ([\\d,]+) wipe days\\.$", "설정된 마켓 이벤트 $1개를 와이프 $2일에 걸쳐 그린 시간표."],
-    ["^Sparkline of the last ([\\d,]+) days\\.$", "최근 $1일 스파크라인."],
-    ["^([\\d.,]+)-([\\d.,]+), ([\\d,]+) items \\(at base\\)$", "$1-$2, 품목 $3개 (기준가)"],
-    ["^([<>][\\d.,]+), ([\\d,]+) items$", "$1, 품목 $2개"],
-    ["^([\\d.,]+)-([\\d.,]+), ([\\d,]+) items$", "$1-$2, 품목 $3개"],
-    ["^\\+([\\d,]+) / -([\\d,]+) items, \\+([\\d,]+) / -([\\d,]+) categories$", "품목 +$1 / -$2, 분류 +$3 / -$4"],
-    ["^SPT ([\\d.]+) · Server connected$", "SPT $1 · 서버 연결됨"],
-    ["^Start length ([\\d]+) d, start multiplier ×([\\d.]+)\\. Current multiplier ×([\\d.]+)$", "초기 구간 $1일, 시작 배수 ×$2. 지금 배수 ×$3"],
-    ["^(.+) on GitHub \\(opens in a new tab\\)$", "$1 GitHub (새 탭에서 열림)"],
-    ["^(.+) on sp-mod \\(opens in a new tab\\)$", "$1 sp-mod (새 탭에서 열림)"],
-    ["^(.+), ([0-9a-f]{24}), Supply: ([\\d.]+), Factor: ([\\d.]+)$", "$1 — 공급 $3, 계수 $4"],
-    ["^Formation (\\d+) · Team Leader$", "편성 $1 · 팀 리더"],
-    ["^Formation (\\d+) · Operative$", "편성 $1 · 작전요원"],
-    ["^Formation (\\d+) · Specialist$", "편성 $1 · 특기병"],
-    ["^Formation (\\d+) · Scout$", "편성 $1 · 정찰병"],
-    ["^Formation (\\d+) · Heavy$", "편성 $1 · 중화기병"],
-    ["^Formation (\\d+) · Marksman$", "편성 $1 · 지정사수"],
-    ["^Formation (\\d+) · Assassin$", "편성 $1 · 암살자"],
-    ["^Formation (\\d+) · (.+)$", "편성 $1 · $2"],
-    ["^Formations · (\\d+)$", "편성 · $1"],
-    ["^Day ([\\d.]+), Multiplier: ×([\\d.]+)$", "$1일차, 배수 ×$2"],
-    ["^(\\d{4}-\\d{2}-\\d{2}), Buys: ([\\d,]+), Sells: ([\\d,]+)$", "$1 · 구매 $2, 판매 $3"],
-    ["^(.+), items: ([\\d,]+), Avg factor: ([\\d.]+), Avg demand: ([\\d.]+), Avg supply: ([\\d.]+)$", "$1 — 품목 $2개, 평균 계수 $3, 평균 수요 $4, 평균 공급 $5"],
-    ["^(.+), ([0-9a-f]{24}), Factor: ([\\d.]+), Base ([\\d,]+) → Now ([\\d,]+)$", "$1 — 계수 $3, 기준 $4 → 지금 $5"],
-    ["^(.+), ([0-9a-f]{24}), Demand: ([\\d.]+), Factor: ([\\d.]+)$", "$1 — 수요 $3, 계수 $4"],
-    ["^([\\d,]+) formations selected / ([\\d,]+) eligible · (.+) operators$", "편성 $1개 선택 / $2개 가능 · 요원 $3명"],
-    ["^([\\d,]+) above base, ([\\d,]+) at base, ([\\d,]+) below base$", "기준보다 비쌈 $1 · 기준과 같음 $2 · 기준보다 쌈 $3"],
-    ["^([\\d,]+) fixed prices$", "고정 가격 $1개"],
-    ["^([\\d,]+) floating prices$", "변동 가격 $1개"],
-    ["^([\\d,]+) items, ([\\d,]+) categories, (.+) rules$", "품목 $1개, 분류 $2개, 규칙 $3"],
-    ["^(.+), Days ([\\d-]+), Multiplier: ×([\\d.]+), Active$", "$1 · $2일차, 배수 ×$3, 켜짐"],
-    ["^(.+), Days ([\\d-]+), Multiplier: ×([\\d.]+), Inactive$", "$1 · $2일차, 배수 ×$3, 꺼짐"],
-    ["^Maximum raid duration for the spawn to occur \\(s\\)$", "스폰이 일어날 최대 레이드 시간(초)"],
-    ["^Minimum raid duration for the spawn to occur \\(s\\)$", "스폰이 일어날 최소 레이드 시간(초)"],
-    ["^January (\\d+), (\\d{4})$", "$2년 1월 $1일"],
-    ["^February (\\d+), (\\d{4})$", "$2년 2월 $1일"],
-    ["^March (\\d+), (\\d{4})$", "$2년 3월 $1일"],
-    ["^April (\\d+), (\\d{4})$", "$2년 4월 $1일"],
-    ["^May (\\d+), (\\d{4})$", "$2년 5월 $1일"],
-    ["^June (\\d+), (\\d{4})$", "$2년 6월 $1일"],
-    ["^July (\\d+), (\\d{4})$", "$2년 7월 $1일"],
-    ["^August (\\d+), (\\d{4})$", "$2년 8월 $1일"],
-    ["^September (\\d+), (\\d{4})$", "$2년 9월 $1일"],
-    ["^October (\\d+), (\\d{4})$", "$2년 10월 $1일"],
-    ["^November (\\d+), (\\d{4})$", "$2년 11월 $1일"],
-    ["^December (\\d+), (\\d{4})$", "$2년 12월 $1일"],
-    ["^([\\d,]+)-([\\d,]+) of ([\\d,]+)$", "$3개 중 $1-$2"],
-    ["^(\\d+) of ([\\d,]+)$", "$2개 중 $1"],
-    ["^\\+(\\d+) cells$", "칸 +$1"],
-    ["^(\\d+) grids$", "격자 $1개"],
-    ["^Has (\\d+) grids; the blacklist entry has no effect$", "격자가 $1개다. 제외 목록 항목은 효과가 없다"],
-    ["^— items:$", "— 품목:"],
-    ["^— items: ([\\d,]+)$", "— 품목 $1개"],
-    ["^([\\d,]+) local profiles loaded$", "로컬 프로필 $1개를 불러왔다"],
-    ["^([\\d,]+) skills$", "스킬 $1개"],
-    ["^([\\d,]+) backpacks on this server: ([\\d,]+) resized, ([\\d,]+) at their original size\\.$", "이 서버의 배낭 $1개 — $2개는 크기를 바꿨고 $3개는 원래 크기다."],
-    ["^([\\d,]+) enabled · ([\\d,]+) pending changes$", "$1개 켜짐 · 바뀐 것 $2개 대기"],
-    ["^([\\d,]+) Unsaved Changes$", "저장 안 한 변경 $1개"],
-    ["^Unsaved changes: ([\\d,]+)$", "저장 안 한 변경: $1개"],
-    ["^([\\d,]+) authorized profile\\(s\\)\\. Standalone SPT editor access is unchanged\\.$", "허용된 프로필 $1개. 단독 SPT 편집기 접근은 그대로다."],
-    ["^No mapping for (.+)$", "$1 에 대한 지정 없음"],
-    ["^Replaces mapping to (.+)$", "$1 지정을 대신한다"],
-    ["^Open (.+) \\((\\d+) settings\\)$", "$1 열기 (설정 $2개)"],
-    ["^Version (.+)$", "버전 $1"],
-    ["^This release is for SPT (.+)$", "SPT $1 용 릴리스다"],
-    ["^Chance a riser fitted to a bot's weapon stays on it: (.+)$", "봇 총기에 달린 라이저가 그대로 남을 확률: $1"],
-    ["^Weight relative to the night vision at each spot: (.+)$", "각 자리의 야시경 대비 가중치: $1"],
-    ["^Weight relative to the night vision at each spot, both colours together: (.+)$", "각 자리의 야시경 대비 가중치(두 색 합쳐): $1"],
-    ["^(.+) size set for one backpack$", "배낭 하나에 $1 크기를 지정했다"]
+    [
+      "^Remove follower (\\d+)$",
+      "부하 $1 지우기"
+    ],
+    [
+      "^Today ([\\d.]+), ×([\\d.]+)$",
+      "오늘 $1, ×$2"
+    ],
+    [
+      "^Top (\\d+) by pressure$",
+      "압력 상위 $1"
+    ],
+    [
+      "^(.+) \\((\\d+) properties\\)$",
+      "$1 (속성 $2개)"
+    ],
+    [
+      "^Ranked bar chart of ([\\d,]+) items\\.$",
+      "아이템 $1개를 순위로 매긴 막대 그래프."
+    ],
+    [
+      "^Ranked bar chart of ([\\d,]+) categories by average price factor\\.$",
+      "분류 $1개를 평균 가격 계수 순으로 매긴 막대 그래프."
+    ],
+    [
+      "^Diverging bar chart of ([\\d,]+) items above and below base price\\.$",
+      "기준가 위아래 아이템 $1개의 양방향 막대 그래프."
+    ],
+    [
+      "^Histogram of ([\\d,]+) items across ([\\d,]+) price-factor buckets\\.$",
+      "아이템 $1개를 가격 계수 $2구간으로 나눈 히스토그램."
+    ],
+    [
+      "^Scatter plot of ([\\d,]+) items by demand minus supply against price factor\\.$",
+      "아이템 $1개를 (수요−공급) 대 가격 계수로 찍은 산점도."
+    ],
+    [
+      "^Line chart of daily flea buys and sells over ([\\d,]+) days\\. ([\\d,]+) buys and ([\\d,]+) sells in total\\.$",
+      "$1일간 플리마켓 일별 구매·판매 꺾은선 그래프. 합계 구매 $2, 판매 $3."
+    ],
+    [
+      "^Line chart of the early-wipe price multiplier over ([\\d,]+) wipe days\\.$",
+      "와이프 초기 가격 배수를 $1일에 걸쳐 그린 꺾은선 그래프."
+    ],
+    [
+      "^Timeline of ([\\d,]+) configured market events over ([\\d,]+) wipe days\\.$",
+      "설정된 마켓 이벤트 $1개를 와이프 $2일에 걸쳐 그린 시간표."
+    ],
+    [
+      "^Sparkline of the last ([\\d,]+) days\\.$",
+      "최근 $1일 스파크라인."
+    ],
+    [
+      "^([\\d.,]+)-([\\d.,]+), ([\\d,]+) items \\(at base\\)$",
+      "$1-$2, 아이템 $3개 (기준가)"
+    ],
+    [
+      "^([<>][\\d.,]+), ([\\d,]+) items$",
+      "$1, 아이템 $2개"
+    ],
+    [
+      "^([\\d.,]+)-([\\d.,]+), ([\\d,]+) items$",
+      "$1-$2, 아이템 $3개"
+    ],
+    [
+      "^\\+([\\d,]+) / -([\\d,]+) items, \\+([\\d,]+) / -([\\d,]+) categories$",
+      "아이템 +$1 / -$2, 분류 +$3 / -$4"
+    ],
+    [
+      "^SPT ([\\d.]+) · Server connected$",
+      "SPT $1 · 서버 연결됨"
+    ],
+    [
+      "^Start length ([\\d]+) d, start multiplier ×([\\d.]+)\\. Current multiplier ×([\\d.]+)$",
+      "초기 구간 $1일, 시작 배수 ×$2. 지금 배수 ×$3"
+    ],
+    [
+      "^(.+) on GitHub \\(opens in a new tab\\)$",
+      "$1 GitHub (새 탭에서 열림)"
+    ],
+    [
+      "^(.+) on sp-mod \\(opens in a new tab\\)$",
+      "$1 sp-mod (새 탭에서 열림)"
+    ],
+    [
+      "^(.+), ([0-9a-f]{24}), Supply: ([\\d.]+), Factor: ([\\d.]+)$",
+      "$1 — 공급 $3, 계수 $4"
+    ],
+    [
+      "^Formation (\\d+) · Team Leader$",
+      "편성 $1 · 팀 리더"
+    ],
+    [
+      "^Formation (\\d+) · Operative$",
+      "편성 $1 · 작전요원"
+    ],
+    [
+      "^Formation (\\d+) · Specialist$",
+      "편성 $1 · 특기병"
+    ],
+    [
+      "^Formation (\\d+) · Scout$",
+      "편성 $1 · 정찰병"
+    ],
+    [
+      "^Formation (\\d+) · Heavy$",
+      "편성 $1 · 중화기병"
+    ],
+    [
+      "^Formation (\\d+) · Marksman$",
+      "편성 $1 · 지정사수"
+    ],
+    [
+      "^Formation (\\d+) · Assassin$",
+      "편성 $1 · 암살자"
+    ],
+    [
+      "^Formation (\\d+) · (.+)$",
+      "편성 $1 · $2"
+    ],
+    [
+      "^Formations · (\\d+)$",
+      "편성 · $1"
+    ],
+    [
+      "^Day ([\\d.]+), Multiplier: ×([\\d.]+)$",
+      "$1일차, 배수 ×$2"
+    ],
+    [
+      "^(\\d{4}-\\d{2}-\\d{2}), Buys: ([\\d,]+), Sells: ([\\d,]+)$",
+      "$1 · 구매 $2, 판매 $3"
+    ],
+    [
+      "^(.+), items: ([\\d,]+), Avg factor: ([\\d.]+), Avg demand: ([\\d.]+), Avg supply: ([\\d.]+)$",
+      "$1 — 아이템 $2개, 평균 계수 $3, 평균 수요 $4, 평균 공급 $5"
+    ],
+    [
+      "^(.+), ([0-9a-f]{24}), Factor: ([\\d.]+), Base ([\\d,]+) → Now ([\\d,]+)$",
+      "$1 — 계수 $3, 기준 $4 → 지금 $5"
+    ],
+    [
+      "^(.+), ([0-9a-f]{24}), Demand: ([\\d.]+), Factor: ([\\d.]+)$",
+      "$1 — 수요 $3, 계수 $4"
+    ],
+    [
+      "^([\\d,]+) formations selected / ([\\d,]+) eligible · (.+) operators$",
+      "편성 $1개 선택 / $2개 가능 · 요원 $3명"
+    ],
+    [
+      "^([\\d,]+) above base, ([\\d,]+) at base, ([\\d,]+) below base$",
+      "기준보다 비쌈 $1 · 기준과 같음 $2 · 기준보다 쌈 $3"
+    ],
+    [
+      "^([\\d,]+) fixed prices$",
+      "고정 가격 $1개"
+    ],
+    [
+      "^([\\d,]+) floating prices$",
+      "변동 가격 $1개"
+    ],
+    [
+      "^([\\d,]+) items, ([\\d,]+) categories, (.+) rules$",
+      "아이템 $1개, 분류 $2개, 규칙 $3"
+    ],
+    [
+      "^(.+), Days ([\\d-]+), Multiplier: ×([\\d.]+), Active$",
+      "$1 · $2일차, 배수 ×$3, 켜짐"
+    ],
+    [
+      "^(.+), Days ([\\d-]+), Multiplier: ×([\\d.]+), Inactive$",
+      "$1 · $2일차, 배수 ×$3, 꺼짐"
+    ],
+    [
+      "^Maximum raid duration for the spawn to occur \\(s\\)$",
+      "스폰이 일어날 최대 레이드 시간(초)"
+    ],
+    [
+      "^Minimum raid duration for the spawn to occur \\(s\\)$",
+      "스폰이 일어날 최소 레이드 시간(초)"
+    ],
+    [
+      "^January (\\d+), (\\d{4})$",
+      "$2년 1월 $1일"
+    ],
+    [
+      "^February (\\d+), (\\d{4})$",
+      "$2년 2월 $1일"
+    ],
+    [
+      "^March (\\d+), (\\d{4})$",
+      "$2년 3월 $1일"
+    ],
+    [
+      "^April (\\d+), (\\d{4})$",
+      "$2년 4월 $1일"
+    ],
+    [
+      "^May (\\d+), (\\d{4})$",
+      "$2년 5월 $1일"
+    ],
+    [
+      "^June (\\d+), (\\d{4})$",
+      "$2년 6월 $1일"
+    ],
+    [
+      "^July (\\d+), (\\d{4})$",
+      "$2년 7월 $1일"
+    ],
+    [
+      "^August (\\d+), (\\d{4})$",
+      "$2년 8월 $1일"
+    ],
+    [
+      "^September (\\d+), (\\d{4})$",
+      "$2년 9월 $1일"
+    ],
+    [
+      "^October (\\d+), (\\d{4})$",
+      "$2년 10월 $1일"
+    ],
+    [
+      "^November (\\d+), (\\d{4})$",
+      "$2년 11월 $1일"
+    ],
+    [
+      "^December (\\d+), (\\d{4})$",
+      "$2년 12월 $1일"
+    ],
+    [
+      "^([\\d,]+)-([\\d,]+) of ([\\d,]+)$",
+      "$3개 중 $1-$2"
+    ],
+    [
+      "^(\\d+) of ([\\d,]+)$",
+      "$2개 중 $1"
+    ],
+    [
+      "^\\+(\\d+) cells$",
+      "칸 +$1"
+    ],
+    [
+      "^(\\d+) grids$",
+      "격자 $1개"
+    ],
+    [
+      "^Has (\\d+) grids; the blacklist entry has no effect$",
+      "격자가 $1개다. 제외 목록 항목은 효과가 없다"
+    ],
+    [
+      "^— items:$",
+      "— 아이템:"
+    ],
+    [
+      "^— items: ([\\d,]+)$",
+      "— 아이템 $1개"
+    ],
+    [
+      "^([\\d,]+) local profiles loaded$",
+      "로컬 프로필 $1개를 불러왔다"
+    ],
+    [
+      "^([\\d,]+) skills$",
+      "스킬 $1개"
+    ],
+    [
+      "^([\\d,]+) backpacks on this server: ([\\d,]+) resized, ([\\d,]+) at their original size\\.$",
+      "이 서버의 배낭 $1개 — $2개는 크기를 바꿨고 $3개는 원래 크기다."
+    ],
+    [
+      "^([\\d,]+) enabled · ([\\d,]+) pending changes$",
+      "$1개 켜짐 · 바뀐 것 $2개 대기"
+    ],
+    [
+      "^([\\d,]+) Unsaved Changes$",
+      "저장 안 한 변경 $1개"
+    ],
+    [
+      "^Unsaved changes: ([\\d,]+)$",
+      "저장 안 한 변경: $1개"
+    ],
+    [
+      "^([\\d,]+) authorized profile\\(s\\)\\. Standalone SPT editor access is unchanged\\.$",
+      "허용된 프로필 $1개. 단독 SPT 편집기 접근은 그대로다."
+    ],
+    [
+      "^No mapping for (.+)$",
+      "$1 에 대한 지정 없음"
+    ],
+    [
+      "^Replaces mapping to (.+)$",
+      "$1 지정을 대신한다"
+    ],
+    [
+      "^Open (.+) \\((\\d+) settings\\)$",
+      "$1 열기 (설정 $2개)"
+    ],
+    [
+      "^Version (.+)$",
+      "버전 $1"
+    ],
+    [
+      "^This release is for SPT (.+)$",
+      "SPT $1 용 릴리스다"
+    ],
+    [
+      "^Chance a riser fitted to a bot's weapon stays on it: (.+)$",
+      "봇 총기에 달린 라이저가 그대로 남을 확률: $1"
+    ],
+    [
+      "^Weight relative to the night vision at each spot: (.+)$",
+      "각 자리의 야시경 대비 가중치: $1"
+    ],
+    [
+      "^Weight relative to the night vision at each spot, both colours together: (.+)$",
+      "각 자리의 야시경 대비 가중치(두 색 합쳐): $1"
+    ],
+    [
+      "^(.+) size set for one backpack$",
+      "배낭 하나에 $1 크기를 지정했다"
+    ]
   ],
-
+  "_scoped": {
+    "/definitive-weapon-variants": {
+      "Advanced": null,
+      "Add item": "항목 추가"
+    },
+    "/cci": {
+      "Config": "일반 설정"
+    }
+  },
   "Sign in": "로그인",
   "Enter your SPT web credentials to continue.": "계속하려면 SPT 웹 자격 증명을 입력하세요.",
   "Default login: spt / spt": "기본 로그인: spt / spt",
   "Username": "사용자 이름",
   "Password": "비밀번호",
   "No permissions": "권한 없음",
-
   "Home": "홈",
   "Back to SPT": "SPT 로 돌아가기",
   "Server home": "서버 홈",
@@ -99,7 +345,7 @@
   "Menu": "메뉴",
   "Settings": "설정",
   "SETTINGS": "설정",
-  "Main": "기본",
+  "Main": "주요",
   "General": "일반",
   "General settings": "일반 설정",
   "Advanced": "고급",
@@ -114,7 +360,7 @@
   "Open": "열기",
   "Actions": "동작",
   "Add": "추가",
-  "Add item": "품목 추가",
+  "Add item": "아이템 추가",
   "Add property": "속성 추가",
   "Create": "만들기",
   "Save": "저장",
@@ -135,7 +381,6 @@
   "Unblock": "차단 풀기",
   "Override": "덮어쓰기",
   "Open Generate Quality Tiers": "품질 등급 생성 열기",
-
   "Search": "검색",
   "Search by id or name...": "ID 나 이름으로 검색...",
   "Search name or ID": "이름이나 ID 검색",
@@ -161,10 +406,8 @@
   "n/a": "없음",
   "Uncategorized": "분류 없음",
   "Unknown Packages": "알 수 없는 꾸러미",
-
   "Items": "아이템",
   "Item": "아이템",
-  "Case": "케이스",
   "Backup": "백업",
   "Core": "코어",
   "Bot": "봇",
@@ -192,7 +435,6 @@
   "In Raid": "레이드 중",
   "Lost On Death": "사망 시 손실",
   "local profiles loaded": "개의 로컬 프로필을 불러왔다",
-
   "Browse server database records.": "서버 데이터베이스 기록을 살펴본다.",
   "Item templates, prices, categories, and core item properties.": "아이템 템플릿과 가격, 분류, 핵심 속성.",
   "Select a row to inspect its data.": "표에서 줄을 골라 내용을 본다.",
@@ -222,7 +464,6 @@
   "Custom": "직접 지정",
   "Current result": "지금 결과",
   "Rounds": "발",
-
   "Profile control": "프로필 관리",
   "Create, inspect, save, reload, and remove local SPT profiles.": "로컬 SPT 프로필을 만들고 살펴보고 저장하고 다시 읽고 지운다.",
   "Profiles": "프로필",
@@ -242,8 +483,7 @@
   "Host editor": "호스트 편집기",
   "Select the profiles allowed to use the in-game developer editor. An empty list disables client editing on Fika servers. Save changes to apply access immediately.": "게임 안 개발자 편집기를 쓸 수 있는 프로필을 고른다. 비워 두면 Fika 서버에서 클라이언트 편집이 꺼진다. 저장하면 바로 적용된다.",
   "authorized profile(s). Standalone SPT editor access is unchanged.": "개의 허용된 프로필. 단독 SPT 편집기 접근은 그대로다.",
-
-  "Configuration sections": "설정 구역",
+  "Configuration sections": "설정 섹션",
   "Configuration save controls": "설정 저장 조작",
   "All configuration changes saved": "설정 변경을 모두 저장했다",
   "Config JSON import / export": "설정 JSON 들여오기 / 내보내기",
@@ -266,7 +506,6 @@
   "Running": "돌고 있음",
   "Enabled": "켬",
   "enabled ·": "개 켜짐 ·",
-
   "Preset": "프리셋",
   "Presets": "프리셋",
   "- Presets -": "- 프리셋 -",
@@ -279,7 +518,6 @@
   "Manage presets & export a ZIP": "프리셋 관리 · ZIP 으로 내보내기",
   "Review, tweak, apply": "살펴보고, 손보고, 적용한다",
   "Start with Default for varied raids, or try a community preset.": "다양한 레이드를 원하면 Default 로 시작하거나 커뮤니티 프리셋을 써 본다.",
-
   "What's new": "새로운 것",
   "Updates": "업데이트",
   "Release notes": "릴리스 노트",
@@ -303,12 +541,11 @@
   "Based on": "기반",
   "Version": "버전",
   "(Thanks!)": "(고맙습니다!)",
-
   "Flea market": "플리마켓",
   "Flea market configuration": "플리마켓 설정",
   "Unlock the blacklist and shape how the flea sells.": "금지 목록을 풀고 플리마켓이 파는 방식을 정한다.",
-  "Item overrides": "품목별 지정",
-  "Pin prices, multiply them, or keep an item blacklisted.": "가격을 고정하거나 배수를 주거나, 그 품목을 금지로 남긴다.",
+  "Item overrides": "아이템별 지정",
+  "Pin prices, multiply them, or keep an item blacklisted.": "가격을 고정하거나 배수를 주거나, 그 아이템을 금지로 남긴다.",
   "Ammo pricing baselines and offer generation limits.": "탄약 가격 기준과 매물 생성 한도.",
   "Add to blacklist": "금지 목록에 넣기",
   "Remove from blacklist": "금지 목록에서 빼기",
@@ -319,10 +556,9 @@
   "Loyalty level": "충성도 레벨",
   "Purchases per restock": "재입고당 구매 수",
   "Purchases per restock, each colour": "재입고당 구매 수(색깔별)",
-
   "Loot": "전리품",
   "Loot configuration": "전리품 설정",
-  "Loot settings": "전리품 설정",
+  "Loot settings": "전리품 세부 설정",
   "Loot and bots": "전리품과 봇",
   "Control global spawning behavior.": "전체 스폰 동작을 정한다.",
   "Tune locations, rooms, and containers.": "지역과 방, 컨테이너를 손본다.",
@@ -332,7 +568,6 @@
   "Loot Sources - Marked Rooms and Containers": "전리품 출처 - 표식 방과 컨테이너",
   "Add Ref Key Rooms by": "Ref 열쇠 방 추가 기준",
   "Lots of Loot pages": "Lots of Loot 페이지",
-
   "Weapon Generation": "총기 생성",
   "Generate Quality Tiers": "품질 등급 생성",
   "Choose which weapon variants are generated and exclude selected types or weapons.": "어떤 총기 변형을 만들지 고르고, 특정 종류나 총기를 뺀다.",
@@ -354,7 +589,6 @@
   "Niche": "Niche",
   "Baseline": "Baseline",
   "Flawed": "Flawed",
-
   "Backpacks": "배낭",
   "Size mapping": "크기 지정",
   "Size mappings": "크기 지정",
@@ -372,19 +606,15 @@
   "Sizes are width x height in cells. Backpacks with several grids show their grid count instead of a size. Widths above 6 cells may not display correctly in the game.": "크기는 칸 기준 너비 x 높이다. 격자가 여러 개인 배낭은 크기 대신 격자 수를 보여 준다. 너비가 6칸을 넘으면 게임에서 제대로 안 보일 수 있다.",
   "The game's inventory screen is laid out for backpacks up to 6 cells wide; wider grids may appear stretched or overlap.": "게임 인벤토리 화면은 너비 6칸까지를 전제로 짜여 있다. 그보다 넓으면 늘어나거나 겹쳐 보일 수 있다.",
   "Over 6 wide": "너비 6칸 초과",
-  "Over": "초과",
-  "wide": "너비",
-  "grids": "격자",
   "cells may not display correctly in the game.": "칸은 게임에서 제대로 안 보일 수 있다.",
-
   "Crafting": "제작",
   "Toggle Crafting": "제작 켜기/끄기",
   "Custom Crafts": "직접 만든 제작법",
-  "Vanilla Crafts": "기본 제작법",
+  "Vanilla Crafts": "바닐라 제작법",
   "Backport Crafts": "백포트 제작법",
-  "Main Config": "기본 설정",
-  "Show Undo Button": "되돌리기 단추 보이기",
-  "Show Default Button": "기본값 단추 보이기",
+  "Main Config": "주요 설정",
+  "Show Undo Button": "되돌리기 버튼 보이기",
+  "Show Default Button": "기본값 버튼 보이기",
   "Disable Animations": "애니메이션 끄기",
   "Navigate to different config pages by clicking the Menu at the top left.": "왼쪽 위 메뉴를 눌러 다른 설정 페이지로 간다.",
   "There's really nothing else to it.": "그게 전부다.",
@@ -392,7 +622,6 @@
   "Enable Labyrinth Webconfig": "Enable Labyrinth 웹 설정",
   "Webconfig is available": "웹 설정을 쓸 수 있다",
   "The Blacklist pages": "The Blacklist 페이지",
-
   "Thermal riser": "열상 라이저",
   "Thermal Riser Compatibility": "열상 라이저 호환",
   "Thermal Scope Ring Compatibility": "열상 조준경 링 호환",
@@ -406,7 +635,6 @@
   "Peacekeeper's offer. Applied to the running server on save; relaunch the game client to see it.": "피스키퍼 매물. 저장하면 돌고 있는 서버에 적용되고, 게임 클라이언트를 다시 켜야 보인다.",
   "Peacekeeper's offer for each colour, black and tan. Applied to the running server on save; relaunch the game client to see it.": "검정·탄 색깔별 피스키퍼 매물. 저장하면 돌고 있는 서버에 적용되고, 게임 클라이언트를 다시 켜야 보인다.",
   "Peacekeeper's offer reaches the flea either way. This only decides whether simulated player offers are generated, and whether you can list one yourself. Relaunch the game client to see it.": "피스키퍼 매물은 어느 쪽이든 플리마켓에 올라온다. 이건 가상 플레이어 매물을 만들지와, 직접 올릴 수 있을지만 정한다. 게임 클라이언트를 다시 켜야 보인다.",
-
   "Explore ORBIT": "ORBIT 둘러보기",
   "Explore operations": "작전 둘러보기",
   "Zones": "구역",
@@ -448,7 +676,6 @@
   "Choose config, zones or both. Compare the result with ORBIT Default and adjust it before applying.": "설정, 구역, 또는 둘 다를 고른다. 결과를 ORBIT Default 와 견주고 손본 뒤 적용하라.",
   "Save your edits to use them next raid. Faction takeover and brain lists need a game restart.": "고친 것을 저장해야 다음 레이드에 쓰인다. 진영 장악과 brain 목록은 게임을 다시 켜야 한다.",
   "is highly recommended for more varied PMC personalities. It is optional.": "를 함께 쓰면 PMC 성향이 훨씬 다양해진다. 필수는 아니다.",
-
   "Make every skill your own": "스킬을 내 것으로 만든다",
   "Extended skills": "확장 스킬",
   "Combat skills": "전투 스킬",
@@ -488,24 +715,20 @@
   "Tune stamina, jumping costs, and breath recovery.": "스태미나와 점프 소모, 호흡 회복을 손본다.",
   "Tune weapon handling, XP sharing, and the Eastern weapon list.": "총기 조작과 XP 공유, 동구권 총기 목록을 손본다.",
   "Tune weapon handling, XP sharing, and the NATO weapon list.": "총기 조작과 XP 공유, NATO 총기 목록을 손본다.",
-
   "Stack Size": "겹침 수",
   "Resources": "자원",
   "Weight Mult": "무게 배수",
   "Price Mult": "가격 배수",
   "Weight limit multiplier": "무게 한도 배수",
-  "Barter items": "물물교환 품목",
+  "Barter items": "교환 아이템",
   "Ammo packs": "탄약 묶음",
-  "Info Items": "정보 품목",
-  "Special Items": "특수 품목",
+  "Info Items": "정보 아이템",
+  "Special Items": "특수 아이템",
   "Cash": "현금",
-  "item": "품목",
-  "in": "에서",
-
   "Configure weapon variants, loot, variant cores, and integrations.": "총기 변형과 전리품, 변형 코어, 다른 모드와의 연동을 설정한다.",
   "Working…": "처리 중…",
   "Remove": "지우기",
-  "SECTION": "구역",
+  "SECTION": "섹션",
   "Selection Chance (Weight)": "선택 확률 (가중치)",
   "Spawn Chance (%)": "스폰 확률 (%)",
   "Squad Count": "분대 수",
@@ -530,7 +753,6 @@
   "SPT Developer": "SPT 개발자",
   "SPT Easy start": "SPT 쉬운 시작",
   "SPT Zero to hero": "SPT 맨땅에서 영웅으로",
-
   "Ammo": "탄약",
   "AssaultRifle": "돌격소총",
   "Barrel": "총열",
@@ -542,15 +764,14 @@
   "Stock": "개머리판",
   "Magazine": "탄창",
   "Handguard": "핸드가드",
-
   "A lot of preparation to allow for presets in the future, but all of that has been disabled for now": "앞으로 프리셋을 쓸 수 있도록 바탕을 많이 깔았다. 다만 지금은 전부 꺼 뒀다",
   "Added 'Key case' to the config file": "설정 파일에 'Key case' 를 더했다",
   "Added a missing dogtag that was not blacklisted on the flea": "플리마켓 금지 목록에서 빠져 있던 인식표 하나를 더했다",
-  "Added an option to allow only Found in Raid items to be sold to the flea": "레이드에서 찾은 물건만 플리마켓에 팔 수 있게 하는 설정을 더했다",
+  "Added an option to allow only Found in Raid items to be sold to the flea": "레이드에서 찾은 아이템만 플리마켓에 팔 수 있게 하는 설정을 더했다",
   "Added an option to disable random container spawns": "무작위 컨테이너 스폰을 끄는 설정을 더했다",
   "Added authorization attributes to SIC pages": "SIC 페이지에 권한 속성을 달았다",
   "Added blazor pages": "Blazor 페이지를 더했다",
-  "Added extra items to the blacklist for the Key Case (This will require updating the config!)": "열쇠 케이스의 금지 목록에 품목을 더 넣었다(설정을 갱신해야 한다!)",
+  "Added extra items to the blacklist for the Key Case (This will require updating the config!)": "열쇠 케이스의 금지 목록에 아이템을 더 넣었다(설정을 갱신해야 한다!)",
   "Added new properties ReduceLowLooseLootRolls and ReduceLowLooseLootRollsAmount  these properties allow for raising the lower end of the RNG loot rolls that takes place.": "ReduceLowLooseLootRolls 와 ReduceLowLooseLootRollsAmount 속성을 더했다. 전리품 난수 굴림의 아래쪽을 끌어올릴 수 있다.",
   "Backported various fixes from this mod's version on 4.1": "이 모드의 4.1 판에서 여러 수정을 가져왔다",
   "Converted integers internally into doubles, allowing for more fine-tuning and returning to behavior prior to 4.0": "내부에서 정수를 실수로 바꿨다. 더 잘게 조절할 수 있고 4.0 이전 동작으로 돌아간다",
@@ -574,7 +795,6 @@
   "Set lots of loot priority even higher because AI mods seemingly use absurdly high priorities": "Lots of Loot 의 우선순위를 더 올렸다. AI 모드들이 터무니없이 높은 값을 쓰는 듯해서다",
   "Some huge code refactors to various loot generation systems": "여러 전리품 생성 코드를 크게 손봤다",
   "There's probably another few things I forgot, but considering this has been in dev since the middle of November of last year these are the changes that I can still remember.": "빠뜨린 것이 더 있겠지만, 작년 11월 중순부터 만들어 온 것치고는 이 정도가 아직 기억나는 변경이다.",
-
   "Relative probability of selecting this formation during the spawn draw.": "스폰 추첨에서 이 편성이 뽑힐 상대 확률.",
   "Spawn probability for this category, from 0 to 100. Formation weights only select the squad composition.": "이 분류의 스폰 확률(0~100). 편성 가중치는 분대 구성만 고른다.",
   "Use -1 for a instant spawn.": "-1 을 넣으면 즉시 스폰한다.",
@@ -583,7 +803,6 @@
   "present, 8,916": "있음, 8,916",
   "Vengeful Evernight (The Chosen One)": "복수의 에버나이트 (선택받은 자)",
   "Vengeful Nemesis (The Dark Lord)": "복수의 네메시스 (암흑군주)",
-
   "Server connected": "서버 연결됨",
   "Spawn Limit": "스폰 한도",
   "The Blackout": "정전",
@@ -603,8 +822,6 @@
   "SYSTEM": "시스템",
   "Wipe day": "와이프 경과일",
   "Dogtags": "인식표",
-  "Overview": "개요",
-
   "OPERATIONS": "작전",
   "Operations control": "작전 통제",
   "CONTROL CENTER": "통제 센터",
@@ -615,13 +832,13 @@
   "Find a section…": "구역 찾기…",
   "FIND A SETTING": "설정 찾기",
   "Connecting to server…": "서버에 연결 중…",
-  "Configuration section": "설정 구역",
+  "Configuration section": "설정 섹션",
   "Maps & Formations": "맵과 편성",
   "DEPLOYMENT MAP": "배치 지도",
-  "ISB Deployment & Essentials": "ISB 배치와 기본 설정",
-  "ISB DEPLOYMENT & ESSENTIALS": "ISB 배치와 기본 설정",
-  "Configure deployments, essential settings and the Containment Breach event.": "배치와 기본 설정, 격리 돌파 이벤트를 설정한다.",
-  "Essentials & Debug": "기본 설정과 디버그",
+  "ISB Deployment & Essentials": "ISB 배치와 필수 설정",
+  "ISB DEPLOYMENT & ESSENTIALS": "ISB 배치와 필수 설정",
+  "Configure deployments, essential settings and the Containment Breach event.": "배치와 필수 설정, 격리 돌파 이벤트를 설정한다.",
+  "Essentials & Debug": "필수 설정과 디버그",
   "Audio & Communications": "소리와 통신",
   "AUDIO & EVENT OPTIONS": "소리와 이벤트 설정",
   "CONTAINMENT BREACH": "격리 돌파",
@@ -691,9 +908,8 @@
   "Changes are applied only when saved. A backup of the previous configuration is kept.": "저장해야 적용된다. 직전 설정은 백업으로 남는다.",
   "Project links": "프로젝트 링크",
   "↗ Open SPT dashboard": "↗ SPT 대시보드 열기",
-
   "Economy": "경제",
-  "Economy items": "경제 품목",
+  "Economy items": "경제 아이템",
   "Economy sim": "경제 시뮬레이션",
   "Market config": "마켓 설정",
   "Market state": "마켓 상태",
@@ -704,11 +920,11 @@
   "Pricing": "가격",
   "Price source": "가격 출처",
   "Price factor distribution": "가격 계수 분포",
-  "Items per factor bucket": "계수 구간별 품목 수",
+  "Items per factor bucket": "계수 구간별 아이템 수",
   "Category overview": "분류 개요",
   "Avg factor": "평균 계수",
-  "Average factor; bar thickness = item count": "평균 계수. 막대 두께는 품목 수",
-  "Movers": "변동 품목",
+  "Average factor; bar thickness = item count": "평균 계수. 막대 두께는 아이템 수",
+  "Movers": "변동 아이템",
   "Furthest from base price": "기준가에서 가장 먼 것",
   "Hot demand": "수요 급등",
   "Hot supply": "공급 급등",
@@ -722,8 +938,7 @@
   "Player offers only": "플레이어 매물만",
   "Auto-refresh": "자동 새로 고침",
   "/overview is a heavy call, so auto-refresh runs every 30s and should not be polled faster.": "/overview 는 무거운 호출이라 자동 새로 고침은 30초마다 돈다. 더 자주 부르지 말 것.",
-  "Each dot is one item. Points right of the zero line are demand-driven and tend to sit above the 1.0 line; points left are oversupplied and drift below it.": "점 하나가 품목 하나다. 0 선 오른쪽은 수요가 끌어올린 것이라 1.0 위에 있기 쉽고, 왼쪽은 공급 과잉이라 아래로 내려간다.",
-
+  "Each dot is one item. Points right of the zero line are demand-driven and tend to sit above the 1.0 line; points left are oversupplied and drift below it.": "점 하나가 아이템 하나다. 0 선 오른쪽은 수요가 끌어올린 것이라 1.0 위에 있기 쉽고, 왼쪽은 공급 과잉이라 아래로 내려간다.",
   "Endurance": "체력",
   "Strength": "근력",
   "Vitality": "생명력",
@@ -754,26 +969,23 @@
   "BEAR Raw Power": "BEAR 강인함",
   "USEC Negotiations": "USEC 협상",
   "Hideout Management": "은신처 관리",
-
   "Property": "속성",
   "ID": "ID",
   "English": "영어",
   "Euros": "유로",
-  "default": "기본",
   "Final": "최종",
   "Pistols": "권총",
-  "Update to 4.1": "4.1 로 올림",
-  "Update to SPT 4.0": "SPT 4.0 로 올림",
-  "Updated to 4.1": "4.1 로 올렸다",
-  "Updated to SPT 4.0": "SPT 4.0 로 올렸다",
-  "Updated to SPT 4.1": "SPT 4.1 로 올렸다",
-  "Updated vanilla crafts": "기본 제작법을 갱신했다",
+  "Update to 4.1": "4.1 대응",
+  "Update to SPT 4.0": "SPT 4.0 대응",
+  "Updated to 4.1": "4.1 대응",
+  "Updated to SPT 4.0": "SPT 4.0 대응",
+  "Updated to SPT 4.1": "SPT 4.1 대응",
+  "Updated vanilla crafts": "바닐라 제작법을 갱신했다",
   "Removed the extra custom crafts (they are vanilla now)": "따로 넣었던 제작법을 뺐다(이제 기본에 들어 있다)",
   "Webconfig toggle to enable/disable Access Keycard Requirement": "출입 키카드 요구를 켜고 끄는 웹 설정",
   "Webconfig toggle to enable/disable allowing scavs to infil to Labyrinth from the map screen": "맵 화면에서 스캐브가 라비린스로 들어가는 것을 켜고 끄는 웹 설정",
   "Webconfig toggle to Guarantee Labyrinth Tagilla having Secret Exfil Key": "라비린스 타길라가 비밀 탈출 열쇠를 반드시 들게 하는 웹 설정",
   "Webconfig options to change the exfil time, and availability timer of the normal Pmc exfil": "일반 PMC 탈출구의 탈출 시간과 개방 시각을 바꾸는 웹 설정",
-
   "Assault Rifles": "돌격소총",
   "Sniper Rifles": "저격소총",
   "Designated Marksman Rifles": "지정사수소총",
@@ -790,13 +1002,11 @@
   "Server Settings": "서버 설정",
   "SAIN Presets": "SAIN 프리셋",
   "SAIN Personality Mixer": "SAIN 성향 조합기",
-  "settings)": "개 설정)",
   "size set for one backpack": "크기를 배낭 하나에 지정했다",
   "Sizes are width x height in cells. Backpacks with several grids show their grid count instead of a size. Widths above": "크기는 칸 기준 너비 x 높이다. 격자가 여러 개인 배낭은 크기 대신 격자 수를 보여 준다. 너비가",
   "Add attraction or avoidance zones, set floors and bot filters, and create custom rush destinations.\n                    Capture Rush door in F12 adds room-rush points from in-game doors.": "유인·회피 구역을 더하고 층과 봇 거르기를 정하고, 돌격 목적지를 직접 만든다.\n                    F12 의 Capture Rush door 를 쓰면 게임 안 문에서 방 돌격 지점을 더한다.",
   "Choose config, zones or both. Compare the result with ORBIT Default and adjust it before applying.\n                    Your tweaks create a personal copy; the original preset stays intact.": "설정, 구역, 또는 둘 다를 고른다. 결과를 ORBIT Default 와 견주고 손본 뒤 적용하라.\n                    손댄 것은 개인 복사본이 되고 원래 프리셋은 그대로 남는다.",
   "For a complete backup with zones, use the ZIP export on the Presets page.\n                JSON imports below become unsaved settings: review them, then Save.": "구역까지 포함한 완전한 백업은 프리셋 페이지의 ZIP 내보내기를 쓰라.\n                아래로 들여온 JSON 은 저장 안 한 설정이 된다. 살펴본 뒤 저장하라.",
-
   "All In Weapon: Unslotted": "All In Weapon: Unslotted",
   "Web Config Bridge": "Web Config Bridge"
 }

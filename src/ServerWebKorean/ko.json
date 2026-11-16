@@ -140,7 +140,7 @@
   "database-loading-browser": "데이터베이스 탐색기 불러오는 중",
   "database-loading-record-details": "항목 상세 불러오는 중",
   "database-page-title": "데이터베이스 탐색기 - SPT 서버",
-  "database-preparing-assort-items": "상인 물건 {0} 개를 준비한다.",
+  "database-preparing-assort-items": "상인 아이템 {0} 개를 준비한다.",
   "database-preparing-row-properties": "속성 {0} 개를 준비한다.",
   "database-preparing-tables": "표를 준비한다.",
   "example-feature-1": "기능 1",
