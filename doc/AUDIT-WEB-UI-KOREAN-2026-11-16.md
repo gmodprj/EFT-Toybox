@@ -339,6 +339,12 @@ QuestCodex 에 남은 202건은 웹이 아니라 **게임 locale 의 몫**이다
 
 **번역기를 고치자 새로 드러난 것.** 합쳐진 문자열 안에 숨어 있던 아이템 이름이 낱개로 보이게 됐다 — locale 열쇠가 있는
 미번역 50개(배낭·총기·탄창·플래시 드라이브 등, 예: `Mystery Ranch Blackjack 50 backpack (USEC Intelligence Support Bureau)`,
-`Magnum Research Desert Eagle L5 .50 AE pistol`). 이번 202건에는 없던 것이라 넣지 않았다. 그중 하나라도 사전에 없으면
-그 목록 줄은 전부 원문으로 남는다(위 규칙) — ISB 배낭 목록처럼 여러 이름이 붙은 줄이 아직 남는 이유다. 나머지 70개는
-상인·모드·프리셋 이름과 `· PMC` 탈출구처럼 번역하지 않는 것이다.
+`Magnum Research Desert Eagle L5 .50 AE pistol`). 그중 하나라도 사전에 없으면 그 목록 줄은 전부 원문으로 남는다(위 규칙)
+— ISB 배낭 목록처럼 여러 이름이 붙은 줄이 남던 이유다.
+
+**2차 — 끝(같은 날 재기동).** 그 50개를 `item-names-questcodex-2.json` 으로 넣었다 — `14-4 KORD SSD` 는 1 묶음에 있어 빼고
+Name 47 + ShortName 20, 상품명 `PC CPU`·`Snickers` 는 keptAsIs. 표기는 1 묶음과 같고 탄창은 공식 꼴("30발, … 탄창"),
+raid backpack=급습 배낭, assault backpack=돌격 배낭이다. `check-locale-dict`: **OK — 8804/8804**. QuestCodex 미번역
+**120 → 75**, 아이템 이름은 일부러 둔 3개(`14-4 KORD SSD`·`PC CPU`·`Snickers`)와 등급 꼬리가 붙은 `Mace · Lv 69` 만 남았다.
+남은 것은 상인·모드·프리셋 이름, `· PMC` 탈출구, 그리고 `Born Free`·`Dig Deep`·`The Final Touch` 같은 **업적·퀘스트 이름**이다
+— 아이템 이름이 아니라 이번 범위 밖이다.
