@@ -24,6 +24,8 @@ export const BUCKETS = [
     /^!!!DO/,
     /^(WD-40|Can of|Car battery|CPU fan|PC CPU|RAM stick|Soap|Awl|Mace|Carry Case|Expeditionary Case|Thumb drive)/,
     /^\[[\w-]+\]_\(/, // [모드]_(아이템) 꼴
+    /^Dogtag (BEAR|USEC)\b/, // 공식 kr 도 "Dogtag BEAR" 영문
+    /^Black Division Dogtag\b/,
   ]],
   ['사람·모드 이름', [
     /^[A-Za-z][A-Za-z0-9_.-]*$/,
