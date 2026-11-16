@@ -163,36 +163,67 @@ OK — 15/15
 
 고친 방식: 읽는 쪽에서 `_` 로 시작하는 키와 객체가 아닌 값을 먼저 걸러 낸다. 주석 줄의 모양이 달라도 터지지 않는다.
 
-## 6. 페이지 안쪽 — 화면에서 바꾼다
+## 6. 페이지 안쪽 — 응답에 끼워 넣는다
 
-DLL 11개를 각각 패치하는 길은 버렸다. 모드가 업데이트될 때마다 다시 해야 하고, 분량도 감당이 안 된다.
-대신 **모든 페이지가 공통으로 부르는 자리에 번역기를 하나 끼웠다.**
+DLL 을 모드마다 패치하는 길은 버렸다. 업데이트마다 다시 해야 하고 분량도 감당이 안 된다.
+**서버가 내보내는 모든 HTML 응답에 번역기 스크립트 한 줄을 끼운다.**
 
-### 끼울 자리
+### 왜 미들웨어인가 (두 번 갈아탔다)
 
-호스트 HTML 은 `SPTarkov.Server.Web.dll` 안에 리터럴로 박혀 있어 모드가 `<head>` 에 들어갈 수 없다.
-하지만 그 HTML 이 부르는 스크립트는 **디스크의 정적 파일**이다.
+처음에는 디스크의 `SPT_Data/wwwroot/_framework/blazor.web.js` 끝에 로더를 붙였다. 돌긴 했지만 둘이 걸렸다.
+
+1. **SPT 파일을 건드린다.** 업데이트마다 다시 해야 하고, 원본을 떠 둬야 한다.
+2. **닿지 않는 페이지가 있다.** `/isb` 와 `/ultimateflea/app.html` 은 그 모드가 직접 내놓는
+   독립 HTML 이라 Blazor 호스트의 스크립트를 아예 부르지 않는다. ISB 는 HTML 이 DLL 안에 박혀 있어
+   파일로 고칠 수도 없다.
+
+그래서 `IStartupFilter` 로 미들웨어를 끼우는 쪽으로 갈아탔다. 응답이 HTML 이면 `</head>` 앞에
+`<script src="/modcardkorean/ko-ui.js" defer>` 를 넣는다. 셋 다 한 번에 잡히고,
+**SPT 파일은 하나도 건드리지 않는다**(되돌린 뒤 `blazor.web.js` 의 md5 가 원본과 같은 것을 확인했다).
+
+`IStartupFilter` 는 Microsoft 의 인터페이스라 SPT 의 DI 가 그대로 등록해 준다 —
+`DependencyInjectionHandler` 는 `System` 으로 시작하는 네임스페이스만 건너뛴다.
+등록은 `builder.Build()` 전에 끝나므로 파이프라인이 세워질 때 반영된다.
+
+### 버퍼링은 좁게
+
+모든 응답을 버퍼에 담으면 큰 JSON 과 웹소켓까지 메모리에 올라간다. 다음만 본다:
+
+- `GET` 이고, 요청의 `Accept` 에 `text/html` 이 있는 것
+- `/_blazor`·`/_framework`·`/_content` 가 아닌 것, 웹소켓이 아닌 것
+- 응답이 2xx 이고 `Content-Type` 이 `text/html` 이며 `Content-Encoding` 이 비어 있는 것(압축본은 손대면 깨진다)
+
+끼우지 못해도 원본을 그대로 내보낸다. 화면이 영어로 남을 뿐 깨지지 않는다.
+
+> 확인할 때 주의: PowerShell 의 `Invoke-WebRequest` 는 `Accept: */*` 를 보내서 **끼워지지 않는다.**
+> 브라우저처럼 `text/html` 을 넣어 보내야 한다. 이걸 모르면 "안 된다"로 오진한다.
+
+### 파일은 전부 모드 폴더 안에
 
 ```
-SPT_Data/wwwroot/_framework/blazor.web.js      ← 여기 끝에 로더 한 줄
-SPT_Data/wwwroot/SPTarkov.Server.Web/js/ko-ui.js    ← 번역기
-SPT_Data/wwwroot/SPTarkov.Server.Web/js/ko-ui.json  ← UI 사전(손으로 씀)
-SPT_Data/wwwroot/SPTarkov.Server.Web/js/ko-items.json ← 아이템 이름(자동 생성)
+user/mods/ModCardKorean/
+  ModCardKorean.dll
+  mod-cards.ko.json   모드 카드 글귀
+  ko-ui.js            번역기        → /modcardkorean/ko-ui.js
+  ko-ui.json          UI 사전       → /modcardkorean/ko-ui.json
 ```
 
-실측으로 확인한 것 둘:
+아이템 이름은 파일이 아니라 **라우트**가 그 자리에서 만든다(`/modcardkorean/item-names.json`).
+디스크의 `locales/global/*.json` 을 쓰지 않는 이유가 있다 — 서버는 런타임에 모드가 만든 아이템까지
+합쳐 들고 있고, `SptKoreanLocale` 이 kr 을 그 위에 또 고친다. 디스크 파일로 만들면 2,778줄,
+라우트로 뽑으면 **3,669줄**이다.
 
-| 확인 | 결과 |
-| --- | --- |
-| `checks.dat` 가 wwwroot 를 검증하는가 | **아니다.** base64 안에 `configs/*` 데이터베이스 파일 경로만 있다 |
-| wwwroot 에 새 파일을 넣으면 재기동 없이 서빙되는가 | **된다.** 넣자마자 200 으로 받았다 |
+왜 기동 중이 아니라 요청 시점인가: `LazyLoad` 는 값을 읽는 순간 그때까지 걸린 변환기를 모두 돌린다.
+`SptKoreanLocale` 은 PostLoad 패스(`TypePriority >= 200000`)에서 변환기를 거는데 같은 패스 안의
+순서는 보장되지 않는다. 기동 중에 읽으면 한글화 전 사전을 뽑을 수 있다.
 
-→ **사전을 고칠 때마다 서버를 다시 켤 필요가 없다.** 브라우저 새로고침이면 된다.
+함정 하나 더: 다른 모드가 아이템 이름에 Unity 리치 텍스트를 박아 둔다
+(`<b><color=#FFFFFF>Colt M4A1 … ●</color></b>`). 게임에서는 색이 입혀 보이지만 웹에 넣으면
+**태그가 글자로 찍힌다.** 라우트가 떼고 내보낸다.
 
-### 압축본 함정
-
-`blazor.web.js` 옆에 `.br`·`.gz` 미리 압축본이 같이 있다. **원본만 고치면 브라우저는 압축본을 받아 가
-고친 것이 무시된다.** 설치 스크립트가 원본을 고친 뒤 압축본을 다시 만든다.
+그리고 **짧은 한 낱말은 아이템 사전에서 버린다.** `Case`·`Buck`·`Core` 같은 것이 UI 라벨이나
+프로필 이름 자리를 엉뚱하게 바꿔 놓는다. 실제로 `/database` 의 "Items" 탭이 "물품 보관함"으로
+바뀌는 것을 보고 넣은 규칙이다.
 
 ### 번역기가 하는 일
 
@@ -209,50 +240,47 @@ Blazor Server 는 웹소켓으로 DOM 을 계속 갈아 끼우므로 `MutationOb
 
 ```powershell
 node tools/dump-web-ui-strings.mjs out.json   # 23개 페이지를 실제로 렌더해 미번역을 긁는다
-node tools/gen-web-item-names.mjs             # 게임 로케일에서 아이템 이름 en→kr 을 뽑는다
-node tools/install-server-web-ui-korean.mjs   # 설치(--remove 로 제거)
 node tools/check-web-ui-korean.mjs /database  # 그 페이지가 실제로 어떻게 보이는지 찍어 본다
+pwsh -File tools/install-modcardkorean.ps1 -Force
 ```
 
-프리렌더만 봐서는 안 된다 — Blazor 는 웹소켓이 붙은 뒤에야 본문이 채워진다. 그래서 headless Chrome 을
+프리렌더만 봐서는 안 된다 — Blazor 는 웹소켓이 붙은 뒤에야 본문이 채워진다. headless Chrome 을
 CDP 로 몰아 하이드레이션을 기다린 뒤 읽는다.
+
+**사전을 고칠 때 서버를 다시 켤 필요가 없다.** 라우트가 매 요청마다 디스크에서 읽는다.
+모드 폴더에 복사하고 브라우저를 새로고침하면 된다.
 
 ### 지금까지 (2026-11-16)
 
 | | 미번역 |
 | --- | --- |
 | 처음 | 1,400 |
-| 지금 | **440** |
+| 1차 사전 | 440 |
+| 지금 | **472** (단, `/isb` 212 + `/ultimateflea` 251 이 새로 보이게 된 뒤의 수) |
 
-0 이 된 페이지: `/tools`, `/status`, `/webconfigbridge`.
-거의 끝난 페이지: `/cci` 3, `/coti` 2, `/enablelabyrinth` 6, `/orbit` 6, `/configs` 8, `/definitive-weapon-variants/config` 8.
+숫자만 보면 늘었지만, 안 보이던 두 페이지 463개가 드러난 결과다. 그 둘은 각각 51 / 81 로 줄었다.
 
-남은 440 의 내역:
+페이지별 미번역: `/tools` 0, `/status` 0, `/cci` 0, `/webconfigbridge` 0, `/enablelabyrinth` 1,
+`/credentials` 1, `/coti` 2, `/orbit` 2, `/configs` 6, `/definitive-weapon-variants/config` 6,
+`/sain/presets` 7, `/` 14, `/theblacklist` 15, `/skills-extended` 16, `/profiles` 28, `/database` 29,
+`/lotsofloot` 34, `/bis` 44, `/questcodex` 45, `/isb` 51, `/jerobackpack` 63, `/thank-you` 67,
+`/ultimateflea` 81.
 
-| 무엇 | 개수 | 어떻게 할 것인가 |
-| --- | --- | --- |
-| 기여자·프로필 이름, 모드 id | 약 160 | **번역하지 않는다.** 바꾸면 안 되는 것들이다 |
-| 아이템·스킬 이름 | 약 120 | 서버 메모리의 로케일에서 뽑아야 한다 — 아래 |
-| 각 모드의 변경 이력 산문 | 약 30 | 모드가 업데이트되면 갈린다. 아직 안 했다 |
-| 치수(`3x8`·`1 x 1`) | 약 20 | 그대로 둔다 |
-| 그 밖 UI 문구 | 나머지 | 사전에 채워 간다 |
+남은 472 의 내역:
 
-### 아직 안 된 것
-
-1. **아이템 이름을 서버 메모리에서 뽑는 일.** 지금 `ko-items.json` 은 디스크의 `locales/global/*.json`
-   에서 만들어 2,778줄뿐이다. 서버는 런타임에 모드 아이템까지 합쳐 10,674개를 들고 있고,
-   `SptKoreanLocale` 이 kr 을 그 위에 또 고친다. 정확히 뽑으려면 서버 모드가 `LocaleTable` 을 읽어
-   내보내야 한다. 다만 `LazyLoad` 를 너무 일찍 풀면 뒤에 붙는 변환기와 엉키므로, 기동 중이 아니라
-   **요청 시점에** 뽑아야 한다.
-2. **`/ultimateflea/app.html`** — 자체 정적 HTML 이라 `blazor.web.js` 를 안 부른다. 그 파일에 따로
-   로더를 넣어야 하는데, 남의 모드 파일이라 설치 기록·백업을 갖춰야 한다.
-3. **`/isb`** — 렌더가 거의 비어 온다. 원인을 아직 안 봤다.
-4. 변경 이력 산문.
+| 무엇 | 어떻게 할 것인가 |
+| --- | --- |
+| 기여자·프로필 이름, 모드 id (약 160) | **번역하지 않는다.** 바꾸면 안 되는 것들이다 |
+| 한글 이름이 아예 없는 아이템 | kr 로케일에도 영문뿐이라 뽑을 것이 없다. `SptKoreanLocale` 소관 |
+| 각 모드의 변경 이력 산문 (약 30) | 모드가 업데이트되면 갈린다. 아직 안 했다 |
+| 대시보드가 만들어 내는 수치 문자열 | 규칙으로 잡히는 만큼만 잡았다 |
+| 그 밖 UI 문구 | 사전에 채워 간다 |
 
 ### 되돌리기
 
 ```powershell
-node tools/install-server-web-ui-korean.mjs --remove
+pwsh -File tools/install-modcardkorean.ps1 -Remove
 ```
 
-로더를 떼고 번역기 파일을 지운다. 원본 `blazor.web.js` 는 `backup/server-web-ui-pre/` 에 떠 뒀다.
+모드 폴더만 지우면 끝이다. SPT 파일은 건드린 것이 없다.
+(`blazor.web.js` 를 고치던 옛 방식은 `tools/install-server-web-ui-korean.mjs --remove` 로 되돌렸다.)
