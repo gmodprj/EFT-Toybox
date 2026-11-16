@@ -86,15 +86,17 @@
 
     for (var i = 0; i < rules.length; i++) {
       var m = rules[i][0].exec(core);
-      if (m) {
-        return rules[i][1].replace(/\$(\d)/g, function (_, d) {
-          var cap = m[+d];
-          if (cap === undefined) return '';
-          // 캡처도 사전에 있으면 바꾼다("Formation 3 · Scout" → "편성 3 · 정찰병").
-          var inner = /[A-Za-z]/.test(cap) ? lookup(cap.trim(), depth + 1) : null;
-          return typeof inner === 'string' ? inner : cap;
-        });
-      }
+      if (!m) continue;
+      var res = rules[i][1].replace(/\$(\d)/g, function (_, d) {
+        var cap = m[+d];
+        if (cap === undefined) return '';
+        // 캡처도 사전에 있으면 바꾼다("Formation 3 · Scout" → "편성 3 · 정찰병").
+        var inner = /[A-Za-z]/.test(cap) ? lookup(cap.trim(), depth + 1) : null;
+        return typeof inner === 'string' ? inner : cap;
+      });
+      // 일반 규칙("$1 ×$2")이 맞았는데 캡처를 못 바꿔 원문 그대로면, 뒤의 구체적 규칙
+      // ("Day N, Multiplier: ×M")에 기회를 준다. 여기서 멈추면 그 규칙이 영영 안 돈다.
+      if (res !== core) return res;
     }
 
     // "#FireKlean gun lube ○" 처럼 꼬리표가 붙은 것은 알맹이만 바꿔 본다.
