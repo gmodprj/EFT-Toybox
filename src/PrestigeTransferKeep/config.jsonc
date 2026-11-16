@@ -1,0 +1,16 @@
+{
+  // 프레스티지에서 넘기기로 고른 물건을 그대로 받게 되돌린다.
+  // 3332 Prestige Perks 가 설계상 전송 목록을 비우고 코인으로 바꾸는 것을 밖에서 막는다.
+  // 경위는 doc/fixes/2026-11-16-prestige-perks-eats-transfer.md
+  "ModEnabled": true,
+
+  // 넘기기로 고른 물건을 그대로 받는다(바닐라 전송 우편)
+  "KeepTransferItems": true,
+
+  // 전송분 코인 우편을 막는다. 물건을 받으면서 코인까지 받으면 두 번 받는 셈이다.
+  // 꺼도 보스·금고 코인은 그대로라 퍽을 살 길은 남는다.
+  "SuppressCoinMail": true,
+
+  // 끼어들 때마다 로그에 한 줄씩
+  "Debug": true
+}
