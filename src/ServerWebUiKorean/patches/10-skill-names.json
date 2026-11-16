@@ -1,0 +1,55 @@
+{
+  "_comment": "스킬 이름을 공식 kr 로케일(locales/global/kr.json)에 맞춘다. 공식에 없는 것은 Skills Extended 의 자체 kr.json, 그것도 없으면 공식 BEAR 스킬 표기의 결을 따른다. Launchers=로켓 발사기, Sniper(스킬)=볼트액션 소총.",
+  "rules": [
+    ["^Reset (.+) multiplier$", "$1 배수 되돌리기"]
+  ],
+  "scoped": {
+    "/skills-extended": {
+      "Sniper Rifles": "볼트액션 소총",
+      "Search": "확인"
+    }
+  },
+  "dict": {
+    "Endurance": "지구력",
+    "Health": "체력",
+    "Vitality": "활력",
+    "Immunity": "면역력",
+    "Intellect": "지력",
+    "Perception": "인지능력",
+    "Stress Resistance": "스트레스 저항력",
+    "Throwing": "투척무기",
+    "Covert Movement": "은밀한 움직임",
+    "Prone Movement": "포복 기동",
+    "Field Medicine": "야전 의술",
+    "First Aid": "응급 처치",
+    "Weapon Maintenance": "무기 유지보수",
+    "BEAR Raw Power": "BEAR 원초적 힘",
+    "Launchers": "로켓 발사기",
+    "Memory": "기억력",
+    "Sniping": "저격술",
+    "Barter": "물물교환",
+    "Advanced Modding": "심화 개조",
+    "Weapon Modding": "무기 개조",
+    "Weapon Drawing": "총기 전환 숙련",
+    "Weapon Aiming": "조준 숙련",
+    "Night Operations": "야간 작전",
+    "Silent Ops": "은밀 작전",
+    "Clean Operations": "소탕 작전",
+    "Free Trading": "자유 거래",
+    "Shadow Connections": "은밀한 연락책",
+    "BEAR Assault Operations": "BEAR 강습 작전",
+    "BEAR Authority": "BEAR 지휘권",
+    "BEAR Heavy Caliber": "BEAR 중화기",
+    "Heavy Machine Guns": "중기관총",
+    "Underbarrel Launchers": "총열 하부 발사기",
+    "Miscellaneous Weapons": "기타 무기",
+    "NATO Weapon Proficiency": "서구권 총기 숙련도",
+    "Eastern Weapon Proficiency": "동구권 총기 숙련도",
+    "USEC Negotiations": "USEC 협상",
+    "USEC Tactics": "USEC 전술",
+    "USEC Long Range Optics": "USEC 장거리 광학",
+    "USEC Advanced Weapon Modding": "USEC 심화 무기 개조",
+    "Task Performance": "임무 수행",
+    "Auctions": "경매"
+  }
+}

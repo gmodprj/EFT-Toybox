@@ -4,7 +4,7 @@
   },
 
   "/bis": {
-    "description": "물물교환 품목이 한 칸에 얼마나 겹쳐 쌓이는지 정한다"
+    "description": "교환 아이템이 한 칸에 얼마나 겹쳐 쌓이는지 정한다"
   },
   "/cci": {
     "description": "컬티스트 서클의 제물 결과와 시간을 설정한다"
@@ -40,7 +40,7 @@
     "description": "Skills Extended 의 웹 설정 화면"
   },
   "/theblacklist": {
-    "description": "플리마켓 금지 품목을 풀고 가격을 다시 맞춘다"
+    "description": "플리마켓 금지 아이템을 풀고 가격을 다시 맞춘다"
   },
   "/ultimateflea/app.html": {
     "description": "플리마켓 설정과 경제 현황판, 빠른 등록 기능"

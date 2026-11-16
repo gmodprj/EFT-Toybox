@@ -1,0 +1,48 @@
+{
+  "_comment": "C 단계 1차 — BIS·Enable Labyrinth·본체·CCI",
+  "rules": [
+    ["^Craft #(\\d+)$", "제작법 #$1"],
+    ["^Threshold #(\\d+) (.+)$", "구간 #$1 $2"],
+    ["^(\\d+) visible properties$", "보이는 속성 $1개"]
+  ],
+  "dict": {
+    "Default login:": "기본 로그인:",
+
+    "Change Pmc Exfil Timers": "PMC 탈출 시간 바꾸기",
+    "Pmc Exfil Timers": "PMC 탈출 시간",
+    "Primary Pmc Exfil Timer": "주 PMC 탈출 시간",
+    "Elapsed Seconds Before Available": "열리기까지 걸리는 시간(초)",
+    "Exfiltration Type": "탈출 방식",
+    "Individual": "개별",
+    "True": "예",
+    "False": "아니오",
+    "Guarantee Secret Exfil Key": "비밀 탈출 열쇠 보장",
+    "Map Select Scav Entry": "맵 선택 화면에서 스캐브 진입",
+    "Remove Keycard Requirement": "키카드 요구 없애기",
+    "Select one..": "하나 고르기..",
+
+    "General Config": "일반 설정",
+    "Max Reward Item Count": "최대 보상 아이템 수",
+    "Reward Price Multiplier Minimum": "보상 가격 배수 최소",
+    "Reward Price Multiplier Maximum": "보상 가격 배수 최대",
+    "Bonus Chance Multiplier": "보너스 확률 배수",
+    "Hideout Task Reward Time in Seconds": "은신처·퀘스트 보상 대기 시간(초)",
+    "High Value Threshold Roubles": "고가 기준 (루블)",
+    "Hideout Craft Sacrifice Threshold Roubles": "은신처 제작품 기준 제물 가치 (루블)",
+    "Craft Time Override": "제작 시간 덮어쓰기",
+    "Craft Time Thresholds": "제작 시간 구간",
+    "These thresholds are the fallback for when you put items into the Cultist Circle and they ARE NOT a predefined craft, NOR did the result roll to be a Hideout/Task reward. Please read the below if you don't understand. If you still don't understand, probably best to ignore this section. The values should automatically adjust to keep the thresholds unique and not overlap.": "이 구간들은 컬티스트 서클에 넣은 아이템이 정해진 제작법도 아니고, 은신처·퀘스트 보상으로도 굴려지지 않았을 때 쓰는 대비책이다. 이해가 안 되면 아래를 읽어라. 그래도 모르겠으면 이 섹션은 그냥 두는 게 낫다. 값은 구간이 겹치지 않도록 저절로 맞춰진다.",
+    "MATH: value sacrificed * (Random(RewardPriceMultiplierMin, RewardPriceMultiplierMax) * (1 + (Hideout Management Progress / 10000)).": "계산: 바친 가치 * (Random(RewardPriceMultiplierMin, RewardPriceMultiplierMax) * (1 + (은신처 관리 진행도 / 10000)).",
+    "EXAMPLE: 100k sacrifice value, lv51 hideout management, 1.14 roll on reward multi: 100,000 value * (1.14 * ( 1 + (5100 / 10000) = 172,140 value sacrificed": "보기: 제물 가치 100k, 은신처 관리 레벨 51, 보상 배수 굴림 1.14 이면 — 100,000 가치 * (1.14 * ( 1 + (5100 / 10000) = 172,140 가치를 바친 것으로 친다",
+    "Add Threshold": "구간 추가",
+    "Remove Last": "마지막 것 지우기",
+    "Craft Timer": "제작 시간",
+    "Max Value": "최댓값",
+    "Min Value": "최솟값",
+    "Add New Craft": "새 제작법 추가",
+    "Craft Time (seconds)": "제작 시간(초)",
+    "Required Items": "필요 아이템",
+    "Rewards": "보상",
+    "Repeatable": "반복 가능"
+  }
+}
