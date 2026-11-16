@@ -215,3 +215,97 @@ QuestCodex 상인 목록에서 CaseTrader 모드의 상인 `Case` 가 **"케이�
 | 앞의 일반 규칙에서 멈췄다 | `Day 0, Multiplier: ×1.8` 처럼 **이미 규칙이 있는 문장**이 안 바뀌었다 | 결과가 원문과 같으면 다음 규칙으로 |
 | SVG `<style>` 을 못 걸렀다 | ORBIT 지도의 CSS(`#orbit-rush-canvas * { … }`)가 번역 대상으로 잡혔다. SVG 안에서는 tagName 이 소문자다 | 대소문자 무시 비교 |
 | 점검 도구 주입 정규식 | 셸 heredoc 이 `\` 를 `\` 로 줄여 템플릿 문자열 안의 `\s` 가 `s` 가 됐다 | Edit 로 직접 고침. 이후 정규식 든 파일은 셸로 쓰지 않는다 |
+| 8 | Skills Extended | 1,792 → 0 | 좌표·캐시/자물쇠 장소 이름·총기 이름·해킹 미니게임 요소 이름 |
+
+#### 스킬 이름을 공식 표기로 — 앞서 넣은 17개가 틀렸다
+
+공식 kr 로케일과 대조해 보니 제가 넣은 스킬 이름 17개가 공식과 달랐다. **특히 "체력"은 Endurance 에 썼는데
+공식은 Health 가 "체력"이라 뜻이 엇갈려 있었다.**
+
+| 원문 | 넣었던 것 | 공식 |
+| --- | --- | --- |
+| Endurance | 체력 | **지구력** |
+| Health | 건강 | **체력** |
+| Vitality | 생명력 | **활력** |
+| Intellect | 지능 | **지력** |
+| Perception | 지각 | **인지능력** |
+| Immunity / Stress Resistance | 면역 / 스트레스 저항 | **면역력 / 스트레스 저항력** |
+| Covert Movement / Prone Movement | 은밀 이동 / 포복 이동 | **은밀한 움직임 / 포복 기동** |
+| Field Medicine / First Aid | 야전 의료 / 응급처치 | **야전 의술 / 응급 처치** |
+| Weapon Maintenance | 총기 정비 | **무기 유지보수** |
+| Throwing | 투척 | **투척무기** |
+| BEAR Raw Power | BEAR 강인함 | **BEAR 원초적 힘** |
+| Launchers | 유탄발사기 | **로켓 발사기** |
+| Sniper Rifles (스킬) | 저격소총 | **볼트액션 소총** (Skills Extended 페이지에서만) |
+
+공식에 없는 것은 Skills Extended 의 자체 kr.json 을 따랐다 — NATO / Eastern Weapon Proficiency 는 그 모드가 게임 안에서
+**서구권 / 동구권 총기 숙련도**로 쓴다. 그것도 없는 USEC 스킬은 공식 BEAR 스킬 표기(BEAR 강습 작전, BEAR 지휘권)의 결로
+**USEC 협상 / 전술 / 장거리 광학 / 심화 무기 개조**로 정했다.
+
+### D. 다시 점검 — 끝
+
+`audit-web-ui.mjs` 로 전체를 다시 쟀다(Skills Extended 가 80쪽 상한에 걸려 150 으로 올렸더니 108쪽까지 들어갔다).
+
+| 모드 | 화면 | 미번역 전 → 후 | 번역 후보 전 → 후 | 남은 후보가 무엇인가 |
+| --- | ---: | ---: | ---: | --- |
+| BIS | 1 | 15 → 16 | 2 → 2 | 모드 이름, 아이템 이름 |
+| CCI | 10 | 25 → **0** | 23 → **0** | |
+| DWV | 17 | 197 → 4 | 177 → 2 | 상인·모드 이름 |
+| ECOTI | 4 | 171 → 53 | 92 → 20 | 튜브 식별자·좌표·아이템 이름 |
+| Enable Labyrinth | 2 | 11 → **0** | 9 → **0** | |
+| ISB | 19 | 295 → 110 | 254 → 14 | 세력·부대 고유명 |
+| jerobackpack | 3 | 129 → 55 | 72 → 6 | 아이템 이름 |
+| Lots of Loot | 4 | 83 → 13 | 61 → 6 | 모드 이름·버전 |
+| ORBIT | 43 | 586 → 58 | 512 → **0** | |
+| QuestCodex | 9 | 849 → 285 | 698 → 202 | 퀘스트·모드 아이템 이름(kr 로케일에도 영문) |
+| SAIN | 3 | 112 → 36 | 86 → 10 | 프리셋 이름(일부러)·버전 |
+| Skills Extended | 80 → 108 | 1,539 → 795 | 1,404 → 52 | 장소·모드 이름, 문장 조각 하나 |
+| The Blacklist | 4 | 64 → 8 | 45 → 5 | 모드 이름·버전 |
+| UltimateFlea | 13 | 241 → 103 | 141 → 22 | 설정 키(`events[].id`)·아이템 이름 |
+| Web Config Bridge | 11 | 40 → 11 | 37 → 10 | 모드 이름 |
+| 본체 | 12 | 126 → 123 | 14 → 14 | 모드·프로필 이름 |
+| **합계** | | **4,483 → 1,670** | **3,627 → 365** | |
+
+**남은 번역 후보 365개를 하나하나 확인했다 — 번역할 UI 문구는 없다.** 분류기가 다 못 거르는 이름·식별자·아이템
+이름이다. 남은 미번역 1,670 은 좌표·수치 556, 사람·모드·장소 이름 459, 아이템 이름 228, 식별자 43, 링크·버전 19 다.
+
+#### 다시 점검하며 내장 브라우저로 더 찾은 것
+
+| 자리 | 문제 | 고침 |
+| --- | --- | --- |
+| Skills Extended 설명 | "XP 공유" — 다른 데선 "경험치" | 경험치 나눔 |
+| Skills Extended 바닥 | "46 켬 · 대기 중인 변경 0개" — 숫자가 다른 요소에 있다 | 규칙 `enabled · N pending changes` → "개 켬 · …" |
+| ORBIT 위쪽 메뉴 | `Custom` 이 "직접 지정", 같은 모드 안 `Custom 1` 은 "사용자 지정" | 사용자 지정 |
+| ORBIT 설명 | `Spawn sectors` 가 "스폰 구역" — sector 는 섹터로 정했다 | 스폰 섹터 |
+| ECOTI | `Scale`(3D 배율)과 `Size` 가 둘 다 "크기" | Scale → 배율 |
+
+Skills Extended 머리말의 "스킬 확장"은 **번역기가 아니라 모드가 스스로** 자기 kr.json 으로 그리는 것이라 그대로 둔다.
+
+#### 서로 다른 영문이 같은 한글 — 남겨 둔 것
+
+분석기가 32쌍을 뽑았다. 모두 봤고, 같은 뜻이라 그대로 둔다:
+`Categories`/`Category`(분류), `Min`/`Minimum`(최소), `Remove`/`Clear`(지우기), `Revert`/`Reset`(되돌리기),
+`Flea market`/`Ragfair`(플리마켓), `Pistols`/`Handgun`(권총), `Submachine Guns`/`SMG`(기관단총),
+`Config`/`General Config`(CCI 의 같은 페이지 — 일반 설정), `Update to`/`Updated to`(릴리스 노트 — 대응) 등.
+
+### 번역하지 않는 것 (정리)
+
+| 무엇 | 왜 |
+| --- | --- |
+| 모드·사람·상인·프리셋 이름 | 고유명. SAIN 프리셋 이름은 SAIN 안내 글과 짝이 맞아야 한다 |
+| 세력 이름(Black Division, Chaos Insurgency, White Tusk) | 공식 표기가 없는 모드 고유명 |
+| DWV 품질 등급 이름 | 게임 안 아이템 이름에 그대로 붙는다 |
+| 인식표 이름(`Dogtag BEAR — …`) | 공식 kr 도 영문 |
+| 설정 키·열거값·MongoID·문 ID·파일명·URL | 파일에 그대로 쓰는 값 |
+| 캐시·자물쇠 장소 이름(`Bus Depot`, `Oli - 3`) | Skills Extended 의 맵 지점 고유명 |
+| kr 로케일에도 영문인 아이템 이름 | 웹에만 넣으면 게임과 어긋난다 — `SptKoreanLocale` 에 넣어야 게임·웹이 함께 잡힌다 |
+
+### 재기동해야 반영되는 것
+
+아래 셋은 서버 기동 때 읽히는 값이라, **고쳐 두었지만 서버를 다시 켜야 화면에 나온다.**
+
+- 모드 카드 설명 2건(`src/ModCardKorean/mod-cards.ko.json`): BIS "교환 아이템…", Blacklist "…금지 아이템…"
+- 본체 웹 로케일 1건(`src/ServerWebKorean/ko.json`): `database-preparing-assort-items` "상인 아이템 {0} 개를 준비한다."
+  — `pwsh -File tools/install-server-web-locale.ps1` 로 다시 깔아야 한다.
+
+나머지(번역기·사전)는 모드 폴더에 복사하면 새로고침만으로 반영된다.

@@ -1,0 +1,12 @@
+{
+  "_comment": "D 단계 — 내장 브라우저 재점검에서 찾은 것. 모드 이름은 원문(null), XP 는 경험치, 켬·대기 줄 어순.",
+  "rules": [
+    ["^enabled · ([\\d,]+) pending changes$", "개 켬 · 대기 중인 변경 $1개"]
+  ],
+  "dict": {
+    "Skills Extended": null,
+    "Configure BEAR trade discounts and quest XP bonuses.": "BEAR 의 거래 할인과 퀘스트 경험치 보너스를 설정한다.",
+    "Tune weapon handling, XP sharing, and the Eastern weapon list.": "총기 조작과 경험치 나눔, 동구권 총기 목록을 손본다.",
+    "Tune weapon handling, XP sharing, and the NATO weapon list.": "총기 조작과 경험치 나눔, NATO 총기 목록을 손본다."
+  }
+}

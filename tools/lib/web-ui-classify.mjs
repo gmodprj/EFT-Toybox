@@ -22,6 +22,7 @@ export const BUCKETS = [
     /^[-+0-9.,xX×%\s|:/]+$/,
     /^[\d.,]+\s?(m|ms|kg|cm|mm)$/, // 단위 값(80 m, 50 ms) — 그대로가 맞다
     /^[\d.,]+-[\d.,]+\s?m$/, // 거리 구간(100-150m)
+    /^· [XYZ] -?[\d.]+$/, // 좌표(Skills Extended 캐시 위치)
   ]],
   ['아이템 이름', [
     /[○●]\s*$/,
@@ -29,12 +30,15 @@ export const BUCKETS = [
     /^!!!DO/,
     /^(WD-40|Can of|Car battery|CPU fan|PC CPU|RAM stick|Soap|Awl|Mace|Carry Case|Expeditionary Case|Thumb drive)/,
     /^\[[\w-]+\]_\(/, // [모드]_(아이템) 꼴
+    /\b(pistol|shotgun|rifle|carbine|submachine gun|machine gun|sniper rifle)\b( \(.+\))?$/i, // 총기 이름
     /^Dogtag (BEAR|USEC)\b/, // 공식 kr 도 "Dogtag BEAR" 영문
     /^Black Division Dogtag\b/,
   ]],
   ['사람·모드 이름', [
     /^[A-Za-z][A-Za-z0-9_.-]*$/,
     /\(White Tusk\)$/,
+    /^· [0-9a-f]{24}$/, // 프로필 ID
+    /^[A-Z][\w' ]+ - \d+$/, // 맵 지점 이름 + 번호(Oli - 3, Woods - 2)
   ]],
 ];
 

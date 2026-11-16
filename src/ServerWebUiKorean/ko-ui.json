@@ -2,6 +2,10 @@
   "_comment": "서버 웹 화면에 남은 영문 → 한국어. 열쇠는 화면에 보이는 문자열 그대로(앞뒤 공백 제외). '_' 로 시작하는 열쇠는 건너뛴다. 아이템 이름은 ko-items.json 이 따로 맡는다. 사람 이름·URL·파일명·MongoID 는 일부러 넣지 않는다 — 바꾸면 안 되는 것들이다. 미번역은 화면에서 window.__ko.missing 으로 모은다.",
   "_rules": [
     [
+      "^enabled · ([\\d,]+) pending changes$",
+      "개 켬 · 대기 중인 변경 $1개"
+    ],
+    [
       "^([\\d,]+) nodes: ([\\d,]+) defenses, ([\\d,]+) utilities, ([\\d,]+) caches, ([\\d,]+) core, ([\\d,]+) empty$",
       "노드 $1개: 방어 $2, 유틸리티 $3, 캐시 $4, 코어 $5, 빈 칸 $6"
     ],
@@ -733,7 +737,7 @@
       "Right": "오른쪽",
       "Roll": "롤",
       "Rotation": "회전",
-      "Scale": "크기",
+      "Scale": "배율",
       "Show": "보이기",
       "Step": "간격",
       "Text": "글자",
@@ -964,7 +968,7 @@
   "Object": "객체",
   "Default": "기본값",
   "Original": "원래",
-  "Custom": "직접 지정",
+  "Custom": "사용자 지정",
   "Current result": "지금 결과",
   "Rounds": "발",
   "Profile control": "프로필 관리",
@@ -1167,7 +1171,7 @@
   "Shared goals, regrouping, travel styles and looting cover. Personality shapes how squads spend their raid.": "공동 목표, 재집결, 이동 방식, 전리품 엄호. 성향이 분대가 레이드를 보내는 방식을 정한다.",
   "Squads pursue objectives, loot, regroup and extract. SAIN handles their combat.": "분대는 목표를 좇고, 줍고, 다시 모이고, 탈출한다. 전투는 SAIN 이 맡는다.",
   "Squads hold hotspots, camp extracts or approach airdrops, with cover roles and personality-based choices.": "분대는 요충지를 지키거나 탈출구에 죽치거나 보급에 접근한다. 엄호 역할과 성향에 따라 고른다.",
-  "Spawn sectors, boss areas, marked rooms, sniper positions and custom destinations give squads a purpose from the start.": "스폰 구역, 보스 구역, 표식 방, 저격 자리, 직접 지정한 목적지가 분대에 처음부터 목적을 준다.",
+  "Spawn sectors, boss areas, marked rooms, sniper positions and custom destinations give squads a purpose from the start.": "스폰 섹터, 보스 구역, 표식 방, 저격 자리, 사용자 지정 목적지가 분대에 처음부터 목적을 준다.",
   "Power, switches and locked doors: squads work through objectives such as KIBA, ULTRA Medical, Saferoom and D-2.": "전원, 스위치, 잠긴 문 — 분대가 KIBA, ULTRA 메디컬, 세이프룸, D-2 같은 목표를 풀어 간다.",
   "Search bodies, containers and loose loot, upgrade equipment, then leave based on loot, objectives, time or injuries.": "시체와 컨테이너, 흩어진 전리품을 뒤지고 장비를 갈아입은 뒤 전리품·목표·시간·부상을 보고 빠진다.",
   "Distant bots use a lighter simulation while moving, looting and fighting. They wake near players and through scoped views.": "먼 곳의 봇은 이동·줍기·전투를 가벼운 시뮬레이션으로 돈다. 플레이어 근처나 조준경에 들어오면 깨어난다.",
@@ -1200,7 +1204,7 @@
   "Hack keycard doors with a Modified PDA. Configure attempts, hacking stats, and door difficulty.": "개조 PDA 로 키카드 문을 해킹한다. 시도 횟수와 해킹 능력치, 문 난이도를 설정한다.",
   "Tune and triangulate hidden supply caches using the Modified PDA.": "개조 PDA 로 숨은 보급 캐시를 맞춰 찾는다.",
   "Configure pin difficulty, pick resilience, progression, and per-map locks.": "핀 난이도, 픽 내구, 성장, 맵별 자물쇠를 설정한다.",
-  "Configure BEAR trade discounts and quest XP bonuses.": "BEAR 의 거래 할인과 퀘스트 XP 보너스를 설정한다.",
+  "Configure BEAR trade discounts and quest XP bonuses.": "BEAR 의 거래 할인과 퀘스트 경험치 보너스를 설정한다.",
   "Configure USEC trade discounts and quest cash bonuses.": "USEC 의 거래 할인과 퀘스트 현금 보너스를 설정한다.",
   "Configure scav cooldown, Cultist Circle returns, and Cultist scav chance.": "스캐브 대기시간, 컬티스트 서클 회수, 컬티스트 스캐브 확률을 설정한다.",
   "Configure Ghost Mode": "고스트 모드 설정",
@@ -1216,8 +1220,8 @@
   "Tune fracture resistance and energy and hydration consumption.": "골절 저항과 체력·수분 소모를 손본다.",
   "Tune negative effects, poison resistance, and painkiller duration.": "나쁜 효과와 독 저항, 진통제 지속을 손본다.",
   "Tune stamina, jumping costs, and breath recovery.": "스태미나와 점프 소모, 호흡 회복을 손본다.",
-  "Tune weapon handling, XP sharing, and the Eastern weapon list.": "총기 조작과 XP 공유, 동구권 총기 목록을 손본다.",
-  "Tune weapon handling, XP sharing, and the NATO weapon list.": "총기 조작과 XP 공유, NATO 총기 목록을 손본다.",
+  "Tune weapon handling, XP sharing, and the Eastern weapon list.": "총기 조작과 경험치 나눔, 동구권 총기 목록을 손본다.",
+  "Tune weapon handling, XP sharing, and the NATO weapon list.": "총기 조작과 경험치 나눔, NATO 총기 목록을 손본다.",
   "Stack Size": "겹침 수",
   "Resources": "자원",
   "Weight Mult": "무게 배수",
@@ -2563,7 +2567,6 @@
   "USEC Advanced Weapon Modding": "USEC 심화 무기 개조",
   "Task Performance": "임무 수행",
   "Auctions": "경매",
-  "enabled · 0 pending changes": "켬 · 대기 중인 변경 0개",
   "Administrator configuration": "관리자 설정",
   "All guides": "모든 안내",
   "Pin tumbler lock with pick depth, lift and tension arrows.": "픽의 깊이·들어 올림·장력 화살표가 그려진 핀 텀블러 자물쇠.",
@@ -3056,5 +3059,6 @@
   "align the moving signal when pairing at the case.": "케이스에서 페어링할 때 움직이는 신호를 맞춘다.",
   "record from separated positions.": "떨어진 위치에서 기록한다.",
   "sweep for the strongest direction.": "가장 센 방향을 훑어 찾는다.",
-  "tune the transmission peak.": "송신 꼭대기에 맞춘다."
+  "tune the transmission peak.": "송신 꼭대기에 맞춘다.",
+  "Skills Extended": null
 }

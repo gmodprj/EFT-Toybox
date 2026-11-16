@@ -331,7 +331,9 @@
           continue;
         }
         if (k.charAt(0) === '_') continue;
-        dict[k] = j[k];
+        // null 은 "원문 그대로 둔다". 모드 이름처럼 아이템 사전 경로로 엉뚱하게 번역되는 것을 막는다
+        // (런타임 kr 로케일에 "Skills Extended" → "스킬 확장" 이 들어 있었다).
+        dict[k] = j[k] === null ? KEEP : j[k];
       }
       // 아이템 이름은 ModCardKorean 의 라우트가 서버 메모리의 로케일에서 그 자리에서 뽑는다.
       // 모드가 만든 아이템까지 들어 있고 SptKoreanLocale 의 번역도 반영돼 있다.
