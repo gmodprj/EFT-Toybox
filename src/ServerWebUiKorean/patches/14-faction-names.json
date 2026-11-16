@@ -1,0 +1,7 @@
+{
+  "_comment": "2026-11-16 — 세력 이름을 게임 locale 에 맞춘다. 게임(SptKoreanLocale item-names-isb-1, gen-isb-item-names.mjs 의 TERMS)이 블랙 디비전·카오스 인서전시로 쓰는데 웹만 영문이었다. patch 06 의 값과 규칙도 같이 바꿨다. White Tusk·Ghost Busters 는 게임도 영문이라 그대로 둔다.",
+  "dict": {
+    "Black Division": "블랙 디비전",
+    "Chaos Insurgency": "카오스 인서전시"
+  }
+}

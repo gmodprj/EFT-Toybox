@@ -293,7 +293,7 @@ Skills Extended 머리말의 "스킬 확장"은 **번역기가 아니라 모드�
 | 무엇 | 왜 |
 | --- | --- |
 | 모드·사람·상인·프리셋 이름 | 고유명. SAIN 프리셋 이름은 SAIN 안내 글과 짝이 맞아야 한다 |
-| 세력 이름(Black Division, Chaos Insurgency, White Tusk) | 공식 표기가 없는 모드 고유명 |
+| 세력 이름 White Tusk·Ghost Busters | 공식 표기가 없는 모드 고유명. Black Division·Chaos Insurgency 는 **게임 locale 이 블랙 디비전·카오스 인서전시로 쓰므로** 웹도 맞췄다(아래 E) |
 | DWV 품질 등급 이름 | 게임 안 아이템 이름에 그대로 붙는다 |
 | 인식표 이름(`Dogtag BEAR — …`) | 공식 kr 도 영문 |
 | 설정 키·열거값·MongoID·문 ID·파일명·URL | 파일에 그대로 쓰는 값 |
@@ -309,3 +309,30 @@ Skills Extended 머리말의 "스킬 확장"은 **번역기가 아니라 모드�
   — `pwsh -File tools/install-server-web-locale.ps1` 로 다시 깔아야 한다.
 
 나머지(번역기·사전)는 모드 폴더에 복사하면 새로고침만으로 반영된다.
+
+### E. QuestCodex 아이템 이름 — 사전은 넣었고 재기동 대기
+
+QuestCodex 에 남은 202건은 웹이 아니라 **게임 locale 의 몫**이다(kr 로케일에도 영문). 그래서 웹 사전이 아니라
+`SptKoreanLocale` 에 넣었다 — 그래야 게임 화면과 웹이 같은 말을 쓴다.
+
+| 무엇 | 수 | 처리 |
+| --- | ---: | --- |
+| locale 열쇠가 있는 이름 | 175 | `src/SptKoreanLocale/lang/item-names-questcodex-1.json` — Name 174 + ShortName 95, `14-4 KORD SSD` 1개는 모델 코드라 keptAsIs |
+| 그중 바닐라인데 공식 kr 도 영문 | 96 | 공식 결(브랜드·모델·위장 무늬는 영문, 물건 종류만 한국어)로 옮겼다 |
+| 그중 모드가 이름을 바꿔 공식 한국어가 덮인 것 | 2 | Red Bull(원래 "Hot Rod 핫 로드 에너지 드링크"), SilencerCo Osprey 9 2.0 — 공식 낱말(소음기 등)을 되쓴다 |
+| 열쇠가 없는 것 | 44 | 프로필·상인·SAIN 프리셋 이름, `Dorms V-Ex · PMC` 같은 탈출구, `· USEC body` 같은 시신·상자 꼬리, 그리고 **번역기 회귀로 합쳐진 문자열** |
+
+방탄판의 `(3/50)` 같은 꼬리는 앞선 변환기가 locale 값에 써 넣은 것이라 값에 함께 적었다. 색 태그·●○ 는 넣지 않았다.
+낱말은 퀘스트 목표 사전과 맞췄다(등대지기·프라퍼·레프·스키어·크노소스·래버린스·테라그룹·USEC 정보지원국).
+
+**번역기 회귀.** 한 요소 안에 글자 조각이 둘 이상이고 통째로 사전에 없으면 원문으로 두게 했었는데, QuestCodex 의
+"아이템, 아이템, …" 목록은 조각마다 노드가 갈려 통째로는 영영 안 맞는다. 조각이 **전부** 사전에 있으면(원문 유지 `null`·이미
+한국어 포함) 낱개로 바꾸고, 하나라도 빠지면 지금처럼 원문으로 둔다. 다시 점검하니 합쳐진 문자열은 미번역 목록에서 사라졌다.
+
+**세력 이름.** 게임(ISB 아이템 사전)은 블랙 디비전·카오스 인서전시인데 웹만 영문이었다. patch 06 의 값·규칙 28곳을 바꾸고
+낱말 단독 항목을 patch 14 로 더했다. ISB 미번역 110 → 98. 남은 `Black Division Dogtag — …`·`Dogtag BEAR — Black Division …` 은
+인식표 이름(공식 kr 도 영문)이라 둔다.
+
+**반영 상태.** 번역기와 웹 사전은 넣었다(새로고침으로 반영). 아이템 사전은 `tools/install-koreanlocale.ps1` 로 깔고
+서버를 다시 켜야 나온다 — 작업 때 게임이 켜져 있어 아직 깔지 않았다. 깐 뒤 `node tools/check-locale-dict.mjs` 가
+`값 다름 0` 이어야 하고(깔기 전에는 269건이 다름으로 나온다), QuestCodex 를 다시 점검한다.
