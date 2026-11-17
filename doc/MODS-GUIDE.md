@@ -438,6 +438,6 @@ Direct Reload의 아래 두 알림은 고장이 아니다.
 | EasyMounting | `...\EasyMounting\Config\config.json` | 프리셋 `AnySurface` 적용 상태 |
 | Trader Namer | `...\TraderNamer\config.json` | 이름·소개 변경. 아바타는 `avatars\<상인이름>.jpg` |
 | SVM | `Greed.exe` | 치트성 기능은 여기서 먼저 찾는다 |
-| UI Fixes ↔ Definitive Weapon Variants | `BepInExnfigm.tyfon.uifixes.cfg` | **`C. Gameplay / Modify Weapons In Raid = Always`**(2026-11-17, 사용자 결정 — 기본값 `Never`). `Never` 면 레이드 중 들지 않은 총기의 핵심 부품을 못 바꿔, DWV 가 로딩마다 "UI-Fixes blocks required mod_core changes" 를 띄우고 그 무기의 변형 전환이 막힌다. 경고만 끄는 길(DWV `Compatibility / Show UI-Fixes compatibility warnings = false`)은 택하지 않았다. F12 의 드롭다운은 자동 입력으로 안 열려 파일을 고쳤다 — 게임을 다시 켜야 반영된다 |
+| UI Fixes ↔ Definitive Weapon Variants | `BepInEx\config\com.tyfon.uifixes.cfg` | **`C. Gameplay / Modify Weapons In Raid = Always`**(2026-11-17, 사용자 결정 — 기본값 `Never`). `Never` 면 레이드 중 들지 않은 총기의 핵심 부품을 못 바꿔, DWV 가 로딩마다 "UI-Fixes blocks required mod_core changes" 를 띄우고 그 무기의 변형 전환이 막힌다. 경고만 끄는 길(DWV `Compatibility / Show UI-Fixes compatibility warnings = false`)은 택하지 않았다. F12 의 드롭다운은 자동 입력으로 안 열려 파일을 고쳤다 — 게임을 다시 켜야 반영된다 |
 | SptKoreanConfig | `...\SptKoreanConfig\lang\*.json` | 번역 문구. 모드별 사전은 고치고 F12를 다시 열면 반영, `_ui.json`은 재시작 필요. F12 안에서 한글 표시 자체를 끌 수도 있다 |
 | Transparent Sights | F12 메뉴 + 조준경 아이콘 더블클릭 | 파일로 받을 설정이 없다. `plugins\7Bpencil.TransparentSights\config.json`은 조준경별 전환을 저장할 때 모드가 직접 만든다(없으면 기본값). 형식은 `"<아이템 템플릿 ID>": "Enabled" / "EnabledWithMount" / "Disabled"` |
