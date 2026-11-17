@@ -124,3 +124,30 @@ F12 새 메뉴(Better BepInEx), F6 SAIN 편집기, F8 Scope Rangefinder 편집�
 - **새 모드를 대상으로 넣으면 `Plugin.cs` 에 그 GUID 를 `SoftDependency` 로 적는다.** BepInEx 는 플러그인 어셈블리를 차례가 올 때
   읽으므로, 우리보다 뒤에 올라오는 모드는 패치할 때 아직 없다(로그에 "어셈블리를 찾지 못했다").
 - DLL 패치라 **고친 뒤에는 게임을 다시 켜야 한다.**
+
+### 리터럴이 아닌 글자 — `resultMaps`·`argMaps`·`instanceFieldsOf` (2026-11-17, T Override PageUp 메뉴)
+
+메뉴가 **설정 열쇠나 열거형 이름을 그대로 그리면** IL 에 영문 리터럴이 없어 위 방법으로는 못 바꾼다. 그때 쓴다.
+
+```json
+{
+  "resultMaps": {
+    "SPTPracticeMenu.Plugin::MenuNameFor": { "strings": { "Label limit": "이름표 수", "Head": "머리" }, "configNames": "local.spt.practicemenu" },
+    "SPTPracticeMenu.Plugin::MenuHelp": { "configHelp": "local.spt.practicemenu" }
+  },
+  "argMaps": { "SPTPracticeMenu.Plugin::MenuSection": { "PLAYER PRACTICE": "플레이어 연습" } },
+  "instanceFieldsOf": "local.spt.practicemenu",
+  "instanceStrings": { "Loot": "전리품", "Hover a feature name for help.": "기능 이름에 마우스를 올리면 도움말이 나온다." }
+}
+```
+
+- `resultMaps` — 그 메서드가 **돌려주는 글자**를 바꾼다(후처리). 먼저 `strings`(돌려준 글자 → 한글), 없으면
+  `configNames`(첫 인자인 설정 열쇠 → 그 GUID 의 F12 사전 이름. 섹션마다 이름이 갈리는 열쇠는 쓰지 않는다),
+  `configHelp`(첫 인자인 `ConfigEntryBase` 의 원래 설명과 같을 때만 → F12 사전 설명). 인자가 하나 이상인 메서드만 고른다.
+- `argMaps` — 그 메서드의 **첫 문자열 인자**를 바꾼다(앞처리). 데이터로 만든 제목을 받아 그리기만 하는 함수에 쓴다.
+- `instanceFieldsOf` + `instanceStrings` — 그 GUID 의 플러그인 인스턴스가 이미 만들어져 있으면 그 타입의 문자열·문자열 배열 필드를 바꾼다.
+  탭 이름·첫 안내처럼 **필드 초기화(생성자)** 에서 정해진 글자다. `strings` 와 따로 두는 것은 같은 글자가 메서드 안에서 열쇠로 쓰일 수 있어서다.
+- **그리는 함수에 거는 것이라 매 프레임 불린다.** 2026-11-17 실측: 메뉴를 몇 분 열어 두니 `MenuNameFor`·`MenuHelp` 가 각 10만~20만 회.
+  그래서 할당 없이 사전 찾기만 한다 — 메서드 객체로 규칙을 찾고(`__args` 대신 `__0`), 도움말은 설정마다 한 번 찾은 값을 기억한다.
+  게임을 끌 때 로그에 `결과 바꾸기 … 호출 N회, 바꿈 M회` 를 남기니 횟수를 본다— 그리는 메서드에 무거운 패치를 걸었다가 F12 프레임이 떨어진 적이 있다.
+- F12 한글 표시를 끄면(`한글로 표시`) 이 셋도 원문으로 돌린다.
