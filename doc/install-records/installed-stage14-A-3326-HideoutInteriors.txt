@@ -1,0 +1,10 @@
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\decor_icon.png
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\HideoutInteriors.dll
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\HideoutInteriors.Fika.dll
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\LICENSE.txt
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\README.md
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\browser\HideoutBrowser.exe
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\browser\HideoutBrowser.exe.config
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\browser\Microsoft.Web.WebView2.Core.dll
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\browser\Microsoft.Web.WebView2.WinForms.dll
+3326__HideoutInteriors-1.0.0	BepInEx\plugins\HideoutInteriors\browser\WebView2Loader.dll

@@ -40,7 +40,8 @@
       "size": 172558945,
       "binding": false,
       "addonFor": 3373,
-      "link": "https://sp-mod.com/addon/download/201/satellite-interchange-backport-map/1.0.0"
+      "link": "https://sp-mod.com/addon/download/201/satellite-interchange-backport-map/1.0.0",
+      "homepage": "https://sp-mod.com/addon/201"
     },
     {
       "group": "14-C",
@@ -50,7 +51,8 @@
       "size": 44894689,
       "binding": false,
       "addonFor": 3373,
-      "link": "https://sp-mod.com/addon/download/203/satellite-lighthouse-backport-map/1.0.0"
+      "link": "https://sp-mod.com/addon/download/203/satellite-lighthouse-backport-map/1.0.0",
+      "homepage": "https://sp-mod.com/addon/203"
     },
     {
       "group": "14-C",
@@ -60,7 +62,8 @@
       "size": 9099781,
       "binding": false,
       "addonFor": 3373,
-      "link": "https://sp-mod.com/addon/download/202/satellite-the-lab-office-backport-map/1.0.0"
+      "link": "https://sp-mod.com/addon/download/202/satellite-the-lab-office-backport-map/1.0.0",
+      "homepage": "https://sp-mod.com/addon/202"
     },
     {
       "group": "14-C",
@@ -70,7 +73,8 @@
       "size": 5890739,
       "binding": false,
       "addonFor": 3373,
-      "link": "https://sp-mod.com/addon/download/200/satellite-icebreaker-map/1.0.0"
+      "link": "https://sp-mod.com/addon/download/200/satellite-icebreaker-map/1.0.0",
+      "homepage": "https://sp-mod.com/addon/200"
     },
     {
       "group": "14-D",
@@ -169,7 +173,8 @@
       "size": 1617842011,
       "binding": false,
       "addonFor": 3352,
-      "link": "https://sp-mod.com/addon/download/193/zm-stronghold/0.1.0"
+      "link": "https://sp-mod.com/addon/download/193/zm-stronghold/0.1.0",
+      "homepage": "https://sp-mod.com/addon/193"
     }
   ]
 }
