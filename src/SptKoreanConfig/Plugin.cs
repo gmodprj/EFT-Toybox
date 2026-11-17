@@ -24,6 +24,7 @@ namespace SptKoreanConfig
     [BepInDependency("com.maschine.ScopeRangefinder", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.tylevo.fieldattachments", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.rairai.hiddencaches.eft", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("local.spt.practicemenu", BepInDependency.DependencyFlags.SoftDependency)]
     public class KoreanConfigPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.koreanconfig";
@@ -85,6 +86,9 @@ namespace SptKoreanConfig
             // 사전마다 고를 메서드를 적어 그 안의 리터럴만 바꾼다.
             DllStringPatch.LoadAndPatch(langDir, harmony);
         }
+
+        /// <summary>함수 결과 바꾸기가 몇 번 돌았는지 남긴다 — 그리는 함수에 건 것이라 매 프레임인지 세어 둔다.</summary>
+        private void OnApplicationQuit() => DllStringPatch.ReportResultMaps();
     }
 
     /// <summary>

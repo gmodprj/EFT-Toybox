@@ -55,6 +55,9 @@ namespace SptKoreanConfig
         public int SettingCount { get; private set; }
         public int SectionCount { get; private set; }
 
+        /// <summary>사전을 다시 읽을 때마다 1 씩 는다. 사전에서 뽑아 둔 표를 다시 만들지 판단할 때 쓴다.</summary>
+        public int Generation { get; private set; }
+
         public TranslationStore(string dir)
         {
             _dir = dir;
@@ -146,6 +149,7 @@ namespace SptKoreanConfig
             PluginCount = byGuid.Count;
             SettingCount = settings;
             SectionCount = sections;
+            Generation++;
         }
     }
 }
