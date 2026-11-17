@@ -1,0 +1,225 @@
+# 계획 — 새 모드 6개 (14차): Satellite · Hideout Interiors · Hideout Last Stand · T Override · SPZombies · Skill Cap 100
+
+- 날짜: 2026-11-17
+- 상태: **계획만. 아직 아무것도 받지 않았고 설치하지 않았다.**
+- 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
+- 조사: Forge API(`tools/survey-candidates.mjs`·버전·의존성 트리), 각 모드 페이지 본문 전문, 애드온 탭(내장 브라우저),
+  댓글(`tools/fetch-mod-comments.mjs`, 9개 모드 189건, 실패 0), 설치본 실측(설치 목록·DLL 안 GUID·서버 모드 폴더·`.cfg` 단축키·패처).
+- 받기 매니페스트: [`doc/download/manifest-stage14.json`](../download/manifest-stage14.json) (Skill Cap 100 은 넣지 않았다 — §2-6)
+
+## 1. 한눈에
+
+| 묶음 | 모드 | 버전 (SPT) | 크기 | 결속 | 선행 | 판단 |
+| --- | --- | --- | ---: | --- | --- | --- |
+| 14-A | [3326 Hideout Interiors](https://sp-mod.com/mod/3326) | 1.0.0 (`~4.1.0`) | 0.4MB | - | - | **넣는다** |
+| 14-B | [3353 Hideout Last Stand](https://sp-mod.com/mod/3353) | 0.3.1 (`~4.1.0`) | 6.7MB | **결속** | 3326 | **넣는다** — 14-A 확인 뒤, 혼자, 프로필 백업 뒤 |
+| 14-C | [3373 Satellite](https://sp-mod.com/mod/3373) + 맵 애드온 4 | 1.0.1 (`~4.1`) | 1.0GB | - | - | **넣는다** — Dynamic Maps 는 남긴다(§2-3) |
+| 14-D | [3317 T∗∗∗∗∗ Override](https://sp-mod.com/mod/3317) | 1.4.3 (`4.1.6`) | 0.1MB | - (치트) | - | **넣는다** — 첫 기동 전에 단축키를 바꾼다(§2-4) |
+| 14-E | [3352 Dr K's SPZombies](https://sp-mod.com/mod/3352) + 선행 6 + 맵 애드온 | 0.1.2 (`4.1.6`) | **2.0GB** | - | 6개 (설치 0) | **넣는다면 맨 끝** — 알파, 받을 양이 가장 크다(§2-5) |
+| - | [3153 Skill Cap 100](https://sp-mod.com/mod/3153) | 1.0.5 (`~4.1.6`) | 25KB | **결속** | - | **넣지 않는다** — Skills Extended 제작자가 비호환을 못박았다(§2-6) |
+
+- 6개와 선행 6개, 모두 12개가 **설치돼 있지 않다**: 설치 목록, 설치본 DLL 안 GUID, 서버 모드 폴더를 셋 다 확인했다.
+- 6개 모두 4.1.6 호환판이 있다. Fika 표시는 3317 만 비호환인데, 우리는 Fika 를 설치하지 않았다.
+- 받을 양은 모두 **약 3.0GiB**다(14-E 2.04GiB, 14-C 1.0GiB, 나머지 7MB). E: 여유는 799GB.
+
+## 2. 모드별 — 페이지에서 읽은 것과 우리 설치본에 걸리는 것
+
+### 2-1. 14-A Hideout Interiors (`jrs.hideoutinteriors`, 게임 전용)
+
+은신처 전경 화면에 "꾸미기" 버튼을 붙여, 상자·선반·조명을 집어 옮기고 돌리고 숨기고 다른 구역에 붙인다. 1.0.0 은 포스터·TV 화면(동영상·YouTube·Twitch)·웹 브라우저 컴퓨터를 더했다.
+
+- **외부 프로그램을 띄운다**: 컴퓨터 화면은 `browser/HideoutBrowser.exe`(Edge WebView2)가 게임 옆에서 돌다 함께 닫힌다. 겹침 검사에서 이 exe 를 확인한다.
+- 바꾼 배치는 `BepInEx/config/jrs.hideoutinteriors.*.json` 에 프로필마다 남는다. 지워도 그 파일은 남는다.
+- **단축키**: 꾸미기 모드 안의 `G`(이동/회전 전환)·`R`·`P`·`M`·`Delete`·`Backspace`·`Ctrl+Z`, 걸어 다닐 때 화면 앞에서 `F`.
+  설치본의 `F` 는 **Amands' Sense**(`SenseKey = F`)와 UI Fixes(`Filter by Item Shortcut = F`, 인벤토리)가 쓴다.
+  Sense 는 레이드용이라 은신처에서 겹칠지 화면으로 본다. `G` 는 Cooking Grenades 의 수류탄 휠인데, 꾸미기 모드에서만 쓰는 키라 겹칠 일은 적다.
+- 이미 있는 은신처 모드 — Hideout Overhaul(서버)·Hideout In Progress·Vertical Hideout·Hideout Cat·Hideout UI Revamp — 와의
+  호환은 페이지에 언급이 없다. 페이지가 "함께 돈다"고 적은 것은 Hideout Extensions(미설치)·Fika 뿐이다.
+- 한국어 없음 → F12 사전을 새로 쓴다.
+
+### 2-2. 14-B Hideout Last Stand (`jrs.hideoutsiege`, 게임+서버, **결속**)
+
+메뉴에 습격 알림이 뜨고, 자기 은신처를 무대로 파도처럼 몰려오는 적을 막는 레이드에 들어간다. 무기 거치대·마네킹의 실제 장비를 들고 싸운다.
+
+- **지면 진짜 창고를 턴다**: 창고·무기 거치대·마네킹에서 비싼 것을 가져가고, 시설 일부를 부수고, 심하게 다친 채로 깬다.
+  결속 표시 그대로 **프로필 백업 뒤 혼자** 넣고, 첫 습격은 일부러 지는 시험 없이 이기는 쪽으로 확인한다.
+- 선행 3326(0.2.0 이상) — 14-A 를 먼저 넣는 이유다. 방어물(모래주머니·바리케이드·거치 기관총)도 3326 의 꾸미기 화면에서 놓는다.
+- 마지막 웨이브의 Black Division 은 MoreBots(패처)·WTT CommonLib·WTT ContentBackport·SAIN 이 필요하다. 설치본에
+  `BepInEx/patchers/MoreBotsPrepatch`·`BlackDiv`·`WTT-ContentBackportPatcher`, WTT CommonLib 3.0.7, SAIN, 2511 Black Division Home 이 **있다**.
+  Hideout Extensions 는 없으므로 두 번째 침입로는 비상 벽 문이 된다(페이지 설명대로).
+- 함께 시험했다는 목록에 HollywoodFX·ORBIT 이 있고, 둘 다 우리 설치본에 있다.
+- **댓글**: 0.1.0 때 "Manimal 의 Icebreaker·ISB·Skills Extended 와 문제가 있다"는 보고가 있었고 제작자가 고치겠다고 답했다. 셋 다 우리 설치본에 있으므로
+  설치 뒤 기동 로그에서 이 셋의 오류를 따로 센다.
+- **곧 1.0.0** — 제작자가 "다음 주 수요일 전에 1.0.0, 그때 번역용 JSON 폴더를 넣는다"고 적었다. **받는 날 다시 조회해** 1.0.0 이 나와 있으면 그것을 받는다.
+  지금 0.3.1 에는 번역 파일이 없다.
+- 설정: F12 `Tushonka: Hideout Last Stand`, 빈도·창고 상자 크기는 `SPT_Runtime\user\mods\HideoutSiege.Server\config.json`.
+- 단축키: F7(허락)·F8(거절)은 **Fika 협동에서 남의 장비를 집을 때만** 뜬다. 우리는 혼자라 F7(Breakout Outlines·Field Attachments)·F8(Scope Rangefinder·Field Attachments)과 부딪힐 자리가 없지만, 설치 뒤 `.cfg` 에서 다시 본다.
+- 우리 STM(PIT Fireteam 포크) 팀원은 습격에 들어오지 않는다(댓글에서 제작자가 PIT 는 아직 안 해 봤다고 답했다).
+
+### 2-3. 14-C Satellite (`com.fums.satellite`, 게임+서버)
+
+레이드를 브라우저에 실시간 지도로 띄운다(`https://127.0.0.1:6969/satellite/`, 게임 안 `Left Alt+M`). 봇·탈출구·전리품·잠긴 문과 열쇠·퀘스트 표시를 보여 주고, 읽기만 한다.
+
+- **Dynamic Maps 와 같이 쓰기를 권하지 않는다**고 페이지에 적혀 있다. 우리는 Dynamic Maps 1.2.1·DynamicMaps Extended 2.5.2 에 더해
+  **이 저장소가 만든 `DynamicMapsFactionMarkers`** 가 Dynamic Maps 위에서 돈다. 그래서 **Dynamic Maps 는 빼지 않는다.**
+  Satellite 는 다른 화면용 웹 지도이고 게임 안 지도는 Dynamic Maps 로 둔다. 둘 다 켠 채 레이드 프레임과 기동 로그를 본다. 문제가 나오면 그때 고른다.
+- **별도 포트를 열지 않는다** — 6969 안의 `/satellite/` 다. 휴대폰·태블릿에서 보려면 Fika 가 서버를 망에 열어야 한다고 적혀 있어, 우리는 **같은 PC 의 두 번째 모니터**로만 쓴다.
+- **맵 애드온**: 기본 zip 은 바닐라 맵만 담는다. 우리 설치본의 포트 맵에 맞는 애드온 4개를 함께 받는다.
+
+  | 애드온 | 크기 | 우리 맵 |
+  | --- | ---: | --- |
+  | [201 Interchange Backport](https://sp-mod.com/addon/201) 1.0.0 | 165MB | 3025 Manimal Interchange Expansion Backport |
+  | [203 Lighthouse Backport](https://sp-mod.com/addon/203) 1.0.0 | 43MB | 3022 Manimal Lighthouse Rework Backport |
+  | [202 The Lab (Office) Backport](https://sp-mod.com/addon/202) 1.0.0 | 8.7MB | 2937 Manimal Labs Office Backport |
+  | [200 Icebreaker](https://sp-mod.com/addon/200) 1.0.0 | 5.6MB | 2866 Manimal Icebreaker Backport |
+
+  Terminal·Factory Classic·Halloween 2026(Labs·Factory) 애드온은 해당 맵이 설치본에 없어 받지 않는다. Map Variants(3040)로
+  같은 맵의 바닐라·포트를 골라 들어가도 Satellite 가 맞는 쪽을 스스로 고른다고 적혀 있다.
+- 전리품 값 색은 Better Flea 가격을 쓴다고 하는데 Better Flea 는 설치돼 있지 않다 — 그때는 기본 가격으로 칠한다.
+- SAIN·ORBIT 을 쓰면 봇이 무엇을 하는지 보여 준다. 둘 다 설치돼 있다.
+- 10개 언어 번역이 있다. 한국어가 있는지는 해제본에서 센다(`mod-may-ship-own-korean`).
+- 단축키 `Left Alt+M` 은 설치본 `.cfg` 에서 겹치는 것이 없다.
+
+### 2-4. 14-D T∗∗∗∗∗ Override (`local.spt.practicemenu`, 게임 전용, 치트)
+
+ESP·조준 보조·아이템 생성·무적·노클립·문 열기·탈출 조건 무시·공중 보급 요청을 한 창에 모은 치트 메뉴다. SVM 으로 되는 기능이 아니라
+절차의 "SVM 으로 되는 치트는 넣지 않는다"에는 걸리지 않는다. 다만 이미 있는 치트성 모드(Tushonka-800 Combat Augmentation, Infinite Everything,
+이 저장소의 AirdropCaller)와 하는 일이 일부 겹친다.
+
+- **단축키가 이미 쓰이는 키에 걸린다** — 이게 이 모드의 첫 관문이다.
+  - 주 메뉴 `Insert`: 설치본에서 **CSF**(`Change Currency Key = Insert`)·**TraceSix**(`Toggle Key = Insert`)가 쓴다.
+  - 댓글에 기본 단축키가 **F6~F10** 이라는 언급이 있다. 우리 F6(SAIN 편집기)·F7·F8(편집기 둘)·F9·F10(ImpactCue·Prestige Perks)이 모두 쓰인다.
+  - 단축키는 F12 가 아니라 `BepInEx\config\SPTFieldToolkit\` 의 JSON 이다(제작자 댓글). 해제본에서 기본값을 읽고, **첫 기동 전에 JSON 을 넣어** 빈 키로 옮긴다.
+- **설치본의 Rippers Casino(3212)** 가, 이 모드가 F12 메뉴에서 사라지게 만든 원인 둘 중 하나로 댓글에 지목됐다(다른 하나 tylevos-tactical-service-control 은 미설치).
+  설치 뒤 F12 에 이 모드가 보이는지 화면으로 본다.
+- DLSS 를 켜면 ESP 상자가 어긋난다는 보고가 있다(제작자 확인). 6배율 이상 조준경에서 ESP 표시가 흔들린다는 보고도 있다.
+- 제작자가 "한동안 마지막 업데이트일 수 있다, 5.0 은 안 올린다"고 적었다.
+
+### 2-5. 14-E Dr K's SPZombies (`com.kennerz.spzombies`) — 선행 6 + 맵
+
+라운드제 좀비 모드다. 자체 메뉴·맵이 있고 본 캐릭터·프로필에는 영향이 없다고 적혀 있다. **알파 / 개념 증명**이라고 제작자가 대문자로 밝혔다.
+
+| 순서 | 모드 | 버전 | 크기 | 하는 일 | 우리 설치본에 걸리는 것 |
+| --- | --- | --- | ---: | --- | --- |
+| 1 | [3167 Hideout Uncensored](https://sp-mod.com/mod/3167) | 1.3.0 | 33KB | 은신처에서 무기를 꺼내 쏘고, 엎드리고, 넘고, 수류탄을 던진다(사격장 사본으로, 실제 장비는 안 쓴다). 서버 쪽은 "버리기를 메시지로 돌려받기" | 꺼내기 키 `J` — 설치본의 **Pinned Quest HUD**(`Toggle Key = J`)·Airburst(`J`)·Prestige Perks(`Use key = J`)와 같다. Infinite Everything 과 함께 돈다고 적혀 있다 |
+| 2 | [3193 Tushonka Mapping SDK](https://sp-mod.com/mod/3193) | 1.9.3 | 121KB | 사용자 맵 로더 | "위치 데이터를 바꾸는 모드(LotsOfLoot)와는 안 된다". LotsOfLoot 은 설치본에 **없다**. 다만 SVM·PityLoot 처럼 위치 값을 만지는 모드가 있어, 좀비 맵 로드에서 오류를 본다 |
+| 3 | [3223 Pack A Punch Hideout Module](https://sp-mod.com/mod/3223) | 2.2.0 | 43MB | 은신처 옆방에 PaP 기계. **메카닉 퀘스트**로 연다 | 결속 표시는 없지만 **본 프로필에 퀘스트·아이템을 넣는다**. 2.2.0 에 "좀비 모드에서만" 옵션이 생겼다. WTT DoomArcade 와 자리가 겹칠 수 있다고 하나 DoomArcade 는 미설치. 2.1.1 의 레이드 중 끊김은 다음 판에서 고쳤다고 답했다 |
+| 4 | [3226 ZM_Thundergun](https://sp-mod.com/mod/3226) | 1.2.0 | 22MB | 은신처 벽에서 935,000₽ 에 사는 무기 | 같은 "좀비 모드에서만" 옵션 |
+| 5 | [3229 ZM_Raygun](https://sp-mod.com/mod/3229) | 1.2.0 | 26MB | 같은 방식의 레이건 | 같은 옵션 |
+| 6 | [3351 Dr K's Perk Beverages](https://sp-mod.com/mod/3351) | 0.1.0 | 108MB | 퍽 음료 기계 — 지금은 좀비 모드용 | 혼자는 아무것도 안 한다 |
+| 7 | **3352 SPZombies** | 0.1.2 | 343MB | 본체 | 0.1.0 에서 LotsOfLoot 충돌(우리는 미설치). 댓글에 "일반 레이드보다 FPS 30~50% 낮고 3~5초마다 끊긴다", 제작자 "성능은 아직 잡는 중" |
+| 8 | [애드온 193 ZM_Stronghold](https://sp-mod.com/addon/193) | 0.1.0 | **1.51GB** | **첫 맵** — 본체에는 맵이 없다 | 애드온 탭이 0.1.0 호환으로만 적지만 0.1.2 변경 기록이 "Stronghold 는 그대로 돈다, 옮길 것 없다"고 밝혔다 |
+
+- **판단**: 좀비 모드 하나를 위해 선행 6개가 본 게임 은신처(무기 꺼내기·PaP 기계·벽 무기 판매·메카닉 퀘스트)를 바꾼다.
+  셋(3223·3226·3229)의 "좀비 모드에서만" 옵션을 **켜고** 들이면 본 프로필에 퀘스트·아이템이 들어오지 않는다. 옵션 이름과 기본값은 해제본에서 확인하고,
+  **첫 기동 전에 `.cfg` 를 넣어** 켠다(기본값이 "본 게임에도"라면 첫 기동에서 이미 퀘스트가 생긴다).
+- Hideout Uncensored 와 14-A 는 둘 다 은신처 안을 바꾼다. 서로 시험한 기록이 없으므로 14-A·14-B 를 확인한 뒤에 넣는다.
+- 받을 양 2.0GiB 의 80% 가 Stronghold 맵 하나다. 호스트는 GitHub 이다. 느리면 `download-ranged.mjs` 로 끊어 받는다(`one-stream-throttled-use-ranges`).
+
+### 2-6. Skill Cap 100 — 넣지 않는다
+
+스킬 상한을 51 → 100 으로 올리는 결속 모드(서버+게임). Skill Distribution 은 자동으로 맞추고 SVM 과도 된다고 적혀 있다.
+
+- **설치본의 Skills Extended 3.1.4(2383) 제작자 cj 가 이 모드 댓글에 직접 "다음 업데이트에서 Skills Extended 와 비호환으로 표시한다,
+  높은 스킬 레벨에서 많은 것이 깨진다"고 적었다.** 다른 사용자는 "설치 후 스킬이 10 으로 굳었다"고 보고했다.
+- 우리는 Skills Extended·Skill Distribution·Repair Skill Extension 셋이 스킬을 만진다. 결속이라 빼도 프로필에 51 넘는 값이 남는다.
+- 그래서 매니페스트에 넣지 않았다. **넣으려면 Skills Extended 를 빼는 결정이 먼저**다.
+
+## 3. 순서와 이유
+
+1. **14-A Hideout Interiors** — 작고 게임 전용이며, 14-B 의 선행이다.
+2. **14-B Hideout Last Stand** — 결속이라 혼자 넣는다. 14-A 가 은신처에서 멀쩡한 것을 본 뒤에 넣는다.
+3. **14-C Satellite** — 은신처와 무관하다. 1GB 라 받기는 14-A·B 와 같이 시작하되 설치는 따로 한다.
+4. **14-D T Override** — 단축키 JSON 을 먼저 만들어 넣는다. 첫 기동에서 F12·Insert 겹침을 화면으로 본다.
+5. **14-E SPZombies** — 맨 끝에 둔다. 선행 1→6 을 넣고, 본체와 맵은 마지막이다. 가장 무겁고 알파라서, 앞 단계가 다 멀쩡한 기준선 위에서 넣는다.
+
+`download-stage.mjs` 는 작은 파일부터 받는다. 그래서 하나의 매니페스트로도 14-A~D 가 먼저 받아지고, 2GB 짜리 맵이 맨 뒤에 남는다(`slow-downloads-go-last`).
+
+## 4. 절차 — `doc/PROCEDURE.md` 그대로
+
+### 4-1. 받기
+
+1. **받는 날 다시 조회한다**: `node tools/survey-candidates.mjs '{"14":[3326,3353,3373,3317,3352,3167,3193,3223,3226,3229,3351]}' <out>`.
+   특히 3353 은 1.0.0 이 곧 나온다. 버전이 바뀌었으면 매니페스트의 `version`·`size`·`link` 를 고친다.
+   조회 실패를 "변화 없음"으로 읽지 않는다(`lookup-failure-is-not-a-negative`).
+2. `node tools/download-stage.mjs stage14` → `downloads/stage14/`, 결과 `doc/download/download-results-stage14.json`. 바이트 수를 매니페스트와 대조한다.
+   504 면 `gh` 로 받는다(`forge-download-may-504-use-gh`).
+3. 해제: `/c/Windows/System32/tar.exe -xf <파일> -C extracted/stage14/<id>__<이름>` (**절대경로**).
+
+### 4-2. 해제본에서 먼저 볼 것 (설치 전)
+
+| 모드 | 볼 것 |
+| --- | --- |
+| 전부 | 압축 뿌리 구조가 `BepInEx/…`·`SPT_Runtime/…` 인지. 뿌리에 섞인 README 는 치운다. `node tools/check-installed-vs-extracted.mjs` 로 **덮어쓸 파일 0** |
+| 14-A | `HideoutBrowser.exe` 위치·크기, 한국어 유무 |
+| 14-B | 서버 `config.json` 의 습격 빈도·창고 상자 크기 기본값, 번역 파일(1.0.0 이면) |
+| 14-C | 애드온 4개가 같은 `BepInEx\plugins\Satellite` 아래 서로 다른 파일만 넣는지(애드온끼리·본체와 겹침), `config.jsonc`, 한국어 유무 |
+| 14-D | `SPTFieldToolkit` 단축키 JSON 의 기본값 — Insert·F6~F10 이면 빈 키로 바꿀 JSON 을 만든다 |
+| 14-E | 3223·3226·3229 의 "좀비 모드에서만" 설정 이름·기본값, Hideout Uncensored 의 `J`, Stronghold 가 `BepInEx\plugins\SPZombies_Maps\ZM_Stronghold` 로 가는지 |
+
+### 4-3. 넣기
+
+- 전제: 게임·서버가 꺼져 있다. **내가 끄지 않는다** — 켜져 있으면 사용자에게 묻는다(`never-stop-server-or-game-unasked`).
+- 프로필 백업: `E:\Spt\SPT_Runtime\user\profiles\*` → `backup/profiles-before-stage14/` (14-B 앞에서 한 번 더: `profiles-before-stage14-B/`).
+
+```powershell
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3326__*'      -Tag 'stage14-A-3326-HideoutInteriors'
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3353__*'      -Tag 'stage14-B-3353-HideoutLastStand'
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3373__*'      -Tag 'stage14-C-3373-Satellite' -SkipTest
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern 'addon201__*'  -Tag 'stage14-C-addon201-SatInterchange' -SkipTest
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern 'addon203__*'  -Tag 'stage14-C-addon203-SatLighthouse' -SkipTest
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern 'addon202__*'  -Tag 'stage14-C-addon202-SatLabOffice' -SkipTest
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern 'addon200__*'  -Tag 'stage14-C-addon200-SatIcebreaker'
+E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -Tag 'stage14-D-3317-TOverride'
+# 14-E: 3167 → 3193 → 3223 → 3226 → 3229 → 3351 → 3352 → addon193, 하나씩
+```
+
+- `install-and-test.ps1` 은 `-Pattern`(`Get-ChildItem -Filter`)에 맞는 폴더를 **첫 하나만** 넣는다. `[0-3]` 같은 범위도 받지 않는다 — 애드온은 한 줄에 하나씩 쓴다.
+  14-C 는 마지막 줄에서만 서버 시험을 돌린다.
+
+- **한 묶음 넣고 멈춘다.** 다음 묶음은 앞 묶음을 게임에서 확인한 뒤에 넣는다.
+- DLL 이 잠겨 있으면 안 깔린 것이다(`locked-dll-means-not-installed`).
+- 14-D·14-E 는 **첫 기동 전에** 바꾼 설정 파일(단축키 JSON, "좀비 모드에서만" `.cfg`)을 넣는다. 그 파일도 설치 기록에 적는다.
+
+### 4-4. 기록·검사 (묶음마다)
+
+1. `node tools/gen-installed-mods.mjs` → `doc/INSTALLED-MODS.md`
+2. `node tools/check-install-records.mjs` → **`OK — 0/0`**. 다른 모드 기록에 구멍이 나도 유실로 단정하지 않는다(`install-records-can-misattribute`).
+3. `node tools/check-conflicts.mjs`
+4. 한글화: `node tools/check-lang-coverage.mjs`·`check-plugin-locales.mjs`. 새 F12 항목에 사전을 쓰고, **다른 모드 사전에 난 구멍**도 센다(`lang-dicts-leak-as-mods-arrive`).
+   T Override·Hideout Interiors 처럼 자체 창을 그리는 모드는 `_dll-*.json` 대상인지 본다(`src/SptKoreanConfig/README.md`). 대상으로 넣으면 `Plugin.cs` 에 `SoftDependency` 를 단다.
+
+### 4-5. 확인
+
+| 무엇 | 어떻게 |
+| --- | --- |
+| 서버 모드 수 | `ModLoader: 총 N 개`. 지금 181. 서버 쪽을 싣는 모드만큼 는다(해제본의 `SPT_Runtime\user\mods` 폴더 수로 미리 센다) |
+| 게임 플러그인 수 | `N plugins to load`. 지금 252. **넣은 DLL 수와 같지 않다**(`plugin-count-is-not-dll-count`) |
+| 오류 | 게임 `[Error`/`[Fatal`, 서버 `Could not add` **고유 id 수를 날짜와 함께**. 14-B 는 Icebreaker·ISB·Skills Extended 관련 줄을 따로 센다 |
+| 14-A | 은신처 전경에 꾸미기 버튼, 물건 하나 옮기고 다시 들어와 그대로인지 |
+| 14-B | 메뉴에 습격 알림 → 방어 시작 → 첫 웨이브까지. 이겨서 창고 상자 물건이 실제 창고에 들어오는지 |
+| 14-C | 레이드 중 `https://127.0.0.1:6969/satellite/` 에 내 위치·봇. 포트 맵 4개에서 맞는 그림. Dynamic Maps 와 함께 켠 레이드 프레임 |
+| 14-D | F12 에 모드가 보이는지(Rippers Casino), 바꾼 단축키로 메뉴가 열리고 CSF·TraceSix·SAIN·F8 편집기가 그대로인지 |
+| 14-E | 좀비 메뉴 → Stronghold 로드 → 1라운드. 본 프로필 메카닉 퀘스트 목록이 그대로인지("좀비 모드에서만") |
+
+화면으로만 드러나는 것(꾸미기 화면, 습격 알림, 웹 지도, 메뉴)은 스크린숏을 남긴다. 로그만으로 판정하지 않는다(`coverage-is-not-display`).
+
+### 4-6. 되돌리기
+
+- 묶음 하나: `doc/install-records/installed-<Tag>.txt` 의 파일만 지우고 기록을 `removed/` 로 옮긴다.
+- 14-B 는 결속이다. 습격에서 진 뒤에는 창고가 이미 털렸으므로 `backup/profiles-before-stage14-B/` 로 돌린다.
+- 14-A 의 배치 파일(`jrs.hideoutinteriors.*.json`), 14-E 의 메카닉 퀘스트·PaP 아이템은 모드를 지워도 남는다. 지울 때 함께 본다.
+
+## 5. 사용자가 정할 것
+
+| 무엇 | 권장 | 다른 길 |
+| --- | --- | --- |
+| Satellite 와 Dynamic Maps | **둘 다 둔다** — 우리 `DynamicMapsFactionMarkers` 가 Dynamic Maps 위에 있다 | Dynamic Maps(+Extended·우리 마커)를 뺀다 |
+| SPZombies 묶음 | **넣는다면 맨 끝**, PaP·무기 셋은 "좀비 모드에서만" | 넣지 않는다(2GB·알파·은신처를 바꾸는 선행 6개) |
+| Skill Cap 100 | **넣지 않는다** | Skills Extended 를 빼고 넣는다 |
+
+## 6. 함께 보는 문서
+
+- 절차: `doc/PROCEDURE.md`
+- 앞선 설치 계획 형식: `doc/plans/2026-11-15-prestige-mods-install-plan.md`
+- 한글화 장치: `src/SptKoreanConfig/README.md`
