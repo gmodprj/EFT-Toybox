@@ -1,0 +1,39 @@
+{
+  "guid": "com.kennerz.thundergun",
+  "name": "썬더건 (ZM_Thundergun)",
+  "sections": {
+    "1. Normal gameplay": "1. 보통 게임",
+    "Size": "크기",
+    "Volume": "음량"
+  },
+  "settings": {
+    "1. Normal gameplay/Show in normal gameplay": {
+      "name": "보통 게임에 표시",
+      "desc": "켜기: 은신처 옆방의 벽을 허물면 분필 벽 구매와 탄약 상자가 나타난다. 루블로 Thundergun 과 카트리지를 사서 보통 레이드에 가져갈 수 있다! 끄기: Thundergun 은 좀비 모드에만 있다(거기서는 늘 작동한다). 끄면 여기서 얻은 것이 사라진다: 가진 모든 Thundergun 과 압력 카트리지(창고, 우편, 보험), 그리고 거기에 쓴 루블. 게임과 서버를 다시 켠 뒤에 적용된다."
+    },
+    "Size/Size": {
+      "name": "크기",
+      "desc": "Default: 더 작게, EFT 자체 총처럼 자리 잡게 맞춘 크기. Large: 처음 배포 때의 원래 크기."
+    },
+    "Volume/Shot": {
+      "name": "사격",
+      "desc": "Thundergun 의 폭풍음. (Zeus Cannon 강화 사격에 얹히는 소리는 Pack-a-Punch 의 \"Pack-a-Punch 사격음\" 슬라이더가 맡는다.)"
+    },
+    "Volume/Reload and handling": {
+      "name": "재장전·조작",
+      "desc": "꺼내기, 재장전, 기계 삑 소리, 빈 격발음, 총이 덜컹거리는 소리."
+    },
+    "Volume/Purchase": {
+      "name": "구매",
+      "desc": "벽이나 탄약 상자에서 살 때 나는 \"짤랑\" 소리."
+    },
+    "Volume/Wall buy": {
+      "name": "벽 구매",
+      "desc": "분필 벽에서 총이 나오는 소리."
+    },
+    "Volume/Deny": {
+      "name": "거절",
+      "desc": "구매가 거절될 때(돈 부족, 자리 없음) 나는 부저음."
+    }
+  }
+}

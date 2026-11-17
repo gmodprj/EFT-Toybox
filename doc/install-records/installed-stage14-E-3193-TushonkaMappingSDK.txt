@@ -1,0 +1,2 @@
+3193__CustomMapLoader	BepInEx\plugins\CustomMapLoader\CustomMapLoader.dll
+3193__CustomMapLoader	SPT_Runtime\user\mods\CustomMapLoader\CustomMapLoader.dll

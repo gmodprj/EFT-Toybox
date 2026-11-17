@@ -1,0 +1,3 @@
+3193__CustomMapLoader	BepInEx\plugins\CustomMapLoader\bundles
+3193__CustomMapLoader	BepInEx\plugins\CustomMapLoader\bundles\maps
+3193__CustomMapLoader	SPT_Runtime\user\mods\CustomMapLoader\maps
