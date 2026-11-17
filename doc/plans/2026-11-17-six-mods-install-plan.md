@@ -1,7 +1,7 @@
 # 계획 — 새 모드 6개 (14차): Satellite · Hideout Interiors · Hideout Last Stand · T Override · SPZombies · Skill Cap 100
 
 - 날짜: 2026-11-17
-- 상태: **14-A 설치·확인 끝(§8).** 14-B 부터는 아직이다. 받기·해제는 §7
+- 상태: **14-A(§8)·14-B(§9) 설치·확인 끝.** 14-C 부터는 아직이다. 받기·해제는 §7
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 조사: Forge API(`tools/survey-candidates.mjs`·버전·의존성 트리), 각 모드 페이지 본문 전문, 애드온 탭(내장 브라우저),
   댓글(`tools/fetch-mod-comments.mjs`, 9개 모드 189건, 실패 0), 설치본 실측(설치 목록·DLL 안 GUID·서버 모드 폴더·`.cfg` 단축키·패처).
@@ -276,3 +276,20 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
   **꾸미기 패널 글자(DECORATE·분류 이름·버튼)는 영문** — 모드 DLL 안 리터럴이라 `_dll-*.json` 대상이다. 다음 묶음과 따로 한다.
 - 첫 기동(12:32) 뒤 화면이 로딩 표시에서 오래 멈춰 있었고 "Fatal error" 제목의 창이 잠깐 앞에 있었다. 사용자가 게임을 껐고, 로그는
   12:44:55 에 패치를 차례로 끄는 **정상 종료**였다. 두 번째 기동(12:46)은 메인 메뉴·은신처까지 정상이었다. 원인은 가리지 못했다 — 다시 나오면 그때 Player.log 를 본다.
+
+## 9. 14-B Hideout Last Stand 설치 결과 (2026-11-17 13:30 무렵)
+
+- 설치 직전 재조회: 여전히 0.3.1(1.0.0 아직 없음).
+- 게임은 창 닫기로 정상 종료(TraumaCore 등 패치를 차례로 끄는 줄 확인), 서버 종료. 프로필 11개를 `backup/profiles-before-stage14-B/` 에 떴다(불일치 0).
+- `install-and-test.ps1 -Pattern '3353__*' -Tag 'stage14-B-3353-HideoutLastStand'` — 파일 29 + 서버가 만든 `HideoutSiege.Server\config.json`(NEWFILE) = **기록 30줄**.
+  서버 시험: `ModLoader: 총 182 개`(181 → 182), `Hideout Last Stand: the hideout is ready to be attacked.`, `Loaded self-signed certificate`, `Could not add` 고유 48(기준선).
+- 서버 설정 기본값: 습격 간격 3~8시간, 진 뒤 2시간, `InvadedOnFirstRun: true`, 창고 상자 10×6.
+- 기록: 설치 목록 **310개**(결속 표시 붙음), `check-install-records` **`OK — 0/0`**.
+- 게임 기동: `254 plugins to load`(253 → 254), `Loading [Tushonka: Hideout Last Stand 0.3.1]`, `BigBrain found`, 방어물 셋(모래주머니·강철 바리케이드·철조망)이
+  **Hideout Interiors 꾸미기 패널에 들어갔다**는 줄, `Hideout Last Stand loaded.` `[Error` 는 알려진 DirectReload·Fika 1줄뿐.
+- **화면**: 메인 메뉴 위에 "HIDEOUT IS BEING INVADED — START THE DEFENSE / LATER" 알림이 떴다. **방어는 시작하지 않았다** — 지면 실제 창고가 털린다.
+- 한글화: F12 사전 `lang/jrs.hideoutsiege.json` 21항목(보스 이름은 공식 kr — 르샬라·킬라·타길라·세니타·글루하, 우리 사전 표기 — 구니즈·블랙 디비전, 공식 표기가 없는 카반·콜론타이는 음역).
+  모드가 들어오며 **No Barrel Shadow 에 `○ NGAL` 두 항목이 새로 생겨** 함께 채웠다(`lang-dicts-leak-as-mods-arrive`). `check-lang-coverage` **5234/5234**(사전 190개).
+  메뉴 알림·습격 화면 글자는 영문 — 제작자가 1.0.0 에 번역 JSON 폴더를 넣겠다고 했다.
+- 단축키: `Leave key`(이긴 뒤 바로 나가기) 기본 **F10** 이 ImpactCue 설정 창 키와 같다. 이긴 뒤에만 쓰는 키라 그대로 두고 사전 설명에 적었다. F7·F8 은 협동 전용.
+- 같은 기동에서 UI Fixes `Modify Weapons In Raid = Always` 가 반영됐다. 로그에 DWV 의 "UI-Fixes blocks" 줄은 없다(로딩 화면은 찍지 못했다).

@@ -674,6 +674,14 @@
     "3. Intensity Multipliers/EukyreECOT (CTF Photonics CTF 3 Tactical Device) — Intensity": {
       "name": "EukyreECOT (CTF Photonics CTF 3 Tactical Device) — 밝기",
       "desc": "EukyreECOT (CTF Photonics CTF 3 Tactical Device) 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
+    },
+    "2. Range Multipliers/<color#FFFFFF>○ NGAL</color> — Range": {
+      "name": "<color#FFFFFF>○ NGAL</color> — 도달 거리",
+      "desc": "○ NGAL 조명이 비추는 거리 배율. 1.0 이면 기본값 그대로다."
+    },
+    "3. Intensity Multipliers/<color#FFFFFF>○ NGAL</color> — Intensity": {
+      "name": "<color#FFFFFF>○ NGAL</color> — 밝기",
+      "desc": "○ NGAL 조명의 밝기 배율. 1.0 이면 기본값 그대로다."
     }
   }
 }
