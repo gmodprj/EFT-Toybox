@@ -30,7 +30,8 @@ function readCfg(path) {
     }
     if (!trimmed || trimmed.startsWith('#')) continue;
     // 값이 비어 있는 줄("Use Item Shortcut = ")도 항목이다. 먼저 trim 하면 놓친다.
-    const m = line.match(/^(.+?) = ?(.*)$/);
+    // 키가 빈 줄(" = FF6000FF", Hidden Caches 의 색 고르개)도 항목이다 — 키 쪽을 .+? 로 두면 놓친다.
+    const m = line.match(/^(.*?) = ?(.*)$/);
     if (!m) continue;
     out.push(`${section}/${m[1]}`);
   }

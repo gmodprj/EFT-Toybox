@@ -96,7 +96,8 @@ pwsh -File tools/check-ui-strings.ps1
 
 ## 다른 모드 창의 글자 (`lang/_dll-*.json`)
 
-F12 새 메뉴(Better BepInEx), F6 SAIN 편집기, F8 Scope Rangefinder 편집기, F8/Alt Field Attachments 오버레이의 글자는
+F12 새 메뉴(Better BepInEx), F6 SAIN 편집기, F8 Scope Rangefinder 편집기, F8/Alt Field Attachments 오버레이, F12 안에서 모드가
+`CustomDrawer` 로 직접 그리는 버튼(Hidden Caches 의 Apply)의 글자는
 각 모드 DLL 안의 리터럴이다. `DllStringPatch.cs` 가 사전마다 **고른 메서드 안의** 문자열 상수만 바꾼다
 (`_ui.json`·`_sain-ui.json` 은 어셈블리 전체를 바꾸므로 열쇠로도 쓰이는 짧은 낱말을 넣을 수 없었다).
 
@@ -120,4 +121,6 @@ F12 새 메뉴(Better BepInEx), F6 SAIN 편집기, F8 Scope Rangefinder 편집�
   `안 쓰임:` 줄이 원문 어긋남이다. 패치 실패 줄이 나오면 그 메서드를 `excludeMethods` 에 넣는다.
 - 게임 없이 확인: `node tools/check-dll-strings.mjs` (`--list` 사전에 없는 영문 리터럴, `--where` 여러 메서드에 걸친 공통 항목 —
   그중 열쇠로 쓰는 곳이 섞였으면 `methodStrings` 로 좁힌다).
+- **새 모드를 대상으로 넣으면 `Plugin.cs` 에 그 GUID 를 `SoftDependency` 로 적는다.** BepInEx 는 플러그인 어셈블리를 차례가 올 때
+  읽으므로, 우리보다 뒤에 올라오는 모드는 패치할 때 아직 없다(로그에 "어셈블리를 찾지 못했다").
 - DLL 패치라 **고친 뒤에는 게임을 다시 켜야 한다.**
