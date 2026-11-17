@@ -1,0 +1,21 @@
+{
+  "guid": "com.fums.satellite",
+  "name": "실시간 웹 지도 (Satellite)",
+  "sections": {
+    "General": "일반"
+  },
+  "settings": {
+    "General/Enabled": {
+      "name": "지도 열기 키 사용",
+      "desc": "지도 열기 키를 켜거나 끈다. 지도 자체는 어느 쪽이든 그대로 돈다."
+    },
+    "General/Updates per second": {
+      "name": "초당 갱신 횟수",
+      "desc": "지도 페이지가 열려 있을 때 움직이는 표시를 몇 번 보낼지."
+    },
+    "General/Open the map": {
+      "name": "지도 열기",
+      "desc": "이 게임이 연결된 서버의 지도를 브라우저로 연다(https://127.0.0.1:6969/satellite/)."
+    }
+  }
+}
