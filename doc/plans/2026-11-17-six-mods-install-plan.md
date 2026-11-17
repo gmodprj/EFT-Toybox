@@ -1,7 +1,7 @@
 # 계획 — 새 모드 6개 (14차): Satellite · Hideout Interiors · Hideout Last Stand · T Override · SPZombies · Skill Cap 100
 
 - 날짜: 2026-11-17
-- 상태: **14-A(§8)·14-B(§9) 설치·확인 끝.** 14-C 부터는 아직이다. 받기·해제는 §7
+- 상태: **14-A(§8)·14-B(§9·§10)·14-C(§11) 설치·확인 끝.** 14-D 부터는 아직이다. 받기·해제는 §7
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 조사: Forge API(`tools/survey-candidates.mjs`·버전·의존성 트리), 각 모드 페이지 본문 전문, 애드온 탭(내장 브라우저),
   댓글(`tools/fetch-mod-comments.mjs`, 9개 모드 189건, 실패 0), 설치본 실측(설치 목록·DLL 안 GUID·서버 모드 폴더·`.cfg` 단축키·패처).
@@ -306,3 +306,26 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
 
 - 습격 중 `Kept you out of past the cultist gate` 45회 — 플레이어가 무대 밖(교단원 방 쪽)으로 나가지 못하게 되돌린 기록이다.
 - 기다리던 타길라가 정문 안쪽에 있다가 대기 자리로 되돌려졌다는 경고 1줄(모드 자체 보정).
+
+## 11. 14-C Satellite + 맵 애드온 4 설치 결과 (2026-11-17 13:30~13:45)
+
+- 게임 정상 종료·서버 종료 뒤 설치. 본체와 애드온 셋은 `-SkipTest` 로 복사만, 마지막 Icebreaker 애드온에서 서버 시험.
+  | 기록 | 줄 |
+  | --- | ---: |
+  | `stage14-C-3373-Satellite` | 65 (파일 64 + 서버가 만든 `config.jsonc`) |
+  | `stage14-C-addon201-SatInterchange` | 3 |
+  | `stage14-C-addon203-SatLighthouse` | 3 |
+  | `stage14-C-addon202-SatLabOffice` | 3 |
+  | `stage14-C-addon200-SatIcebreaker` | 3 |
+- **기록을 하나 옮겼다**: 서버 시험에서 생긴 `Satellite\config.jsonc` 가 시험을 돌린 Icebreaker 애드온 몫(NEWFILE)으로 적혔다. 본체가 만든 파일이라
+  본체 기록으로 옮겼다(`install-records-can-misattribute`). 옮긴 뒤 `check-install-records` **`OK — 0/0`**.
+- 서버 시험: `ModLoader: 총 183 개`(182 → 183), `[Satellite] Open it at https://127.0.0.1:6969/satellite/`, `Loaded self-signed certificate`, `Could not add` 고유 48.
+  "Only this PC can open the map" — Fika 없이 휴대폰에서는 못 연다(계획대로 같은 PC 의 두 번째 모니터용).
+- **모드 카드**: 서버 기동 로그 `[ModCardKorean] 사전에 없어 원문으로 남은 카드 1 개: Satellite (/satellite)` → `src/ModCardKorean/mod-cards.ko.json` 에 설명을 더해 설치본에 넣었다.
+  `check-mod-card-locale` **16/16**.
+- 설치 목록 **315개**(본체 + 애드온 4).
+- 게임: `255 plugins to load`(254 → 255), `Loading [Fums-Satellite 1.0.1]`, `Bot details: SAIN found, ORBIT found, COMET not found`. `[Error` 는 알려진 DirectReload 1줄.
+  Dynamic Maps·DynamicMaps Extended 도 함께 올라왔다.
+- F12 사전 `lang/com.fums.satellite.json` 3항목 → `check-lang-coverage` **5237/5237**(사전 191개).
+- 웹 페이지 `https://127.0.0.1:6969/satellite/` 는 200(34KB)으로 응답한다. 내장 브라우저는 SPT 의 자체 서명 인증서를 신뢰하지 않아 화면을 열지 못했다.
+  **레이드 중 실제 지도는 아직 보지 않았다** — 게임 안 `Left Alt+M` 으로 연다(처음엔 인증서 경고에서 "고급 → 계속").
