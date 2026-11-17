@@ -1,7 +1,7 @@
 # 계획 — 새 모드 6개 (14차): Satellite · Hideout Interiors · Hideout Last Stand · T Override · SPZombies · Skill Cap 100
 
 - 날짜: 2026-11-17
-- 상태: **계획만. 아직 아무것도 받지 않았고 설치하지 않았다.**
+- 상태: **받고 풀었다(16/16, 바이트 일치, 겹침 0). 아직 설치하지 않았다** — §7
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 조사: Forge API(`tools/survey-candidates.mjs`·버전·의존성 트리), 각 모드 페이지 본문 전문, 애드온 탭(내장 브라우저),
   댓글(`tools/fetch-mod-comments.mjs`, 9개 모드 189건, 실패 0), 설치본 실측(설치 목록·DLL 안 GUID·서버 모드 폴더·`.cfg` 단축키·패처).
@@ -223,3 +223,39 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
 - 절차: `doc/PROCEDURE.md`
 - 앞선 설치 계획 형식: `doc/plans/2026-11-15-prestige-mods-install-plan.md`
 - 한글화 장치: `src/SptKoreanConfig/README.md`
+
+## 7. 받기·해제 결과 (2026-11-17 11:36~11:39)
+
+**설치는 아직 하지 않았다.** 게임(PID 42100)과 서버(PID 45256)가 켜져 있어 사용자에게 물은 뒤에 넣는다.
+
+### 7-1. 받기
+
+- 받기 직전 11개를 다시 조회했다(조회 실패 0) — 버전 변화 없음. 3353 도 아직 0.3.1 이다.
+- `node tools/download-stage.mjs stage14` — **16/16, 바이트 일치 16**, 합계 3,265,759,205 바이트, 약 3분 30초. 전부 GitHub(`release-assets.githubusercontent.com`, 3317 만 `raw.githubusercontent.com`).
+  결과는 `doc/download/download-results-stage14.json`.
+- 해제: `/c/Windows/System32/tar.exe` 절대경로로 16개 모두 성공.
+
+### 7-2. 겹침
+
+해제본 16개 폴더(파일 1,644개)를 설치본과 서로에 대조했다.
+
+| 검사 | 결과 |
+| --- | --- |
+| 설치본에 이미 있는 경로(덮어쓰기) | **0** |
+| 모드끼리 같은 경로 | **0** — Stronghold 맵은 3193 의 `CustomMapLoader` 폴더 아래에 넣지만 같은 파일은 없다. Satellite 애드온 넷은 `maps/<맵>~backport` 처럼 본체와 다른 폴더다 |
+| `BepInEx/`·`SPT_Runtime/` 밖의 파일 | **0** — 3317 의 뿌리 `docs/`(안내서 14개)는 `extracted/stage14/_docs-3317/` 로 치웠다 |
+
+### 7-3. 해제본에서 확인한 것과 첫 기동 전에 넣은 파일
+
+| 모드 | 확인한 것 | 넣은 파일 (설치 기록에 함께 남는다) |
+| --- | --- | --- |
+| 14-A 3326 | `browser/HideoutBrowser.exe` + WebView2 DLL 3개. 한국어 없음 | - |
+| 14-B 3353 | 서버 쪽은 DLL 하나 — `config.json` 은 첫 기동에 생긴다. 번역 파일 없음(1.0.0 에서 넣는다고 했다) | - |
+| 14-C 3373 | 게임 `Satellite.Client.dll`, 서버 `Satellite.Server.dll`·`web/`·바닐라 맵 13장. **한국어 `web/lang/ko.js` 가 있다** — 707항목 중 원문 그대로 16(Customs·Factory·Woods·Shoreline·Reserve·The Lab 맵 이름 6 + 고유명사). 맵 이름이 "인터체인지·등대"만 한국어라 섞여 있다 | - |
+| 14-D 3317 | DLL 역컴파일로 기본 단축키 확인: `OpenSettings=Insert`·`ToggleEnemyESP=F6`·`ToggleLootESP=F7`·`ToggleAimbot=F8`·`ReloadConfig=F9`·`Panic=F10`·`AimHold=Mouse4`. `config.json` 이 있으면 덮어쓰지 않는다 | `BepInEx/config/SPTFieldToolkit/config.json` — **메뉴 PageUp, 적 ESP Keypad7, 전리품 ESP Keypad9, 조준 Keypad6, 패닉 PageDown, 다시 읽기 None**. 설치본 `.cfg` 전체에서 안 쓰이는 키를 골랐다(Home=STM, End=두 모드, Keypad1~5·8=SetSpeed·DynamicMaps 등) |
+| 14-E 3223·3226·3229 | 세 모드 모두 F12 `1. Normal gameplay / Show in normal gameplay`(기본 **true**). 끄면 서버 경로(`/pap/normalgame` 등)로 넘기고 "게임과 서버를 다시 켠 뒤" 반영. 첫 기동에 "YOUR NORMAL GAMEPLAY" 선택 창도 뜬다 | `BepInEx/config/com.kennerz.paphideoutmodule.cfg`·`com.kennerz.thundergun.cfg`·`com.kennerz.raygun.cfg` — `Show in normal gameplay = false`. 선택 창이 뜨면 거기서도 끈다 |
+| 14-E 3167 | `Draw / holster key = J`(`com.trappuss.hideoutuncensored`). 은신처 전용이고 슬롯 키로도 꺼낸다 — **바꾸지 않았다**. Pinned Quest HUD(`J`)와 함께 눌리는지 화면으로 본다 | - |
+| 14-E 3352 | 본체 1,398파일(음성 1,097). 맵은 없다 | - |
+
+- 3223 서버 DLL 은 역컴파일이 실패했다(참조 해석). 클라이언트 쪽 코드만 읽었다.
+- 내려받은 JS(`ko.js`)를 `require` 로 읽으려던 것은 막혔다 — 받은 코드는 실행하지 않고 글자로만 셌다.
