@@ -404,3 +404,6 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
   Goons→구니즈, PaP 판매가 문장은 다시 썼다. CaliberUnderName 에 새로 생긴 구경 2개(Cold Fusion·Pressure)도 채웠다.
   `check-lang-coverage` **5933/5933**(사전 199개), 기동 로그 "사전에 없음" **36** 그대로.
 - **자동 클릭으로는 ZOMBIES MODE 버튼이 눌리지 않았다**(마우스를 올린 강조만). 좀비 메뉴·Stronghold 매치는 화면으로 보지 못했다 — 직접 해 볼 거리다.
+- **나머지 10개 프로필도 끔(사용자 결정, 16:05).** 세 모드 서버 폴더의 `normalgame.json` 에 11개 프로필 id 를 모두 `false` 로 넣었다(이전 파일은
+  `backup/normalgame-before-2026-11-17/`). 서버·게임이 켜져 있어 끄지 않고 파일만 고쳤다 — **다음 서버 재시작 때** 반영되고, 그때 서버 로그에
+  `chose Pack-a-Punch for zombies only` 가 프로필마다 나오는지 본다. 그 프로필로 접속해도 선택 창이 다시 뜨는지는 아직 모른다.
