@@ -25,6 +25,7 @@ namespace SptKoreanConfig
     [BepInDependency("com.tylevo.fieldattachments", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.rairai.hiddencaches.eft", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("local.spt.practicemenu", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("jrs.hideoutinteriors", BepInDependency.DependencyFlags.SoftDependency)]
     public class KoreanConfigPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.koreanconfig";

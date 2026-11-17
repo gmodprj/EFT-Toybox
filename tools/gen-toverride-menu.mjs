@@ -194,7 +194,7 @@ const resultNames = {
 };
 
 const out = {
-  comment: 'T Override(3317) 의 PageUp 메뉴. 열 제목·소제목·안내·버튼은 고른 메서드 안 리터럴(strings), 항목 이름은 MenuNameFor 결과(resultMaps — 짧은 이름·드롭다운 값은 strings, 나머지는 F12 사전 local.spt.practicemenu 의 이름), 도움말은 MenuHelp 결과(F12 사전 설명), 탭 이름·첫 안내는 이미 만들어진 플러그인 인스턴스 필드(instanceStrings). 설정 열쇠·단축키 필드 이름(OpenSettings·ToggleNoClip·bone 등)과 Category - 접두어는 열쇠로 쓰여 넣지 않는다. 생성: tools/gen-toverride-menu.mjs.',
+  comment: 'T Override(3317) 의 PageUp 메뉴. 열 제목·소제목·안내·버튼은 고른 메서드 안 리터럴(strings), 항목 이름은 MenuNameFor 결과(resultMaps — 짧은 이름·드롭다운 값은 strings, 나머지는 F12 사전 local.spt.practicemenu 의 이름), 도움말은 MenuHelp 결과(F12 사전 설명), 키 탭 이름 중 표에 없는 14개(Flight Forward·ToggleNoWeight 등)는 KeyLabel 결과(resultMaps), 탭 이름·첫 안내는 이미 만들어진 플러그인 인스턴스 필드(instanceStrings). 설정 열쇠·단축키 필드 이름(OpenSettings·ToggleNoClip·bone 등)과 Category - 접두어는 열쇠로 쓰여 넣지 않는다. 생성: tools/gen-toverride-menu.mjs.',
   assembly: 'SPTPracticeMenu',
   methods: [
     'SPTPracticeMenu.Plugin::DrawCompactWindow', 'SPTPracticeMenu.Plugin::DrawCompactContents', 'SPTPracticeMenu.Plugin::DrawMenuColumn',
@@ -214,6 +214,19 @@ const out = {
   resultMaps: {
     'SPTPracticeMenu.Plugin::MenuNameFor': { strings: resultNames, configNames: 'local.spt.practicemenu' },
     'SPTPracticeMenu.Plugin::MenuHelp': { configHelp: 'local.spt.practicemenu' },
+    // 키 탭 이름. KeyLabel(필드 이름)은 표에 있는 15개만 리터럴로 돌려주고(strings 가 바꾼다) 나머지는
+    // 필드 이름의 "NoClip" 을 "Flight " 로 바꿔 돌려준다 — 이동 키 7개는 "Flight Forward", 그 뒤 7개는 필드 이름 그대로.
+    // 결과는 MenuName 에 그리기만 하고 열쇠로 쓰지 않는다.
+    'SPTPracticeMenu.Plugin::KeyLabel': {
+      strings: {
+        'Flight Forward': '비행 앞으로', 'Flight Back': '비행 뒤로', 'Flight Left': '비행 왼쪽', 'Flight Right': '비행 오른쪽',
+        'Flight Up': '비행 위로', 'Flight Down': '비행 아래로', 'Flight Boost': '비행 가속',
+        'ToggleInfiniteMedical': '무한 의약품 켜고 끄기', 'ToggleNoWeight': '무게 무시 켜고 끄기',
+        'ToggleInteractionRange': '상호작용 거리 켜고 끄기', 'ToggleFireRate': '연사 속도 켜고 끄기',
+        'ToggleEnemyAlerts': '근처 경고 켜고 끄기', 'ToggleAvailableExtractions': '탈출구 열기 켜고 끄기',
+        'RepairEquippedGear': '착용 장비 수리',
+      },
+    },
   },
   // 플레이어·기타 탭은 설정 섹션 이름에서 번호를 떼고 대문자로 만들어 MenuSection 에 넘긴다 → F12 사전의 섹션 이름(번호 뗌)
   argMaps: {

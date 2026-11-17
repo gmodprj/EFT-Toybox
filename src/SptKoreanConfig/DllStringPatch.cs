@@ -75,6 +75,12 @@ namespace SptKoreanConfig
         /// 이 GUID 의 F12 사전에서 **첫 인자(ConfigEntryBase)** 의 설명을 찾는다. 돌려준 글자가 그 설정의 원래 설명과 같을 때만 바꾼다.
         /// </summary>
         [JsonProperty("configHelp")] public string ConfigHelp;
+
+        /// <summary>
+        /// 첫 인자(문자열) → 한글. strings 에 없고 **돌려준 글자가 첫 인자로 시작할 때** 그 앞부분만 바꾼다.
+        /// "{kind} &lt;color&gt;12&lt;/color&gt;" 처럼 열쇠를 이름으로 그대로 그리고 뒤에 무엇을 덧붙이는 함수에 쓴다(Hideout Interiors 분류).
+        /// </summary>
+        [JsonProperty("argStrings")] public Dictionary<string, string> ArgStrings;
     }
 
     /// <summary>
@@ -197,6 +203,7 @@ namespace SptKoreanConfig
             public string Pattern;
             public ResultMapSpec Spec;
             public Dictionary<string, string> Strings;
+            public Dictionary<string, string> ArgStrings;
             public Dictionary<string, string> Names; // 설정 열쇠 → 한글 이름 (configNames)
             public int NamesGeneration = -1;
             public readonly Dictionary<object, string> HelpCache = new Dictionary<object, string>();
@@ -217,7 +224,7 @@ namespace SptKoreanConfig
             var postfix = new HarmonyMethod(AccessTools.Method(typeof(DllStringPatch), nameof(ResultPostfix)));
             foreach (var kv in file.Data.ResultMaps)
             {
-                var rule = new ResultRule { File = file, Pattern = kv.Key, Spec = kv.Value, Strings = Clean(kv.Value?.Strings) };
+                var rule = new ResultRule { File = file, Pattern = kv.Key, Spec = kv.Value, Strings = Clean(kv.Value?.Strings), ArgStrings = Clean(kv.Value?.ArgStrings) };
                 var re = ToRegex(kv.Key);
                 var patched = 0;
                 foreach (var m in AllMethods(asm))
@@ -236,6 +243,7 @@ namespace SptKoreanConfig
                 }
                 Rules.Add(rule);
                 KoreanConfigPlugin.Log.LogInfo($"  {file.File}: 결과 바꾸기 {kv.Key} — 메서드 {patched}개, 사전 {rule.Strings.Count}개" +
+                    (rule.ArgStrings.Count > 0 ? $", 앞머리(인자) {rule.ArgStrings.Count}개" : "") +
                     (rule.Spec?.ConfigNames != null ? $", F12 이름({rule.Spec.ConfigNames})" : "") +
                     (rule.Spec?.ConfigHelp != null ? $", F12 설명({rule.Spec.ConfigHelp})" : ""));
             }
@@ -302,6 +310,16 @@ namespace SptKoreanConfig
             }
 
             var arg = __0;
+
+            // 돌려준 글자가 첫 인자(열쇠)로 시작하면 그 앞부분만 바꾼다. 맞을 때만 새 글자를 만든다.
+            if (rule.ArgStrings.Count > 0 && arg is string head && head.Length > 0
+                && rule.ArgStrings.TryGetValue(head, out var headKo) && __result.StartsWith(head, StringComparison.Ordinal))
+            {
+                rule.Hits++;
+                rule.Used.Add(head);
+                __result = __result.Length == head.Length ? headKo : headKo + __result.Substring(head.Length);
+                return;
+            }
 
             if (rule.Spec?.ConfigHelp != null && arg is BepInEx.Configuration.ConfigEntryBase entry)
             {
