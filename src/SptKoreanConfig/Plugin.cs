@@ -23,6 +23,7 @@ namespace SptKoreanConfig
     // lang/_dll-*.json 이 고치는 모드들. 어셈블리가 먼저 올라와 있어야 메서드를 찾는다.
     [BepInDependency("com.maschine.ScopeRangefinder", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.tylevo.fieldattachments", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("com.rairai.hiddencaches.eft", BepInDependency.DependencyFlags.SoftDependency)]
     public class KoreanConfigPlugin : BaseUnityPlugin
     {
         public const string PluginGuid = "spt.koreanconfig";
