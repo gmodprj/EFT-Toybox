@@ -293,3 +293,16 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
   메뉴 알림·습격 화면 글자는 영문 — 제작자가 1.0.0 에 번역 JSON 폴더를 넣겠다고 했다.
 - 단축키: `Leave key`(이긴 뒤 바로 나가기) 기본 **F10** 이 ImpactCue 설정 창 키와 같다. 이긴 뒤에만 쓰는 키라 그대로 두고 사전 설명에 적었다. F7·F8 은 협동 전용.
 - 같은 기동에서 UI Fixes `Modify Weapons In Raid = Always` 가 반영됐다. 로그에 DWV 의 "UI-Fixes blocks" 줄은 없다(로딩 화면은 찍지 못했다).
+
+## 10. 14-B 첫 습격 — 사용자가 직접 플레이 (2026-11-17 13:19~13:24)
+
+| 무엇 | 결과 |
+| --- | --- |
+| 진행 (게임 로그) | 맵 `Suburbs`(은신처 복사본, 시설 28/28, 방어 0%) → 1단계 구성 "Scav 2, Scav 2 + Raider 1, 타길라" → 웨이브 1·2·3 → **`Won, wave 3/3`** → `Leaving the raid: Survived` |
+| 서버 | `defended at tier 1, wave 3, 6 kills`. 무기 거치대에 장비가 없어 `0 things brought in`, `everything from your racks is still there` |
+| 오류 | 습격 구간 게임 로그 `Exception` **0**, Unity 로그 예외 0. `[Error` 는 `SPTBattleAmbience` 가 `suburbs` 맵 설정을 못 찾은 1줄 — Icebreaker·Labyrinth 와 같은 종류(그 맵에서만 전투 소음이 빠진다). 경고는 ISB·UNTARGH·RUAF·ORBIT·사다리가 처음 보는 맵 `Suburbs` 설정이 없다고 적은 것 |
+| 서버 오류 | 이번 기동 구간 `Could not add` 고유 **48**, 다른 오류 0 — 기준선과 같다 |
+| 프로필 (백업 대조) | 아이템 2186 → 2233. 사라진 3개는 쏜 탄약 묶음 둘과 갱신된 BEAR 군번줄(같은 종류가 새 id 로 들어옴) — **털린 것 없음**. 새 50개는 배낭의 전리품(타길라 에디션 플레이트 캐리어, 연구소 출입 카드 2, 수류탄·탄창·의약품 등)과 장전. 화폐·은신처 시설 레벨·체력 그대로, 경험치 412,314 → 427,193 |
+
+- 습격 중 `Kept you out of past the cultist gate` 45회 — 플레이어가 무대 밖(교단원 방 쪽)으로 나가지 못하게 되돌린 기록이다.
+- 기다리던 타길라가 정문 안쪽에 있다가 대기 자리로 되돌려졌다는 경고 1줄(모드 자체 보정).
