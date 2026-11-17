@@ -144,6 +144,8 @@ F12 새 메뉴(Better BepInEx), F6 SAIN 편집기, F8 Scope Rangefinder 편집�
 - `resultMaps` — 그 메서드가 **돌려주는 글자**를 바꾼다(후처리). 먼저 `strings`(돌려준 글자 → 한글), 없으면
   `configNames`(첫 인자인 설정 열쇠 → 그 GUID 의 F12 사전 이름. 섹션마다 이름이 갈리는 열쇠는 쓰지 않는다),
   `configHelp`(첫 인자인 `ConfigEntryBase` 의 원래 설명과 같을 때만 → F12 사전 설명). 인자가 하나 이상인 메서드만 고른다.
+  `argStrings`(2026-11-18) — `strings` 에 없고 **돌려준 글자가 첫 인자(문자열)로 시작할 때** 그 앞부분만 바꾼다.
+  `"{kind} <color>12</color>"` 처럼 열쇠를 이름으로 그대로 그리고 뒤에 덧붙이는 함수에 쓴다(Hideout Interiors `CategoryLabel`). 맞을 때만 새 글자를 만든다.
 - `argMaps` — 그 메서드의 **첫 문자열 인자**를 바꾼다(앞처리). 데이터로 만든 제목을 받아 그리기만 하는 함수에 쓴다.
 - `instanceFieldsOf` + `instanceStrings` — 그 GUID 의 플러그인 인스턴스가 이미 만들어져 있으면 그 타입의 문자열·문자열 배열 필드를 바꾼다.
   탭 이름·첫 안내처럼 **필드 초기화(생성자)** 에서 정해진 글자다. `strings` 와 따로 두는 것은 같은 글자가 메서드 안에서 열쇠로 쓰일 수 있어서다.
