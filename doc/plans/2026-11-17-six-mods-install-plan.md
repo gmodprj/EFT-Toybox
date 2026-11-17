@@ -1,7 +1,7 @@
 # 계획 — 새 모드 6개 (14차): Satellite · Hideout Interiors · Hideout Last Stand · T Override · SPZombies · Skill Cap 100
 
 - 날짜: 2026-11-17
-- 상태: **14-A(§8)·14-B(§9·§10)·14-C(§11) 설치·확인 끝.** 14-D 부터는 아직이다. 받기·해제는 §7
+- 상태: **14-A(§8)·14-B(§9·§10)·14-C(§11)·14-D(§12) 설치·확인 끝.** 14-E 는 아직이다. 받기·해제는 §7
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 조사: Forge API(`tools/survey-candidates.mjs`·버전·의존성 트리), 각 모드 페이지 본문 전문, 애드온 탭(내장 브라우저),
   댓글(`tools/fetch-mod-comments.mjs`, 9개 모드 189건, 실패 0), 설치본 실측(설치 목록·DLL 안 GUID·서버 모드 폴더·`.cfg` 단축키·패처).
@@ -275,7 +275,7 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
 - 한글화: F12 사전 `lang/jrs.hideoutinteriors.json` 15항목. `check-lang-coverage` **5211/5211**(사전 189개), 기동 로그 "사전에 없음" **36** 그대로.
   **꾸미기 패널 글자(DECORATE·분류 이름·버튼)는 영문** — 모드 DLL 안 리터럴이라 `_dll-*.json` 대상이다. 다음 묶음과 따로 한다.
 - 첫 기동(12:32) 뒤 화면이 로딩 표시에서 오래 멈춰 있었고 "Fatal error" 제목의 창이 잠깐 앞에 있었다. 사용자가 게임을 껐고, 로그는
-  12:44:55 에 패치를 차례로 끄는 **정상 종료**였다. 두 번째 기동(12:46)은 메인 메뉴·은신처까지 정상이었다. 원인은 가리지 못했다 — 다시 나오면 그때 Player.log 를 본다.
+  12:44:55 에 패치를 차례로 끄는 **정상 종료**였다. 두 번째 기동(12:46)은 메인 메뉴·은신처까지 정상이었다. 원인은 §12 에서 찾았다 — computer-use 가 게임을 하나 더 띄운 것이었다.
 
 ## 9. 14-B Hideout Last Stand 설치 결과 (2026-11-17 13:30 무렵)
 
@@ -329,3 +329,22 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
 - F12 사전 `lang/com.fums.satellite.json` 3항목 → `check-lang-coverage` **5237/5237**(사전 191개).
 - 웹 페이지 `https://127.0.0.1:6969/satellite/` 는 200(34KB)으로 응답한다. 내장 브라우저는 SPT 의 자체 서명 인증서를 신뢰하지 않아 화면을 열지 못했다.
   **레이드 중 실제 지도는 아직 보지 않았다** — 게임 안 `Left Alt+M` 으로 연다(처음엔 인증서 경고에서 "고급 → 계속").
+
+## 12. 14-D T Override 설치 결과 (2026-11-17 13:50~14:20)
+
+- 게임 정상 종료·서버 종료 뒤 설치. `install-and-test -Pattern '3317__*' -Tag 'stage14-D-3317-TOverride'` — **2파일**(DLL + 미리 만든 단축키
+  `BepInEx\config\SPTFieldToolkit\config.json`), 서버 183 그대로(게임 전용), `Could not add` 고유 48. 설치 목록 316개, 기록 `OK — 0/0`.
+- **첫 기동에서 스스로 꺼졌다**: `[Error :Tarkov Override] Solo SPT only: Fika detected, toolkit disabled.`
+  - 역컴파일: 로드된 플러그인 중 **GUID 에 `fika` 가 든 것이 하나라도 있으면** 끈다(`Chainloader.PluginInfos` 를 훑는다).
+  - Fika 본체는 없다. 걸린 것은 **LootNet(2679) 의 `LootNetFika.dll`** — GUID `com.20fpsguy.LootNet.fika`, 이름 `LootNet.Fika 1.0.9`.
+    Fika 가 없으면 `Fika not installed` 한 줄만 찍고 아무것도 하지 않는다(역컴파일 `Awake` 확인). 로드된 플러그인 중 이름에 Fika 가 든 것은 이것 하나였다.
+  - 조치: `LootNetFika.dll` → **`LootNetFika.dll.disabled`** 로 이름을 바꿔 BepInEx 가 읽지 않게 했다. LootNet 기록(`installed-stage10-G-2679-LootNET.txt`)의
+    그 줄도 같은 이름으로 고쳤다. **LootNet 을 업데이트하면 이 DLL 이 다시 들어와 T Override 가 또 꺼진다** — 그때 다시 이름을 바꾼다.
+- 다시 켠 기동: `Tarkov Override 1.4.3 ready`, `Hotkeys loaded: ...SPTFieldToolkit\config.json`(미리 넣은 파일 해시 그대로). 플러그인 255
+  (T Override +1, LootNet.Fika −1). `PageUp` 으로 메뉴가 열리는 것을 화면으로 봤다(창 아래 "PageUp / Esc: Close"). 메뉴 안 글자는 영문.
+- **Rippers Casino 와 함께여도 F12 에서 사라지지 않았다** — 목록에 있고 236개 항목이 열린다.
+- F12 사전 `lang/local.spt.practicemenu.json` **236항목**(섹션 34). 조준 보조·레짓·레이지 세 묶음이 같은 키를 되풀이해 키별 번역에 섹션 예외를 얹어 만들었다.
+  `check-lang-coverage` **5473/5473**(사전 192개), 기동 로그 "사전에 없음" 272 → **36**, F12 화면에 "치트 메뉴 (Tarkov Override)"·한국어 항목.
+  - Better BepInEx 창은 설정 목록을 한 번만 만들어서, **사전을 고친 뒤 F12 를 다시 열어도 반영되지 않았다**(재적용 로그 없음). 게임을 다시 켜야 한다.
+- §8 의 "첫 기동 멈춤·Fatal error 창"은 **원인을 찾았다**: 화면을 앞으로 가져오려고 쓴 computer-use `open_application` 이 게임을 하나 더 띄웠고,
+  두 번째 게임이 "Another instance is already running" 오류 창을 냈다(대화상자를 찍어 확인). 게임·모드 문제가 아니다.

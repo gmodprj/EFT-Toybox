@@ -1,0 +1,2 @@
+3317__TarkovOverride-1.4.3-SPT4.1.6	BepInEx\config\SPTFieldToolkit\config.json
+3317__TarkovOverride-1.4.3-SPT4.1.6	BepInEx\plugins\SPTPracticeMenu\SPTPracticeMenu.dll

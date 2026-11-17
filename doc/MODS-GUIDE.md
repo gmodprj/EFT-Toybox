@@ -246,7 +246,7 @@ Forge에서 받은 모드가 아니라 이 저장소에서 만든 것. 소스는
 | StackUnify | 0.1.0 | 서버 | - | 최대 스택 크기를 한 곳에서 정한다. 그 값을 쓰는 서버 모드가 13개나 되어 어느 값이 남는지 예측할 수 없었다. **클라이언트 목록이 굳기 전의 가장 늦은 자리**(`OnLoadOrder.PostLoad`)에서 설정에 적힌 값으로 못박는다. 기본 설정은 비어 있어 아무 일도 하지 않는다 — `config.jsonc` 의 `StackByCaliber`/`StackByItemId` 를 채워야 움직인다. `ReportOnly: true` 로 띄우면 바꾸지 않고 겹침만 알려 준다. |
 | HelmetSlotUnion | 0.1.0 | 서버 | - | 헬멧의 부착 칸 필터를 **칸 이름별 합집합**으로 넓힌다. 같은 이름의 칸(`helmet_ears`·`mod_nvg`·`mod_equipment_000` …)을 헬멧 전체에서 모아 그 합집합을 각 칸에 더한다. 헬멧 64종·칸 묶음 11개, 필터 항목 495 → 6719. 기존 항목은 지우지 않고 더하기만 한다. |
 
-번역을 고치려면 `BepInEx\plugins\SptKoreanConfig\lang\<모드 GUID>.json`을 고치고 F12를 다시 열면 된다(재시작 불필요). 창 자체의 글자(`lang\_ui.json`)만은 게임을 다시 켜야 한다.
+번역을 고치려면 `BepInEx\plugins\SptKoreanConfig\lang\<모드 GUID>.json`을 고친다. **지금 F12 창(Better BepInEx)은 설정 목록을 처음 한 번만 만들어서, 사전을 고친 뒤 F12 를 다시 열어도 반영되지 않는다 — 게임을 다시 켠다**(2026-11-17 실측. 원래 ConfigurationManager 창 때는 다시 열면 반영됐다). 창 자체의 글자(`lang\_ui.json`)만은 게임을 다시 켜야 한다.
 
 HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`이고 서버를 다시 켜야 적용된다. `helmet_top`·`helmet_back`은 내장 방탄판 자리(36종)라 기본값대로 합치면 아무 헬멧에 아무 방탄판이 들어간다 — 방어력을 그대로 두려면 `"ExcludedSlotNames": ["helmet_top", "helmet_back"]`. 자세한 내용은 [../src/HelmetSlotUnion/README.md](../src/HelmetSlotUnion/README.md).
 
@@ -306,6 +306,17 @@ HelmetSlotUnion 설정은 `SPT_Runtime\user\mods\HelmetSlotUnion\config.jsonc`�
 - [Ultimate Flea](https://sp-mod.com/mod/2844) (1.2.0)
 
 ## 알려진 충돌
+
+### T Override 가 "Fika detected" 로 꺼지던 것 — LootNet 의 Fika 연동 DLL (2026-11-17, 해결)
+
+**증상:** [T Override](https://sp-mod.com/mod/3317) 가 기동하자마자 `Solo SPT only: Fika detected, toolkit disabled.` 를 적고 꺼진다. Fika 는 설치하지 않았다.
+
+**원인:** T Override 는 로드된 플러그인 중 **GUID 에 `fika` 가 든 것이 하나라도 있으면** 스스로 끈다. [LootNet](https://sp-mod.com/mod/2679) 이
+들고 오는 `BepInEx\plugins\LootNet\LootNetFika.dll`(GUID `com.20fpsguy.LootNet.fika`)이 Fika 없이도 플러그인으로 올라와 걸렸다.
+그 DLL 은 Fika 가 없으면 `Fika not installed` 한 줄만 찍고 아무 일도 하지 않는다(역컴파일 확인).
+
+**해결:** `LootNetFika.dll` 을 **`LootNetFika.dll.disabled`** 로 이름을 바꿨다(LootNet 설치 기록도 같은 이름으로). 잃는 기능은 없다.
+**LootNet 을 업데이트하면 다시 들어오니** 그때 또 이름을 바꾼다. 경위는 `plans/2026-11-17-six-mods-install-plan.md` §12.
 
 ### 프레스티지에서 넘긴 물건이 오지 않던 것 — Prestige Perks 가 코인으로 바꾼다 (2026-11-16, 해결)
 
@@ -439,5 +450,5 @@ Direct Reload의 아래 두 알림은 고장이 아니다.
 | Trader Namer | `...\TraderNamer\config.json` | 이름·소개 변경. 아바타는 `avatars\<상인이름>.jpg` |
 | SVM | `Greed.exe` | 치트성 기능은 여기서 먼저 찾는다 |
 | UI Fixes ↔ Definitive Weapon Variants | `BepInEx\config\com.tyfon.uifixes.cfg` | **`C. Gameplay / Modify Weapons In Raid = Always`**(2026-11-17, 사용자 결정 — 기본값 `Never`). `Never` 면 레이드 중 들지 않은 총기의 핵심 부품을 못 바꿔, DWV 가 로딩마다 "UI-Fixes blocks required mod_core changes" 를 띄우고 그 무기의 변형 전환이 막힌다. 경고만 끄는 길(DWV `Compatibility / Show UI-Fixes compatibility warnings = false`)은 택하지 않았다. F12 의 드롭다운은 자동 입력으로 안 열려 파일을 고쳤다 — 게임을 다시 켜야 반영된다 |
-| SptKoreanConfig | `...\SptKoreanConfig\lang\*.json` | 번역 문구. 모드별 사전은 고치고 F12를 다시 열면 반영, `_ui.json`은 재시작 필요. F12 안에서 한글 표시 자체를 끌 수도 있다 |
+| SptKoreanConfig | `...\SptKoreanConfig\lang\*.json` | 번역 문구. 모드별 사전도 고친 뒤 게임을 다시 켜야 반영(Better BepInEx 창은 목록을 한 번만 만든다), `_ui.json`도 재시작 필요. F12 안에서 한글 표시 자체를 끌 수도 있다 |
 | Transparent Sights | F12 메뉴 + 조준경 아이콘 더블클릭 | 파일로 받을 설정이 없다. `plugins\7Bpencil.TransparentSights\config.json`은 조준경별 전환을 저장할 때 모드가 직접 만든다(없으면 기본값). 형식은 `"<아이템 템플릿 ID>": "Enabled" / "EnabledWithMount" / "Disabled"` |
