@@ -1,7 +1,7 @@
 # 계획 — 새 모드 6개 (14차): Satellite · Hideout Interiors · Hideout Last Stand · T Override · SPZombies · Skill Cap 100
 
 - 날짜: 2026-11-17
-- 상태: **14-A(§8)·14-B(§9·§10)·14-C(§11)·14-D(§12) 설치·확인 끝.** 14-E 는 아직이다. 받기·해제는 §7
+- 상태: **14-A~E 설치 끝**(§8~§14). 14-E 의 좀비 매치는 아직 화면으로 보지 않았다. 받기·해제는 §7
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 조사: Forge API(`tools/survey-candidates.mjs`·버전·의존성 트리), 각 모드 페이지 본문 전문, 애드온 탭(내장 브라우저),
   댓글(`tools/fetch-mod-comments.mjs`, 9개 모드 189건, 실패 0), 설치본 실측(설치 목록·DLL 안 GUID·서버 모드 폴더·`.cfg` 단축키·패처).
@@ -373,3 +373,34 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
   **할당 없는 사전 찾기만** 남겼다.
 - 사전 생성: `node tools/gen-toverride-f12.mjs`(F12, 설치본 .cfg 에서) → `node tools/gen-toverride-menu.mjs`(메뉴). 모드를 업데이트하면 둘을 차례로
   돌려 "빠짐"·"번역 없음" 을 채운다. 두 스크립트로 다시 만든 결과가 손으로 확인한 사전과 같다(줄끝만 다름).
+
+## 14. 14-E SPZombies + 선행 6 + Stronghold 설치 결과 (2026-11-17 15:10~16:00)
+
+- 설치 직전 재조회: 7개 모두 버전 변화 없음. 게임 정상 종료·서버 종료, 프로필 11개를 `backup/profiles-before-stage14-E/` 에(불일치 0).
+- 하나씩 `install-and-test` — 모두 정상 시작, `Could not add` 고유 48, `Unable to add bundle` 은 기준선의 VPO-215 총열 1건뿐.
+
+  | 순서 | 모드 | 기록 줄 | 서버 모드 |
+  | --- | --- | ---: | ---: |
+  | 1 | 3167 Hideout Uncensored | 4 | 184 |
+  | 2 | 3193 Tushonka Mapping SDK | 2 (+빈 폴더 3, `.dirs.txt`) | 185 |
+  | 3 | 3223 Pack A Punch Hideout Module | 26 (파일 14 + 서버가 만든 `config.json`·프로필별 상태 11) | 186 |
+  | 4 | 3226 ZM_Thundergun | 19 | 187 |
+  | 5 | 3229 ZM_Raygun | 25 | 188 |
+  | 6 | 3351 Dr K's Perk Beverages | 46 | 189 |
+  | 7 | 3352 Dr K's SPZombies | 1,398 | 190 |
+  | 8 | 애드온 193 ZM_Stronghold (1.66GB) | 18 | 190 — `[MappingSDK] Registered map 'zm_stronghold'` |
+
+- 설치 목록 **324개**, `check-install-records` **`OK — 0/0`**. 본 프로필(Nomad)은 구역 28·퀘스트 91·아이템 2,233 그대로.
+- 게임: `262 plugins to load`(255 → 262, 새 플러그인 7개 모두 이름으로 확인), `[Error` 는 알려진 DirectReload 1줄. 메인 메뉴 오른쪽 위에 **ZOMBIES MODE** 버튼.
+- **"보통 게임에서만 끄기"는 미리 넣은 `.cfg` 로는 안 됐다.** 세 모드가 첫 기동에 `.cfg` 를 `true` 로 다시 썼다. 실제로 정하는 곳은 첫 기동에
+  뜨는 **"YOUR NORMAL GAMEPLAY" 선택 창**이다(이 창도 처음엔 PaP ON·Ray Gun/Thundergun OFF 였다가 하나를 누르자 셋 다 파일 값대로 다시 그렸다).
+  창에서 셋 다 OFF → CONFIRM → `.cfg` 셋 다 `false`, 각 서버 폴더 `normalgame.json` 에 `{"6adc…": false}`.
+  서버를 다시 켜니 `Profile 6adc… chose Pack-a-Punch for zombies only: its quest, machine and upgrades removed (copy in removed/)`.
+  - **선택은 프로필마다다.** 접속한 적 없는 다른 10개 프로필(STM 팀원 등)은 기본값(보통 게임에도)이라 서버가 메모리에서 PaP 퀘스트·구역을 붙인다
+    (`restored … quest, Pack-a-Punch area from the mod's side file`). 저장된 프로필 파일에는 11개 모두 PaP 구역(115)이 없다 — 모드가 자기 파일
+    (`PaPHideoutServer\profiles\<id>.json`)에 따로 둔다. 그 프로필로 접속하면 같은 선택 창이 뜬다.
+- F12 사전 7개 **458항목**: ZM_Core 344(셋으로 나눠 번역) + PaP 25·Perk Beverages 35·Raygun 15·Thundergun 7·Mapping SDK 5·Hideout Uncensored 27.
+  나눠 맡긴 번역은 받은 파일을 직접 셌다(id 집합 일치, 한글 없는 이름은 고유명사 2개뿐, 머리말 섞임 0). 원문에 없던 말("태엽") 삭제, Customs→세관,
+  Goons→구니즈, PaP 판매가 문장은 다시 썼다. CaliberUnderName 에 새로 생긴 구경 2개(Cold Fusion·Pressure)도 채웠다.
+  `check-lang-coverage` **5933/5933**(사전 199개), 기동 로그 "사전에 없음" **36** 그대로.
+- **자동 클릭으로는 ZOMBIES MODE 버튼이 눌리지 않았다**(마우스를 올린 강조만). 좀비 메뉴·Stronghold 매치는 화면으로 보지 못했다 — 직접 해 볼 거리다.

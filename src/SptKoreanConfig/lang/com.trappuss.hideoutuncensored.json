@@ -1,0 +1,122 @@
+{
+  "guid": "com.trappuss.hideoutuncensored",
+  "name": "은신처 무장 (Hideout Uncensored)",
+  "sections": {
+    "1. General": "1. 일반",
+    "2. Weapons": "2. 무기",
+    "3. Movement and actions": "3. 이동과 동작",
+    "4. Inventory, interactions, HUD": "4. 인벤토리, 상호작용, HUD",
+    "5. Safety": "5. 안전",
+    "6. Progression": "6. 성장"
+  },
+  "settings": {
+    "1. General/Enabled": {
+      "name": "켜기",
+      "desc": "전체 스위치. 끄면 원래 은신처다(무기는 사격장 안에서만)."
+    },
+    "1. General/Show messages": {
+      "name": "메시지 표시",
+      "desc": "이 모드가 무기를 꺼내거나 집어넣을 때 짧은 알림을 띄운다."
+    },
+    "1. General/Debug log": {
+      "name": "디버그 로그",
+      "desc": "모드가 내린 판단(꺼내기, 집어넣기, 탄창 선택기 점검)을 BepInEx/LogOutput.log 에 적는다."
+    },
+    "2. Weapons/Weapons anywhere in the hideout": {
+      "name": "은신처 어디서나 무기",
+      "desc": "1인칭이면 은신처 어디서나 사격장 안내 없이 무기를 꺼내고, 조준하고, 쏘고, 재장전하고, 바꾸고, 살펴본다. 게임 자체의 사격장 모드를 쓴다: 장비의 사본을 들기 때문에 탄약과 내구도는 줄지 않는다."
+    },
+    "2. Weapons/Draw / holster key": {
+      "name": "꺼내기 / 집어넣기 키",
+      "desc": "은신처에서 무기를 꺼내거나 집어넣는다. 사격장에서처럼 Escape 로도 집어넣는다."
+    },
+    "2. Weapons/Weapon keys draw": {
+      "name": "무기 키로 꺼내기",
+      "desc": "집어넣은 상태에서 무기 슬롯 키(주무기, 보조무기, 권총, 근접무기)를 누르면 그 무기를 꺼낸다."
+    },
+    "2. Weapons/Draw automatically": {
+      "name": "자동으로 꺼내기",
+      "desc": "은신처에서 1인칭이면 언제나 무기가 저절로 나온다."
+    },
+    "2. Weapons/Remember drawn weapons": {
+      "name": "꺼낸 무기 기억",
+      "desc": "은신처를 나갈 때 무기를 꺼내 두었다면, 다음에 들어올 때 다시 꺼낸다."
+    },
+    "2. Weapons/Quick slots": {
+      "name": "빠른 슬롯",
+      "desc": "무기를 꺼내 두는 동안 게임이 빠른 슬롯 4-0 을 비운다. 이 설정은 거기에 지정한 무기와 (수류탄 설정이 켜져 있으면) 수류탄을 지킨다. 의약품·음식 등 소모품은 일부러 빼 둔다: 사본을 쓰면 서버에 가지고 있지 않은 아이템을 소모하라고 요청하게 된다."
+    },
+    "2. Weapons/Rocket launchers": {
+      "name": "로켓 발사기",
+      "desc": "로케이션이 은신처이면 게임이 로켓 발사기(RShG-2 등)의 방아쇠를 무시한다. 이 설정은 발사되게 한다."
+    },
+    "2. Weapons/No aiming restriction": {
+      "name": "조준 제한 없음",
+      "desc": "사격장에서 50도 넘게 고개를 돌리면 게임이 무기를 내리고 방아쇠를 막는다. 이 설정은 그것을 없앤다."
+    },
+    "2. Weapons/No firing while the cursor is free": {
+      "name": "커서가 풀려 있을 때 사격 안 함",
+      "desc": "은신처 패널이 마우스 커서를 쥐고 있는 동안 사격·투척·근접 입력을 무시해, 버튼을 눌러도 무기가 발사되지 않게 한다."
+    },
+    "3. Movement and actions/Prone": {
+      "name": "엎드리기",
+      "desc": "은신처에서는 엎드리기 키가 강제로 막혀 있다. 이 설정은 통과시킨다."
+    },
+    "3. Movement and actions/Drop backpack": {
+      "name": "배낭 내려놓기",
+      "desc": "은신처에서는 배낭 내려놓기 키가 강제로 막혀 있다. 무기를 꺼낸 동안 작동하며, 진짜 배낭이 아니라 사본을 내려놓는다."
+    },
+    "3. Movement and actions/Grenades": {
+      "name": "수류탄",
+      "desc": "은신처에서는 수류탄 키와 투척이 꺼져 있다(손에 든 수류탄은 살펴보기만 된다). 이 설정은 무기를 꺼낸 동안 둘 다 켠다. 던진 수류탄은 사본이고 다음에 꺼낼 때 돌아온다."
+    },
+    "3. Movement and actions/Vaulting": {
+      "name": "넘기",
+      "desc": "은신처 플레이어는 넘기/오르기 구성 요소 없이 만들어진다. 이 설정은 그것을 만든다. 다음에 은신처를 불러올 때 적용된다."
+    },
+    "4. Inventory, interactions, HUD/Inventory while armed": {
+      "name": "무장 중 인벤토리",
+      "desc": "무기를 꺼낸 동안에는 인벤토리 키가 무시된다. 이 설정을 켜면 무기를 집어넣고 인벤토리를 연 뒤, 닫을 때 (바꾼 것을 반영해) 다시 꺼낸다."
+    },
+    "4. Inventory, interactions, HUD/Hideout interactions while armed": {
+      "name": "무장 중 은신처 상호작용",
+      "desc": "무기를 꺼낸 동안에는 구역 안내(구역으로 전환, 아이템 옮기기, 운동)가 숨겨진다. 이 설정은 그것을 남긴다. 운동은 먼저 무기를 집어넣고, 장비 화면은 열리면서 집어넣는다."
+    },
+    "4. Inventory, interactions, HUD/Magazine selector (hold reload + scroll)": {
+      "name": "탄창 선택기 (재장전 누른 채 스크롤)",
+      "desc": "재장전 키를 누르고 있으면 뜨는 선택기는 HUD 의 일부라, 무기를 꺼내면 저절로 작동해야 한다. 이 설정은 HUD 가 입력을 받지 못했을 때 직접 구동하는 예비책이다."
+    },
+    "4. Inventory, interactions, HUD/Area info icons key while armed": {
+      "name": "무장 중 구역 정보 아이콘 키",
+      "desc": "무기를 꺼낸 동안에는 은신처 구역 아이콘을 보이고 숨기는 키가 무시된다. 이 설정은 통과시킨다."
+    },
+    "4. Inventory, interactions, HUD/Discard sends items back by message": {
+      "name": "버린 아이템을 메시지로 돌려받기",
+      "desc": "은신처에 있는 동안 인벤토리에서 아이템을 버려도 없어지지 않는다: 빠진 뒤 보험 반환처럼 메시지로 돌려보내진다. Hideout Uncensored 서버 쪽이 있어야 한다. 없으면 아무것도 버려지지 않는다."
+    },
+    "4. Inventory, interactions, HUD/Wear your gear while holstered": {
+      "name": "집어넣은 상태에서도 장비 착용",
+      "desc": "게임은 무기를 꺼낸 동안에만 은신처 캐릭터에 헬멧·방탄복·리그·배낭을 입힌다. 이 설정은 무기를 집어넣어도 입혀 둔다(1인칭과 사진 카메라에서). 용기류는 빈 채로 입혀 무게가 없다."
+    },
+    "4. Inventory, interactions, HUD/Health panel": {
+      "name": "체력 패널",
+      "desc": "은신처에서는 체력 HUD 패널이 절대 허용되지 않는다. 이 설정은 허용한다(HUD 표시 설정은 그대로 적용된다)."
+    },
+    "4. Inventory, interactions, HUD/Hideout flashlight while armed": {
+      "name": "무장 중 은신처 손전등",
+      "desc": "무기를 꺼낸 동안에는 은신처 자체 손전등이 강제로 꺼진다(그 키가 조준이 된다). 이 설정은 아래 키로 쓸 수 있게 남긴다."
+    },
+    "4. Inventory, interactions, HUD/Hideout flashlight key": {
+      "name": "은신처 손전등 키",
+      "desc": "무기를 꺼낸 동안 은신처 손전등을 켜고 끈다. 기본으로는 지정되어 있지 않다."
+    },
+    "5. Safety/No damage in the hideout": {
+      "name": "은신처 피해 없음",
+      "desc": "은신처에서 캐릭터가 맞는 것(수류탄, 도탄)을 무시한다: 움찔하지도, 피격 반응도 없다. 은신처 체력 컨트롤러는 원래 피해를 받지 않는다. 이 설정은 거기에 더한 이중 안전장치다."
+    },
+    "6. Progression/Skill and weapon mastery gain (experimental)": {
+      "name": "스킬·무기 숙련도 획득 (실험)",
+      "desc": "은신처 플레이어의 스킬·숙련도 연결부는 비어 있다. 이 설정은 보통 것을 돌려, 은신처에서 쏘고 움직여도 레벨이 오를 수 있게 한다. 이 게임에서 무기 숙련도는 플레이어나 봇을 맞혀야만 오르므로 종이 표적으로는 오르지 않는다: 살아 있는 표적(HideoutShootout 의 스캐브)이 필요하다. 기본은 꺼짐이다: 경험치 농사이고, 진행은 다음 레이드 때에야 서버에 닿는다."
+    }
+  }
+}

@@ -305,6 +305,14 @@
     "4. Caliber Names/Caliber102x22": {
       "name": "102x22 표시 이름",
       "desc": "102x22 탄의 이름을 어떻게 적을지 정한다. 비워 두면 기본 이름을 쓴다."
+    },
+    "4. Caliber Names/CaliberColdFusion": {
+      "name": "저온 핵융합 셀 (Ray Gun)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다. ZM_Raygun 의 Cold Fusion Cell 이 쓰는 구경이다."
+    },
+    "4. Caliber Names/CaliberPressure": {
+      "name": "압축 공기 (Thundergun)",
+      "desc": "이 구경을 화면에 어떻게 적을지 정한다. ZM_Thundergun 의 카트리지가 쓰는 구경이다."
     }
   }
 }

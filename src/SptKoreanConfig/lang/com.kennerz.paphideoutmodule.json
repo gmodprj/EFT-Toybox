@@ -1,0 +1,113 @@
+{
+  "guid": "com.kennerz.paphideoutmodule",
+  "name": "팩어펀치 기계 (Pack A Punch Hideout Module)",
+  "sections": {
+    "1. Normal gameplay": "1. 보통 게임",
+    "1. Volume": "1. 음량",
+    "2. Gameplay": "2. 게임플레이",
+    "3. Machine": "3. 기계",
+    "4. Debug": "4. 디버그"
+  },
+  "settings": {
+    "1. Normal gameplay/Show in normal gameplay": {
+      "name": "보통 게임에 표시",
+      "desc": "켜기: 은신처 옆방의 벽을 허물면 기계가 나타난다. 방이 열리면 메카닉의 퀘스트 \"115 Riddles\"를 끝내고 보통 게임에서 Pack-a-Punch 기계를 쓸 수 있다! 끄기: Pack-a-Punch 는 좀비 모드에만 있다(거기서는 늘 작동한다). 끄면 여기서 얻은 것이 사라진다: 115 Riddles 퀘스트 진행, 지어 둔 기계, Pack-a-Punch 한 총의 강화(총은 보통 총으로 남는다). 게임과 서버를 다시 켠 뒤에 적용된다."
+    },
+    "1. Volume/Machine hum": {
+      "name": "기계 웅웅거림",
+      "desc": "가동 중인 기계가 쉬는 동안 내는 웅웅거림."
+    },
+    "1. Volume/Machine working hum": {
+      "name": "작업 중 웅웅거림",
+      "desc": "총을 강화하는 동안의 웅웅거림."
+    },
+    "1. Volume/Jingle": {
+      "name": "징글",
+      "desc": "기계가 이따금 트는 Pack-a-Punch 징글."
+    },
+    "1. Volume/Sting": {
+      "name": "스팅",
+      "desc": "총이 기계에 들어갈 때 나는 짧은 효과음."
+    },
+    "1. Volume/Crunch": {
+      "name": "우두둑 소리",
+      "desc": "총이 기계에 들어갈 때 나는 우두둑 소리."
+    },
+    "1. Volume/Power-on": {
+      "name": "전원 켜기",
+      "desc": "기계를 켤 때 나는 기동음."
+    },
+    "1. Volume/Deny": {
+      "name": "거절",
+      "desc": "기계가 거절할 때(돈이 모자랄 때) 나는 부저음."
+    },
+    "1. Volume/Purchase": {
+      "name": "구매",
+      "desc": "강화 값을 치를 때 나는 \"짤랑\" 소리."
+    },
+    "1. Volume/Voice line": {
+      "name": "음성 대사",
+      "desc": "총이 들어갈 때 캐릭터가 하는 \"Good work\"(게임 자체 음성 위에 겹친다)."
+    },
+    "1. Volume/Pack-a-Punch shot": {
+      "name": "Pack-a-Punch 사격음",
+      "desc": "115 Infused 총의 사격음에 얹히는 Pack-a-Punch 소리."
+    },
+    "1. Volume/Origins machine: upgrading": {
+      "name": "Origins 기계: 강화 중",
+      "desc": "총이 Origins 기계를 거치는 동안 나는 소리."
+    },
+    "1. Volume/Origins machine: idle hum": {
+      "name": "Origins 기계: 대기 웅웅거림",
+      "desc": "Origins 기계가 켜져 있는 동안 수정이 내는 웅웅거림(작업 중에는 더 크다)."
+    },
+    "1. Volume/Origins machine: power-on": {
+      "name": "Origins 기계: 전원 켜기",
+      "desc": "Origins 기계를 켤 때 나는 기동음."
+    },
+    "1. Volume/Pack-a-Punch shot tail": {
+      "name": "Pack-a-Punch 사격 잔향",
+      "desc": "Pack-a-Punch 사격마다 뒤따라 울리는 잔향(권총·산탄총 등 느린 총에서 더 크다). 1을 넘기면 모드 자체 수준(일부 총에서는 조용하다)보다 크게 울린다."
+    },
+    "1. Volume/Pack-a-Punch shot (enemies)": {
+      "name": "Pack-a-Punch 사격음 (적)",
+      "desc": "적이 든 115 총의 Pack-a-Punch 사격음 크기. 내 총에 견준 비율이다."
+    },
+    "1. Volume/Factory 115 rock hum": {
+      "name": "Factory 115 암석 웅웅거림",
+      "desc": "Factory 의 115 파편이 내는 웅웅거림."
+    },
+    "1. Volume/Hideout green rock hum": {
+      "name": "은신처 녹색 암석 웅웅거림",
+      "desc": "은신처에 숨겨진 녹색 115 암석이 내는 웅웅거림."
+    },
+    "1. Volume/115 rock pickup": {
+      "name": "115 암석 줍기",
+      "desc": "115 암석을 줍거나(Factory) 조사할 때(은신처) 나는 소리."
+    },
+    "1. Volume/115 song": {
+      "name": "115 노래",
+      "desc": "녹색 암석을 다 조사하면 은신처에서 트는 노래."
+    },
+    "2. Gameplay/Looks and sound only (no weapon bonuses)": {
+      "name": "겉모습·소리만 (무기 보너스 없음)",
+      "desc": "Pack-a-Punch 한 총이 위장 무늬·발광·소리·예광탄·총구 화염은 그대로 두고, 피해·연사 속도·반동 보너스는 받지 않는다. 대신 기계 값이 5,000 루블이 되고, 강화한 총을 팔 때 값이 500,000 이 아니라 5,000 루블만 오른다."
+    },
+    "2. Gameplay/Enemies can carry a 115 gun": {
+      "name": "적이 115 총을 들 수 있음",
+      "desc": "아주 드물게 적(스캐브, PMC, 레이더, 보스, 구니즈 등)이 Pack-a-Punch 한 총을 들고 나타난다. 죽이고 집으로 가져오면 115 Infused 상태로 남는다."
+    },
+    "2. Gameplay/Sally no Mustang (CHEAT)": {
+      "name": "Sally no Mustang (치트)",
+      "desc": "치트. 그 시절처럼 탄을 유탄으로 바꾼다. Pack-a-Punch 한 M1911A1 은 여전히 .45 ACP 를 넣지만, 모든 탄이 40mm M381 HE 유탄으로 총구를 떠난다: 유탄처럼 포물선을 그리고 맞으면 터진다. 가까이서는 폭발에 주의한다."
+    },
+    "3. Machine/Machine model": {
+      "name": "기계 모델",
+      "desc": "Default(고전 Pack-a-Punch) 또는 Origins 의 돌 기계. Origins 기계는 자기 소리만 낸다(징글·웅웅거림 없음)."
+    },
+    "4. Debug/Restart 115 Riddles": {
+      "name": "115 Riddles 다시 시작",
+      "desc": "메카닉의 퀘스트를 처음부터 다시 시작한다(암석을 잃어버렸거나, 암석을 우편으로 돌려받기 전에 퀘스트를 끝낸 경우). Pack-a-Punch 를 짓기 전에만 된다. 가진 암석은 회수되고, 메카닉이 일을 다시 맡긴다."
+    }
+  }
+}
