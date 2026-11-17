@@ -1,7 +1,7 @@
 # 계획 — 새 모드 6개 (14차): Satellite · Hideout Interiors · Hideout Last Stand · T Override · SPZombies · Skill Cap 100
 
 - 날짜: 2026-11-17
-- 상태: **14-A~E 설치 끝**(§8~§14). 14-E 의 좀비 매치는 아직 화면으로 보지 않았다. 받기·해제는 §7
+- 상태: **14-A~D 설치·확인 끝**(§8~§13). **14-E(좀비 모드)는 넣었다가 뺐다**(§14·§15). 받기·해제는 §7
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 조사: Forge API(`tools/survey-candidates.mjs`·버전·의존성 트리), 각 모드 페이지 본문 전문, 애드온 탭(내장 브라우저),
   댓글(`tools/fetch-mod-comments.mjs`, 9개 모드 189건, 실패 0), 설치본 실측(설치 목록·DLL 안 GUID·서버 모드 폴더·`.cfg` 단축키·패처).
@@ -407,3 +407,20 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
 - **나머지 10개 프로필도 끔(사용자 결정, 16:05).** 세 모드 서버 폴더의 `normalgame.json` 에 11개 프로필 id 를 모두 `false` 로 넣었다(이전 파일은
   `backup/normalgame-before-2026-11-17/`). 서버·게임이 켜져 있어 끄지 않고 파일만 고쳤다 — **다음 서버 재시작 때** 반영되고, 그때 서버 로그에
   `chose Pack-a-Punch for zombies only` 가 프로필마다 나오는지 본다. 그 프로필로 접속해도 선택 창이 다시 뜨는지는 아직 모른다.
+
+## 15. 좀비 모드 제거 (2026-11-17 16:50~17:10, 사용자 결정)
+
+사용자가 Stronghold 매치를 해 본 뒤 좀비 모드를 통째로 빼기로 했다. 매치 화면은 FogSix 가 좀비 맵 안개를 거의 최대로 그려 하얗게 덮였고
+(F12 에서 FogSix 를 끄자 걷혔다), 그 뒤에도 낮 시간(9:30)·구운 조명 0인 맵이라 표면이 하얗게 날아갔다.
+
+- 뺀 것: 14-E 8개 전부 — SPZombies 본체·Stronghold 맵, 그리고 좀비 모드 때문에 들인 Hideout Uncensored·Mapping SDK·Pack A Punch·Thundergun·Raygun·Perk Beverages.
+- 게임·서버는 이미 꺼져 있었다. 설치 기록 9개(빈 폴더 기록 포함)에서 폴더 16개를 뽑아 지웠다 — 기록된 1,538파일 + 실행 중 생긴 18파일
+  (보통 게임 선택 `normalgame.json` 셋, PaP 가 Nomad 에서 뺀 데이터 사본, 좀비 매치 로그·통계). 설정 파일 7개도 지웠다.
+  실행 중 생긴 파일과 설정은 `backup/stage14-E-removed-2026-11-17/`(25파일)에 떠 두었다. 원본 압축은 `downloads/stage14/` 에 있다.
+- 설치 기록은 `install-records/removed/` 로 옮겼다. 매니페스트 8개에 `removed` 를 달고 `gen-installed-mods` 가 "제거 — 사유"로 적게 했다(미설치와 구분).
+- F12 사전 7개(458항목)는 저장소·설치본에서 뺐다 — git 기록에 있다. CaliberUnderName 의 Cold Fusion·Pressure 구경 2항목은 그 모드 설정에 남아 있어 둔다.
+- 프로필 11개를 14-E 전 백업과 대조: 새 구역·아이템 0. Nomad 의 새 퀘스트 5개는 모두 상인 일일 퀘스트(일일 교체)다. PaP 는 구역을 프로필이 아니라
+  자기 파일에 두었으므로 남은 것이 없다.
+- 다시 켠 상태: 서버 `ModLoader: 총 183 개`(`Removed 7 mods: PaPHideoutModule … HideoutUncensored`), `Could not add` 고유 48, 다른 오류 0.
+  게임 `255 plugins to load`, `[Error` 는 알려진 DirectReload 1줄, 좀비 관련 로그 0줄, F12 "사전에 없음" 36. 설치 목록 316개, 기록 `OK — 0/0`,
+  `check-lang-coverage` 5475/5475. FogSix·CloudSix 설정은 기본값 그대로다(시험으로 바꾼 것이 남지 않았다).
