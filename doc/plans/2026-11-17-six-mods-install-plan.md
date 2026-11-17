@@ -1,7 +1,7 @@
 # 계획 — 새 모드 6개 (14차): Satellite · Hideout Interiors · Hideout Last Stand · T Override · SPZombies · Skill Cap 100
 
 - 날짜: 2026-11-17
-- 상태: **받고 풀었다(16/16, 바이트 일치, 겹침 0). 아직 설치하지 않았다** — §7
+- 상태: **14-A 설치·확인 끝(§8).** 14-B 부터는 아직이다. 받기·해제는 §7
 - 대상: `E:\Spt` (SPT 4.1.6, EFT 0.16.9.5.40743)
 - 조사: Forge API(`tools/survey-candidates.mjs`·버전·의존성 트리), 각 모드 페이지 본문 전문, 애드온 탭(내장 브라우저),
   댓글(`tools/fetch-mod-comments.mjs`, 9개 모드 189건, 실패 0), 설치본 실측(설치 목록·DLL 안 GUID·서버 모드 폴더·`.cfg` 단축키·패처).
@@ -259,3 +259,20 @@ E:\Spt_Mods\tools\install-and-test.ps1 -Stage stage14 -Pattern '3317__*'      -T
 
 - 3223 서버 DLL 은 역컴파일이 실패했다(참조 해석). 클라이언트 쪽 코드만 읽었다.
 - 내려받은 JS(`ko.js`)를 `require` 로 읽으려던 것은 막혔다 — 받은 코드는 실행하지 않고 글자로만 셌다.
+
+## 8. 14-A Hideout Interiors 설치 결과 (2026-11-17 12:29~12:50)
+
+- 사용자 허락으로 서버를 끄고 설치했다. 프로필 11개를 `backup/profiles-before-stage14/` 에 떴다(해시 불일치 0).
+- `install-and-test.ps1 -Pattern '3326__*' -Tag 'stage14-A-3326-HideoutInteriors'` — **10파일**, 덮어쓰기 0.
+  서버 시험: `ModLoader: 총 181 개`(게임 전용이라 그대로), `Loaded self-signed certificate`, `Could not add` 고유 48(기준선과 같다).
+- 기록: `gen-installed-mods` 308 → **309개**, `check-install-records` **`OK — 0/0`**.
+  생성기가 14차를 몰라서(`stageTitle`·단계 목록에 13까지만) 3326 이 목록에 안 올라왔다 — 14 를 더했다.
+  애드온은 `mod/addon201` 처럼 잘못된 링크가 나와 매니페스트에 `homepage`(`/addon/<번호>`)를 적었다.
+- 게임 기동(12:35·12:46): `253 plugins to load`(252 → 253), `Loading [JRS-HideoutInteriors 1.0.0]`, `Hideout Interiors 1.0.0 loaded.`
+  `[Error` 1줄은 알려진 DirectReload·Fika 건, `Excluding 'HideoutInteriors.Fika.dll'` 은 Fika 미설치 경고다.
+- **화면**: 은신처 전경 아래 버튼 줄의 다섯째에 꾸미기 버튼이 붙었고, 누르면 DECORATE 패널(분류·물건 그림·검색, MOVE/TURN/SIZE/HIDE/DONE)이 뜬다.
+  아무것도 옮기지 않고 DONE 으로 나왔다 — 배치 파일 `jrs.hideoutinteriors.decor.<프로필>.json` 은 2바이트로 비어 있다.
+- 한글화: F12 사전 `lang/jrs.hideoutinteriors.json` 15항목. `check-lang-coverage` **5211/5211**(사전 189개), 기동 로그 "사전에 없음" **36** 그대로.
+  **꾸미기 패널 글자(DECORATE·분류 이름·버튼)는 영문** — 모드 DLL 안 리터럴이라 `_dll-*.json` 대상이다. 다음 묶음과 따로 한다.
+- 첫 기동(12:32) 뒤 화면이 로딩 표시에서 오래 멈춰 있었고 "Fatal error" 제목의 창이 잠깐 앞에 있었다. 사용자가 게임을 껐고, 로그는
+  12:44:55 에 패치를 차례로 끄는 **정상 종료**였다. 두 번째 기동(12:46)은 메인 메뉴·은신처까지 정상이었다. 원인은 가리지 못했다 — 다시 나오면 그때 Player.log 를 본다.
