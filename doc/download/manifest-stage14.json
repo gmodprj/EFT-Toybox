@@ -92,7 +92,8 @@
       "version": "1.3.0",
       "size": 33939,
       "binding": false,
-      "link": "https://sp-mod.com/mod/download/3167/hideout-uncensored/1.3.0"
+      "link": "https://sp-mod.com/mod/download/3167/hideout-uncensored/1.3.0",
+      "removed": "2026-11-17 좀비 모드를 통째로 뺐다(계획 문서 §15). 기록은 install-records/removed/"
     },
     {
       "group": "14-E",
@@ -101,7 +102,8 @@
       "version": "1.9.3",
       "size": 124062,
       "binding": false,
-      "link": "https://sp-mod.com/mod/download/3193/tushonka-mapping-sdk/1.9.3"
+      "link": "https://sp-mod.com/mod/download/3193/tushonka-mapping-sdk/1.9.3",
+      "removed": "2026-11-17 좀비 모드를 통째로 뺐다(계획 문서 §15). 기록은 install-records/removed/"
     },
     {
       "group": "14-E",
@@ -113,7 +115,8 @@
       "dependsOn": [
         3167
       ],
-      "link": "https://sp-mod.com/mod/download/3223/pack-a-punch-hideout-module/2.2.0"
+      "link": "https://sp-mod.com/mod/download/3223/pack-a-punch-hideout-module/2.2.0",
+      "removed": "2026-11-17 좀비 모드를 통째로 뺐다(계획 문서 §15). 기록은 install-records/removed/"
     },
     {
       "group": "14-E",
@@ -125,7 +128,8 @@
       "dependsOn": [
         3167
       ],
-      "link": "https://sp-mod.com/mod/download/3226/zm-thundergun/1.2.0"
+      "link": "https://sp-mod.com/mod/download/3226/zm-thundergun/1.2.0",
+      "removed": "2026-11-17 좀비 모드를 통째로 뺐다(계획 문서 §15). 기록은 install-records/removed/"
     },
     {
       "group": "14-E",
@@ -137,7 +141,8 @@
       "dependsOn": [
         3167
       ],
-      "link": "https://sp-mod.com/mod/download/3229/zm-raygun/1.2.0"
+      "link": "https://sp-mod.com/mod/download/3229/zm-raygun/1.2.0",
+      "removed": "2026-11-17 좀비 모드를 통째로 뺐다(계획 문서 §15). 기록은 install-records/removed/"
     },
     {
       "group": "14-E",
@@ -146,7 +151,8 @@
       "version": "0.1.0",
       "size": 112866982,
       "binding": false,
-      "link": "https://sp-mod.com/mod/download/3351/dr-ks-perk-beverages/0.1.0"
+      "link": "https://sp-mod.com/mod/download/3351/dr-ks-perk-beverages/0.1.0",
+      "removed": "2026-11-17 좀비 모드를 통째로 뺐다(계획 문서 §15). 기록은 install-records/removed/"
     },
     {
       "group": "14-E",
@@ -163,7 +169,8 @@
         3229,
         3351
       ],
-      "link": "https://sp-mod.com/mod/download/3352/dr-ks-spzombies/0.1.2"
+      "link": "https://sp-mod.com/mod/download/3352/dr-ks-spzombies/0.1.2",
+      "removed": "2026-11-17 좀비 모드를 통째로 뺐다(계획 문서 §15). 기록은 install-records/removed/"
     },
     {
       "group": "14-E",
@@ -174,7 +181,8 @@
       "binding": false,
       "addonFor": 3352,
       "link": "https://sp-mod.com/addon/download/193/zm-stronghold/0.1.0",
-      "homepage": "https://sp-mod.com/addon/193"
+      "homepage": "https://sp-mod.com/addon/193",
+      "removed": "2026-11-17 좀비 모드를 통째로 뺐다(계획 문서 §15). 기록은 install-records/removed/"
     }
   ]
 }

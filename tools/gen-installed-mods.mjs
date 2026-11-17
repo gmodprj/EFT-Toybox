@@ -11,7 +11,7 @@ const mods = new Map();
 for (const f of fs.readdirSync(path.join(DOC, 'download')).filter(f => /^manifest-stage\d+(?:-[A-Za-z0-9]+)?\.json$/.test(f)).sort()) {
   const stage = f.match(/stage(\d+)/)[1];
   for (const m of JSON.parse(fs.readFileSync(path.join(DOC, 'download', f), 'utf8')).mods)
-    mods.set(String(m.id), { id: m.id, link: m.homepage ?? `https://sp-mod.com/mod/${m.id}`, name: m.name, version: m.version, stage, group: m.group ?? '', files: [], records: new Set() });
+    mods.set(String(m.id), { id: m.id, link: m.homepage ?? `https://sp-mod.com/mod/${m.id}`, name: m.name, version: m.version, stage, group: m.group ?? '', removed: m.removed ?? null, files: [], records: new Set() });
 }
 
 // 2) 설치 기록: "<id>__<폴더>\t<E:\Spt 기준 경로>"
@@ -58,7 +58,7 @@ for (const st of ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12',
   md += `## ${stageTitle[st]}\n\n| 모드 | 버전 | 위치 | 결속 | 파일 | 설치 기록 |\n| --- | --- | --- | --- | --- | --- |\n`;
   for (const m of list) {
     const b = binding.get(String(m.id)) ?? {};
-    md += `| [${m.name.replace(/[[\]|]/g, c => '\\' + c)}](${m.link}) | ${m.version} | ${side(m.files) || '-'} | ${b.bind ? '**결속**' : '-'}${b.cheat ? ' (치트 표시)' : ''} | ${m.files.length} | ${[...m.records].map(r => '`' + r + '`').join(', ') || '**미설치**'} |\n`;
+    md += `| [${m.name.replace(/[[\]|]/g, c => '\\' + c)}](${m.link}) | ${m.version} | ${side(m.files) || '-'} | ${b.bind ? '**결속**' : '-'}${b.cheat ? ' (치트 표시)' : ''} | ${m.files.length} | ${[...m.records].map(r => '`' + r + '`').join(', ') || (m.removed ? `**제거** — ${m.removed}` : '**미설치**')} |\n`;
   }
   md += '\n';
 }
