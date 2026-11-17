@@ -1,0 +1,986 @@
+{
+  "guid": "local.spt.practicemenu",
+  "name": "치트 메뉴 (Tarkov Override)",
+  "sections": {
+    "01 Enemy ESP": "01 적 ESP",
+    "02 Loot ESP": "02 전리품 ESP",
+    "03 Aimbot": "03 조준 보조",
+    "04 Display": "04 표시",
+    "05 Hotkeys": "05 단축키",
+    "06 Loot filters and highlights": "06 전리품 거르기·강조",
+    "07 Corpse markers": "07 시체 표시",
+    "09 Advanced aim": "09 조준 보조 고급",
+    "10 Compact window": "10 작은 창",
+    "11 Aim modes": "11 조준 모드",
+    "12 Legit Aim - Target": "12 레짓 조준 — 대상",
+    "13 Legit Aim - Advanced": "13 레짓 조준 — 고급",
+    "14 Rage Aim - Target": "14 레이지 조준 — 대상",
+    "15 Rage Aim - Advanced": "15 레이지 조준 — 고급",
+    "16 ESP appearance": "16 ESP 모양",
+    "17 Enemy filters": "17 적 거르기",
+    "18 Loot presentation": "18 전리품 표시 방식",
+    "19 Body filters": "19 시체 거르기",
+    "20 Body colours": "20 시체 색",
+    "21 Enemy colours": "21 적 색",
+    "23 Player practice": "23 플레이어 연습",
+    "24 Legit Aim RCS": "24 레짓 조준 반동 제어",
+    "25 Rage Aim RCS": "25 레이지 조준 반동 제어",
+    "26 Misc vision": "26 기타 — 시야",
+    "27 Misc movement": "27 기타 — 이동",
+    "28 Misc actions": "28 기타 — 동작",
+    "29 Equipment & supplies": "29 장비·보급품",
+    "30 Interaction": "30 상호작용",
+    "31 Extraction overrides": "31 탈출 조건 무시",
+    "32 Nearby enemy alerts": "32 근처 적 경고",
+    "34 Rage ballistics": "34 레이지 탄도",
+    "35 Rage weapon handling": "35 레이지 무기 다루기",
+    "36 Direct hit": "36 직접 명중",
+    "37 Vampire mode": "37 흡혈 모드"
+  },
+  "settings": {
+    "01 Enemy ESP/Enabled": {
+      "name": "켜기",
+      "desc": "살아 있는 AI 플레이어를 보여 준다. 나는 빼고."
+    },
+    "01 Enemy ESP/Maximum distance": {
+      "name": "최대 거리",
+      "desc": "미터."
+    },
+    "01 Enemy ESP/Bounding boxes": {
+      "name": "테두리 상자",
+      "desc": "머리와 발을 기준으로 한 화면상의 상자."
+    },
+    "01 Enemy ESP/Names and distance": {
+      "name": "이름과 거리",
+      "desc": "적 종류와 거리. 보스는 이름을 그대로 보인다."
+    },
+    "01 Enemy ESP/Health bars": {
+      "name": "체력 막대",
+      "desc": "현재 총체력을 최대치에 대한 비율로."
+    },
+    "01 Enemy ESP/Upper body skeleton": {
+      "name": "상체 뼈대",
+      "desc": "머리·척추·어깨·팔."
+    },
+    "01 Enemy ESP/Visible only": {
+      "name": "보이는 적만",
+      "desc": "벽 뒤의 AI 는 숨긴다. 물리 광선 비용이 든다."
+    },
+    "01 Enemy ESP/Colour": {
+      "name": "색",
+      "desc": "적 표시 색."
+    },
+    "01 Enemy ESP/Hidden enemies only": {
+      "name": "가려진 적만",
+      "desc": "머리·가슴·골반 어느 표본에도 막힘 없는 물리 광선이 닿지 않을 때만 적을 보인다. ESP 에만 걸리고 조준 보조 대상 선택에는 영향이 없다. \"보이는 적만\"을 끈다."
+    },
+    "02 Loot ESP/Enabled": {
+      "name": "켜기",
+      "desc": "바닥에 생성된 전리품을 보여 준다. 컨테이너 안은 훑지 않는다."
+    },
+    "02 Loot ESP/Maximum distance": {
+      "name": "최대 거리",
+      "desc": "미터."
+    },
+    "02 Loot ESP/Container markers": {
+      "name": "컨테이너 표시",
+      "desc": "뒤질 수 있는 컨테이너 위치를 보여 준다(내용물 없이)."
+    },
+    "02 Loot ESP/Name filter": {
+      "name": "이름 거르기",
+      "desc": "쉼표로 나눈 이름 조각 또는 템플릿 ID. 비우면 전부 보인다. 예: bitcoin,M995,razor"
+    },
+    "02 Loot ESP/Refresh seconds": {
+      "name": "갱신 간격 (초)",
+      "desc": "낮을수록 CPU 를 더 쓴다."
+    },
+    "02 Loot ESP/Maximum labels": {
+      "name": "최대 이름표 수",
+      "desc": "가까운 것부터."
+    },
+    "02 Loot ESP/Colour": {
+      "name": "색",
+      "desc": "전리품 표시 색."
+    },
+    "03 Aimbot/Enabled": {
+      "name": "켜기",
+      "desc": "고른 작동 방식으로 살아 있는 AI 를 따라간다. 자동으로 쏘지는 않는다."
+    },
+    "03 Aimbot/Target bone": {
+      "name": "노릴 부위",
+      "desc": "조준할 신체 지점."
+    },
+    "03 Aimbot/Target priority": {
+      "name": "대상 우선순위",
+      "desc": "조준 원뿔 안 후보의 순위를 매기는 기준."
+    },
+    "03 Aimbot/Activation": {
+      "name": "작동 방식",
+      "desc": "RightMouseHeld: 오른쪽 클릭을 누르고 있을 때만. HoldJsonHotkey: JSON 의 AimHold 키를 누르고 있을 때. Always: 켜져 있는 동안 늘 따라간다."
+    },
+    "03 Aimbot/Show aim status": {
+      "name": "조준 상태 보이기",
+      "desc": "입력 상태, 노릴 수 있는 AI, 대상 포착 여부를 화면에 보여 준다."
+    },
+    "03 Aimbot/FOV radius degrees": {
+      "name": "시야각 반지름 (도)",
+      "desc": "화면 가운데에서 잰 각도. 원뿔 전체 폭이 아니라 반지름이다."
+    },
+    "03 Aimbot/Maximum distance": {
+      "name": "최대 거리",
+      "desc": "미터."
+    },
+    "03 Aimbot/Smoothing seconds": {
+      "name": "부드럽게 (초)",
+      "desc": "반응 시간. 0 이면 부드럽게 하지 않지만 회전 속도 제한은 그대로 걸린다."
+    },
+    "03 Aimbot/Maximum turn degrees per second": {
+      "name": "초당 최대 회전 (도)",
+      "desc": "최대 회전 속도."
+    },
+    "03 Aimbot/Visibility check": {
+      "name": "보이는지 확인",
+      "desc": "고른 신체 부위까지 가로막는 것 없이 물리 광선이 닿아야 한다."
+    },
+    "03 Aimbot/Require right mouse held": {
+      "name": "오른쪽 마우스도 누르고 있어야 함",
+      "desc": "HoldJsonHotkey 방식에서만: 오른쪽 마우스도 눌러야 한다. 다른 작동 방식은 이 설정을 무시한다."
+    },
+    "03 Aimbot/Keep current target": {
+      "name": "지금 대상 유지",
+      "desc": "누르고 있는 동안 거리·원뿔·보임 조건을 계속 만족하면 대상을 바꾸지 않는다."
+    },
+    "03 Aimbot/Exclude same group": {
+      "name": "같은 그룹 제외",
+      "desc": "내 그룹 ID(비어 있지 않은 것)를 공유하는 AI 는 건너뛴다. 모드가 만든 동맹을 다 알아내지는 못한다."
+    },
+    "03 Aimbot/Target PMCs": {
+      "name": "PMC 노리기",
+      "desc": "PMC 역할과 진영."
+    },
+    "03 Aimbot/Target ordinary scavs": {
+      "name": "일반 스캐브 노리기",
+      "desc": "assault·marksman 역할."
+    },
+    "03 Aimbot/Target bosses and other AI": {
+      "name": "보스와 그 밖의 AI 노리기",
+      "desc": "보스·경호원·레이더와 그 밖의 역할."
+    },
+    "03 Aimbot/Show FOV circle": {
+      "name": "시야각 원 보이기",
+      "desc": "켜져 있는 동안 대상 포착 원뿔을 그린다."
+    },
+    "03 Aimbot/Show selected target": {
+      "name": "고른 대상 표시",
+      "desc": "지금 따라가는 지점을 표시한다."
+    },
+    "04 Display/Text size": {
+      "name": "글자 크기",
+      "desc": "화면 픽셀."
+    },
+    "05 Hotkeys/Instructions": {
+      "name": "안내",
+      "desc": "단축키는 JSON 으로만 정하고 바뀌면 저절로 다시 읽는다. BepInEx 키 고르기 창은 없다. 파일: BepInEx/config/SPTFieldToolkit/config.json"
+    },
+    "05 Hotkeys/Optional actions": {
+      "name": "선택 동작",
+      "desc": "이 JSON 속성을 원하는 키 이름과 함께 더한다. 없는 속성은 None 이다. IgnoreTarget 은 따라가는 적이나 조준점 5도 안의 적을 이번 레이드 동안 제외한다."
+    },
+    "06 Loot filters and highlights/Preset": {
+      "name": "프리셋",
+      "desc": "All, 분류 프리셋들, CustomCategories, QuestRun(퀘스트·위시리스트 + 열쇠·의약품), Wishlist(위시리스트만)."
+    },
+    "06 Loot filters and highlights/Category - Ammo": {
+      "name": "분류 — 탄약",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Valuables": {
+      "name": "분류 — 귀중품",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Keys": {
+      "name": "분류 — 열쇠",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Medical": {
+      "name": "분류 — 의약품",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Attachments": {
+      "name": "분류 — 부착물",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Weapons": {
+      "name": "분류 — 총기",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Equipment": {
+      "name": "분류 — 장비",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Provisions": {
+      "name": "분류 — 식량",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Barter": {
+      "name": "분류 — 교환품",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Category - Other": {
+      "name": "분류 — 기타",
+      "desc": "CustomCategories 프리셋에서 쓴다."
+    },
+    "06 Loot filters and highlights/Wishlist highlighting": {
+      "name": "위시리스트 강조",
+      "desc": "게임 안 위시리스트(자동 그룹 포함)에 든 바닥 아이템에 표시를 붙인다."
+    },
+    "06 Loot filters and highlights/Quest highlighting": {
+      "name": "퀘스트 강조",
+      "desc": "시작한 퀘스트의 미완료 찾기·넘기기 목표와 템플릿이 같은 아이템에 표시를 붙인다. 내구도 같은 다른 목표 조건까지 보장하지는 않는다."
+    },
+    "06 Loot filters and highlights/Important items bypass filters": {
+      "name": "중요 아이템은 거르기 무시",
+      "desc": "강조된 위시리스트·퀘스트 아이템은 분류·이름 거르기를 무시한다(위시리스트 전용 프리셋 제외)."
+    },
+    "06 Loot filters and highlights/Wishlist colour": {
+      "name": "위시리스트 색",
+      "desc": "위시리스트 이름표 색."
+    },
+    "06 Loot filters and highlights/Quest colour": {
+      "name": "퀘스트 색",
+      "desc": "퀘스트 이름표 색이 위시리스트 색보다 앞선다."
+    },
+    "06 Loot filters and highlights/Group nearby labels": {
+      "name": "가까운 이름표 묶기",
+      "desc": "화면에서 가까운 전리품 이름표를 하나로 묶고 겹치는 묶음은 숨긴다."
+    },
+    "06 Loot filters and highlights/Grouping pixels": {
+      "name": "묶기 칸 크기 (픽셀)",
+      "desc": "화면상 묶기 칸의 크기."
+    },
+    "06 Loot filters and highlights/Names per group": {
+      "name": "묶음당 이름 수",
+      "desc": "나머지는 \"+N nearby\" 로 보인다."
+    },
+    "07 Corpse markers/Enabled": {
+      "name": "켜기",
+      "desc": "전리품 ESP 와 따로 시체를 보여 준다. 시체는 조준 보조 대상이 되지 않는다."
+    },
+    "07 Corpse markers/Maximum distance": {
+      "name": "최대 거리",
+      "desc": "미터."
+    },
+    "07 Corpse markers/Refresh seconds": {
+      "name": "갱신 간격 (초)",
+      "desc": "목록을 한 번 훑은 뒤 다시 훑기까지의 간격."
+    },
+    "07 Corpse markers/Colour": {
+      "name": "색",
+      "desc": "시체 이름표 색."
+    },
+    "09 Advanced aim/Target switch delay": {
+      "name": "대상 바꿈 지연",
+      "desc": "잡은 대상에서 다른 대상으로 넘어가기 전에 기다린다. 처치한 뒤에도 그렇다."
+    },
+    "09 Advanced aim/Target switch seconds": {
+      "name": "대상 바꿈 지연 (초)",
+      "desc": "넘어가기 전 기다리는 시간. 처음 잡을 때는 바로 잡는다."
+    },
+    "09 Advanced aim/Aim point fallback": {
+      "name": "대체 조준 지점",
+      "desc": "보이는지 확인이 켜져 있을 때, 고른 지점이 막혀 있으면 보이는 가슴·골반·머리로 대신 노린다. 모든 지점은 시야각·거리·보정 한도를 통과해야 한다."
+    },
+    "09 Advanced aim/Limit aim correction": {
+      "name": "조준 보정 제한",
+      "desc": "신체 지점이 이미 조준점에서 \"최대 보정 각도\" 안에 있을 때만 돕는다."
+    },
+    "09 Advanced aim/Maximum correction degrees": {
+      "name": "최대 보정 각도",
+      "desc": "포착 각도 한도. 이것과 기본 시야각 중 작은 쪽을 쓴다."
+    },
+    "09 Advanced aim/Ignore enemies": {
+      "name": "무시할 적",
+      "desc": "쉼표로 나눈 정확한 종류 이름, 보스 이름, 원래 역할 이름, 프로필 ID. 예: SCAV,ROGUE,Killa. 무작위로 붙는 보통 닉네임과는 맞추지 않는다."
+    },
+    "10 Compact window/Scale": {
+      "name": "크기",
+      "desc": "창 크기 배율. 화면에 맞게 저절로 줄어든다."
+    },
+    "11 Aim modes/Active mode": {
+      "name": "쓸 모드",
+      "desc": "이 프로필만 돈다. 모드 바꾸기 키(이 설치본은 Keypad6, 원래 F8)로 바꾼다. 각 탭에서 모드를 켜면 그 모드가 골라진다."
+    },
+    "12 Legit Aim - Target/Visibility check": {
+      "name": "보이는지 확인",
+      "desc": "고른 신체 부위까지 가로막는 것 없이 물리 광선이 닿아야 한다."
+    },
+    "12 Legit Aim - Target/Require right mouse held": {
+      "name": "오른쪽 마우스도 누르고 있어야 함",
+      "desc": "HoldJsonHotkey 방식에서만: 오른쪽 마우스도 눌러야 한다. 다른 작동 방식은 이 설정을 무시한다."
+    },
+    "12 Legit Aim - Target/Keep current target": {
+      "name": "지금 대상 유지",
+      "desc": "누르고 있는 동안 거리·원뿔·보임 조건을 계속 만족하면 대상을 바꾸지 않는다."
+    },
+    "12 Legit Aim - Target/Show FOV circle": {
+      "name": "시야각 원 보이기",
+      "desc": "켜져 있는 동안 대상 포착 원뿔을 그린다."
+    },
+    "12 Legit Aim - Target/Exclude same group": {
+      "name": "같은 그룹 제외",
+      "desc": "내 그룹 ID(비어 있지 않은 것)를 공유하는 AI 는 건너뛴다. 모드가 만든 동맹을 다 알아내지는 못한다."
+    },
+    "12 Legit Aim - Target/Target PMCs": {
+      "name": "PMC 노리기",
+      "desc": "PMC 역할과 진영."
+    },
+    "12 Legit Aim - Target/Target ordinary scavs": {
+      "name": "일반 스캐브 노리기",
+      "desc": "assault·marksman 역할."
+    },
+    "12 Legit Aim - Target/Target bosses and other AI": {
+      "name": "보스와 그 밖의 AI 노리기",
+      "desc": "보스·경호원·레이더와 그 밖의 역할."
+    },
+    "12 Legit Aim - Target/Show selected target": {
+      "name": "고른 대상 표시",
+      "desc": "지금 따라가는 지점을 표시한다."
+    },
+    "12 Legit Aim - Target/Maximum distance": {
+      "name": "최대 거리",
+      "desc": "미터."
+    },
+    "12 Legit Aim - Target/FOV radius degrees": {
+      "name": "시야각 반지름 (도)",
+      "desc": "화면 가운데에서 잰 각도. 원뿔 전체 폭이 아니라 반지름이다."
+    },
+    "12 Legit Aim - Target/Smoothing seconds": {
+      "name": "부드럽게 (초)",
+      "desc": "반응 시간. 0 이면 부드럽게 하지 않지만 회전 속도 제한은 그대로 걸린다."
+    },
+    "12 Legit Aim - Target/Maximum turn degrees per second": {
+      "name": "초당 최대 회전 (도)",
+      "desc": "최대 회전 속도."
+    },
+    "12 Legit Aim - Target/Target bone": {
+      "name": "노릴 부위",
+      "desc": "조준할 신체 지점."
+    },
+    "12 Legit Aim - Target/Target priority": {
+      "name": "대상 우선순위",
+      "desc": "조준 원뿔 안 후보의 순위를 매기는 기준."
+    },
+    "12 Legit Aim - Target/Activation": {
+      "name": "작동 방식",
+      "desc": "RightMouseHeld: 오른쪽 클릭을 누르고 있을 때만. HoldJsonHotkey: JSON 의 AimHold 키를 누르고 있을 때. Always: 켜져 있는 동안 늘 따라간다."
+    },
+    "12 Legit Aim - Target/Show aim status": {
+      "name": "조준 상태 보이기",
+      "desc": "입력 상태, 노릴 수 있는 AI, 대상 포착 여부를 화면에 보여 준다."
+    },
+    "13 Legit Aim - Advanced/Target switch delay": {
+      "name": "대상 바꿈 지연",
+      "desc": "잡은 대상에서 다른 대상으로 넘어가기 전에 기다린다. 처치한 뒤에도 그렇다."
+    },
+    "13 Legit Aim - Advanced/Aim point fallback": {
+      "name": "대체 조준 지점",
+      "desc": "보이는지 확인이 켜져 있을 때, 고른 지점이 막혀 있으면 보이는 가슴·골반·머리로 대신 노린다. 모든 지점은 시야각·거리·보정 한도를 통과해야 한다."
+    },
+    "13 Legit Aim - Advanced/Limit aim correction": {
+      "name": "조준 보정 제한",
+      "desc": "신체 지점이 이미 조준점에서 \"최대 보정 각도\" 안에 있을 때만 돕는다."
+    },
+    "13 Legit Aim - Advanced/Target switch seconds": {
+      "name": "대상 바꿈 지연 (초)",
+      "desc": "넘어가기 전 기다리는 시간. 처음 잡을 때는 바로 잡는다."
+    },
+    "13 Legit Aim - Advanced/Maximum correction degrees": {
+      "name": "최대 보정 각도",
+      "desc": "포착 각도 한도. 이것과 기본 시야각 중 작은 쪽을 쓴다."
+    },
+    "13 Legit Aim - Advanced/Ignore enemies": {
+      "name": "무시할 적",
+      "desc": "쉼표로 나눈 정확한 종류 이름, 보스 이름, 원래 역할 이름, 프로필 ID. 예: SCAV,ROGUE,Killa. 무작위로 붙는 보통 닉네임과는 맞추지 않는다."
+    },
+    "14 Rage Aim - Target/Visibility check": {
+      "name": "보이는지 확인",
+      "desc": "고른 신체 부위까지 가로막는 것 없이 물리 광선이 닿아야 한다."
+    },
+    "14 Rage Aim - Target/Require right mouse held": {
+      "name": "오른쪽 마우스도 누르고 있어야 함",
+      "desc": "HoldJsonHotkey 방식에서만: 오른쪽 마우스도 눌러야 한다. 다른 작동 방식은 이 설정을 무시한다."
+    },
+    "14 Rage Aim - Target/Keep current target": {
+      "name": "지금 대상 유지",
+      "desc": "누르고 있는 동안 거리·원뿔·보임 조건을 계속 만족하면 대상을 바꾸지 않는다."
+    },
+    "14 Rage Aim - Target/Show FOV circle": {
+      "name": "시야각 원 보이기",
+      "desc": "켜져 있는 동안 대상 포착 원뿔을 그린다."
+    },
+    "14 Rage Aim - Target/Exclude same group": {
+      "name": "같은 그룹 제외",
+      "desc": "내 그룹 ID(비어 있지 않은 것)를 공유하는 AI 는 건너뛴다. 모드가 만든 동맹을 다 알아내지는 못한다."
+    },
+    "14 Rage Aim - Target/Target PMCs": {
+      "name": "PMC 노리기",
+      "desc": "PMC 역할과 진영."
+    },
+    "14 Rage Aim - Target/Target ordinary scavs": {
+      "name": "일반 스캐브 노리기",
+      "desc": "assault·marksman 역할."
+    },
+    "14 Rage Aim - Target/Target bosses and other AI": {
+      "name": "보스와 그 밖의 AI 노리기",
+      "desc": "보스·경호원·레이더와 그 밖의 역할."
+    },
+    "14 Rage Aim - Target/Show selected target": {
+      "name": "고른 대상 표시",
+      "desc": "지금 따라가는 지점을 표시한다."
+    },
+    "14 Rage Aim - Target/Maximum distance": {
+      "name": "최대 거리",
+      "desc": "미터."
+    },
+    "14 Rage Aim - Target/FOV radius degrees": {
+      "name": "시야각 반지름 (도)",
+      "desc": "화면 가운데에서 잰 각도. 원뿔 전체 폭이 아니라 반지름이다."
+    },
+    "14 Rage Aim - Target/Smoothing seconds": {
+      "name": "부드럽게 (초)",
+      "desc": "반응 시간. 0 이면 부드럽게 하지 않지만 회전 속도 제한은 그대로 걸린다."
+    },
+    "14 Rage Aim - Target/Maximum turn degrees per second": {
+      "name": "초당 최대 회전 (도)",
+      "desc": "최대 회전 속도."
+    },
+    "14 Rage Aim - Target/Target bone": {
+      "name": "노릴 부위",
+      "desc": "조준할 신체 지점."
+    },
+    "14 Rage Aim - Target/Target priority": {
+      "name": "대상 우선순위",
+      "desc": "조준 원뿔 안 후보의 순위를 매기는 기준."
+    },
+    "14 Rage Aim - Target/Activation": {
+      "name": "작동 방식",
+      "desc": "RightMouseHeld: 오른쪽 클릭을 누르고 있을 때만. HoldJsonHotkey: JSON 의 AimHold 키를 누르고 있을 때. Always: 켜져 있는 동안 늘 따라간다."
+    },
+    "14 Rage Aim - Target/Show aim status": {
+      "name": "조준 상태 보이기",
+      "desc": "입력 상태, 노릴 수 있는 AI, 대상 포착 여부를 화면에 보여 준다."
+    },
+    "15 Rage Aim - Advanced/Target switch delay": {
+      "name": "대상 바꿈 지연",
+      "desc": "잡은 대상에서 다른 대상으로 넘어가기 전에 기다린다. 처치한 뒤에도 그렇다."
+    },
+    "15 Rage Aim - Advanced/Aim point fallback": {
+      "name": "대체 조준 지점",
+      "desc": "보이는지 확인이 켜져 있을 때, 고른 지점이 막혀 있으면 보이는 가슴·골반·머리로 대신 노린다. 모든 지점은 시야각·거리·보정 한도를 통과해야 한다. 머리를 고르고 \"머리만 노리기\"가 켜져 있으면 몸으로 대신 노리지 않는다."
+    },
+    "15 Rage Aim - Advanced/Limit aim correction": {
+      "name": "조준 보정 제한",
+      "desc": "신체 지점이 이미 조준점에서 \"최대 보정 각도\" 안에 있을 때만 돕는다."
+    },
+    "15 Rage Aim - Advanced/Target switch seconds": {
+      "name": "대상 바꿈 지연 (초)",
+      "desc": "넘어가기 전 기다리는 시간. 처음 잡을 때는 바로 잡는다."
+    },
+    "15 Rage Aim - Advanced/Maximum correction degrees": {
+      "name": "최대 보정 각도",
+      "desc": "포착 각도 한도. 이것과 기본 시야각 중 작은 쪽을 쓴다."
+    },
+    "15 Rage Aim - Advanced/Ignore enemies": {
+      "name": "무시할 적",
+      "desc": "쉼표로 나눈 정확한 종류 이름, 보스 이름, 원래 역할 이름, 프로필 ID. 예: SCAV,ROGUE,Killa. 무작위로 붙는 보통 닉네임과는 맞추지 않는다."
+    },
+    "15 Rage Aim - Advanced/Instant lock": {
+      "name": "즉시 고정",
+      "desc": "작동하는 동안 고른 대상으로 곧바로 돈다. 끄면 레이지 프로필의 부드럽게·회전 속도 설정을 쓴다. 자동으로 쏘지는 않는다."
+    },
+    "15 Rage Aim - Advanced/Strict head targeting": {
+      "name": "머리만 노리기",
+      "desc": "레이지 조준이 머리만 쓰게 한다 — 노릴 부위를 무시하고 몸으로 대신 노리기를 끈다. 살아 있는 모델의 머리 위치 하나를 쓰고, 잘못됐거나 막힌 머리 정보는 건너뛴다. 사격을 막지는 않는다."
+    },
+    "16 ESP appearance/Display preset": {
+      "name": "표시 프리셋",
+      "desc": "Simple: 모서리 꺾쇠와 최소 정보. Detailed: 전체 상자와 뼈대. Custom: 내 모양 설정 유지. 프리셋은 적·전리품·시체 전체 스위치, 종류 거르기, 보임 거르기는 바꾸지 않는다."
+    },
+    "16 ESP appearance/Box style": {
+      "name": "상자 모양",
+      "desc": "전체 상자, 모서리 꺾쇠, 작은 표시 중 고른다."
+    },
+    "16 ESP appearance/Enemy type colours": {
+      "name": "적 종류별 색",
+      "desc": "USEC·BEAR·스캐브·보스·경호원·레이더·로그·교단원·같은 그룹 아군을 다른 색으로."
+    },
+    "16 ESP appearance/Hidden colour brightness": {
+      "name": "가려진 적 밝기",
+      "desc": "가려진 적에 곱하는 밝기. 보이는 적은 종류 색 그대로."
+    },
+    "16 ESP appearance/Boss emphasis": {
+      "name": "보스 강조",
+      "desc": "보스 위에 마름모를 하나 더 그리고 이름을 그대로 보인다."
+    },
+    "16 ESP appearance/Distant enemy markers": {
+      "name": "먼 적은 작은 표시로",
+      "desc": "먼 적의 상자를 작은 표시로 바꾸고 체력·뼈대를 숨겨 화면을 덜 어지럽힌다."
+    },
+    "16 ESP appearance/Enemy detail distance": {
+      "name": "적 세부 거리",
+      "desc": "이 거리(미터)를 넘으면 적을 간단히 그린다."
+    },
+    "17 Enemy filters/Show USEC": {
+      "name": "USEC 보이기",
+      "desc": "살아 있는 USEC 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show BEAR": {
+      "name": "BEAR 보이기",
+      "desc": "살아 있는 BEAR 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show SCAV": {
+      "name": "스캐브 보이기",
+      "desc": "살아 있는 스캐브 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Boss": {
+      "name": "보스 보이기",
+      "desc": "살아 있는 보스 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Guard": {
+      "name": "경호원 보이기",
+      "desc": "살아 있는 경호원 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Raider": {
+      "name": "레이더 보이기",
+      "desc": "살아 있는 레이더 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Rogue": {
+      "name": "로그 보이기",
+      "desc": "살아 있는 로그 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Cultist": {
+      "name": "교단원 보이기",
+      "desc": "살아 있는 교단원 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Bloodhound": {
+      "name": "블러드하운드 보이기",
+      "desc": "살아 있는 블러드하운드 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Infected": {
+      "name": "감염자 보이기",
+      "desc": "살아 있는 감염자 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Friendly": {
+      "name": "아군 보이기",
+      "desc": "살아 있는 아군 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "17 Enemy filters/Show Other": {
+      "name": "기타 보이기",
+      "desc": "살아 있는 기타 표시를 보인다. 아군은 같은 그룹 ID(비어 있지 않은 것)라는 뜻이지 모드가 만든 동맹 전부가 아니다."
+    },
+    "18 Loot presentation/Category icons": {
+      "name": "분류 아이콘",
+      "desc": "탄약·열쇠·의약품·귀중품·부착물 등 분류 기호를 작게 그린다."
+    },
+    "18 Loot presentation/Distance-based loot detail": {
+      "name": "거리에 따른 전리품 세부",
+      "desc": "먼 바닥 전리품은 작은 표시로, 가까이 가거나 그쪽을 보면 이름을 보인다. 중요 아이템은 작은 꼬리표를 유지한다."
+    },
+    "18 Loot presentation/Loot name distance": {
+      "name": "전리품 이름 거리",
+      "desc": "이 거리(미터) 안에서는 아이템 이름을 다 보인다."
+    },
+    "18 Loot presentation/Loot focus angle": {
+      "name": "전리품 주시 각도",
+      "desc": "조준점에서 이 각도(도) 안으로 아이템·묶음을 보면 자세히 보인다."
+    },
+    "18 Loot presentation/Look to expand clusters": {
+      "name": "보면 묶음 펼치기",
+      "desc": "묶음은 아이템 수만 보이다가 그쪽을 보면 이름을 펼친다."
+    },
+    "18 Loot presentation/Expanded names": {
+      "name": "펼칠 이름 수",
+      "desc": "주시한 묶음에서 보일 최대 이름 수. 나머지는 \"+N nearby\" 로."
+    },
+    "19 Body filters/Body type colours": {
+      "name": "시체 종류별 색",
+      "desc": "시체 전용 색표를 쓴다. 끄면 원래의 한 가지 시체 색."
+    },
+    "19 Body filters/Show USEC bodies": {
+      "name": "USEC 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show BEAR bodies": {
+      "name": "BEAR 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show SCAV bodies": {
+      "name": "스캐브 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Boss bodies": {
+      "name": "보스 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Guard bodies": {
+      "name": "경호원 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Raider bodies": {
+      "name": "레이더 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Rogue bodies": {
+      "name": "로그 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Cultist bodies": {
+      "name": "교단원 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Bloodhound bodies": {
+      "name": "블러드하운드 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Infected bodies": {
+      "name": "감염자 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Friendly bodies": {
+      "name": "아군 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "19 Body filters/Show Other bodies": {
+      "name": "기타 시체 보이기",
+      "desc": "알 수 있으면 이 종류의 시체를 보인다. 누구인지 모르는 시체는 진영으로 대신한다."
+    },
+    "20 Body colours/USEC body colour": {
+      "name": "USEC 시체 색",
+      "desc": "USEC 시체에만 쓰는 색."
+    },
+    "20 Body colours/BEAR body colour": {
+      "name": "BEAR 시체 색",
+      "desc": "BEAR 시체에만 쓰는 색."
+    },
+    "20 Body colours/SCAV body colour": {
+      "name": "스캐브 시체 색",
+      "desc": "스캐브 시체에만 쓰는 색."
+    },
+    "20 Body colours/Boss body colour": {
+      "name": "보스 시체 색",
+      "desc": "보스 시체에만 쓰는 색."
+    },
+    "20 Body colours/Guard body colour": {
+      "name": "경호원 시체 색",
+      "desc": "경호원 시체에만 쓰는 색."
+    },
+    "20 Body colours/Raider body colour": {
+      "name": "레이더 시체 색",
+      "desc": "레이더 시체에만 쓰는 색."
+    },
+    "20 Body colours/Rogue body colour": {
+      "name": "로그 시체 색",
+      "desc": "로그 시체에만 쓰는 색."
+    },
+    "20 Body colours/Cultist body colour": {
+      "name": "교단원 시체 색",
+      "desc": "교단원 시체에만 쓰는 색."
+    },
+    "20 Body colours/Bloodhound body colour": {
+      "name": "블러드하운드 시체 색",
+      "desc": "블러드하운드 시체에만 쓰는 색."
+    },
+    "20 Body colours/Infected body colour": {
+      "name": "감염자 시체 색",
+      "desc": "감염자 시체에만 쓰는 색."
+    },
+    "20 Body colours/Friendly body colour": {
+      "name": "아군 시체 색",
+      "desc": "아군 시체에만 쓰는 색."
+    },
+    "20 Body colours/Other body colour": {
+      "name": "기타 시체 색",
+      "desc": "기타 시체에만 쓰는 색."
+    },
+    "21 Enemy colours/USEC colour": {
+      "name": "USEC 색",
+      "desc": "보이는 USEC 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/BEAR colour": {
+      "name": "BEAR 색",
+      "desc": "보이는 BEAR 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/SCAV colour": {
+      "name": "스캐브 색",
+      "desc": "보이는 스캐브 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Boss colour": {
+      "name": "보스 색",
+      "desc": "보이는 보스 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Guard colour": {
+      "name": "경호원 색",
+      "desc": "보이는 경호원 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Raider colour": {
+      "name": "레이더 색",
+      "desc": "보이는 레이더 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Rogue colour": {
+      "name": "로그 색",
+      "desc": "보이는 로그 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Cultist colour": {
+      "name": "교단원 색",
+      "desc": "보이는 교단원 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Bloodhound colour": {
+      "name": "블러드하운드 색",
+      "desc": "보이는 블러드하운드 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Infected colour": {
+      "name": "감염자 색",
+      "desc": "보이는 감염자 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Friendly colour": {
+      "name": "아군 색",
+      "desc": "보이는 아군 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "21 Enemy colours/Other colour": {
+      "name": "기타 색",
+      "desc": "보이는 기타 의 색. 가려진 표시는 밝기 배율을 곱한다."
+    },
+    "23 Player practice/Unlimited stamina": {
+      "name": "무한 스태미나",
+      "desc": "레이드 중 살아 있는 동안 몸·팔 스태미나를 가득 유지한다. 레이드 사이와 시작할 때 꺼진다."
+    },
+    "23 Player practice/Prevent malfunctions": {
+      "name": "고장 막기",
+      "desc": "지금 든 총기에 새 고장이 나지 않게 한다. 봇에는 영향이 없고 이미 난 고장은 풀지 않는다. 레이드 사이에 꺼진다."
+    },
+    "23 Player practice/Demigod": {
+      "name": "반신",
+      "desc": "부위별 현재·최대 체력을 고른 배율만큼 올리고 체력 비율은 지킨다. 계속 회복하거나 무적이 되지는 않는다. 끄거나 레이드 사이·패닉 때 원래 최대치로 돌아간다."
+    },
+    "23 Player practice/Godmode": {
+      "name": "무적",
+      "desc": "이번 레이드 동안 피해와 죽음을 막는다. 켜면 반신이 꺼진다. 레이드 사이와 패닉 때 꺼진다."
+    },
+    "23 Player practice/Protection": {
+      "name": "보호 범위",
+      "desc": "Full 은 모든 피해를 막고, Custom 은 고른 피해 종류만 막는다."
+    },
+    "23 Player practice/Bullets": {
+      "name": "총탄",
+      "desc": "Custom 일 때 총탄 피해를 막는다."
+    },
+    "23 Player practice/Explosions": {
+      "name": "폭발",
+      "desc": "Custom 일 때 폭발 피해를 막는다."
+    },
+    "23 Player practice/Falls": {
+      "name": "낙하",
+      "desc": "Custom 일 때 낙하 피해를 막는다."
+    },
+    "23 Player practice/Bleeding": {
+      "name": "출혈",
+      "desc": "Custom 일 때 출혈 피해를 막는다."
+    },
+    "23 Player practice/Melee and impact": {
+      "name": "근접·충격",
+      "desc": "Custom 일 때 근접·충격 피해를 막는다."
+    },
+    "23 Player practice/Environmental damage": {
+      "name": "환경 피해",
+      "desc": "Custom 일 때 환경 피해를 막는다."
+    },
+    "23 Player practice/Survival and toxins": {
+      "name": "생존·독소",
+      "desc": "Custom 일 때 생존(허기·갈증 등)·독소 피해를 막는다."
+    },
+    "23 Player practice/Health multiplier": {
+      "name": "체력 배율",
+      "desc": "반신의 체력 배율. 5 면 부위마다 원래 최대치의 다섯 배. 바꿔도 겹쳐 곱해지지 않고 파괴된 팔다리를 고치지 않는다."
+    },
+    "24 Legit Aim RCS/RCS enabled": {
+      "name": "반동 제어 켜기",
+      "desc": "고른 조준 모드의 전체 스위치가 켜져 있는 동안 반동을 줄인다. 대상을 잡지 않아도 돌고, 내 무기에만 영향을 준다."
+    },
+    "24 Legit Aim RCS/Vertical reduction (%)": {
+      "name": "수직 반동 줄이기 (%)",
+      "desc": "위아래(피치) 반동 충격을 줄이는 정도. 0 이면 원래 반동 그대로, 100 이면 새로 생기는 이 방향 충격을 없앤다."
+    },
+    "24 Legit Aim RCS/Horizontal reduction (%)": {
+      "name": "수평 반동 줄이기 (%)",
+      "desc": "좌우(요) 반동 충격을 줄이는 정도. 0 이면 원래 반동 그대로, 100 이면 새로 생기는 이 방향 충격을 없앤다."
+    },
+    "24 Legit Aim RCS/Kickback reduction (%)": {
+      "name": "뒤로 밀림 줄이기 (%)",
+      "desc": "무기가 뒤로 밀리는 반동을 줄인다. 관계없는 흔들림·애니메이션·카메라 기울기는 그대로다."
+    },
+    "24 Legit Aim RCS/RCS right mouse only": {
+      "name": "오른쪽 마우스일 때만 반동 제어",
+      "desc": "오른쪽 마우스를 누르고 있을 때만 반동 제어를 건다. 대상 포착과는 별개다."
+    },
+    "25 Rage Aim RCS/RCS enabled": {
+      "name": "반동 제어 켜기",
+      "desc": "고른 조준 모드의 전체 스위치가 켜져 있는 동안 반동을 줄인다. 대상을 잡지 않아도 돌고, 내 무기에만 영향을 준다."
+    },
+    "25 Rage Aim RCS/Vertical reduction (%)": {
+      "name": "수직 반동 줄이기 (%)",
+      "desc": "위아래(피치) 반동 충격을 줄이는 정도. 0 이면 원래 반동 그대로, 100 이면 새로 생기는 이 방향 충격을 없앤다."
+    },
+    "25 Rage Aim RCS/Horizontal reduction (%)": {
+      "name": "수평 반동 줄이기 (%)",
+      "desc": "좌우(요) 반동 충격을 줄이는 정도. 0 이면 원래 반동 그대로, 100 이면 새로 생기는 이 방향 충격을 없앤다."
+    },
+    "25 Rage Aim RCS/Kickback reduction (%)": {
+      "name": "뒤로 밀림 줄이기 (%)",
+      "desc": "무기가 뒤로 밀리는 반동을 줄인다. 관계없는 흔들림·애니메이션·카메라 기울기는 그대로다."
+    },
+    "25 Rage Aim RCS/RCS right mouse only": {
+      "name": "오른쪽 마우스일 때만 반동 제어",
+      "desc": "오른쪽 마우스를 누르고 있을 때만 반동 제어를 건다. 대상 포착과는 별개다."
+    },
+    "26 Misc vision/Night vision": {
+      "name": "야간 투시",
+      "desc": "고글 없이 기본 카메라에 게임의 야간 투시를 건다. 열상과 함께 켤 수 없다. 레이드 사이에 꺼진다."
+    },
+    "26 Misc vision/Thermal vision": {
+      "name": "열상",
+      "desc": "기본 카메라에 게임의 열상을 건다. 야간 투시와 함께 켤 수 없다. 끄면 카메라를 원래대로 돌린다."
+    },
+    "26 Misc vision/No flash": {
+      "name": "섬광 없애기",
+      "desc": "섬광탄의 하얀 화면과 잔상을 기본 카메라에서 없앤다. 수류탄 피해나 봇 행동은 그대로다."
+    },
+    "26 Misc vision/No visor": {
+      "name": "바이저 효과 없애기",
+      "desc": "바이저의 금·먼지 화면 효과를 숨긴다. 바이저와 그 보호는 그대로 남는다."
+    },
+    "27 Misc movement/No-clip": {
+      "name": "벽 통과 비행",
+      "desc": "지형을 뚫고 난다. JSON 의 NoClipForward/Back/Left/Right/Up/Down 키를 쓰고, 메뉴에서는 멈춘다. 트인 곳에서 끈다. 레이드 사이에 꺼진다."
+    },
+    "27 Misc movement/Flight speed": {
+      "name": "비행 속도",
+      "desc": "벽 통과 비행 속도(초당 미터)."
+    },
+    "27 Misc movement/Flight boost multiplier": {
+      "name": "비행 가속 배율",
+      "desc": "JSON 의 NoClipBoost 키를 누르는 동안의 속도 배율."
+    },
+    "28 Misc actions/Door radius": {
+      "name": "문 반경",
+      "desc": "\"근처 문 열기\"의 반경(미터). 보통 잠긴 문만 바꾼다."
+    },
+    "29 Equipment & supplies/Infinite medical supplies": {
+      "name": "무한 의약품",
+      "desc": "쓰는 의약품의 충전량을 지키고 소모를 막는다. 치료 시간·효과는 그대로. 이미 빈 것은 채우지 않는다. 레이드 사이에 꺼진다."
+    },
+    "29 Equipment & supplies/No weight penalties": {
+      "name": "무게 불이익 없애기",
+      "desc": "몸에 걸리는 무게 불이익을 무게 0 인 것처럼 계산한다. 인벤토리 무게 표시와 아이템 무게는 그대로, 장비 자체의 불이익도 남는다."
+    },
+    "29 Equipment & supplies/Adjustable fire rate": {
+      "name": "연사 속도 조절",
+      "desc": "지금 든 무기의 자동 연사 속도와 단발 대기 시간을 덮어쓴다. 사격 모드를 더하거나 저절로 쏘지는 않는다."
+    },
+    "29 Equipment & supplies/Fire rate RPM": {
+      "name": "연사 속도 (RPM)",
+      "desc": "원하는 분당 발사 수. 무기 애니메이션·노리쇠 순환·고장 때문에 실제로는 덜 나갈 수 있다."
+    },
+    "29 Equipment & supplies/Restore maximum durability": {
+      "name": "최대 내구도까지 복구",
+      "desc": "\"착용 장비 수리\" 때 줄어든 최대 내구도도 원래 최대치로 되살린다. 끄면 지금의 최대치까지만 고친다."
+    },
+    "30 Interaction/Extended interaction range": {
+      "name": "상호작용 거리 늘리기",
+      "desc": "전리품·문 상호작용 광선을 늘리되 게임의 가림 확인은 지킨다. 상인·차량·스크립트 상호작용은 늘리지 않는다."
+    },
+    "30 Interaction/Interaction distance": {
+      "name": "상호작용 거리",
+      "desc": "\"상호작용 거리 늘리기\"가 켜졌을 때 전리품·문 상호작용 거리(미터)."
+    },
+    "31 Extraction overrides/Always-available extractions": {
+      "name": "탈출구 항상 열기",
+      "desc": "내 진영의 보통 탈출구를 스폰 위치·비용·배낭·전원·작동 조건과 상관없이 열어 둔다. 탈출 시간은 그대로. 비밀·이동·스크립트 탈출은 빠진다. 레이드 사이에 꺼진다."
+    },
+    "32 Nearby enemy alerts/Nearby enemy alerts": {
+      "name": "근처 적 경고",
+      "desc": "살아 있는 AI 가 반경 안에 들어오면 ESP 와 따로 경고를 띄운다. 같은 그룹 ID 는 빠진다 — 모드가 만든 동맹은 그룹 ID 를 공유하지 않을 수 있다."
+    },
+    "32 Nearby enemy alerts/Alert radius": {
+      "name": "경고 반경",
+      "desc": "적 경고 반경(미터)."
+    },
+    "32 Nearby enemy alerts/Alert sound": {
+      "name": "경고음",
+      "desc": "새 적이 반경에 들어오면 짧은 소리를 낸다. 경계에서 되풀이되지 않게 5미터 여유와 대기 시간을 둔다."
+    },
+    "32 Nearby enemy alerts/Alert sound cooldown": {
+      "name": "경고음 대기 시간",
+      "desc": "새 적 경고음 사이의 최소 초."
+    },
+    "32 Nearby enemy alerts/Alert volume": {
+      "name": "경고음 음량",
+      "desc": "경고음의 음량."
+    },
+    "34 Rage ballistics/Movement prediction": {
+      "name": "움직임 예측",
+      "desc": "대상 속도와 예상 탄 비행 시간으로 고른 부위보다 앞을 노린다. 선택 사항이고 \"머리만 노리기\"와 별개다."
+    },
+    "34 Rage ballistics/Bullet drop compensation": {
+      "name": "탄 낙차 보정",
+      "desc": "예상 비행 시간 동안의 중력만큼 조준을 올린다. 지금 탄약과 무기 탄속을 쓴다. 근사 계산이라 공기 저항·탄 퍼짐·영점은 다 반영하지 않는다."
+    },
+    "34 Rage ballistics/Prediction strength": {
+      "name": "예측 세기",
+      "desc": "움직임 예측에 넣을 대상 속도의 비율(%)."
+    },
+    "34 Rage ballistics/Maximum flight prediction seconds": {
+      "name": "최대 비행 예측 (초)",
+      "desc": "예상 비행 시간의 최대치. 이 안에서 답이 없으면 보정 없이 지금 고른 지점을 노린다."
+    },
+    "35 Rage weapon handling/No ADS movement sway": {
+      "name": "조준 중 흔들림 없애기",
+      "desc": "레이지 조준이 켜져 있을 때 실제로 조준경을 보는 동안 들고 있는 무기의 이동·회전 흔들림과 걷기 출렁임을 없앤다. 대상을 잡지 않아도 돈다. 봇·지향 사격·레짓 조준에는 영향이 없고, 반동은 반동 제어가 따로 맡는다."
+    },
+    "36 Direct hit/Direct hit mode": {
+      "name": "직접 명중 모드",
+      "desc": "내 총탄을 조건에 맞는 AI 의 고른 신체 부위에 바로 맞힌다. 조준 전체 스위치와 별개이고 시점을 움직이지 않는다. 레이지의 대상 종류·그룹·제외 거르기와 자체 시야각·거리·보임 조건을 쓴다. 대상이 없으면 보통 사격이다. 레이드마다 꺼진다."
+    },
+    "36 Direct hit/Direct hit body part": {
+      "name": "직접 명중 부위",
+      "desc": "게임의 명중·피해를 적용할 부위. 직접 명중 모드가 꺼져 있으면 숨지만 고른 값은 기억한다. 탄약 피해와 게임의 신체 명중 경로를 쓰고, 탄이 실제로 날아가거나 가로막히지 않는다."
+    },
+    "36 Direct hit/Direct hit range": {
+      "name": "직접 명중 거리",
+      "desc": "적까지의 최대 거리(미터)."
+    },
+    "36 Direct hit/Direct hit FOV": {
+      "name": "직접 명중 시야각",
+      "desc": "조준점 둘레의 각도 반지름. 탄 하나마다 가장 가까운 후보 넷까지 본다."
+    },
+    "36 Direct hit/Direct hit visible only": {
+      "name": "보이는 대상만 직접 명중",
+      "desc": "고른 부위가 훤히 보여야 한다. 끄면 엄폐물 너머로도 맞힌다. 대상 거르기는 그대로다."
+    },
+    "37 Vampire mode/Vampire mode": {
+      "name": "흡혈 모드",
+      "desc": "살아 있는 AI 에게 실제로 입힌 체력 피해만큼 내 체력을 되찾는다. 보통 사격과 직접 명중 모두. 파괴된 부위를 살리거나 부상을 없애지는 않는다. 레이드마다 꺼진다."
+    },
+    "37 Vampire mode/Damage healing (%)": {
+      "name": "피해 회복 비율 (%)",
+      "desc": "적이 실제로 잃은 체력에 대한 회복 비율. 넘친 피해와 방어구에 흡수된 피해는 세지 않는다."
+    },
+    "37 Vampire mode/Kill healing bonus": {
+      "name": "처치 회복 추가",
+      "desc": "내 피해로 적을 처치하면 더 회복한다. 0 이면 피해만큼만."
+    },
+    "37 Vampire mode/Maximum healing per hit": {
+      "name": "한 번 명중 최대 회복",
+      "desc": "피해 한 번에서 얻는 회복(처치 추가 포함)의 상한. 산탄처럼 탄이 여럿이면 여러 번 셀 수 있다."
+    }
+  }
+}
