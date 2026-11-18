@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <IsPackable>false</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <!--
+    게임 어셈블리를 참조하지 않는다. 플러그인의 순수 파일(EFT 를 모르는 것)만 링크 컴파일해
+    EFT 없이 정렬·가격 환산·표시 글자를 시험한다.
+  -->
+  <ItemGroup>
+    <Compile Include="..\TraderListView\OfferRow.cs" />
+    <Compile Include="..\TraderListView\SortSpec.cs" />
+    <Compile Include="..\TraderListView\TraderSorter.cs" />
+    <Compile Include="TraderSorterTests.cs" />
+    <Compile Include="SortSpecTests.cs" />
+    <Compile Include="..\TraderListView\PriceNormalizer.cs" />
+    <Compile Include="..\TraderListView\PriceText.cs" />
+    <Compile Include="PriceNormalizerTests.cs" />
+    <Compile Include="PriceTextTests.cs" />
+    <Compile Include="..\TraderListView\GlyphFallback.cs" />
+    <Compile Include="GlyphFallbackTests.cs" />
+    <Compile Include="..\TraderListView\VirtualWindow.cs" />
+    <Compile Include="VirtualWindowTests.cs" />
+    <Compile Include="..\TraderListView\ButtonStyle.cs" />
+    <Compile Include="ButtonStyleTests.cs" />
+  </ItemGroup>
+
+</Project>
