@@ -464,7 +464,9 @@ namespace TraderListView.Ui
                 rt.anchorMin = new Vector2(0f, 1f);
                 rt.anchorMax = new Vector2(1f, 1f);
                 rt.pivot = new Vector2(0.5f, 1f);
-                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, RowHeight);
+                // 새 RectTransform 의 기본 sizeDelta 는 (100,100) 이다 — 가로로 늘인 줄에 그대로 두면
+                // 부모보다 100 넓어져 양쪽 50씩 화면 밖으로 밀린다(게임 확인 2026-11-18: 아이콘·등급 칸이 잘림).
+                rt.sizeDelta = new Vector2(0f, RowHeight);
                 var view = rt.gameObject.AddComponent<OfferRowView>();
                 view._owner = owner;
                 view._rt = rt;

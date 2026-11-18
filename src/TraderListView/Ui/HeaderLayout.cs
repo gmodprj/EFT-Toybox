@@ -193,10 +193,17 @@ namespace TraderListView.Ui
             row.childControlHeight = true;
             row.childForceExpandWidth = true;
             row.childForceExpandHeight = true;
-            _gridButton = UiKit.NewButton("Grid", _toggle, _font, 16f, () => SetViewMode("Grid"), out _gridLabel);
-            _listButton = UiKit.NewButton("List", _toggle, _font, 16f, () => SetViewMode("List"), out _listLabel);
-            UiKit.SetText(_gridLabel, "▦");
-            UiKit.SetText(_listLabel, "☰");
+            // ▦·☰ 는 글꼴 검사(HasCharacter)를 통과하고도 빈칸으로 그려졌다(게임 확인 2026-11-18) — 글자로 쓴다.
+            _gridButton = UiKit.NewButton("Grid", _toggle, _font, 13f, () => SetViewMode("Grid"), out _gridLabel);
+            _listButton = UiKit.NewButton("List", _toggle, _font, 13f, () => SetViewMode("List"), out _listLabel);
+            _gridLabel.enableAutoSizing = true;
+            _gridLabel.fontSizeMin = 9f;
+            _gridLabel.fontSizeMax = 13f;
+            _listLabel.enableAutoSizing = true;
+            _listLabel.fontSizeMin = 9f;
+            _listLabel.fontSizeMax = 13f;
+            _gridLabel.text = "격자";
+            _listLabel.text = "목록";
         }
 
         private void BuildSortBar()
