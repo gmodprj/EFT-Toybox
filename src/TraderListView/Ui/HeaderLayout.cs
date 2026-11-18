@@ -11,7 +11,7 @@ using UnityEngine.UI;
 namespace TraderListView.Ui
 {
     /// <summary>
-    /// 상인 화면 헤더 한 줄: <c>[상점 새로고침][검색창][✎][▦|☰]</c> (설계 §5, 사용자 결정 2026-11-18).
+    /// 상인 화면 헤더 한 줄: <c>[↻][✎][☰][검색창 ...][▦ I II III ♛]</c> — 버튼 셋을 등급 탭과 같은 정사각형으로(사용자 요청 2026-11-18).
     /// Trader Search·Assort Editor 가 자리를 잡은 뒤 다시 놓는다. 둘 중 없는 것은 건너뛴다.
     /// 격자 모드에서는 헤더 아래에 정렬 막대를 둔다.
     /// </summary>
@@ -32,7 +32,6 @@ namespace TraderListView.Ui
         private TraderDealScreen _screen;
         private TMP_FontAsset _font;
         private RectTransform _toggle;
-        private TextMeshProUGUI _toggleLabel;
         private RectTransform _sortBar;
         private readonly List<(SortKey key, string label, Button button, TextMeshProUGUI text)> _sortItems =
             new List<(SortKey, string, Button, TextMeshProUGUI)>();
@@ -116,85 +115,206 @@ namespace TraderListView.Ui
                 return;
             }
 
+            LogStructureOnce(space, refresh, allItems);
+
+            // 기준은 등급 탭(▦ I II III ♛)의 정사각형. 새로고침·연필·전환을 같은 크기로 맞추고
+            // 남은 폭을 같은 높이의 검색창이 쓴다(사용자 요청 2026-11-18):
+            //   [↻][✎][☰] [검색창 ............] [▦][I][II][III][♛]
             var r = UiKit.BoundsIn(refresh, space);
             var a = UiKit.BoundsIn(allItems, space);
-            float h = r.height;
-            float left = r.xMax + Gap;
+            float s = a.height;
+            float yMin = a.yMin, yMax = a.yMax;
+            float x = r.xMin;
             float right = a.xMin - Gap;
-            if (right - left < h * 4)
+            if (right - x < s * 5)
             {
                 return;
             }
 
-            // 오른쪽부터: 전환 버튼(하나, 높이의 2.6배 폭) → 연필 → 검색창이 남은 폭.
-            float x = right;
-            var toggleRect = Rect.MinMaxRect(x - h * 2.6f, r.yMin, x, r.yMax);
-            if (_toggle.parent != space)
-            {
-                _toggle.SetParent(space, false);
-            }
+            var tabBack = TabBackground(allItems);
 
-            UiKit.PlaceIn(_toggle, space, toggleRect);
-            x = toggleRect.xMin - Gap * 2; // 연필과 붙어 있으면 잘못 눌린다(게임 확인 2026-11-18).
+            PlaceSquare(refresh, space, ref x, yMin, yMax, s, tabBack);
+            AddTooltip(refresh, () => "상점 새로고침");
 
             // 두 모드 모두 헤더 부모(space)의 직계 자식으로 붙인다 — 화면 전체를 훑지 않는다.
             var edit = space.Find(EditButtonName) as RectTransform;
             if (edit != null && edit.gameObject.activeSelf)
             {
-                var editRect = Rect.MinMaxRect(x - h, r.yMin, x, r.yMax);
-                UiKit.PlaceIn(edit, space, editRect);
-                MakePencilOnly(edit);
-                x = editRect.xMin - Gap;
+                PlaceSquare(edit, space, ref x, yMin, yMax, s, tabBack);
             }
+
+            if (_toggle.parent != space)
+            {
+                _toggle.SetParent(space, false);
+            }
+
+            UiKit.PlaceIn(_toggle, space, Rect.MinMaxRect(x, yMin, x + s, yMax));
+            ApplyBackground(_toggle, tabBack);
+            x += s + Gap;
 
             var search = space.Find(SearchFieldName) as RectTransform;
             if (search != null)
             {
-                UiKit.PlaceIn(search, space, Rect.MinMaxRect(left, r.yMin, Mathf.Max(left + h, x), r.yMax));
+                UiKit.PlaceIn(search, space, Rect.MinMaxRect(x, yMin, Mathf.Max(x + s, right), yMax));
             }
         }
 
-        /// <summary>EDIT ASSORTS 글자를 끄고 연필 아이콘 층을 가운데로.</summary>
-        private static void MakePencilOnly(RectTransform edit)
+        /// <summary>정사각형 칸에 놓고, 글자를 끄고, 작은 아이콘 층을 가운데로, 바탕을 등급 탭 것으로.</summary>
+        private static void PlaceSquare(RectTransform target, RectTransform space, ref float x, float yMin, float yMax, float s, Image tabBack)
         {
-            foreach (var label in edit.GetComponentsInChildren<TMP_Text>(true))
+            // 글자 길이에 맞춰 폭을 다시 늘리는 부품이 있으면 끈다.
+            var fitter = target.GetComponent<ContentSizeFitter>();
+            if (fitter != null)
+            {
+                fitter.enabled = false;
+            }
+
+            UiKit.PlaceIn(target, space, Rect.MinMaxRect(x, yMin, x + s, yMax));
+            MakeIconOnly(target, s);
+            ApplyBackground(target, tabBack);
+            x += s + Gap;
+        }
+
+        /// <summary>글자를 끄고 작은(점 앵커) 아이콘 층을 버튼 가운데로.</summary>
+        private static void MakeIconOnly(RectTransform button, float size)
+        {
+            foreach (var label in button.GetComponentsInChildren<TMP_Text>(true))
             {
                 label.enabled = false;
             }
 
-            foreach (var text in edit.GetComponentsInChildren<Text>(true))
+            foreach (var text in button.GetComponentsInChildren<Text>(true))
             {
                 text.enabled = false;
             }
 
-            var center = edit.TransformPoint(edit.rect.center);
-            foreach (var image in edit.GetComponentsInChildren<Image>(true))
+            var center = button.TransformPoint(button.rect.center);
+            foreach (var image in button.GetComponentsInChildren<Image>(true))
             {
                 var rt = image.rectTransform;
-                if (rt == edit || rt.anchorMin != rt.anchorMax || rt.rect.width > 40f)
+                if (rt == button || rt.anchorMin != rt.anchorMax || rt.rect.width > size)
                 {
                     continue; // 버튼 바탕·늘어나는 층은 그대로.
                 }
 
                 var local = rt.parent.InverseTransformPoint(center);
-                var pos = rt.localPosition;
-                pos.x = local.x;
-                rt.localPosition = pos;
+                rt.localPosition = new Vector3(local.x, local.y, rt.localPosition.z);
             }
         }
 
+        /// <summary>등급 탭의 바탕(그림이 있는 가장 큰 Image).</summary>
+        private static Image TabBackground(RectTransform tab)
+        {
+            Image best = null;
+            float bestArea = 0f;
+            foreach (var image in tab.GetComponentsInChildren<Image>(true))
+            {
+                var area = image.rectTransform.rect.width * image.rectTransform.rect.height;
+                if (image.sprite != null && area > bestArea)
+                {
+                    best = image;
+                    bestArea = area;
+                }
+            }
+
+            return best;
+        }
+
+        /// <summary>버튼 자기 바탕(루트 Image)을 등급 탭 바탕의 그림·색으로.</summary>
+        private static void ApplyBackground(RectTransform button, Image tabBack)
+        {
+            var own = button.GetComponent<Image>();
+            if (own == null || tabBack == null)
+            {
+                return;
+            }
+
+            own.sprite = tabBack.sprite;
+            own.type = tabBack.type;
+            own.color = tabBack.color;
+        }
+
+        private static bool _structureLogged;
+
+        /// <summary>헤더 구조를 한 번만 로그에 남긴다 — 배치가 어긋나면 이것으로 본다.</summary>
+        private static void LogStructureOnce(RectTransform space, RectTransform refresh, RectTransform allItems)
+        {
+            if (_structureLogged)
+            {
+                return;
+            }
+
+            _structureLogged = true;
+            try
+            {
+                var sb = new System.Text.StringBuilder("헤더 구조: 부모 ").Append(space.name)
+                    .Append(" HLG=").Append(space.GetComponent<HorizontalLayoutGroup>() != null)
+                    .Append(" / 새로고침 ").Append(UiKit.BoundsIn(refresh, space))
+                    .Append(" CSF=").Append(refresh.GetComponent<ContentSizeFitter>() != null)
+                    .Append(" / 등급 탭 ").Append(UiKit.BoundsIn(allItems, space)).Append(" / 형제:");
+                for (int i = 0; i < space.childCount; i++)
+                {
+                    var c = space.GetChild(i) as RectTransform;
+                    if (c != null)
+                    {
+                        sb.Append(" [").Append(c.name).Append(c.gameObject.activeSelf ? "" : "(꺼짐)").Append("]");
+                    }
+                }
+
+                Plugin.Log.LogInfo(sb.ToString());
+            }
+            catch (Exception)
+            {
+                // 기록은 덤이다.
+            }
+        }
+
+        private static void AddTooltip(RectTransform target, Func<string> text)
+        {
+            var hover = target.GetComponent<HoverTooltip>() ?? target.gameObject.AddComponent<HoverTooltip>();
+            hover.Text = text;
+        }
+
+        private RectTransform _gridIcon, _listIcon;
+
         private void BuildToggle()
         {
-            // 버튼 하나로 격자 ↔ 목록을 오간다. 정사각형 둘(▦|☰)은 8px 남짓으로 작아 연필과 함께 잘못 눌렸고,
-            // ▦·☰ 글리프는 빈칸으로 그려졌다(게임 확인 2026-11-18). 글자는 "바꿀 곳"을 보인다.
+            // 등급 탭과 같은 정사각형 아이콘 버튼 하나로 격자 ↔ 목록을 오간다. ▦·☰ 글리프는 빈칸으로 그려져
+            // (게임 확인 2026-11-18) 작은 Image 로 직접 그린다: 격자 = 네모 넷, 목록 = 가로줄 셋. 보이는 그림은 "바꿀 곳".
             var button = UiKit.NewButton("TraderListView Toggle", _screen._updateAssort.transform.parent, _font, 13f,
-                () => SetViewMode(Plugin.IsListMode ? "Grid" : "List"), out _toggleLabel);
+                () => SetViewMode(Plugin.IsListMode ? "Grid" : "List"), out var label);
+            label.enabled = false;
             _toggle = (RectTransform)button.transform;
-            _toggleLabel.enableAutoSizing = true;
-            _toggleLabel.fontSizeMin = 9f;
-            _toggleLabel.fontSizeMax = 13f;
-            _toggleLabel.color = UiKit.TextActive;
-            _toggleLabel.text = "목록 보기";
+            _gridIcon = DrawIcon(_toggle, "GridIcon", new[]
+            {
+                new Rect(0.22f, 0.54f, 0.24f, 0.24f), new Rect(0.54f, 0.54f, 0.24f, 0.24f),
+                new Rect(0.22f, 0.22f, 0.24f, 0.24f), new Rect(0.54f, 0.22f, 0.24f, 0.24f),
+            });
+            _listIcon = DrawIcon(_toggle, "ListIcon", new[]
+            {
+                new Rect(0.22f, 0.66f, 0.56f, 0.10f), new Rect(0.22f, 0.45f, 0.56f, 0.10f), new Rect(0.22f, 0.24f, 0.56f, 0.10f),
+            });
+            AddTooltip(_toggle, () => Plugin.IsListMode ? "격자 보기" : "목록 보기");
+        }
+
+        /// <summary>버튼 안에 비율 사각형들로 아이콘을 그린다.</summary>
+        private static RectTransform DrawIcon(RectTransform parent, string name, Rect[] parts)
+        {
+            var icon = UiKit.NewRect(name, parent);
+            UiKit.Stretch(icon);
+            foreach (var p in parts)
+            {
+                var piece = UiKit.NewRect("Piece", icon);
+                piece.anchorMin = new Vector2(p.xMin, p.yMin);
+                piece.anchorMax = new Vector2(p.xMax, p.yMax);
+                piece.offsetMin = Vector2.zero;
+                piece.offsetMax = Vector2.zero;
+                var image = piece.gameObject.AddComponent<Image>();
+                image.color = UiKit.Text;
+                image.raycastTarget = false;
+            }
+
+            return icon;
         }
 
         private void BuildSortBar()
@@ -273,7 +393,9 @@ namespace TraderListView.Ui
             bool allowed = ListAllowed;
             bool list = allowed && Plugin.IsListMode;
             _toggle.gameObject.SetActive(allowed);
-            _toggleLabel.text = list ? "격자 보기" : "목록 보기";
+            // 바꿀 곳의 그림을 보인다: 목록이면 격자 그림, 격자면 목록 그림.
+            _gridIcon.gameObject.SetActive(list);
+            _listIcon.gameObject.SetActive(!list);
             SetSortBarVisible(allowed && !list);
 
             if (allowed != _lastListAllowed)
@@ -361,6 +483,31 @@ namespace TraderListView.Ui
 
             var editor = _screen.GetComponent(_editorType);
             return editor != null && _editorIsEditing.GetValue(editor) is bool b && b;
+        }
+    }
+
+    /// <summary>마우스를 올리면 게임의 간단 툴팁으로 글자를 보인다(글자가 없는 아이콘 버튼용).</summary>
+    public sealed class HoverTooltip : MonoBehaviour, UnityEngine.EventSystems.IPointerEnterHandler, UnityEngine.EventSystems.IPointerExitHandler
+    {
+        public Func<string> Text;
+
+        public void OnPointerEnter(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            var context = ItemUiContext.Instance;
+            var text = Text?.Invoke();
+            if (context != null && !string.IsNullOrEmpty(text))
+            {
+                context.Tooltip.Show(text);
+            }
+        }
+
+        public void OnPointerExit(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            var context = ItemUiContext.Instance;
+            if (context != null)
+            {
+                context.Tooltip.Close();
+            }
         }
     }
 }
