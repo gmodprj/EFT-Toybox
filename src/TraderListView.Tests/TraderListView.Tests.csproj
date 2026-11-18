@@ -29,6 +29,8 @@
     <Compile Include="..\TraderListView\PriceText.cs" />
     <Compile Include="PriceNormalizerTests.cs" />
     <Compile Include="PriceTextTests.cs" />
+    <Compile Include="..\TraderListView\GlyphFallback.cs" />
+    <Compile Include="GlyphFallbackTests.cs" />
   </ItemGroup>
 
 </Project>
