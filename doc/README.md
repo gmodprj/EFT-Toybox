@@ -146,6 +146,7 @@ SptTeamManager-ServerMod · SlotFilterSweep · StackUnify · WebConfigBridge)이
 | `GogglesWheel` | 야시경·실드 휠 | [설계](specs/2026-10-30-goggles-wheel-design.md) · [계획](plans/2026-10-30-goggles-wheel-plan.md) |
 | `DynamicMapsFactionMarkers` | 지도에 세력 표시 | [설계](specs/2026-10-30-dynamicmaps-faction-markers-design.md) · [계획](plans/2026-10-30-dynamicmaps-faction-markers-plan.md) · [세력 조사](specs/2026-10-30-faction-identification-survey.md) |
 | `GridWindowScroll` | 가방·상자 창을 화면 안에 가둔다 | [README](../src/GridWindowScroll/README.md) |
+| `TraderListView` | 상인 화면 격자↔목록 전환·가격·이름·재고·등급 정렬, EDIT ASSORTS 겹침 해소 | [README](../src/TraderListView/README.md) · [설계](specs/2026-11-18-trader-list-view-design.md) · [계획](plans/2026-11-18-trader-list-view-plan.md) |
 | `StackUnify` | 최대 스택을 한 곳에서 정한다 | [README](../src/StackUnify/README.md) |
 | `HelmetSlotUnion`·`SlotCategoryRelax` | 슬롯 필터를 넓힌다(STM 편집기가 기댄다) | STM 인계 불변식 9 |
 | `SlotFilterSweep` | 칸 필터에서 **없는 부품 id** 를 걷어낸다(기본은 세기만) | [감사](REVIEW-MODS-AUDIT-2026-11-12.md) |
