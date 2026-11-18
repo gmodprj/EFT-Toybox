@@ -40,5 +40,25 @@
 ## 남은 것
 
 - 서버·게임 재기동 후 확인: SAIN 프리셋 로드, LoL 전리품 체감, CCI 제단 보상, 플리 매물 수(Blacklist 희소 매물 + UltimateFlea).
-- **충돌 의심(미해결)**: UltimateFlea `pool.add` 5,662개(11-16 `modded_items_flea` 프리셋) 중 674개가 TheBlacklist 가 막아 둔 itemId 와 겹친다. 어느 쪽이 이기는지 확인 안 함.
+- **UltimateFlea ↔ TheBlacklist 충돌 — 확인됨, 방향 결정 대기**: 아래 절.
+
+## UltimateFlea 가 TheBlacklist 되살림 674건을 다시 열었다 (같은 날 실측)
+
+떠 있는 서버(11:26 기동, 오늘 바꾼 값은 아직 반영 전)에서 `POST /client/items`(10,674종)와 `POST /client/ragfair/find` 로 쟀다. 세션은 `PHPSESSID=<프로필 id>`, 본문은 zlib(`tools/stm-call.mjs`).
+
+| 묶음 | 막힘 | 열림 |
+|---|---|---|
+| 되살린 858건 — 10-28 측정 | 785 | 73 (+ AllWeaponsFlea 41 은 그 전에 결정) |
+| 되살린 858건 — **지금** | **104** | **754** |
+| 그중 UltimateFlea `pool.add` 와 겹치는 674건 | **0** | **674** |
+| 겹치지 않는 열림 80건 | — | 핸드북에 없음 73(10-28 과 같은 "플래그만 남은" 것) + 총기 7(AllWeaponsFlea, 결정된 상태) |
+
+- 겹친 674건의 출처: ISB-Aishi 353, WTT-ContentBackport 273, WTT-Armory 34, WTT-Artem 12, Airburst 2.
+- **플래그만이 아니라 실제 매물이다.** `ragfair/find` 결과 겹친 품목 3개 모두 상인(`memberType 4`) 4건 + **플리 판매자(`memberType 0`) 7~9건**. 대조군: 아직 막힌 품목(`699b6b88…`)은 상인 4건뿐, 일반 품목(Salewa)은 20건.
+- 순서: 로그상 UltimateFlea `Pool applied … +5662 enabled … cleared 1277 from item blacklist`(02:27:09.329) 뒤에 TheBlacklist 가 돈다(02:27:10.743). 그런데도 열려 있으니 TheBlacklist 가 이 674건을 다시 닫지 못한다 — 결과가 UltimateFlea 쪽이다. 어떤 코드 경로로 지는지는 읽지 않았다(결과만 실측).
+- 원인: 11-16 18:30 에 적용된 UltimateFlea 프리셋 `modded_items_flea` 가 "모드가 판매 불가로 표시한 아이템"까지 풀에 올린다. 10-28 에 "UltimateFlea 는 무죄"였던 것은 그때 풀이 비어 있었기 때문이다.
+
+선택지:
+1. `pool.add` 에서 TheBlacklist 되살림 id 674개만 뺀다(UltimateFlea API `POST /ultimateflea/api/config/pool`, 나머지 4,988개는 유지). 제작자 의도대로 다시 막힌다. 서버 재기동 필요.
+2. 그대로 둔다 — 모드 아이템 전부 플리 허용을 고른 것으로 본다. 그러면 TheBlacklist 되살림 블록은 이 674건에 대해 효과가 없다.
 - 기록 없이 바뀌어 있던 값: BIS 클라이언트 FiR 섞기 4종 true, ISB 격리 돌파 확률 55→30. 둘 다 그대로 두었다.
