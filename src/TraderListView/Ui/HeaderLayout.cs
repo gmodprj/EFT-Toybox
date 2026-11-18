@@ -32,8 +32,7 @@ namespace TraderListView.Ui
         private TraderDealScreen _screen;
         private TMP_FontAsset _font;
         private RectTransform _toggle;
-        private Button _gridButton, _listButton;
-        private TextMeshProUGUI _gridLabel, _listLabel;
+        private TextMeshProUGUI _toggleLabel;
         private RectTransform _sortBar;
         private readonly List<(SortKey key, string label, Button button, TextMeshProUGUI text)> _sortItems =
             new List<(SortKey, string, Button, TextMeshProUGUI)>();
@@ -127,16 +126,16 @@ namespace TraderListView.Ui
                 return;
             }
 
-            // 오른쪽부터: 전환 버튼(정사각형 둘) → 연필 → 검색창이 남은 폭.
+            // 오른쪽부터: 전환 버튼(하나, 높이의 2.6배 폭) → 연필 → 검색창이 남은 폭.
             float x = right;
-            var toggleRect = Rect.MinMaxRect(x - h * 2, r.yMin, x, r.yMax);
+            var toggleRect = Rect.MinMaxRect(x - h * 2.6f, r.yMin, x, r.yMax);
             if (_toggle.parent != space)
             {
                 _toggle.SetParent(space, false);
             }
 
             UiKit.PlaceIn(_toggle, space, toggleRect);
-            x = toggleRect.xMin - Gap;
+            x = toggleRect.xMin - Gap * 2; // 연필과 붙어 있으면 잘못 눌린다(게임 확인 2026-11-18).
 
             // 두 모드 모두 헤더 부모(space)의 직계 자식으로 붙인다 — 화면 전체를 훑지 않는다.
             var edit = space.Find(EditButtonName) as RectTransform;
@@ -186,24 +185,16 @@ namespace TraderListView.Ui
 
         private void BuildToggle()
         {
-            _toggle = UiKit.NewRect("TraderListView Toggle", _screen._updateAssort.transform.parent);
-            var row = _toggle.gameObject.AddComponent<HorizontalLayoutGroup>();
-            row.spacing = 2f;
-            row.childControlWidth = true;
-            row.childControlHeight = true;
-            row.childForceExpandWidth = true;
-            row.childForceExpandHeight = true;
-            // ▦·☰ 는 글꼴 검사(HasCharacter)를 통과하고도 빈칸으로 그려졌다(게임 확인 2026-11-18) — 글자로 쓴다.
-            _gridButton = UiKit.NewButton("Grid", _toggle, _font, 13f, () => SetViewMode("Grid"), out _gridLabel);
-            _listButton = UiKit.NewButton("List", _toggle, _font, 13f, () => SetViewMode("List"), out _listLabel);
-            _gridLabel.enableAutoSizing = true;
-            _gridLabel.fontSizeMin = 9f;
-            _gridLabel.fontSizeMax = 13f;
-            _listLabel.enableAutoSizing = true;
-            _listLabel.fontSizeMin = 9f;
-            _listLabel.fontSizeMax = 13f;
-            _gridLabel.text = "격자";
-            _listLabel.text = "목록";
+            // 버튼 하나로 격자 ↔ 목록을 오간다. 정사각형 둘(▦|☰)은 8px 남짓으로 작아 연필과 함께 잘못 눌렸고,
+            // ▦·☰ 글리프는 빈칸으로 그려졌다(게임 확인 2026-11-18). 글자는 "바꿀 곳"을 보인다.
+            var button = UiKit.NewButton("TraderListView Toggle", _screen._updateAssort.transform.parent, _font, 13f,
+                () => SetViewMode(Plugin.IsListMode ? "Grid" : "List"), out _toggleLabel);
+            _toggle = (RectTransform)button.transform;
+            _toggleLabel.enableAutoSizing = true;
+            _toggleLabel.fontSizeMin = 9f;
+            _toggleLabel.fontSizeMax = 13f;
+            _toggleLabel.color = UiKit.TextActive;
+            _toggleLabel.text = "목록 보기";
         }
 
         private void BuildSortBar()
@@ -282,8 +273,7 @@ namespace TraderListView.Ui
             bool allowed = ListAllowed;
             bool list = allowed && Plugin.IsListMode;
             _toggle.gameObject.SetActive(allowed);
-            _gridLabel.color = list ? UiKit.Text : UiKit.TextActive;
-            _listLabel.color = list ? UiKit.TextActive : UiKit.Text;
+            _toggleLabel.text = list ? "격자 보기" : "목록 보기";
             SetSortBarVisible(allowed && !list);
 
             if (allowed != _lastListAllowed)

@@ -413,7 +413,10 @@ namespace TraderListView.Ui
             _scroll.horizontal = false;
             _scroll.vertical = true;
             _scroll.movementType = ScrollRect.MovementType.Clamped;
-            _scroll.scrollSensitivity = RowHeight;
+            // 게임 격자 스크롤과 같은 감도. 고정값 48 은 휠 10칸에 한 줄로 너무 느렸다(게임 확인 2026-11-18).
+            float gridSensitivity = _screen._traderScroll != null ? _screen._traderScroll.scrollSensitivity : 0f;
+            _scroll.scrollSensitivity = Mathf.Max(gridSensitivity, RowHeight * 10f);
+            Plugin.Log.LogInfo("목록 스크롤 감도 " + _scroll.scrollSensitivity + " (격자 " + gridSensitivity + ")");
             _scroll.onValueChanged.AddListener(_ => Rebind());
 
             _empty = UiKit.NewLabel(_viewport, _font, 16f, TextAlignmentOptions.Center);
