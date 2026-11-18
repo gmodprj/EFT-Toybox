@@ -36,6 +36,7 @@ namespace TraderListView
             Sort = Config.Bind("General", "Sort", SortSpec.DefaultAsc.ToConfig(),
                 "정렬. 키는 Default·Price·Name·Stock·Loyalty, 방향은 Asc·Desc (예: Price:Asc)");
 
+            Patches.TraderScreenShowPatch.Attached += (screen, header) => Ui.OfferListView.Attach(screen, header);
             new Harmony(PluginGuid).PatchAll(typeof(Plugin).Assembly);
             Log.LogInfo("상인 목록 보기 0.1.0 로드");
         }

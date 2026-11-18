@@ -119,6 +119,9 @@ namespace TraderListView.Patches
             }
         }
 
+        /// <summary>격자가 보여 주는 상인의 물건 묶음(구매 창이 따르는 것).</summary>
+        public static Assortment AssortmentOf(TradingGridView grid) => grid != null ? AssortmentRef(grid) : null;
+
         public static int TraderLoyalty(Assortment assortment)
         {
             var trader = assortment != null ? assortment._trader : null;
