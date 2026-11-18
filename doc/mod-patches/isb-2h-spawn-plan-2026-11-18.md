@@ -2,7 +2,7 @@
 
 대상: `E:\Spt\SPT_Runtime\user\mods\ISB-SpecialForces\config.jsonc`
 화면: `https://127.0.0.1:6969/isb` → **맵과 편성** 탭(`/locations/<맵>`), **외부 세력** 탭(`/externalFactions/chaosInsurgency/locations/<맵>`)
-적용: 서버와 게임을 다시 켜야 반영된다(아직 재기동 안 함).
+적용: 서버와 게임을 다시 켜야 반영된다. 서버는 같은 날 13:59 에 다시 띄웠다(기동 로그에 ISB 오류 없음). 게임 레이드 확인은 아직.
 
 ## 설정이 움직이는 방식 (웹 앱 `app.js`·`formation-estimates.js` 로 확인)
 

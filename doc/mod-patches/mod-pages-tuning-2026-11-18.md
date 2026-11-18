@@ -37,9 +37,23 @@
 - CCI 백포트 파일은 제작 시간 말고는 이전과 같다.
 - `check-install-records.mjs` → `OK — 0/0`.
 
+## 서버 재기동 후 확인 (2026-11-18 13:59 기동, 터미널 탭 `SPT server`)
+
+| 항목 | 결과 |
+|---|---|
+| UltimateFlea 경제 | 실행 중 API `GET /ultimateflea/api/config/economy` = 0.04 / 0.4 / 0.8 / 2.5 |
+| SAIN | 기동 때 스키마 갱신이 파일을 다시 쓰지 않았다(수정 시각 13:16 그대로). 전역 0.65 / 1.1 / 0.7 / 1.1 / 1.1, 수류탄 true |
+| Lots of Loot | 로그 `Preset 'default' successfully loaded` |
+| CCI | 로그 `Cultist Circle: 'vanilla'`, `Added 25 Cultist Circle crafts` |
+| TheBlacklist 희소 매물 | `ragfair/find` 플리 판매자 매물: Salewa 9 → **2**(각 1개), Propital 3(각 1개). 켜졌다 |
+| 오류 | 이번 기동 `[Error]` 49 = 앞 정상 기동(11:27)과 종류·수가 같다(ItemBaseClassService 48 + 번들 1). 새로 생긴 것 없음 |
+| ISB | 기동 로그에 ISB 오류 없음. 스폰은 레이드에서 봐야 한다 |
+
+- 처음 띄운 것(13:56, 탭 `SPT 서버`)은 `[ItemInfo] Processing items...`(보통 124초 걸림) 55초째에 **로그 없이 끝났다.** 이벤트 로그에 SPT.Server 충돌 기록은 없다. 원인은 모른다. 다시 띄운 것은 끝까지 올라왔다.
+
 ## 남은 것
 
-- 서버·게임 재기동 후 확인: SAIN 프리셋 로드, LoL 전리품 체감, CCI 제단 보상, 플리 매물 수(Blacklist 희소 매물 + UltimateFlea).
+- 게임에서 확인: SAIN 체감, LoL 전리품 체감, CCI 제단 보상, ISB 스폰 시간대.
 - **UltimateFlea ↔ TheBlacklist 충돌 — 확인됨, 그대로 두기로 결정**: 아래 절.
 
 ## UltimateFlea 가 TheBlacklist 되살림 674건을 다시 열었다 (같은 날 실측)
