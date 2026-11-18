@@ -32,10 +32,11 @@ public static class ExportSelection
     /// <summary>
     /// 한 번에 내보낼 수 있는 최대 개수(**자손까지 센 수**).
     ///
-    /// 실측(§9.1)에서 가장 큰 것이 Nomad 의 1,358개였다. 그 두 배가 안 되는 자리에 둔다 —
-    /// 사람이 손으로 고르는 화면의 상한이고, 넘으면 "나눠서 하라" 고 말해 준다.
+    /// 처음에는 실측(§9.1)의 최대(Nomad 1,358개)를 보고 2048 로 뒀다. 11-18 에 Nomad 스태시가
+    /// 2,067개로 자라 걸렸고, SPT 우편 쪽에 개수 제한이 없는 것과 큰 우편이 받히는 것을 재고
+    /// 4096 으로 올렸다(§24). 사람이 손으로 고르는 화면의 상한이고, 넘으면 "나눠서 하라" 고 말해 준다.
     /// </summary>
-    public const int MaxItems = 2048;
+    public const int MaxItems = 4096;
 
     /// <param name="items">원본 프로필의 아이템 전부.</param>
     /// <param name="stashRootId">스태시 루트 아이템의 id.</param>
