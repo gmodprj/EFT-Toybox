@@ -146,6 +146,10 @@ TheBlacklist 의 `PricingService::ApplyPrices` 는 **핸드북 항목을 돌며*
 플레아 생성 쪽(`Blacklist.Custom`)에서는 걸러질 수도 있다. 플래그만으로 "플레아에 뜬다"고
 단정하지는 않는다.
 
+### 2026-11-18 갱신 — UltimateFlea 풀이 674건을 다시 열었고, 그대로 두기로 했다
+
+11-16 에 UltimateFlea `modded_items_flea` 프리셋이 켜지면서 되살린 858건 중 674건이 다시 플레아 매물로 뜬다(실측: 막힘 104 / 열림 754). **결정: 그대로 둔다.** 측정과 결정은 [mod-pages-tuning-2026-11-18.md](mod-pages-tuning-2026-11-18.md) 의 "UltimateFlea 가 TheBlacklist 되살림 674건을 다시 열었다" 절에 있다.
+
 ## 넣은 꼴
 
 `customItemConfigs` 배열이 열리는 자리에 표시를 달아 끼웠다. 주석을 살리려고 JSON 으로 다시
