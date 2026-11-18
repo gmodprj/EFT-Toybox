@@ -39,6 +39,14 @@ public class GlyphFallbackTests
     }
 
     [Fact]
+    public void LoneSurrogate_IsCopiedWithoutThrowing()
+    {
+        string broken = "이름\uD83D끝";
+
+        Assert.Equal(broken, GlyphFallback.Replace(broken, HasNoSymbols));
+    }
+
+    [Fact]
     public void NullOrEmpty_ReturnsSame()
     {
         Assert.Null(GlyphFallback.Replace(null, HasNoSymbols));

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EFT;
 using EFT.InventoryLogic;
 using EFT.Trading;
 using EFT.UI;
@@ -41,10 +42,16 @@ namespace TraderListView.Ui
             new List<(SortKey, string, TextMeshProUGUI)>();
         private readonly List<OfferRowView> _pool = new List<OfferRowView>();
 
+        private static readonly HarmonyLib.AccessTools.FieldRef<TraderDealScreen, Trader> TraderRef =
+            HarmonyLib.AccessTools.FieldRefAccess<TraderDealScreen, Trader>("_trader");
+
+        private IReadOnlyList<Item> _items = Array.Empty<Item>();
         private List<OfferRow> _rows = new List<OfferRow>();
         private Assortment _assortment;
-        private Action _unsubscribeSelection;
+        private Action _unsubscribeSelection, _unsubscribeUpdated;
         private bool _visible;
+        private int _dataVersion, _boundVersion = -1;
+        private VirtualWindow _boundWindow;
 
         /// <summary>줄 겉모습을 바꿀 고리(Task 6 의 플리 겉모습). (줄, 짝수/홀수)</summary>
         public static Action<GameObject, bool> RowSkin;
@@ -56,8 +63,34 @@ namespace TraderListView.Ui
         {
             var view = screen.GetComponent<OfferListView>() ?? screen.gameObject.AddComponent<OfferListView>();
             view.Init(screen, header);
+            view.OnShown();
             view.ApplyMode();
             return view;
+        }
+
+        /// <summary>지금 화면이 보여 주는 상인의 물건 묶음(상인을 바꾸면 달라진다).</summary>
+        private Assortment CurrentAssortment()
+        {
+            var trader = _screen != null ? TraderRef(_screen) : null;
+            return trader != null ? trader.CurrentAssortment : null;
+        }
+
+        /// <summary>
+        /// 화면이 열릴 때: 목록이 다른 상인(또는 불러오기 전)의 것이면 비운다 —
+        /// 옛 상인의 줄을 눌러 지금 구매 창과 다른 물건을 고르는 일이 없게(설계 §2).
+        /// </summary>
+        private void OnShown()
+        {
+            var current = CurrentAssortment();
+            if (current == _assortment)
+            {
+                return;
+            }
+
+            SetAssortment(null);
+            var trader = TraderRef(_screen);
+            bool loading = current == null || (trader != null && trader.AssortmentLoading);
+            SetItems(Array.Empty<Item>(), loading ? "불러오는 중..." : "물건이 없습니다");
         }
 
         private void Init(TraderDealScreen screen, HeaderLayout header)
@@ -80,6 +113,7 @@ namespace TraderListView.Ui
         {
             TraderGridSortPatch.ListApplied -= OnListApplied;
             _unsubscribeSelection?.Invoke();
+            _unsubscribeUpdated?.Invoke();
         }
 
         private void ApplyMode()
@@ -118,24 +152,26 @@ namespace TraderListView.Ui
             SetItems(items);
         }
 
-        public void SetItems(IReadOnlyList<Item> items)
+        public void SetItems(IReadOnlyList<Item> items) => SetItems(items, "물건이 없습니다");
+
+        private void SetItems(IReadOnlyList<Item> items, string emptyText)
         {
+            _items = items ?? Array.Empty<Item>();
             int loyalty = TraderGridSortPatch.TraderLoyalty(_assortment);
-            _rows = new List<OfferRow>(items?.Count ?? 0);
-            if (items != null)
+            _rows = new List<OfferRow>(_items.Count);
+            for (int i = 0; i < _items.Count; i++)
             {
-                for (int i = 0; i < items.Count; i++)
-                {
-                    _rows.Add(OfferRowFactory.Create(items[i], _assortment, i, loyalty));
-                }
+                _rows.Add(OfferRowFactory.Create(_items[i], _assortment, i, loyalty));
             }
 
+            _dataVersion++;
             if (_content == null)
             {
                 return;
             }
 
             _content.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, _rows.Count * RowHeight);
+            _empty.text = emptyText;
             _empty.gameObject.SetActive(_rows.Count == 0);
             RefreshColumnLabels();
             Rebind();
@@ -150,10 +186,34 @@ namespace TraderListView.Ui
 
             _unsubscribeSelection?.Invoke();
             _unsubscribeSelection = null;
+            _unsubscribeUpdated?.Invoke();
+            _unsubscribeUpdated = null;
             _assortment = assortment;
             if (assortment != null)
             {
                 _unsubscribeSelection = assortment.SelectedItemChanged.Subscribe(UpdateSelection);
+                _unsubscribeUpdated = assortment.AssortmentUpdated.Subscribe(OnAssortmentUpdated);
+            }
+        }
+
+        /// <summary>
+        /// 구매·새로고침 뒤: 물건 집합이 같으면 게임이 격자를 다시 채우지 않으므로(Id 해시) 목록이 스스로 고친다.
+        /// 재고로 정렬 중이면 순서도 바뀌니 격자부터 다시 줄 세운다.
+        /// </summary>
+        private void OnAssortmentUpdated()
+        {
+            if (!_visible)
+            {
+                return;
+            }
+
+            if (Plugin.CurrentSort.Key == SortKey.Stock)
+            {
+                TraderGridSortPatch.Refresh(_screen);
+            }
+            else
+            {
+                SetItems(_items);
             }
         }
 
@@ -168,7 +228,8 @@ namespace TraderListView.Ui
 
         internal void OnRowClicked(OfferRowView row)
         {
-            if (_assortment == null || row.Item == null)
+            // 목록이 지금 상인의 것이 아니면(상인을 바꾸는 중) 고르지 않는다.
+            if (_assortment == null || row.Item == null || _assortment != CurrentAssortment())
             {
                 return;
             }
@@ -181,6 +242,44 @@ namespace TraderListView.Ui
             {
                 Plugin.Log.LogError("목록에서 물건 고르기 실패: " + e);
             }
+        }
+
+        /// <summary>격자와 같은 가격 툴팁(<c>TradingItemView.ShowTooltip</c> 와 같은 인자).</summary>
+        internal void ShowItemTooltip(Item item)
+        {
+            var context = ItemUiContext.Instance;
+            if (context == null || item == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var price = _assortment != null ? _assortment.GetBarterPrice(item).GetValueOrDefault() : default;
+                string text = Comfort.Common.Singleton<ItemFactory>.Instance.BriefItemName(item, item.Name.Localized());
+                if (item.StackObjectsCount <= 0)
+                {
+                    text += "\n<color=red>(" + "OUT OF STOCK".Localized().ToLower() + ")</color>";
+                }
+
+                context.PriceTooltip.Show(item.Owner.OwnerType, text, price.Amount, price.CurrencyId);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("목록 툴팁 실패: " + e.Message);
+            }
+        }
+
+        internal void HideAllTooltips()
+        {
+            var context = ItemUiContext.Instance;
+            if (context == null)
+            {
+                return;
+            }
+
+            context.PriceTooltip.Close();
+            context.Tooltip.Close();
         }
 
         internal void ShowTooltip(string text)
@@ -223,9 +322,17 @@ namespace TraderListView.Ui
                 return;
             }
 
-            float top = _content.anchoredPosition.y;
-            int first = Mathf.Max(0, Mathf.FloorToInt(top / RowHeight));
-            int needed = Mathf.CeilToInt(_viewport.rect.height / RowHeight) + 2;
+            // 스크롤 매 프레임 다시 묶지 않는다 — 창(첫 줄·칸 수)이나 데이터가 바뀔 때만.
+            var window = VirtualWindow.Compute(_content.anchoredPosition.y, RowHeight, _viewport.rect.height, _rows.Count);
+            if (window.Equals(_boundWindow) && _boundVersion == _dataVersion)
+            {
+                return;
+            }
+
+            _boundWindow = window;
+            _boundVersion = _dataVersion;
+            int first = window.First;
+            int needed = window.Slots;
             while (_pool.Count < needed)
             {
                 _pool.Add(OfferRowView.Create(this, _content, _font, _pool.Count));
@@ -347,7 +454,7 @@ namespace TraderListView.Ui
             private Image _back, _icon, _selected;
             private TextMeshProUGUI _name, _price, _stock, _loyalty;
             private TooltipZone _priceZone;
-            private int _bindVersion;
+            private Action _unsubscribeIcon;
 
             public Item Item { get; private set; }
 
@@ -451,7 +558,9 @@ namespace TraderListView.Ui
             {
                 gameObject.SetActive(true);
                 _rt.anchoredPosition = new Vector2(0f, -index * RowHeight);
-                Item = row.Tag as Item;
+                var item = row.Tag as Item;
+                bool itemChanged = item != Item;
+                Item = item;
                 bool alternate = index % 2 == 1;
                 _back.color = alternate ? new Color(1f, 1f, 1f, 0.04f) : new Color(0f, 0f, 0f, 0f);
                 RowSkin?.Invoke(gameObject, alternate);
@@ -464,40 +573,62 @@ namespace TraderListView.Ui
                 UiKit.SetText(_loyalty, TraderListView.PriceText.Loyalty(row.LoyaltyLevel, row.Locked));
                 _name.color = row.Locked ? new Color(0.6f, 0.45f, 0.45f, 1f) : UiKit.Text;
                 _priceZone.Text = Item != null ? _owner.PriceTooltip(Item) : null;
-                LoadIcon();
+                if (itemChanged)
+                {
+                    BindIcon();
+                }
             }
 
-            private async void LoadIcon()
+            /// <summary>
+            /// 게임의 캐시된 아이콘(<c>ItemViewFactory.LoadItemIcon</c>)을 쓴다 — 격자 칸과 같은 길.
+            /// 아직 만들어지는 중이면 <c>Changed</c> 를 받아 갈아 끼운다. 물건이 바뀔 때만 부른다.
+            /// </summary>
+            private void BindIcon()
             {
-                int version = ++_bindVersion;
-                var item = Item;
-                _icon.enabled = false;
-                if (item == null)
+                UnbindIcon();
+                if (Item == null)
                 {
+                    _icon.enabled = false;
                     return;
                 }
 
                 try
                 {
-                    var sprite = await ItemViewFactory.GetItemSpriteAsync(item);
-                    if (this != null && version == _bindVersion && sprite != null)
+                    var icon = ItemViewFactory.LoadItemIcon(Item);
+                    void Apply()
                     {
-                        _icon.sprite = sprite;
-                        _icon.enabled = true;
+                        if (this == null)
+                        {
+                            return;
+                        }
+
+                        _icon.sprite = icon.Sprite;
+                        _icon.enabled = icon.Sprite != null;
                     }
+
+                    Apply();
+                    _unsubscribeIcon = icon.Changed.Subscribe(Apply);
                 }
                 catch (Exception)
                 {
-                    // 아이콘을 못 얻어도 줄은 그대로 쓴다.
+                    _icon.enabled = false; // 아이콘을 못 얻어도 줄은 그대로 쓴다.
                 }
+            }
+
+            private void UnbindIcon()
+            {
+                _unsubscribeIcon?.Invoke();
+                _unsubscribeIcon = null;
             }
 
             public void Hide()
             {
                 Item = null;
-                _bindVersion++;
+                UnbindIcon();
                 gameObject.SetActive(false);
             }
+
+            private void OnDestroy() => UnbindIcon();
 
             public void SetSelected(bool on) => _selected.enabled = on;
 
@@ -513,11 +644,11 @@ namespace TraderListView.Ui
             {
                 if (Item != null)
                 {
-                    _owner.ShowTooltip(_name.text);
+                    _owner.ShowItemTooltip(Item);
                 }
             }
 
-            public void OnPointerExit(PointerEventData eventData) => _owner.HideTooltip();
+            public void OnPointerExit(PointerEventData eventData) => _owner.HideAllTooltips();
         }
 
         /// <summary>물물교환 가격 칸 위에서 재료 목록을 띄운다.</summary>
@@ -534,7 +665,7 @@ namespace TraderListView.Ui
                 }
             }
 
-            public void OnPointerExit(PointerEventData eventData) => Owner.HideTooltip();
+            public void OnPointerExit(PointerEventData eventData) => Owner.HideAllTooltips();
 
             // 가격 칸을 눌러도 줄을 누른 것과 같게.
             public void OnPointerClick(PointerEventData eventData)

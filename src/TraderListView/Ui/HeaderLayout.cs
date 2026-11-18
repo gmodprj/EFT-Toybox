@@ -138,7 +138,8 @@ namespace TraderListView.Ui
             UiKit.PlaceIn(_toggle, space, toggleRect);
             x = toggleRect.xMin - Gap;
 
-            var edit = FindDeep(_screen.transform, EditButtonName) as RectTransform;
+            // 두 모드 모두 헤더 부모(space)의 직계 자식으로 붙인다 — 화면 전체를 훑지 않는다.
+            var edit = space.Find(EditButtonName) as RectTransform;
             if (edit != null && edit.gameObject.activeSelf)
             {
                 var editRect = Rect.MinMaxRect(x - h, r.yMin, x, r.yMax);
@@ -147,7 +148,7 @@ namespace TraderListView.Ui
                 x = editRect.xMin - Gap;
             }
 
-            var search = FindDeep(space, SearchFieldName) as RectTransform ?? FindDeep(_screen.transform, SearchFieldName) as RectTransform;
+            var search = space.Find(SearchFieldName) as RectTransform;
             if (search != null)
             {
                 UiKit.PlaceIn(search, space, Rect.MinMaxRect(left, r.yMin, Mathf.Max(left + h, x), r.yMax));
@@ -328,46 +329,41 @@ namespace TraderListView.Ui
             }
         }
 
-        private bool IsEditing()
+        private const string EditorPluginGuid = "com.goatboy.ultimate-trader-assort-editor";
+
+        // 타입·속성 찾기는 한 번만(못 찾은 결과도 담는다). 모드가 없으면 타입을 찾지도 않는다 —
+        // AccessTools.TypeByName 은 못 찾으면 전 어셈블리를 훑고 경고를 찍는다.
+        private static bool _editorResolved;
+        private static Type _editorType;
+        private static System.Reflection.PropertyInfo _editorIsEditing;
+
+        private static void ResolveEditor()
         {
-            var editorType = AccessTools.TypeByName(EditorTypeName);
-            if (editorType == null)
+            if (_editorResolved)
             {
-                return false;
+                return;
             }
 
-            var editor = _screen.GetComponent(editorType);
-            if (editor == null)
+            _editorResolved = true;
+            if (!BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(EditorPluginGuid))
             {
-                return false;
+                return;
             }
 
-            var prop = AccessTools.Property(editorType, "IsEditing");
-            return prop != null && prop.GetValue(editor) is bool b && b;
+            _editorType = AccessTools.TypeByName(EditorTypeName);
+            _editorIsEditing = _editorType != null ? AccessTools.Property(_editorType, "IsEditing") : null;
         }
 
-        private static Transform FindDeep(Transform root, string name)
+        private bool IsEditing()
         {
-            if (root == null)
+            ResolveEditor();
+            if (_editorType == null || _editorIsEditing == null)
             {
-                return null;
+                return false;
             }
 
-            if (root.name == name)
-            {
-                return root;
-            }
-
-            for (int i = 0; i < root.childCount; i++)
-            {
-                var found = FindDeep(root.GetChild(i), name);
-                if (found != null)
-                {
-                    return found;
-                }
-            }
-
-            return null;
+            var editor = _screen.GetComponent(_editorType);
+            return editor != null && _editorIsEditing.GetValue(editor) is bool b && b;
         }
     }
 }

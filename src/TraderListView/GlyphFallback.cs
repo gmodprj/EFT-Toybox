@@ -30,8 +30,10 @@ namespace TraderListView
             StringBuilder sb = null;
             for (int i = 0; i < text.Length; i++)
             {
-                int cp = char.ConvertToUtf32(text, i);
-                int width = char.IsSurrogatePair(text, i) ? 2 : 1;
+                // 짝 없는 서로게이트(깨진 locale 글자)는 바꾸지 않고 그대로 옮긴다.
+                bool pair = char.IsSurrogatePair(text, i);
+                int width = pair ? 2 : 1;
+                int cp = pair || !char.IsSurrogate(text[i]) ? char.ConvertToUtf32(text, i) : -1;
                 if (Replacements.TryGetValue(cp, out var replacement) && !hasCodepoint(cp))
                 {
                     if (sb == null)
