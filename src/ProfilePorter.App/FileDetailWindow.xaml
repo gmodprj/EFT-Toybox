@@ -27,7 +27,7 @@
       <TextBlock x:Name="NoticeText" TextWrapping="Wrap" Foreground="#E0D0A0" />
     </Border>
 
-    <Grid Grid.Row="2">
+    <Grid Grid.Row="2" x:Name="Columns">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="1*" MinWidth="220" />
         <ColumnDefinition Width="6" />

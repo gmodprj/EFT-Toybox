@@ -28,7 +28,7 @@
       </StackPanel>
     </Border>
 
-    <Grid Grid.Row="1">
+    <Grid Grid.Row="1" x:Name="Columns">
       <!--
         기본 너비는 2 : 1.5 : 1 이다. 내보내는 쪽이 격자를 그리느라 가장 넓어야 하고,
         받는 쪽은 프로필 목록뿐이라 가장 좁아도 된다.
