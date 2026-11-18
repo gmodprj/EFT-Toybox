@@ -128,8 +128,15 @@ namespace TraderListView.Ui
             var a = UiKit.BoundsIn(allItems, space);
             float s = a.height;
             float yMin = a.yMin, yMax = a.yMax;
-            float x = r.xMin;
             float right = a.xMin - GroupGap;
+            // 묶음 전체를 오른쪽(등급 탭 쪽)으로 붙인다(사용자 요청 2026-11-18 "전체 위치를 우측으로").
+            // ✕ 를 검색창 안에 넣어 따로 비워 두던 칸이 없어진 만큼 왼쪽 시작을 오른쪽으로 민다.
+            float x = r.xMin + s + GroupGap;
+            if (right - x < s * 7)
+            {
+                x = r.xMin;
+            }
+
             if (right - x < s * 7)
             {
                 return;
@@ -160,21 +167,26 @@ namespace TraderListView.Ui
             UiKit.PlaceIn(_toggle, space, Rect.MinMaxRect(x, yMin, x + s * 2, yMax));
             x += s * 2 + GroupGap;
 
-            // 그룹 D: 검색창 + 지우기
+            // 그룹 D: 검색창(등급 탭 바로 앞까지). ✕ 는 검색창 안 돋보기 왼쪽에 얹는다.
             var search = space.Find(SearchFieldName) as RectTransform;
             if (search != null)
             {
-                float clearLeft = right - s;
-                UiKit.PlaceIn(search, space, Rect.MinMaxRect(x, yMin, Mathf.Max(x + s, clearLeft - InnerGap), yMax));
+                float searchRight = Mathf.Max(x + s * 3, right);
+                UiKit.PlaceIn(search, space, Rect.MinMaxRect(x, yMin, searchRight, yMax));
                 if (_clear.parent != space)
                 {
                     _clear.SetParent(space, false);
                 }
 
-                UiKit.PlaceIn(_clear, space, Rect.MinMaxRect(clearLeft, yMin, right, yMax));
+                float c = s * 0.8f;
+                float clearRight = searchRight - s * 0.9f; // 돋보기 칸을 비켜서
+                float cy = (yMin + yMax) * 0.5f;
+                UiKit.PlaceIn(_clear, space, Rect.MinMaxRect(clearRight - c, cy - c * 0.5f, clearRight, cy + c * 0.5f));
+                _clear.SetAsLastSibling();
                 var decor = SearchDecor.Attach(search, _clear);
-                var clearButton = _clear.GetComponent<StyledButton>();
-                clearButton.OnClick = decor.Clear;
+                var clearButton = _clear.GetComponent<Button>();
+                clearButton.onClick.RemoveAllListeners();
+                clearButton.onClick.AddListener(decor.Clear);
             }
             else
             {
@@ -210,17 +222,43 @@ namespace TraderListView.Ui
                 text.enabled = false;
             }
 
-            var center = button.TransformPoint(button.rect.center);
+            // 아이콘 층들의 기준점이 아니라 **그림이 실제로 차지하는 사각형**의 가운데를 버튼 가운데에 맞춘다
+            // (기준점만 옮기면 피벗이 가운데가 아닌 층이 어긋난다 — 게임 확인 2026-11-18, 연필).
+            var icons = new System.Collections.Generic.List<RectTransform>();
             foreach (var image in button.GetComponentsInChildren<Image>(true))
             {
                 var rt = image.rectTransform;
-                if (rt == button || rt.anchorMin != rt.anchorMax || rt.rect.width > size || rt.name.StartsWith("TLV "))
+                if (rt == button || rt.anchorMin != rt.anchorMax || rt.rect.width > size || rt.name.StartsWith("TLV ") || !image.enabled)
                 {
-                    continue; // 바탕·늘어나는 층·우리 층은 그대로.
+                    continue; // 바탕·늘어나는 층·우리 층·꺼진 층은 그대로.
                 }
 
-                var local = rt.parent.InverseTransformPoint(center);
-                rt.localPosition = new Vector3(local.x, local.y, rt.localPosition.z);
+                icons.Add(rt);
+            }
+
+            if (icons.Count == 0)
+            {
+                return;
+            }
+
+            var corners = new Vector3[4];
+            Vector3 min = new Vector3(float.MaxValue, float.MaxValue), max = new Vector3(float.MinValue, float.MinValue);
+            foreach (var rt in icons)
+            {
+                rt.GetWorldCorners(corners);
+                foreach (var c in corners)
+                {
+                    min = Vector3.Min(min, c);
+                    max = Vector3.Max(max, c);
+                }
+            }
+
+            var buttonCenter = button.TransformPoint(button.rect.center);
+            var delta = buttonCenter - (min + max) * 0.5f;
+            delta.z = 0f;
+            foreach (var rt in icons)
+            {
+                rt.position += delta;
             }
         }
 
@@ -274,9 +312,13 @@ namespace TraderListView.Ui
             var list = SegmentButton(_toggle, "List", 0f, IconArt.List, () => Plugin.IsListMode, "List", "목록 보기");
             var grid = SegmentButton(_toggle, "Grid", 0.5f, IconArt.Grid, () => !Plugin.IsListMode, "Grid", "격자 보기");
 
+            // 검색창 안에 얹는 ✕ — 틀 없이 아이콘만(검색창 바탕 위라서).
             _clear = UiKit.NewRect("TraderListView ClearSearch", parent);
+            var hit = _clear.gameObject.AddComponent<Image>();
+            hit.color = new Color(0f, 0f, 0f, 0f);
+            var clearButton = _clear.gameObject.AddComponent<Button>();
+            clearButton.transition = Selectable.Transition.None;
             IconArt.DrawClear(_clear);
-            var clear = StyledButton.Apply(_clear, null, hideOwnBackground: false);
             AddTooltip(_clear, () => "검색어 지우기");
             _clear.gameObject.SetActive(false);
         }

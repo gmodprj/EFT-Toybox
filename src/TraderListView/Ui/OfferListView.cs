@@ -282,6 +282,53 @@ namespace TraderListView.Ui
             context.Tooltip.Close();
         }
 
+        private static readonly HarmonyLib.AccessTools.FieldRef<TraderDealScreen, EFT.InventoryLogic.Stash> StashRef =
+            HarmonyLib.AccessTools.FieldRefAccess<TraderDealScreen, EFT.InventoryLogic.Stash>("_stash");
+
+        /// <summary>
+        /// 더블클릭 → 아이템 상세 창(격자와 같게, 사용자 확인 2026-11-18). 격자에 그 물건의 칸이 만들어져 있으면
+        /// 격자 더블클릭과 똑같은 길(<c>NewContextInteractions.ExecuteInteraction(Inspect)</c>)을 쓰고,
+        /// 없으면(보이는 칸만 만드는 모드가 있다) 상인 쪽 문맥을 만들어 <c>ItemUiContext.Inspect</c> 를 부른다.
+        /// </summary>
+        internal void InspectItem(Item item)
+        {
+            if (item == null || _screen == null)
+            {
+                return;
+            }
+
+            try
+            {
+                HideAllTooltips();
+                var grid = _screen._traderGridView;
+                if (grid != null)
+                {
+                    foreach (var view in grid.GetComponentsInChildren<ItemView>(true))
+                    {
+                        if (view != null && view.Item == item && view.ItemContext != null)
+                        {
+                            view.NewContextInteractions.ExecuteInteraction(EItemInfoButton.Inspect);
+                            return;
+                        }
+                    }
+                }
+
+                var context = ItemUiContext.Instance;
+                var stash = StashRef(_screen);
+                if (context == null || stash == null)
+                {
+                    return;
+                }
+
+                var parent = new TradingItemContext(stash, ETradeMode.Purchase, ETradingSide.Trader);
+                context.Inspect(parent.CreateChild(item), null);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("목록 더블클릭 상세 창 실패: " + e.Message);
+            }
+        }
+
         internal void ShowTooltip(string text)
         {
             var context = ItemUiContext.Instance;
@@ -639,7 +686,17 @@ namespace TraderListView.Ui
 
             public void OnPointerClick(PointerEventData eventData)
             {
-                if (eventData.button == PointerEventData.InputButton.Left)
+                if (eventData.button != PointerEventData.InputButton.Left)
+                {
+                    return;
+                }
+
+                // 첫 클릭은 고르기(구매 창), 두 번째 클릭은 상세 창 — 격자와 같은 순서.
+                if (eventData.clickCount >= 2)
+                {
+                    _owner.InspectItem(Item);
+                }
+                else
                 {
                     _owner.OnRowClicked(this);
                 }
