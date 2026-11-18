@@ -33,6 +33,8 @@
     <Compile Include="GlyphFallbackTests.cs" />
     <Compile Include="..\TraderListView\VirtualWindow.cs" />
     <Compile Include="VirtualWindowTests.cs" />
+    <Compile Include="..\TraderListView\ButtonStyle.cs" />
+    <Compile Include="ButtonStyleTests.cs" />
   </ItemGroup>
 
 </Project>
