@@ -40,6 +40,6 @@ Icebreaker·터미널  ISB P3 H1 + 카오스 1@60% → 4~5
 
 ## 남은 것
 
-- **레이드 길이는 지금 2시간이 아니다.** 바닐라 `EscapeTimeLimit` 20~50분, SVM `Raids.RaidTime`(추가 분) = 0. 이대로면 45분 이후 순찰·카오스·추격 대부분이 나오기 전에 레이드가 끝난다.
+- 레이드 길이: 실제로는 **2시간**이다(사용자 확인, 모드 영향). DB 파일의 `EscapeTimeLimit`(20~50분)과 SVM `Raids.RaidTime`(= 0)만 보면 바닐라처럼 보이지만, 런타임에 다른 모드가 늘린다. 파일 값으로 판정하지 않는다.
 - 게임에서 실제 스폰은 아직 안 봤다. Icebreaker·터미널은 작성자가 꺼 두었던 맵이라 구역 없이(무작위 위치) 켰다.
 - 되돌리기: `backup/isb/config-before-2h-spawn-plan-2026-11-18.jsonc` (커밋 안 됨), 또는 모드가 남긴 `config.jsonc.isb-web.bak`(마지막 저장 직전 한 단계만).
