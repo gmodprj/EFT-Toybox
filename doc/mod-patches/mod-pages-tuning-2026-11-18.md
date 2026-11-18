@@ -40,7 +40,7 @@
 ## 남은 것
 
 - 서버·게임 재기동 후 확인: SAIN 프리셋 로드, LoL 전리품 체감, CCI 제단 보상, 플리 매물 수(Blacklist 희소 매물 + UltimateFlea).
-- **UltimateFlea ↔ TheBlacklist 충돌 — 확인됨, 방향 결정 대기**: 아래 절.
+- **UltimateFlea ↔ TheBlacklist 충돌 — 확인됨, 그대로 두기로 결정**: 아래 절.
 
 ## UltimateFlea 가 TheBlacklist 되살림 674건을 다시 열었다 (같은 날 실측)
 
@@ -61,4 +61,8 @@
 선택지:
 1. `pool.add` 에서 TheBlacklist 되살림 id 674개만 뺀다(UltimateFlea API `POST /ultimateflea/api/config/pool`, 나머지 4,988개는 유지). 제작자 의도대로 다시 막힌다. 서버 재기동 필요.
 2. 그대로 둔다 — 모드 아이템 전부 플리 허용을 고른 것으로 본다. 그러면 TheBlacklist 되살림 블록은 이 674건에 대해 효과가 없다.
+
+> **결정 (2026-11-18): 2번, 그대로 둔다.** 사용자가 정했다. UltimateFlea `modded_items_flea` 풀(5,662개)을 유지하고, TheBlacklist 되살림 858건 중 겹치는 674건은 플리에서 사고팔 수 있는 상태가 **고른 상태**다. 다음에 "되살렸는데 왜 754건이 열려 있지" 하고 다시 뒤지지 않도록 적어 둔다.
+>
+> 마음이 바뀌면 1번(풀에서 674개만 빼기)을 하면 된다. 겹치는 id 는 `theblacklist-restored-ids.json` 과 `UltimateFlea/config/pool.json` 의 `add` 교집합으로 다시 뽑는다.
 - 기록 없이 바뀌어 있던 값: BIS 클라이언트 FiR 섞기 4종 true, ISB 격리 돌파 확률 55→30. 둘 다 그대로 두었다.
