@@ -17,6 +17,18 @@
       <Setter Property="FontSize" Value="13" />
     </Style>
 
+    <!--
+      **툴팁도 어둡게 칠한다.** 위의 TextBlock 기본 스타일(밝은 글씨)은 툴팁 안의 글자에도
+      걸리는데, 툴팁 바탕은 WPF 기본인 흰색이다 — 흰 바탕에 흰 글씨라 빈 상자로 보였다.
+    -->
+    <Style TargetType="ToolTip">
+      <Setter Property="Background" Value="#2D2D30" />
+      <Setter Property="Foreground" Value="{StaticResource Fg}" />
+      <Setter Property="BorderBrush" Value="#55555E" />
+      <Setter Property="Padding" Value="6,4" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
+
     <Style TargetType="TextBox">
       <Setter Property="Background" Value="#2D2D30" />
       <Setter Property="Foreground" Value="{StaticResource Fg}" />

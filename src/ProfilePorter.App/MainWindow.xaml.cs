@@ -13,6 +13,10 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        // 창 크기·칸 너비를 지난번 그대로 연다(닫을 때 적는다). 서버에 닿지 못해도 배치는 되살린다.
+        WindowLayout.Attach(this, "main", Columns);
+
         _config = AppConfig.Load(out var configError);
 
         var sessionId = _config.ResolveSessionId(out var how);
@@ -149,7 +153,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        new FileDetailWindow(_client, _icons, row.FileName) { Owner = this }.Show();
+        var detail = new FileDetailWindow(_client, _icons, row.FileName) { Owner = this };
+        WindowLayout.Attach(detail, "detail", detail.Columns);
+        detail.Show();
     }
 
     private async void Delete_Click(object sender, RoutedEventArgs e)
