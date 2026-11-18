@@ -25,6 +25,10 @@
     <Compile Include="..\TraderListView\TraderSorter.cs" />
     <Compile Include="TraderSorterTests.cs" />
     <Compile Include="SortSpecTests.cs" />
+    <Compile Include="..\TraderListView\PriceNormalizer.cs" />
+    <Compile Include="..\TraderListView\PriceText.cs" />
+    <Compile Include="PriceNormalizerTests.cs" />
+    <Compile Include="PriceTextTests.cs" />
   </ItemGroup>
 
 </Project>
