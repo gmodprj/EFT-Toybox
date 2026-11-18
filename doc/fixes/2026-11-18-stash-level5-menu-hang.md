@@ -35,8 +35,9 @@ KeyNotFoundException: The given key '5' was not present in the dictionary.
 
 - 서버 재기동(14:3x) 후 `client/hideout/areas` 의 창고 단계 = `0,1,2,3,4`.
 - 프로필 파일: 창고 레벨 4, 창고 템플릿 EOD.
-- **게임 메뉴 로드는 사용자가 게임을 켜야 확인된다**(아래 남은 것).
+- **게임 메뉴 로드 확인됨** — 사용자가 14:42 게임을 켜 Nomad 로 들어갔다(14:46 `SelectProfile`). 메뉴가 끝까지 떴고 레이드 설정(14:58 `client/raid/configuration`)까지 갔다. 새 세션 `errors.log` 에 `stage level` 0건, `KeyNotFoundException` 0건.
+- 반환 우편은 14:39 도착, 아직 받지 않은 상태(`rewardCollected false`).
 
 ## 남은 것
 
-- 게임을 켜 Nomad 로 들어가 메뉴가 끝까지 뜨는지, `errors.log` 에 `stage level 5` 가 없는지, 우편으로 비용이 들어왔는지 본다.
+- 사용자가 우편함에서 반환 비용을 받는다. 모드 갱신 뒤에는 창고 단계 수를 다시 본다.
