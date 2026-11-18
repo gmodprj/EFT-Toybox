@@ -106,6 +106,7 @@ namespace TraderListView.Ui
             }
         }
 
+        private float? _baseLeft; // 처음 잰 새로고침 왼쪽 끝(헤더 좌표)
         private const float InnerGap = 3f;  // 같은 그룹 안 버튼 사이
         private const float GroupGap = 10f; // 그룹 사이
 
@@ -131,10 +132,17 @@ namespace TraderListView.Ui
             float right = a.xMin - GroupGap;
             // 묶음 전체를 오른쪽(등급 탭 쪽)으로 붙인다(사용자 요청 2026-11-18 "전체 위치를 우측으로").
             // ✕ 를 검색창 안에 넣어 따로 비워 두던 칸이 없어진 만큼 왼쪽 시작을 오른쪽으로 민다.
-            float x = r.xMin + s + GroupGap;
+            // 배치는 여러 번 돈다(Show 직후·프레임 끝·다시 열 때). 새로고침의 지금 자리는 앞선 배치가 옮긴 자리이므로
+            // 기준으로 쓰면 돌 때마다 오른쪽으로 밀린다(게임 확인 2026-11-18). 처음 잰 왼쪽 끝을 담아 두고 그것을 쓴다.
+            if (_baseLeft == null)
+            {
+                _baseLeft = r.xMin;
+            }
+
+            float x = _baseLeft.Value + s + GroupGap;
             if (right - x < s * 7)
             {
-                x = r.xMin;
+                x = _baseLeft.Value;
             }
 
             if (right - x < s * 7)
