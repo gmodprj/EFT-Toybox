@@ -58,3 +58,24 @@ SPT 서버 코드(`SPTarkov.Server.Core.dll` 의 `SeasonalEventService`, 역컴�
 - 서버 모드 하나: `seasonalevents.json` 의 할로윈 `zombieSettings` 를 `Enabled=true` 로 두고, 할로윈 이벤트를 강제하지 않은 채 `ConfigureZombies` 와 같은 일(봇 테이블·전역 감염·맵별 감염률·`halloweenzombies` 보스)만 한다. 맵별 감염률은 `config.jsonc` 로.
 - 위험: **SAIN 이 좀비 공격을 막는 문제**(PPES 설명). 클라이언트 쪽 해결이 필요하면 범위가 커진다 — 먼저 서버 쪽만 만들어 레이드에서 좀비가 때리는지 본다.
 - 이 저장소의 다른 서버 모드처럼 SPT DB 는 **변환기·PostLoad** 로 고친다(메모리 `spt-db-writes-need-transformers`, `db-changes-must-outrun-item-mods`).
+
+## 5. 15-A PPES 설치 결과 (2026-11-19 14:16~14:40, 사용자 결정 "PPES로 설치")
+
+- 받기: `manifest-stage15.json` → `downloads/stage15/3232__PastPresentEventSelector-1.7.7.zip` **380,614 B 일치**(GitHub 릴리스). 해제본 7파일, 설치본과 겹침 0.
+- 해제본 역컴파일로 본 기본값: 계절 이벤트 전부 `auto`, 지난 이벤트 `[]`, 순환 `off`. 할로윈 부분은 **ritual · cultists · labInfectedOnly · freeLab · loot 가 기본 켜짐**, zombies · zombieWaves · outbreak2026 이 기본 꺼짐. `config.json` 은 **있으면 그대로 읽고 없을 때만 만든다**(`ConfigService.Load`).
+- 그래서 **첫 기동 전에 `config.json` 을 넣었다**(해제본에 두고 함께 설치 — 기록에 남는다):
+  - `seasonal.halloween = "on"`(오늘이 할로윈 기간 밖이라 `auto` 면 좀비가 안 켜진다), 크리스마스·새해·만우절은 `auto` 그대로.
+  - 할로윈 부분: **zombies 만 true**. ritual · cultists · freeLab · loot · outbreak2026 · zombieWaves false. `labInfectedOnly` false — Labs 는 "감염자만" 이 아니라 **평소 봇에 좀비가 섞인다**. `botsHideFromZombies` false(봇이 좀비를 피해 숨지 않는다, 클라이언트 플러그인 필요).
+  - `traderMessage` false — 로그인 때 Fence 가 보내는 영어 소문 메시지를 끈다.
+  - 바꾸려면 서버 웹 `https://127.0.0.1:6969/ppes` 에서. 계절 이벤트 변경은 **서버 재시작** 후 적용.
+- 설치: 서버 정지(사용자 승인, `tools/stop-spt-server.ps1`, 게임 꺼짐) → 프로필 11개 백업 `backup/profiles-before-stage15-A/`(정지 뒤 다시 떴다) → `install-and-test -Stage stage15 -Pattern '3232__*' -Tag 'stage15-A-3232-PPES'` — **8파일**(해제본 7 + 미리 넣은 `config.json`).
+- 시험·재기동 모두: `ModLoader: 총 184 개`(183 → 184), `Seasonal: Halloween on (on) … Halloween parts: ritual off, zombies on, zombie waves off, cultists off, Lab infected only off, free Lab off, 2026 outbreak off, loot off`, `No past events picked`, `Registered 5 built-in factions with SAIN`, `Event quests ready (146)`. 오류는 `Could not add` 고유 48 · bundle 1 로 **기준선 그대로**. 설치본 `config.json` 은 넣은 것과 **md5 같다**(첫 기동이 덮어쓰지 않았다).
+- 프로필: 11개 모두 달라졌으나 바뀐 곳은 **`spt.migrations.TraderGenPocketMigration` 하나뿐**(다른 모드의 이전 기록 시각). PPES 가 넣는 이벤트 퀘스트는 아직 없다 — 로그인 때 들어올 수 있다.
+- 서버는 터미널 탭 `SPT server` 에 다시 띄웠다(14:40 무렵 6969 응답 200).
+
+**아직 확인하지 않은 것**
+
+- 게임 기동: 플러그인 수(예상 256 = AirdropProbe −1, PPES 클라이언트 +1)와 `Loading [` 줄.
+- **레이드에서 좀비가 실제로 나오고 때리는지**(SAIN 과 PPES 클라이언트 플러그인). 감염률 기본값으로 **Customs·Interchange 는 0** 이라 그 두 맵에는 안 나온다 — 넣으려면 PPES 의 레이드 미리보기 → 스폰 편집기.
+- 할로윈을 켜면 SPT 가 봇의 할로윈 마스크·이벤트 장비도 함께 켠다(PPES 가 나누지 않는다). 할로윈 퀘스트가 퀘스트 목록에 보일 수 있다.
+- 서버 웹 첫 화면 모드 카드: ModCardKorean 이 `사전에 없어 원문으로 남은 카드 1 개: Past & Present Event Selector (/ppes)` — 한글 카드 사전에 아직 없다.
