@@ -112,8 +112,8 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 | [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) | 2026-11-06 세션 인계 — 10차 완료, F12 한글화 전수, 설치본 감사, **게임 DB 퀘스트 네 묶음 한글화 완료**, 남은 미확정 |
 | [HANDOVER-2026-10-26.md](HANDOVER-2026-10-26.md) | 2026-10-26 세션 인계 |
 | [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 |
-| [../src/SptKoreanLocale/README.md](../src/SptKoreanLocale/README.md) | **게임 DB locale 한글화 서버 모드** — 지금 **사전 19개 / 8,468항목**이다(2026-11-12 실측 — 봇 역할 이름 23 · BTR 대화 44 · 아이템 이름 406(바닐라 28 · ISB 계열 378) · 퀘스트 이름 1,243 · 목표 3,482 · 설명 1,526 · 대사·메일 1,744). **사전에 값을 직접 쓰면 날아가는 실측**, `LazyLoad.AddTransformer` 로 가는 이유, **나중에 등록한 변환기가 이긴다**는 것(ExpandedTaskText 가 `int.MaxValue` 를 쓴다), 다시 펴낼 때 기준이 `en` 이어야 하는 이유, 묶음을 병렬로 나눠 번역할 때의 검사가 여기 있다 |
-| [../src/PluginLocales/README.md](../src/PluginLocales/README.md) | **모드 폴더 안에 넣는 한국어 locale 4개 (338항목)** — ISB 무전·방송 자막 222줄, 보관함 정렬 창, 위시리스트 확장, 주변 아이템 패널. 네 모드가 각각 어떻게 locale 코드를 고르는지 역컴파일로 확인한 표와, **모드 업데이트에 날아가므로 다시 넣는** 절차 |
+| [../src/SptKoreanLocale/README.md](../src/SptKoreanLocale/README.md) | **게임 DB locale 한글화 서버 모드** — 지금 **사전 21개 / 8,804항목**이다(2026-11-19 소스 기준 — 봇 역할 이름 23 · BTR 대화 44 · 아이템 이름 742(바닐라 28 · ISB 계열 378 · QuestCodex 퀘스트 아이템 336) · 퀘스트 이름 1,243 · 목표 3,482 · 설명 1,526 · 대사·메일 1,744). **사전에 값을 직접 쓰면 날아가는 실측**, `LazyLoad.AddTransformer` 로 가는 이유, **나중에 등록한 변환기가 이긴다**는 것(ExpandedTaskText 가 `int.MaxValue` 를 쓴다), 다시 펴낼 때 기준이 `en` 이어야 하는 이유, 묶음을 병렬로 나눠 번역할 때의 검사가 여기 있다 |
+| [../src/PluginLocales/README.md](../src/PluginLocales/README.md) | **모드 폴더 안에 넣는 한국어 locale 5개 (1,647항목)** — ISB 무전·방송 자막 222줄, 보관함 정렬 창, 위시리스트 확장, 주변 아이템 패널, ImpactCue F10 설정 창(1,309). 모드마다 각각 어떻게 locale 코드를 고르는지 역컴파일로 확인한 표와, **모드 업데이트에 날아가므로 다시 넣는** 절차 |
 | [../src/GridWindowScroll/README.md](../src/GridWindowScroll/README.md) | 가방·상자 내부 인벤 창을 화면 안에 가두는 플러그인 (보이는 칸 수 제한 + 스크롤) |
 | [../src/StackUnify/README.md](../src/StackUnify/README.md) | 최대 스택 크기를 한 곳에서 정하는 서버 모드. **`PostLoad` 단계가 클라이언트에 닿는다는 실측**도 여기 있다 |
 
@@ -122,13 +122,15 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 
 ## 직접 만든 모드 (`src/`)
 
-**20개**(테스트 프로젝트 제외). 그중 **자기 이름의 설치 자리를 가진 것이 16개**다 —
-2026-11-12 실측으로 `BepInEx\plugins\` 에 8개(AirdropCaller · AirdropProbe ·
+**23개**(테스트 프로젝트 제외, 여러 조각인 AirdropCaller·ProfilePorter·PrestigeStashRelax 는 하나로,
+`ServerWebUiKorean` 은 ModCardKorean 에 묶어 센다). 그중 **자기 이름의 설치 자리를 가진 것이 20개**다 —
+2026-11-19 실측으로 `BepInEx\plugins\` 에 10개(AirdropCaller · AirdropProbe ·
 DynamicMapsFactionMarkers · GogglesWheel · GridWindowScroll · IcebreakerOffMapGuard ·
-SptKoreanConfig · SptTeamManager), `user\mods\` 에 10개(AirdropCaller · HelmetSlotUnion ·
-ProfilePorter · ScavRaidWaves · SlotCategoryRelax · SptKoreanLocale ·
-SptTeamManager-ServerMod · SlotFilterSweep · StackUnify · WebConfigBridge)이고, AirdropCaller 와 STM 은
-양쪽에 걸쳐 있어 모드로는 16개다. `AirdropCaller.exe`·`ProfilePorter.exe` 는 설치본 루트에 선다.
+PrestigeStashRelax · SptKoreanConfig · SptTeamManager · TraderListView), `user\mods\` 에 13개(AirdropCaller ·
+HelmetSlotUnion · ModCardKorean · PrestigeStashRelax · PrestigeTransferKeep · ProfilePorter · ScavRaidWaves ·
+SlotCategoryRelax · SlotFilterSweep · SptKoreanLocale · SptTeamManager-ServerMod · StackUnify ·
+WebConfigBridge)이고, AirdropCaller·PrestigeStashRelax·STM 은 양쪽에 걸쳐 있어 모드로는 20개다.
+`AirdropCaller.exe`·`ProfilePorter.exe` 는 설치본 루트에 선다.
 `PluginLocales`·`ServerWebKorean` 은 자기 폴더 없이 **남의 모드 폴더와 서버 웹에 파일로** 들어가고,
 `CompatToggle` 은 지금 설치본에 없다.
 
@@ -136,8 +138,11 @@ SptTeamManager-ServerMod · SlotFilterSweep · StackUnify · WebConfigBridge)이
 | --- | --- | --- |
 | **SptTeamManager (STM)** | PIT Fireteam 포크. 다른 런처 프로필을 팀원으로 | [인계](STM-HANDOVER.md) · [설계](specs/2026-10-31-spt-team-manager-design.md) · 계획 [1](plans/2026-10-31-spt-team-manager-plan-1-foundation.md)·[2](plans/2026-11-01-spt-team-manager-plan-2-raid.md)·[3](plans/2026-11-02-spt-team-manager-plan-3-gear-editing.md)·[4](plans/2026-11-02-stm-plan4-kit-loadouts.md)·[5](plans/2026-11-03-stm-plan5-gear-parity.md)·[6](plans/2026-11-06-stm-plan6-accrual-and-stash-transfer.md) · [대조표](specs/2026-11-04-stash-parity-checklist.md) · [조사](specs/2026-11-04-stash-operations-survey.md) · [사망 관문](specs/2026-11-04-death-strip-gate.md) · [편집기 여섯](specs/2026-11-06-stm-six-checks.md) · [전적 대응표](specs/2026-11-07-stm-raid-tally-mapping.md) · [제거 조사](specs/2026-11-04-allinweapon-removal-survey.md) |
 | **AirdropCaller** | 외부 창으로 보급을 부른다(`.Server`+`.Plugin`+`.App` 세 조각) | [설계](specs/2026-10-28-airdrop-caller-design.md) · [1단계](specs/2026-10-29-airdrop-stage1-findings.md) · [2단계](specs/2026-10-29-airdrop-stage2-result.md) |
-| `AirdropProbe` | 보급 지점 측정기. AirdropCaller 1단계용 | 위 설계 §7.9 |
+| `AirdropProbe` | 보급 지점 측정기 + 드롭 시험(0.3.1). AirdropCaller 1단계용 — 둘 다 확인을 마쳐 **지울 대상인데 아직 깔려 있다** | 위 설계 §7.9 · [1단계](specs/2026-10-29-airdrop-stage1-findings.md) |
 | **ProfilePorter** | 프로필 사이로 물건을 베낀다 — 격자로 골라 우편으로 보낸다(`.Server`+`.App` 두 조각) | [설계](specs/2026-11-08-profile-porter-design.md) · [인계](HANDOVER-2026-11-09.md) |
+| `PrestigeStashRelax` | 프레스티지 **이전 창고**의 격자·품목을 넓힌다(서버 `PrestigeStashRelax` + 게임 `PrestigeStashRelaxClient` 두 조각) | [설계](specs/2026-11-15-prestige-stash-relax-design.md) · [계획](plans/2026-11-15-prestige-mods-install-plan.md) |
+| `PrestigeTransferKeep` | 3332 Prestige Perks 가 전송 물건을 코인으로 바꾸는 것을 되돌린다 | [INSTALLED-MODS](INSTALLED-MODS.md) "다른 경로로 설치된 것" |
+| `ModCardKorean` | 서버 웹 첫 화면 모드 카드와 웹 화면 한글화(`ServerWebUiKorean` 의 `ko-ui.js` 를 함께 싣는다) | [모드 페이지 검토](REVIEW-MOD-PAGE-KOREAN.md) · [웹 UI 감사](AUDIT-WEB-UI-KOREAN-2026-11-16.md) |
 | `SptKoreanConfig` | F12 설정 창 한글화 | [README](../src/SptKoreanConfig/README.md) |
 | `SptKoreanLocale` | 게임 DB locale 한글화 | [README](../src/SptKoreanLocale/README.md) · [범위 검토](REVIEW-KOREAN-LOCALIZATION.md) · [아이템 범위](specs/2026-11-06-item-locale-scope.md) · [계획](plans/2026-11-02-korean-localization-plan.md) |
 | `PluginLocales` | 모드 폴더에 넣는 한국어 locale 4개 | [README](../src/PluginLocales/README.md) |
