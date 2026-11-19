@@ -106,3 +106,27 @@ SPT 서버 코드(`SPTarkov.Server.Core.dll` 의 `SeasonalEventService`, 역컴�
 - 문자열은 역컴파일 소스의 `T("pt","en")`·이벤트 카탈로그(`PastEventDef`·`SeasonalEventDef`·`PartDef`)·화면 감사(`tools/audit-web-ui.mjs` 에 `ppes` 추가)를 합쳐 모았다.
 - 번역은 덩이 다섯(웹 2·게임 3)으로 나눠 돌리고 **개수·자리표시자·줄바꿈을 직접 대조**했다. 덩이마다 갈린 이름은 게임 화면 기준으로 맞췄다 — 바닐라 퀘스트는 저장소 `quest-names-*.json` 의 이름(Hustle → 한몫 잡기, Staying Light → 가볍게 유지, Tourists → 관광객들), 연작은 저장소 관례 "- 파트 N", 아이템은 바닐라 표기(Obdolbos, 현물 비트코인, Grizzly 응급 치료 키트), The Unheard → 언허드, Blackout → 정전(모드 이름일 때 "Vultify 의 Blackout 모드").
 - 남은 확인: 게임에서 퀘스트·세력 이름이 한글로 보이는지(이벤트를 켜야 보이는 것이 대부분), 다음 재시작 뒤 `node tools/check-locale-dict.mjs` 가 빠뜨림 0 인지.
+
+## 7. 게임 확인 — 세관 레이드 (2026-11-19 16:12~16:36 KST, 로그로 확인)
+
+- 게임 15:40 기동: `256 plugins to load`(AirdropProbe −1, PPES 클라이언트 +1 — 예상과 같다), `Loading [zezinho-PastPresentEventSelector 1.7.7]`, `[Error` 2(알려진 DirectReload+Fika·ECOTI) · `[Fatal` 0.
+- 서버 15:34 기동(사용자): `ZombieMapInfection` 감염률 줄이 다시 찍혔다.
+- 세관 한 판, Raid Review 기록(`RaidReview/data/logs/1795070098916_raid_review.log`)으로 셌다:
+  - **감염자 71명** 출현 — 일반 47(`INFECTED`) · 감염 PMC 24(`INFECTED PMC`). 레이드 시작부터 약 21분까지 들어왔다(웨이브).
+  - **감염자가 공격한다** — 스캐브 2명이 `Infectious strike`(가슴)로 죽었다. SAIN 이 막는다던 좀비 공격을 PPES 클라이언트 플러그인이 풀었다고 볼 근거다. 플레이어가 맞은 기록은 따로 찾지 않았다.
+  - 감염자 33명이 죽었고 그중 21명이 플레이어(Buck). 게임 로그에도 SmoothTalker 의 `infectedAssault kill` 13 · `infectedPmc kill` 8.
+  - 감염자 이름은 `???` — 바닐라 표시다.
+- 같은 판에 **약탈자**(`PPESPILLAGER`)가 있었다 — 사용자가 켠 Casus belli 이벤트 몫.
+
+### 사용자가 15:33 에 다시 바꾼 PPES 설정 (15:34 재기동으로 적용)
+
+- 할로윈 부분: 의식 · 좀비 · **좀비 웨이브**(5~10분마다 5~7명) · 교단원 · **2026 발병** · 호박 전리품 모두 켜짐. Labs 감염자 전용·키카드 없는 Labs 는 꺼짐.
+- 지난 이벤트 7개: Lighthouse Airdrops · Bonus EXP Weekend · Casus belli · A Key to Salvation · Bloodhounds Reveal · Boosted Skill Leveling · Airdrop Traffic. 순환은 꺼짐.
+- 스폰 편집: 세관 `infectedPmc`(55 · ZoneCustoms · 2-3), 야간 공장 `bossWedge`(100 · BotZone).
+- 주의: 의식을 켰으므로 SPT `DisableNonHalloweenExitsDuringEventPatch`(spt-custom.dll, 역컴파일)가 **의식이 끝난 뒤 탈출구를 하나만 남긴다** — 바닐라 할로윈 동작이다. 의식이 꺼져 있으면 돌지 않는다.
+- 2026 발병은 댓글의 "civilian key 맵 로딩 충돌" 보고가 있던 부분인데, 세관 한 판은 문제없이 지나갔다(다른 맵은 아직).
+- 2026 발병은 감염률을 PPES 가 199999 에 읽어 둔 값으로 다시 쓰되 **0 인 맵만 40 으로** 올린다(`SeasonalState.InfectionByKey`·`ApplyOutbreak2026`, 역컴파일). 그래서 ZombieMapInfection 의 세관·인터체인지 50 은 그대로 산다. 발병을 켜 둔 동안에는 이 모드가 없어도 두 맵이 40 이 된다 — 발병을 끄면 다시 이 모드만이 두 맵을 연다.
+
+### 아직 적용되지 않은 것
+
+- `ppes-event-quests.json` 의 **55건**(바닐라 영문 이벤트 퀘스트 이름 28 · 목표 2 · "파트 N" 표기 25)은 저장소에만 있다. 설치본은 15:15 판이다 — `check-locale-dict` 가 `값 다름 55` 로 잡는다(17:56 실측). 서버를 끄고 `pwsh -File tools/install-koreanlocale.ps1` 뒤 다시 켜면 적용된다. Casus belli 를 켰으므로 관련 퀘스트 이름 일부가 지금 영어거나 "1부" 표기로 보일 수 있다.
