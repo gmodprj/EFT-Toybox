@@ -117,3 +117,12 @@ Trader Search, Ultimate Trader Assort Editor, UI Fixes(Tyfon), OpenBarters, Wish
 | 구매 제한 — 레프 `Locked supply crate (Rare)` 10 GP, 최대 1 | 샀다(GP 4,648 → 4,638, 재고 9999999 → 9999998, 상자 1개). 목록은 **(1/1) 그대로**다 — 게임 자체 구매 창도 "이 아이템을 0개 구매했습니다(최대 1개)"로 그대로이고, 서버 프로필 `traderPurchases` 의 레프 몫도 비어 있다. **TraderListView 가 아니라 서버가 이 물건의 구매 횟수를 세지 않는 것**이다(이 상자는 BoxesAtRef 가 넣은 것). 목록은 게임과 같은 `BuyRestrictionCurrent` 를 보여 준다. 이 설치본에서 구매 제한이 걸린 물건은 레프의 9개뿐이다 |
 | 플리마켓과 나란히 | 글꼴(굵은 Bender)·어두운 반투명 바탕·가격 굵게는 같다. 다른 점은 의도한 것이다 — 목록은 한 줄(높이 약 36px)이고 판매자·만료·구매 버튼 칸이 없다. 플리 줄의 회색 아이콘 칸 바탕과 줄 사이 가는 구분선은 목록에 없고 대신 줄마다 번갈아 어둡다 |
 | 게임 로그 | 이번 기동 `[Error` 1(알려진 DirectReload) · `[Fatal` 0. TraderListView 예외 0, `플리 겉모습을 빌렸다`·`목록 스크롤 감도 480 (격자 63)` 찍힘. F12 한글화가 `ViewMode`·`Sort` 두 키를 "사전에 없음"으로 적는다 |
+
+### 2026-11-19 사용자 제보 둘 — 미조사 구분·우클릭 메뉴 (고침, 게임 확인)
+
+| 제보 | 원인 | 고친 것 |
+|---|---|---|
+| 목록에서 조사하지 않은 물건이 구분되지 않는다(이름·아이콘이 다 보인다) | 줄이 `item.LocalizedName()` 과 실제 아이콘을 그대로 썼다. 격자 칸은 상인 화면의 `_stashController.Examined(item)` 이 거짓이면 `"Unknown item".Localized()` 와 실루엣을 쓴다(`GridItemView.GetItemName`, `TradingItemView` 툴팁) | 같은 컨트롤러로 판정해 이름(정렬·툴팁 포함)을 감추고 아이콘을 `(0,0,0,0.85)` 실루엣으로(게임이 미조사 물건을 끌 때 쓰는 색). `ExamineEvent` 를 받아 조사가 끝나면 줄을 다시 그린다 |
+| 우클릭 메뉴가 안 떠서 조사도 못 한다 | 줄의 `OnPointerClick` 이 왼쪽 버튼이 아니면 버렸다. 격자는 `ItemView.OnClick` 에서 오른쪽 → `ItemUiContext.ShowContextMenu(ItemContext, 위치)` | 오른쪽 → 격자 칸이 있으면 그 칸의 `ShowContextMenu`, 없으면 상인 쪽 `TradingItemContext` 로 `ItemUiContext.ShowContextMenu` |
+
+판단(이름·색·클릭 갈래)은 `RowLook` 으로 떼어 시험 10개를 더했다(51 → 61). 게임 확인(Soap, Collector): 미조사 줄이 실루엣·"알 수 없는 아이템", 우클릭에 상세정보·조사·ITEM INFO·EXPORT TO TG(격자와 같다), 조사 후 그 줄이 곧바로 Gold Deer Skull 로 바뀜, 미조사 줄 툴팁도 이름을 감춤. 게임 로그 TraderListView 경고 0.
