@@ -126,3 +126,9 @@ Trader Search, Ultimate Trader Assort Editor, UI Fixes(Tyfon), OpenBarters, Wish
 | 우클릭 메뉴가 안 떠서 조사도 못 한다 | 줄의 `OnPointerClick` 이 왼쪽 버튼이 아니면 버렸다. 격자는 `ItemView.OnClick` 에서 오른쪽 → `ItemUiContext.ShowContextMenu(ItemContext, 위치)` | 오른쪽 → 격자 칸이 있으면 그 칸의 `ShowContextMenu`, 없으면 상인 쪽 `TradingItemContext` 로 `ItemUiContext.ShowContextMenu` |
 
 판단(이름·색·클릭 갈래)은 `RowLook` 으로 떼어 시험 10개를 더했다(51 → 61). 게임 확인(Soap, Collector): 미조사 줄이 실루엣·"알 수 없는 아이템", 우클릭에 상세정보·조사·ITEM INFO·EXPORT TO TG(격자와 같다), 조사 후 그 줄이 곧바로 Gold Deer Skull 로 바뀜, 미조사 줄 툴팁도 이름을 감춤. 게임 로그 TraderListView 경고 0.
+
+### 2026-11-19 사용자 제보 — 조사 진행 막대가 목록에 없다 (고침, 게임 확인)
+
+격자 칸은 `ExamineEvent` 의 `Begin` 에 `ItemViewAnimation.StartExamination(ExamineTime)` → `ItemViewExamineComponent.Show` 로 진행 막대를 띄우고 그 밖의 상태에 지운다. 목록은 그 이벤트로 이름만 다시 그렸다. 이제 조사 중인 물건을 (시작 시각, 조사 시간)으로 들고 줄 아래 4px 막대(활성 색 계열)를 `RowLook.ExamineProgress` 만큼 채운다(시험 6개, 61 → 67).
+
+게임 확인(Soap, Collector): 클릭 직후 아직 "알 수 없는 아이템" 인 줄 아래 막대가 차오르는 것을 찍었고, 로그가 `조사 Begin: 0.55초` → `조사 막대 켬` → `조사 Succeed` → `조사 막대 끔` 으로 맞는다. **Soap 은 조사 시간이 0.55초**(기본 1초, 스킬 보너스)라 처음 두 번은 화면으로 못 잡았다 — 그때는 막대가 없는 것이 아니라 너무 빨랐다. 이 네 줄 진단 로그는 남겨 둔다(조사 한 번에 4줄).

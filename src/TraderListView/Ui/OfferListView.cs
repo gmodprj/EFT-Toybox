@@ -146,8 +146,37 @@ namespace TraderListView.Ui
             }
         }
 
+        /// <summary>조사 중인 물건 → (시작 시각, 조사 시간). 격자 칸처럼 Begin 에 켜고 그 밖의 상태에 끈다.</summary>
+        private readonly Dictionary<Item, (float start, float duration)> _examining =
+            new Dictionary<Item, (float, float)>();
+
+        internal bool TryGetExamineProgress(Item item, out float progress)
+        {
+            progress = 0f;
+            if (item == null || !_examining.TryGetValue(item, out var e))
+            {
+                return false;
+            }
+
+            progress = RowLook.ExamineProgress(Time.unscaledTime - e.start, e.duration);
+            return true;
+        }
+
         private void OnExamine(ExamineItemEventArgs args)
         {
+            if (args?.Item != null)
+            {
+                Plugin.Log.LogInfo($"조사 {args.Status}: {args.ExamineTime:0.00}초 (목록 보임={_visible}, 줄 {_pool.Count(r => r.Item == args.Item)}개)");
+                if (args.Status == CommandStatus.Begin)
+                {
+                    _examining[args.Item] = (Time.unscaledTime, args.ExamineTime);
+                }
+                else
+                {
+                    _examining.Remove(args.Item);
+                }
+            }
+
             if (_visible && _items.Count > 0)
             {
                 SetItems(_items);
@@ -602,6 +631,30 @@ namespace TraderListView.Ui
             private TextMeshProUGUI _name, _price, _stock, _loyalty;
             private TooltipZone _priceZone;
             private Action _unsubscribeIcon;
+            private GameObject _examineTrack;
+            private RectTransform _examineFill;
+
+            /// <summary>조사 중이면 진행 막대를 채우고, 아니면 숨긴다(줄은 풀에서 다시 쓰이므로 매 프레임 본다).</summary>
+            private void Update()
+            {
+                if (_examineTrack == null)
+                {
+                    return;
+                }
+
+                float progress = 0f;
+                bool examining = Item != null && _owner.TryGetExamineProgress(Item, out progress);
+                if (_examineTrack.activeSelf != examining)
+                {
+                    _examineTrack.SetActive(examining);
+                    Plugin.Log.LogInfo($"조사 막대 {(examining ? "켬" : "끔")} (진행 {progress:0.00}, 줄 활성={gameObject.activeInHierarchy})");
+                }
+
+                if (examining)
+                {
+                    _examineFill.anchorMax = new Vector2(progress, 1f);
+                }
+            }
 
             public Item Item { get; private set; }
 
@@ -632,6 +685,28 @@ namespace TraderListView.Ui
                 view._icon = icon.gameObject.AddComponent<Image>();
                 view._icon.preserveAspect = true;
                 view._icon.raycastTarget = false;
+
+                // 조사 진행 막대 — 격자 칸 아래쪽 막대처럼 줄 아래에 붙여, 조사 시간 동안 왼쪽에서 차오른다.
+                var track = UiKit.NewRect("ExamineTrack", rt);
+                track.anchorMin = new Vector2(0f, 0f);
+                track.anchorMax = new Vector2(1f, 0f);
+                track.pivot = new Vector2(0.5f, 0f);
+                track.offsetMin = new Vector2(4f, 2f);
+                track.offsetMax = new Vector2(-4f, 6f);
+                var trackImage = track.gameObject.AddComponent<Image>();
+                trackImage.color = new Color(0.08f, 0.10f, 0.12f, 0.9f);
+                trackImage.raycastTarget = false;
+                var fill = UiKit.NewRect("Fill", track);
+                fill.anchorMin = Vector2.zero;
+                fill.anchorMax = new Vector2(0f, 1f);
+                fill.offsetMin = Vector2.zero;
+                fill.offsetMax = Vector2.zero;
+                var fillImage = fill.gameObject.AddComponent<Image>();
+                fillImage.color = new Color(0.28f, 0.49f, 0.62f, 1f); // 활성 색 #477D9D 와 같은 계열
+                fillImage.raycastTarget = false;
+                view._examineTrack = track.gameObject;
+                view._examineFill = fill;
+                view._examineTrack.SetActive(false);
 
                 view._name = Cell(rt, font, SortKey.Name, TextAlignmentOptions.MidlineLeft);
                 view._price = Cell(rt, font, SortKey.Price, TextAlignmentOptions.MidlineRight);

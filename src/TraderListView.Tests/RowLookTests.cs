@@ -31,6 +31,18 @@ namespace TraderListView.Tests
         }
 
         [Theory]
+        [InlineData(0f, 4f, 0f)]
+        [InlineData(1f, 4f, 0.25f)]
+        [InlineData(4f, 4f, 1f)]
+        [InlineData(9f, 4f, 1f)]
+        [InlineData(-1f, 4f, 0f)]
+        [InlineData(1f, 0f, 1f)]
+        public void ExamineProgressFillsOverTheExamineTime(float elapsed, float duration, float expected)
+        {
+            Assert.Equal(expected, RowLook.ExamineProgress(elapsed, duration), 3);
+        }
+
+        [Theory]
         [InlineData(RowLook.Button.Left, 1, RowLook.Action.Select)]
         [InlineData(RowLook.Button.Left, 2, RowLook.Action.Inspect)]
         [InlineData(RowLook.Button.Left, 3, RowLook.Action.Inspect)]
