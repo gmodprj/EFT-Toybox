@@ -166,6 +166,7 @@ namespace TraderListView.Ui
         {
             if (args?.Item != null)
             {
+                Plugin.Log.LogInfo($"조사 {args.Status}: {args.ExamineTime:0.00}초 (목록 보임={_visible}, 줄 {_pool.Count(r => r.Item == args.Item)}개)");
                 if (args.Status == CommandStatus.Begin)
                 {
                     _examining[args.Item] = (Time.unscaledTime, args.ExamineTime);
@@ -646,6 +647,7 @@ namespace TraderListView.Ui
                 if (_examineTrack.activeSelf != examining)
                 {
                     _examineTrack.SetActive(examining);
+                    Plugin.Log.LogInfo($"조사 막대 {(examining ? "켬" : "끔")} (진행 {progress:0.00}, 줄 활성={gameObject.activeInHierarchy})");
                 }
 
                 if (examining)
