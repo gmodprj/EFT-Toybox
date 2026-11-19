@@ -45,6 +45,12 @@ namespace TraderListView.Ui
         private static readonly HarmonyLib.AccessTools.FieldRef<TraderDealScreen, Trader> TraderRef =
             HarmonyLib.AccessTools.FieldRefAccess<TraderDealScreen, Trader>("_trader");
 
+        /// <summary>상인 화면이 격자 칸에 넘기는 플레이어 인벤토리 컨트롤러 — 조사 여부와 조사 이벤트가 여기 있다.</summary>
+        private static readonly HarmonyLib.AccessTools.FieldRef<TraderDealScreen, InventoryController> StashControllerRef =
+            HarmonyLib.AccessTools.FieldRefAccess<TraderDealScreen, InventoryController>("_stashController");
+
+        private InventoryController _examineSource;
+
         private IReadOnlyList<Item> _items = Array.Empty<Item>();
         private List<OfferRow> _rows = new List<OfferRow>();
         private Assortment _assortment;
@@ -81,6 +87,7 @@ namespace TraderListView.Ui
         /// </summary>
         private void OnShown()
         {
+            WatchExamine();
             var current = CurrentAssortment();
             if (current == _assortment)
             {
@@ -109,8 +116,52 @@ namespace TraderListView.Ui
             TraderGridSortPatch.ListApplied += OnListApplied;
         }
 
+        /// <summary>
+        /// 조사 여부를 격자와 같은 컨트롤러로 판정하고, 조사가 끝나면(문맥 메뉴의 "조사") 줄을 다시 그린다.
+        /// 상인 화면은 열 때마다 컨트롤러를 새로 받을 수 있어 열 때마다 맞춘다.
+        /// </summary>
+        private void WatchExamine()
+        {
+            var controller = _screen != null ? StashControllerRef(_screen) : null;
+            OfferRowFactory.IsExamined = item =>
+            {
+                var c = _screen != null ? StashControllerRef(_screen) : null;
+                return c == null || c.Examined(item);
+            };
+
+            if (controller == _examineSource)
+            {
+                return;
+            }
+
+            if (_examineSource != null)
+            {
+                _examineSource.ExamineEvent -= OnExamine;
+            }
+
+            _examineSource = controller;
+            if (controller != null)
+            {
+                controller.ExamineEvent += OnExamine;
+            }
+        }
+
+        private void OnExamine(ExamineItemEventArgs args)
+        {
+            if (_visible && _items.Count > 0)
+            {
+                SetItems(_items);
+            }
+        }
+
         private void OnDestroy()
         {
+            if (_examineSource != null)
+            {
+                _examineSource.ExamineEvent -= OnExamine;
+                _examineSource = null;
+            }
+
             TraderGridSortPatch.ListApplied -= OnListApplied;
             _unsubscribeSelection?.Invoke();
             _unsubscribeUpdated?.Invoke();
@@ -256,7 +307,10 @@ namespace TraderListView.Ui
             try
             {
                 var price = _assortment != null ? _assortment.GetBarterPrice(item).GetValueOrDefault() : default;
-                string text = Comfort.Common.Singleton<ItemFactory>.Instance.BriefItemName(item, item.Name.Localized());
+                // 격자 툴팁(TradingItemView)과 같게 — 조사하지 않은 물건은 이름을 감춘다.
+                string text = OfferRowFactory.Examined(item)
+                    ? Comfort.Common.Singleton<ItemFactory>.Instance.BriefItemName(item, item.Name.Localized())
+                    : "Unknown item".Localized();
                 if (item.StackObjectsCount <= 0)
                 {
                     text += "\n<color=red>(" + "OUT OF STOCK".Localized().ToLower() + ")</color>";
@@ -326,6 +380,49 @@ namespace TraderListView.Ui
             catch (Exception e)
             {
                 Plugin.Log.LogWarning("목록 더블클릭 상세 창 실패: " + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// 우클릭 → 격자와 같은 문맥 메뉴(상세정보·조사 등). 격자에 그 물건의 칸이 있으면 그 칸의
+        /// <c>ShowContextMenu</c> 를 그대로 부르고, 없으면 상인 쪽 문맥을 만들어 <c>ItemUiContext.ShowContextMenu</c> 를 부른다.
+        /// </summary>
+        internal void ShowContextMenu(Item item, Vector2 position)
+        {
+            if (item == null || _screen == null)
+            {
+                return;
+            }
+
+            try
+            {
+                HideAllTooltips();
+                var grid = _screen._traderGridView;
+                if (grid != null)
+                {
+                    foreach (var view in grid.GetComponentsInChildren<ItemView>(true))
+                    {
+                        if (view != null && view.Item == item && view.ItemContext != null)
+                        {
+                            view.ShowContextMenu(position);
+                            return;
+                        }
+                    }
+                }
+
+                var context = ItemUiContext.Instance;
+                var stash = StashRef(_screen);
+                if (context == null || stash == null)
+                {
+                    return;
+                }
+
+                var parent = new TradingItemContext(stash, ETradeMode.Purchase, ETradingSide.Trader);
+                context.ShowContextMenu(parent.CreateChild(item), position);
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("목록 우클릭 메뉴 실패: " + e.Message);
             }
         }
 
@@ -629,6 +726,10 @@ namespace TraderListView.Ui
                 {
                     BindIcon();
                 }
+
+                // 조사하지 않은 물건은 격자처럼 실루엣 — 조사가 끝나면 다시 Bind 되어 원래 색으로 돌아온다.
+                var tint = RowLook.IconTint(OfferRowFactory.Examined(Item));
+                _icon.color = new Color(tint.r, tint.g, tint.b, tint.a);
             }
 
             /// <summary>
@@ -686,19 +787,22 @@ namespace TraderListView.Ui
 
             public void OnPointerClick(PointerEventData eventData)
             {
-                if (eventData.button != PointerEventData.InputButton.Left)
-                {
-                    return;
-                }
+                var button = eventData.button == PointerEventData.InputButton.Left ? RowLook.Button.Left
+                    : eventData.button == PointerEventData.InputButton.Right ? RowLook.Button.Right
+                    : RowLook.Button.Middle;
 
-                // 첫 클릭은 고르기(구매 창), 두 번째 클릭은 상세 창 — 격자와 같은 순서.
-                if (eventData.clickCount >= 2)
+                // 격자와 같은 갈래: 왼쪽 한 번 = 고르기(구매 창), 두 번 = 상세 창, 오른쪽 = 문맥 메뉴(조사 등).
+                switch (RowLook.Route(button, eventData.clickCount))
                 {
-                    _owner.InspectItem(Item);
-                }
-                else
-                {
-                    _owner.OnRowClicked(this);
+                    case RowLook.Action.Select:
+                        _owner.OnRowClicked(this);
+                        break;
+                    case RowLook.Action.Inspect:
+                        _owner.InspectItem(Item);
+                        break;
+                    case RowLook.Action.ContextMenu:
+                        _owner.ShowContextMenu(Item, eventData.position);
+                        break;
                 }
             }
 

@@ -71,7 +71,27 @@ namespace TraderListView
             }
         }
 
-        public static string DisplayName(Item item) => item.LocalizedName();
+        /// <summary>
+        /// 지금 화면의 플레이어가 그 물건을 조사했는가(<c>InventoryController.Examined</c>, 격자 칸과 같은 판정).
+        /// 상인 화면이 붙일 때 정한다. 정해지지 않았으면 조사한 것으로 친다.
+        /// </summary>
+        public static Func<Item, bool> IsExamined;
+
+        public static bool Examined(Item item)
+        {
+            try
+            {
+                return item == null || IsExamined == null || IsExamined(item);
+            }
+            catch (Exception)
+            {
+                return true;
+            }
+        }
+
+        /// <summary>목록·정렬에 쓰는 이름. 조사하지 않은 물건은 격자처럼 "알 수 없는 아이템"이다(이름순 정렬로도 새지 않게).</summary>
+        public static string DisplayName(Item item) =>
+            RowLook.Name(Examined(item), item.LocalizedName(), "Unknown item".Localized());
 
         /// <summary>재료의 짧은 이름(게임 locale 키 "<tpl> ShortName").</summary>
         public static string ShortName(string templateId) => (templateId + " ShortName").Localized();
