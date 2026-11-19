@@ -19,6 +19,21 @@ namespace TraderListView
             examined ? (1f, 1f, 1f, 1f) : (0f, 0f, 0f, 0.85f);
 
         /// <summary>
+        /// 조사 진행률(0~1). 격자 칸의 진행 막대(<c>ItemViewExamineComponent.Show(ExamineTime)</c>)처럼
+        /// 조사 시간 동안 차오른다. 시간이 0 이하면 곧바로 다 찬 것으로 본다.
+        /// </summary>
+        public static float ExamineProgress(float elapsed, float duration)
+        {
+            if (duration <= 0f)
+            {
+                return 1f;
+            }
+
+            float t = elapsed / duration;
+            return t < 0f ? 0f : t > 1f ? 1f : t;
+        }
+
+        /// <summary>
         /// 왼쪽 한 번 = 고르기(구매 창), 왼쪽 두 번 = 상세 창, 오른쪽 = 문맥 메뉴(조사·상세정보 등).
         /// 가운데는 상인 칸에서 할 일이 없다.
         /// </summary>
