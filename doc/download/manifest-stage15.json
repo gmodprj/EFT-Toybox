@@ -1,0 +1,16 @@
+{
+  "stage": "stage15",
+  "note": "15차 — 기존 맵에 나오는 좀비. 후보 조사는 doc/CANDIDATES-ZOMBIES.md. PPES 의 할로윈 '2024 좀비·감염' 부분만 켜고 나머지는 끈다(2026 발병은 맵 로딩 충돌 보고). 요구 MoreBotsAPI 2.1.1+ 는 설치본 2.1.2. 크기는 2026-11-19 Forge content_length 실측.",
+  "mods": [
+    {
+      "group": "15-A",
+      "id": 3232,
+      "name": "zezinho's Past & Present Event Selector (PPES)",
+      "version": "1.7.7",
+      "size": 380614,
+      "binding": true,
+      "dependsOn": [2426],
+      "link": "https://sp-mod.com/mod/download/3232/zezinhos-past-present-event-selector-ppes/1.7.7"
+    }
+  ]
+}

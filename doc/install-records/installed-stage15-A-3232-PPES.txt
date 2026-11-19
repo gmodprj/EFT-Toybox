@@ -1,0 +1,8 @@
+3232__PastPresentEventSelector-1.7.7	BepInEx\patchers\PastPresentEventSelector\PastPresentEventSelector.Prepatch.dll
+3232__PastPresentEventSelector-1.7.7	BepInEx\plugins\PastPresentEventSelector\PastPresentEventSelector.Client.dll
+3232__PastPresentEventSelector-1.7.7	SPT_Runtime\user\mods\PastPresentEventSelector\CHANGELOG.md
+3232__PastPresentEventSelector-1.7.7	SPT_Runtime\user\mods\PastPresentEventSelector\config.json
+3232__PastPresentEventSelector-1.7.7	SPT_Runtime\user\mods\PastPresentEventSelector\LICENSE
+3232__PastPresentEventSelector-1.7.7	SPT_Runtime\user\mods\PastPresentEventSelector\PastPresentEventSelector.dll
+3232__PastPresentEventSelector-1.7.7	SPT_Runtime\user\mods\PastPresentEventSelector\README.md
+3232__PastPresentEventSelector-1.7.7	SPT_Runtime\user\mods\PastPresentEventSelector\wwwroot\css\ppes.css
