@@ -36,7 +36,9 @@ catch {
 $running = Get-Process -Name 'EscapeFromTarkov' -ErrorAction SilentlyContinue
 if ($running) { throw "게임이 이미 돌고 있다(PID $($running.Id)). 두 번 띄우지 않는다." }
 
-$nickname = (Get-Content $profile -Raw | ConvertFrom-Json).characters.pmc.Info.Nickname
+# -AsHashtable: 모드가 대소문자만 다른 키를 함께 쓰는 프로필이 있다(2026-11-19 needFuelForAllProductionTime /
+# NeedFuelForAllProductionTime) — 기본 ConvertFrom-Json 은 그런 JSON 을 거절한다.
+$nickname = (Get-Content $profile -Raw | ConvertFrom-Json -AsHashtable).characters.pmc.Info.Nickname
 $config = "{'BackendUrl':'$BackendUrl','Version':'live','MatchingVersion':'live'}"
 
 "띄운다: $nickname ($Token)"

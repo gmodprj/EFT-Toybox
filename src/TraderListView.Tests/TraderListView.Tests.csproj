@@ -31,6 +31,8 @@
     <Compile Include="PriceTextTests.cs" />
     <Compile Include="..\TraderListView\GlyphFallback.cs" />
     <Compile Include="GlyphFallbackTests.cs" />
+    <Compile Include="..\TraderListView\RowLook.cs" />
+    <Compile Include="RowLookTests.cs" />
     <Compile Include="..\TraderListView\VirtualWindow.cs" />
     <Compile Include="VirtualWindowTests.cs" />
     <Compile Include="..\TraderListView\ButtonStyle.cs" />
