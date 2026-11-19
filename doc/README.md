@@ -123,22 +123,22 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 ## 직접 만든 모드 (`src/`)
 
 **23개**(테스트 프로젝트 제외, 여러 조각인 AirdropCaller·ProfilePorter·PrestigeStashRelax 는 하나로,
-`ServerWebUiKorean` 은 ModCardKorean 에 묶어 센다). 그중 **자기 이름의 설치 자리를 가진 것이 20개**다 —
-2026-11-19 실측으로 `BepInEx\plugins\` 에 10개(AirdropCaller · AirdropProbe ·
+`ServerWebUiKorean` 은 ModCardKorean 에 묶어 센다). 그중 **자기 이름의 설치 자리를 가진 것이 19개**다 —
+2026-11-19 실측으로 `BepInEx\plugins\` 에 9개(AirdropCaller ·
 DynamicMapsFactionMarkers · GogglesWheel · GridWindowScroll · IcebreakerOffMapGuard ·
 PrestigeStashRelax · SptKoreanConfig · SptTeamManager · TraderListView), `user\mods\` 에 13개(AirdropCaller ·
 HelmetSlotUnion · ModCardKorean · PrestigeStashRelax · PrestigeTransferKeep · ProfilePorter · ScavRaidWaves ·
 SlotCategoryRelax · SlotFilterSweep · SptKoreanLocale · SptTeamManager-ServerMod · StackUnify ·
-WebConfigBridge)이고, AirdropCaller·PrestigeStashRelax·STM 은 양쪽에 걸쳐 있어 모드로는 20개다.
+WebConfigBridge)이고, AirdropCaller·PrestigeStashRelax·STM 은 양쪽에 걸쳐 있어 모드로는 19개다(AirdropProbe 는 같은 날 지웠다).
 `AirdropCaller.exe`·`ProfilePorter.exe` 는 설치본 루트에 선다.
 `PluginLocales`·`ServerWebKorean` 은 자기 폴더 없이 **남의 모드 폴더와 서버 웹에 파일로** 들어가고,
-`CompatToggle` 은 지금 설치본에 없다.
+`CompatToggle`·`AirdropProbe` 는 지금 설치본에 없다.
 
 | 모드 | 무엇 | 설계·계획 |
 | --- | --- | --- |
 | **SptTeamManager (STM)** | PIT Fireteam 포크. 다른 런처 프로필을 팀원으로 | [인계](STM-HANDOVER.md) · [설계](specs/2026-10-31-spt-team-manager-design.md) · 계획 [1](plans/2026-10-31-spt-team-manager-plan-1-foundation.md)·[2](plans/2026-11-01-spt-team-manager-plan-2-raid.md)·[3](plans/2026-11-02-spt-team-manager-plan-3-gear-editing.md)·[4](plans/2026-11-02-stm-plan4-kit-loadouts.md)·[5](plans/2026-11-03-stm-plan5-gear-parity.md)·[6](plans/2026-11-06-stm-plan6-accrual-and-stash-transfer.md) · [대조표](specs/2026-11-04-stash-parity-checklist.md) · [조사](specs/2026-11-04-stash-operations-survey.md) · [사망 관문](specs/2026-11-04-death-strip-gate.md) · [편집기 여섯](specs/2026-11-06-stm-six-checks.md) · [전적 대응표](specs/2026-11-07-stm-raid-tally-mapping.md) · [제거 조사](specs/2026-11-04-allinweapon-removal-survey.md) |
 | **AirdropCaller** | 외부 창으로 보급을 부른다(`.Server`+`.Plugin`+`.App` 세 조각) | [설계](specs/2026-10-28-airdrop-caller-design.md) · [1단계](specs/2026-10-29-airdrop-stage1-findings.md) · [2단계](specs/2026-10-29-airdrop-stage2-result.md) |
-| `AirdropProbe` | 보급 지점 측정기 + 드롭 시험(0.3.1). AirdropCaller 1단계용 — 둘 다 확인을 마쳐 **지울 대상인데 아직 깔려 있다** | 위 설계 §7.9 · [1단계](specs/2026-10-29-airdrop-stage1-findings.md) |
+| `AirdropProbe` | 보급 지점 측정기 + 드롭 시험(0.3.1). AirdropCaller 1단계용 — 둘 다 확인을 마쳐 **2026-11-19 에 지웠다**(지금 설치본에 없다) | 위 설계 §7.9 · [1단계](specs/2026-10-29-airdrop-stage1-findings.md) |
 | **ProfilePorter** | 프로필 사이로 물건을 베낀다 — 격자로 골라 우편으로 보낸다(`.Server`+`.App` 두 조각) | [설계](specs/2026-11-08-profile-porter-design.md) · [인계](HANDOVER-2026-11-09.md) |
 | `PrestigeStashRelax` | 프레스티지 **이전 창고**의 격자·품목을 넓힌다(서버 `PrestigeStashRelax` + 게임 `PrestigeStashRelaxClient` 두 조각) | [설계](specs/2026-11-15-prestige-stash-relax-design.md) · [계획](plans/2026-11-15-prestige-mods-install-plan.md) |
 | `PrestigeTransferKeep` | 3332 Prestige Perks 가 전송 물건을 코인으로 바꾸는 것을 되돌린다 | [INSTALLED-MODS](INSTALLED-MODS.md) "다른 경로로 설치된 것" |
