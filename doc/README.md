@@ -113,7 +113,7 @@ PIT Fireteam 의 포크. 다른 런처 프로필을 팀원으로 쓴다. **이 �
 | [HANDOVER-2026-11-06.md](HANDOVER-2026-11-06.md) | 2026-11-06 세션 인계 — 10차 완료, F12 한글화 전수, 설치본 감사, **게임 DB 퀘스트 네 묶음 한글화 완료**, 남은 미확정 |
 | [HANDOVER-2026-10-26.md](HANDOVER-2026-10-26.md) | 2026-10-26 세션 인계 |
 | [../src/SptKoreanConfig/README.md](../src/SptKoreanConfig/README.md) | F12 설정 창 한글화 플러그인 |
-| [../src/SptKoreanLocale/README.md](../src/SptKoreanLocale/README.md) | **게임 DB locale 한글화 서버 모드** — 지금 **사전 21개 / 8,804항목**이다(2026-11-19 소스 기준 — 봇 역할 이름 23 · BTR 대화 44 · 아이템 이름 742(바닐라 28 · ISB 계열 378 · QuestCodex 퀘스트 아이템 336) · 퀘스트 이름 1,243 · 목표 3,482 · 설명 1,526 · 대사·메일 1,744). **사전에 값을 직접 쓰면 날아가는 실측**, `LazyLoad.AddTransformer` 로 가는 이유, **나중에 등록한 변환기가 이긴다**는 것(ExpandedTaskText 가 `int.MaxValue` 를 쓴다), 다시 펴낼 때 기준이 `en` 이어야 하는 이유, 묶음을 병렬로 나눠 번역할 때의 검사가 여기 있다 |
+| [../src/SptKoreanLocale/README.md](../src/SptKoreanLocale/README.md) | **게임 DB locale 한글화 서버 모드** — 지금 **사전 22개 / 9,355항목**이다(2026-11-19 소스 기준, PPES 이벤트 퀘스트 546 포함 — 봇 역할 이름 23 · BTR 대화 44 · 아이템 이름 742(바닐라 28 · ISB 계열 378 · QuestCodex 퀘스트 아이템 336) · 퀘스트 이름 1,243 · 목표 3,482 · 설명 1,526 · 대사·메일 1,744). **사전에 값을 직접 쓰면 날아가는 실측**, `LazyLoad.AddTransformer` 로 가는 이유, **나중에 등록한 변환기가 이긴다**는 것(ExpandedTaskText 가 `int.MaxValue` 를 쓴다), 다시 펴낼 때 기준이 `en` 이어야 하는 이유, 묶음을 병렬로 나눠 번역할 때의 검사가 여기 있다 |
 | [../src/PluginLocales/README.md](../src/PluginLocales/README.md) | **모드 폴더 안에 넣는 한국어 locale 5개 (1,647항목)** — ISB 무전·방송 자막 222줄, 보관함 정렬 창, 위시리스트 확장, 주변 아이템 패널, ImpactCue F10 설정 창(1,309). 모드마다 각각 어떻게 locale 코드를 고르는지 역컴파일로 확인한 표와, **모드 업데이트에 날아가므로 다시 넣는** 절차 |
 | [../src/GridWindowScroll/README.md](../src/GridWindowScroll/README.md) | 가방·상자 내부 인벤 창을 화면 안에 가두는 플러그인 (보이는 칸 수 제한 + 스크롤) |
 | [../src/StackUnify/README.md](../src/StackUnify/README.md) | 최대 스택 크기를 한 곳에서 정하는 서버 모드. **`PostLoad` 단계가 클라이언트에 닿는다는 실측**도 여기 있다 |
@@ -158,6 +158,7 @@ WebConfigBridge)이고, AirdropCaller·PrestigeStashRelax·STM 은 양쪽에 걸
 | `SlotFilterSweep` | 칸 필터에서 **없는 부품 id** 를 걷어낸다(기본은 세기만) | [감사](REVIEW-MODS-AUDIT-2026-11-12.md) |
 | `ScavRaidWaves` | 스캐브 레이드 웨이브 | — |
 | `WebConfigBridge` | 서버 웹 설정 다리 | — |
+| `ZombieMapInfection` | 할로윈 좀비의 맵별 감염률 — 세관·인터체인지에도 나오게(15-A PPES 와 함께) | [README](../src/ZombieMapInfection/README.md) · [후보·설치](CANDIDATES-ZOMBIES.md) |
 | `CompatToggle` | 호환 토글(**지금 설치본에 없다**) | [설계](specs/2026-10-26-compat-toggle-design.md) · [계획](plans/2026-10-26-compat-toggle-plan.md) |
 
 그 밖의 조사 문서: [F12 메뉴 검토](specs/2026-10-26-f12-menu-review.md) ·

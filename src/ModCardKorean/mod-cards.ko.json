@@ -47,6 +47,9 @@
   "/webconfigbridge": {
     "description": "자체 편집 수단이 없는 서버 모드의 설정을 고친다"
   },
+  "/ppes": {
+    "description": "켜 둘 계절 이벤트와 지난 이벤트를 고른다"
+  },
   "/satellite": {
     "description": "레이드를 다른 화면의 브라우저에 실시간 지도로 띄운다 — 봇·탈출구·전리품·잠긴 문"
   }
