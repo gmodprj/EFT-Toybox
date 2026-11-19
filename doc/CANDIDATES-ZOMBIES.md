@@ -79,3 +79,30 @@ SPT 서버 코드(`SPTarkov.Server.Core.dll` 의 `SeasonalEventService`, 역컴�
 - **레이드에서 좀비가 실제로 나오고 때리는지**(SAIN 과 PPES 클라이언트 플러그인). 감염률 기본값으로 **Customs·Interchange 는 0** 이라 그 두 맵에는 안 나온다 — 넣으려면 PPES 의 레이드 미리보기 → 스폰 편집기.
 - 할로윈을 켜면 SPT 가 봇의 할로윈 마스크·이벤트 장비도 함께 켠다(PPES 가 나누지 않는다). 할로윈 퀘스트가 퀘스트 목록에 보일 수 있다.
 - 서버 웹 첫 화면 모드 카드: ModCardKorean 이 `사전에 없어 원문으로 남은 카드 1 개: Past & Present Event Selector (/ppes)` — 한글 카드 사전에 아직 없다.
+
+## 6. 세관·인터체인지 좀비와 PPES 한글화 (2026-11-19 14:45~15:25)
+
+### 세관·인터체인지 — 자체 모드 ZombieMapInfection
+
+- PPES 에는 맵별 감염률 설정이 없다(2026 발병 부분만 따로 덮는다 — 역컴파일). SPT 기본값이 세관(`bigmap`)·인터체인지만 0 이라 그 둘에 안 나왔다. 감염자 스폰 자체는 SPT `eventBossSpawns.halloweenzombies` 에 이미 있다.
+- 그래서 [src/ZombieMapInfection](../src/ZombieMapInfection) 을 만들었다 — 메모리의 `SeasonalEventConfig` 할로윈 감염률만 설정대로 바꾼다(기본 두 맵 50). **적용 순서가 전부다**: PPES `SeasonalApplier` 가 199999 에 기본값을 읽고, SPT `GameCallbacks`(200000) → `PostDbLoadService` → `EnableSeasonalEvents` → `ConfigureZombies` 가 좀비를 넣는다. 그래서 이 모드는 **199998** 에 돈다(다른 자체 모드처럼 PostLoad 면 이미 지나간다).
+- 기동 로그: `[ZombieMapInfection] halloween 감염률: bigmap 0 -> 50, Interchange 0 -> 50`, 서버 **185**.
+
+### 사용자가 /ppes 에서 바꾼 설정 (14:50 저장 — 손대지 않았다)
+
+- 할로윈 부분 `cultists: true`(컬트의 밤 — 야간 레이드에 교단원), 레이드 설정 스폰 편집 1건: 세관 `infectedPmc` 확률 55 · `ZoneCustoms` · 호위 2-3. 15:15 기동에 `cultists on` 으로 적용됐다.
+- 내 감사 크롤러(14:49:38 끝)보다 뒤의 저장이고, 크롤러는 저장 버튼을 누르지 않는다.
+
+### 한글화
+
+| 부분 | 무엇 | 어디 | 적용 |
+| --- | --- | --- | --- |
+| 서버 웹 `/ppes` | 영어 531 + 숫자 끼는 문구 규칙 26 (날짜 "Today is Nov 19" 는 달마다 규칙) | `src/ServerWebUiKorean/ko-ui.json` | 사전은 요청마다 파일에서 읽어 **재시작 없이** 적용 — 미번역 443 → 22(전부 일부러 둔 구역·봇 id·언어 단추·SCOURGE) |
+| 첫 화면 모드 카드 | `/ppes` 설명 | `src/ModCardKorean/mod-cards.ko.json` | 15:15 기동 `모드 카드 17/17` |
+| 인게임 이벤트 퀘스트 | PPES 가 kr 에 영어로 TryAdd 하는 글 516 + 바닐라 kr 에 영문이던 이벤트 퀘스트 이름 28 + 목표 2 | `src/SptKoreanLocale/lang/ppes-event-quests.json`(sources 포함) | 516 은 15:15 기동에 적용(`9322/9325`), **28+2 와 "파트 N" 표기는 다음 재시작에 적용** |
+| 세력 이름 | 청소반·밀수업자·약탈자·구스·바스마치 | `src/SptKoreanLocale/lang/scav-roles.json` | 15:15 기동 |
+| 게임 플러그인 | F12 설정·화면 글자가 없다(역컴파일) | — | 해당 없음 |
+
+- 문자열은 역컴파일 소스의 `T("pt","en")`·이벤트 카탈로그(`PastEventDef`·`SeasonalEventDef`·`PartDef`)·화면 감사(`tools/audit-web-ui.mjs` 에 `ppes` 추가)를 합쳐 모았다.
+- 번역은 덩이 다섯(웹 2·게임 3)으로 나눠 돌리고 **개수·자리표시자·줄바꿈을 직접 대조**했다. 덩이마다 갈린 이름은 게임 화면 기준으로 맞췄다 — 바닐라 퀘스트는 저장소 `quest-names-*.json` 의 이름(Hustle → 한몫 잡기, Staying Light → 가볍게 유지, Tourists → 관광객들), 연작은 저장소 관례 "- 파트 N", 아이템은 바닐라 표기(Obdolbos, 현물 비트코인, Grizzly 응급 치료 키트), The Unheard → 언허드, Blackout → 정전(모드 이름일 때 "Vultify 의 Blackout 모드").
+- 남은 확인: 게임에서 퀘스트·세력 이름이 한글로 보이는지(이벤트를 켜야 보이는 것이 대부분), 다음 재시작 뒤 `node tools/check-locale-dict.mjs` 가 빠뜨림 0 인지.

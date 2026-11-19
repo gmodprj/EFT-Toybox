@@ -1,0 +1,16 @@
+{
+  // false 로 두면 이 모드는 아무것도 바꾸지 않는다. 서버를 다시 켜야 적용된다.
+  "ModEnabled": true,
+
+  // 맵별 좀비 감염률(%). 할로윈 이벤트의 좀비가 켜져 있을 때만 의미가 있다(PPES 의
+  // "Zombies and infected (2024)"). 0 이면 그 맵에는 좀비가 나오지 않는다.
+  // 적지 않은 맵은 SPT 기본값 그대로다 — 연구소 100, 우즈 60, 팩토리·해안선·리저브·
+  // 등대·스트리트 50, 그라운드 제로 25, 세관 0, 인터체인지 0.
+  //
+  // 맵 열쇠(대소문자 무관): bigmap(세관), Interchange, Woods, Shoreline, RezervBase,
+  // Lighthouse, TarkovStreets, laboratory, Sandbox(그라운드 제로), factory4(팩토리 낮·밤)
+  "Infection": {
+    "bigmap": 50,
+    "Interchange": 50
+  }
+}

@@ -29,7 +29,13 @@
     "ScavRole/infectedCivil": "감염자",
     "ScavRole/infectedLaborant": "감염자",
     "ScavRole/infectedPmc": "감염자",
-    "ScavRole/infectedTagilla": "감염자"
+    "ScavRole/infectedTagilla": "감염자",
+
+    "ScavRole/PpesCleanupCrew": "청소반",
+    "ScavRole/PpesSmuggler": "밀수업자",
+    "ScavRole/PpesPillager": "약탈자",
+    "ScavRole/PpesGus": "구스",
+    "ScavRole/PpesBasmach": "바스마치"
   },
 
   "keptAsIs": {

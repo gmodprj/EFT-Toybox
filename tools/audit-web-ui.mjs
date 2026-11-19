@@ -35,6 +35,7 @@ const MODS = [
   ['jerobackpack', '/jerobackpack'],
   ['lotsofloot', '/lotsofloot'],
   ['orbit', '/orbit'],
+  ['ppes', '/ppes'],
   ['questcodex', '/questcodex'],
   ['sain', '/sain/presets'],
   ['skills-extended', '/skills-extended'],
