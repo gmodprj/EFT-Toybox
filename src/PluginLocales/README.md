@@ -1,6 +1,6 @@
 # PluginLocales — 모드 폴더 안에 넣는 한국어 locale
 
-제 `locales/` 폴더를 읽는 게임 플러그인에 한국어 파일을 넣는다. 지금 **네 파일 / 338항목**이다.
+제 `locales/` 폴더를 읽는 게임 플러그인에 한국어 파일을 넣는다. 지금 **다섯 파일 / 1,647항목**이다(2026-11-19 manifest 기준).
 
 | 대상 | 플러그인 | 항목 | 넣는 자리 |
 | --- | --- | --- | --- |
@@ -8,6 +8,7 @@
 | 보관함 정렬 창 | Advanced Stash Sorting | 104 | `AdvancedStashSorting\locales\kr.json` |
 | 위시리스트 확장 | Wishlist Extended | 10 | `WishlistExtended\locales\kr.json` |
 | 주변 아이템 패널 | Softwyx Loot In Vicinity | 2 | `Softwyx-LootInVicinity\locales\kr.json` |
+| F10 설정 창 | ImpactCue-UI-MOD | 1,309 | `ImpactCue-UI-MOD\locales\ko-KR.json` — `Language=Auto` 가 `ko-KR` 을 `ko` 보다 먼저 찾는다. 모드의 `ko.json` 은 그대로 두고 `tools/gen-impactcue-ko.mjs` 가 `ImpactCue/overrides.json` 을 얹어 만든다 |
 
 범위 전체는 [doc/REVIEW-KOREAN-LOCALIZATION.md](../../doc/REVIEW-KOREAN-LOCALIZATION.md) 에 있다.
 게임 DB 쪽(아이템·퀘스트·봇 역할 이름)은 [SptKoreanLocale](../SptKoreanLocale), F12 창은 [SptKoreanConfig](../SptKoreanConfig) 가 맡는다.
