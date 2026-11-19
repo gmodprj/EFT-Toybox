@@ -38,6 +38,7 @@
 | [PLAN-STAGE8.md](PLAN-STAGE8.md) | 8차 계획 — OP·AI 동료·HUD 포팅본. 단계별 순서와 8-C 결과 절 |
 | [COMPARE-STAGE8-B.md](COMPARE-STAGE8-B.md) | 8-B 택일 3건 비교 — 설치본 설정과 후보 DLL 을 직접 열어 대조 |
 | [REVIEW-STAGE8-D.md](REVIEW-STAGE8-D.md) | 8-D 치트 표시 2개 검토 + Tushonka F12 설정 확정 |
+| [CANDIDATES-ZOMBIES.md](CANDIDATES-ZOMBIES.md) | **기존 맵에 나오는** 대체 좀비 모드 후보(2026-11-19) — SPT 에 내장된 2024 감염 이벤트가 `enabled: false` 로 꺼져 있다는 것, SVM 할로윈 스위치로는 좀비가 안 나온다는 것(역컴파일), 1순위 PPES |
 | [CANDIDATES-OP-416.md](CANDIDATES-OP-416.md) | 외부 OP 모드 목록 58개를 Forge 로 재검증한 결과 |
 | [PLAN-STAGE7.md](PLAN-STAGE7.md) / [CANDIDATES-STAGE7.md](CANDIDATES-STAGE7.md) | 7차 계획과 후보 65개 |
 | [PLAN-STAGE6.md](PLAN-STAGE6.md) | 6차 계획 — sp-mod 밖(GitHub·Nexus)까지 훑은 결과 |
